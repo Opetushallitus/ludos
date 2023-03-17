@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "yarn workspace web dev",
     "playwright": "npx playwright test",
+    "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
     "lint:playwright": "yarn workspace playwright lint"
   }
