@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "workspaces": ["web", "playwright"],
+  "scripts": {
+    "dev": "yarn workspace web dev",
+    "playwright": "npx playwright test",
+    "lint:web": "yarn workspace web lint",
+    "lint:playwright": "yarn workspace playwright lint"
+  }
+}
