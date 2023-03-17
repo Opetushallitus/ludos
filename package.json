@@ -2,7 +2,7 @@
   "private": true,
   "workspaces": ["web", "playwright"],
   "scripts": {
-    "dev": "yarn workspace web dev",
+    "dev": "yarn workspace web dev & (cd server && ./gradlew build --continuous) & (cd server && ./gradlew bootRun)",
     "playwright": "npx playwright test",
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",

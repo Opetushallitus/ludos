@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>{data}</h1>
+      <h1>Server says: {data}</h1>
     </div>
   )
 }
