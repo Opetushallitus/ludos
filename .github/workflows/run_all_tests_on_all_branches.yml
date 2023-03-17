@@ -1,0 +1,7 @@
+name: Pull request
+run-name: Run all tests on all branches 🦉
+on: push
+jobs:
+  tests:
+    name: "🐯"
+    uses: ./.github/workflows/code_check.yml
