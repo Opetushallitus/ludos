@@ -2,7 +2,7 @@ name: Pull request
 run-name: Run all tests on pull request 🦉
 on: push
 jobs:
-  Explore-GitHub-Actions:
+  Run-All-Tests:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
