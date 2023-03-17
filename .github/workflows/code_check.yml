@@ -29,5 +29,12 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
-      - name: Run linter
-        run: cd web && yarn install --frozen-lockfile && yarn lint && yarn format
+
+      - name: Go to web
+        run: cd web
+      - name: Yarn install
+        run: yarn install --frozen-lockfile
+      - name: Run Eslint
+        run: yarn lint
+      - name: Run Prettier
+        run: yarn format
