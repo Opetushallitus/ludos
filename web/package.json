@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "lint:fix": "eslint --fix src/**/*.ts src/**/*.tsx",
-    "lint:prettier": "prettier --check 'src/**/*.{js,ts,tsx,css}'"
+    "format": "prettier --check 'src/**/*.{js,ts,tsx,css}'",
+    "format:fix": "prettier --write 'src/**/*.{js,ts,tsx,css}'"
   },
   "dependencies": {
     "react": "^18.2.0",
