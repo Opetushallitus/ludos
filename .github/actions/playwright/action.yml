@@ -1,0 +1,29 @@
+name: Playwright Tests
+description: Run playwright tests
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: echo "🎉 playwright action. ${{ github.event_name }} event."
+    - name: "🔨 Start frontend and backend"
+      uses: ./.github/actions/start_frontend_and_backend
+    - name: Cache Playwright browser
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ hashFiles('./playwright/playwright.config.ts') }}
+        restore-keys: |
+          ${{ runner.os }}-playwright-
+    - name: Install Playwright Browsers
+      shell: bash
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      shell: bash
+      run: yarn playwright
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30

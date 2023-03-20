@@ -1,0 +1,12 @@
+name: Code check
+description: Run eslint and prettier on project TypeScript files
+
+runs:
+  using: composite
+  steps:
+    - name: Lint web
+      shell: bash
+      run: yarn lint:web
+    - name: Lint playwright
+      shell: bash
+      run: yarn lint:playwright

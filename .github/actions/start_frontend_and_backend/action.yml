@@ -1,0 +1,8 @@
+name: Start frontend and backend
+description: Starts up the frontend and backend
+runs:
+  using: composite
+  steps:
+    - name: Start
+      shell: bash
+      run: yarn ci

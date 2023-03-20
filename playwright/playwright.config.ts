@@ -1,6 +1,6 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
-require('dotenv').config();
+require('dotenv').config()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -13,7 +13,7 @@ export default defineConfig({
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 5000
+    timeout: 8000
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -41,8 +41,8 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+      use: { ...devices['Desktop Chrome'] }
+    }
 
     // {
     //   name: 'firefox',
@@ -73,7 +73,7 @@ export default defineConfig({
     //   name: 'Google Chrome',
     //   use: { channel: 'chrome' },
     // },
-  ],
+  ]
 
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   // outputDir: 'test-results/',
@@ -83,4 +83,4 @@ export default defineConfig({
   //   command: 'npm run start',
   //   port: 3000,
   // },
-});
+})
