@@ -3,6 +3,7 @@ run-name: Run all tests on all branches 🦉
 on: push
 jobs:
   tests:
+    runs-on: "ubuntu-22.04"
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
