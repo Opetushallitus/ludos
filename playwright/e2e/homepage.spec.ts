@@ -5,5 +5,5 @@ test('has title', async ({ page }) => {
 
   const el = page.getByTestId('heading')
 
-  expect(await el.innerText()).toBe('Server says: hello ludos')
+  await expect(el).toHaveText("Server says: hello ludos")
 })
