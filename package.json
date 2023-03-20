@@ -3,7 +3,7 @@
   "workspaces": ["web", "playwright"],
   "scripts": {
     "dev": "yarn workspace web dev & (cd server && ./gradlew build --continuous) & (cd server && ./gradlew bootRun)",
-    "ci": "(cd server && ./gradlew bootRun) & yarn workspace web ci",
+    "ci": "(cd server && ./gradlew bootRun) & yarn workspace web ci &",
     "playwright": "npx playwright test",
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
