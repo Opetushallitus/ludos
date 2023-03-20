@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "ci": "yarn build && vite preview --port 8000",
     "lint": "eslint src/**/*.ts src/**/*.tsx",
     "lint:fix": "eslint --fix src/**/*.ts src/**/*.tsx"
   },

@@ -3,6 +3,6 @@ description: Starts up the frontend and backend
 runs:
   using: composite
   steps:
-    - name: "echo action"
+    - name: Start
       shell: bash
-      run: echo "inside action"
+      run: yarn ci
