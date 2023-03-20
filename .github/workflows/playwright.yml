@@ -1,0 +1,29 @@
+name: Playwright Tests
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        type: string
+        default: "ubuntu-20.04"
+jobs:
+  playwright_e2e_tests:
+    timeout-minutes: 60
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: "🔨 Start frontend and backend"
+        uses: ./.github/actions/start_frontend_and_backend
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }}"
+#    steps:
+#    - name: Install dependencies
+#      run: yarn
+#    - name: Install Playwright Browsers
+#      run: yarn playwright install --with-deps
+#    - name: Run Playwright tests
+#      run: yarn playwright test
+#    - uses: actions/upload-artifact@v3
+#      if: always()
+#      with:
+#        name: playwright-report
+#        path: playwright-report/
+#        retention-days: 30
