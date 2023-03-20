@@ -20,7 +20,7 @@ runs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       shell: bash
-      run: yarn workspace playwright
+      run: yarn playwright
     - uses: actions/upload-artifact@v3
       if: always()
       with:
