@@ -14,7 +14,9 @@ function App() {
 
   return (
     <div className="App">
-      <h1 data-testid="heading">Server says: {data}</h1>
+      <h1 className="text-2xl underline" data-testid="heading">
+        Server says: {data}
+      </h1>
     </div>
   )
 }
