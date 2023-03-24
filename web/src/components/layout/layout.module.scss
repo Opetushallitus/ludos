@@ -1,6 +1,6 @@
 .container {
   display: grid;
-  grid-template-rows: 6rem 5fr 6rem;
+  grid-template-rows: 6rem 1fr 6rem;
   grid-template-areas:
     "header"
     "main"

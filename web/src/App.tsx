@@ -17,8 +17,10 @@ function App() {
   return (
     <Layout header={<Header />} footer={<Footer />}>
       <div className="px-5 pt-3">
-        <h2 className="text-2xl underline text-omaVari-100" data-testid="heading">
-          Server says: {data}
+        <h2 className="text-gray-primary text-2xl font-semibold" data-testid="heading">
+          {data}
+          <br />
+          Hei Yrjö Ylivoima, tervetuloa Koepankin ylläpitoon!
         </h2>
       </div>
     </Layout>
