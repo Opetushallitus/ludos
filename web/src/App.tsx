@@ -8,7 +8,7 @@ function App() {
 
   useEffect(() => {
     ;(async () => {
-      const response = await fetch('http://localhost:8080/api/', { method: 'GET' })
+      const response = await fetch('/api/', { method: 'GET' })
       const json = await response.json()
       setData(json.message)
     })()
@@ -18,9 +18,10 @@ function App() {
     <Layout header={<Header />} footer={<Footer />}>
       <div className="px-5 pt-3">
         <h2 className="text-gray-primary text-2xl font-semibold" data-testid="heading">
-          {data}
-          <br />
           Hei Yrjö Ylivoima, tervetuloa Koepankin ylläpitoon!
+          <br />
+          <br />
+          {data}
         </h2>
       </div>
     </Layout>
