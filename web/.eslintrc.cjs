@@ -1,4 +1,4 @@
-module.exports = {
+const eslintConfig = {
     extends: ['plugin:prettier/recommended'],
     plugins: ['prettier'],
     parser: "@typescript-eslint/parser",
@@ -21,3 +21,5 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 'off'
     }
 }
+
+module.exports = eslintConfig

@@ -1,3 +1,8 @@
-module.exports = {
-  plugins: [require('tailwindcss'), require('autoprefixer')]
+const postcssConfig = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {}
+  }
 }
+
+module.exports = postcssConfig
