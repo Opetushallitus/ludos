@@ -4,13 +4,23 @@
 
 @layer utilities {
   .row {
-    display: flex;
-    flex-direction: row;
+    @apply flex flex-row
   }
 
   .col {
-    display: flex;
-    flex-direction: column;
+    @apply flex flex-col
+  }
+
+  .buttonPrimary {
+    @apply bg-green-primary hover:bg-green-light text-white
+  }
+
+  .buttonSecondary {
+    @apply border-green-primary text-green-primary hover:bg-green-primary border-2 hover:text-white
+  }
+
+  .buttonGhost {
+    @apply text-gray-primary bg-none
   }
 }
 
