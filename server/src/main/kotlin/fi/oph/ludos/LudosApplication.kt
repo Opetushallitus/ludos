@@ -12,9 +12,8 @@ fun main(args: Array<String>) {
 }
 
 @RestController
-@CrossOrigin(origins = ["http://localhost:8000"])
 @RequestMapping("api")
 class TaskController() {
     @GetMapping("/")
-    fun index() = "{\"message\":\"hello ludos\"}"
+    fun index() = "{\"message\":\"Terkkuja koepankin taustajärjestelmästä.\"}"
 }
