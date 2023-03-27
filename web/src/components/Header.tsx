@@ -1,6 +1,7 @@
-export const Header = () => {
-  const titles = ['etusivu', 'koetehtävät', 'ohjeet', 'todistukset', 'palautteet']
+import { NavLink } from 'react-router-dom'
+import { Pages } from '../types'
 
+export const Header = ({ pages }: { pages: Pages[] }) => {
   return (
     <div>
       <div className="row justify-between px-5 pt-3">
@@ -13,9 +14,15 @@ export const Header = () => {
       </div>
       <nav className="row px-5 pt-3">
         <ul className="row space-x-8">
-          {titles.map((title, i) => (
+          {pages.map((page, i) => (
             <li key={i}>
-              <a className="text-gray-primary text-lg font-semibold">{title}</a>
+              <NavLink
+                to={page.key}
+                className={({ isActive }) =>
+                  `text-gray-primary text-lg capitalize${isActive ? ' border-b-green-primary border-b-5' : ''}`
+                }>
+                {page.title}
+              </NavLink>
             </li>
           ))}
         </ul>
