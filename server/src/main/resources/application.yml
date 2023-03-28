@@ -1,0 +1,14 @@
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ludos
+    username: oph
+    password: oph
+  jpa:
+    open-in-view: false
+
+logging:
+  level:
+    org:
+      springframework: INFO
