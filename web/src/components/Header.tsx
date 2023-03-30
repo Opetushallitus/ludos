@@ -8,8 +8,8 @@ export const Header = ({ pages }: { pages: Pages[] }) => {
         <h1 className="font-bold">koepankki</h1>
         <div className="flex h-6 flex-row gap-3">
           <p className="text-green-primary">Käyttäjä</p>
-          <p className="text-green-primary border-green-primary m-0 border-l-2 pl-5">Latauskori</p>
-          <p className="text-green-primary border-green-primary m-0 border-l-2 pl-5">Kieli</p>
+          <p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>
+          <p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Kieli</p>
         </div>
       </div>
       <nav className="row px-5 pt-3">
@@ -19,7 +19,7 @@ export const Header = ({ pages }: { pages: Pages[] }) => {
               <NavLink
                 to={page.key}
                 className={({ isActive }) =>
-                  `text-gray-primary text-lg capitalize${isActive ? ' border-b-green-primary border-b-5' : ''}`
+                  `text-lg text-gray-primary capitalize${isActive ? ' border-b-5 border-b-green-primary' : ''}`
                 }>
                 {page.title}
               </NavLink>
