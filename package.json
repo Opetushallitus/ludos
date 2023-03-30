@@ -1,6 +1,9 @@
 {
   "private": true,
-  "workspaces": ["web", "playwright"],
+  "workspaces": [
+    "web",
+    "playwright"
+  ],
   "scripts": {
     "dev:server": "server/up.sh",
     "dev:web": "yarn workspace web dev",
@@ -8,6 +11,7 @@
     "playwright": "yarn workspace playwright test",
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
-    "lint:playwright": "yarn workspace playwright lint"
+    "lint:playwright": "yarn workspace playwright lint",
+    "postinstall": "git config core.hooksPath .githooks"
   }
 }
