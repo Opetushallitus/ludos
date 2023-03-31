@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { frontpageKey, getPage } from './routes/routes'
 import { Page } from '../types'
 
@@ -18,9 +18,8 @@ function getBreadcrumb(pathname: string) {
   // add the etusivu page to the beginning of the array and return
   return [{ title: 'etusivu', path: '/' }, ...pages]
 }
-export const Breadcrumbs = () => {
-  const location = useLocation()
-  const breadcrumbs = getBreadcrumb(location.pathname)
+export const Breadcrumbs = ({ pathname }: { pathname: string }) => {
+  const breadcrumbs = getBreadcrumb(pathname)
 
   return (
     <>
@@ -30,7 +29,7 @@ export const Breadcrumbs = () => {
             const isLast = i === breadcrumbs.length - 1
             return (
               <NavLink
-                className={`pr-1 ${isLast ? 'text-gray-secondary' : 'text-green-primary'}`}
+                className={`pr-1 ${isLast ? 'text-gray-primary' : 'text-green-primary'}`}
                 to={crumb.path}
                 key={i}>
                 <span className="inline-block first-letter:capitalize">

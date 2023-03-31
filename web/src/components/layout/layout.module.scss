@@ -6,36 +6,24 @@
 
 .container {
   display: grid;
-  grid-template-rows: 6rem 3em 1fr 7rem;
+  grid-template-rows: 6rem 1fr 7rem;
   grid-template-areas:
     "header"
-    "breadcrumb"
     "main"
     "footer";
   grid-gap: 0;
-
-
   min-height: 100vh;
+  max-width: 100%;
 
   header {
     grid-area: header;
-    margin-left: 10vw;
-    margin-right: 10vw;
   }
 
   section {
     grid-area: main;
-    margin-left: 10vw;
-    margin-right: 10vw;
   }
 
   footer {
     grid-area: footer;
   }
-}
-
-.breadcrumb {
-  grid-area: breadcrumb;
-  margin-left: 10vw;
-  margin-right: 10vw;
 }

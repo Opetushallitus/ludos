@@ -7,10 +7,10 @@ WORKDIR /ludos
 COPY . .
 COPY docker-build/run.sh .
 
-RUN cd server && ./gradlew build
+RUN cd server && ./gradlew build -x test
 
 RUN apk add nodejs yarn
-RUN cd web && yarn build && cd ..
-RUN cp -r web/dist server/build/resources/main/static
+RUN cd web && yarn install && yarn build && cd ..
+RUN rm -fv server/build/resources/main/static && cp -r web/dist server/build/resources/main/static
 
 ENTRYPOINT [ "./run.sh" ]

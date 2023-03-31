@@ -20,7 +20,7 @@
   }
 
   .buttonGhost {
-    @apply text-gray-primary bg-none
+    @apply text-black bg-none
   }
 }
 
@@ -43,6 +43,12 @@ h1 {
   text-transform: uppercase;
 }
 
+h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
 html {
   font-size: 100%;
 }
@@ -51,4 +57,17 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.boxBorder {
+  border-top: 4px solid theme('colors.green.primary');
+  border-left: 2px solid theme('colors.gray.light');
+  border-right: 2px solid theme('colors.gray.light');
+  border-bottom: 2px solid theme('colors.gray.light');
+
+  &:hover {
+    border-left: 2px solid theme('colors.green.primary');
+    border-right: 2px solid theme('colors.green.primary');
+    border-bottom: 2px solid theme('colors.green.primary');
+  }
 }

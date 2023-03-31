@@ -1,5 +1,4 @@
 import { AssignmentState } from '../types'
-import { string } from 'zod'
 
 type TagAttributes = {
   text: string
@@ -19,7 +18,5 @@ function getTagAttributes(state: AssignmentState): TagAttributes {
 
 export const StateTag = ({ state }: { state: AssignmentState }) => {
   const tagAttributes = getTagAttributes(state)
-  return (
-    <div className={`p-x-1 mb-3 w-20 rounded ${tagAttributes.variant} text-center text-base`}>{tagAttributes.text}</div>
-  )
+  return <div className={`p-x-1 w-20 rounded ${tagAttributes.variant} text-center text-base`}>{tagAttributes.text}</div>
 }
