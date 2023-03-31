@@ -11,16 +11,21 @@ group = "fi.oph"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
+val springBootVersion = "3.0.5"
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    runtimeOnly("org.springframework.boot:spring-boot-devtools")
+    implementation("org.flywaydb:flyway-core:9.16.1")
+    runtimeOnly("org.postgresql:postgresql:42.6.0")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
 tasks.withType<KotlinCompile> {
