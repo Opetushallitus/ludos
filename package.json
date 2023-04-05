@@ -12,6 +12,9 @@
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
     "lint:playwright": "yarn workspace playwright lint",
-    "postinstall": "git config core.hooksPath .githooks"
+    "postinstall": "git config core.hooksPath .githooks",
+    "build:docker": "docker build -f docker-build/Dockerfile -t ludos:manual-$(git rev-parse --short HEAD) .",
+    "ecr:login": "aws --profile oph-ludos-utility ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 505953557276.dkr.ecr.eu-west-1.amazonaws.com",
+    "ecr:publish": "docker tag ludos:manual-$(git rev-parse --short HEAD) 505953557276.dkr.ecr.eu-west-1.amazonaws.com/ludos:manual-$(git rev-parse --short HEAD) && docker push 505953557276.dkr.ecr.eu-west-1.amazonaws.com/ludos:manual-$(git rev-parse --short HEAD)"
   }
 }

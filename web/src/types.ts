@@ -3,7 +3,9 @@ export type Page = {
   path: string
 }
 
-export const PAGE_HEADERS = ['frontpage', 'assignments', 'instructions', 'certificates', 'feedback'] as const
+export const EXAM_TYPES = ['suko', 'puhvi', 'ld']
+
+export const PAGE_HEADERS = ['frontpage', ...EXAM_TYPES, 'palautteet'] as const
 
 export type PageHeaders = (typeof PAGE_HEADERS)[number]
 
@@ -38,3 +40,23 @@ export type AssignmentIn = {
   createdAt: string
   updatedAt: string
 }
+
+export const AssignmentTypes = {
+  KOETEHTAVAT: 'koetehtävät',
+  OHJEET: 'ohjeet',
+  TODISTUKSET: 'todistukset'
+} as const
+
+export type AssignmentsKey = keyof typeof AssignmentTypes
+
+type SingularOptions = {
+  [key in AssignmentsKey]: string
+}
+
+export const AssignmentsSingular: SingularOptions = {
+  KOETEHTAVAT: 'koetehtävä',
+  OHJEET: 'ohje',
+  TODISTUKSET: 'todistus'
+}
+
+export type AssignmentType = (typeof AssignmentTypes)[keyof typeof AssignmentTypes]

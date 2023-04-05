@@ -2,8 +2,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { Button } from '../Button'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from 'react-router-dom'
-import { assignmentsKey } from '../routes/routes'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { AssignmentState } from '../../types'
 
 const MIN_LENGTH = 3
@@ -37,6 +36,9 @@ type Response = {
 
 export const AssignmentForm = ({ header, description }: { header: string; description: string }) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const [_, examType, assignmentType] = location.pathname.split('/')
+
   const {
     register,
     handleSubmit,
@@ -46,7 +48,7 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
 
   async function submitAssignment({ state }: { state: AssignmentState }) {
     await handleSubmit(async (data: SukoAssignmentForm) => {
-      const body = JSON.stringify({ ...data, state, examType: 'SUKO' })
+      const body = JSON.stringify({ ...data, state, examType: examType.toUpperCase() })
 
       try {
         const result = await fetch('/api/assignment/', {
@@ -60,7 +62,8 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
         }
 
         const data: Response = await result.json()
-        navigate(`${assignmentsKey}/${data.id}`)
+
+        navigate(`/${examType}/${assignmentType}/${data.id}`)
       } catch (e) {
         console.error('WIRHE', e)
       }
@@ -70,7 +73,7 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
   return (
     <div className="w-10/12 pt-3">
       <div className="mb-6">
-        <h2 className="mb-3 text-2xl font-semibold text-gray-primary" data-testid="heading">
+        <h2 className="mb-3" data-testid="heading">
           {header}
         </h2>
         <p>{description}</p>

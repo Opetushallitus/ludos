@@ -1,6 +1,5 @@
 import styles from './layout.module.scss'
 import { ReactNode } from 'react'
-import { Breadcrumbs } from '../Breadcrumbs'
 
 interface TLayout {
   header: ReactNode
@@ -11,10 +10,11 @@ interface TLayout {
 export const Layout = ({ header, footer, children }: TLayout) => (
   <main className={`${styles.container} ${styles.borderTop}`}>
     <header>{header}</header>
-    <div className={styles.breadcrumb}>
-      <Breadcrumbs />
+    <div className="flex justify-center">
+      <div className="w-[80vw]">
+        <section>{children}</section>
+      </div>
     </div>
-    <section>{children}</section>
     <footer>{footer}</footer>
   </main>
 )

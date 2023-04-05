@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
 import { Button } from '../Button'
-import { assignmentsKey } from '../routes/routes'
+import { sukoKey } from '../routes/routes'
 
 function useAssignment(id?: string) {
   const [assignment, setAssignment] = useState<AssignmentIn>()
@@ -15,8 +15,15 @@ function useAssignment(id?: string) {
     ;(async () => {
       try {
         setLoading(true)
+
         const response = await fetch(`/api/assignment/${id}`, { method: 'GET' })
+
+        if (!response.ok) {
+          throw new Error('could not fetch tasks')
+        }
+
         const json = await response.json()
+
         setAssignment(json)
       } catch (e) {
         setError('error')
@@ -56,21 +63,21 @@ export const Assignment = () => {
             <div className="row h-full pb-3">
               <div className="col w-10/12">
                 <p className="pb-3">{new Date(assignment.createdAt).toLocaleDateString('fi-FI')}</p>
-                <h2 className="pb-3 text-2xl font-semibold" data-testid="assignment-header">
+                <h2 className="pb-3" data-testid="assignment-header">
                   {assignment.name}
                 </h2>
                 <div className="row gap-3">
                   <StateTag state={assignment.state} />
                   <p>Muokkaa</p>
                 </div>
-                <p className="max-w-screen-sm break-words pb-3">{assignment.content}</p>
+                <p className="pb-3">{assignment.content}</p>
               </div>
               <div className="col w-2/12">
                 <p>Tehtävän kieli</p>
               </div>
             </div>
             <div className="row mb-6">
-              <Button variant="buttonPrimary" onClick={() => navigate(`${assignmentsKey}`)}>
+              <Button variant="buttonPrimary" onClick={() => navigate(`${sukoKey}`)}>
                 Palaa koetehtäviin
               </Button>
             </div>

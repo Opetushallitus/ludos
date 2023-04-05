@@ -3,9 +3,9 @@ import { expect, test } from '@playwright/test'
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await page.getByTestId('nav-link-assignments').click()
+    await page.getByTestId('nav-link-suko').click()
     await page.waitForSelector('text=Koetehtävät')
-    await page.getByTestId('create-assignment-button').click()
+    await page.getByTestId('create-koetehtävät-button').click()
   })
 
   test('can create a new assignment', async ({ page }) => {

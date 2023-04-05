@@ -8,7 +8,7 @@ export interface TButton
 }
 
 export const Button: React.FC<TButton> = ({ variant, testId, children, ...props }) => (
-  <button className={`${variant} rounded py-2 px-4 font-bold`} data-testid={testId} {...props}>
+  <button className={`${variant} rounded px-4 py-2 font-bold`} data-testid={testId} {...props}>
     {children}
   </button>
 )
