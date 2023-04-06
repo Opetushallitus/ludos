@@ -62,21 +62,23 @@ export const Assignments = ({ rootPath }: { rootPath: PageHeaders }) => {
 
       <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="my-5">
-        <Button
-          variant="buttonPrimary"
-          onClick={() => navigate(`${location.pathname}${createKey}`)}
-          data-testid={`create-${activeTab}-button`}>
-          + Lisää {getOptionsKey(activeTab)}
-        </Button>
+      <div role="tabpanel">
+        <div className="my-5">
+          <Button
+            variant="buttonPrimary"
+            onClick={() => navigate(`${location.pathname}${createKey}`)}
+            data-testid={`create-${activeTab}-button`}>
+            + Lisää {getOptionsKey(activeTab)}
+          </Button>
+        </div>
+        {assignments && assignments.length > 0 && (
+          <ul>
+            {assignments.map((assignment, i) => (
+              <AssignmentCard assignment={assignment} key={i} />
+            ))}
+          </ul>
+        )}
       </div>
-      {assignments && assignments.length > 0 && (
-        <ul>
-          {assignments.map((assignment, i) => (
-            <AssignmentCard assignment={assignment} key={i} />
-          ))}
-        </ul>
-      )}
     </div>
   )
 }

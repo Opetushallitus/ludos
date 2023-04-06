@@ -12,7 +12,7 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
           <h3 className="mb-3 text-base font-semibold">{examType.title}</h3>
           <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`exam-type-${examType.path}`}>
             {assignments.map((option, i) => (
-              <div
+              <button
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
                 onClick={() => navigate(examType.path, { state: { assignmentType: option } })}
                 data-testid={`nav-box-${option}`}
@@ -21,7 +21,7 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
                   <Icon name={option} color="text-green-primary" />
                   <p className="capitalize text-green-primary">{option}</p>
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
