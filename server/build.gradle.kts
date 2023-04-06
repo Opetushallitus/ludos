@@ -33,12 +33,6 @@ tasks.withType<KotlinCompile> {
     }
 }
 
-tasks.register<Exec>("linkStatic") {
-    workingDir(".")
-    commandLine("ln", "-svf", "../../../../web/dist", "build/resources/main/static")
-}
-tasks.named("build") { finalizedBy("linkStatic") }
-
 tasks.withType<Test> {
     useJUnitPlatform()
 }

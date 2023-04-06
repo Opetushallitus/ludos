@@ -11,6 +11,5 @@ RUN cd server && ./gradlew build -x test
 
 RUN apk add nodejs yarn
 RUN cd web && yarn install && yarn build && cd ..
-RUN rm -fv server/build/resources/main/static && cp -r web/dist server/build/resources/main/static
 
 ENTRYPOINT [ "./run.sh" ]
