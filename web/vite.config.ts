@@ -9,5 +9,9 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8080/'
     }
+  },
+  build: {
+    outDir: '../server/build/resources/main/static',
+    emptyOutDir: true
   }
 })
