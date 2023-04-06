@@ -15,15 +15,14 @@ enum class SukoAssignmentType {
 }
 
 enum class AssignmentState {
-    DRAFT,
-    PUBLISHED,
-    ARCHIVED
+    DRAFT, PUBLISHED, ARCHIVED
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "examType")
 @JsonSubTypes(
     JsonSubTypes.Type(value = SukoAssignmentDtoIn::class, name = "SUKO"),
-    JsonSubTypes.Type(value = PuhviAssignmentDtoIn::class, name = "PUHVI")
+    JsonSubTypes.Type(value = PuhviAssignmentDtoIn::class, name = "PUHVI"),
+    JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
 )
 interface Assignment {
     val name: String
@@ -41,12 +40,16 @@ data class SukoAssignmentDtoIn(
 
 @JsonTypeName("PUHVI")
 data class PuhviAssignmentDtoIn(
-    override val name: String, override val content: String, override val state: AssignmentState
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
 ) : Assignment
 
 @JsonTypeName("LD")
 data class LdAssignmentDtoIn(
-    override val name: String, override val content: String, override val state: AssignmentState
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
 ) : Assignment
 
 interface AssignmentOut {
@@ -61,6 +64,24 @@ data class SukoAssignmentDtoOut(
     override val content: String,
     override val state: AssignmentState,
     val assignmentType: String,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp
+) : Assignment, AssignmentOut
+
+data class PuhviAssignmentDtoOut(
+    override val id: Int,
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp
+) : Assignment, AssignmentOut
+
+data class LdAssignmentDtoOut(
+    override val id: Int,
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
