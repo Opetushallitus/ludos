@@ -1,13 +1,12 @@
 import { AllPages, NavigationPages, Page, PageHeaders } from '../../types'
-export const frontpageKey = '/'
-export const assignmentsKey = '/assignments'
+
+export const frontpageKey = '/etusivu'
 export const createKey = '/new'
-export const instructionsKey = '/instructions'
-export const certificatesKey = '/certificates'
 export const feedbackKey = '/feedback'
 export const sukoKey = '/suko'
 export const puhviKey = '/puhvi'
 export const ldKey = '/ld'
+export const examKey = '/exam'
 
 export const navigationPages: NavigationPages = {
   frontpage: {
@@ -16,15 +15,15 @@ export const navigationPages: NavigationPages = {
   },
   suko: {
     title: 'Suullinen kielitaito',
-    path: sukoKey
+    path: `${examKey}${sukoKey}`
   },
   puhvi: {
     title: 'Puheviestintä',
-    path: puhviKey
+    path: `${examKey}${puhviKey}`
   },
   ld: {
     title: 'Lukiodiplomit',
-    path: ldKey
+    path: `${examKey}${ldKey}`
   },
   palautteet: {
     title: 'Palautteet',

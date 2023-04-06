@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { AssignmentIn, ExamType } from '../../types'
 
-export function useAssignments(examType: ExamType) {
-  const [assignments, setAssignments] = useState<AssignmentIn[]>()
+export function useFetch<T>(url: string) {
+  const [data, setData] = useState<T>()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [refresh, setRefresh] = useState(false)
@@ -11,9 +10,16 @@ export function useAssignments(examType: ExamType) {
     ;(async () => {
       try {
         setLoading(true)
-        const response = await fetch(`/api/assignment/${examType}`, { method: 'GET' })
+
+        const response = await fetch(`/api/${url}`, { method: 'GET' })
+
+        if (!response.ok) {
+          throw new Error('could not fetch tasks')
+        }
+
         const json = await response.json()
-        setAssignments(json)
+
+        setData(json)
       } catch (e) {
         setError('error')
         console.error('could not fetch tasks', e)
@@ -21,10 +27,10 @@ export function useAssignments(examType: ExamType) {
         setLoading(false)
       }
     })()
-  }, [refresh])
+  }, [url, refresh])
 
   return {
-    assignments,
+    data,
     loading,
     error,
     refresh: () => setRefresh(!refresh)

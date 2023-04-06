@@ -8,7 +8,7 @@ export const Frontpage = () => {
 
   return (
     <div className="mt-10">
-      <h2 data-testid="heading">Hei Yrjö Ylivoima, tervetuloa Koepankin ylläpitoon!</h2>
+      <h2 data-testid="page-heading-etusivu">Hei Yrjö Ylivoima, tervetuloa Koepankin ylläpitoon!</h2>
       <NavigationBoxes exams={examTypes} assignments={assignmentTypes} />
     </div>
   )
