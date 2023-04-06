@@ -23,7 +23,7 @@ runs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       shell: bash
-      run: yarn playwright --abort-on-failure
+      run: yarn playwright
     - uses: actions/upload-artifact@v3
       if: always()
       with:
