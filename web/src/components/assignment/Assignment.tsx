@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { StateTag } from '../StateTag'
 import { Button } from '../Button'
-import { examKey, sukoKey } from '../routes/routes'
+import { contentKey, sukoKey } from '../routes/routes'
 import { useFetch } from '../useFetch'
 import { AssignmentIn } from '../../types'
 
@@ -45,7 +45,7 @@ export const Assignment = () => {
               </div>
             </div>
             <div className="row mb-6">
-              <Button variant="buttonPrimary" onClick={() => navigate(`${examKey}${sukoKey}`)}>
+              <Button variant="buttonPrimary" onClick={() => navigate(`/${contentKey}/${sukoKey}`)}>
                 Palaa koetehtäviin
               </Button>
             </div>

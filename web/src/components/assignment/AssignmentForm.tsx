@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { AssignmentState } from '../../types'
+import { contentKey } from '../routes/routes'
 
 const MIN_LENGTH = 3
 
@@ -37,7 +38,7 @@ type Response = {
 export const AssignmentForm = ({ header, description }: { header: string; description: string }) => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const match = useMatch('/exam/:examType/:assignmentType/new')
+  const match = useMatch(`/${contentKey}/:examType/:assignmentType/new`)
 
   const { examType } = match!.params
 

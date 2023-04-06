@@ -2,7 +2,7 @@ import { Layout } from '../layout/Layout'
 import { Header } from '../Header'
 import { Footer } from '../Footer'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { createKey, examKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey } from './routes'
+import { contentKey, createKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey } from './routes'
 import { Frontpage } from '../frontpage/Frontpage'
 import { Assignments } from '../assignment/Assignments'
 import { AssignmentForm } from '../assignment/AssignmentForm'
@@ -17,10 +17,10 @@ export const LudosRoutes = () => {
   return (
     <Layout header={isMobile ? <HeaderMobile /> : <Header />} footer={<Footer />}>
       <Routes>
-        <Route path={frontpageKey} element={<Frontpage />} />
-        <Route path="/" element={<Navigate to={frontpageKey} />} />
+        <Route path={`/${frontpageKey}`} element={<Frontpage />} />
+        <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
         <Route
-          path={feedbackKey}
+          path={`/${feedbackKey}`}
           element={
             <div>
               <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>Palautteet</h2>
@@ -28,7 +28,7 @@ export const LudosRoutes = () => {
           }
         />
         <Route
-          path={`${examKey}${sukoKey}/:assignmentType${createKey}`}
+          path={`/${contentKey}/${sukoKey}/:assignmentType/${createKey}`}
           element={
             <AssignmentForm
               header="Luo uusi koetehtävä"
@@ -37,7 +37,7 @@ export const LudosRoutes = () => {
           }
         />
         <Route
-          path={`${examKey}${puhviKey}${createKey}`}
+          path={`/${contentKey}/${puhviKey}/${createKey}`}
           element={
             <AssignmentForm
               header="Luo uusi puheviestintä tehtävä"
@@ -46,7 +46,7 @@ export const LudosRoutes = () => {
           }
         />
         <Route
-          path={`${examKey}${ldKey}${createKey}`}
+          path={`/${contentKey}/${ldKey}/${createKey}`}
           element={
             <AssignmentForm
               header="Luo uusi lukiodiplomi tehtävä"
@@ -54,18 +54,9 @@ export const LudosRoutes = () => {
             />
           }
         />
-        <Route path={`${examKey}/:examType`}>
+        <Route path={`/${contentKey}/:examType`}>
           <Route index path={':assignmentType?'} element={<Assignments />} />
           <Route path={':assignmentType/:id'} element={<Assignment />} />
-          <Route
-            path="*"
-            element={
-              <div className="p-10">
-                <h2 className="text-green-primary">404</h2>
-                <p>Valitettavasti sivua ei löytynyt.</p>
-              </div>
-            }
-          />
         </Route>
         <Route
           path="*"

@@ -1,21 +1,15 @@
 import { expect, test } from '@playwright/test'
 
-const examTypes = ['/exam/suko', '/exam/puhvi', '/exam/ld']
-const assignmentTypes = ['koetehtävät', 'ohjeet', 'todistukset']
-
-const assignmentsSingular: Record<string, string> = {
-  koetehtävät: 'koetehtävä',
-  ohjeet: 'ohje',
-  todistukset: 'todistus'
-}
+const examTypes = ['suko', 'puhvi', 'ld']
+const assignmentTypes = ['assignments', 'instructions', 'certificates']
 
 const titles: Record<string, string> = {
-  '/exam/suko': 'Suullinen kielitaito',
-  '/exam/puhvi': 'Puheviestintä',
-  '/exam/ld': 'Lukiodiplomit'
+  suko: 'Suullinen kielitaito',
+  puhvi: 'Puheviestintä',
+  ld: 'Lukiodiplomit'
 }
 
-const pages = ['etusivu', 'exam-suko', 'exam-puhvi', 'exam-ld', 'feedback']
+const pages = ['etusivu', 'content-suko', 'content-puhvi', 'content-ld', 'feedback']
 
 test('naviation links work', async ({ page }) => {
   await page.goto('/')
@@ -30,14 +24,14 @@ test('naviation links work', async ({ page }) => {
 
   await page.goto('/')
 
-  for (const examType of examTypes) {
-    const boxRow = page.getByTestId(`exam-type-${examType}`)
+  for (const contentType of examTypes) {
+    const boxRow = page.getByTestId(contentType)
 
     for (const assignmentType of assignmentTypes) {
       await boxRow.getByTestId(`nav-box-${assignmentType}`).click()
       const heading2 = page.locator('h2')
 
-      expect(await heading2.innerText()).toBe(titles[examType])
+      expect(await heading2.innerText()).toBe(titles[contentType])
 
       const addBtn = page.getByTestId(`create-koetehtävä-button`)
 

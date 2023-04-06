@@ -1,6 +1,6 @@
 import { Button } from '../Button'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { createKey, navigationPages } from '../routes/routes'
+import { contentKey, createKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
 import { AssignmentIn, AssignmentType, AssignmentTypes, ExamType } from '../../types'
 import { AssignmentTabs } from './AssignmentTabs'
@@ -24,7 +24,7 @@ function useActiveTabAndUrlPathUpdate({
 
   useEffect(() => {
     if (activeTab) {
-      navigate(`/exam/${examType}/${AssignmentKeyTranslationEnglish[activeTab]}`, { replace: true })
+      navigate(`/${contentKey}/${examType}/${AssignmentKeyTranslationEnglish[activeTab]}`, { replace: true })
     }
   }, [activeTab, navigate, examType])
 
@@ -48,7 +48,7 @@ export const Assignments = () => {
 
   return (
     <div className="pt-3">
-      <h2 data-testid={`page-heading-exam-${examParam}`}>{navigationPages[examParam as string].title}</h2>
+      <h2 data-testid={`page-heading-${contentKey}-${examParam}`}>{navigationPages[examParam as string].title}</h2>
 
       <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -56,7 +56,7 @@ export const Assignments = () => {
         <div className="my-5">
           <Button
             variant="buttonPrimary"
-            onClick={() => navigate(`${location.pathname}${createKey}`)}
+            onClick={() => navigate(`${location.pathname}/${createKey}`)}
             data-testid={`create-${singularActiveTab}-button`}>
             + Lisää {singularActiveTab}
           </Button>

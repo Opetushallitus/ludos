@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await page.getByTestId('nav-link-exam-suko').click()
+    await page.getByTestId('nav-link-content-suko').click()
     await page.waitForSelector('text=Koetehtävät')
     await page.getByTestId('create-koetehtävä-button').click()
   })
