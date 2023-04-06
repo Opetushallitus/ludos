@@ -37,6 +37,9 @@ export default defineConfig({
     testIdAttribute: 'data-testid'
   },
 
+  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
+  outputDir: 'playwright-report/',
+
   /* Configure projects for major browsers */
   projects: [
     {
@@ -74,9 +77,6 @@ export default defineConfig({
     //   use: { channel: 'chrome' },
     // },
   ]
-
-  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  // outputDir: 'test-results/',
 
   /* Run your local dev server before starting the tests */
   // webServer: {
