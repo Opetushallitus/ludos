@@ -1,6 +1,8 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Constants
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -17,8 +19,8 @@ class AssignmentController(val service: AssignmentService) {
     }
 
     @PostMapping("/")
-    fun createAssignment(@RequestBody assignment: Assignment): AssignmentOut {
-        return service.createAssignment(assignment)
+    fun createAssignment(@RequestBody assignment: Assignment): ResponseEntity<out Any> {
+        return ResponseEntity.status(HttpStatus.OK).body(service.createAssignment(assignment))
     }
 
     @PutMapping("/{id}")

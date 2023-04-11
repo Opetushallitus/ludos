@@ -1,5 +1,6 @@
 package fi.oph.ludos.assignment
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -111,43 +112,80 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         )[0]
     }
 
-    fun getSukoAssignmentById(id: Int): AssignmentOut = jdbcTemplate.query(
-            "SELECT * FROM suko_assignment WHERE assignment_id = ?", { rs: ResultSet, _: Int ->
-                SukoAssignmentDtoOut(
-                    rs.getInt("assignment_id"),
-                    rs.getString("assignment_name"),
-                    rs.getString("assignment_content"),
-                    AssignmentState.valueOf(rs.getString("assignment_state")),
-                    rs.getString("suko_assignment_type"),
-                    rs.getTimestamp("assignment_created_at"),
-                    rs.getTimestamp("assignment_updated_at")
-                )
-            }, id
-        )[0]
+    fun getSukoAssignmentById(id: Int): AssignmentOut {
+        return try {
+            val results = jdbcTemplate.query(
+                "SELECT * FROM suko_assignment WHERE assignment_id = ?", { rs: ResultSet, _: Int ->
+                    SukoAssignmentDtoOut(
+                        rs.getInt("assignment_id"),
+                        rs.getString("assignment_name"),
+                        rs.getString("assignment_content"),
+                        AssignmentState.valueOf(rs.getString("assignment_state")),
+                        rs.getString("suko_assignment_type"),
+                        rs.getTimestamp("assignment_created_at"),
+                        rs.getTimestamp("assignment_updated_at")
+                    )
+                }, id
+            )
 
-    fun getPuhviAssignmentById(id: Int): AssignmentOut = jdbcTemplate.query(
-            "SELECT * FROM puhvi_assignment WHERE assignment_id = ?", { rs: ResultSet, _: Int ->
-                PuhviAssignmentDtoOut(
-                    rs.getInt("assignment_id"),
-                    rs.getString("assignment_name"),
-                    rs.getString("assignment_content"),
-                    AssignmentState.valueOf(rs.getString("assignment_state")),
-                    rs.getTimestamp("assignment_created_at"),
-                    rs.getTimestamp("assignment_updated_at")
-                )
-            }, id
-        )[0]
+            if (results.isEmpty()) {
+                throw NotFoundException()
+            }
 
-    fun getLdAssignmentById(id: Int): AssignmentOut = jdbcTemplate.query(
-            "SELECT * FROM ld_assignment WHERE assignment_id = ?", { rs: ResultSet, _: Int ->
-                LdAssignmentDtoOut(
-                    rs.getInt("assignment_id"),
-                    rs.getString("assignment_name"),
-                    rs.getString("assignment_content"),
-                    AssignmentState.valueOf(rs.getString("assignment_state")),
-                    rs.getTimestamp("assignment_created_at"),
-                    rs.getTimestamp("assignment_updated_at")
-                )
-            }, id
-        )[0]
+            results[0]
+        } catch (e: NotFoundException) {
+            throw NotFoundException()
+        }
+    }
+
+
+    fun getPuhviAssignmentById(id: Int): AssignmentOut {
+        return try {
+            val results = jdbcTemplate.query(
+                "SELECT * FROM puhvi_assignment WHERE assignment_id = ?", { rs: ResultSet, _: Int ->
+                    PuhviAssignmentDtoOut(
+                        rs.getInt("assignment_id"),
+                        rs.getString("assignment_name"),
+                        rs.getString("assignment_content"),
+                        AssignmentState.valueOf(rs.getString("assignment_state")),
+                        rs.getTimestamp("assignment_created_at"),
+                        rs.getTimestamp("assignment_updated_at")
+                    )
+                }, id
+            )
+
+            if (results.isEmpty()) {
+                throw NotFoundException()
+            }
+
+            results[0]
+        } catch (e: NotFoundException) {
+            throw NotFoundException()
+        }
+    }
+
+    fun getLdAssignmentById(id: Int): AssignmentOut {
+        return try {
+            val results = jdbcTemplate.query(
+                "SELECT * FROM ld_assignment WHERE assignment_id = ?", { rs: ResultSet, _: Int ->
+                    LdAssignmentDtoOut(
+                        rs.getInt("assignment_id"),
+                        rs.getString("assignment_name"),
+                        rs.getString("assignment_content"),
+                        AssignmentState.valueOf(rs.getString("assignment_state")),
+                        rs.getTimestamp("assignment_created_at"),
+                        rs.getTimestamp("assignment_updated_at")
+                    )
+                }, id
+            )
+
+            if (results.isEmpty()) {
+                throw NotFoundException()
+            }
+
+            results[0]
+        } catch (e: NotFoundException) {
+            throw NotFoundException()
+        }
+    }
 }

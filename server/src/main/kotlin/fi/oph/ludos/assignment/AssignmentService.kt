@@ -1,6 +1,9 @@
 package fi.oph.ludos.assignment
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AssignmentService(val db: AssignmentRepository) {
@@ -18,8 +21,28 @@ class AssignmentService(val db: AssignmentRepository) {
     }
 
     fun getAssignmentById(examType: ExamType, id: Int): AssignmentOut = when (examType) {
-        ExamType.SUKO -> db.getSukoAssignmentById(id)
-        ExamType.PUHVI -> db.getPuhviAssignmentById(id)
-        ExamType.LD -> db.getLdAssignmentById(id)
+        ExamType.SUKO -> {
+            try {
+                db.getSukoAssignmentById(id)
+            } catch (e: NotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+            }
+        }
+
+        ExamType.PUHVI -> {
+            try {
+                db.getPuhviAssignmentById(id)
+            } catch (e: NotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+            }
+        }
+
+        ExamType.LD -> {
+            try {
+                db.getLdAssignmentById(id)
+            } catch (e: NotFoundException) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+            }
+        }
     }
 }
