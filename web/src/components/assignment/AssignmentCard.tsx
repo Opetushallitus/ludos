@@ -38,7 +38,7 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
             <p className="ml-1 text-sm text-green-primary">Katselunäkymä</p>
           </span>
           <span className="flex items-center">
-            <Icon name="koetehtävät" color="text-green-primary" />
+            <Icon name="koetehtavat" color="text-green-primary" />
             <p className="ml-1 text-sm text-green-primary">Lataa pdf</p>
           </span>
           <span className="flex items-center">
