@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
-import { navigationPages } from './routes/routes'
+import { navigationPages } from '../routes/routes'
 import { useState } from 'react'
-import { Icon } from './Icon'
+import { Icon } from '../Icon'
 
 export const HeaderMobile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)

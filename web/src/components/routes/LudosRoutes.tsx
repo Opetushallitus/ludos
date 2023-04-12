@@ -1,5 +1,5 @@
 import { Layout } from '../layout/Layout'
-import { Header } from '../Header'
+import { Header } from '../header/Header'
 import { Footer } from '../Footer'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { contentKey, createKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey } from './routes'
@@ -8,7 +8,7 @@ import { Assignments } from '../assignment/Assignments'
 import { AssignmentForm } from '../assignment/AssignmentForm'
 import { Assignment } from '../assignment/Assignment'
 import { useMediaQuery } from '../useMediaQuery'
-import { HeaderMobile } from '../HeaderMobile'
+import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
 
 export const LudosRoutes = () => {
