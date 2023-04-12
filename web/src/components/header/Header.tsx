@@ -80,7 +80,7 @@ function useDropdownCloseOnBlur(setExpansion: (bool: boolean) => void) {
     return () => {
       document.removeEventListener('click', handleOutsideClick)
     }
-  }, [dropdownRef])
+  }, [dropdownRef, setExpansion])
 
   return dropdownRef
 }
