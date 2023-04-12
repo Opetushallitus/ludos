@@ -2,8 +2,10 @@ import { AssignmentType, Page } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { AssignmentKeyTranslationEnglish } from '../assignment/assignmentUtils'
+import { useTranslation } from 'react-i18next'
 
 export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignments: AssignmentType[] }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   return (
@@ -20,7 +22,7 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={option} color="text-green-primary" />
-                  <p className="capitalize text-green-primary">{option}</p>
+                  <p className="text-green-primary">{t(`button.${option}`)}</p>
                 </span>
               </button>
             ))}

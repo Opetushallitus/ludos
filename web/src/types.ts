@@ -42,7 +42,7 @@ export type AssignmentIn = {
 }
 
 export const AssignmentTypes = {
-  KOETEHTAVAT: 'koetehtävät',
+  KOETEHTAVAT: 'koetehtavat',
   OHJEET: 'ohjeet',
   TODISTUKSET: 'todistukset'
 } as const
