@@ -30,12 +30,15 @@ export default defineConfig({
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.WEB_URL || 'http://localhost:8000',
+    baseURL: 'http://localhost:8080',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     testIdAttribute: 'data-testid'
   },
+
+  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
+  outputDir: 'playwright-report/',
 
   /* Configure projects for major browsers */
   projects: [
@@ -74,9 +77,6 @@ export default defineConfig({
     //   use: { channel: 'chrome' },
     // },
   ]
-
-  /* Folder for test artifacts such as screenshots, videos, traces, etc. */
-  // outputDir: 'test-results/',
 
   /* Run your local dev server before starting the tests */
   // webServer: {

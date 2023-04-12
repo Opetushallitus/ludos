@@ -21,7 +21,7 @@ export const Header = () => (
                 className={({ isActive }) =>
                   `text-lg text-gray-primary${isActive ? ' border-b-5 border-b-green-primary text-green-primary' : ''}`
                 }
-                data-testid={`nav-link-${path.substring(1)}`}>
+                data-testid={`nav-link-${path.substring(1).replaceAll('/', '-')}`}>
                 {title}
               </NavLink>
             </li>

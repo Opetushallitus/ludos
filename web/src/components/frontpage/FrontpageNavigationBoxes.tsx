@@ -1,6 +1,7 @@
 import { AssignmentType, Page } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
+import { AssignmentKeyTranslationEnglish } from '../assignment/assignmentUtils'
 
 export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignments: AssignmentType[] }) => {
   const navigate = useNavigate()
@@ -10,18 +11,18 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
       {exams.map((examType, i) => (
         <div className="mt-6" key={i}>
           <h3 className="mb-3 text-base font-semibold">{examType.title}</h3>
-          <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`exam-type-${examType.path}`}>
+          <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`${examType.path.replace('/content/', '')}`}>
             {assignments.map((option, i) => (
-              <div
+              <button
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
                 onClick={() => navigate(examType.path, { state: { assignmentType: option } })}
-                data-testid={`nav-box-${option}`}
+                data-testid={`nav-box-${AssignmentKeyTranslationEnglish[option]}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={option} color="text-green-primary" />
                   <p className="capitalize text-green-primary">{option}</p>
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>

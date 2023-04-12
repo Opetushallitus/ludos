@@ -1,8 +1,8 @@
 import { Layout } from '../layout/Layout'
 import { Header } from '../Header'
 import { Footer } from '../Footer'
-import { Route, Routes } from 'react-router-dom'
-import { frontpageKey, createKey, sukoKey, puhviKey, ldKey } from './routes'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { contentKey, createKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey } from './routes'
 import { Frontpage } from '../frontpage/Frontpage'
 import { Assignments } from '../assignment/Assignments'
 import { AssignmentForm } from '../assignment/AssignmentForm'
@@ -17,8 +17,18 @@ export const LudosRoutes = () => {
   return (
     <Layout header={isMobile ? <HeaderMobile /> : <Header />} footer={<Footer />}>
       <Routes>
+        <Route path={`/${frontpageKey}`} element={<Frontpage />} />
+        <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
         <Route
-          path={`${sukoKey}/:assignmentType${createKey}`}
+          path={`/${feedbackKey}`}
+          element={
+            <div>
+              <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>Palautteet</h2>
+            </div>
+          }
+        />
+        <Route
+          path={`/${contentKey}/${sukoKey}/:assignmentType/${createKey}`}
           element={
             <AssignmentForm
               header="Luo uusi koetehtävä"
@@ -27,7 +37,7 @@ export const LudosRoutes = () => {
           }
         />
         <Route
-          path={`${puhviKey}${createKey}`}
+          path={`/${contentKey}/${puhviKey}/${createKey}`}
           element={
             <AssignmentForm
               header="Luo uusi puheviestintä tehtävä"
@@ -36,7 +46,7 @@ export const LudosRoutes = () => {
           }
         />
         <Route
-          path={`${ldKey}${createKey}`}
+          path={`/${contentKey}/${ldKey}/${createKey}`}
           element={
             <AssignmentForm
               header="Luo uusi lukiodiplomi tehtävä"
@@ -44,28 +54,9 @@ export const LudosRoutes = () => {
             />
           }
         />
-        <Route path={frontpageKey} element={<Frontpage />} />
-        <Route path={sukoKey}>
-          <Route index path={':assignmentType?'} element={<Assignments rootPath={'suko'} />} />
+        <Route path={`/${contentKey}/:examType`}>
+          <Route index path={':assignmentType?'} element={<Assignments />} />
           <Route path={':assignmentType/:id'} element={<Assignment />} />
-        </Route>
-        <Route path={puhviKey}>
-          <Route index path={':assignmentType?'} element={<Assignments rootPath={'puhvi'} />} />
-          <Route path={':id'} element={<Assignment />} />
-        </Route>
-        <Route path={ldKey}>
-          <Route index path={':assignmentType?'} element={<Assignments rootPath={'ld'} />} />
-          <Route path={':assignmentType/:id'} element={<Assignment />} />
-        </Route>
-        <Route path={ldKey}>
-          <Route
-            index
-            element={
-              <div>
-                <h2>palautteet</h2>
-              </div>
-            }
-          />
         </Route>
         <Route
           path="*"

@@ -3,6 +3,12 @@ description: Starts up the frontend and backend
 runs:
   using: composite
   steps:
-    - name: Start
+    - name: Build backend
       shell: bash
-      run: yarn ci
+      run: cd server && ./gradlew build
+    - name: Build frontend
+      shell: bash
+      run: cd web && yarn build
+    - name: Start backend
+      shell: bash
+      run: cd server && ./gradlew bootRun &

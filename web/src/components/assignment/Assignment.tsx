@@ -1,51 +1,19 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
 import { Button } from '../Button'
-import { sukoKey } from '../routes/routes'
-
-function useAssignment(id?: string) {
-  const [assignment, setAssignment] = useState<AssignmentIn>()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [refresh, setRefresh] = useState(false)
-
-  useEffect(() => {
-    ;(async () => {
-      try {
-        setLoading(true)
-
-        const response = await fetch(`/api/assignment/${id}`, { method: 'GET' })
-
-        if (!response.ok) {
-          throw new Error('could not fetch tasks')
-        }
-
-        const json = await response.json()
-
-        setAssignment(json)
-      } catch (e) {
-        setError('error')
-        console.error('could not fetch tasks', e)
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [id])
-
-  return {
-    assignment,
-    loading,
-    error,
-    refresh: () => setRefresh(!refresh)
-  }
-}
+import { contentKey, sukoKey } from '../routes/routes'
+import { useFetch } from '../useFetch'
+import { AssignmentIn } from '../../types'
 
 export const Assignment = () => {
   const navigate = useNavigate()
-  const { id } = useParams()
-  const { assignment, loading, error } = useAssignment(id)
+  const params = useParams()
+
+  const {
+    data: assignment,
+    loading,
+    error
+  } = useFetch<AssignmentIn>(`assignment/${params.examType!.toLocaleUpperCase()}/${params.id}`)
 
   if (loading) {
     return <div>Loading...</div>
@@ -77,7 +45,7 @@ export const Assignment = () => {
               </div>
             </div>
             <div className="row mb-6">
-              <Button variant="buttonPrimary" onClick={() => navigate(`${sukoKey}`)}>
+              <Button variant="buttonPrimary" onClick={() => navigate(`/${contentKey}/${sukoKey}`)}>
                 Palaa koetehtäviin
               </Button>
             </div>
