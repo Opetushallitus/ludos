@@ -11,7 +11,7 @@ export const AssignmentTabs = ({ activeTab, setActiveTab }: AssignmentTabsProps)
       {Object.values(AssignmentTypes).map((option, i) => (
         <button
           role="tab"
-          className={`mr-2 inline-block cursor-pointer rounded-t-lg px-3 py-1 capitalize${
+          className={`inline-block cursor-pointer rounded-t-lg px-3 py-1 hover:bg-gray-light capitalize${
             activeTab === option ? ' border-b-5 border-b-green-primary text-green-primary' : ''
           }`}
           onClick={() => setActiveTab(option)}

@@ -13,13 +13,15 @@ export const Header = () => (
         </div>
       </div>
       <nav className="row pb-1 pt-3">
-        <ul className="row space-x-6">
+        <ul className="row gap-6">
           {Object.values(navigationPages).map(({ path, title }, i) => (
             <li key={i}>
               <NavLink
                 to={path}
                 className={({ isActive }) =>
-                  `text-lg text-gray-primary${isActive ? ' border-b-5 border-b-green-primary text-green-primary' : ''}`
+                  `p-1 text-lg text-gray-primary hover:bg-gray-light${
+                    isActive ? ' border-b-5 border-b-green-primary text-green-primary' : ''
+                  }`
                 }
                 data-testid={`nav-link-${path.substring(1).replaceAll('/', '-')}`}>
                 {title}
