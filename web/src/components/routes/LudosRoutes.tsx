@@ -11,6 +11,7 @@ import { useMediaQuery } from '../useMediaQuery'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { useTranslation } from 'react-i18next'
+import { AssignmentEditForm } from '../assignment/AssignmentEditForm.'
 
 export const LudosRoutes = () => {
   const { t } = useTranslation()
