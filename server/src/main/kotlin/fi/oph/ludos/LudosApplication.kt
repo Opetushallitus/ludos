@@ -20,22 +20,17 @@ fun main(args: Array<String>) {
 @Configuration
 class Config : WebMvcConfigurer {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        registry // Capture everything (REST controllers get priority over this, see above)
-            .addResourceHandler("/**") // Add locations where files might be found
-            .addResourceLocations("classpath:/static/**") // Needed to allow use of `addResolver` below
-            .resourceChain(true) // This thing is what does all the resolving. This impl. is responsible for
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/**").resourceChain(true)
             // resolving ALL files. Meaning nothing gets resolves automatically by pointing
             // out "static" above.
             .addResolver(object : PathResourceResolver() {
-                override fun getResource(resourcePath: String, location: Resource): Resource? {
+                override fun getResource(resourcePath: String, location: Resource): Resource {
                     val requestedResource: Resource = location.createRelative(resourcePath)
-
-                    // If we actually hit a file, serve that. This is stuff like .js and .css files.
                     return if (requestedResource.exists() && requestedResource.isReadable) {
                         requestedResource
-                    } else ClassPathResource("/static/index.html")
-
-                    // Anything else returns the index.
+                    } else {
+                        ClassPathResource("/static/index.html")
+                    }
                 }
             })
 
