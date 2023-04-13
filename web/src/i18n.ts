@@ -3,6 +3,11 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 const loadResources = async () => {
+  if (import.meta.env.MODE === 'CI') {
+    console.log('Running in CI mode!')
+    return []
+  }
+
   try {
     const result = await fetch('api/localization/')
 
