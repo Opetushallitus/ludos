@@ -3,24 +3,29 @@ import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
 const loadResources = async () => {
-  const result = await fetch('api/localization/')
-  return result.json()
+  try {
+    const result = await fetch('api/localization/')
+
+    if (!result.ok) {
+      return []
+    }
+
+    return result.json()
+  } catch (error) {
+    console.error('Failed to load localization resources', error)
+    return []
+  }
 }
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    debug: true,
-    detection: {
-      order: ['cookie'],
-      cookieOptions: {
-        sameSite: 'lax',
-        secure: true
-      }
-    },
-    fallbackLng: 'fi',
-    resources: await loadResources()
-  })
+const i18nOptions = {
+  debug: true,
+  lng: localStorage.getItem('i18nextLng') || 'fi',
+  detection: {
+    order: ['localStorage']
+  },
+  resources: await loadResources()
+}
+
+i18n.use(LanguageDetector).use(initReactI18next).init(i18nOptions)
 
 export default i18n
