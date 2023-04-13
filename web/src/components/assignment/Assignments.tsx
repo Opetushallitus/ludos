@@ -11,6 +11,7 @@ import {
   getSingularAssignmentFinnish
 } from './assignmentUtils'
 import { useFetch } from '../useFetch'
+import { useTranslation } from 'react-i18next'
 
 function useActiveTabAndUrlPathUpdate({
   assignmentType,
@@ -32,6 +33,7 @@ function useActiveTabAndUrlPathUpdate({
 }
 
 export const Assignments = () => {
+  const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const { assignmentType: assignmentParam, examType: examParam } = useParams()
@@ -50,7 +52,7 @@ export const Assignments = () => {
     <div className="pt-3">
       <h2 data-testid={`page-heading-${contentKey}-${examParam}`}>{navigationPages[examParam as string].title}</h2>
 
-      <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} t={t} />
 
       <div role="tabpanel">
         <div className="my-5">

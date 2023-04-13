@@ -27,7 +27,7 @@ export const LocaleDropdown: FC<{
       </svg>
     </Button>
     {isExpanded && (
-      <ul className="absolute mt-2 w-32 border-2 border-gray-secondary bg-white px-2 py-1">
+      <ul className="absolute -left-1 mt-2 w-28 border-2 border-gray-secondary bg-white px-2 py-1">
         {Object.keys(options).map((option, i) => (
           <li
             className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
