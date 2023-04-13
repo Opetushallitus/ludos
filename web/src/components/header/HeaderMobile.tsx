@@ -2,11 +2,18 @@ import { NavLink } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useState } from 'react'
 import { Icon } from '../Icon'
+import { Button } from '../Button'
+import { useTranslation } from 'react-i18next'
 
 export const HeaderMobile = () => {
+  const { i18n } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
+  const changeLanguage = (lang: string) => {
+    void i18n.changeLanguage(lang)
+  }
 
   return (
     <div className="flex justify-center bg-green-primary">
@@ -41,8 +48,24 @@ export const HeaderMobile = () => {
                 ))}
                 <div className="mt-2 border-t-2 border-gray-separator bg-white py-2">
                   <p className="pl-5 text-gray-secondary">Kieli</p>
-                  <p className="border-l-5 border-green-primary pl-4 text-lg text-black">Suomi</p>
-                  <p className="border-l-5 border-white pl-4 text-lg text-green-primary">På Svenska</p>
+                  <div className="row w-full flex-wrap">
+                    <Button
+                      className={`col w-full pl-4 text-lg text-black${
+                        i18n.language === 'fi' ? ' border-l-5 border-green-primary' : ''
+                      }`}
+                      variant="buttonGhost"
+                      onClick={() => changeLanguage('fi')}>
+                      Suomi
+                    </Button>
+                    <Button
+                      className={`col w-full pl-4 text-lg text-black${
+                        i18n.language === 'sv' ? ' border-l-5 border-green-primary' : ''
+                      }`}
+                      variant="buttonGhost"
+                      onClick={() => changeLanguage('sv')}>
+                      På Svenska
+                    </Button>
+                  </div>
                 </div>
               </nav>
             </div>
