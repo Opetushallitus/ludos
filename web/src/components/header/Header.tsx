@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next'
 import { LocaleDropdown } from './LocaleDropdown'
 import { useEffect, useRef, useState } from 'react'
 
-export type Languages = 'fi' | 'sv'
+export type Languages = 'fi' | 'sv' | 'keys'
 
 export type LanguageOption = Record<Languages, { name: string }>
 
 const options: LanguageOption = {
   fi: { name: 'Suomi' },
-  sv: { name: 'Svenska' }
+  sv: { name: 'Svenska' },
+  keys: { name: 'Näytä avaimet' }
 }
 
 export const Header = () => {
