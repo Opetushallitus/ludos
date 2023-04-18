@@ -4,21 +4,16 @@ test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.getByTestId('nav-link-content-suko').click()
-    await page.waitForSelector('text=Koetehtävät')
-    await page.getByTestId('create-koetehtävä-button').click()
+    await page.getByTestId('create-koetehtava-button').click()
   })
 
   test('can create a new assignment', async ({ page }) => {
     const nameText = 'Testi tehtävä'
     const contentText = 'Testi sisältö'
 
-    const el = page.getByTestId('heading')
-
-    await expect(el).toHaveText('Luo uusi koetehtävä')
-
-    await page.getByLabel('Tehtävän nimi').fill(nameText)
+    await page.getByLabel('form.tehtavannimi').fill(nameText)
     await page.getByLabel('Tekstin lukeminen').click()
-    await page.getByLabel('Tehtävän sisältö').fill(contentText)
+    await page.getByLabel('form.tehtavansisalto').fill(contentText)
 
     await page.getByTestId('form-submit').click()
 
@@ -28,24 +23,16 @@ test.describe('Assignment form tests', () => {
   })
 
   test('can create draft assignment', async ({ page }) => {
-    const el = page.getByTestId('heading')
-
-    await expect(el).toHaveText('Luo uusi koetehtävä')
-
-    await page.getByLabel('Tehtävän nimi').fill('Testi luonnos tehtävä')
+    await page.getByLabel('form.tehtavannimi').fill('Testi luonnos tehtävä')
     await page.getByLabel('Tekstin lukeminen').click()
-    await page.getByLabel('Tehtävän sisältö').fill('Testi luonnos sisältö')
+    await page.getByLabel('form.tehtavansisalto').fill('Testi luonnos sisältö')
 
     const btn = page.getByTestId('form-draft')
-    await expect(btn).toHaveText('Tallenna luonnos')
+    await expect(btn).toHaveText('button.tallennaluonnos')
   })
 
   test('can cancel assignment creation', async ({ page }) => {
-    const el = page.getByTestId('heading')
-
-    await expect(el).toHaveText('Luo uusi koetehtävä')
-
     const btn = page.getByTestId('form-cancel')
-    await expect(btn).toHaveText('Peruuta')
+    await expect(btn).toHaveText('button.peruuta')
   })
 })

@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
+import { useTranslation } from 'react-i18next'
 
 type AssignmentCardProps = {
   assignment: AssignmentIn
 }
 
 export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
+  const { t } = useTranslation()
+
   return (
     <li className="my-2 rounded-lg border-2 border-gray-light hover:text-green-primary">
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
@@ -20,30 +23,30 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
       <div className="flex flex-wrap md:flex md:flex-row md:flex-nowrap">
         <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-6/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">
           <div>
-            <p className="text-sm text-gray-secondary">Oppimäärä</p>
+            <p className="text-sm text-gray-secondary">{t('assignment.oppimaara')}</p>
             <p className="text-sm text-black">*oppimäärä*</p>
           </div>
           <div>
-            <p className="text-sm text-gray-secondary">Tehtävätyyppi</p>
+            <p className="text-sm text-gray-secondary">{t('assignment.tyyppi')}</p>
             <p className="text-sm text-black">{assignment.assignmentType}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-secondary">Lisätty</p>
+            <p className="text-sm text-gray-secondary">{t('assignment.lisatty')}</p>
             <p className="text-sm text-black">{new Date(assignment.createdAt).toLocaleDateString('fi-FI')}</p>
           </div>
         </div>
         <div className="flex w-full flex-wrap items-center justify-evenly md:w-6/12 md:justify-end md:gap-3 md:p-3">
           <span className="flex items-center">
             <Icon name="uusi-valilehti" color="text-green-primary" />
-            <p className="ml-1 text-sm text-green-primary">Katselunäkymä</p>
+            <p className="ml-1 text-sm text-green-primary">{t('assignment.katselunakyma')}</p>
           </span>
           <span className="flex items-center">
-            <Icon name="koetehtävät" color="text-green-primary" />
-            <p className="ml-1 text-sm text-green-primary">Lataa pdf</p>
+            <Icon name="koetehtavat" color="text-green-primary" />
+            <p className="ml-1 text-sm text-green-primary">{t('assignment.lataapdf')}</p>
           </span>
           <span className="flex items-center">
             <Icon name="lisää" color="text-green-primary" />
-            <p className="ml-1 text-sm text-green-primary">Latauskoriin</p>
+            <p className="ml-1 text-sm text-green-primary">{t('assignment.lisaalatauskoriin')}</p>
           </span>
         </div>
       </div>

@@ -1,5 +1,5 @@
 export type Page = {
-  title: string
+  titleKey: string
   path: string
 }
 
@@ -42,7 +42,7 @@ export type AssignmentIn = {
 }
 
 export const AssignmentTypes = {
-  KOETEHTAVAT: 'koetehtävät',
+  KOETEHTAVAT: 'koetehtavat',
   OHJEET: 'ohjeet',
   TODISTUKSET: 'todistukset'
 } as const
@@ -54,7 +54,7 @@ type SingularOptions = {
 }
 
 export const AssignmentsSingular: SingularOptions = {
-  KOETEHTAVAT: 'koetehtävä',
+  KOETEHTAVAT: 'koetehtava',
   OHJEET: 'ohje',
   TODISTUKSET: 'todistus'
 }

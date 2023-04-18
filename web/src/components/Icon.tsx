@@ -4,7 +4,7 @@ type IconProps = {
 }
 
 type Icons =
-  | 'koetehtävät'
+  | 'koetehtavat'
   | 'ohjeet'
   | 'todistukset'
   | 'palautteet'
@@ -18,7 +18,7 @@ type Icons =
   | 'uusi-valilehti'
 
 const icons: Record<Icons, string> = {
-  ['koetehtävät']: 'assignment',
+  ['koetehtavat']: 'assignment',
   ['ohjeet']: 'help',
   ['todistukset']: 'verified',
   ['palautteet']: 'chat',

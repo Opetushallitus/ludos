@@ -6,13 +6,13 @@ export function getSingularAssignmentFinnish(s: AssignmentType) {
 }
 
 export const AssignmentKeyTranslationEnglish = {
-  koetehtävät: 'assignments',
+  koetehtavat: 'assignments',
   ohjeet: 'instructions',
   todistukset: 'certificates'
 } as { [key: string]: string }
 
 export const AssignmentKeyTranslationFinnish = {
-  assignments: 'koetehtävät',
+  assignments: 'koetehtavat',
   instructions: 'ohjeet',
   certificates: 'todistukset'
 } as { [key: string]: string }

@@ -8,7 +8,7 @@ runs:
       run: cd server && ./gradlew build
     - name: Build frontend
       shell: bash
-      run: cd web && yarn build
+      run: cd web && yarn build:ci
     - name: Start backend
       shell: bash
       run: cd server && ./gradlew bootRun &
