@@ -4,9 +4,9 @@ const examTypes = ['suko', 'puhvi', 'ld']
 const assignmentTypes = ['assignments', 'instructions', 'certificates']
 
 const titles: Record<string, string> = {
-  suko: 'Suullinen kielitaito',
-  puhvi: 'Puheviestintä',
-  ld: 'Lukiodiplomit'
+  suko: 'header.suko',
+  puhvi: 'header.puhvi',
+  ld: 'header.ld'
 }
 
 const pages = ['etusivu', 'content-suko', 'content-puhvi', 'content-ld', 'feedback']
@@ -33,9 +33,9 @@ test('naviation links work', async ({ page }) => {
 
       expect(await heading2.innerText()).toBe(titles[contentType])
 
-      const addBtn = page.getByTestId(`create-koetehtävä-button`)
+      const addBtn = page.getByTestId(`create-koetehtava-button`)
 
-      expect(await addBtn.innerText()).toBe(`+ Lisää koetehtävä`)
+      expect(await addBtn.innerText()).toBe('button.lisaakoetehtava')
 
       await page.goBack()
     }
