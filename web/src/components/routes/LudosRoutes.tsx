@@ -10,12 +10,14 @@ import { Assignment } from '../assignment/Assignment'
 import { useMediaQuery } from '../useMediaQuery'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
+import { useTranslation } from 'react-i18next'
 
 export const LudosRoutes = () => {
+  const { t } = useTranslation()
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   return (
-    <Layout header={isMobile ? <HeaderMobile /> : <Header />} footer={<Footer />}>
+    <Layout header={isMobile ? <HeaderMobile /> : <Header />} footer={<Footer t={t} />}>
       <Routes>
         <Route path={`/${frontpageKey}`} element={<Frontpage />} />
         <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
@@ -23,37 +25,16 @@ export const LudosRoutes = () => {
           path={`/${feedbackKey}`}
           element={
             <div>
-              <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>Palautteet</h2>
+              <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>{t('title.palautteet')}</h2>
             </div>
           }
         />
         <Route
           path={`/${contentKey}/${sukoKey}/:assignmentType/${createKey}`}
-          element={
-            <AssignmentForm
-              header="Luo uusi koetehtävä"
-              description="Lisää uusi tehtävä molemmilla kielillä. Julkaise tehtävä tai tallenna se luonnoksena."
-            />
-          }
+          element={<AssignmentForm header={t('form.suko')} />}
         />
-        <Route
-          path={`/${contentKey}/${puhviKey}/${createKey}`}
-          element={
-            <AssignmentForm
-              header="Luo uusi puheviestintä tehtävä"
-              description="Lisää uusi tehtävä molemmilla kielillä. Julkaise tehtävä tai tallenna se luonnoksena."
-            />
-          }
-        />
-        <Route
-          path={`/${contentKey}/${ldKey}/${createKey}`}
-          element={
-            <AssignmentForm
-              header="Luo uusi lukiodiplomi tehtävä"
-              description="Lisää uusi tehtävä molemmilla kielillä. Julkaise tehtävä tai tallenna se luonnoksena."
-            />
-          }
-        />
+        <Route path={`/${contentKey}/${puhviKey}/${createKey}`} element={<AssignmentForm header={t('form.puhvi')} />} />
+        <Route path={`/${contentKey}/${ldKey}/${createKey}`} element={<AssignmentForm header={t('form.ld')} />} />
         <Route path={`/${contentKey}/:examType`}>
           <Route index path={':assignmentType?'} element={<Assignments />} />
           <Route path={':assignmentType/:id'} element={<Assignment />} />

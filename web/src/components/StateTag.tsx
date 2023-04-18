@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { AssignmentState } from '../types'
 
 type TagAttributes = {
@@ -8,15 +9,21 @@ type TagAttributes = {
 function getTagAttributes(state: AssignmentState): TagAttributes {
   switch (state) {
     case AssignmentState.Draft:
-      return { text: 'Luonnos', variant: 'bg-yellow' }
+      return { text: 'luonnos', variant: 'bg-yellow' }
     case AssignmentState.Published:
-      return { text: 'Julkaistu', variant: 'bg-green-light' }
+      return { text: 'julkaistu', variant: 'bg-green-light' }
     case AssignmentState.Archived:
-      return { text: 'Archived', variant: 'bg-gray-secondary' }
+      return { text: 'arkistoitu', variant: 'bg-gray-secondary' }
   }
 }
 
 export const StateTag = ({ state }: { state: AssignmentState }) => {
+  const { t } = useTranslation()
   const tagAttributes = getTagAttributes(state)
-  return <div className={`p-x-1 w-20 rounded ${tagAttributes.variant} text-center text-base`}>{tagAttributes.text}</div>
+
+  return (
+    <div className={`p-x-1 w-20 rounded ${tagAttributes.variant} text-center text-base`}>
+      {t(`state.${tagAttributes.text}`)}
+    </div>
+  )
 }

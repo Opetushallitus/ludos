@@ -16,7 +16,7 @@ function getBreadcrumb(pathname: string) {
     .filter((pageOrUndefined): pageOrUndefined is Page => pageOrUndefined !== undefined)
 
   // add the etusivu page to the beginning of the array and return
-  return [{ title: 'etusivu', path: '/' }, ...pages]
+  return [{ titleKey: 'etusivu', path: '/' }, ...pages]
 }
 export const Breadcrumbs = ({ pathname }: { pathname: string }) => {
   const breadcrumbs = getBreadcrumb(pathname)
@@ -33,7 +33,7 @@ export const Breadcrumbs = ({ pathname }: { pathname: string }) => {
                 to={crumb.path}
                 key={i}>
                 <span className="inline-block first-letter:capitalize">
-                  {crumb.title} {isLast ? '' : '/'}
+                  {crumb.titleKey} {isLast ? '' : '/'}
                 </span>
               </NavLink>
             )

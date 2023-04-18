@@ -9,7 +9,7 @@ const loadResources = async () => {
   }
 
   try {
-    const result = await fetch('api/localization/')
+    const result = await fetch('/api/localization/')
 
     if (!result.ok) {
       return []

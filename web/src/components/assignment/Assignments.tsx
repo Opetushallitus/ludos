@@ -47,10 +47,11 @@ export const Assignments = () => {
   })
 
   const singularActiveTab = getSingularAssignmentFinnish(activeTab)
+  const headingTextKey = navigationPages[examParam as string].titleKey
 
   return (
     <div className="pt-3">
-      <h2 data-testid={`page-heading-${contentKey}-${examParam}`}>{navigationPages[examParam as string].title}</h2>
+      <h2 data-testid={`page-heading-${contentKey}-${examParam}`}>{t(`header.${headingTextKey}`)}</h2>
 
       <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} t={t} />
 
@@ -60,7 +61,7 @@ export const Assignments = () => {
             variant="buttonPrimary"
             onClick={() => navigate(`${location.pathname}/${createKey}`)}
             data-testid={`create-${singularActiveTab}-button`}>
-            + Lisää {singularActiveTab}
+            {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
         {loading && <div>Loading...</div>}

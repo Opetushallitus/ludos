@@ -12,7 +12,7 @@ export const AssignmentKeyTranslationEnglish = {
 } as { [key: string]: string }
 
 export const AssignmentKeyTranslationFinnish = {
-  assignments: 'koetehtävät',
+  assignments: 'koetehtavat',
   instructions: 'ohjeet',
   certificates: 'todistukset'
 } as { [key: string]: string }

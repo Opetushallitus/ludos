@@ -10,23 +10,23 @@ export const contentKey = 'content'
 
 export const navigationPages: NavigationPages = {
   frontpage: {
-    title: 'Etusivu',
+    titleKey: 'etusivu',
     path: `/${frontpageKey}`
   },
   suko: {
-    title: 'Suullinen kielitaito',
+    titleKey: 'suko',
     path: `/${contentKey}/${sukoKey}`
   },
   puhvi: {
-    title: 'Puheviestintä',
+    titleKey: 'puhvi',
     path: `/${contentKey}/${puhviKey}`
   },
   ld: {
-    title: 'Lukiodiplomit',
+    titleKey: 'ld',
     path: `/${contentKey}/${ldKey}`
   },
   palautteet: {
-    title: 'Palautteet',
+    titleKey: 'palautteet',
     path: `/${feedbackKey}`
   }
 }
@@ -34,7 +34,7 @@ export const navigationPages: NavigationPages = {
 const allPages: AllPages = {
   ...navigationPages,
   create: {
-    title: 'lisää uusi koetehtävä',
+    titleKey: 'lisää uusi koetehtävä',
     path: `/${createKey}`
   }
 }

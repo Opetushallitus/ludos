@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { AssignmentState } from '../../types'
 import { contentKey } from '../routes/routes'
+import { useTranslation } from 'react-i18next'
 
 const MIN_LENGTH = 3
 
@@ -35,7 +36,8 @@ type Response = {
   id: string
 }
 
-export const AssignmentForm = ({ header, description }: { header: string; description: string }) => {
+export const AssignmentForm = ({ header }: { header: string }) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const match = useMatch(`/${contentKey}/:examType/:assignmentType/new`)
@@ -79,12 +81,12 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
         <h2 className="mb-3" data-testid="heading">
           {header}
         </h2>
-        <p>{description}</p>
+        <p>{t('form.kuvaus')}</p>
       </div>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <div className="mb-6">
           <label className="mb-2 font-semibold" htmlFor="name">
-            Tehtävän nimi
+            {t('form.tehtavannimi')}
           </label>
           <input
             id="name"
@@ -95,7 +97,7 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
           {errors?.name && <p className="text-green-primary">{errors.name.message}</p>}
         </div>
         <div className="mb-6">
-          <legend className="mb-2 font-semibold">Tehtävätyyppi</legend>
+          <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
           <Controller
             control={control}
             name="assignmentType"
@@ -122,7 +124,7 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
 
         <div className="mb-6">
           <label className="mb-2 font-semibold" htmlFor="content">
-            Tehtävän sisältö
+            {t('form.tehtavansisalto')}
           </label>
           <textarea
             id="content"
@@ -133,21 +135,21 @@ export const AssignmentForm = ({ header, description }: { header: string; descri
       </form>
       <div className="mt-4 flex justify-end gap-3">
         <Button variant="buttonGhost" type="button" onClick={() => navigate(-1)} testId="form-cancel">
-          Peruuta
+          {t('button.peruuta')}
         </Button>
         <Button
           variant="buttonSecondary"
           type="button"
           onClick={() => submitAssignment({ state: AssignmentState.Draft })}
           testId="form-draft">
-          Tallenna luonnos
+          {t('button.tallennaluonnos')}
         </Button>
         <Button
           variant="buttonPrimary"
           type="button"
           onClick={() => submitAssignment({ state: AssignmentState.Published })}
           testId="form-submit">
-          Tallenna ja julkaise
+          {t('button.tallennajulkaise')}
         </Button>
       </div>
     </div>

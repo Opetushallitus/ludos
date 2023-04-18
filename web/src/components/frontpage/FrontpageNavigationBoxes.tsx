@@ -12,7 +12,7 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
     <>
       {exams.map((examType, i) => (
         <div className="mt-6" key={i}>
-          <h3 className="mb-3 text-base font-semibold">{examType.title}</h3>
+          <h3 className="mb-3 text-base font-semibold">{t(`header.${examType.titleKey}`)}</h3>
           <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`${examType.path.replace('/content/', '')}`}>
             {assignments.map((option, i) => (
               <button

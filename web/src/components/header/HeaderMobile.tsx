@@ -6,7 +6,7 @@ import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 
 export const HeaderMobile = () => {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
@@ -32,7 +32,7 @@ export const HeaderMobile = () => {
               </div>
 
               <nav className="flex h-full flex-col bg-white">
-                {Object.values(navigationPages).map(({ path, title }, i) => (
+                {Object.values(navigationPages).map(({ path, titleKey }, i) => (
                   <NavLink
                     to={path}
                     onClick={toggleMenu}
@@ -43,11 +43,11 @@ export const HeaderMobile = () => {
                       }`
                     }
                     data-testid={`nav-link-${path.substring(1)}`}>
-                    {title}
+                    {t(`header.${titleKey}`)}
                   </NavLink>
                 ))}
                 <div className="mt-2 border-t-2 border-gray-separator bg-white py-2">
-                  <p className="pl-5 text-gray-secondary">Kieli</p>
+                  <p className="pl-5 text-gray-secondary">{t('header.kieli')}</p>
                   <div className="row w-full flex-wrap">
                     <Button
                       className={`col w-full pl-4 text-lg text-black${

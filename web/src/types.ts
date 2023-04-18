@@ -1,5 +1,5 @@
 export type Page = {
-  title: string
+  titleKey: string
   path: string
 }
 
@@ -54,7 +54,7 @@ type SingularOptions = {
 }
 
 export const AssignmentsSingular: SingularOptions = {
-  KOETEHTAVAT: 'koetehtävä',
+  KOETEHTAVAT: 'koetehtava',
   OHJEET: 'ohje',
   TODISTUKSET: 'todistus'
 }
