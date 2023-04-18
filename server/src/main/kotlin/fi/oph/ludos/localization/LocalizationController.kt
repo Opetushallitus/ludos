@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("${Constants.API_PREFIX}/localization")
 class LocalizationController(val localizationService: LocalizationService) {
     @GetMapping("/")
-    fun getFinnish(): Map<String, Any> = localizationService.getLocalizationTexts()
+    fun getLocalizationTexts(): Map<String, Any> = localizationService.getLocalizationTexts()
 }
