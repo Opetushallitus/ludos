@@ -21,7 +21,7 @@ export const AssignmentTabs: FC<AssignmentTabsProps> = ({ activeTab, setActiveTa
           }`}
           onClick={() => setActiveTab(option)}
           key={i}
-          data-testId={`tab-${option}`}>
+          data-testid={`tab-${option}`}>
           {t(`tab.${option}`)}
         </Button>
       ))}
