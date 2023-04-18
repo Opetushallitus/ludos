@@ -1,22 +1,49 @@
 package fi.oph.ludos.localization
 
+import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+
 
 @Service
-class LocalizationService(val localizationRepository: LocalizationRepository) {
-    fun getLocalizationTexts(): Map<String, Map<String, Any>> {
-        val unparsedArr = localizationRepository.getLocalizationTexts()
+class LocalizationService(val localizationRepository: LocalizationRepository, val cacheManager: CacheManager) {
+    init {
+        // Schedule cache update every 2 minutes
+        val scheduler = Executors.newScheduledThreadPool(1)
+        scheduler.scheduleAtFixedRate({ updateCache() }, 0, 2, TimeUnit.MINUTES)
 
+        // Init cache
+        updateCache()
+    }
+
+    fun getLocalizationTexts(): Map<String, Map<String, Any>> {
+        val cachedValue = cacheManager.getCache("localizedTexts")?.get("all")?.get() as? Map<String, Map<String, Any>>
+
+        if (cachedValue != null) {
+            println("cachedValue: $cachedValue")
+            return cachedValue
+        }
+
+        return updateCache()
+
+    }
+
+    private fun updateCache(): Map<String, Map<String, Any>> {
+        val unparsedArr = localizationRepository.getLocalizationTexts()
         val localizedTexts = mutableMapOf<String, Map<String, Any>>()
+
         for (locale in setOf("fi", "sv")) {
             val localeTexts = unparsedArr.filter { it.locale == locale }
             localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
         }
 
+        cacheManager.getCache("localizedTexts")?.put("all", localizedTexts)
+
         return localizedTexts
     }
 
-    fun parseLocalizationTexts(texts: List<Localization>): Map<String, Any> {
+    private fun parseLocalizationTexts(texts: List<Localization>): Map<String, Any> {
         val result = mutableMapOf<String, Any>()
 
         texts.forEach { localizationText ->
