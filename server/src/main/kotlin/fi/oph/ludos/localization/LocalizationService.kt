@@ -21,7 +21,6 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
         val cachedValue = cacheManager.getCache("localizedTexts")?.get("all")?.get() as? Map<String, Map<String, Any>>
 
         if (cachedValue != null) {
-            println("cachedValue: $cachedValue")
             return cachedValue
         }
 
