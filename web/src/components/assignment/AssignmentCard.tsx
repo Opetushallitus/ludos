@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
 import { useTranslation } from 'react-i18next'
+import { InternalLink } from '../InternalLink'
 
 type AssignmentCardProps = {
   assignment: AssignmentIn
@@ -12,11 +12,11 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
   const { t } = useTranslation()
 
   return (
-    <li className="my-2 rounded-lg border-2 border-gray-light hover:text-green-primary">
+    <li className="my-2 rounded-lg border-2 border-gray-light">
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
-        <Link className="text-lg font-semibold text-green-primary" to={`${assignment.id}`}>
+        <InternalLink className="text-lg font-semibold text-green-primary" to={`${assignment.id}`}>
           {assignment.name}
-        </Link>
+        </InternalLink>
         <StateTag state={assignment.state} />
         <Icon name="muokkaa" color="text-green-primary" />
       </div>

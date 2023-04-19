@@ -1,15 +1,24 @@
-import { FC, RefObject } from 'react'
+import { RefObject } from 'react'
 import { Button } from '../Button'
 import { LanguageOption, Languages } from './Header'
 
-export const LocaleDropdown: FC<{
+interface LocaleDropdownProps {
   currentLanguage: string
   options: LanguageOption
   onOptionClick: (lang: string) => void
   isExpanded: boolean
   setExpansion: (isExpanded: boolean) => void
   closeOnBlurRef: RefObject<HTMLDivElement>
-}> = ({ currentLanguage, options, isExpanded, onOptionClick, setExpansion, closeOnBlurRef }) => (
+}
+
+export const LocaleDropdown = ({
+  currentLanguage,
+  options,
+  isExpanded,
+  onOptionClick,
+  setExpansion,
+  closeOnBlurRef
+}: LocaleDropdownProps) => (
   <div className="relative border-l-2 border-green-primary pl-5" ref={closeOnBlurRef}>
     <Button
       className="flex items-center text-green-primary"

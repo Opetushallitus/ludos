@@ -1,6 +1,5 @@
 import { TFunction } from 'i18next'
 import { AssignmentType, AssignmentTypes } from '../../types'
-import { FC } from 'react'
 import { Button } from '../Button'
 
 type AssignmentTabsProps = {
@@ -9,7 +8,7 @@ type AssignmentTabsProps = {
   t: TFunction
 }
 
-export const AssignmentTabs: FC<AssignmentTabsProps> = ({ activeTab, setActiveTab, t }) => (
+export const AssignmentTabs = ({ activeTab, setActiveTab, t }: AssignmentTabsProps) => (
   <div className="text-gray-500 text-center text-base">
     <div className="flex flex-wrap border-b-2 border-gray-separator font-semibold" role="tablist">
       {Object.values(AssignmentTypes).map((option, i) => (
