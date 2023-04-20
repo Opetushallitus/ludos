@@ -1,6 +1,9 @@
 package fi.oph.ludos.localization
 
+import fi.oph.ludos.exception.LocalizationException
 import org.springframework.cache.CacheManager
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -13,33 +16,48 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
         val scheduler = Executors.newScheduledThreadPool(1)
         scheduler.scheduleAtFixedRate({ updateCache() }, 0, 2, TimeUnit.MINUTES)
 
-        // Init cache
-        updateCache()
+        try {
+            // Init cache
+            updateCache()
+        } catch (e: Exception) {
+            // todo: proper logging/error handling
+            println("ERROR: ${e.message}")
+        }
     }
 
-    fun getLocalizationTexts(): Map<String, Map<String, Any>> {
-        val cachedValue = cacheManager.getCache("localizedTexts")?.get("all")?.get() as? Map<String, Map<String, Any>>
+    fun getLocalizationTexts(): ResponseEntity<out Map<out Any?, Any?>> {
+        val cachedValue = cacheManager.getCache("localizedTexts")?.get("all")?.get() as? Map<*, *>
 
         if (cachedValue != null) {
-            return cachedValue
+            return ResponseEntity.ok(cachedValue)
         }
 
-        return updateCache()
-
+        return try {
+            val localizedTexts = updateCache()
+            ResponseEntity.ok(localizedTexts)
+        } catch (e: LocalizationException) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mapOf("error" to e.message))
+        }
     }
 
-    private fun updateCache(): Map<String, Map<String, Any>> {
-        val unparsedArr = localizationRepository.getLocalizationTexts()
-        val localizedTexts = mutableMapOf<String, Map<String, Any>>()
 
-        for (locale in setOf("fi", "sv")) {
-            val localeTexts = unparsedArr.filter { it.locale == locale }
-            localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
+    private fun updateCache(): Map<String, Map<String, Any>> {
+        try {
+            val unparsedArr = localizationRepository.getLocalizationTexts()
+            val localizedTexts = mutableMapOf<String, Map<String, Any>>()
+
+            for (locale in setOf("fi", "sv")) {
+                val localeTexts = unparsedArr.filter { it.locale == locale }
+                localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
+            }
+
+            cacheManager.getCache("localizedTexts")?.put("all", localizedTexts)
+
+            return localizedTexts
+        } catch (e: Exception) {
+            throw LocalizationException("${e.message}", e)
         }
 
-        cacheManager.getCache("localizedTexts")?.put("all", localizedTexts)
-
-        return localizedTexts
     }
 
     private fun parseLocalizationTexts(texts: List<Localization>): Map<String, Any> {

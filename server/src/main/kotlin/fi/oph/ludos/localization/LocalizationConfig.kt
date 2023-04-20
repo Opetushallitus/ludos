@@ -21,6 +21,8 @@ class CacheConfig {
     @Bean
     fun cacheManager(): CacheManager {
         //todo: define cache properties such as time-to-live or maximum cache size?
+        // what if localization api is down? should we keep the cache for many hours,
+        // is it forever by default? I do not want it to expire
         return ConcurrentMapCacheManager("localizedTexts")
     }
 }
