@@ -23,7 +23,7 @@ const loadResources = async () => {
 }
 
 const i18nOptions = {
-  debug: true,
+  debug: import.meta.env.MODE !== 'CI',
   lng: localStorage.getItem('i18nextLng') || 'fi',
   detection: {
     order: ['localStorage']

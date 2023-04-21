@@ -54,3 +54,11 @@ Aja main-luokka IDEAsta, tai käynnistä vaihtoehtoisesti komentoriviltä
 ```shell
 yarn dev
 ```
+
+### Playwright e2e
+- Ympäristö
+  - Lokaalissa backend pystyssä ja frontend buildattuna komennolla `yarn build:ci`
+  - Tai vaihtoehtoisesti `yarn dev` ja muutos playwright configissa `baseUrl: 'http://localhost:8080'` 
+- Ajo
+  - vs coden testing näkymästä
+  - Komentoriviltä `yarn test:e2e`

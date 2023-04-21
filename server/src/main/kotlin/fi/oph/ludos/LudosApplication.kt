@@ -19,10 +19,10 @@ fun main(args: Array<String>) {
 
 @Configuration
 class Config : WebMvcConfigurer {
+
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/**").resourceChain(true)
-            // resolving ALL files. Meaning nothing gets resolves automatically by pointing
-            // out "static" above.
+            // resolving ALL files. Meaning nothing gets resolves automatically by pointing out "static" above.
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource): Resource {
                     val requestedResource: Resource = location.createRelative(resourcePath)

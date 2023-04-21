@@ -12,3 +12,6 @@ logging:
   level:
     org:
       springframework: INFO
+
+myapp:
+  env: ${env:dev}
