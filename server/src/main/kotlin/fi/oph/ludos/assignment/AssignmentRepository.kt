@@ -188,4 +188,75 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             throw NotFoundException()
         }
     }
+
+    fun updateSukoAssignment(assignment: SukoUpdateAssignmentDtoIn, id: Int): Int {
+        return try {
+            val results = jdbcTemplate.query(
+                "UPDATE suko_assignment SET assignment_name = ?, assignment_content = ?, suko_assignment_type = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+                { rs: ResultSet, _: Int ->
+                    rs.getInt("assignment_id")
+                },
+                assignment.name,
+                assignment.content,
+                assignment.assignmentType,
+                assignment.state.toString(),
+                id
+            )
+
+            if (results.isEmpty()) {
+                throw NotFoundException()
+            }
+
+            results[0]
+        } catch (e: NotFoundException) {
+            throw NotFoundException()
+        }
+    }
+
+
+    fun updatePuhviAssignment(assignment: PuhviUpdateAssignmentDtoIn, id: Int): Int {
+        return try {
+            val results = jdbcTemplate.query(
+                "UPDATE puhvi_assignment SET assignment_name = ?, assignment_content = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+                { rs: ResultSet, _: Int ->
+                    rs.getInt("assignment_id")
+                },
+                assignment.name,
+                assignment.content,
+                assignment.state.toString(),
+                id
+            )
+
+            if (results.isEmpty()) {
+                throw NotFoundException()
+            }
+
+            results[0]
+        } catch (e: NotFoundException) {
+            throw NotFoundException()
+        }
+    }
+
+    fun updateLdAssignment(assignment: LdUpdateAssignmentDtoIn, id: Int): Int {
+        return try {
+            val results = jdbcTemplate.query(
+                "UPDATE ld_assignment SET assignment_name = ?, assignment_content = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+                { rs: ResultSet, _: Int ->
+                    rs.getInt("assignment_id")
+                },
+                assignment.name,
+                assignment.content,
+                assignment.state.toString(),
+                id
+            )
+
+            if (results.isEmpty()) {
+                throw NotFoundException()
+            }
+
+            results[0]
+        } catch (e: NotFoundException) {
+            throw NotFoundException()
+        }
+    }
 }

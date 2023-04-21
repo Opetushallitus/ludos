@@ -85,3 +85,32 @@ data class LdAssignmentDtoOut(
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
+
+interface UpdateAssignmentDtoIn {
+    val id: Int
+    val name: String
+    val content: String
+    val state: AssignmentState
+}
+
+data class SukoUpdateAssignmentDtoIn(
+    override val id: Int,
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
+    val assignmentType: String
+) : UpdateAssignmentDtoIn
+
+data class PuhviUpdateAssignmentDtoIn(
+    override val id: Int,
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
+):  UpdateAssignmentDtoIn
+
+data class LdUpdateAssignmentDtoIn(
+    override val id: Int,
+    override val name: String,
+    override val content: String,
+    override val state: AssignmentState,
+):  UpdateAssignmentDtoIn
