@@ -3,9 +3,11 @@ import { Button } from '../Button'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentState } from '../../types'
+import { AssignmentIn, AssignmentState, ExamType } from '../../types'
 import { contentKey } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
+import { postAssignment, updateAssignment } from '../formUtils'
+import { useEffect } from 'react'
 
 const MIN_LENGTH = 3
 
@@ -32,45 +34,48 @@ const assignmentTypes = [
   }
 ]
 
-type Response = {
-  id: string
-}
-
-export const AssignmentForm = ({ header }: { header: string }) => {
+export const AssignmentForm = ({ header, action }: { header: string; action: 'new' | 'update' }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { pathname } = useLocation()
-  const match = useMatch(`/${contentKey}/:examType/:assignmentType/new`)
+  const { pathname, state } = useLocation()
+  const match = useMatch(`/${contentKey}/:examType/:assignmentType/${action}`)
 
-  const { examType } = match!.params
+  const examType = match!.params.examType as ExamType
+  const assignment = (state?.assignment as AssignmentIn) || null
 
   const {
     register,
+    reset,
     handleSubmit,
     control,
     formState: { errors }
   } = useForm<SukoAssignmentForm>({ mode: 'onBlur', resolver: zodResolver(schema) })
 
+  // set initial values when updating
+  useEffect(() => {
+    if (assignment) {
+      reset(assignment)
+    }
+  }, [assignment, reset])
+
   async function submitAssignment({ state }: { state: AssignmentState }) {
     await handleSubmit(async (data: SukoAssignmentForm) => {
-      const body = JSON.stringify({ ...data, state, examType: examType!.toUpperCase() })
+      const body = JSON.stringify({ ...data, state, examType: examType.toUpperCase() })
 
       try {
-        const result = await fetch('/api/assignment/', {
-          method: 'POST',
-          body,
-          headers: { 'Content-Type': 'application/json' }
-        })
+        let resultId: string
 
-        if (!result.ok) {
-          throw new Error()
+        // When updating we need to have the assignment
+        if (action === 'update' && assignment) {
+          resultId = await updateAssignment<string>(examType, assignment.id, body)
+        } else {
+          const { id } = await postAssignment<{ id: string }>(body)
+          resultId = id
         }
 
-        const data: Response = await result.json()
-
-        navigate(`${pathname}/../${data.id}`)
+        navigate(`${pathname}/../${resultId}`)
       } catch (e) {
-        console.error('WIRHE', e)
+        console.error(e)
       }
     })()
   }
@@ -97,25 +102,28 @@ export const AssignmentForm = ({ header }: { header: string }) => {
           {errors?.name && <p className="text-green-primary">{errors.name.message}</p>}
         </div>
         <div className="mb-6">
-          <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
+          <legend className="mb-2 font-semibold">Tehtävätyyppi</legend>
           <Controller
             control={control}
             name="assignmentType"
+            rules={{ required: true }}
             render={({ field }) => (
               <>
-                {assignmentTypes.map((assignmentType, i) => (
-                  <div className="w-10/12" key={i}>
-                    <input
-                      className="mr-2"
-                      type="radio"
-                      onChange={field.onChange}
-                      value={assignmentType.id}
-                      name="assignmentType"
-                      id={assignmentType.id}
-                    />
-                    <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
-                  </div>
-                ))}
+                {assignmentTypes.map((assignmentType, i) => {
+                  return (
+                    <fieldset key={i} className="flex items-center">
+                      <input
+                        type="radio"
+                        {...field}
+                        value={assignmentType.id}
+                        checked={field.value === assignmentType.id}
+                        id={assignmentType.id}
+                        className="mr-2"
+                      />
+                      <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
+                    </fieldset>
+                  )
+                })}
               </>
             )}
           />
