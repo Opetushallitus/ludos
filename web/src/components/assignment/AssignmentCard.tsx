@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
@@ -14,7 +14,7 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
   const navigate = useNavigate()
 
   return (
-    <li className="my-2 rounded-lg border-2 border-gray-light">
+    <li className="my-2 rounded-lg border-2 border-gray-light" data-testid={`assignment-${assignment.id.toString()}`}>
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
         <InternalLink className="text-lg font-semibold text-green-primary" to={`${assignment.id}`}>
           {assignment.name}
@@ -23,6 +23,7 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
         <Icon
           name="muokkaa"
           color="text-green-primary"
+          dataTestId={`assignment-${assignment.id.toString()}-edit`}
           onClick={() =>
             navigate('update', {
               state: {

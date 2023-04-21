@@ -3,6 +3,7 @@ type IconProps = {
   color: 'text-green-primary' | 'text-black' | 'text-white'
   size?: 'sm' | 'base' | 'lg'
   onClick?: () => void
+  dataTestId?: string
 }
 
 type Icons =
@@ -34,12 +35,12 @@ const icons: Record<Icons, string> = {
   ['uusi-valilehti']: 'open_in_new'
 }
 
-export const Icon = ({ name, color, size, onClick }: IconProps) => {
+export const Icon = ({ name, color, size, onClick, dataTestId }: IconProps) => {
   const className = `material-symbols-outlined ${color} ${size ? `text-${size}` : 'text-base'} ${
     onClick ? 'cursor-pointer hover:bg-gray-light ' : ''
   }`
   return (
-    <i className={className} onClick={onClick}>
+    <i className={className} onClick={onClick} data-testid={dataTestId}>
       {icons[name]}
     </i>
   )
