@@ -35,6 +35,12 @@ const icons: Record<Icons, string> = {
 }
 
 export const Icon = ({ name, color, size, onClick }: IconProps) => {
-  const className = `material-symbols-outlined ${color} ${size && `text-${size}`}`
-  return <i className={className} onClick={onClick}>{icons[name]}</i>
+  const className = `material-symbols-outlined ${color} ${size ? `text-${size}` : 'text-base'} ${
+    onClick ? 'cursor-pointer hover:bg-gray-light ' : ''
+  }`
+  return (
+    <i className={className} onClick={onClick}>
+      {icons[name]}
+    </i>
+  )
 }

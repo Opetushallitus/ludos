@@ -1,7 +1,8 @@
 import { AllPages, NavigationPages, Page, PageHeaders } from '../../types'
 
 export const frontpageKey = 'etusivu'
-export const createKey = 'new'
+export const newKey = 'new'
+export const updateKey = 'update'
 export const feedbackKey = 'feedback'
 export const sukoKey = 'suko'
 export const puhviKey = 'puhvi'
@@ -35,7 +36,7 @@ const allPages: AllPages = {
   ...navigationPages,
   create: {
     titleKey: 'lisää uusi koetehtävä',
-    path: `/${createKey}`
+    path: `/${newKey}`
   }
 }
 

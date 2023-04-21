@@ -1,6 +1,6 @@
 import { Button } from '../Button'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { contentKey, createKey, navigationPages } from '../routes/routes'
+import { contentKey, newKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
 import { AssignmentIn, AssignmentType, AssignmentTypes, ExamType } from '../../types'
 import { AssignmentTabs } from './AssignmentTabs'
@@ -39,10 +39,10 @@ export const Assignments = () => {
   const { assignmentType: assignmentParam, examType: examParam } = useParams()
   const { data: assignments, loading, error } = useFetch<AssignmentIn[]>(`assignment/${examParam!.toLocaleUpperCase()}`)
 
-  const defaulAssignmentType = AssignmentKeyTranslationFinnish[assignmentParam!] as AssignmentType
+  const defaultAssignmentType = AssignmentKeyTranslationFinnish[assignmentParam!] as AssignmentType
 
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
-    assignmentType: defaulAssignmentType || AssignmentTypes.KOETEHTAVAT,
+    assignmentType: defaultAssignmentType || AssignmentTypes.KOETEHTAVAT,
     examType: examParam as ExamType
   })
 
@@ -59,7 +59,7 @@ export const Assignments = () => {
         <div className="my-5">
           <Button
             variant="buttonPrimary"
-            onClick={() => navigate(`${location.pathname}/${createKey}`)}
+            onClick={() => navigate(`${location.pathname}/${newKey}`)}
             data-testid={`create-${singularActiveTab}-button`}>
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
