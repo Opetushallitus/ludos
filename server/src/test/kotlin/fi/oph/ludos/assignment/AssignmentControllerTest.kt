@@ -33,6 +33,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val name: String,
         val content: String,
         val state: AssignmentState,
+        val examType: ExamType,
         val assignmentType: String,
         val exam: Exam
     )
@@ -41,6 +42,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val id: Int,
         val name: String,
         val content: String,
+        val examType: ExamType,
         val state: AssignmentState,
         val assignmentType: String,
         val createdAt: Timestamp,
@@ -53,6 +55,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
             name = "Suko Test Assignment",
             content = "Suko assignment content",
             state = AssignmentState.PUBLISHED,
+            examType = ExamType.ASSIGNMENTS,
             assignmentType = SukoAssignmentType.LUKEMINEN.toString(),
             exam = Exam.SUKO
         )
@@ -75,10 +78,11 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedAssignment =
-            "{\"id\": \"${assignmentOut.id}\",\"name\":\"New test name\",\"content\":\"${assignmentOut.content}\",\"state\":\"PUBLISHED\",\"assignmentType\": \"${SukoAssignmentType.LUKEMINEN}\"}\n"
+            "{\"id\": \"${assignmentOut.id}\",\"name\":\"New test name\",\"content\":\"${assignmentOut.content}\",\"state\":\"PUBLISHED\",\"examType\":\"${ExamType.CERTIFICATES}\",\"assignmentType\": \"${SukoAssignmentType.LUKEMINEN}\"}\n"
 
-        val updatedAssignmentId = mockMvc.perform(updateAssignment(Exam.SUKO, assignmentOut.id, editedAssignment))
-            .andExpect(status().isOk()).andReturn().response.contentAsString
+        val updatedAssignmentId =
+            mockMvc.perform(updateAssignment(Exam.SUKO, assignmentOut.id, editedAssignment)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
 
         assertEquals(updatedAssignmentId, assignmentOut.id.toString())
     }
@@ -87,7 +91,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
     fun failSukoUpdate() {
         val nonExistentId = -1
         val editedAssignmentFail =
-            "{\"id\": \"$nonExistentId\",\"name\":\"New test name\",\"content\":\"content\",\"state\":\"PUBLISHED\",\"assignmentType\": \"${SukoAssignmentType.LUKEMINEN}\"}\n"
+            "{\"id\": \"$nonExistentId\",\"name\":\"New test name\",\"content\":\"content\",\"state\":\"PUBLISHED\",\"examType\": \"${ExamType.INSTRUCTIONS}\",\"assignmentType\": \"${SukoAssignmentType.LUKEMINEN}\"}\n"
 
         val failUpdate = mockMvc.perform(updateAssignment(Exam.SUKO, nonExistentId, editedAssignmentFail))
             .andReturn().response.contentAsString
@@ -100,12 +104,13 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val name: String,
         val content: String,
         val state: AssignmentState,
+        val examType: ExamType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
 
     data class TestLdIn(
-        val name: String, val content: String, val state: AssignmentState, val exam: Exam
+        val name: String, val content: String, val state: AssignmentState, val examType: ExamType, val exam: Exam
     )
 
     @Test
@@ -114,6 +119,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
             name = "Lukiodiplomi assignment",
             content = "Lukiodiplomi assignment content",
             state = AssignmentState.PUBLISHED,
+            examType = ExamType.ASSIGNMENTS,
             Exam.LD
         )
 
@@ -140,6 +146,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val name: String,
         val content: String,
         val state: AssignmentState,
+        val examType: ExamType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
@@ -147,7 +154,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
     @Test
     fun puhviAssignmentTest() {
         val body =
-            "{\"name\":\"Puhvi assignment\",\"content\":\"Puhvi assignment content\",\"state\":\"PUBLISHED\",\"exam\":\"PUHVI\"}\n"
+            "{\"name\":\"Puhvi assignment\",\"content\":\"Puhvi assignment content\",\"state\":\"PUBLISHED\",\"examType\":\"${ExamType.ASSIGNMENTS}\",\"exam\":\"PUHVI\"}\n"
         // post assignment DTO IN
         val postResult =
             mockMvc.perform(postAssignment(body)).andExpect(status().isOk()).andReturn().response.contentAsString
@@ -167,7 +174,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
     fun invalidExam() {
         // Invalid exam type
         val body =
-            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"state\":\"PUBLISHED\",\"assignmentType\":\"LUKEMINEN\",\"exam\":\"WRONG\"}\n"
+            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"state\":\"PUBLISHED\",\"examType\": \"${ExamType.CERTIFICATES}\",\"assignmentType\":\"LUKEMINEN\",\"exam\":\"WRONG\"}\n"
 
         val postResult = mockMvc.perform(postAssignment(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString
@@ -179,7 +186,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
     fun invalidState() {
         // Invalid assignment type
         val body =
-            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"state\":\"TEST\",\"exam\":\"SUKO\"}\n"
+            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"state\":\"TEST\",\"examType\": \"${ExamType.ASSIGNMENTS}\",\"exam\":\"SUKO\"}\n"
 
         val postResult = mockMvc.perform(postAssignment(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString
