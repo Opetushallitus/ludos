@@ -1,4 +1,4 @@
-import { ExamType } from '../types'
+import { Exam } from '../types'
 
 const doRequest = async (url: string, method: string, body?: string) =>
   await fetch(url, {
@@ -8,7 +8,7 @@ const doRequest = async (url: string, method: string, body?: string) =>
   })
 
 export async function postAssignment<T>(body: string): Promise<T> {
-  const result = await doRequest('/api/assignment/', 'POST', body)
+  const result = await doRequest('/api/assignment', 'POST', body)
 
   if (!result.ok) {
     throw new Error()
@@ -17,8 +17,8 @@ export async function postAssignment<T>(body: string): Promise<T> {
   return await result.json()
 }
 
-export async function updateAssignment<T>(examType: ExamType, id: number, body: string): Promise<T> {
-  const result = await doRequest(`/api/assignment/${examType!.toUpperCase()}/${id}`, 'PUT', body)
+export async function updateAssignment<T>(exam: Exam, id: number, body: string): Promise<T> {
+  const result = await doRequest(`/api/assignment/${exam!.toUpperCase()}/${id}`, 'PUT', body)
 
   if (!result.ok) {
     throw new Error()

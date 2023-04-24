@@ -1,10 +1,10 @@
-import { AssignmentTypes, EXAM_TYPES } from '../../types'
+import { ExamTypes, EXAM_TYPES } from '../../types'
 import { navigationPages } from '../routes/routes'
 import { NavigationBoxes } from './FrontpageNavigationBoxes'
 
 export const Frontpage = () => {
   const examTypes = EXAM_TYPES.map((ex) => navigationPages[ex])
-  const assignmentTypes = Object.values(AssignmentTypes)
+  const assignmentTypes = Object.values(ExamTypes)
 
   return (
     <div className="mt-10">

@@ -1,8 +1,8 @@
-import { AssignmentsKey, AssignmentsSingular, AssignmentType, AssignmentTypes } from '../../types'
+import { ExamsSingular, ExamsKey, ExamType, ExamTypes } from '../../types'
 
-export function getSingularAssignmentFinnish(s: AssignmentType) {
-  const key = Object.keys(AssignmentTypes).find((k) => AssignmentTypes[k as AssignmentsKey] === s) as AssignmentsKey
-  return AssignmentsSingular[key]
+export function getSingularAssignmentFinnish(s: ExamType) {
+  const key = Object.keys(ExamTypes).find((k) => ExamTypes[k as ExamsKey] === s) as ExamsKey
+  return ExamsSingular[key]
 }
 
 export const AssignmentKeyTranslationEnglish = {

@@ -13,7 +13,7 @@ export const Assignment = () => {
     data: assignment,
     loading,
     error
-  } = useFetch<AssignmentIn>(`assignment/${params.examType!.toLocaleUpperCase()}/${params.id}`)
+  } = useFetch<AssignmentIn>(`assignment/${params.exam!.toLocaleUpperCase()}/${params.id}`)
 
   if (loading) {
     return <div>Loading...</div>

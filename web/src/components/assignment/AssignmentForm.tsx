@@ -3,7 +3,7 @@ import { Button } from '../Button'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentIn, AssignmentState, ExamType } from '../../types'
+import { AssignmentIn, AssignmentState, Exam } from '../../types'
 import { contentKey } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
 import { postAssignment, updateAssignment } from '../formUtils'
@@ -38,9 +38,9 @@ export const AssignmentForm = ({ header, action }: { header: string; action: 'ne
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
-  const match = useMatch(`/${contentKey}/:examType/:assignmentType/${action}`)
+  const match = useMatch(`/${contentKey}/:exam/:examType/${action}`)
 
-  const examType = match!.params.examType as ExamType
+  const exam = match!.params.exam as Exam
   const assignment = (state?.assignment as AssignmentIn) || null
 
   const {
@@ -60,14 +60,14 @@ export const AssignmentForm = ({ header, action }: { header: string; action: 'ne
 
   async function submitAssignment({ state }: { state: AssignmentState }) {
     await handleSubmit(async (data: SukoAssignmentForm) => {
-      const body = JSON.stringify({ ...data, state, examType: examType.toUpperCase() })
+      const body = JSON.stringify({ ...data, state, examType: exam.toUpperCase() })
 
       try {
         let resultId: string
 
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<string>(examType, assignment.id, body)
+          resultId = await updateAssignment<string>(exam, assignment.id, body)
         } else {
           const { id } = await postAssignment<{ id: string }>(body)
           resultId = id

@@ -30,32 +30,32 @@ export const LudosRoutes = () => {
           }
         />
         <Route
-          path={`/${contentKey}/${sukoKey}/:assignmentType/${newKey}`}
+          path={`/${contentKey}/${sukoKey}/:examType/${newKey}`}
           element={<AssignmentForm header={t('form.suko')} action={newKey} />}
         />
         <Route
-          path={`/${contentKey}/${puhviKey}/:assignmentType/${newKey}`}
+          path={`/${contentKey}/${puhviKey}/:examType/${newKey}`}
           element={<AssignmentForm header={t('form.puhvi')} action={newKey} />}
         />
         <Route
-          path={`/${contentKey}/${ldKey}/:assignmentType/${newKey}`}
+          path={`/${contentKey}/${ldKey}/:examType/${newKey}`}
           element={<AssignmentForm header={t('form.ld')} action={newKey} />}
         />
         <Route
-          path={`/${contentKey}/${sukoKey}/:assignmentType/${updateKey}`}
+          path={`/${contentKey}/${sukoKey}/:examType/${updateKey}`}
           element={<AssignmentForm header={t('form.suko')} action={updateKey} />}
         />
         <Route
-          path={`/${contentKey}/${puhviKey}/:assignmentType/${updateKey}`}
+          path={`/${contentKey}/${puhviKey}/:examType/${updateKey}`}
           element={<AssignmentForm header={t('form.puhvi')} action={updateKey} />}
         />
         <Route
-          path={`/${contentKey}/${ldKey}/:assignmentType/${updateKey}`}
+          path={`/${contentKey}/${ldKey}/:examType/${updateKey}`}
           element={<AssignmentForm header={t('form.ld')} action={updateKey} />}
         />
-        <Route path={`/${contentKey}/:examType`}>
-          <Route index path={':assignmentType?'} element={<Assignments />} />
-          <Route path={':assignmentType/:id'} element={<Assignment />} />
+        <Route path={`/${contentKey}/:exam`}>
+          <Route index path={':examType?'} element={<Assignments />} />
+          <Route path={':examType/:id'} element={<Assignment />} />
         </Route>
         <Route
           path="*"
