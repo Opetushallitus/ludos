@@ -2,16 +2,15 @@ import { Button } from '../Button'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { contentKey, newKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
-import { AssignmentIn, ExamTypes, Exam, ExamType } from '../../types'
+import { ExamTypes, Exam, ExamType } from '../../types'
 import { AssignmentTabs } from './AssignmentTabs'
-import { AssignmentCard } from './AssignmentCard'
 import {
   AssignmentKeyTranslationEnglish,
   AssignmentKeyTranslationFinnish,
   getSingularExamTypeFinnish
 } from './assignmentUtils'
-import { useFetch } from '../useFetch'
 import { useTranslation } from 'react-i18next'
+import { AssignmentList } from './AssignmentList'
 
 export const Assignments = () => {
   const { t } = useTranslation()
@@ -20,14 +19,6 @@ export const Assignments = () => {
   const { exam, examType } = useParams()
 
   const defaultExamType = AssignmentKeyTranslationFinnish[examType!] as ExamType
-
-  const {
-    data: assignments,
-    loading,
-    error
-  } = useFetch<AssignmentIn[]>(
-    `assignment/${exam!.toLocaleUpperCase()}${examType ? `?examType=${examType.toUpperCase()}` : ''}`
-  )
 
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
     assignmentType: defaultExamType || ExamTypes.KOETEHTAVAT,
@@ -52,14 +43,8 @@ export const Assignments = () => {
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
-        {loading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
-        {assignments && assignments.length > 0 && (
-          <ul>
-            {assignments.map((assignment, i) => (
-              <AssignmentCard assignment={assignment} key={i} />
-            ))}
-          </ul>
+        {examType && (
+          <AssignmentList url={`assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`} />
         )}
       </div>
     </div>
