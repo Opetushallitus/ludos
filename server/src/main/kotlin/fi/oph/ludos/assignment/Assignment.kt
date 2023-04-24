@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import java.sql.Timestamp
 import java.util.*
 
-enum class ExamType {
+enum class Exam {
     SUKO, PUHVI, LD
 }
 
@@ -18,7 +18,7 @@ enum class AssignmentState {
     DRAFT, PUBLISHED, ARCHIVED
 }
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "examType")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
     JsonSubTypes.Type(value = SukoAssignmentDtoIn::class, name = "SUKO"),
     JsonSubTypes.Type(value = PuhviAssignmentDtoIn::class, name = "PUHVI"),
