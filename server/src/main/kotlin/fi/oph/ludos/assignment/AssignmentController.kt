@@ -16,8 +16,27 @@ class AssignmentController(val service: AssignmentService) {
     }
 
     @GetMapping("/{exam}")
-    fun getAssignments(@PathVariable exam: Exam, @RequestParam examType: ExamType?): List<AssignmentOut> {
-        return service.getAssignments(exam, examType)
+    fun getAssignments(
+        @PathVariable exam: Exam,
+        @RequestParam examType: ExamType?,
+        @RequestParam(required = false) course: String?,
+        @RequestParam(required = false) assignmentType: String?,
+        @RequestParam(required = false) title: String?,
+        @RequestParam(required = false) language: String?,
+        @RequestParam(required = false) orderBy: String?,
+        @RequestParam(required = false) orderDirection: String?
+    ): List<AssignmentOut> {
+
+        val filters = AssignmentFilter(
+            course,
+            assignmentType,
+            title,
+            language,
+            orderBy,
+            orderDirection
+        )
+
+        return service.getAssignments(exam, examType, filters)
     }
 
     @GetMapping("{exam}/{id}")

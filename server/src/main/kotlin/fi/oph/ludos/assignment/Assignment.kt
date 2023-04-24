@@ -129,3 +129,12 @@ data class LdUpdateAssignmentDtoIn(
     override val state: AssignmentState,
     override val examType: ExamType,
 ) : UpdateAssignmentDtoIn
+
+data class AssignmentFilter(
+    val course: String?,
+    val assignmentType: String?,
+    val title: String?,
+    val language: String?,
+    val orderBy: String?,
+    val orderDirection: String?
+)

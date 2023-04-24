@@ -7,10 +7,10 @@ import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AssignmentService(val db: AssignmentRepository) {
-    fun getAssignments(exam: Exam, examType: ExamType?): List<AssignmentOut> = when (exam) {
-        Exam.SUKO -> db.getSukoAssignments(examType)
-        Exam.PUHVI -> db.getPuhviAssignments(examType)
-        Exam.LD -> db.getLdAssignments(examType)
+    fun getAssignments(exam: Exam, examType: ExamType?, filters: AssignmentFilter?): List<AssignmentOut> = when (exam) {
+        Exam.SUKO -> db.getSukoAssignments(examType, filters)
+        Exam.PUHVI -> db.getPuhviAssignments(examType, filters)
+        Exam.LD -> db.getLdAssignments(examType, filters)
     }
 
     fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {

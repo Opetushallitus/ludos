@@ -21,23 +21,65 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun getSukoAssignments(examType: ExamType?): List<SukoAssignmentDtoOut> {
-        val query = if (examType != null) {
-            "SELECT * FROM suko_assignment where assignment_exam_type = ?::assignment_exam_type"
+    fun getSukoAssignments(examType: ExamType?, filters: AssignmentFilter?): List<SukoAssignmentDtoOut> {
+        var query = if (examType != null) {
+            "SELECT * FROM suko_assignment WHERE assignment_exam_type = ?::assignment_exam_type"
         } else {
             "SELECT * FROM suko_assignment"
         }
 
+        val args = mutableListOf<Any>()
+        args.add(examType.toString())
+
+        if (filters != null) {
+            if (filters.course != null) {
+                query += " AND course = ?"
+                args.add(filters.course)
+            }
+            if (filters.assignmentType != null) {
+                query += " AND suko_assignment_type = ?"
+                args.add(filters.assignmentType)
+            }
+            if (filters.title != null) {
+                query += " AND assignment_name LIKE ?"
+                args.add("%${filters.title}%")
+            }
+            if (filters.language != null) {
+                query += " AND language = ?"
+                args.add(filters.language)
+            }
+            if (filters.orderBy != null) {
+                query += " ORDER BY ${filters.orderBy}"
+                if (filters.orderDirection != null) {
+                    query += " ${filters.orderDirection}"
+                }
+            }
+        }
+
         return if (examType != null) {
-            jdbcTemplate.query(
-                query, mapSukoResultSet, examType.toString()
-            )
+            if (filters != null) {
+                jdbcTemplate.query(
+                    query, mapSukoResultSet, *args.toTypedArray() // spread the args
+                )
+            } else {
+                jdbcTemplate.query(
+                    query, mapSukoResultSet, examType.toString()
+                )
+            }
         } else {
-            jdbcTemplate.query(query, mapSukoResultSet)
+            if (filters != null) {
+                jdbcTemplate.query(
+                    query, mapSukoResultSet, filters.course, filters.assignmentType, "%${filters.title}%", filters.language
+                )
+            } else {
+                jdbcTemplate.query(
+                    query, mapSukoResultSet
+                )
+            }
         }
     }
 
-    fun getPuhviAssignments(examType: ExamType?): List<PuhviAssignmentDtoOut> {
+    fun getPuhviAssignments(examType: ExamType?, filters: AssignmentFilter?): List<PuhviAssignmentDtoOut> {
         return jdbcTemplate.query(
             "SELECT * FROM puhvi_assignment"
         ) { rs: ResultSet, _: Int ->
@@ -53,7 +95,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         }
     }
 
-    fun getLdAssignments(examType: ExamType?): List<LdAssignmentDtoOut> {
+    fun getLdAssignments(examType: ExamType?, filters: AssignmentFilter?): List<LdAssignmentDtoOut> {
         return jdbcTemplate.query(
             "SELECT * FROM ld_assignment"
         ) { rs: ResultSet, _: Int ->
