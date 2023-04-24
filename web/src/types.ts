@@ -36,9 +36,13 @@ export type AssignmentIn = {
   name: string
   content: string
   state: AssignmentState
-  assignmentType: string
+  examType: Exam
   createdAt: string
   updatedAt: string
+}
+
+export type SukoAssignmentIn = AssignmentIn & {
+  assignmentType: string
 }
 
 export const ExamTypes = {

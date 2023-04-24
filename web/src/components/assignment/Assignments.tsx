@@ -8,7 +8,7 @@ import { AssignmentCard } from './AssignmentCard'
 import {
   AssignmentKeyTranslationEnglish,
   AssignmentKeyTranslationFinnish,
-  getSingularAssignmentFinnish
+  getSingularExamTypeFinnish
 } from './assignmentUtils'
 import { useFetch } from '../useFetch'
 import { useTranslation } from 'react-i18next'
@@ -21,14 +21,20 @@ export const Assignments = () => {
 
   const defaultExamType = AssignmentKeyTranslationFinnish[examType!] as ExamType
 
-  const { data: assignments, loading, error } = useFetch<AssignmentIn[]>(`assignment/${exam!.toLocaleUpperCase()}`)
+  const {
+    data: assignments,
+    loading,
+    error
+  } = useFetch<AssignmentIn[]>(
+    `assignment/${exam!.toLocaleUpperCase()}${examType ? `?examType=${examType.toUpperCase()}` : ''}`
+  )
 
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
     assignmentType: defaultExamType || ExamTypes.KOETEHTAVAT,
     exam: exam as Exam
   })
 
-  const singularActiveTab = getSingularAssignmentFinnish(activeTab)
+  const singularActiveTab = getSingularExamTypeFinnish(activeTab)
   const headingTextKey = navigationPages[exam as string].titleKey
 
   return (
