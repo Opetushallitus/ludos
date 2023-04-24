@@ -48,7 +48,7 @@ export const Assignment = () => {
               <Button
                 variant="buttonPrimary"
                 onClick={() => navigate(`/${contentKey}/${sukoKey}`)}
-                data-testId="return">
+                data-testid="return">
                 Palaa koetehtäviin
               </Button>
             </div>
