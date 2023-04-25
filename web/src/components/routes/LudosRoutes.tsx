@@ -7,10 +7,10 @@ import { Frontpage } from '../frontpage/Frontpage'
 import { Assignments } from '../assignment/Assignments'
 import { AssignmentForm } from '../assignment/AssignmentForm'
 import { Assignment } from '../assignment/Assignment'
-import { useMediaQuery } from '../useMediaQuery'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { useTranslation } from 'react-i18next'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
 
 export const LudosRoutes = () => {
   const { t } = useTranslation()
