@@ -11,19 +11,22 @@ import {
 } from './assignmentUtils'
 import { useTranslation } from 'react-i18next'
 import { AssignmentList } from './AssignmentList'
+import { AssignmentFilters } from './AssignmentFilters'
+import { useFilters } from './useFilters'
 
 export const Assignments = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
-  const { exam, examType } = useParams()
+  const { exam, examType } = useParams<{ exam: Exam; examType: string }>()
 
-  const defaultExamType = AssignmentKeyTranslationFinnish[examType!] as ExamType
-
+  const defaultExamType = (AssignmentKeyTranslationFinnish[examType!] as ExamType) || ExamTypes.KOETEHTAVAT
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
-    assignmentType: defaultExamType || ExamTypes.KOETEHTAVAT,
-    exam: exam as Exam
+    assignmentType: defaultExamType,
+    exam: exam!
   })
+
+  const { filters, setFilters } = useFilters()
 
   const singularActiveTab = getSingularExamTypeFinnish(activeTab)
   const headingTextKey = navigationPages[exam as string].titleKey
@@ -43,8 +46,12 @@ export const Assignments = () => {
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
+        <AssignmentFilters filters={filters} setFilters={setFilters} />
         {examType && (
-          <AssignmentList url={`assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`} />
+          <AssignmentList
+            url={`assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`}
+            filters={filters}
+          />
         )}
       </div>
     </div>

@@ -72,7 +72,7 @@ export const Header = () => {
   )
 }
 
-function useDropdownCloseOnBlur(setExpansion: (bool: boolean) => void) {
+export function useDropdownCloseOnBlur(setExpansion: (bool: boolean) => void) {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

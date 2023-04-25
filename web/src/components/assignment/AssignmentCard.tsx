@@ -41,7 +41,7 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
           </div>
           <div>
             <p className="text-sm text-gray-secondary">{t('assignment.tyyppi')}</p>
-            <p className="text-sm text-black">{assignment.assignmentType}</p>
+            <p className="text-sm text-black">{assignment.examType}</p>
           </div>
           <div>
             <p className="text-sm text-gray-secondary">{t('assignment.lisatty')}</p>

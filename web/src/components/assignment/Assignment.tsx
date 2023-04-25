@@ -2,8 +2,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { StateTag } from '../StateTag'
 import { Button } from '../Button'
 import { contentKey, sukoKey } from '../routes/routes'
-import { useFetch } from '../useFetch'
 import { AssignmentIn } from '../../types'
+import { useFetch } from '../../hooks/useFetch'
 
 export const Assignment = () => {
   const navigate = useNavigate()
