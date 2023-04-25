@@ -133,7 +133,7 @@ data class LdUpdateAssignmentDtoIn(
 data class AssignmentFilter(
     val course: String?,
     val assignmentType: String?,
-    val title: String?,
+    val topic: String?,
     val language: String?,
     val orderBy: String?,
     val orderDirection: String?
