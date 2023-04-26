@@ -34,7 +34,7 @@ class WebSecurityConfiguration {
         println("securityFilterChain: env: $env")
 
         if (env != "prod") {
-            http.authorizeHttpRequests().antMatchers("/api/**").permitAll().anyRequest().authenticated()
+            http.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
 
             return http.build()
         }
