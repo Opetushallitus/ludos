@@ -20,6 +20,9 @@ fun postAssignment(body: String) =
 fun getAssignment(examType: ExamType, id: Int) =
     MockMvcRequestBuilders.get("/api/assignment/$examType/$id").contentType(MediaType.APPLICATION_JSON)
 
+fun updateAssignment(examType: ExamType, id: Int, body: String) =
+    MockMvcRequestBuilders.put("/api/assignment/$examType/$id").contentType(MediaType.APPLICATION_JSON).content(body)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -59,18 +62,37 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val postResult = mockMvc.perform(postAssignment(testAssignmentToString)).andExpect(status().isOk())
             .andReturn().response.contentAsString
         val assignmentIn = objectMapper.readValue(postResult, TestSukoOut::class.java)
-        println("assignmentIn $assignmentIn")
 
         // get assignment DTO OUT
-        val getResult = mockMvc.perform(getAssignment(ExamType.SUKO, assignmentIn.id))
-            .andExpect(status().isOk()).andReturn().response.contentAsString
+        val getResult = mockMvc.perform(getAssignment(ExamType.SUKO, assignmentIn.id)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
         val assignmentOut = objectMapper.readValue(getResult, TestSukoOut::class.java)
 
-        assertEquals(assignmentOut.id, assignmentOut.id)
         assertEquals(assignmentOut.name, testAssignment.name)
         assertEquals(assignmentOut.content, testAssignment.content)
         assertEquals(assignmentOut.state, testAssignment.state)
         assertEquals(assignmentOut.assignmentType, testAssignment.assignmentType)
+
+        // update request
+        val editedAssignment =
+            "{\"id\": \"${assignmentOut.id}\",\"name\":\"New test name\",\"content\":\"${assignmentOut.content}\",\"state\":\"PUBLISHED\",\"assignmentType\": \"${SukoAssignmentType.LUKEMINEN}\"}\n"
+
+        val updatedAssignmentId = mockMvc.perform(updateAssignment(ExamType.SUKO, assignmentOut.id, editedAssignment))
+            .andExpect(status().isOk()).andReturn().response.contentAsString
+
+        assertEquals(updatedAssignmentId, assignmentOut.id.toString())
+    }
+
+    @Test
+    fun failSukoUpdate() {
+        val nonExistentId = -1
+        val editedAssignmentFail =
+            "{\"id\": \"$nonExistentId\",\"name\":\"New test name\",\"content\":\"content\",\"state\":\"PUBLISHED\",\"assignmentType\": \"${SukoAssignmentType.LUKEMINEN}\"}\n"
+
+        val failUpdate = mockMvc.perform(updateAssignment(ExamType.SUKO, nonExistentId, editedAssignmentFail))
+            .andReturn().response.contentAsString
+
+        assertThat(failUpdate).isEqualTo("404 NOT_FOUND \"Assignment not found $nonExistentId\"")
     }
 
     data class TestLdOut(
@@ -103,8 +125,8 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val assignmentIn = objectMapper.readValue(postResult, TestLdOut::class.java)
 
         // get assignment DTO OUT
-        val getResult = mockMvc.perform(getAssignment(ExamType.LD, assignmentIn.id))
-            .andExpect(status().isOk()).andReturn().response.contentAsString
+        val getResult = mockMvc.perform(getAssignment(ExamType.LD, assignmentIn.id)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
         val assignmentOut = objectMapper.readValue(getResult, TestLdOut::class.java)
 
         assertEquals(assignmentOut.id, assignmentOut.id)

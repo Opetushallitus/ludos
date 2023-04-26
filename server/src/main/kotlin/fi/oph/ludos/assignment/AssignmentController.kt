@@ -1,6 +1,7 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Constants
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -23,7 +24,17 @@ class AssignmentController(val service: AssignmentService) {
         return ResponseEntity.status(HttpStatus.OK).body(service.createAssignment(assignment))
     }
 
-    @PutMapping("/{id}")
-    fun updateAssignment() {
+    @PutMapping("/{examType}/{id}")
+    fun updateAssignment(
+        @PathVariable examType: ExamType,
+        @PathVariable("id") id: Int,
+        @RequestBody assignment: SukoUpdateAssignmentDtoIn
+    ): ResponseEntity<Int> {
+        return try {
+            val updatedAssignmentId = service.updateAssignment(examType, id, assignment)
+            ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
+        } catch (e: NotFoundException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+        }
     }
 }

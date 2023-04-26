@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
@@ -10,15 +11,27 @@ type AssignmentCardProps = {
 
 export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   return (
-    <li className="my-2 rounded-lg border-2 border-gray-light">
+    <li className="my-2 rounded-lg border-2 border-gray-light" data-testid={`assignment-${assignment.id.toString()}`}>
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
         <InternalLink className="text-lg font-semibold text-green-primary" to={`${assignment.id}`}>
           {assignment.name}
         </InternalLink>
         <StateTag state={assignment.state} />
-        <Icon name="muokkaa" color="text-green-primary" />
+        <Icon
+          name="muokkaa"
+          color="text-green-primary"
+          dataTestId={`assignment-${assignment.id.toString()}-edit`}
+          onClick={() =>
+            navigate('update', {
+              state: {
+                assignment
+              }
+            })
+          }
+        />
       </div>
       <div className="flex flex-wrap md:flex md:flex-row md:flex-nowrap">
         <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-6/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">

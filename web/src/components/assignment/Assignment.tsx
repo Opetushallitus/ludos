@@ -45,7 +45,10 @@ export const Assignment = () => {
               </div>
             </div>
             <div className="row mb-6">
-              <Button variant="buttonPrimary" onClick={() => navigate(`/${contentKey}/${sukoKey}`)}>
+              <Button
+                variant="buttonPrimary"
+                onClick={() => navigate(`/${contentKey}/${sukoKey}`)}
+                data-testId="return">
                 Palaa koetehtäviin
               </Button>
             </div>
