@@ -3,6 +3,8 @@ import { navigationPages } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
 import { LocaleDropdown } from './LocaleDropdown'
 import { useEffect, useRef, useState } from 'react'
+import { useFetch } from '../useFetch'
+import { Button } from '../Button'
 
 export type Languages = 'fi' | 'sv' | 'keys'
 
@@ -16,13 +18,15 @@ const options: LanguageOption = {
 
 export const Header = () => {
   const { t, i18n } = useTranslation()
+  const { data } = useFetch<{ name: string }>('auth')
   const [isExpanded, setExpansion] = useState(false)
+
   const closeOnBlurRef = useDropdownCloseOnBlur(setExpansion)
 
   const currentLanguageKey = i18n.language as Languages
 
   const changeLanguage = (lang: string) => {
-    i18n.changeLanguage(lang)
+    void i18n.changeLanguage(lang)
   }
 
   return (
@@ -31,7 +35,9 @@ export const Header = () => {
         <div className="row justify-between pt-3">
           <h1 className="font-bold">{t('title.ludos')}</h1>
           <div className="flex h-6 flex-row gap-3">
-            <p className="text-green-primary">Käyttäjä</p>
+            <Button className="m-0" variant="buttonGhost" onClick={() => (document.location = '/api/logout')}>
+              {data && <p>{data.name}</p>}
+            </Button>
             <p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>
             <LocaleDropdown
               currentLanguage={options[currentLanguageKey].name}
