@@ -6,6 +6,7 @@ import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import React from 'react'
 import { SukoAssignmentContent } from './SukoAssignmentContent'
+import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../assignment/assignmentUtils'
 
 export const Assignment = () => {
   const { t } = useTranslation()
@@ -22,10 +23,6 @@ export const Assignment = () => {
     return <div>error</div>
   }
 
-  const isSukoAssignment = (assignment: AssignmentIn): assignment is SukoAssignmentIn => exam === 'suko'
-  const isPuhviAssignment = (assignment: AssignmentIn): assignment is SukoAssignmentIn => exam === 'puhvi'
-  const isLdAssignment = (assignment: AssignmentIn): assignment is SukoAssignmentIn => exam === 'ld'
-
   return (
     <div className="min-h-[80vh]">
       {assignment && (
@@ -36,9 +33,11 @@ export const Assignment = () => {
           <div className="row">
             <div className="col w-9/12 pr-5">
               <div className="row pb-3">
-                {isSukoAssignment(assignment) && <SukoAssignmentContent assignment={assignment} examType={examType} />}
-                {isPuhviAssignment(assignment) && <div>puhvi</div>}
-                {isLdAssignment(assignment) && <div>ld</div>}
+                {isSukoAssignment(assignment, exam!) && (
+                  <SukoAssignmentContent assignment={assignment} examType={examType} />
+                )}
+                {isPuhviAssignment(assignment, exam!) && <div>puhvi</div>}
+                {isLdAssignment(assignment, exam!) && <div>ld</div>}
               </div>
               <div className="row mb-6">
                 <Button
