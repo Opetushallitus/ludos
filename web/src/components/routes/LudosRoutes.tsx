@@ -6,7 +6,7 @@ import { contentKey, newKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey
 import { Frontpage } from '../frontpage/Frontpage'
 import { Assignments } from '../assignment/Assignments'
 import { AssignmentForm } from '../assignment/AssignmentForm'
-import { Assignment } from '../assignment/Assignment'
+import { Assignment } from '../assignmentpage/Assignment'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { useTranslation } from 'react-i18next'
