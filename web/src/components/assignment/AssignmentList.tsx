@@ -1,11 +1,11 @@
 import { useFetch } from '../../hooks/useFetch'
-import { AssignmentIn } from '../../types'
+import { AssignmentIn, Exam } from '../../types'
 import { AssignmentCard } from './AssignmentCard'
 import { FiltersType } from '../../hooks/useFilters'
 
-export const AssignmentList = ({ url, filters }: { url: string; filters: FiltersType }) => {
+export const AssignmentList = ({ exam, examType, filters }: { exam: Exam; examType: string; filters: FiltersType }) => {
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
-
+  const url = `assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
   const { data, loading, error } = useFetch<AssignmentIn[]>(
     `${url}&${new URLSearchParams(removeNullsFromFilterObj).toString()}`
   )
@@ -17,7 +17,7 @@ export const AssignmentList = ({ url, filters }: { url: string; filters: Filters
       {data && data.length > 0 && (
         <ul>
           {data.map((assignment, i) => (
-            <AssignmentCard assignment={assignment} key={i} />
+            <AssignmentCard assignment={assignment} exam={exam} key={i} />
           ))}
         </ul>
       )}

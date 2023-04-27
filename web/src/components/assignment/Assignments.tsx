@@ -47,12 +47,7 @@ export const Assignments = () => {
           </Button>
         </div>
         <AssignmentFilters filters={filters} setFilters={setFilters} />
-        {examType && (
-          <AssignmentList
-            url={`assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`}
-            filters={filters}
-          />
-        )}
+        {examType && exam && <AssignmentList exam={exam} examType={examType} filters={filters} />}
       </div>
     </div>
   )
