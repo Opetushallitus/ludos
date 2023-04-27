@@ -9,6 +9,7 @@ type DropdownProps = {
   onOptionClick: (option: string | null) => void
   setExpansion: (isExpanded: boolean) => void
   closeOnBlurRef?: RefObject<HTMLDivElement>
+  canReset?: boolean
 }
 
 export const Dropdown = ({
@@ -17,7 +18,8 @@ export const Dropdown = ({
   isExpanded,
   onOptionClick,
   setExpansion,
-  closeOnBlurRef
+  closeOnBlurRef,
+  canReset = true
 }: DropdownProps) => (
   <div className="relative mx-2 mb-3 mt-1 border border-gray-secondary" ref={closeOnBlurRef}>
     <Button
@@ -27,14 +29,18 @@ export const Dropdown = ({
       {currentOption ? (
         <>
           {currentOption}
-          <Icon
-            name="sulje"
-            color="text-black"
-            onClick={(e) => {
-              e.stopPropagation()
-              onOptionClick(null)
-            }}
-          />
+          {canReset ? (
+            <Icon
+              name="sulje"
+              color="text-black"
+              onClick={(e) => {
+                e.stopPropagation()
+                onOptionClick(null)
+              }}
+            />
+          ) : (
+            <Icon name="laajenna" color="text-black" />
+          )}
         </>
       ) : (
         <>

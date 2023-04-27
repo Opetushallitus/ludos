@@ -1,32 +1,49 @@
 import { NavLink } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
-import { LocaleDropdown } from './LocaleDropdown'
+import { HeaderDropdown } from './HeaderDropdown'
 import { useEffect, useRef, useState } from 'react'
-import { useFetch } from '../useFetch'
-import { Button } from '../Button'
+import { useFetch } from '../../hooks/useFetch'
+import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
 
-export type Languages = 'fi' | 'sv' | 'keys'
+export type LocaleDropdownOptions = Record<string, { name: string }>
 
-export type LanguageOption = Record<Languages, { name: string }>
-
-const options: LanguageOption = {
+const languageOptions: LocaleDropdownOptions = {
   fi: { name: 'Suomi' },
   sv: { name: 'Svenska' },
   keys: { name: 'Näytä avaimet' }
+}
+
+const authOptions: LocaleDropdownOptions = {
+  logout: { name: 'Kirjaudu ulos' }
 }
 
 export const Header = () => {
   const { t, i18n } = useTranslation()
   const { data } = useFetch<{ name: string }>('auth')
   const [isExpanded, setExpansion] = useState(false)
+  const [currentOption, setCurrentOption] = useState<string | null>(null)
+  const [authIsExpanded, setAuthExpansion] = useState(false)
 
-  const closeOnBlurRef = useDropdownCloseOnBlur(setExpansion)
+  const closeOnBlurRef = useDropdownCloseOnBlur<boolean>(false, setExpansion)
+  const authCloseOnBlurRef = useDropdownCloseOnBlur<boolean>(false, setAuthExpansion)
 
-  const currentLanguageKey = i18n.language as Languages
+  const currentLanguageKey = i18n.language
 
   const changeLanguage = (lang: string) => {
     void i18n.changeLanguage(lang)
+  }
+
+  useEffect(() => {
+    if (data && data.name) {
+      setCurrentOption(data.name)
+    }
+  }, [data])
+
+  const handleOptionClick = (opt: string | null) => {
+    if (opt === 'logout') {
+      document.location = '/api/logout'
+    }
   }
 
   return (
@@ -35,18 +52,27 @@ export const Header = () => {
         <div className="row justify-between pt-3">
           <h1 className="font-bold">{t('title.ludos')}</h1>
           <div className="flex h-6 flex-row gap-3">
-            <Button className="m-0" variant="buttonGhost" onClick={() => (document.location = '/api/logout')}>
-              {data && <p>{data.name}</p>}
-            </Button>
+            <div className="relative">
+              <HeaderDropdown
+                currentOption={currentOption || ''}
+                options={authOptions}
+                isExpanded={authIsExpanded}
+                onOptionClick={handleOptionClick}
+                setExpansion={setAuthExpansion}
+                closeOnBlurRef={authCloseOnBlurRef}
+              />
+            </div>
             <p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>
-            <LocaleDropdown
-              currentLanguage={options[currentLanguageKey].name}
-              options={options}
-              isExpanded={isExpanded}
-              onOptionClick={(str) => changeLanguage(str)}
-              setExpansion={setExpansion}
-              closeOnBlurRef={closeOnBlurRef}
-            />
+            <div className="relative border-l-2 border-green-primary pl-5">
+              <HeaderDropdown
+                currentOption={languageOptions[currentLanguageKey].name}
+                options={languageOptions}
+                isExpanded={isExpanded}
+                onOptionClick={(str) => changeLanguage(str)}
+                setExpansion={setExpansion}
+                closeOnBlurRef={closeOnBlurRef}
+              />
+            </div>
           </div>
         </div>
         <nav className="row pb-1 pt-3">
@@ -70,24 +96,4 @@ export const Header = () => {
       </div>
     </div>
   )
-}
-
-export function useDropdownCloseOnBlur(setExpansion: (bool: boolean) => void) {
-  const dropdownRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setExpansion(false)
-      }
-    }
-
-    document.addEventListener('click', handleOutsideClick)
-
-    return () => {
-      document.removeEventListener('click', handleOutsideClick)
-    }
-  }, [dropdownRef, setExpansion])
-
-  return dropdownRef
 }

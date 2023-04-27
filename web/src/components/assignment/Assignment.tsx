@@ -4,16 +4,14 @@ import { Button } from '../Button'
 import { contentKey, sukoKey } from '../routes/routes'
 import { AssignmentIn } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
+import { useTranslation } from 'react-i18next'
 
 export const Assignment = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
-  const params = useParams()
+  const { exam, examType, id } = useParams<{ exam: string; examType: string; id: string }>()
 
-  const {
-    data: assignment,
-    loading,
-    error
-  } = useFetch<AssignmentIn>(`assignment/${params.exam!.toLocaleUpperCase()}/${params.id}`)
+  const { data: assignment, loading, error } = useFetch<AssignmentIn>(`assignment/${exam!.toLocaleUpperCase()}/${id}`)
 
   if (loading) {
     return <div>Loading...</div>
@@ -36,25 +34,25 @@ export const Assignment = () => {
                 </h2>
                 <div className="row gap-3">
                   <StateTag state={assignment.state} />
-                  <p>Muokkaa</p>
+                  <p>{t('assignment.muokkaa')}</p>
                 </div>
                 <p className="pb-3">{assignment.content}</p>
               </div>
               <div className="col w-2/12">
-                <p>Tehtävän kieli</p>
+                <p>{t('assignment.kieli')}</p>
               </div>
             </div>
             <div className="row mb-6">
               <Button
                 variant="buttonPrimary"
-                onClick={() => navigate(`/${contentKey}/${sukoKey}`)}
+                onClick={() => navigate(`/${contentKey}/${exam}/${examType}`)}
                 data-testid="return">
-                Palaa koetehtäviin
+                {t('assignment.palaa')}
               </Button>
             </div>
           </div>
           <div className="col w-3/12">
-            <p>Muita tehtäviä</p>
+            <p>{t('assignment.muita')}</p>
           </div>
         </>
       )}
