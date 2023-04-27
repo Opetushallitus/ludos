@@ -4,7 +4,6 @@ export function useDropdownCloseOnBlur<T>(desiredState: T, setExpansion: (state:
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    console.log('asdasd')
     const handleOutsideClick = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setExpansion(desiredState)
@@ -16,7 +15,7 @@ export function useDropdownCloseOnBlur<T>(desiredState: T, setExpansion: (state:
     return () => {
       document.removeEventListener('click', handleOutsideClick)
     }
-  }, [dropdownRef, setExpansion])
+  }, [desiredState, dropdownRef, setExpansion])
 
   return dropdownRef
 }
