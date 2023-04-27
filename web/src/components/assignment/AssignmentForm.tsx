@@ -10,11 +10,10 @@ import { useEffect } from 'react'
 import { SukoAssignmentForm, sukoSchema } from './sukoSchema'
 
 type AssignmentFormProps = {
-  header: string
   action: 'new' | 'update'
 }
 
-export const AssignmentForm = ({ header, action }: AssignmentFormProps) => {
+export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
@@ -73,9 +72,9 @@ export const AssignmentForm = ({ header, action }: AssignmentFormProps) => {
     <div className="w-10/12 pt-3">
       <div className="mb-6">
         <h2 className="mb-3" data-testid="heading">
-          {header}
+          {action === 'new' ? t(`form.${exam}`) : assignment?.name}
         </h2>
-        <p>{t('form.kuvaus')}</p>
+        {action === 'new' ? <p>{t('form.kuvaus')}</p> : <p>{t('form.muokkauskuvaus')}</p>}
       </div>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
