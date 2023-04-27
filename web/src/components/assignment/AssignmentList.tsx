@@ -1,7 +1,7 @@
 import { useFetch } from '../../hooks/useFetch'
 import { AssignmentIn } from '../../types'
 import { AssignmentCard } from './AssignmentCard'
-import { FiltersType } from './useFilters'
+import { FiltersType } from '../../hooks/useFilters'
 
 export const AssignmentList = ({ url, filters }: { url: string; filters: FiltersType }) => {
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)

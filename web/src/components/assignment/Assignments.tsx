@@ -12,7 +12,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { AssignmentList } from './AssignmentList'
 import { AssignmentFilters } from './AssignmentFilters'
-import { useFilters } from './useFilters'
+import { useFilters } from '../../hooks/useFilters'
 
 export const Assignments = () => {
   const { t } = useTranslation()

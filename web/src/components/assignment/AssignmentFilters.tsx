@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState } from 'react'
-import { FiltersType } from './useFilters'
+import { FiltersType } from '../../hooks/useFilters'
 import { Dropdown } from '../Dropdown'
 import { SUKO_ASSIGNMENT_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../koodisto'
 import { useTranslation } from 'react-i18next'
