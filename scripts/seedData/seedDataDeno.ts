@@ -33,7 +33,9 @@ const numAssignments = 30
 const examTypes = ['ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES']
 
 const seedData = async () => {
+  console.time('seedData')
   const examsArr = Object.entries({ SUKO: sukoData, PUHVI: puhviData, LD: ldData })
+  const promises = []
 
   for (const [exam, data] of examsArr) {
     const origName = data.name
@@ -51,20 +53,29 @@ const seedData = async () => {
           exam
         }
 
-        const response = await fetch(BASE_URL, {
+        const promise = fetch(BASE_URL, {
           method: 'POST',
           headers,
           body: JSON.stringify(body)
         })
+          .then(async (response) => {
+            if (response.ok) {
+              console.log(`Assignment created: ${data.name}`)
+            } else {
+              console.log(`Error creating assignment: ${await response.text()}`)
+            }
+          })
+          .catch((error) => {
+            console.log(`Error creating assignment: ${error.message}`)
+          })
 
-        if (response.ok) {
-          console.log(`Assignment created: ${data.name}`)
-        } else {
-          console.log(`Error creating assignment: ${await response.text()}`)
-        }
+        promises.push(promise)
       }
     }
   }
+
+  await Promise.allSettled(promises)
+  console.timeEnd('seedData')
 }
 
 void seedData()
