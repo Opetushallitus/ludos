@@ -41,9 +41,7 @@ class CasConfig {
     }
 
     @Bean
-    fun ticketValidator(): TicketValidator {
-        return Cas30ServiceTicketValidator("https://$opintopolkuHostname/cas")
-    }
+    fun ticketValidator(): TicketValidator = Cas30ServiceTicketValidator("https://$opintopolkuHostname/cas")
 
     @Bean
     fun authenticationEntryPoint(

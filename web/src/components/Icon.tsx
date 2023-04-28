@@ -1,8 +1,10 @@
+import { MouseEventHandler } from 'react'
+
 type IconProps = {
   name: Icons
   color: 'text-green-primary' | 'text-black' | 'text-white'
   size?: 'sm' | 'base' | 'lg'
-  onClick?: () => void
+  onClick?: MouseEventHandler<HTMLButtonElement>
   dataTestId?: string
 }
 
@@ -19,6 +21,7 @@ type Icons =
   | 'ostoskori'
   | 'lisää'
   | 'uusi-valilehti'
+  | 'laajenna'
 
 const icons: Record<Icons, string> = {
   ['koetehtavat']: 'assignment',
@@ -32,7 +35,8 @@ const icons: Record<Icons, string> = {
   ['virheellinen']: 'error',
   ['ostoskori']: 'shopping_basket',
   ['lisää']: 'add',
-  ['uusi-valilehti']: 'open_in_new'
+  ['uusi-valilehti']: 'open_in_new',
+  ['laajenna']: 'expand_more'
 }
 
 export const Icon = ({ name, color, size, onClick, dataTestId }: IconProps) => {

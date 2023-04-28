@@ -4,12 +4,14 @@ import { AssignmentIn } from '../../types'
 import { StateTag } from '../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
+import { isSukoAssignment } from './assignmentUtils'
 
 type AssignmentCardProps = {
   assignment: AssignmentIn
+  exam: string
 }
 
-export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
+export const AssignmentCard = ({ assignment, exam }: AssignmentCardProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -41,7 +43,9 @@ export const AssignmentCard = ({ assignment }: AssignmentCardProps) => {
           </div>
           <div>
             <p className="text-sm text-gray-secondary">{t('assignment.tyyppi')}</p>
-            <p className="text-sm text-black">{assignment.assignmentType}</p>
+            <p className="text-sm capitalize text-black">
+              {isSukoAssignment(assignment, exam) ? assignment.assignmentType.toLowerCase() : '*'}
+            </p>
           </div>
           <div>
             <p className="text-sm text-gray-secondary">{t('assignment.lisatty')}</p>

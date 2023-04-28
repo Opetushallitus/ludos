@@ -2,56 +2,38 @@ import { Button } from '../Button'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { contentKey, newKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
-import { AssignmentIn, AssignmentType, AssignmentTypes, ExamType } from '../../types'
+import { ExamTypes, Exam, ExamType } from '../../types'
 import { AssignmentTabs } from './AssignmentTabs'
-import { AssignmentCard } from './AssignmentCard'
 import {
   AssignmentKeyTranslationEnglish,
   AssignmentKeyTranslationFinnish,
-  getSingularAssignmentFinnish
+  getSingularExamTypeFinnish
 } from './assignmentUtils'
-import { useFetch } from '../useFetch'
 import { useTranslation } from 'react-i18next'
-
-function useActiveTabAndUrlPathUpdate({
-  assignmentType,
-  examType
-}: {
-  assignmentType: AssignmentType
-  examType: ExamType
-}) {
-  const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<AssignmentType>(assignmentType)
-
-  useEffect(() => {
-    if (activeTab) {
-      navigate(`/${contentKey}/${examType}/${AssignmentKeyTranslationEnglish[activeTab]}`, { replace: true })
-    }
-  }, [activeTab, navigate, examType])
-
-  return { activeTab, setActiveTab }
-}
+import { AssignmentList } from './AssignmentList'
+import { AssignmentFilters } from './AssignmentFilters'
+import { useFilters } from '../../hooks/useFilters'
 
 export const Assignments = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
-  const { assignmentType: assignmentParam, examType: examParam } = useParams()
-  const { data: assignments, loading, error } = useFetch<AssignmentIn[]>(`assignment/${examParam!.toLocaleUpperCase()}`)
+  const { exam, examType } = useParams<{ exam: Exam; examType: string }>()
 
-  const defaultAssignmentType = AssignmentKeyTranslationFinnish[assignmentParam!] as AssignmentType
-
+  const defaultExamType = (AssignmentKeyTranslationFinnish[examType!] as ExamType) || ExamTypes.KOETEHTAVAT
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
-    assignmentType: defaultAssignmentType || AssignmentTypes.KOETEHTAVAT,
-    examType: examParam as ExamType
+    assignmentType: defaultExamType,
+    exam: exam!
   })
 
-  const singularActiveTab = getSingularAssignmentFinnish(activeTab)
-  const headingTextKey = navigationPages[examParam as string].titleKey
+  const { filters, setFilters } = useFilters()
+
+  const singularActiveTab = getSingularExamTypeFinnish(activeTab)
+  const headingTextKey = navigationPages[exam as string].titleKey
 
   return (
     <div className="pt-3">
-      <h2 data-testid={`page-heading-${contentKey}-${examParam}`}>{t(`header.${headingTextKey}`)}</h2>
+      <h2 data-testid={`page-heading-${contentKey}-${exam}`}>{t(`header.${headingTextKey}`)}</h2>
 
       <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} t={t} />
 
@@ -64,16 +46,22 @@ export const Assignments = () => {
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
-        {loading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
-        {assignments && assignments.length > 0 && (
-          <ul>
-            {assignments.map((assignment, i) => (
-              <AssignmentCard assignment={assignment} key={i} />
-            ))}
-          </ul>
-        )}
+        <AssignmentFilters filters={filters} setFilters={setFilters} />
+        {examType && exam && <AssignmentList exam={exam} examType={examType} filters={filters} />}
       </div>
     </div>
   )
+}
+
+function useActiveTabAndUrlPathUpdate({ assignmentType, exam: examType }: { assignmentType: ExamType; exam: Exam }) {
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<ExamType>(assignmentType)
+
+  useEffect(() => {
+    if (activeTab) {
+      navigate(`/${contentKey}/${examType}/${AssignmentKeyTranslationEnglish[activeTab]}`, { replace: true })
+    }
+  }, [activeTab, navigate, examType])
+
+  return { activeTab, setActiveTab }
 }

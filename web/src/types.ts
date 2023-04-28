@@ -23,40 +23,44 @@ export const AssignmentState = {
 
 export type AssignmentState = (typeof AssignmentState)[keyof typeof AssignmentState]
 
-export const ExamType = {
+export const Exam = {
   Suko: 'SUKO',
   Puhvi: 'PUHVI',
   Ld: 'LD'
 } as const
 
-export type ExamType = (typeof ExamType)[keyof typeof ExamType]
+export type Exam = (typeof Exam)[keyof typeof Exam]
 
 export type AssignmentIn = {
   id: number
   name: string
   content: string
   state: AssignmentState
-  assignmentType: string
+  examType: Exam
   createdAt: string
   updatedAt: string
 }
 
-export const AssignmentTypes = {
+export type SukoAssignmentIn = AssignmentIn & {
+  assignmentType: string
+}
+
+export const ExamTypes = {
   KOETEHTAVAT: 'koetehtavat',
   OHJEET: 'ohjeet',
   TODISTUKSET: 'todistukset'
 } as const
 
-export type AssignmentsKey = keyof typeof AssignmentTypes
+export type ExamsKey = keyof typeof ExamTypes
 
 type SingularOptions = {
-  [key in AssignmentsKey]: string
+  [key in ExamsKey]: string
 }
 
-export const AssignmentsSingular: SingularOptions = {
+export const ExamsSingular: SingularOptions = {
   KOETEHTAVAT: 'koetehtava',
   OHJEET: 'ohje',
   TODISTUKSET: 'todistus'
 }
 
-export type AssignmentType = (typeof AssignmentTypes)[keyof typeof AssignmentTypes]
+export type ExamType = (typeof ExamTypes)[keyof typeof ExamTypes]

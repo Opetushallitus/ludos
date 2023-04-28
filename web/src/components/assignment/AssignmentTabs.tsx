@@ -1,17 +1,17 @@
 import { TFunction } from 'i18next'
-import { AssignmentType, AssignmentTypes } from '../../types'
+import { ExamType, ExamTypes } from '../../types'
 import { Button } from '../Button'
 
 type AssignmentTabsProps = {
-  activeTab: AssignmentType
-  setActiveTab: (tab: AssignmentType) => void
+  activeTab: ExamType
+  setActiveTab: (tab: ExamType) => void
   t: TFunction
 }
 
 export const AssignmentTabs = ({ activeTab, setActiveTab, t }: AssignmentTabsProps) => (
   <div className="text-gray-500 text-center text-base">
     <div className="flex flex-wrap border-b-2 border-gray-separator font-semibold" role="tablist">
-      {Object.values(AssignmentTypes).map((option, i) => (
+      {Object.values(ExamTypes).map((option, i) => (
         <Button
           variant="buttonGhost"
           role="tab"

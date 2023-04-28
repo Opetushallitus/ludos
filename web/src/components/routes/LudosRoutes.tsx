@@ -6,11 +6,11 @@ import { contentKey, newKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey
 import { Frontpage } from '../frontpage/Frontpage'
 import { Assignments } from '../assignment/Assignments'
 import { AssignmentForm } from '../assignment/AssignmentForm'
-import { Assignment } from '../assignment/Assignment'
-import { useMediaQuery } from '../useMediaQuery'
+import { Assignment } from '../assignmentpage/Assignment'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { useTranslation } from 'react-i18next'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
 
 export const LudosRoutes = () => {
   const { t } = useTranslation()
@@ -29,33 +29,24 @@ export const LudosRoutes = () => {
             </div>
           }
         />
+        <Route path={`/${contentKey}/${sukoKey}/:examType/${newKey}`} element={<AssignmentForm action={newKey} />} />
+        <Route path={`/${contentKey}/${puhviKey}/:examType/${newKey}`} element={<AssignmentForm action={newKey} />} />
+        <Route path={`/${contentKey}/${ldKey}/:examType/${newKey}`} element={<AssignmentForm action={newKey} />} />
         <Route
-          path={`/${contentKey}/${sukoKey}/:assignmentType/${newKey}`}
-          element={<AssignmentForm header={t('form.suko')} action={newKey} />}
+          path={`/${contentKey}/${sukoKey}/:examType/${updateKey}`}
+          element={<AssignmentForm action={updateKey} />}
         />
         <Route
-          path={`/${contentKey}/${puhviKey}/:assignmentType/${newKey}`}
-          element={<AssignmentForm header={t('form.puhvi')} action={newKey} />}
+          path={`/${contentKey}/${puhviKey}/:examType/${updateKey}`}
+          element={<AssignmentForm action={updateKey} />}
         />
         <Route
-          path={`/${contentKey}/${ldKey}/:assignmentType/${newKey}`}
-          element={<AssignmentForm header={t('form.ld')} action={newKey} />}
+          path={`/${contentKey}/${ldKey}/:examType/${updateKey}`}
+          element={<AssignmentForm action={updateKey} />}
         />
-        <Route
-          path={`/${contentKey}/${sukoKey}/:assignmentType/${updateKey}`}
-          element={<AssignmentForm header={t('form.suko')} action={updateKey} />}
-        />
-        <Route
-          path={`/${contentKey}/${puhviKey}/:assignmentType/${updateKey}`}
-          element={<AssignmentForm header={t('form.puhvi')} action={updateKey} />}
-        />
-        <Route
-          path={`/${contentKey}/${ldKey}/:assignmentType/${updateKey}`}
-          element={<AssignmentForm header={t('form.ld')} action={updateKey} />}
-        />
-        <Route path={`/${contentKey}/:examType`}>
-          <Route index path={':assignmentType?'} element={<Assignments />} />
-          <Route path={':assignmentType/:id'} element={<Assignment />} />
+        <Route path={`/${contentKey}/:exam`}>
+          <Route index path={':examType?'} element={<Assignments />} />
+          <Route path={':examType/:id'} element={<Assignment />} />
         </Route>
         <Route
           path="*"

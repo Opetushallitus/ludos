@@ -32,7 +32,6 @@ test.describe('Assignment form tests', () => {
 
     await page.getByTestId('return').click()
 
-    console.log(createdAssignmentId)
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 

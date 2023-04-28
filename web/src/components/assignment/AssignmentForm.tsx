@@ -1,73 +1,61 @@
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from '../Button'
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentIn, AssignmentState, ExamType } from '../../types'
+import { AssignmentState, Exam, ExamType, SukoAssignmentIn } from '../../types'
 import { contentKey } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
-import { postAssignment, updateAssignment } from '../formUtils'
+import { assignmentTypes, postAssignment, updateAssignment } from '../formUtils'
 import { useEffect } from 'react'
+import { SukoAssignmentForm, sukoSchema } from './sukoSchema'
 
-const MIN_LENGTH = 3
+type AssignmentFormProps = {
+  action: 'new' | 'update'
+}
 
-const schema = z.object({
-  name: z.string().min(MIN_LENGTH, { message: 'Too short' }),
-  assignmentType: z.string({ required_error: 'Required' }),
-  content: z.string().nullable()
-})
-
-type SukoAssignmentForm = z.infer<typeof schema>
-
-const assignmentTypes = [
-  {
-    id: 'LUKEMINEN',
-    label: 'Tekstin lukeminen'
-  },
-  {
-    id: 'TEKSTIN_TIIVISTAMINEN',
-    label: 'Tekstin tiivistäminen'
-  },
-  {
-    id: 'KESKUSTELU',
-    label: 'Ryhmäkeskustelu'
-  }
-]
-
-export const AssignmentForm = ({ header, action }: { header: string; action: 'new' | 'update' }) => {
+export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
-  const match = useMatch(`/${contentKey}/:examType/:assignmentType/${action}`)
+  const match = useMatch(`/${contentKey}/:exam/:examType/${action}`)
 
+  const exam = match!.params.exam as Exam
   const examType = match!.params.examType as ExamType
-  const assignment = (state?.assignment as AssignmentIn) || null
+
+  const assignment = (state?.assignment as SukoAssignmentIn) || null
 
   const {
     register,
     reset,
     handleSubmit,
     control,
+    setValue,
     formState: { errors }
-  } = useForm<SukoAssignmentForm>({ mode: 'onBlur', resolver: zodResolver(schema) })
+  } = useForm<SukoAssignmentForm>({ mode: 'onBlur', resolver: zodResolver(sukoSchema) })
 
-  // set initial values when updating
+  // set initial values
   useEffect(() => {
     if (assignment) {
-      reset(assignment)
+      reset({
+        ...assignment,
+        exam: exam.toUpperCase() as Exam,
+        examType: assignment.examType.toUpperCase() as SukoAssignmentForm['examType']
+      })
+    } else {
+      setValue('exam', exam.toUpperCase() as Exam)
+      setValue('examType', examType.toUpperCase() as SukoAssignmentForm['examType'])
     }
   }, [assignment, reset])
 
   async function submitAssignment({ state }: { state: AssignmentState }) {
     await handleSubmit(async (data: SukoAssignmentForm) => {
-      const body = JSON.stringify({ ...data, state, examType: examType.toUpperCase() })
+      const body = { ...data, state }
 
       try {
         let resultId: string
-
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<string>(examType, assignment.id, body)
+          resultId = await updateAssignment<string>(exam, assignment.id, body)
         } else {
           const { id } = await postAssignment<{ id: string }>(body)
           resultId = id
@@ -84,11 +72,13 @@ export const AssignmentForm = ({ header, action }: { header: string; action: 'ne
     <div className="w-10/12 pt-3">
       <div className="mb-6">
         <h2 className="mb-3" data-testid="heading">
-          {header}
+          {action === 'new' ? t(`form.${exam}`) : assignment?.name}
         </h2>
-        <p>{t('form.kuvaus')}</p>
+        {action === 'new' ? <p>{t('form.kuvaus')}</p> : <p>{t('form.muokkauskuvaus')}</p>}
       </div>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+        <input type="hidden" {...register('exam')} />
+        <input type="hidden" {...register('examType')} />
         <div className="mb-6">
           <label className="mb-2 font-semibold" htmlFor="name">
             {t('form.tehtavannimi')}

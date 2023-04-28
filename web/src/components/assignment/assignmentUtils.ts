@@ -1,8 +1,8 @@
-import { AssignmentsKey, AssignmentsSingular, AssignmentType, AssignmentTypes } from '../../types'
+import { ExamsSingular, ExamsKey, ExamType, ExamTypes, AssignmentIn, SukoAssignmentIn } from '../../types'
 
-export function getSingularAssignmentFinnish(s: AssignmentType) {
-  const key = Object.keys(AssignmentTypes).find((k) => AssignmentTypes[k as AssignmentsKey] === s) as AssignmentsKey
-  return AssignmentsSingular[key]
+export function getSingularExamTypeFinnish(s: ExamType) {
+  const key = Object.keys(ExamTypes).find((k) => ExamTypes[k as ExamsKey] === s) as ExamsKey
+  return ExamsSingular[key]
 }
 
 export const AssignmentKeyTranslationEnglish = {
@@ -16,3 +16,9 @@ export const AssignmentKeyTranslationFinnish = {
   instructions: 'ohjeet',
   certificates: 'todistukset'
 } as { [key: string]: string }
+
+export const isSukoAssignment = (assignment: AssignmentIn, exam: string): assignment is SukoAssignmentIn =>
+  exam === 'suko'
+export const isPuhviAssignment = (assignment: AssignmentIn, exam: string): assignment is AssignmentIn =>
+  exam === 'puhvi'
+export const isLdAssignment = (assignment: AssignmentIn, exam: string): assignment is AssignmentIn => exam === 'ld'
