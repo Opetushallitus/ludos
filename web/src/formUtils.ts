@@ -1,5 +1,5 @@
-import { Exam } from '../types'
-import { SukoAssignmentForm } from './assignment/sukoSchema'
+import { Exam } from './types'
+import { SukoAssignmentForm } from './components/exam/assignment/sukoSchema'
 
 const doRequest = async (url: string, method: string, body?: string) =>
   await fetch(url, {

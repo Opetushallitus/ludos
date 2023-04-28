@@ -51,6 +51,12 @@ export const ExamTypes = {
   TODISTUKSET: 'todistukset'
 } as const
 
+export const ExamTypesEng = {
+  KOETEHTAVAT: 'assignments',
+  OHJEET: 'instructions',
+  TODISTUKSET: 'certificates'
+}
+
 export type ExamsKey = keyof typeof ExamTypes
 
 type SingularOptions = {

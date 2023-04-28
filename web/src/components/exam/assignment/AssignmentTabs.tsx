@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next'
-import { ExamType, ExamTypes } from '../../types'
-import { Button } from '../Button'
+import { ExamType, ExamTypes } from '../../../types'
+import { Button } from '../../Button'
 
 type AssignmentTabsProps = {
   activeTab: ExamType

@@ -22,7 +22,7 @@ export const StateTag = ({ state }: { state: AssignmentState }) => {
   const tagAttributes = getTagAttributes(state)
 
   return (
-    <div className={`w-20 rounded ${tagAttributes.variant} text-center text-sm`}>
+    <div className={`w-20 rounded ${tagAttributes.variant} text-center text-xs`}>
       {t(`state.${tagAttributes.text}`)}
     </div>
   )

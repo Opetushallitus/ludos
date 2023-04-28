@@ -3,18 +3,16 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { contentKey, newKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
 import { ExamTypes, Exam, ExamType } from '../../types'
-import { AssignmentTabs } from './AssignmentTabs'
+import { AssignmentTabs } from './assignment/AssignmentTabs'
 import {
   AssignmentKeyTranslationEnglish,
   AssignmentKeyTranslationFinnish,
   getSingularExamTypeFinnish
-} from './assignmentUtils'
+} from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
-import { AssignmentList } from './AssignmentList'
-import { AssignmentFilters } from './AssignmentFilters'
-import { useFilters } from '../../hooks/useFilters'
+import { AssignmentList } from './assignment/AssignmentList'
 
-export const Assignments = () => {
+export const Exams = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
@@ -25,8 +23,6 @@ export const Assignments = () => {
     assignmentType: defaultExamType,
     exam: exam!
   })
-
-  const { filters, setFilters } = useFilters()
 
   const singularActiveTab = getSingularExamTypeFinnish(activeTab)
   const headingTextKey = navigationPages[exam as string].titleKey
@@ -46,8 +42,7 @@ export const Assignments = () => {
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
-        <AssignmentFilters filters={filters} setFilters={setFilters} />
-        {examType && exam && <AssignmentList exam={exam} examType={examType} filters={filters} />}
+        {examType && exam && <AssignmentList exam={exam} examType={examType} />}
       </div>
     </div>
   )

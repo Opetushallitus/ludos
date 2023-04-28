@@ -1,7 +1,7 @@
 import { ExamType, Page } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
-import { AssignmentKeyTranslationEnglish } from '../assignment/assignmentUtils'
+import { AssignmentKeyTranslationEnglish } from '../exam/assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 
 export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignments: ExamType[] }) => {

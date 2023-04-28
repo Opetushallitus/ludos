@@ -4,8 +4,8 @@ import { Footer } from '../Footer'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { contentKey, newKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey, updateKey } from './routes'
 import { Frontpage } from '../frontpage/Frontpage'
-import { Assignments } from '../assignment/Assignments'
-import { AssignmentForm } from '../assignment/AssignmentForm'
+import { Exams } from '../exam/Exams'
+import { AssignmentForm } from '../exam/assignment/AssignmentForm'
 import { Assignment } from '../assignmentpage/Assignment'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
@@ -45,7 +45,7 @@ export const LudosRoutes = () => {
           element={<AssignmentForm action={updateKey} />}
         />
         <Route path={`/${contentKey}/:exam`}>
-          <Route index path={':examType?'} element={<Assignments />} />
+          <Route index path={':examType?'} element={<Exams />} />
           <Route path={':examType/:id'} element={<Assignment />} />
         </Route>
         <Route
