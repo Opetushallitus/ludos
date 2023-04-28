@@ -9,7 +9,9 @@ import { AssignmentFilters } from './AssignmentFilters'
 import { Spinner } from '../../Spinner'
 import { CertificateCard } from '../certificate/CertificateCard'
 
-export const AssignmentList = ({ exam, examType, filters }: { exam: Exam; examType: string; filters: FiltersType }) => {
+export const AssignmentList = ({ exam, examType }: { exam: Exam; examType: string }) => {
+  const { filters, setFilters } = useFilters()
+
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
   const url = `assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
   const { data, loading, error } = useFetch<AssignmentIn[]>(
@@ -17,16 +19,41 @@ export const AssignmentList = ({ exam, examType, filters }: { exam: Exam; examTy
   )
 
   return (
-    <>
-      {loading && <div>Loading...</div>}
-      {error && <div>{error}</div>}
-      {data && data.length > 0 && (
-        <ul>
-          {data.map((assignment, i) => (
-            <AssignmentCard assignment={assignment} exam={exam} key={i} />
-          ))}
-        </ul>
+    <div>
+      {loading ? (
+        <div className="mt-10 text-center">
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          {examType === ExamTypesEng.KOETEHTAVAT && (
+            <div>
+              <AssignmentFilters filters={filters} setFilters={setFilters} />
+              <ul>
+                {data?.map((assignment, i) => (
+                  <AssignmentCard assignment={assignment} exam={exam} key={i} />
+                ))}
+              </ul>
+            </div>
+          )}
+          {examType === ExamTypesEng.OHJEET && (
+            <div className="mt-3 flex flex-wrap gap-5">
+              <>{loading && <Spinner />}</>
+              {data?.map((assignment, i) => (
+                <InstructionCard assignment={assignment} exam={exam} key={i} />
+              ))}
+            </div>
+          )}
+          {examType === ExamTypesEng.TODISTUKSET && (
+            <div className="mt-3 flex flex-wrap gap-5">
+              <>{loading && <Spinner />}</>
+              {data?.map((assignment, i) => (
+                <CertificateCard assignment={assignment} exam={exam} key={i} />
+              ))}
+            </div>
+          )}
+        </>
       )}
-    </>
+    </div>
   )
 }

@@ -24,8 +24,6 @@ export const Exams = () => {
     exam: exam!
   })
 
-  const { filters, setFilters } = useFilters()
-
   const singularActiveTab = getSingularExamTypeFinnish(activeTab)
   const headingTextKey = navigationPages[exam as string].titleKey
 
@@ -44,8 +42,7 @@ export const Exams = () => {
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
-        <AssignmentFilters filters={filters} setFilters={setFilters} />
-        {examType && exam && <AssignmentList exam={exam} examType={examType} filters={filters} />}
+        {examType && exam && <AssignmentList exam={exam} examType={examType} />}
       </div>
     </div>
   )
