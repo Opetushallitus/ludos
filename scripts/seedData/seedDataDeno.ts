@@ -9,7 +9,7 @@ const sukoData = {
   content: 'This is a Suko assignment.',
   state: 'PUBLISHED',
   exam: 'SUKO',
-  examType: 'ASSIGNMENTS',
+  examType: '',
   assignmentType: 'KUUNTELU'
 }
 
@@ -18,7 +18,7 @@ const puhviData = {
   content: 'This is a Puhvi assignment.',
   state: 'PUBLISHED',
   exam: 'PUHVI',
-  examType: 'ASSIGNMENTS'
+  examType: ''
 }
 
 const ldData = {
@@ -26,28 +26,42 @@ const ldData = {
   content: 'This is an LD assignment.',
   state: 'PUBLISHED',
   exam: 'LD',
-  examType: 'ASSIGNMENTS'
+  examType: ''
 }
 
-const seedData = async () => {
-  const numAssignments = 30
+const numAssignments = 30
+const examTypes = ['ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES']
 
-  for (const [exam, data] of Object.entries({ SUKO: sukoData, PUHVI: puhviData, LD: ldData })) {
+const seedData = async () => {
+  const examsArr = Object.entries({ SUKO: sukoData, PUHVI: puhviData, LD: ldData })
+
+  for (const [exam, data] of examsArr) {
     const origName = data.name
 
-    for (let i = 0; i < numAssignments; i++) {
-      data.name = `${origName} ${i + 1}`
-      data.exam = exam
-      const response = await fetch(BASE_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(data)
-      })
+    for (const examType of examTypes) {
+      for (let i = 0; i < numAssignments; i++) {
+        const name = `${origName} ${examType.toLowerCase()} ${
+          exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
+        } ${i + 1}`
 
-      if (response.ok) {
-        console.log(`Assignment created: ${data.name}`)
-      } else {
-        console.log(`Error creating assignment: ${await response.text()}`)
+        const body = {
+          ...data,
+          name,
+          examType,
+          exam
+        }
+
+        const response = await fetch(BASE_URL, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(body)
+        })
+
+        if (response.ok) {
+          console.log(`Assignment created: ${data.name}`)
+        } else {
+          console.log(`Error creating assignment: ${await response.text()}`)
+        }
       }
     }
   }
