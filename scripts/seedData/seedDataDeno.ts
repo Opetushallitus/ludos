@@ -10,7 +10,7 @@ const sukoData = {
   state: 'PUBLISHED',
   exam: 'SUKO',
   examType: '',
-  assignmentType: 'KUUNTELU'
+  assignmentType: 'LUKEMINEN'
 }
 
 const puhviData = {
