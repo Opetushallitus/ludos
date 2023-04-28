@@ -19,7 +19,7 @@ export const AssignmentFilters = ({ filters, setFilters }: AssignmentFiltersProp
 
   return (
     <div className="border border-gray-light bg-gray-bg">
-      <p className="px-2 py-1">{t('filter.title')}</p>
+      <p className="px-2 py-1">{t('filter.otsikko')}</p>
       <div className="row w-full flex-wrap justify-start">
         <div className="w-full md:w-56">
           <p className="pl-2">{t('filter.oppimaara')}</p>

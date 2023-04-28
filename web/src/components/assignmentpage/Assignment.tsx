@@ -1,12 +1,14 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { contentKey, sukoKey } from '../routes/routes'
-import { AssignmentIn, SukoAssignmentIn } from '../../types'
+import { contentKey } from '../routes/routes'
+import { AssignmentIn } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import React from 'react'
 import { SukoAssignmentContent } from './SukoAssignmentContent'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../assignment/assignmentUtils'
+import { PuhviAssignmentContent } from './PuhviAssignmentContent'
+import { LdAssignmentContent } from './LdAssignmentContent'
 
 export const Assignment = () => {
   const { t } = useTranslation()
@@ -36,8 +38,12 @@ export const Assignment = () => {
                 {isSukoAssignment(assignment, exam!) && (
                   <SukoAssignmentContent assignment={assignment} examType={examType} />
                 )}
-                {isPuhviAssignment(assignment, exam!) && <div>puhvi</div>}
-                {isLdAssignment(assignment, exam!) && <div>ld</div>}
+                {isPuhviAssignment(assignment, exam!) && (
+                  <PuhviAssignmentContent assignment={assignment} examType={examType} />
+                )}
+                {isLdAssignment(assignment, exam!) && (
+                  <LdAssignmentContent assignment={assignment} examType={examType} />
+                )}
               </div>
               <div className="row mb-6">
                 <Button

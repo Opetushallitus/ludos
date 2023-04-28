@@ -19,6 +19,6 @@ export const AssignmentKeyTranslationFinnish = {
 
 export const isSukoAssignment = (assignment: AssignmentIn, exam: string): assignment is SukoAssignmentIn =>
   exam === 'suko'
-export const isPuhviAssignment = (assignment: AssignmentIn, exam: string): assignment is SukoAssignmentIn =>
+export const isPuhviAssignment = (assignment: AssignmentIn, exam: string): assignment is AssignmentIn =>
   exam === 'puhvi'
-export const isLdAssignment = (assignment: AssignmentIn, exam: string): assignment is SukoAssignmentIn => exam === 'ld'
+export const isLdAssignment = (assignment: AssignmentIn, exam: string): assignment is AssignmentIn => exam === 'ld'
