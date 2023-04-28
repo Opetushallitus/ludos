@@ -2,9 +2,8 @@ import { NavLink } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFetch } from '../../hooks/useFetch'
-import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
 
 export type LocaleDropdownOptions = Record<string, { name: string }>
 
@@ -21,12 +20,7 @@ const authOptions: LocaleDropdownOptions = {
 export const Header = () => {
   const { t, i18n } = useTranslation()
   const { data } = useFetch<{ name: string }>('auth')
-  const [isExpanded, setExpansion] = useState(false)
   const [currentOption, setCurrentOption] = useState<string | null>(null)
-  const [authIsExpanded, setAuthExpansion] = useState(false)
-
-  const closeOnBlurRef = useDropdownCloseOnBlur<boolean>(false, setExpansion)
-  const authCloseOnBlurRef = useDropdownCloseOnBlur<boolean>(false, setAuthExpansion)
 
   const currentLanguageKey = i18n.language
 
@@ -56,10 +50,7 @@ export const Header = () => {
               <HeaderDropdown
                 currentOption={currentOption || ''}
                 options={authOptions}
-                isExpanded={authIsExpanded}
                 onOptionClick={handleOptionClick}
-                setExpansion={setAuthExpansion}
-                closeOnBlurRef={authCloseOnBlurRef}
               />
             </div>
             <p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>
@@ -67,10 +58,7 @@ export const Header = () => {
               <HeaderDropdown
                 currentOption={languageOptions[currentLanguageKey].name}
                 options={languageOptions}
-                isExpanded={isExpanded}
                 onOptionClick={(str) => changeLanguage(str)}
-                setExpansion={setExpansion}
-                closeOnBlurRef={closeOnBlurRef}
               />
             </div>
           </div>
