@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { Icon } from '../Icon'
-import { AssignmentIn } from '../../types'
-import { StateTag } from '../StateTag'
+import { Icon } from '../../Icon'
+import { AssignmentIn } from '../../../types'
+import { StateTag } from '../../StateTag'
 import { useTranslation } from 'react-i18next'
-import { InternalLink } from '../InternalLink'
+import { InternalLink } from '../../InternalLink'
 import { isSukoAssignment } from './assignmentUtils'
+import { toLocaleDate } from '../../../formatUtils'
 
 type AssignmentCardProps = {
   assignment: AssignmentIn

@@ -3,18 +3,16 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { contentKey, newKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
 import { ExamTypes, Exam, ExamType } from '../../types'
-import { AssignmentTabs } from './AssignmentTabs'
+import { AssignmentTabs } from './assignment/AssignmentTabs'
 import {
   AssignmentKeyTranslationEnglish,
   AssignmentKeyTranslationFinnish,
   getSingularExamTypeFinnish
-} from './assignmentUtils'
+} from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
-import { AssignmentList } from './AssignmentList'
-import { AssignmentFilters } from './AssignmentFilters'
-import { useFilters } from '../../hooks/useFilters'
+import { AssignmentList } from './assignment/AssignmentList'
 
-export const Assignments = () => {
+export const Exams = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()

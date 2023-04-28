@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
-import { FiltersType } from '../../hooks/useFilters'
-import { Dropdown } from '../Dropdown'
-import { SUKO_ASSIGNMENT_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../koodisto'
+import { FiltersType } from '../../../hooks/useFilters'
+import { Dropdown } from '../../Dropdown'
+import { SUKO_ASSIGNMENT_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodisto'
 import { useTranslation } from 'react-i18next'
 
 type ValueOf<T> = T[keyof T]
