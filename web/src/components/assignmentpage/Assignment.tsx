@@ -6,7 +6,7 @@ import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import React from 'react'
 import { SukoAssignmentContent } from './SukoAssignmentContent'
-import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../assignment/assignmentUtils'
+import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
 import { PuhviAssignmentContent } from './PuhviAssignmentContent'
 import { LdAssignmentContent } from './LdAssignmentContent'
 
