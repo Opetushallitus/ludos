@@ -13,8 +13,9 @@ const tailwindConfig = {
       'md': MOBILE_BREAKPOINT,
     },
     fontSize: {
-      xs: ['10px', '16px'],
-      sm: ['13px', '22px'],
+      xss: ['11px', '21px'],
+      xs: ['13px', '18px'],
+      sm: ['16px', '22px'],
       base: ['18px', '24px'],
       lg: ['20px', '28px'],
       xl: ['24px', '32px'],
