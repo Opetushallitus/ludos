@@ -30,9 +30,3 @@ export const AssignmentList = ({ exam, examType, filters }: { exam: Exam; examTy
     </>
   )
 }
-
-// Removes key-value pairs with null or undefined values from an object
-// src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
-function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
-  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null))
-}
