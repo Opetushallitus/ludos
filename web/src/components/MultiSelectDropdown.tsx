@@ -38,27 +38,46 @@ export const MultiSelectDropdown = ({
         setExpansion(false)
       }}
       tabIndex={0}>
-      <span
-        className="flex w-full items-center justify-between bg-white px-2"
-        onClick={() => setExpansion(!isExpanded)}>
-        {selectedOptions.length ? (
-          <span className="text-green-primary">{selectedOptions.map((val) => val.label).join(', ')}</span>
-        ) : (
-          <span className="text-gray-secondary">Select...</span>
-        )}
-        {canReset ? (
-          <Icon
-            name="sulje"
-            color="text-black"
-            onClick={(e) => {
-              e.stopPropagation()
-              onSelectedOptionsChange([])
-            }}
-          />
-        ) : (
-          <Icon name="laajenna" color="text-black" />
-        )}
-      </span>
+      <div className="flex items-center justify-between bg-white px-2" onClick={() => setExpansion(!isExpanded)}>
+        <div className="row w-full flex-wrap gap-2 p-2">
+          {selectedOptions.length ? (
+            <>
+              {selectedOptions.map((opt) => (
+                <span
+                  className="flex w-32 items-center justify-center gap-2 rounded-2xl bg-green-primary py-1 text-xs text-white"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleOption(opt)
+                  }}>
+                  {opt.label}{' '}
+                  <Icon
+                    name="sulje"
+                    color="text-white"
+                    size="sm"
+                    customClass="hover:cursor-pointer hover:bg-white hover:text-black"
+                  />
+                </span>
+              ))}
+            </>
+          ) : (
+            <span className="text-gray-secondary">Valitse...</span>
+          )}
+        </div>
+        <div>
+          {canReset ? (
+            <Icon
+              name="sulje"
+              color="text-black"
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelectedOptionsChange([])
+              }}
+            />
+          ) : (
+            <Icon name="laajenna" color="text-black" />
+          )}
+        </div>
+      </div>
       <ul
         className={`${
           isExpanded ? '' : 'hidden'
