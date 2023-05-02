@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { contentKey, newKey, navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
 import { ExamTypes, Exam, ExamType } from '../../types'
-import { AssignmentTabs } from './assignment/AssignmentTabs'
+import { Tabs } from '../Tabs'
 import {
   AssignmentKeyTranslationEnglish,
   AssignmentKeyTranslationFinnish,
@@ -31,7 +31,11 @@ export const Exams = () => {
     <div className="pt-3">
       <h2 data-testid={`page-heading-${contentKey}-${exam}`}>{t(`header.${headingTextKey}`)}</h2>
 
-      <AssignmentTabs activeTab={activeTab} setActiveTab={setActiveTab} t={t} />
+      <Tabs
+        options={Object.values(ExamTypes)}
+        activeTab={activeTab}
+        setActiveTab={(opt) => setActiveTab(opt as ExamType)}
+      />
 
       <div role="tabpanel">
         <div className="my-5">
