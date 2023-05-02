@@ -77,6 +77,8 @@ export const HeaderMobile = () => {
 }
 
 function Header(props: { onClick: () => void }) {
+  const { t } = useTranslation()
+
   return (
     <div className="row ml-1 w-full p-1">
       <div className="col w-1/12">
@@ -91,7 +93,7 @@ function Header(props: { onClick: () => void }) {
         </button>
       </div>
       <div className="col mb-auto ml-4 w-9/12">
-        <h1 className="font-bold text-white">koepankki</h1>
+        <h1 className="text-white">{t('title.ludos')}</h1>
       </div>
       <div className="col mb-auto mt-2 w-2/12 text-center">
         <Icon name="ostoskori" color="text-white" />
