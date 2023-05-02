@@ -1,6 +1,6 @@
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
-import { SukoAssignmentIn } from '../../types'
+import { ExamTypesEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -36,24 +36,26 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
           <p className="text-green-primary">{t('assignment.muokkaa')}</p>
         </span>
       </div>
-      <div className="my-3 bg-gray-bg p-3">
-        <ul>
-          <li>
-            <span className="pr-1 font-semibold">Tehtävätyyppi:</span> {assignment.assignmentType.toLowerCase()}
-          </li>
-          <li>
-            <span className="pr-1 font-semibold">Tavoitetaitotaso:</span>
-            *CEFR*
-          </li>
-          <li>
-            <span className="pr-1 font-semibold">Aihe:</span>
-            *topic*
-          </li>
-          <li>
-            <span className="pr-1 font-semibold">Laaja-alainen osaaminen:</span>
-            *laaja-alainen osaaminen*
-          </li>
-        </ul>
+      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
+        {examType !== ExamTypesEng.OHJEET && (
+          <ul>
+            <li>
+              <span className="pr-1 font-semibold">Tehtävätyyppi:</span> {assignment.assignmentType.toLowerCase()}
+            </li>
+            <li>
+              <span className="pr-1 font-semibold">Tavoitetaitotaso:</span>
+              *CEFR*
+            </li>
+            <li>
+              <span className="pr-1 font-semibold">Aihe:</span>
+              *topic*
+            </li>
+            <li>
+              <span className="pr-1 font-semibold">Laaja-alainen osaaminen:</span>
+              *laaja-alainen osaaminen*
+            </li>
+          </ul>
+        )}
 
         <div className="mt-3 flex gap-3">
           <div className="flex gap-1">
