@@ -11,7 +11,7 @@ import { SukoAssignmentForm, sukoSchema } from './sukoSchema'
 import { Tabs } from '../../../Tabs'
 import { TextAreaInput } from './TextAreaInput'
 import { TextInput } from './TextInput'
-import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
+import { MultiSelectDropdown, SelectOption } from '../../../MultiSelectDropdown'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -24,8 +24,11 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const match = useMatch(`/${contentKey}/:exam/:examType/${action}`)
   const [activeTab, setActiveTab] = useState('fi')
 
-  const handleMultiSelectChange = (newSelectedOptions: string[]) => {
-    setValue('topic', newSelectedOptions)
+  const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
+    setValue(
+      'topic',
+      newSelectedOptions.map((option) => option.value)
+    )
   }
 
   const exam = match!.params.exam as Exam
@@ -82,6 +85,14 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     })()
   }
 
+  const options = [
+    { label: 'First', value: '1' },
+    { label: 'Second', value: '2' },
+    { label: 'Third', value: '3' },
+    { label: 'Fourth', value: '4' },
+    { label: 'Fifth', value: '5' }
+  ]
+
   return (
     <div className="w-10/12 pt-3">
       <div className="mb-6">
@@ -95,12 +106,8 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
         <input type="hidden" {...register('examType')} />
 
         <MultiSelectDropdown
-          options={[
-            { key: '1', value: 'Option 1' },
-            { key: '2', value: 'Option 2' },
-            { key: '3', value: 'Option 3' }
-          ]}
-          selectedOptions={topics}
+          options={options}
+          selectedOptions={options.filter((it) => topics.includes(it.value))}
           onSelectedOptionsChange={handleMultiSelectChange}
           canReset
         />
