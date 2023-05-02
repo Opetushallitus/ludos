@@ -44,7 +44,7 @@ export const Header = () => {
     <div className="flex justify-center bg-gray-bg">
       <div className="w-[80vw]">
         <div className="row justify-between pt-3">
-          <h1 className="font-bold">{t('title.ludos')}</h1>
+          <h1>{t('title.ludos')}</h1>
           <div className="flex h-6 flex-row gap-3">
             <div className="relative">
               <HeaderDropdown

@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .row {
+        @apply flex flex-row
+    }
+
+    .col {
+        @apply flex flex-col
+    }
+
+    .buttonPrimary {
+        @apply bg-green-primary hover:bg-green-light text-white
+    }
+
+    .buttonSecondary {
+        @apply border-green-primary text-green-primary hover:bg-green-primary border-2 hover:text-white
+    }
+
+    .buttonGhost {
+        @apply text-black bg-none
+    }
+
+    h1 {
+        @apply text-[1.8rem] leading-[2.4rem] tracking-[-0.015em] uppercase font-bold
+    }
+
+    h2 {
+        @apply text-[1.5rem] leading-[2rem] font-semibold
+    }
+}
+
+:root {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.5;
+    font-weight: normal;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+html {
+    font-size: 100%;
+}
+
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.boxBorder {
+    border-top: 4px solid theme('colors.green.primary');
+    border-left: 2px solid theme('colors.gray.light');
+    border-right: 2px solid theme('colors.gray.light');
+    border-bottom: 2px solid theme('colors.gray.light');
+}
+
+.boxBorder:hover {
+     border-left: 2px solid theme('colors.green.primary');
+     border-right: 2px solid theme('colors.green.primary');
+     border-bottom: 2px solid theme('colors.green.primary');
+ }

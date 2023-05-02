@@ -1,4 +1,3 @@
-import styles from './layout.module.scss'
 import { ReactNode } from 'react'
 
 interface TLayout {
@@ -8,7 +7,7 @@ interface TLayout {
 }
 
 export const Layout = ({ header, footer, children }: TLayout) => (
-  <main className={`${styles.container} ${styles.borderTop}`}>
+  <main className="grid min-h-screen max-w-full grid-rows-[6rem,1fr,7rem] gap-0">
     <header>{header}</header>
     <div className="flex justify-center">
       <div className="w-[80vw]">
