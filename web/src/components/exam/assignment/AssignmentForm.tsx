@@ -45,7 +45,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
       setValue('exam', exam.toUpperCase() as Exam)
       setValue('examType', examType.toUpperCase() as SukoAssignmentForm['examType'])
     }
-  }, [assignment, reset])
+  }, [assignment, exam, examType, reset, setValue])
 
   async function submitAssignment({ state }: { state: AssignmentState }) {
     await handleSubmit(async (data: SukoAssignmentForm) => {
