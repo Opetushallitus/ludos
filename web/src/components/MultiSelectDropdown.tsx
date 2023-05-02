@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { Icon } from './Icon'
-import { useDropdownCloseOnBlur } from '../hooks/useDropdownCloseOnBlur'
+import { useDropdownKeyboard } from '../hooks/useDropdownKeyboard'
 
 export type SelectOption = {
   label: string
@@ -20,66 +20,24 @@ export const MultiSelectDropdown = ({
   onSelectedOptionsChange,
   canReset
 }: MultiSelectProps) => {
-  const [isExpanded, setExpansion] = useState(false)
-  const containerRef = useDropdownCloseOnBlur(false, setExpansion)
-  const [highlightedIndex, setHighlightedIndex] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const toggleOption = useCallback(
-    (option: SelectOption) => {
-      if (selectedOptions.includes(option)) {
-        onSelectedOptionsChange(selectedOptions.filter((selected) => selected !== option))
-      } else {
-        onSelectedOptionsChange([...selectedOptions, option])
-      }
-    },
-    [onSelectedOptionsChange, selectedOptions]
-  )
-
-  useEffect(() => {
-    const container = containerRef.current
-    const handler = (e: KeyboardEvent) => {
-      if (e.target !== container) {
-        return
-      }
-
-      switch (e.code) {
-        case 'Enter':
-        case 'Space':
-          e.preventDefault()
-          if (isExpanded) {
-            toggleOption(options[highlightedIndex])
-          }
-          break
-        case 'ArrowUp':
-        case 'ArrowDown': {
-          if (!isExpanded) {
-            setExpansion(true)
-            break
-          }
-
-          const newValue = highlightedIndex + (e.code === 'ArrowDown' ? 1 : -1)
-
-          if (newValue >= 0 && newValue < options.length) {
-            setHighlightedIndex(newValue)
-          }
-
-          break
-        }
-        case 'Escape':
-          setExpansion(false)
-          break
-      }
-    }
-
-    container?.addEventListener('keydown', handler)
-
-    return () => {
-      container?.removeEventListener('keydown', handler)
-    }
-  }, [isExpanded, highlightedIndex, options, containerRef, toggleOption])
+  const { isExpanded, setExpansion, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownKeyboard({
+    options,
+    selectedOptions,
+    onSelectedOptionsChange,
+    containerRef
+  })
 
   return (
-    <div className="relative mx-2 mb-3 mt-1 border border-gray-secondary" ref={containerRef} tabIndex={0}>
+    <div
+      className="relative mx-2 mb-3 mt-1 border border-gray-secondary"
+      ref={containerRef}
+      onBlur={(e) => {
+        e.preventDefault()
+        setExpansion(false)
+      }}
+      tabIndex={0}>
       <span
         className="flex w-full items-center justify-between bg-white px-2"
         onClick={() => setExpansion(!isExpanded)}>
