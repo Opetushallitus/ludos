@@ -1,12 +1,12 @@
 import { Controller, useForm } from 'react-hook-form'
-import { Button } from '../../Button'
+import { Button } from '../../../Button'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentState, Exam, ExamType, SukoAssignmentIn } from '../../../types'
-import { contentKey } from '../../routes/routes'
+import { AssignmentState, Exam, ExamType, SukoAssignmentIn } from '../../../../types'
+import { contentKey } from '../../../routes/routes'
 import { useTranslation } from 'react-i18next'
-import { assignmentTypes, postAssignment, updateAssignment } from '../../../formUtils'
-import { useEffect } from 'react'
+import { assignmentTypes, postAssignment, updateAssignment } from '../../../../formUtils'
+import { useEffect, useState } from 'react'
 import { SukoAssignmentForm, sukoSchema } from './sukoSchema'
 
 type AssignmentFormProps = {
