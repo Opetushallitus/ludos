@@ -29,16 +29,20 @@ enum class AssignmentState {
     JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
 )
 interface Assignment {
-    val name: String
-    val content: String
+    val nameFi: String
+    val contentFi: String
+    val nameSv: String
+    val contentSv: String
     val state: AssignmentState
     val examType: ExamType
 }
 
 @JsonTypeName("SUKO")
 data class SukoAssignmentDtoIn(
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
     val assignmentType: String
@@ -46,16 +50,20 @@ data class SukoAssignmentDtoIn(
 
 @JsonTypeName("PUHVI")
 data class PuhviAssignmentDtoIn(
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
 ) : Assignment
 
 @JsonTypeName("LD")
 data class LdAssignmentDtoIn(
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
 ) : Assignment
@@ -68,8 +76,10 @@ interface AssignmentOut {
 
 data class SukoAssignmentDtoOut(
     override val id: Int,
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
     val assignmentType: String,
@@ -79,8 +89,10 @@ data class SukoAssignmentDtoOut(
 
 data class PuhviAssignmentDtoOut(
     override val id: Int,
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
     override val createdAt: Timestamp,
@@ -89,8 +101,10 @@ data class PuhviAssignmentDtoOut(
 
 data class LdAssignmentDtoOut(
     override val id: Int,
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
     override val createdAt: Timestamp,
@@ -99,16 +113,20 @@ data class LdAssignmentDtoOut(
 
 interface UpdateAssignmentDtoIn {
     val id: Int
-    val name: String
-    val content: String
+    val nameFi: String
+    val nameSv: String
+    val contentFi: String
+    val contentSv: String
     val state: AssignmentState
     val examType: ExamType
 }
 
 data class SukoUpdateAssignmentDtoIn(
     override val id: Int,
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
     val assignmentType: String
@@ -116,16 +134,20 @@ data class SukoUpdateAssignmentDtoIn(
 
 data class PuhviUpdateAssignmentDtoIn(
     override val id: Int,
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
 ) : UpdateAssignmentDtoIn
 
 data class LdUpdateAssignmentDtoIn(
     override val id: Int,
-    override val name: String,
-    override val content: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
     override val state: AssignmentState,
     override val examType: ExamType,
 ) : UpdateAssignmentDtoIn

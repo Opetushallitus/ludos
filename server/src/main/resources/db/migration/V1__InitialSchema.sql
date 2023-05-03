@@ -4,8 +4,10 @@ CREATE TYPE assignment_exam_type AS ENUM ('ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIF
 CREATE TABLE assignment
 (
     assignment_id         serial PRIMARY KEY,
-    assignment_name       text                 NOT NULL,
-    assignment_content    text                 NOT NULL,
+    assignment_name_fi    text                 NOT NULL,
+    assignment_name_sv    text                 NOT NULL,
+    assignment_content_fi text                 NOT NULL,
+    assignment_content_sv text                 NOT NULL,
     assignment_state      assignment_state     NOT NULL,
     assignment_exam_type  assignment_exam_type NOT NULL,
     assignment_created_at timestamptz          NOT NULL default now(),
