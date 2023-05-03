@@ -7,8 +7,10 @@ const headers = {
 }
 
 const sukoData = {
-  name: 'Suko Assignment',
-  content: 'This is a Suko assignment.',
+  nameFi: 'Suko Assignment Fi',
+  nameSv: 'Suko Assignment Sv',
+  contentFi: 'This is a Suko assignment. Fi',
+  contentSv: 'This is a Suko assignment. Sv',
   state: 'PUBLISHED',
   exam: 'SUKO',
   examType: '',
@@ -16,16 +18,20 @@ const sukoData = {
 }
 
 const puhviData = {
-  name: 'Puhvi Assignment',
-  content: 'This is a Puhvi assignment.',
+  nameFi: 'Puhvi Assignment Fi',
+  nameSv: 'Puhvi Assignment Sv',
+  contentFi: 'This is a Puhvi assignment. Fi',
+  contentSv: 'This is a Puhvi assignment. Sv',
   state: 'PUBLISHED',
   exam: 'PUHVI',
   examType: ''
 }
 
 const ldData = {
-  name: 'LD Assignment',
-  content: 'This is an LD assignment.',
+  nameFi: 'LD Assignment Fi',
+  nameSv: 'LD Assignment Sv',
+  contentFi: 'This is an LD assignment. Fi',
+  contentSv: 'This is an LD assignment. Sv',
   state: 'PUBLISHED',
   exam: 'LD',
   examType: ''
@@ -40,17 +46,23 @@ const seedData = async () => {
   const promises = []
 
   for (const [exam, data] of examsArr) {
-    const origName = data.name
+    const origNameFi = data.nameFi
+    const origNameSv = data.nameSv
 
     for (const examType of examTypes) {
       for (let i = 0; i < numAssignments; i++) {
-        const name = `${origName} ${examType.toLowerCase()} ${
+        const nameFi = `${origNameFi} ${examType.toLowerCase()} ${
+          exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
+        } ${i + 1}`
+
+        const nameSv = `${origNameSv} ${examType.toLowerCase()} ${
           exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
         } ${i + 1}`
 
         const body = {
           ...data,
-          name,
+          nameFi,
+          nameSv,
           examType,
           exam
         }
@@ -62,7 +74,7 @@ const seedData = async () => {
         })
           .then(async (response) => {
             if (response.ok) {
-              console.log(`Assignment created: ${data.name}`)
+              console.log(`Assignment created: ${data.nameFi}`)
             } else {
               console.log(`Error creating assignment: ${await response.text()}`)
             }
