@@ -11,7 +11,6 @@ import { SukoAssignmentForm, sukoSchema } from './sukoSchema'
 import { Tabs } from '../../../Tabs'
 import { TextAreaInput } from './TextAreaInput'
 import { TextInput } from './TextInput'
-import { MultiSelectDropdown, SelectOption } from '../../../MultiSelectDropdown'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -24,20 +23,12 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const match = useMatch(`/${contentKey}/:exam/:examType/${action}`)
   const [activeTab, setActiveTab] = useState('fi')
 
-  const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
-    setValue(
-      'topic',
-      newSelectedOptions.map((option) => option.value)
-    )
-  }
-
   const exam = match!.params.exam as Exam
   const examType = match!.params.examType as ExamType
 
   const assignment = (state?.assignment as SukoAssignmentIn) || null
 
   const {
-    watch,
     register,
     reset,
     handleSubmit,
@@ -46,7 +37,13 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     formState: { errors }
   } = useForm<SukoAssignmentForm>({ mode: 'onBlur', resolver: zodResolver(sukoSchema) })
 
-  const topics = watch('topic') || []
+  // const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
+  //   setValue(
+  //     'topic',
+  //     newSelectedOptions.map((option) => option.key)
+  //   )
+  // }
+  // const topics = watch('topic') || []
 
   // set initial values
   useEffect(() => {
@@ -72,32 +69,17 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
         if (action === 'update' && assignment) {
           resultId = await updateAssignment<string>(exam, assignment.id, body)
         } else {
-          // const { id } = await postAssignment<{ id: string }>(body)
-          // resultId = id
+          const { id } = await postAssignment<{ id: string }>(body)
+          resultId = id
           console.log(body)
-          resultId = '1'
         }
 
-        //navigate(`${pathname}/../${resultId}`)
+        navigate(`${pathname}/../${resultId}`)
       } catch (e) {
         console.error(e)
       }
     })()
   }
-
-  const options = [
-    { label: 'First', value: '1' },
-    { label: 'Second', value: '2' },
-    { label: 'Third', value: '3' },
-    { label: 'Fourth', value: '4' },
-    { label: 'fifth', value: '5' },
-    { label: 'six', value: '6' },
-    { label: 'seven', value: '7' },
-    { label: 'eightt', value: '8' },
-    { label: 'ninth', value: '9' },
-    { label: 'tenth', value: '10' },
-    { label: 'elev', value: '11' }
-  ]
 
   return (
     <div className="w-10/12 pt-3">
@@ -111,12 +93,12 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
         <input type="hidden" {...register('exam')} />
         <input type="hidden" {...register('examType')} />
 
-        <MultiSelectDropdown
-          options={options}
-          selectedOptions={options.filter((it) => topics.includes(it.value))}
-          onSelectedOptionsChange={handleMultiSelectChange}
-          canReset
-        />
+        {/*<MultiSelectDropdown*/}
+        {/*  options={TOPIC_OPTIONS}*/}
+        {/*  selectedOptions={TOPIC_OPTIONS.filter((it) => topics.includes(it.key))}*/}
+        {/*  onSelectedOptionsChange={handleMultiSelectChange}*/}
+        {/*  canReset*/}
+        {/*/>*/}
 
         <div className="mb-6">
           <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>

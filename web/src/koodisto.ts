@@ -23,3 +23,9 @@ export const SUKO_ASSIGNMENT_ORDER_OPTIONS = [
     value: 'Uusin ensin'
   }
 ]
+
+export const TOPIC_OPTIONS = [
+  { value: 'Ihmisoikeudet', key: '1' },
+  { value: 'Media', key: '2' },
+  { value: 'Ympäristö', key: '3' }
+]
