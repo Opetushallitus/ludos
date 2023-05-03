@@ -26,16 +26,15 @@ class WebSecurityConfiguration {
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
         casConfig: CasConfig,
-        @Value("\${myapp.env}") env: String
+        @Value("\${ludos.env}") env: String
     ): SecurityFilterChain {
         // todo: enable csrf for non local environments
         http.csrf().disable()
 
         println("securityFilterChain: env: $env")
 
-        if (env != "prod") {
+        if (env == "dev") {
             http.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
-
             return http.build()
         }
 

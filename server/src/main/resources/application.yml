@@ -13,5 +13,5 @@ logging:
     org:
       springframework: INFO
 
-myapp:
+ludos:
   env: ${env:dev}

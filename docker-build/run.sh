@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd server
-./gradlew bootRun
+./gradlew bootRun --args="--env=prod"
