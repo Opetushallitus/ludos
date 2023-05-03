@@ -42,7 +42,9 @@ class WebSecurityConfiguration {
             .logoutSuccessUrl("https://${casConfig.opintopolkuHostname}/cas/logout?service=${casConfig.appUrl}")
             .logoutUrl(casConfig.logoutUrl)
 
-        http.authorizeHttpRequests().anyRequest().authenticated().and().addFilter(casAuthenticationFilter)
+        http.authorizeHttpRequests()
+            .antMatchers("/api/health-check").permitAll()
+            .antMatchers("/**").authenticated().and().addFilter(casAuthenticationFilter)
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
             .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
 
