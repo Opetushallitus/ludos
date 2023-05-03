@@ -272,7 +272,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     fun updateSukoAssignment(assignment: SukoUpdateAssignmentDtoIn, id: Int): Int {
         return try {
             val results = jdbcTemplate.query(
-                "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_content_fi = ?, assignment_name_sv = ?, assignment_content_sv = ?, suko_assignment_type = ?, assignment_state = ?::assignment_state, assignment_exam_type = ?::assignment_exam_type, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+                "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, suko_assignment_type = ?, assignment_state = ?::assignment_state, assignment_exam_type = ?::assignment_exam_type, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
                 { rs: ResultSet, _: Int ->
                     rs.getInt("assignment_id")
                 },
@@ -300,7 +300,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     fun updatePuhviAssignment(assignment: PuhviUpdateAssignmentDtoIn, id: Int): Int {
         return try {
             val results = jdbcTemplate.query(
-                "UPDATE puhvi_assignment SET assignment_name_fi = ?, assignment_content_fi = ?, assignment_name_sv = ?, assignment_content_sv = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+                "UPDATE puhvi_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
                 { rs: ResultSet, _: Int ->
                     rs.getInt("assignment_id")
                 },
@@ -326,7 +326,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     fun updateLdAssignment(assignment: LdUpdateAssignmentDtoIn, id: Int): Int {
         return try {
             val results = jdbcTemplate.query(
-                "UPDATE ld_assignment SET assignment_name_fi = ?, assignment_content_fi = ?, assignment_name_sv = ?, assignment_content_sv = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+                "UPDATE ld_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, assignment_state = ?::assignment_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
                 { rs: ResultSet, _: Int ->
                     rs.getInt("assignment_id")
                 },
