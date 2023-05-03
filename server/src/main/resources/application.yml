@@ -12,6 +12,3 @@ logging:
   level:
     org:
       springframework: INFO
-
-ludos:
-  env: ${env:dev}

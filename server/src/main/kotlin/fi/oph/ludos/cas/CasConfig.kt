@@ -4,6 +4,7 @@ import fi.oph.ludos.Constants.Companion.API_PREFIX
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator
 import org.jasig.cas.client.validation.TicketValidator
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.cas.ServiceProperties
@@ -18,8 +19,10 @@ import org.springframework.security.web.AuthenticationEntryPoint
 
 @Configuration
 class CasConfig {
-    val appUrl = "http://localhost:8080"
-    val opintopolkuHostname = "virkailija.testiopintopolku.fi"
+    @Value("\${ludos.appUrl}")
+    lateinit var appUrl: String
+    @Value("\${ludos.opintopolkuHostname}")
+    lateinit var opintopolkuHostname: String
     val logoutUrl = "${API_PREFIX}/logout"
 
     @Bean
@@ -28,6 +31,9 @@ class CasConfig {
         isSendRenew = false
         isAuthenticateAllArtifacts = true
     }
+
+    @Bean
+    fun getCasLogoutUrl() = "https://${opintopolkuHostname}/cas/logout?service=${appUrl}"
 
     @Bean
     fun casAuthenticationFilter(
@@ -41,11 +47,12 @@ class CasConfig {
     }
 
     @Bean
-    fun ticketValidator(): TicketValidator = Cas30ServiceTicketValidator("https://$opintopolkuHostname/cas")
+    fun ticketValidator(): TicketValidator =
+        Cas30ServiceTicketValidator("https://$opintopolkuHostname/cas")
 
     @Bean
     fun authenticationEntryPoint(
-        serviceProperties: ServiceProperties,
+        serviceProperties: ServiceProperties
     ): AuthenticationEntryPoint {
         val entryPoint = CasAuthenticationEntryPoint()
         entryPoint.loginUrl = "https://$opintopolkuHostname/cas/login"

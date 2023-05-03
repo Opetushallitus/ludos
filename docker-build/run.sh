@@ -1,4 +1,6 @@
 #!/bin/sh
 
+set -euo pipefail
+
 cd server
-./gradlew bootRun --args="--env=prod"
+./gradlew bootRun --args="--spring.profiles.active=$ENV_NAME"

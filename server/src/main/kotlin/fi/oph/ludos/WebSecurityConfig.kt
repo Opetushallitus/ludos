@@ -26,20 +26,20 @@ class WebSecurityConfiguration {
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
         casConfig: CasConfig,
-        @Value("\${ludos.env}") env: String
+        @Value("\${spring.profiles.active}") activeProfiles: String
     ): SecurityFilterChain {
         // todo: enable csrf for non local environments
         http.csrf().disable()
 
-        println("securityFilterChain: env: $env")
+        println("securityFilterChain: activeProfiles: $activeProfiles")
 
-        if (env == "dev") {
+        if (activeProfiles == "local") {
             http.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
             return http.build()
         }
 
         http.logout()
-            .logoutSuccessUrl("https://${casConfig.opintopolkuHostname}/cas/logout?service=${casConfig.appUrl}")
+            .logoutSuccessUrl(casConfig.getCasLogoutUrl())
             .logoutUrl(casConfig.logoutUrl)
 
         http.authorizeHttpRequests()
