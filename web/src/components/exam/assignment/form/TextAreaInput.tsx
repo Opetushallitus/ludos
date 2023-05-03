@@ -10,7 +10,7 @@ type TextAreaInputProps = {
 
 export const TextAreaInput = ({ id, register, required, children }: TextAreaInputProps) => (
   <div className="mt-6">
-    <label className="mb-2 font-semibold" htmlFor="content">
+    <label className="mb-2 font-semibold" htmlFor={id}>
       {children}
     </label>
     <textarea

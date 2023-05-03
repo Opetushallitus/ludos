@@ -18,7 +18,7 @@ export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignment
     <div className="col min-h-[60vh] w-full">
       <div className="row justify-between">
         <h2 className="pb-3" data-testid="assignment-header">
-          {assignment.name}
+          {assignment.nameFi}
         </h2>
         <p>{t('assignment.kieli')}</p>
       </div>
@@ -68,7 +68,7 @@ export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignment
           </div>
         </div>
       </div>
-      <p className="h-full pb-3">{assignment.content}</p>
+      <p className="h-full pb-3">{assignment.contentFi}</p>
     </div>
   )
 }

@@ -29,3 +29,8 @@ export const TOPIC_OPTIONS = [
   { value: 'Media', key: '2' },
   { value: 'Ympäristö', key: '3' }
 ]
+
+export const LANGUAGE_OPTIONS = [
+  { value: 'Suomeksi', key: 'fi' },
+  { value: 'Ruotsiksi', key: 'sv' }
+]

@@ -33,8 +33,10 @@ export type Exam = (typeof Exam)[keyof typeof Exam]
 
 export type AssignmentIn = {
   id: number
-  name: string
-  content: string
+  nameFi: string
+  nameSv: string
+  contentFi: string
+  contentSv: string
   state: AssignmentState
   examType: Exam
   createdAt: string

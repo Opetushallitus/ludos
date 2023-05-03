@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useFetch } from '../../../hooks/useFetch'
 import { AssignmentIn, Exam, ExamTypesEng } from '../../../types'
 import { AssignmentCard } from './AssignmentCard'
@@ -11,6 +11,7 @@ import { CertificateCard } from '../certificate/CertificateCard'
 
 export const AssignmentList = ({ exam, examType }: { exam: Exam; examType: string }) => {
   const { filters, setFilters } = useFilters()
+  const [language, setLanguage] = useState<string>('fi')
 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
   const url = `assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
@@ -28,10 +29,15 @@ export const AssignmentList = ({ exam, examType }: { exam: Exam; examType: strin
         <>
           {examType === ExamTypesEng.KOETEHTAVAT && (
             <div>
-              <AssignmentFilters filters={filters} setFilters={setFilters} />
+              <AssignmentFilters
+                filters={filters}
+                setFilters={setFilters}
+                language={language}
+                setLanguage={setLanguage}
+              />
               <ul>
                 {data?.map((assignment, i) => (
-                  <AssignmentCard assignment={assignment} exam={exam} key={i} />
+                  <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
                 ))}
               </ul>
             </div>

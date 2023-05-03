@@ -85,7 +85,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     <div className="w-10/12 pt-3">
       <div className="mb-6">
         <h2 className="mb-3" data-testid="heading">
-          {action === 'new' ? t(`form.${exam}`) : assignment?.name}
+          {action === 'new' ? t(`form.${exam}`) : assignment?.nameFi}
         </h2>
         {action === 'new' ? <p>{t('form.kuvaus')}</p> : <p>{t('form.muokkauskuvaus')}</p>}
       </div>
@@ -135,22 +135,22 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
 
         {activeTab === 'fi' && (
           <>
-            <TextInput id="name_fi" register={register} required>
+            <TextInput id="nameFi" register={register} required>
               {t('form.tehtavannimi')}
             </TextInput>
-            {errors?.name_fi && <p className="text-green-primary">{errors.name_fi.message}</p>}
-            <TextAreaInput id="content_fi" register={register}>
+            {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
+            <TextAreaInput id="contentFi" register={register}>
               {t('form.tehtavansisalto')}
             </TextAreaInput>
           </>
         )}
         {activeTab === 'sv' && (
           <>
-            <TextInput id="name_sv" register={register} required>
+            <TextInput id="nameSv" register={register} required>
               {t('form.tehtavannimi')}
             </TextInput>
-            {errors?.name_sv && <p className="text-green-primary">{errors.name_sv.message}</p>}
-            <TextAreaInput id="content_sv" register={register}>
+            {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
+            <TextAreaInput id="contentSv" register={register}>
               {t('form.tehtavansisalto')}
             </TextAreaInput>
           </>

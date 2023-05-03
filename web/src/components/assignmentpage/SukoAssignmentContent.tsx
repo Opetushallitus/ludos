@@ -3,6 +3,9 @@ import { Icon } from '../Icon'
 import { ExamTypesEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Dropdown } from '../Dropdown'
+import { LANGUAGE_OPTIONS } from '../../koodisto'
+import { useState } from 'react'
 
 type SukoAssignmentContentProps = {
   assignment: SukoAssignmentIn
@@ -11,15 +14,23 @@ type SukoAssignmentContentProps = {
 
 export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentContentProps) => {
   const { t } = useTranslation()
+  const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
 
   return (
     <div className="col min-h-[60vh] w-full">
       <div className="row justify-between">
         <h2 className="pb-3" data-testid="assignment-header">
-          {assignment.name}
+          {language === 'fi' ? assignment.nameFi : assignment.nameSv}
         </h2>
-        <p>{t('assignment.kieli')}</p>
+        <div>
+          <p className="pl-2">{t('filter.kieli')}</p>
+          <Dropdown
+            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
+            onOptionClick={(opt: string) => setLanguage(opt)}
+            options={LANGUAGE_OPTIONS}
+          />
+        </div>
       </div>
       <div className="row">
         <StateTag state={assignment.state} />
@@ -72,7 +83,7 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
           </div>
         </div>
       </div>
-      <p className="h-full pb-3">{assignment.content}</p>
+      <p className="h-full pb-3">{language === 'fi' ? assignment.contentFi : assignment.contentSv}</p>
     </div>
   )
 }
