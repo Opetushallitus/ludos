@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { fillSukoForm } from '../helpers'
 
 test.describe('Assignment form tests', () => {
   let createdAssignmentId: number
@@ -10,12 +11,13 @@ test.describe('Assignment form tests', () => {
 
     await page.getByTestId('create-koetehtava-button').click()
 
-    const nameText = 'Testi tehtävä'
-    const contentText = 'Testi sisältö'
-
-    await page.getByLabel('form.tehtavannimi').fill(nameText)
-    await page.getByLabel('Tekstin lukeminen').click()
-    await page.getByLabel('form.tehtavansisalto').fill(contentText)
+    await fillSukoForm({
+      page,
+      nameTextFi: 'Testi tehtävä',
+      nameTextSv: 'Testuppgifter',
+      contentTextFi: 'Testi sisältö',
+      contentTextSv: 'Testa innehåll'
+    })
 
     await page.getByTestId('form-submit').click()
 
@@ -35,17 +37,25 @@ test.describe('Assignment form tests', () => {
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    const updatedNameText = 'Testi tehtävä muokattu'
-    const updatedContentText = 'Testi sisältö muokattu'
-
-    await page.getByLabel('form.tehtavannimi').fill(updatedNameText)
-    await page.getByLabel('Tekstin lukeminen').click()
-    await page.getByLabel('form.tehtavansisalto').fill(updatedContentText)
+    await fillSukoForm({
+      page,
+      nameTextFi: 'Testi tehtävä muokattu',
+      nameTextSv: 'Testuppgifter muokattu',
+      contentTextFi: 'Testi sisältö muokattu',
+      contentTextSv: 'Testa innehåll muokattu'
+    })
 
     await page.getByTestId('form-submit').click()
 
     const updatedAssignmentHeader = page.getByTestId('assignment-header')
 
     await expect(updatedAssignmentHeader).toHaveText('Testi tehtävä muokattu')
+
+    await page.getByTestId('language-dropdown').click()
+    await page.getByTestId('language-dropdown-option-sv').click()
+
+    const updatedAssignmentHeaderSv = page.getByTestId('assignment-header')
+
+    await expect(updatedAssignmentHeaderSv).toHaveText('Testuppgifter muokattu')
   })
 })

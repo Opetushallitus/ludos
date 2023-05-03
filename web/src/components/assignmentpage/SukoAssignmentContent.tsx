@@ -29,6 +29,7 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
             currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
             onOptionClick={(opt: string) => setLanguage(opt)}
             options={LANGUAGE_OPTIONS}
+            testId={'language-dropdown'}
           />
         </div>
       </div>

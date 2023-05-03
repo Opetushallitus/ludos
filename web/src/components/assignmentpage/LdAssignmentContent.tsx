@@ -3,6 +3,9 @@ import { Icon } from '../Icon'
 import { AssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Dropdown } from '../Dropdown'
+import { LANGUAGE_OPTIONS } from '../../koodisto'
+import { useState } from 'react'
 
 type LdAssignmentContentProps = {
   assignment: AssignmentIn
@@ -11,7 +14,7 @@ type LdAssignmentContentProps = {
 
 export const LdAssignmentContent = ({ assignment, examType }: LdAssignmentContentProps) => {
   const { t } = useTranslation()
-
+  const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
 
   return (
@@ -20,7 +23,15 @@ export const LdAssignmentContent = ({ assignment, examType }: LdAssignmentConten
         <h2 className="pb-3" data-testid="assignment-header">
           {assignment.nameFi}
         </h2>
-        <p>{t('assignment.kieli')}</p>
+        <div>
+          <p className="pl-2">{t('filter.kieli')}</p>
+          <Dropdown
+            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
+            onOptionClick={(opt: string) => setLanguage(opt)}
+            options={LANGUAGE_OPTIONS}
+            testId={'language-dropdown'}
+          />
+        </div>
       </div>
       <div className="row">
         <StateTag state={assignment.state} />

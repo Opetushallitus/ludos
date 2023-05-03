@@ -71,7 +71,6 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
         } else {
           const { id } = await postAssignment<{ id: string }>(body)
           resultId = id
-          console.log(body)
         }
 
         navigate(`${pathname}/../${resultId}`)

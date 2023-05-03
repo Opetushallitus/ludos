@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { fillSukoForm } from '../helpers'
 
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -8,12 +9,13 @@ test.describe('Assignment form tests', () => {
   })
 
   test('can create a new assignment', async ({ page }) => {
-    const nameText = 'Testi tehtävä'
-    const contentText = 'Testi sisältö'
-
-    await page.getByLabel('form.tehtavannimi').fill(nameText)
-    await page.getByLabel('Tekstin lukeminen').click()
-    await page.getByLabel('form.tehtavansisalto').fill(contentText)
+    await fillSukoForm({
+      page,
+      nameTextFi: 'Testi tehtävä',
+      nameTextSv: 'Testuppgifter',
+      contentTextFi: 'Testi sisältö',
+      contentTextSv: 'Testa innehåll'
+    })
 
     await page.getByTestId('form-submit').click()
 

@@ -8,22 +8,19 @@ type DropdownProps<C extends boolean | undefined> = {
   options: { key: string; value: string }[]
   onOptionClick: (option: C extends true ? string | null : string) => void
   canReset?: C
+  testId?: string
 }
 
-// With canReset as truthy
 type WithReset = DropdownProps<true>
-
-// With canReset as falsy
 type WithoutReset = DropdownProps<false>
-
-// With canReset as optional
 type WithOptionalReset = DropdownProps<undefined>
 
 export const Dropdown = ({
   currentOption,
   options,
   onOptionClick,
-  canReset
+  canReset,
+  testId
 }: WithReset | WithoutReset | WithOptionalReset) => {
   const [isExpanded, setExpansion] = useState(false)
   const dropdownRef = useDropdownCloseOnBlur(false, setExpansion)
@@ -33,6 +30,7 @@ export const Dropdown = ({
       <Button
         className="flex w-full items-center justify-between bg-white px-2"
         onClick={() => setExpansion(!isExpanded)}
+        data-testid={testId}
         variant="buttonGhost">
         {currentOption ? (
           <>
@@ -43,9 +41,7 @@ export const Dropdown = ({
                 color="text-black"
                 onClick={(e) => {
                   e.stopPropagation()
-                  if (canReset) {
-                    onOptionClick(null)
-                  }
+                  onOptionClick(null)
                 }}
               />
             ) : (
@@ -66,11 +62,12 @@ export const Dropdown = ({
               className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
                 option.value === currentOption ? 'text-green-primary' : ''
               }`}
-              key={i}
               onClick={() => {
                 onOptionClick(option.key)
                 setExpansion(false)
-              }}>
+              }}
+              key={i}
+              data-testid={`${testId}-option-${option.key}`}>
               {option.value}
             </li>
           ))}
