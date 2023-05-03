@@ -1,3 +1,5 @@
+#!/usr/bin/env -S deno run --allow-net
+
 const BASE_URL = 'http://localhost:8080/api/assignment'
 
 const headers = {
