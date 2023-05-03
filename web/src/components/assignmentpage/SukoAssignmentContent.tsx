@@ -24,7 +24,7 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
           {language === 'fi' ? assignment.nameFi : assignment.nameSv}
         </h2>
         <div>
-          <p className="pl-2">{t('filter.kieli')}</p>
+          <p className="pl-2">{t('assignment.kieli')}</p>
           <Dropdown
             currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
             onOptionClick={(opt: string) => setLanguage(opt)}
@@ -52,18 +52,19 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
         {examType !== ExamTypesEng.OHJEET && (
           <ul>
             <li>
-              <span className="pr-1 font-semibold">Tehtävätyyppi:</span> {assignment.assignmentType.toLowerCase()}
+              <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
+              {assignment.assignmentType.toLowerCase()}
             </li>
             <li>
-              <span className="pr-1 font-semibold">Tavoitetaitotaso:</span>
+              <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
               *CEFR*
             </li>
             <li>
-              <span className="pr-1 font-semibold">Aihe:</span>
+              <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
               *topic*
             </li>
             <li>
-              <span className="pr-1 font-semibold">Laaja-alainen osaaminen:</span>
+              <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
               *laaja-alainen osaaminen*
             </li>
           </ul>
@@ -72,15 +73,15 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
         <div className="mt-3 flex gap-3">
           <div className="flex gap-1">
             <Icon name="uusi-valilehti" color="text-green-primary" />
-            <p className="text-green-primary">Katselunäkymä</p>
+            <p className="text-green-primary">{t('assignment.katselunakyma')}</p>
           </div>
           <div className="flex gap-1">
             <Icon name="todistukset" color="text-green-primary" />
-            <p className="text-green-primary">Lataa pdf</p>
+            <p className="text-green-primary">{t('assignment.lataapdf')}</p>
           </div>
           <div className="flex gap-1">
             <Icon name="lisää" color="text-green-primary" />
-            <p className="text-green-primary">Lisää latauskoriin</p>
+            <p className="text-green-primary">{t('assignment.lisaalatauskoriin')}</p>
           </div>
         </div>
       </div>

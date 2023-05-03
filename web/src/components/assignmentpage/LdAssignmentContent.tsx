@@ -24,7 +24,7 @@ export const LdAssignmentContent = ({ assignment, examType }: LdAssignmentConten
           {assignment.nameFi}
         </h2>
         <div>
-          <p className="pl-2">{t('filter.kieli')}</p>
+          <p className="pl-2">{t('assignment.kieli')}</p>
           <Dropdown
             currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
             onOptionClick={(opt: string) => setLanguage(opt)}
@@ -51,15 +51,15 @@ export const LdAssignmentContent = ({ assignment, examType }: LdAssignmentConten
       <div className="my-3 bg-gray-bg p-3">
         <ul>
           <li>
-            <span className="pr-1 font-semibold">Tavoitetaitotaso:</span>
+            <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
             *CEFR*
           </li>
           <li>
-            <span className="pr-1 font-semibold">Aihe:</span>
+            <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
             *topic*
           </li>
           <li>
-            <span className="pr-1 font-semibold">Laaja-alainen osaaminen:</span>
+            <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
             *laaja-alainen osaaminen*
           </li>
         </ul>

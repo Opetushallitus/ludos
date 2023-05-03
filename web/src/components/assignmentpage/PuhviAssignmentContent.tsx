@@ -51,15 +51,15 @@ export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignment
       <div className="my-3 bg-gray-bg p-3">
         <ul>
           <li>
-            <span className="pr-1 font-semibold">Tavoitetaitotaso:</span>
+            <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
             *CEFR*
           </li>
           <li>
-            <span className="pr-1 font-semibold">Aihe:</span>
+            <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
             *topic*
           </li>
           <li>
-            <span className="pr-1 font-semibold">Laaja-alainen osaaminen:</span>
+            <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
             *laaja-alainen osaaminen*
           </li>
         </ul>
