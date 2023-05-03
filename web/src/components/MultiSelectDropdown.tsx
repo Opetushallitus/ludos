@@ -1,10 +1,10 @@
 import { useRef } from 'react'
 import { Icon } from './Icon'
-import { useDropdownKeyboard } from '../hooks/useDropdownKeyboard'
+import { useDropdownState } from '../hooks/useDropdownState'
 
 export type SelectOption = {
-  label: string
   value: string
+  key: string
 }
 
 type MultiSelectProps = {
@@ -22,7 +22,7 @@ export const MultiSelectDropdown = ({
 }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { isExpanded, setExpansion, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownKeyboard({
+  const { isExpanded, setExpansion, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
     options,
     selectedOptions,
     onSelectedOptionsChange,
@@ -42,14 +42,15 @@ export const MultiSelectDropdown = ({
         <div className="row w-full flex-wrap gap-2 p-2">
           {selectedOptions.length ? (
             <>
-              {selectedOptions.map((opt) => (
+              {selectedOptions.map((opt, i) => (
                 <span
                   className="flex w-32 items-center justify-center gap-2 rounded-2xl bg-green-primary py-1 text-xs text-white"
                   onClick={(e) => {
                     e.stopPropagation()
                     toggleOption(opt)
-                  }}>
-                  {opt.label}{' '}
+                  }}
+                  key={i}>
+                  {opt.value}{' '}
                   <Icon
                     name="sulje"
                     color="text-white"
@@ -84,12 +85,12 @@ export const MultiSelectDropdown = ({
         } absolute -left-1 z-50 mt-2 w-full border border-gray-secondary bg-white px-2 py-1`}>
         {options.map((option, i) => (
           <li
-            key={option.value}
             className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
               selectedOptions.includes(option) ? 'bg-green-light text-white' : ''
             } ${i === highlightedIndex ? 'bg-green-primary' : ''}`}
+            onClick={() => toggleOption(option)}
             onMouseEnter={() => setHighlightedIndex(i)}
-            onClick={() => toggleOption(option)}>
+            key={i}>
             {option.value}
           </li>
         ))}

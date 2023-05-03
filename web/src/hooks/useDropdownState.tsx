@@ -1,20 +1,22 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import { SelectOption } from '../components/MultiSelectDropdown'
 
-type SelectOption = {
-  value: string
-  label: string
-}
-
-type Props = {
+type UseDropdownStateProps = {
   options: SelectOption[]
   selectedOptions: SelectOption[]
   onSelectedOptionsChange: (selectedOptions: SelectOption[]) => void
   containerRef: RefObject<HTMLDivElement>
 }
 
-export const useDropdownKeyboard = ({ options, selectedOptions, onSelectedOptionsChange, containerRef }: Props) => {
+export const useDropdownState = ({
+  options,
+  selectedOptions,
+  onSelectedOptionsChange,
+  containerRef
+}: UseDropdownStateProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
+
   const toggleOption = useCallback(
     (option: SelectOption) => {
       if (selectedOptions.includes(option)) {
