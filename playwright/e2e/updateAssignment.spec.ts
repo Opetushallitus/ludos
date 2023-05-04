@@ -4,7 +4,7 @@ import { fillSukoForm } from '../helpers'
 test.describe('Assignment form tests', () => {
   let createdAssignmentId: number
 
-  test('can create a new assignment', async ({ page }) => {
+  test('can update a new assignment', async ({ page }) => {
     await page.goto('/')
 
     await page.getByTestId('nav-link-content-suko').click()

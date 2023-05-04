@@ -25,16 +25,16 @@ test.describe('Assignment form tests', () => {
   })
 
   test('can create draft assignment', async ({ page }) => {
-    await page.getByLabel('form.tehtavannimi').fill('Testi luonnos tehtävä')
-    await page.getByLabel('Tekstin lukeminen').click()
-    await page.getByLabel('form.tehtavansisalto').fill('Testi luonnos sisältö')
+    await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
+    await page.getByTestId('assignmentTypeRadio-lukeminen').click()
+    await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
 
     const btn = page.getByTestId('form-draft')
-    await expect(btn).toHaveText('button.tallennaluonnos')
+    await expect(btn).toHaveText('Tallenna luonnoksena')
   })
 
   test('can cancel assignment creation', async ({ page }) => {
     const btn = page.getByTestId('form-cancel')
-    await expect(btn).toHaveText('button.peruuta')
+    await expect(btn).toHaveText('Peruuta')
   })
 })

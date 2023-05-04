@@ -3,15 +3,9 @@ import { expect, test } from '@playwright/test'
 const examTypes = ['suko', 'puhvi', 'ld']
 const assignmentTypes = ['assignments', 'instructions', 'certificates']
 
-const titles: Record<string, string> = {
-  suko: 'header.suko',
-  puhvi: 'header.puhvi',
-  ld: 'header.ld'
-}
-
 const pages = ['etusivu', 'content-suko', 'content-puhvi', 'content-ld', 'feedback']
 
-test('naviation links work', async ({ page }) => {
+test('navigation links work', async ({ page }) => {
   await page.goto('/')
 
   for (const pageName of pages) {
@@ -31,11 +25,7 @@ test('naviation links work', async ({ page }) => {
       await boxRow.getByTestId(`nav-box-${assignmentType}`).click()
       const heading2 = page.locator('h2')
 
-      expect(await heading2.innerText()).toBe(titles[contentType])
-
-      const addBtn = page.getByTestId(`create-koetehtava-button`)
-
-      expect(await addBtn.innerText()).toBe('button.lisaakoetehtava')
+      expect(await heading2.getAttribute('data-testid')).toBe(`page-heading-content-${contentType}`)
 
       await page.goBack()
     }

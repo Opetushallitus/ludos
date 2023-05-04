@@ -115,6 +115,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
                       value={assignmentType.id}
                       checked={field.value === assignmentType.id}
                       id={assignmentType.id}
+                      data-testid={`assignmentTypeRadio-${assignmentType.id.toLowerCase()}`}
                       className="mr-2"
                     />
                     <label htmlFor={assignmentType.id}>{assignmentType.label}</label>

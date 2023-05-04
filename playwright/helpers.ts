@@ -13,13 +13,13 @@ export async function fillSukoForm({
   contentTextFi: string
   contentTextSv: string
 }) {
-  await page.getByLabel('Tekstin lukeminen').click()
+  await page.getByTestId('assignmentTypeRadio-lukeminen').click()
 
-  await page.getByLabel('form.tehtavannimi').fill(nameTextFi)
-  await page.getByLabel('form.tehtavansisalto').fill(contentTextFi)
+  await page.getByTestId('nameFi').fill(nameTextFi)
+  await page.getByTestId('contentFi').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
-  await page.getByLabel('form.tehtavannimi').fill(nameTextSv)
-  await page.getByLabel('form.tehtavansisalto').fill(contentTextSv)
+  await page.getByTestId('nameSv').fill(nameTextSv)
+  await page.getByTestId('contentSv').fill(contentTextSv)
 }

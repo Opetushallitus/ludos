@@ -15,6 +15,7 @@ export const TextAreaInput = ({ id, register, required, children }: TextAreaInpu
     </label>
     <textarea
       id={id}
+      data-testid={id}
       className="block h-40 w-full border border-gray-secondary p-2.5"
       {...register(id, { required })}
     />

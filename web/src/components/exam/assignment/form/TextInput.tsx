@@ -14,6 +14,7 @@ export const TextInput = ({ id, register, required, children }: TextInputProps) 
     </label>
     <input
       id={id}
+      data-testid={id}
       type="text"
       className="block w-full border border-gray-secondary p-2.5"
       {...register(id, { required })}
