@@ -1,6 +1,8 @@
 package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import fi.oph.ludos.Constants
+import fi.oph.ludos.State
 import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -15,13 +17,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.sql.Timestamp
 
 fun postAssignment(body: String) =
-    MockMvcRequestBuilders.post("/api/assignment").contentType(MediaType.APPLICATION_JSON).content(body)
+    MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment").contentType(MediaType.APPLICATION_JSON)
+        .content(body)
 
 fun getAssignment(exam: Exam, id: Int) =
-    MockMvcRequestBuilders.get("/api/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
 
 fun updateAssignment(exam: Exam, id: Int, body: String) =
-    MockMvcRequestBuilders.put("/api/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON).content(body)
+    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
+        .content(body)
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,7 +38,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: AssignmentState,
+        val state: State,
         val examType: ExamType,
         val assignmentType: String,
         val exam: Exam
@@ -47,7 +51,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val contentFi: String,
         val contentSv: String,
         val examType: ExamType,
-        val state: AssignmentState,
+        val state: State,
         val assignmentType: String,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
@@ -60,7 +64,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
             nameSv = "Suko Test Assignment SV",
             contentFi = "Suko assignment content Fi",
             contentSv = "Suko assignment content Sv",
-            state = AssignmentState.PUBLISHED,
+            state = State.PUBLISHED,
             examType = ExamType.ASSIGNMENTS,
             assignmentType = SukoAssignmentType.LUKEMINEN.toString(),
             exam = Exam.SUKO
@@ -113,7 +117,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: AssignmentState,
+        val state: State,
         val examType: ExamType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
@@ -124,7 +128,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: AssignmentState,
+        val state: State,
         val examType: ExamType,
         val exam: Exam
     )
@@ -136,7 +140,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
             contentFi = "Lukiodiplomi assignment content FI",
             nameSv = "Lukiodiplomi assignment SV",
             contentSv = "Lukiodiplomi assignment content SV",
-            state = AssignmentState.PUBLISHED,
+            state = State.PUBLISHED,
             examType = ExamType.ASSIGNMENTS,
             exam = Exam.LD
         )
@@ -165,7 +169,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: AssignmentState,
+        val state: State,
         val examType: ExamType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
@@ -189,7 +193,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentOut.nameSv, "Puhvi assignment")
         assertEquals(assignmentOut.contentFi, "Puhvi assignment content")
         assertEquals(assignmentOut.contentSv, "Puhvi assignment content")
-        assertEquals(assignmentOut.state, AssignmentState.PUBLISHED)
+        assertEquals(assignmentOut.state, State.PUBLISHED)
     }
 
     @Test

@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("${Constants.API_PREFIX}/assignment")
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
-    fun createAssignment(@RequestBody assignment: Assignment): ResponseEntity<out Any> {
-        return ResponseEntity.status(HttpStatus.OK).body(service.createAssignment(assignment))
-    }
+    fun createAssignment(@RequestBody assignment: Assignment): ResponseEntity<out Any> =
+        ResponseEntity.status(HttpStatus.OK).body(service.createAssignment(assignment))
 
     @GetMapping("/{exam}")
     fun getAssignments(
@@ -27,33 +26,23 @@ class AssignmentController(val service: AssignmentService) {
     ): List<AssignmentOut> {
 
         val filters = AssignmentFilter(
-            course,
-            assignmentType,
-            title,
-            language,
-            orderBy,
-            orderDirection
+            course, assignmentType, title, language, orderBy, orderDirection
         )
 
         return service.getAssignments(exam, examType, filters)
     }
 
     @GetMapping("{exam}/{id}")
-    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut {
-        return service.getAssignmentById(exam, id)
-    }
+    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
+        service.getAssignmentById(exam, id)
 
     @PutMapping("/{exam}/{id}")
     fun updateAssignment(
-        @PathVariable exam: Exam,
-        @PathVariable("id") id: Int,
-        @RequestBody assignment: SukoUpdateAssignmentDtoIn
-    ): ResponseEntity<Int> {
-        return try {
-            val updatedAssignmentId = service.updateAssignment(exam, id, assignment)
-            ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
-        } catch (e: NotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        }
+        @PathVariable exam: Exam, @PathVariable("id") id: Int, @RequestBody assignment: SukoUpdateAssignmentDtoIn
+    ): ResponseEntity<Int> = try {
+        val updatedAssignmentId = service.updateAssignment(exam, id, assignment)
+        ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
+    } catch (e: NotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).build()
     }
 }

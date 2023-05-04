@@ -5,3 +5,7 @@ interface Constants {
         const val API_PREFIX = "/api"
     }
 }
+
+enum class State {
+    DRAFT, PUBLISHED, ARCHIVED
+}
