@@ -41,13 +41,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-val buildWebTask = task<Exec>("buildWeb") {
+val ensureStaticFolderExistsTask = task<Exec>("buildWeb") {
     workingDir("../web")
     commandLine("bash", "-c", "if [ ! -d ../server/build/resources/main/static ]; then yarn && yarn build; fi")
 }
 
 tasks.withType<KotlinCompile> {
-    dependsOn(buildWebTask)
+    dependsOn(ensureStaticFolderExistsTask)
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"
