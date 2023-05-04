@@ -43,7 +43,7 @@ dependencies {
 
 val ensureStaticFolderExistsTask = task<Exec>("buildWeb") {
     workingDir("../web")
-    commandLine("bash", "-c", "if [ ! -d ../server/build/resources/main/static ]; then yarn && yarn build; fi")
+    commandLine("sh", "-c", "if [ ! -d ../server/build/resources/main/static ]; then yarn && yarn build; fi")
 }
 
 tasks.withType<KotlinCompile> {
