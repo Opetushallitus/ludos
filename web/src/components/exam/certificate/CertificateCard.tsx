@@ -22,7 +22,7 @@ export const CertificateCard = ({ assignment, exam }: CertificateCardProps) => {
       data-testid={`assignment-${assignment.id.toString()}`}>
       <div className="text-center">
         <InternalLink className="text-sm font-semibold text-green-primary" to={`${assignment.id}`}>
-          {assignment.name}
+          {assignment.nameFi}
         </InternalLink>
         <Icon
           name="muokkaa"

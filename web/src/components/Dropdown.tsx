@@ -3,14 +3,25 @@ import { Button } from './Button'
 import { Icon } from './Icon'
 import { useDropdownCloseOnBlur } from '../hooks/useDropdownCloseOnBlur'
 
-type DropdownProps = {
+type DropdownProps<C extends boolean | undefined> = {
   currentOption: string | null
   options: { key: string; value: string }[]
-  onOptionClick: (option: string | null) => void
-  canReset?: boolean
+  onOptionClick: (option: C extends true ? string | null : string) => void
+  canReset?: C
+  testId?: string
 }
 
-export const Dropdown = ({ currentOption, options, onOptionClick, canReset = true }: DropdownProps) => {
+type WithReset = DropdownProps<true>
+type WithoutReset = DropdownProps<false>
+type WithOptionalReset = DropdownProps<undefined>
+
+export const Dropdown = ({
+  currentOption,
+  options,
+  onOptionClick,
+  canReset,
+  testId
+}: WithReset | WithoutReset | WithOptionalReset) => {
   const [isExpanded, setExpansion] = useState(false)
   const dropdownRef = useDropdownCloseOnBlur(false, setExpansion)
 
@@ -19,6 +30,7 @@ export const Dropdown = ({ currentOption, options, onOptionClick, canReset = tru
       <Button
         className="flex w-full items-center justify-between bg-white px-2"
         onClick={() => setExpansion(!isExpanded)}
+        data-testid={testId}
         variant="buttonGhost">
         {currentOption ? (
           <>
@@ -50,11 +62,12 @@ export const Dropdown = ({ currentOption, options, onOptionClick, canReset = tru
               className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
                 option.value === currentOption ? 'text-green-primary' : ''
               }`}
-              key={i}
               onClick={() => {
                 onOptionClick(option.key)
                 setExpansion(false)
-              }}>
+              }}
+              key={i}
+              data-testid={`${testId}-option-${option.key}`}>
               {option.value}
             </li>
           ))}

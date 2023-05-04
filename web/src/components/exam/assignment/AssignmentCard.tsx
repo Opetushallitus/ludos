@@ -8,11 +8,12 @@ import { isSukoAssignment } from './assignmentUtils'
 import { toLocaleDate } from '../../../formatUtils'
 
 type AssignmentCardProps = {
+  language: string
   assignment: AssignmentIn
   exam: string
 }
 
-export const AssignmentCard = ({ assignment, exam }: AssignmentCardProps) => {
+export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -20,7 +21,7 @@ export const AssignmentCard = ({ assignment, exam }: AssignmentCardProps) => {
     <li className="my-2 rounded-lg border-2 border-gray-light" data-testid={`assignment-${assignment.id.toString()}`}>
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
         <InternalLink className="text-lg font-semibold text-green-primary" to={`${assignment.id}`}>
-          {assignment.name}
+          {language === 'fi' ? assignment.nameFi : assignment.nameSv}
         </InternalLink>
         <StateTag state={assignment.state} />
         <Icon

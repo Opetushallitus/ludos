@@ -43,9 +43,9 @@ const icons: Record<Icons, string> = {
 }
 
 export const Icon = ({ name, color, size, onClick, dataTestId, customClass }: IconProps) => {
-  const className = `material-symbols-outlined ${color} ${size ? `text-${size}` : 'text-base'} ${customClass} ${
-    onClick ? 'cursor-pointer hover:bg-gray-light ' : ''
-  }`
+  const className = `material-symbols-outlined ${color} ${size ? `text-${size}` : 'text-base'} ${
+    customClass ? customClass : ''
+  } ${onClick ? 'cursor-pointer hover:bg-gray-light ' : ''}`
   return (
     <i className={className} onClick={onClick} data-testid={dataTestId}>
       {icons[name]}

@@ -1,13 +1,16 @@
 import { Controller, useForm } from 'react-hook-form'
-import { Button } from '../../Button'
+import { Button } from '../../../Button'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentState, Exam, ExamType, SukoAssignmentIn } from '../../../types'
-import { contentKey } from '../../routes/routes'
+import { AssignmentState, Exam, ExamType, SukoAssignmentIn } from '../../../../types'
+import { contentKey } from '../../../routes/routes'
 import { useTranslation } from 'react-i18next'
-import { assignmentTypes, postAssignment, updateAssignment } from '../../../formUtils'
-import { useEffect } from 'react'
+import { assignmentTypes, postAssignment, updateAssignment } from '../../../../formUtils'
+import { useEffect, useState } from 'react'
 import { SukoAssignmentForm, sukoSchema } from './sukoSchema'
+import { Tabs } from '../../../Tabs'
+import { TextAreaInput } from './TextAreaInput'
+import { TextInput } from './TextInput'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -18,6 +21,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
   const match = useMatch(`/${contentKey}/:exam/:examType/${action}`)
+  const [activeTab, setActiveTab] = useState('fi')
 
   const exam = match!.params.exam as Exam
   const examType = match!.params.examType as ExamType
@@ -33,6 +37,14 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     formState: { errors }
   } = useForm<SukoAssignmentForm>({ mode: 'onBlur', resolver: zodResolver(sukoSchema) })
 
+  // const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
+  //   setValue(
+  //     'topic',
+  //     newSelectedOptions.map((option) => option.key)
+  //   )
+  // }
+  // const topics = watch('topic') || []
+
   // set initial values
   useEffect(() => {
     if (assignment) {
@@ -45,7 +57,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
       setValue('exam', exam.toUpperCase() as Exam)
       setValue('examType', examType.toUpperCase() as SukoAssignmentForm['examType'])
     }
-  }, [assignment, reset])
+  }, [assignment, exam, examType, reset, setValue])
 
   async function submitAssignment({ state }: { state: AssignmentState }) {
     await handleSubmit(async (data: SukoAssignmentForm) => {
@@ -72,65 +84,78 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     <div className="w-10/12 pt-3">
       <div className="mb-6">
         <h2 className="mb-3" data-testid="heading">
-          {action === 'new' ? t(`form.${exam}`) : assignment?.name}
+          {action === 'new' ? t(`form.${exam}`) : assignment?.nameFi}
         </h2>
         {action === 'new' ? <p>{t('form.kuvaus')}</p> : <p>{t('form.muokkauskuvaus')}</p>}
       </div>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
         <input type="hidden" {...register('examType')} />
+
+        {/*<MultiSelectDropdown*/}
+        {/*  options={TOPIC_OPTIONS}*/}
+        {/*  selectedOptions={TOPIC_OPTIONS.filter((it) => topics.includes(it.key))}*/}
+        {/*  onSelectedOptionsChange={handleMultiSelectChange}*/}
+        {/*  canReset*/}
+        {/*/>*/}
+
         <div className="mb-6">
-          <label className="mb-2 font-semibold" htmlFor="name">
-            {t('form.tehtavannimi')}
-          </label>
-          <input
-            id="name"
-            type="text"
-            className="block w-full border border-gray-secondary p-2.5"
-            {...register('name', { required: true })}
-          />
-          {errors?.name && <p className="text-green-primary">{errors.name.message}</p>}
-        </div>
-        <div className="mb-6">
-          <legend className="mb-2 font-semibold">Tehtävätyyppi</legend>
+          <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
           <Controller
             control={control}
             name="assignmentType"
             rules={{ required: true }}
             render={({ field }) => (
               <>
-                {assignmentTypes.map((assignmentType, i) => {
-                  return (
-                    <fieldset key={i} className="flex items-center">
-                      <input
-                        type="radio"
-                        {...field}
-                        value={assignmentType.id}
-                        checked={field.value === assignmentType.id}
-                        id={assignmentType.id}
-                        className="mr-2"
-                      />
-                      <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
-                    </fieldset>
-                  )
-                })}
+                {assignmentTypes.map((assignmentType, i) => (
+                  <fieldset key={i} className="flex items-center">
+                    <input
+                      type="radio"
+                      {...field}
+                      value={assignmentType.id}
+                      checked={field.value === assignmentType.id}
+                      id={assignmentType.id}
+                      className="mr-2"
+                    />
+                    <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
+                  </fieldset>
+                ))}
               </>
             )}
           />
           {errors?.assignmentType && <p className="text-green-primary">{errors.assignmentType.message}</p>}
         </div>
 
+        <div className="mb-2 text-lg font-semibold">Sisältö</div>
+
         <div className="mb-6">
-          <label className="mb-2 font-semibold" htmlFor="content">
-            {t('form.tehtavansisalto')}
-          </label>
-          <textarea
-            id="content"
-            className="block h-40 w-full border border-gray-secondary"
-            {...register('content', {})}
-          />
+          <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
+
+        {activeTab === 'fi' && (
+          <>
+            <TextInput id="nameFi" register={register} required>
+              {t('form.tehtavannimi')}
+            </TextInput>
+            {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
+            <TextAreaInput id="contentFi" register={register}>
+              {t('form.tehtavansisalto')}
+            </TextAreaInput>
+          </>
+        )}
+        {activeTab === 'sv' && (
+          <>
+            <TextInput id="nameSv" register={register} required>
+              {t('form.tehtavannimi')}
+            </TextInput>
+            {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
+            <TextAreaInput id="contentSv" register={register}>
+              {t('form.tehtavansisalto')}
+            </TextAreaInput>
+          </>
+        )}
       </form>
+
       <div className="mt-4 flex justify-end gap-3">
         <Button variant="buttonGhost" type="button" onClick={() => navigate(-1)} testId="form-cancel">
           {t('button.peruuta')}

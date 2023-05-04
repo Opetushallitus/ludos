@@ -11,19 +11,16 @@ interface LocaleDropdownProps {
 }
 
 export const HeaderDropdown = ({ currentOption, options, onOptionClick }: LocaleDropdownProps) => {
-  const [isExpanded, setExpansion] = useState(false)
-  const dropdownRef = useDropdownCloseOnBlur<boolean>(false, setExpansion)
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useDropdownCloseOnBlur<boolean>(false, setIsOpen)
 
   return (
     <div ref={dropdownRef}>
-      <Button
-        className="flex items-center text-green-primary"
-        onClick={() => setExpansion(!isExpanded)}
-        variant="buttonGhost">
+      <Button className="flex items-center text-green-primary" onClick={() => setIsOpen(!isOpen)} variant="buttonGhost">
         {currentOption}
         <Icon name="laajenna" color="text-black" />
       </Button>
-      {isExpanded && (
+      {isOpen && (
         <ul className="absolute -left-1 mt-2 w-36 border border-gray-secondary bg-white px-2 py-1">
           {Object.keys(options).map((option, i) => (
             <li
@@ -33,7 +30,7 @@ export const HeaderDropdown = ({ currentOption, options, onOptionClick }: Locale
               key={i}
               onClick={() => {
                 onOptionClick(option)
-                setExpansion(false)
+                setIsOpen(false)
               }}>
               {options[option].name}
             </li>

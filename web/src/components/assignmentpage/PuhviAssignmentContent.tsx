@@ -3,6 +3,9 @@ import { Icon } from '../Icon'
 import { AssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Dropdown } from '../Dropdown'
+import { LANGUAGE_OPTIONS } from '../../koodisto'
+import { useState } from 'react'
 
 type PuhviAssignmentContentProps = {
   assignment: AssignmentIn
@@ -11,16 +14,24 @@ type PuhviAssignmentContentProps = {
 
 export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignmentContentProps) => {
   const { t } = useTranslation()
-
+  const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
 
   return (
     <div className="col min-h-[60vh] w-full">
       <div className="row justify-between">
         <h2 className="pb-3" data-testid="assignment-header">
-          {assignment.name}
+          {assignment.nameFi}
         </h2>
-        <p>{t('assignment.kieli')}</p>
+        <div>
+          <p className="pl-2">{t('filter.kieli')}</p>
+          <Dropdown
+            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
+            onOptionClick={(opt: string) => setLanguage(opt)}
+            options={LANGUAGE_OPTIONS}
+            testId={'language-dropdown'}
+          />
+        </div>
       </div>
       <div className="row">
         <StateTag state={assignment.state} />
@@ -40,15 +51,15 @@ export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignment
       <div className="my-3 bg-gray-bg p-3">
         <ul>
           <li>
-            <span className="pr-1 font-semibold">Tavoitetaitotaso:</span>
+            <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
             *CEFR*
           </li>
           <li>
-            <span className="pr-1 font-semibold">Aihe:</span>
+            <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
             *topic*
           </li>
           <li>
-            <span className="pr-1 font-semibold">Laaja-alainen osaaminen:</span>
+            <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
             *laaja-alainen osaaminen*
           </li>
         </ul>
@@ -68,7 +79,7 @@ export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignment
           </div>
         </div>
       </div>
-      <p className="h-full pb-3">{assignment.content}</p>
+      <p className="h-full pb-3">{assignment.contentFi}</p>
     </div>
   )
 }
