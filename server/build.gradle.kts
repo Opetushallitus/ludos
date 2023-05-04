@@ -41,7 +41,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
+val buildWebTask = task<Exec>("buildWeb") {
+    workingDir("../web")
+    commandLine("bash", "-c", "if [ ! -d ../server/build/resources/main/static ]; then source ~/.nvm/nvm.sh && nvm use && yarn && yarn build; fi")
+}
+
 tasks.withType<KotlinCompile> {
+    dependsOn(buildWebTask)
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"
