@@ -43,7 +43,7 @@ dependencies {
 
 val buildWebTask = task<Exec>("buildWeb") {
     workingDir("../web")
-    commandLine("bash", "-c", "if [ ! -d ../server/build/resources/main/static ]; then source ~/.nvm/nvm.sh && nvm use && yarn && yarn build; fi")
+    commandLine("bash", "-c", "if [ ! -d ../server/build/resources/main/static ]; then yarn && yarn build; fi")
 }
 
 tasks.withType<KotlinCompile> {

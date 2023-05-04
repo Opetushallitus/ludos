@@ -3,12 +3,9 @@ description: Starts up the frontend and backend
 runs:
   using: composite
   steps:
-    - name: Build backend
+    - name: Build frontend and backend
       shell: bash
       run: cd server && ./gradlew build
-    - name: Build frontend
-      shell: bash
-      run: cd web && yarn build:ci
     - name: Start backend
       shell: bash
       run: cd server && ./gradlew bootRun --args='--spring.profiles.active=local' &
