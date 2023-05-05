@@ -7,7 +7,7 @@ import { SukoAssignmentContent } from './SukoAssignmentContent'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
 import { PuhviAssignmentContent } from './PuhviAssignmentContent'
 import { LdAssignmentContent } from './LdAssignmentContent'
-import { ASSIGNMENT_ENUM } from '../../constants'
+import { EXAM_TYPE_ENUM } from '../../constants'
 
 type AssignmentProps = { exam: Exam }
 
@@ -18,10 +18,10 @@ export const Assignment = ({ exam }: AssignmentProps) => {
 
   const url =
     examType === ExamTypesEng.KOETEHTAVAT
-      ? ASSIGNMENT_ENUM.ASSIGNMENT
+      ? EXAM_TYPE_ENUM.ASSIGNMENT
       : examType === ExamTypesEng.OHJEET
-      ? ASSIGNMENT_ENUM.INSTRUCTION
-      : ASSIGNMENT_ENUM.CERTIFICATE
+      ? EXAM_TYPE_ENUM.INSTRUCTION
+      : EXAM_TYPE_ENUM.CERTIFICATE
 
   const { data: assignment, loading, error } = useFetch<AssignmentIn>(`${url}/${exam}/${id}`)
 
