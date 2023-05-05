@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFetch } from '../../../hooks/useFetch'
 import { AssignmentIn, Exam, ExamTypesEng } from '../../../types'
 import { AssignmentCard } from './AssignmentCard'
@@ -8,6 +8,7 @@ import { InstructionCard } from '../instruction/InstructionCard'
 import { AssignmentFilters } from './AssignmentFilters'
 import { Spinner } from '../../Spinner'
 import { CertificateCard } from '../certificate/CertificateCard'
+import { EXAM_TYPE_ENUM } from '../../../constants'
 
 export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; examType: string; activeTab: string }) => {
   const { filters, setFilters } = useFilters()
@@ -17,12 +18,14 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
 
   const url =
     examType === ExamTypesEng.KOETEHTAVAT
-      ? `assignment/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}&${new URLSearchParams(
+      ? `${
+          EXAM_TYPE_ENUM.ASSIGNMENT
+        }/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}&${new URLSearchParams(
           removeNullsFromFilterObj
         ).toString()}`
       : examType === ExamTypesEng.OHJEET
-      ? `instruction/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
-      : `certificate/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
+      ? `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
+      : `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
 
   const { data, loading, refresh } = useFetch<AssignmentIn[]>(url)
 
@@ -70,7 +73,7 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
               {data?.map((assignment, i) => (
-                <CertificateCard assignment={assignment} exam={exam} key={i} />
+                <CertificateCard assignment={assignment} key={i} />
               ))}
             </div>
           )}
