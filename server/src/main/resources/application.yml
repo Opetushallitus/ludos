@@ -5,16 +5,25 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/ludos}
     username: ${DB_USER:oph}
     password: ${DB_PASS:oph}
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+      schema: classpath:org/springframework/session/jdbc/schema-@@platform@@.sql
+      table-name: spring_session
   jpa:
     open-in-view: false
-
 logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        security: INFO
+        session: INFO
 
 server:
+  servlet:
+    session:
+      timeout: 7200s # Session timeout. If a duration suffix is not specified, seconds are used.
   tomcat:
     accesslog:
       enabled: true

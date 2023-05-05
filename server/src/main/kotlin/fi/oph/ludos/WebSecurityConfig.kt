@@ -43,7 +43,10 @@ class WebSecurityConfiguration {
             .logoutUrl(casConfig.logoutUrl)
 
         http.authorizeHttpRequests()
+            .antMatchers("/assets/**").permitAll()
             .antMatchers("/api/health-check").permitAll()
+
+        http.authorizeHttpRequests()
             .antMatchers("/**").authenticated().and().addFilter(casAuthenticationFilter)
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
             .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
