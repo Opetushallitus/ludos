@@ -3,8 +3,8 @@ package fi.oph.ludos.instruction
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Constants
 import fi.oph.ludos.State
-import fi.oph.ludos.assignment.Exam
-import fi.oph.ludos.assignment.ExamType
+import fi.oph.ludos.Exam
+import fi.oph.ludos.ExamType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test

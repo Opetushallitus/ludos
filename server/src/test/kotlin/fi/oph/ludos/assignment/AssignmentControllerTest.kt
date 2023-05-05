@@ -2,6 +2,8 @@ package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Constants
+import fi.oph.ludos.Exam
+import fi.oph.ludos.ExamType
 import fi.oph.ludos.State
 import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
