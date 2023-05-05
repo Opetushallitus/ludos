@@ -97,3 +97,13 @@ data class LdInstructionDtoOut(
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
+
+data class UpdateInstructionDtoIn(
+    val id: Int,
+    val nameFi: String,
+    val nameSv: String,
+    val contentFi: String,
+    val contentSv: String,
+    val state: State,
+    val examType: ExamType,
+)

@@ -30,7 +30,7 @@ fun updateAssignment(exam: Exam, id: Int, body: String) =
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-class ApiTests(@Autowired val mockMvc: MockMvc) {
+class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
 
     data class TestSukoIn(
@@ -81,12 +81,7 @@ class ApiTests(@Autowired val mockMvc: MockMvc) {
             .andReturn().response.contentAsString
         val assignmentOut = objectMapper.readValue(getResult, TestSukoOut::class.java)
 
-        assertEquals(assignmentOut.nameFi, testAssignment.nameFi)
-        assertEquals(assignmentOut.contentFi, testAssignment.contentFi)
-        assertEquals(assignmentOut.nameSv, testAssignment.nameSv)
-        assertEquals(assignmentOut.contentSv, testAssignment.contentSv)
-        assertEquals(assignmentOut.state, testAssignment.state)
-        assertEquals(assignmentOut.assignmentType, testAssignment.assignmentType)
+        assertEquals(assignmentIn, assignmentOut)
 
         // update request
         val editedAssignment =

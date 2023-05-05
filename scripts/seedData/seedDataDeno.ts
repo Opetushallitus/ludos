@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net
 
-const BASE_URL = 'http://localhost:8080/api/assignment'
+const BASE_URL = 'http://localhost:8080/api'
 
 const headers = {
   'Content-Type': 'application/json'
@@ -67,20 +67,30 @@ const seedData = async () => {
           exam
         }
 
-        const promise = fetch(BASE_URL, {
+        let url = BASE_URL
+
+        if (examType === 'ASSIGNMENTS') {
+          url += '/assignment'
+        } else if (examType === 'INSTRUCTIONS') {
+          url += '/instruction'
+        } else {
+          url += '/certificate'
+        }
+
+        const promise = fetch(url, {
           method: 'POST',
           headers,
           body: JSON.stringify(body)
         })
           .then(async (response) => {
             if (response.ok) {
-              console.log(`Assignment created: ${data.nameFi}`)
+              console.log(`${examType} created: ${data.nameFi}`)
             } else {
-              console.log(`Error creating assignment: ${await response.text()}`)
+              console.log(`Error creating ${examType}: ${await response.text()}`)
             }
           })
           .catch((error) => {
-            console.log(`Error creating assignment: ${error.message}`)
+            console.log(`Catch error creating ${examType}: ${error.message}`)
           })
 
         promises.push(promise)
