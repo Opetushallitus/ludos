@@ -3,8 +3,8 @@ package fi.oph.ludos.instruction
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import fi.oph.ludos.ExamType
 import fi.oph.ludos.State
-import fi.oph.ludos.assignment.ExamType
 import java.sql.Timestamp
 
 enum class InstructionFormat {

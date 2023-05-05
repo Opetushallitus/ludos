@@ -1,5 +1,7 @@
 package fi.oph.ludos.assignment
 
+import fi.oph.ludos.ExamType
+import fi.oph.ludos.Exam
 import fi.oph.ludos.State
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate

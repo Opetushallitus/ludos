@@ -1,9 +1,9 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Constants
+import fi.oph.ludos.Exam
+import fi.oph.ludos.ExamType
 import fi.oph.ludos.State
-import fi.oph.ludos.assignment.Exam
-import fi.oph.ludos.assignment.ExamType
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

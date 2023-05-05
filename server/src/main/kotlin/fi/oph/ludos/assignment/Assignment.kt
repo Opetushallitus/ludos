@@ -3,17 +3,10 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import fi.oph.ludos.ExamType
 import fi.oph.ludos.State
 import java.sql.Timestamp
 import java.util.*
-
-enum class Exam {
-    SUKO, PUHVI, LD
-}
-
-enum class ExamType {
-    ASSIGNMENTS, INSTRUCTIONS, CERTIFICATES
-}
 
 enum class SukoAssignmentType {
     LUKEMINEN, TEKSTIN_TIIVISTAMINEN, KESKUSTELU

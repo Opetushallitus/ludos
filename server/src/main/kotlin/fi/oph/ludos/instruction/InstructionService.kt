@@ -1,7 +1,7 @@
 package fi.oph.ludos.instruction
 
-import fi.oph.ludos.assignment.Exam
-import fi.oph.ludos.assignment.ExamType
+import fi.oph.ludos.Exam
+import fi.oph.ludos.ExamType
 import org.springframework.stereotype.Service
 
 @Service

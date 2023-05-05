@@ -1,6 +1,8 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Constants
+import fi.oph.ludos.Exam
+import fi.oph.ludos.ExamType
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
