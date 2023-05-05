@@ -4,7 +4,7 @@ import { fillSukoForm } from '../helpers'
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await page.getByTestId('nav-link-content-suko').click()
+    await page.getByTestId('nav-link-suko').click()
     await page.getByTestId('create-koetehtava-button').click()
   })
 

@@ -7,7 +7,7 @@ test.describe('Assignment form tests', () => {
   test('can update a new assignment', async ({ page }) => {
     await page.goto('/')
 
-    await page.getByTestId('nav-link-content-suko').click()
+    await page.getByTestId('nav-link-suko').click()
 
     await page.getByTestId('create-koetehtava-button').click()
 
