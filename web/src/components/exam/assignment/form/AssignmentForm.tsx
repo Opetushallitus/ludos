@@ -8,8 +8,8 @@ import { assignmentTypes, postAssignment, updateAssignment } from '../../../../f
 import { useEffect, useState } from 'react'
 import { AssignmentFormType, assignmentSchema } from './assignmentSchema'
 import { Tabs } from '../../../Tabs'
-import { TextAreaInput } from './TextAreaInput'
-import { TextInput } from './TextInput'
+import { TextAreaInput } from '../../../TextAreaInput'
+import { TextInput } from '../../../TextInput'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'

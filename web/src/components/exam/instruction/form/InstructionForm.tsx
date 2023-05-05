@@ -8,8 +8,8 @@ import { postInstruction, updateInstruction } from '../../../../formUtils'
 import { useEffect, useState } from 'react'
 import { Tabs } from '../../../Tabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
-import { TextInput } from '../../assignment/form/TextInput'
-import { TextAreaInput } from '../../assignment/form/TextAreaInput'
+import { TextInput } from '../../../TextInput'
+import { TextAreaInput } from '../../../TextAreaInput'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -31,7 +31,6 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
     register,
     reset,
     handleSubmit,
-    control,
     setValue,
     formState: { errors }
   } = useForm<InstructionFormType>({ mode: 'onBlur', resolver: zodResolver(instructionSchema) })

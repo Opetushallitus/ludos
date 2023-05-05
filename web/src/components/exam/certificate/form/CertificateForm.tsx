@@ -8,8 +8,8 @@ import { postCertificate, updateCertificate } from '../../../../formUtils'
 import { useEffect, useState } from 'react'
 import { Tabs } from '../../../Tabs'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
-import { TextInput } from '../../assignment/form/TextInput'
-import { TextAreaInput } from '../../assignment/form/TextAreaInput'
+import { TextInput } from '../../../TextInput'
+import { TextAreaInput } from '../../../TextAreaInput'
 
 type CertificateFormProps = {
   action: 'new' | 'update'

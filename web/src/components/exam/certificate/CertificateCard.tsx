@@ -1,5 +1,4 @@
 import { AssignmentIn } from '../../../types'
-import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
@@ -9,11 +8,9 @@ import { PdfTag } from '../../PdfTag'
 
 type CertificateCardProps = {
   assignment: AssignmentIn
-  exam: string
 }
 
-export const CertificateCard = ({ assignment, exam }: CertificateCardProps) => {
-  const { t } = useTranslation()
+export const CertificateCard = ({ assignment }: CertificateCardProps) => {
   const navigate = useNavigate()
 
   return (

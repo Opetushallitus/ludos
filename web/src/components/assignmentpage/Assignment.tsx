@@ -3,11 +3,11 @@ import { Button } from '../Button'
 import { AssignmentIn, Exam, ExamTypesEng } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
-import React from 'react'
 import { SukoAssignmentContent } from './SukoAssignmentContent'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
 import { PuhviAssignmentContent } from './PuhviAssignmentContent'
 import { LdAssignmentContent } from './LdAssignmentContent'
+import { ASSIGNMENT_ENUM } from '../../constants'
 
 type AssignmentProps = { exam: Exam }
 
@@ -18,10 +18,10 @@ export const Assignment = ({ exam }: AssignmentProps) => {
 
   const url =
     examType === ExamTypesEng.KOETEHTAVAT
-      ? `assignment/`
+      ? ASSIGNMENT_ENUM.ASSIGNMENT
       : examType === ExamTypesEng.OHJEET
-      ? `instruction/`
-      : `certificate/`
+      ? ASSIGNMENT_ENUM.INSTRUCTION
+      : ASSIGNMENT_ENUM.CERTIFICATE
 
   const { data: assignment, loading, error } = useFetch<AssignmentIn>(`${url}/${exam}/${id}`)
 

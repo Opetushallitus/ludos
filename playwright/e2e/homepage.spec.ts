@@ -19,7 +19,7 @@ test('navigation links work', async ({ page }) => {
   await page.goto('/')
 
   for (const contentType of examTypes) {
-    const boxRow = page.getByTestId('/' + contentType)
+    const boxRow = page.getByTestId(`/${contentType}`)
 
     for (const assignmentType of assignmentTypes) {
       await boxRow.getByTestId(`nav-box-${assignmentType}`).click()
