@@ -33,6 +33,9 @@ export function useFetch<T>(url: string) {
     data,
     loading,
     error,
-    refresh: () => setRefresh(!refresh)
+    refresh: () => {
+      setData(undefined)
+      setRefresh(!refresh)
+    }
   }
 }

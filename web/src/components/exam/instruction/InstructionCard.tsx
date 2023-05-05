@@ -1,5 +1,4 @@
 import { AssignmentIn } from '../../../types'
-import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
@@ -11,8 +10,7 @@ type InstructionCardProps = {
   exam: string
 }
 
-export const InstructionCard = ({ assignment, exam }: InstructionCardProps) => {
-  const { t } = useTranslation()
+export const InstructionCard = ({ assignment }: InstructionCardProps) => {
   const navigate = useNavigate()
 
   return (

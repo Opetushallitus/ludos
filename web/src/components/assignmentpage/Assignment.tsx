@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { contentKey } from '../routes/routes'
-import { AssignmentIn } from '../../types'
+import { AssignmentIn, Exam, ExamTypesEng } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import React from 'react'
@@ -10,12 +9,21 @@ import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/ass
 import { PuhviAssignmentContent } from './PuhviAssignmentContent'
 import { LdAssignmentContent } from './LdAssignmentContent'
 
-export const Assignment = () => {
+type AssignmentProps = { exam: Exam }
+
+export const Assignment = ({ exam }: AssignmentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { exam, examType, id } = useParams<{ exam: string; examType: string; id: string }>()
+  const { examType, id } = useParams<{ examType: string; id: string }>()
 
-  const { data: assignment, loading, error } = useFetch<AssignmentIn>(`assignment/${exam!.toLocaleUpperCase()}/${id}`)
+  const url =
+    examType === ExamTypesEng.KOETEHTAVAT
+      ? `assignment/`
+      : examType === ExamTypesEng.OHJEET
+      ? `instruction/`
+      : `certificate/`
+
+  const { data: assignment, loading, error } = useFetch<AssignmentIn>(`${url}/${exam}/${id}`)
 
   if (loading) {
     return <div>Loading...</div>
@@ -35,21 +43,18 @@ export const Assignment = () => {
           <div className="row">
             <div className="col w-9/12 pr-5">
               <div className="row pb-3">
-                {isSukoAssignment(assignment, exam!) && (
+                {isSukoAssignment(assignment, exam) && (
                   <SukoAssignmentContent assignment={assignment} examType={examType} />
                 )}
-                {isPuhviAssignment(assignment, exam!) && (
+                {isPuhviAssignment(assignment, exam) && (
                   <PuhviAssignmentContent assignment={assignment} examType={examType} />
                 )}
-                {isLdAssignment(assignment, exam!) && (
+                {isLdAssignment(assignment, exam) && (
                   <LdAssignmentContent assignment={assignment} examType={examType} />
                 )}
               </div>
               <div className="row mb-6">
-                <Button
-                  variant="buttonSecondary"
-                  onClick={() => navigate(`/${contentKey}/${exam}/${examType}`)}
-                  data-testid="return">
+                <Button variant="buttonSecondary" onClick={() => navigate(`/${exam}/${examType}`)} data-testid="return">
                   {t('assignment.palaa')}
                 </Button>
               </div>

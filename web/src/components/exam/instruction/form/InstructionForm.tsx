@@ -1,21 +1,21 @@
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Button } from '../../../Button'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { AssignmentState, Exam, ExamType, SukoAssignmentIn } from '../../../../types'
 import { useTranslation } from 'react-i18next'
-import { assignmentTypes, postAssignment, updateAssignment } from '../../../../formUtils'
+import { postInstruction, updateInstruction } from '../../../../formUtils'
 import { useEffect, useState } from 'react'
-import { AssignmentFormType, assignmentSchema } from './assignmentSchema'
 import { Tabs } from '../../../Tabs'
-import { TextAreaInput } from './TextAreaInput'
-import { TextInput } from './TextInput'
+import { InstructionFormType, instructionSchema } from './instructionSchema'
+import { TextInput } from '../../assignment/form/TextInput'
+import { TextAreaInput } from '../../assignment/form/TextAreaInput'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
 }
 
-export const AssignmentForm = ({ action }: AssignmentFormProps) => {
+export const InstructionForm = ({ action }: AssignmentFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
@@ -34,15 +34,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     control,
     setValue,
     formState: { errors }
-  } = useForm<AssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(assignmentSchema) })
-
-  // const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
-  //   setValue(
-  //     'topic',
-  //     newSelectedOptions.map((option) => option.key)
-  //   )
-  // }
-  // const topics = watch('topic') || []
+  } = useForm<InstructionFormType>({ mode: 'onBlur', resolver: zodResolver(instructionSchema) })
 
   // set initial values
   useEffect(() => {
@@ -50,25 +42,25 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
       reset({
         ...assignment,
         exam: exam.toUpperCase() as Exam,
-        examType: assignment.examType.toUpperCase() as AssignmentFormType['examType']
+        examType: assignment.examType.toUpperCase() as InstructionFormType['examType']
       })
     } else {
       setValue('exam', exam.toUpperCase() as Exam)
-      setValue('examType', examType.toUpperCase() as AssignmentFormType['examType'])
+      setValue('examType', examType.toUpperCase() as InstructionFormType['examType'])
     }
   }, [assignment, exam, examType, reset, setValue])
 
   async function submitAssignment({ state }: { state: AssignmentState }) {
-    await handleSubmit(async (data: AssignmentFormType) => {
+    await handleSubmit(async (data: InstructionFormType) => {
       const body = { ...data, state }
 
       try {
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<string>(exam, assignment.id, body)
+          resultId = await updateInstruction<string>(exam, assignment.id, body)
         } else {
-          const { id } = await postAssignment<{ id: string }>(body)
+          const { id } = await postInstruction<{ id: string }>(body)
           resultId = id
         }
 
@@ -90,41 +82,6 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
         <input type="hidden" {...register('examType')} />
-
-        {/*<MultiSelectDropdown*/}
-        {/*  options={TOPIC_OPTIONS}*/}
-        {/*  selectedOptions={TOPIC_OPTIONS.filter((it) => topics.includes(it.key))}*/}
-        {/*  onSelectedOptionsChange={handleMultiSelectChange}*/}
-        {/*  canReset*/}
-        {/*/>*/}
-
-        <div className="mb-6">
-          <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
-          <Controller
-            control={control}
-            name="assignmentType"
-            rules={{ required: true }}
-            render={({ field }) => (
-              <>
-                {assignmentTypes.map((assignmentType, i) => (
-                  <fieldset key={i} className="flex items-center">
-                    <input
-                      type="radio"
-                      {...field}
-                      value={assignmentType.id}
-                      checked={field.value === assignmentType.id}
-                      id={assignmentType.id}
-                      data-testid={`assignmentTypeRadio-${assignmentType.id.toLowerCase()}`}
-                      className="mr-2"
-                    />
-                    <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
-                  </fieldset>
-                ))}
-              </>
-            )}
-          />
-          {errors?.assignmentType && <p className="text-green-primary">{errors.assignmentType.message}</p>}
-        </div>
 
         <div className="mb-2 text-lg font-semibold">Sisältö</div>
 

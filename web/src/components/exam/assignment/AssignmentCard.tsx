@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../../Icon'
-import { AssignmentIn } from '../../../types'
+import { AssignmentIn, Exam } from '../../../types'
 import { StateTag } from '../../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
@@ -10,7 +10,7 @@ import { toLocaleDate } from '../../../formatUtils'
 type AssignmentCardProps = {
   language: string
   assignment: AssignmentIn
-  exam: string
+  exam: Exam
 }
 
 export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardProps) => {
