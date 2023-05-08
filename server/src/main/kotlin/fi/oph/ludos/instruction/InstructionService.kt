@@ -13,10 +13,10 @@ class InstructionService(val db: InstructionRepository) {
         else -> throw UnknownError("Unreachable")
     }
 
-    fun getInstructions(exam: Exam, examType: ExamType): List<InstructionOut> = when (exam) {
-        Exam.SUKO -> db.getSukoInstructions(examType)
-        Exam.PUHVI -> db.getPuhviInstructions(examType)
-        Exam.LD -> db.getLdInstructions(examType)
+    fun getInstructions(exam: Exam): List<InstructionOut> = when (exam) {
+        Exam.SUKO -> db.getSukoInstructions()
+        Exam.PUHVI -> db.getPuhviInstructions()
+        Exam.LD -> db.getLdInstructions()
     }
 
     fun getInstructionById(exam: Exam, id: Int): InstructionOut = when (exam) {

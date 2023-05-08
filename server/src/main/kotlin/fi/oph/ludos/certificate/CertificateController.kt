@@ -16,7 +16,7 @@ class CertificateController {
 
     @GetMapping("/{exam}")
     fun getCertificates(
-        @PathVariable exam: Exam, @RequestParam examType: ExamType
+        @PathVariable exam: Exam
     ): List<Any> = listOf()
 
     @GetMapping("/{exam}/{id}")

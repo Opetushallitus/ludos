@@ -16,18 +16,21 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
 
-  const url =
-    examType === ExamTypesEng.KOETEHTAVAT
-      ? `${
-          EXAM_TYPE_ENUM.ASSIGNMENT
-        }/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}&${new URLSearchParams(
-          removeNullsFromFilterObj
-        ).toString()}`
-      : examType === ExamTypesEng.OHJEET
-      ? `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
-      : `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}?examType=${examType.toUpperCase()}`
+  const urlByExamType = () => {
+    if (examType === ExamTypesEng.KOETEHTAVAT) {
+      return `${EXAM_TYPE_ENUM.ASSIGNMENT}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
+        removeNullsFromFilterObj
+      ).toString()}`
+    }
 
-  const { data, loading, refresh } = useFetch<AssignmentIn[]>(url)
+    if (examType === ExamTypesEng.OHJEET) {
+      return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}`
+    }
+
+    return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
+  }
+
+  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByExamType())
 
   // refresh data on tab change
   useEffect(() => {
@@ -40,42 +43,47 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
 
   return (
     <div>
-      {!data ? (
+      {loading ? (
         <div className="mt-10 text-center">
           <Spinner />
         </div>
       ) : (
         <>
-          {examType === ExamTypesEng.KOETEHTAVAT && (
-            <div>
-              <AssignmentFilters
-                filters={filters}
-                setFilters={setFilters}
-                language={language}
-                setLanguage={setLanguage}
-              />
-              <ul>
-                {data?.map((assignment, i) => (
-                  <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
-                ))}
-              </ul>
-            </div>
-          )}
-          {examType === ExamTypesEng.OHJEET && (
-            <div className="mt-3 flex flex-wrap gap-5">
-              <>{loading && <Spinner />}</>
-              {data?.map((assignment, i) => (
-                <InstructionCard assignment={assignment} exam={exam} key={i} />
-              ))}
-            </div>
-          )}
-          {examType === ExamTypesEng.TODISTUKSET && (
-            <div className="mt-3 flex flex-wrap gap-5">
-              <>{loading && <Spinner />}</>
-              {data?.map((assignment, i) => (
-                <CertificateCard assignment={assignment} key={i} />
-              ))}
-            </div>
+          {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
+          {data && (
+            <>
+              {examType === ExamTypesEng.KOETEHTAVAT && (
+                <div>
+                  <AssignmentFilters
+                    filters={filters}
+                    setFilters={setFilters}
+                    language={language}
+                    setLanguage={setLanguage}
+                  />
+                  <ul>
+                    {data?.map((assignment, i) => (
+                      <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {examType === ExamTypesEng.OHJEET && (
+                <div className="mt-3 flex flex-wrap gap-5">
+                  <>{loading && <Spinner />}</>
+                  {data?.map((assignment, i) => (
+                    <InstructionCard assignment={assignment} exam={exam} key={i} />
+                  ))}
+                </div>
+              )}
+              {examType === ExamTypesEng.TODISTUKSET && (
+                <div className="mt-3 flex flex-wrap gap-5">
+                  <>{loading && <Spinner />}</>
+                  {data?.map((assignment, i) => (
+                    <CertificateCard assignment={assignment} key={i} />
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </>
       )}

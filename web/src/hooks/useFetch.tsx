@@ -36,6 +36,7 @@ export function useFetch<T>(url: string) {
     refresh: () => {
       setData(undefined)
       setRefresh(!refresh)
+      setError(null)
     }
   }
 }

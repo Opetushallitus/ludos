@@ -1,5 +1,4 @@
 CREATE TYPE state AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
-CREATE TYPE exam_type AS ENUM ('ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES');
 
 CREATE TABLE assignment
 (
@@ -9,7 +8,6 @@ CREATE TABLE assignment
     assignment_content_fi text        NOT NULL,
     assignment_content_sv text        NOT NULL,
     assignment_state      state       NOT NULL,
-    assignment_exam_type  exam_type   NOT NULL,
     assignment_created_at timestamptz NOT NULL default now(),
     assignment_updated_at timestamptz NOT NULL default now()
 );
@@ -35,7 +33,6 @@ CREATE TABLE instruction
     instruction_content_fi text        NOT NULL,
     instruction_content_sv text        NOT NULL,
     instruction_state      state       NOT NULL,
-    instruction_exam_type  exam_type   NOT NULL,
     instruction_created_at timestamptz NOT NULL default now(),
     instruction_updated_at timestamptz NOT NULL default now()
 );

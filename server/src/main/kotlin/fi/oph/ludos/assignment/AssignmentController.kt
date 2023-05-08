@@ -18,7 +18,6 @@ class AssignmentController(val service: AssignmentService) {
     @GetMapping("/{exam}")
     fun getAssignments(
         @PathVariable exam: Exam,
-        @RequestParam examType: ExamType?,
         @RequestParam(required = false) course: String?,
         @RequestParam(required = false) assignmentType: String?,
         @RequestParam(required = false) title: String?,
@@ -31,7 +30,7 @@ class AssignmentController(val service: AssignmentService) {
             course, assignmentType, title, language, orderBy, orderDirection
         )
 
-        return service.getAssignments(exam, examType, filters)
+        return service.getAssignments(exam, filters)
     }
 
     @GetMapping("{exam}/{id}")

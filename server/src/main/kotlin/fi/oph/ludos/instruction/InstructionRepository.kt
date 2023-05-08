@@ -10,7 +10,7 @@ import java.sql.ResultSet
 @Component
 class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
     fun saveSukoInstruction(instruction: SukoInstructionDtoIn): SukoInstructionDtoOut = jdbcTemplate.query(
-        "INSERT INTO suko_instruction (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_state, instruction_exam_type) VALUES (?, ?, ?, ?, ?::state, ?::exam_type) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
+        "INSERT INTO suko_instruction (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_state) VALUES (?, ?, ?, ?, ?::state) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
         { rs: ResultSet, _: Int ->
             SukoInstructionDtoOut(
                 rs.getInt("instruction_id"),
@@ -29,11 +29,10 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         instruction.contentFi,
         instruction.contentSv,
         instruction.state.toString(),
-        instruction.examType.toString()
     )[0]
 
     fun savePuhviInstruction(instruction: PuhviInstructionDtoIn): PuhviInstructionDtoOut = jdbcTemplate.query(
-        "INSERT INTO puhvi_instruction (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_state, instruction_exam_type) VALUES (?, ?, ?, ?, ?::state, ?::exam_type) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
+        "INSERT INTO puhvi_instruction (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_state) VALUES (?, ?, ?, ?, ?::state) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
         { rs: ResultSet, _: Int ->
             PuhviInstructionDtoOut(
                 rs.getInt("instruction_id"),
@@ -52,11 +51,10 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         instruction.contentFi,
         instruction.contentSv,
         instruction.state.toString(),
-        instruction.examType.toString()
     )[0]
 
     fun saveLdInstruction(instruction: LdInstructionDtoIn): LdInstructionDtoOut = jdbcTemplate.query(
-        "INSERT INTO ld_instruction (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_state, instruction_exam_type) VALUES (?, ?, ?, ?, ?::state, ?::exam_type) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
+        "INSERT INTO ld_instruction (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_state) VALUES (?, ?, ?, ?, ?::state) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
         { rs: ResultSet, _: Int ->
             LdInstructionDtoOut(
                 rs.getInt("instruction_id"),
@@ -75,7 +73,6 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         instruction.contentFi,
         instruction.contentSv,
         instruction.state.toString(),
-        instruction.examType.toString()
     )[0]
 
     val mapSukoResultSet: (ResultSet, Int) -> SukoInstructionDtoOut? = { rs: ResultSet, _: Int ->
@@ -86,7 +83,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             State.valueOf(rs.getString("instruction_state")),
-            ExamType.valueOf(rs.getString("instruction_exam_type")),
+            ExamType.INSTRUCTIONS,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )
@@ -100,7 +97,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             State.valueOf(rs.getString("instruction_state")),
-            ExamType.valueOf(rs.getString("instruction_exam_type")),
+            ExamType.INSTRUCTIONS,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )
@@ -114,7 +111,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             State.valueOf(rs.getString("instruction_state")),
-            ExamType.valueOf(rs.getString("instruction_exam_type")),
+            ExamType.INSTRUCTIONS,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )
@@ -162,31 +159,28 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         throw NotFoundException()
     }
 
-    fun getSukoInstructions(examType: ExamType): List<SukoInstructionDtoOut> = try {
+    fun getSukoInstructions(): List<SukoInstructionDtoOut> = try {
         jdbcTemplate.query(
-            "SELECT * FROM suko_instruction WHERE instruction_exam_type = ?::exam_type",
+            "SELECT * FROM suko_instruction",
             mapSukoResultSet,
-            examType.toString()
         )
     } catch (e: NotFoundException) {
         throw NotFoundException()
     }
 
-    fun getPuhviInstructions(examType: ExamType): List<PuhviInstructionDtoOut> = try {
+    fun getPuhviInstructions(): List<PuhviInstructionDtoOut> = try {
         jdbcTemplate.query(
-            "SELECT * FROM puhvi_instruction WHERE instruction_exam_type = ?::exam_type",
+            "SELECT * FROM puhvi_instruction",
             mapPuhviResultSet,
-            examType.toString()
         )
     } catch (e: NotFoundException) {
         throw NotFoundException()
     }
 
-    fun getLdInstructions(examType: ExamType): List<LdInstructionDtoOut> = try {
+    fun getLdInstructions(): List<LdInstructionDtoOut> = try {
         jdbcTemplate.query(
-            "SELECT * FROM ld_instruction WHERE instruction_exam_type = ?::exam_type",
+            "SELECT * FROM ld_instruction",
             mapLdResultSet,
-            examType.toString()
         )
     } catch (e: NotFoundException) {
         throw NotFoundException()
@@ -194,7 +188,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updateSukoInstruction(id: Int, instruction: UpdateInstructionDtoIn): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE suko_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_state = ?::state, instruction_exam_type = ?::exam_type, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
+            "UPDATE suko_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_state = ?::state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("instruction_id")
             },
@@ -203,7 +197,6 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             instruction.contentFi,
             instruction.contentSv,
             instruction.state.toString(),
-            instruction.examType.toString(),
             id
         )
 
@@ -218,7 +211,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updatePuhviInstruction(id: Int, instruction: UpdateInstructionDtoIn): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE puhvi_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_state = ?::state, instruction_exam_type = ?::exam_type, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
+            "UPDATE puhvi_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_state = ?::state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("instruction_id")
             },
@@ -227,7 +220,6 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             instruction.contentFi,
             instruction.contentSv,
             instruction.state.toString(),
-            instruction.examType.toString(),
             id
         )
 
@@ -242,7 +234,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updateLdInstruction(id: Int, instruction: UpdateInstructionDtoIn): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE ld_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_state = ?::state, instruction_exam_type = ?::exam_type, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
+            "UPDATE ld_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_state = ?::state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("instruction_id")
             },
@@ -251,7 +243,6 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             instruction.contentFi,
             instruction.contentSv,
             instruction.state.toString(),
-            instruction.examType.toString(),
             id
         )
 

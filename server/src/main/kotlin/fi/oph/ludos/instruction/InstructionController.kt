@@ -17,8 +17,8 @@ class InstructionController(val service: InstructionService) {
 
     @GetMapping("/{exam}")
     fun getInstructions(
-        @PathVariable exam: Exam, @RequestParam examType: ExamType
-    ): List<InstructionOut> = service.getInstructions(exam, examType)
+        @PathVariable exam: Exam
+    ): List<InstructionOut> = service.getInstructions(exam)
 
     @GetMapping("/{exam}/{id}")
     fun getInstruction(@PathVariable exam: Exam, @PathVariable("id") id: Int): InstructionOut =

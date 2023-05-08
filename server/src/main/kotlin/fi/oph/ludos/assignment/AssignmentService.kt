@@ -1,7 +1,6 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Exam
-import fi.oph.ludos.ExamType
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -9,10 +8,10 @@ import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AssignmentService(val db: AssignmentRepository) {
-    fun getAssignments(exam: Exam, examType: ExamType?, filters: AssignmentFilter?): List<AssignmentOut> = when (exam) {
-        Exam.SUKO -> db.getSukoAssignments(examType, filters)
-        Exam.PUHVI -> db.getPuhviAssignments(examType, filters)
-        Exam.LD -> db.getLdAssignments(examType, filters)
+    fun getAssignments(exam: Exam, filters: AssignmentFilter?): List<AssignmentOut> = when (exam) {
+        Exam.SUKO -> db.getSukoAssignments(filters)
+        Exam.PUHVI -> db.getPuhviAssignments(filters)
+        Exam.LD -> db.getLdAssignments(filters)
     }
 
     fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {
