@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import { ContentTypes, Exam, ContentType } from '../../types'
 import { Tabs } from '../Tabs'
 import {
-  AssignmentKeyTranslationEnglish,
-  AssignmentKeyTranslationFinnish,
+  ContentTypeTranslationEnglish,
+  ContentTypeTranslationFinnish,
   getSingularContentTypeFinnish
 } from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +22,7 @@ export const Exams = ({ exam }: ExamProps) => {
   const navigate = useNavigate()
   const { contentType } = useParams<{ contentType: string }>()
 
-  const defaultContentType = (AssignmentKeyTranslationFinnish[contentType!] as ContentType) || ContentTypes.KOETEHTAVAT
+  const defaultContentType = (ContentTypeTranslationFinnish[contentType!] as ContentType) || ContentTypes.KOETEHTAVAT
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
     contentType: defaultContentType,
     exam
@@ -62,7 +62,7 @@ function useActiveTabAndUrlPathUpdate({ contentType, exam }: { contentType: Cont
 
   useEffect(() => {
     if (activeTab) {
-      navigate(`/${exam.toLowerCase()}/${AssignmentKeyTranslationEnglish[activeTab]}`, { replace: true })
+      navigate(`/${exam.toLowerCase()}/${ContentTypeTranslationEnglish[activeTab]}`, { replace: true })
     }
   }, [activeTab, navigate, contentType, exam])
 

@@ -1,5 +1,5 @@
 import {
-  ExamsSingular,
+  ContentTypesSingular,
   ContentTypeKeys,
   ContentType,
   ContentTypes,
@@ -10,16 +10,16 @@ import {
 
 export function getSingularContentTypeFinnish(s: ContentType) {
   const key = Object.keys(ContentTypes).find((k) => ContentTypes[k as ContentTypeKeys] === s) as ContentTypeKeys
-  return ExamsSingular[key]
+  return ContentTypesSingular[key]
 }
 
-export const AssignmentKeyTranslationEnglish = {
+export const ContentTypeTranslationEnglish = {
   koetehtavat: 'assignments',
   ohjeet: 'instructions',
   todistukset: 'certificates'
 } as { [key: string]: string }
 
-export const AssignmentKeyTranslationFinnish = {
+export const ContentTypeTranslationFinnish = {
   assignments: 'koetehtavat',
   instructions: 'ohjeet',
   certificates: 'todistukset'

@@ -10,6 +10,8 @@ import { Tabs } from '../../../Tabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
+import { ContentTypeTranslationFinnish } from '../../assignment/assignmentUtils'
+import { FormHeader } from '../../../formCommon/FormHeader'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -72,17 +74,13 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
 
   return (
     <div className="w-10/12 pt-3">
-      <div className="mb-6">
-        <h2 className="mb-3" data-testid="heading">
-          {action === 'new' ? t(`form.${exam}`) : assignment?.nameFi}
-        </h2>
-        {action === 'new' ? <p>{t('form.kuvaus')}</p> : <p>{t('form.muokkauskuvaus')}</p>}
-      </div>
+      <FormHeader action={action} contentType={contentType} assignment={assignment} />
+
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
         <input type="hidden" {...register('contentType')} />
 
-        <div className="mb-2 text-lg font-semibold">Sisältö</div>
+        <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
         <div className="mb-6">
           <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />

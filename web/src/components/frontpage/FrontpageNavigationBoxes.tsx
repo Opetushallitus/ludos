@@ -1,7 +1,7 @@
 import { ContentType, Page } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
-import { AssignmentKeyTranslationEnglish } from '../exam/assignment/assignmentUtils'
+import { ContentTypeTranslationEnglish } from '../exam/assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 
 export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignments: ContentType[] }) => {
@@ -20,7 +20,7 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
               <button
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
                 onClick={() => navigate(contentType.path, { state: { assignmentType: option } })}
-                data-testid={`nav-box-${AssignmentKeyTranslationEnglish[option]}`}
+                data-testid={`nav-box-${ContentTypeTranslationEnglish[option]}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={option} color="text-green-primary" />

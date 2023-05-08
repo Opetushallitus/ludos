@@ -65,7 +65,7 @@ type SingularOptions = {
   [key in ContentTypeKeys]: string
 }
 
-export const ExamsSingular: SingularOptions = {
+export const ContentTypesSingular: SingularOptions = {
   KOETEHTAVAT: 'koetehtava',
   OHJEET: 'ohje',
   TODISTUKSET: 'todistus'

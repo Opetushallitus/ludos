@@ -3,7 +3,7 @@ import { useFetch } from '../../../hooks/useFetch'
 import { AssignmentIn, Exam, ContentTypesEng } from '../../../types'
 import { AssignmentCard } from './AssignmentCard'
 import { FiltersType, useFilters } from '../../../hooks/useFilters'
-import { AssignmentKeyTranslationEnglish, removeEmpty } from './assignmentUtils'
+import { ContentTypeTranslationEnglish, removeEmpty } from './assignmentUtils'
 import { InstructionCard } from '../instruction/InstructionCard'
 import { AssignmentFilters } from './AssignmentFilters'
 import { Spinner } from '../../Spinner'
@@ -42,7 +42,7 @@ export const AssignmentList = ({
 
   // refresh data on tab change
   useEffect(() => {
-    const singularContentType = AssignmentKeyTranslationEnglish[activeTab]
+    const singularContentType = ContentTypeTranslationEnglish[activeTab]
 
     if (contentType !== singularContentType) {
       refresh()
