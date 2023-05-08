@@ -5,6 +5,7 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.Exam
 import fi.oph.ludos.ContentType
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -281,5 +282,48 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
         assertEquals(updatedInstruction.contentType, ContentType.INSTRUCTIONS)
         assertEquals(updatedInstruction.id, instructionIn.id)
+    }
+
+    @Test
+    fun failInstructionsUpdate() {
+        val nonExistentId = -1
+        val editedInstruction =
+            "{\"id\": \"$nonExistentId\",\"nameFi\":\"New test name\",\"contentFi\":\"content\",\"nameSv\":\"New test name\",\"contentSv\":\"content\",\"publishState\":\"PUBLISHED\",\"contentType\": \"${ContentType.INSTRUCTIONS}\"}\n"
+
+        val failUpdate = mockMvc.perform(updateInstruction(Exam.SUKO, nonExistentId, editedInstruction))
+            .andReturn().response.contentAsString
+
+        Assertions.assertThat(failUpdate).isEqualTo("404 NOT_FOUND \"Instruction not found $nonExistentId\"")
+    }
+
+    @Test
+    fun invalidExam() {
+        val body =
+            "{\"name\":\"Suko Test Assignment\",\"content\":\"Instructions content\",\"publishState\":\"PUBLISHED\",\"contentType\": \"${ContentType.INSTRUCTIONS}\",\"exam\":\"WRONG\"}\n"
+
+        val postResult = mockMvc.perform(postInstruction(body)).andExpect(status().isBadRequest()).andReturn()
+        val responseContent = postResult.response.contentAsString
+
+        Assertions.assertThat(responseContent).contains("Could not resolve type id 'WRONG' as a subtype")
+    }
+
+    @Test
+    fun invalidState() {
+        // Invalid assignment type
+        val body =
+            "{\"name\":\"Suko Test Assignment\",\"content\":\"Instructions content\",\"publishState\":\"TEST\",\"contentType\": \"${ContentType.INSTRUCTIONS}\",\"exam\":\"SUKO\"}\n"
+
+        val postResult = mockMvc.perform(postInstruction(body)).andExpect(status().isBadRequest()).andReturn()
+        val responseContent = postResult.response.contentAsString
+
+        Assertions.assertThat(responseContent).contains("Cannot deserialize value of type")
+    }
+
+    @Test
+    fun assignmentNotFound() {
+        val getResult = mockMvc.perform(getInstruction(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
+        val responseContent = getResult.response.contentAsString
+
+        Assertions.assertThat(responseContent).isEqualTo("404 NOT_FOUND \"Instruction not found 999\"")
     }
 }

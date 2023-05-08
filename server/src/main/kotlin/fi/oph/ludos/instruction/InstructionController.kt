@@ -2,7 +2,7 @@ package fi.oph.ludos.instruction
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
-import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -29,7 +29,7 @@ class InstructionController(val service: InstructionService) {
     ): ResponseEntity<Int> = try {
         val updatedAssignmentId = service.updateInstruction(exam, id, instruction)
         ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
-    } catch (e: ChangeSetPersister.NotFoundException) {
+    } catch (e: NotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).build()
     }
 }
