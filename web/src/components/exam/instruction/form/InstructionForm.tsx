@@ -89,22 +89,22 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
         {activeTab === 'fi' && (
           <>
             <TextInput id="nameFi" register={register} required>
-              {t('form.tehtavannimi')}
+              {t('form.ohjeennimi')}
             </TextInput>
             {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
             <TextAreaInput id="contentFi" register={register}>
-              {t('form.tehtavansisalto')}
+              {t('form.ohjeensisalto')}
             </TextAreaInput>
           </>
         )}
         {activeTab === 'sv' && (
           <>
             <TextInput id="nameSv" register={register} required>
-              {t('form.tehtavannimi')}
+              {t('form.ohjeennimi')}
             </TextInput>
             {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
             <TextAreaInput id="contentSv" register={register}>
-              {t('form.tehtavansisalto')}
+              {t('form.ohjeensisalto')}
             </TextAreaInput>
           </>
         )}

@@ -93,7 +93,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
             </TextInput>
             {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
             <TextAreaInput id="contentFi" register={register}>
-              {t('form.todistuksensisalto')}
+              {t('form.todistuksenkuvaus')}
             </TextAreaInput>
           </>
         )}
@@ -104,7 +104,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
             </TextInput>
             {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
             <TextAreaInput id="contentSv" register={register}>
-              {t('form.todistuksensisalto')}
+              {t('form.todistuksenkuvaus')}
             </TextAreaInput>
           </>
         )}
