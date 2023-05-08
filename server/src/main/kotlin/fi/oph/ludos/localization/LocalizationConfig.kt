@@ -10,19 +10,12 @@ import org.springframework.web.client.RestTemplate
 @Configuration
 class LocalizationConfig {
     @Bean
-    fun restTemplate(): RestTemplate {
-        return RestTemplate()
-    }
+    fun restTemplate(): RestTemplate = RestTemplate()
 }
 
 @Configuration
 @EnableCaching
 class CacheConfig {
     @Bean
-    fun cacheManager(): CacheManager {
-        //todo: define cache properties such as time-to-live or maximum cache size?
-        // what if localization api is down? should we keep the cache for many hours,
-        // is it forever by default? I do not want it to expire
-        return ConcurrentMapCacheManager("localizedTexts")
-    }
+    fun cacheManager(): CacheManager = ConcurrentMapCacheManager("localizedTexts")
 }

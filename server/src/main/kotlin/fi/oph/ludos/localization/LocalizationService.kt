@@ -20,7 +20,7 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
             // Init cache
             updateCache()
         } catch (e: Exception) {
-            // todo: proper logging/error handling
+            // TODO: proper logging/error handling
             println("ERROR: ${e.message}")
         }
     }
