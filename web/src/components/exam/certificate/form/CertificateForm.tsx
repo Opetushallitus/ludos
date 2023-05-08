@@ -1,8 +1,7 @@
 import { useForm } from 'react-hook-form'
-import { Button } from '../../../Button'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentState, Exam, ContentType, SukoAssignmentIn, ContentTypesSingular } from '../../../../types'
+import { AssignmentState, Exam, ContentType, SukoAssignmentIn } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { postCertificate, updateCertificate } from '../../../../formUtils'
 import { useEffect, useState } from 'react'
@@ -10,8 +9,8 @@ import { Tabs } from '../../../Tabs'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { ContentTypeTranslationFinnish } from '../../assignment/assignmentUtils'
 import { FormHeader } from '../../../formCommon/FormHeader'
+import { FormButtonRow } from '../../../formCommon/FormButtonRow'
 
 type CertificateFormProps = {
   action: 'new' | 'update'
@@ -112,25 +111,11 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <div className="mb-2 text-lg font-semibold">Todistus</div>
       </form>
 
-      <div className="mt-4 flex justify-end gap-3">
-        <Button variant="buttonGhost" type="button" onClick={() => navigate(-1)} testId="form-cancel">
-          {t('button.peruuta')}
-        </Button>
-        <Button
-          variant="buttonSecondary"
-          type="button"
-          onClick={() => submitAssignment({ state: AssignmentState.Draft })}
-          testId="form-draft">
-          {t('button.tallennaluonnos')}
-        </Button>
-        <Button
-          variant="buttonPrimary"
-          type="button"
-          onClick={() => submitAssignment({ state: AssignmentState.Published })}
-          testId="form-submit">
-          {t('button.tallennajulkaise')}
-        </Button>
-      </div>
+      <FormButtonRow
+        onCancelClick={() => navigate(-1)}
+        onSaveDraftClick={() => submitAssignment({ state: AssignmentState.Draft })}
+        onSubmitClick={() => submitAssignment({ state: AssignmentState.Published })}
+      />
     </div>
   )
 }

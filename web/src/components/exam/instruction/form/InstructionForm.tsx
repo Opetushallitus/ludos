@@ -1,5 +1,4 @@
 import { useForm } from 'react-hook-form'
-import { Button } from '../../../Button'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { AssignmentState, Exam, ContentType, SukoAssignmentIn } from '../../../../types'
@@ -10,8 +9,8 @@ import { Tabs } from '../../../Tabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { ContentTypeTranslationFinnish } from '../../assignment/assignmentUtils'
 import { FormHeader } from '../../../formCommon/FormHeader'
+import { FormButtonRow } from '../../../formCommon/FormButtonRow'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -110,25 +109,11 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
         )}
       </form>
 
-      <div className="mt-4 flex justify-end gap-3">
-        <Button variant="buttonGhost" type="button" onClick={() => navigate(-1)} testId="form-cancel">
-          {t('button.peruuta')}
-        </Button>
-        <Button
-          variant="buttonSecondary"
-          type="button"
-          onClick={() => submitAssignment({ state: AssignmentState.Draft })}
-          testId="form-draft">
-          {t('button.tallennaluonnos')}
-        </Button>
-        <Button
-          variant="buttonPrimary"
-          type="button"
-          onClick={() => submitAssignment({ state: AssignmentState.Published })}
-          testId="form-submit">
-          {t('button.tallennajulkaise')}
-        </Button>
-      </div>
+      <FormButtonRow
+        onCancelClick={() => navigate(-1)}
+        onSaveDraftClick={() => submitAssignment({ state: AssignmentState.Draft })}
+        onSubmitClick={() => submitAssignment({ state: AssignmentState.Published })}
+      />
     </div>
   )
 }
