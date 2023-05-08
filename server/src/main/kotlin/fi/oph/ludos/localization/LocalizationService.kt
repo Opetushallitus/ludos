@@ -1,6 +1,8 @@
 package fi.oph.ludos.localization
 
 import fi.oph.ludos.exception.LocalizationException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class LocalizationService(val localizationRepository: LocalizationRepository, val cacheManager: CacheManager) {
+    val logger: Logger = LoggerFactory.getLogger(LocalizationService::class.java)
     init {
         // Schedule cache update every 2 minutes
         val scheduler = Executors.newScheduledThreadPool(1)
@@ -20,8 +23,7 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
             // Init cache
             updateCache()
         } catch (e: Exception) {
-            // todo: proper logging/error handling
-            println("ERROR: ${e.message}")
+            logger.error("Failed to update localization cache", e)
         }
     }
 
