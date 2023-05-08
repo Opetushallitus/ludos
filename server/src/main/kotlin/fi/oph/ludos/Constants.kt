@@ -14,6 +14,6 @@ enum class Exam {
     SUKO, PUHVI, LD
 }
 
-enum class ExamType {
+enum class ContentType {
     ASSIGNMENTS, INSTRUCTIONS, CERTIFICATES
 }

@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { AssignmentIn, Exam, ExamTypesEng } from '../../types'
+import { AssignmentIn, Exam, ContentTypesEng } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import { SukoAssignmentContent } from './SukoAssignmentContent'
@@ -14,12 +14,12 @@ type AssignmentProps = { exam: Exam }
 export const Assignment = ({ exam }: AssignmentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { examType, id } = useParams<{ examType: string; id: string }>()
+  const { contentType, id } = useParams<{ contentType: string; id: string }>()
 
   const url =
-    examType === ExamTypesEng.KOETEHTAVAT
+    contentType === ContentTypesEng.KOETEHTAVAT
       ? EXAM_TYPE_ENUM.ASSIGNMENT
-      : examType === ExamTypesEng.OHJEET
+      : contentType === ContentTypesEng.OHJEET
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 
@@ -44,17 +44,20 @@ export const Assignment = ({ exam }: AssignmentProps) => {
             <div className="col w-9/12 pr-5">
               <div className="row pb-3">
                 {isSukoAssignment(assignment, exam) && (
-                  <SukoAssignmentContent assignment={assignment} examType={examType} />
+                  <SukoAssignmentContent assignment={assignment} contentType={contentType} />
                 )}
                 {isPuhviAssignment(assignment, exam) && (
-                  <PuhviAssignmentContent assignment={assignment} examType={examType} />
+                  <PuhviAssignmentContent assignment={assignment} contentType={contentType} />
                 )}
                 {isLdAssignment(assignment, exam) && (
-                  <LdAssignmentContent assignment={assignment} examType={examType} />
+                  <LdAssignmentContent assignment={assignment} contentType={contentType} />
                 )}
               </div>
               <div className="row mb-6">
-                <Button variant="buttonSecondary" onClick={() => navigate(`/${exam}/${examType}`)} data-testid="return">
+                <Button
+                  variant="buttonSecondary"
+                  onClick={() => navigate(`/${exam}/${contentType}`)}
+                  data-testid="return">
                   {t('assignment.palaa')}
                 </Button>
               </div>

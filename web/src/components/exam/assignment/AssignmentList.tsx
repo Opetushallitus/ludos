@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentIn, Exam, ExamTypesEng } from '../../../types'
+import { AssignmentIn, Exam, ContentTypesEng } from '../../../types'
 import { AssignmentCard } from './AssignmentCard'
 import { FiltersType, useFilters } from '../../../hooks/useFilters'
 import { AssignmentKeyTranslationEnglish, removeEmpty } from './assignmentUtils'
@@ -10,36 +10,44 @@ import { Spinner } from '../../Spinner'
 import { CertificateCard } from '../certificate/CertificateCard'
 import { EXAM_TYPE_ENUM } from '../../../constants'
 
-export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; examType: string; activeTab: string }) => {
+export const AssignmentList = ({
+  exam,
+  contentType,
+  activeTab
+}: {
+  exam: Exam
+  contentType: string
+  activeTab: string
+}) => {
   const { filters, setFilters } = useFilters()
   const [language, setLanguage] = useState<string>('fi')
 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
 
-  const urlByExamType = () => {
-    if (examType === ExamTypesEng.KOETEHTAVAT) {
+  const urlByContentType = () => {
+    if (contentType === ContentTypesEng.KOETEHTAVAT) {
       return `${EXAM_TYPE_ENUM.ASSIGNMENT}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
         removeNullsFromFilterObj
       ).toString()}`
     }
 
-    if (examType === ExamTypesEng.OHJEET) {
+    if (contentType === ContentTypesEng.OHJEET) {
       return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}`
     }
 
     return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
   }
 
-  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByExamType())
+  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByContentType())
 
   // refresh data on tab change
   useEffect(() => {
-    const singularExamType = AssignmentKeyTranslationEnglish[activeTab]
+    const singularContentType = AssignmentKeyTranslationEnglish[activeTab]
 
-    if (examType !== singularExamType) {
+    if (contentType !== singularContentType) {
       refresh()
     }
-  }, [activeTab, examType, refresh])
+  }, [activeTab, contentType, refresh])
 
   return (
     <div>
@@ -52,7 +60,7 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
           {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
           {data && (
             <>
-              {examType === ExamTypesEng.KOETEHTAVAT && (
+              {contentType === ContentTypesEng.KOETEHTAVAT && (
                 <div>
                   <AssignmentFilters
                     filters={filters}
@@ -67,7 +75,7 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
                   </ul>
                 </div>
               )}
-              {examType === ExamTypesEng.OHJEET && (
+              {contentType === ContentTypesEng.OHJEET && (
                 <div className="mt-3 flex flex-wrap gap-5">
                   <>{loading && <Spinner />}</>
                   {data?.map((assignment, i) => (
@@ -75,7 +83,7 @@ export const AssignmentList = ({ exam, examType, activeTab }: { exam: Exam; exam
                   ))}
                 </div>
               )}
-              {examType === ExamTypesEng.TODISTUKSET && (
+              {contentType === ContentTypesEng.TODISTUKSET && (
                 <div className="mt-3 flex flex-wrap gap-5">
                   <>{loading && <Spinner />}</>
                   {data?.map((assignment, i) => (

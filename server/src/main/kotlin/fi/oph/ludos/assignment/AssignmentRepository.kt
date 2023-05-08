@@ -1,6 +1,6 @@
 package fi.oph.ludos.assignment
 
-import fi.oph.ludos.ExamType
+import fi.oph.ludos.ContentType
 import fi.oph.ludos.Exam
 import fi.oph.ludos.State
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
@@ -18,7 +18,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_content_fi"),
             rs.getString("assignment_content_sv"),
             State.valueOf(rs.getString("assignment_state")),
-            ExamType.ASSIGNMENTS,
+            ContentType.ASSIGNMENTS,
             rs.getString("suko_assignment_type"),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at")
@@ -42,7 +42,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_content_fi"),
             rs.getString("assignment_content_sv"),
             State.valueOf(rs.getString("assignment_state")),
-            ExamType.ASSIGNMENTS,
+            ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
         )
@@ -65,7 +65,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_content_fi"),
             rs.getString("assignment_content_sv"),
             State.valueOf(rs.getString("assignment_state")),
-            ExamType.ASSIGNMENTS,
+            ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
         )
@@ -121,7 +121,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.contentFi,
                 assignment.contentSv,
                 assignment.state,
-                assignment.examType,
+                assignment.contentType,
                 assignment.assignmentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
@@ -145,7 +145,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.contentFi,
                 assignment.contentSv,
                 assignment.state,
-                assignment.examType,
+                assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
             )
@@ -167,7 +167,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.contentFi,
                 assignment.contentSv,
                 assignment.state,
-                assignment.examType,
+                assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
             )

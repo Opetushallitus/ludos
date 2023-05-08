@@ -3,7 +3,7 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import fi.oph.ludos.ExamType
+import fi.oph.ludos.ContentType
 import fi.oph.ludos.State
 import java.sql.Timestamp
 import java.util.*
@@ -24,7 +24,7 @@ interface Assignment {
     val nameSv: String
     val contentSv: String
     val state: State
-    val examType: ExamType
+    val contentType: ContentType
 }
 
 @JsonTypeName("SUKO")
@@ -34,7 +34,7 @@ data class SukoAssignmentDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
     val assignmentType: String
 ) : Assignment
 
@@ -45,7 +45,7 @@ data class PuhviAssignmentDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
 ) : Assignment
 
 @JsonTypeName("LD")
@@ -55,7 +55,7 @@ data class LdAssignmentDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
 ) : Assignment
 
 interface AssignmentOut {
@@ -71,7 +71,7 @@ data class SukoAssignmentDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
     val assignmentType: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
@@ -84,7 +84,7 @@ data class PuhviAssignmentDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
@@ -96,7 +96,7 @@ data class LdAssignmentDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
@@ -108,7 +108,7 @@ interface UpdateAssignmentDtoIn {
     val contentFi: String
     val contentSv: String
     val state: State
-    val examType: ExamType
+    val contentType: ContentType
 }
 
 data class SukoUpdateAssignmentDtoIn(
@@ -118,7 +118,7 @@ data class SukoUpdateAssignmentDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
     val assignmentType: String
 ) : UpdateAssignmentDtoIn
 
@@ -129,7 +129,7 @@ data class PuhviUpdateAssignmentDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
 ) : UpdateAssignmentDtoIn
 
 data class LdUpdateAssignmentDtoIn(
@@ -139,7 +139,7 @@ data class LdUpdateAssignmentDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val state: State,
-    override val examType: ExamType,
+    override val contentType: ContentType,
 ) : UpdateAssignmentDtoIn
 
 data class AssignmentFilter(

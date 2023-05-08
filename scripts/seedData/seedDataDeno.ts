@@ -13,7 +13,7 @@ const sukoData = {
   contentSv: 'This is a Suko assignment. Sv',
   state: 'PUBLISHED',
   exam: 'SUKO',
-  examType: '',
+  contentType: '',
   assignmentType: 'LUKEMINEN'
 }
 
@@ -24,7 +24,7 @@ const puhviData = {
   contentSv: 'This is a Puhvi assignment. Sv',
   state: 'PUBLISHED',
   exam: 'PUHVI',
-  examType: ''
+  contentType: ''
 }
 
 const ldData = {
@@ -34,11 +34,11 @@ const ldData = {
   contentSv: 'This is an LD assignment. Sv',
   state: 'PUBLISHED',
   exam: 'LD',
-  examType: ''
+  contentType: ''
 }
 
 const numAssignments = 30
-const examTypes = ['ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES']
+const contentTypes = ['ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES']
 
 const seedData = async () => {
   console.time('seedData')
@@ -49,13 +49,13 @@ const seedData = async () => {
     const origNameFi = data.nameFi
     const origNameSv = data.nameSv
 
-    for (const examType of examTypes) {
+    for (const contentType of contentTypes) {
       for (let i = 0; i < numAssignments; i++) {
-        const nameFi = `${origNameFi} ${examType.toLowerCase()} ${
+        const nameFi = `${origNameFi} ${contentType.toLowerCase()} ${
           exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
         } ${i + 1}`
 
-        const nameSv = `${origNameSv} ${examType.toLowerCase()} ${
+        const nameSv = `${origNameSv} ${contentType.toLowerCase()} ${
           exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
         } ${i + 1}`
 
@@ -63,15 +63,15 @@ const seedData = async () => {
           ...data,
           nameFi,
           nameSv,
-          examType,
+          contentType,
           exam
         }
 
         let url = BASE_URL
 
-        if (examType === 'ASSIGNMENTS') {
+        if (contentType === 'ASSIGNMENTS') {
           url += '/assignment'
-        } else if (examType === 'INSTRUCTIONS') {
+        } else if (contentType === 'INSTRUCTIONS') {
           url += '/instruction'
         } else {
           url += '/certificate'
@@ -84,13 +84,13 @@ const seedData = async () => {
         })
           .then(async (response) => {
             if (response.ok) {
-              console.log(`${examType} created: ${data.nameFi}`)
+              console.log(`${contentType} created: ${data.nameFi}`)
             } else {
-              console.log(`Error creating ${examType}: ${await response.text()}`)
+              console.log(`Error creating ${contentType}: ${await response.text()}`)
             }
           })
           .catch((error) => {
-            console.log(`Catch error creating ${examType}: ${error.message}`)
+            console.log(`Catch error creating ${contentType}: ${error.message}`)
           })
 
         promises.push(promise)

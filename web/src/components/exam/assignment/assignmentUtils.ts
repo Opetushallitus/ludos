@@ -1,7 +1,15 @@
-import { ExamsSingular, ExamsKey, ExamType, ExamTypes, AssignmentIn, SukoAssignmentIn, Exam } from '../../../types'
+import {
+  ExamsSingular,
+  ContentTypeKeys,
+  ContentType,
+  ContentTypes,
+  AssignmentIn,
+  SukoAssignmentIn,
+  Exam
+} from '../../../types'
 
-export function getSingularExamTypeFinnish(s: ExamType) {
-  const key = Object.keys(ExamTypes).find((k) => ExamTypes[k as ExamsKey] === s) as ExamsKey
+export function getSingularContentTypeFinnish(s: ContentType) {
+  const key = Object.keys(ContentTypes).find((k) => ContentTypes[k as ContentTypeKeys] === s) as ContentTypeKeys
   return ExamsSingular[key]
 }
 

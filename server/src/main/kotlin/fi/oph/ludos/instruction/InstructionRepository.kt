@@ -1,7 +1,7 @@
 package fi.oph.ludos.instruction
 
 import fi.oph.ludos.State
-import fi.oph.ludos.ExamType
+import fi.oph.ludos.ContentType
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -19,7 +19,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
                 instruction.contentFi,
                 instruction.contentSv,
                 instruction.state,
-                instruction.examType,
+                instruction.contentType,
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at")
             )
@@ -41,7 +41,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
                 instruction.contentFi,
                 instruction.contentSv,
                 instruction.state,
-                instruction.examType,
+                instruction.contentType,
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at")
             )
@@ -63,7 +63,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
                 instruction.contentFi,
                 instruction.contentSv,
                 instruction.state,
-                instruction.examType,
+                instruction.contentType,
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at")
             )
@@ -83,7 +83,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             State.valueOf(rs.getString("instruction_state")),
-            ExamType.INSTRUCTIONS,
+            ContentType.INSTRUCTIONS,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )
@@ -97,7 +97,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             State.valueOf(rs.getString("instruction_state")),
-            ExamType.INSTRUCTIONS,
+            ContentType.INSTRUCTIONS,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )
@@ -111,7 +111,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             State.valueOf(rs.getString("instruction_state")),
-            ExamType.INSTRUCTIONS,
+            ContentType.INSTRUCTIONS,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )

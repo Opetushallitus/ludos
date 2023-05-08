@@ -9,10 +9,10 @@ import { useState } from 'react'
 
 type PuhviAssignmentContentProps = {
   assignment: AssignmentIn
-  examType?: string
+  contentType?: string
 }
 
-export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignmentContentProps) => {
+export const PuhviAssignmentContent = ({ assignment, contentType }: PuhviAssignmentContentProps) => {
   const { t } = useTranslation()
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
@@ -38,7 +38,7 @@ export const PuhviAssignmentContent = ({ assignment, examType }: PuhviAssignment
         <span
           className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
           onClick={() =>
-            navigate(`../${examType}/update`, {
+            navigate(`../${contentType}/update`, {
               state: {
                 assignment
               }

@@ -39,8 +39,8 @@ export const LudosRoutes = () => {
           <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
           <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
           <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
-          <Route index path={':examType?'} element={<Exams exam={Exam.Suko} />} />
-          <Route path={':examType/:id'} element={<Assignment exam={Exam.Suko} />} />
+          <Route index path={':contentType?'} element={<Exams exam={Exam.Suko} />} />
+          <Route path={':contentType/:id'} element={<Assignment exam={Exam.Suko} />} />
         </Route>
         <Route path={`/${puhviKey}`}>
           <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
@@ -49,8 +49,8 @@ export const LudosRoutes = () => {
           <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
           <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
           <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
-          <Route index path={':examType?'} element={<Exams exam={Exam.Puhvi} />} />
-          <Route path={':examType/:id'} element={<Assignment exam={Exam.Puhvi} />} />
+          <Route index path={':contentType?'} element={<Exams exam={Exam.Puhvi} />} />
+          <Route path={':contentType/:id'} element={<Assignment exam={Exam.Puhvi} />} />
         </Route>
         <Route path={`/${ldKey}`}>
           <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
@@ -59,8 +59,8 @@ export const LudosRoutes = () => {
           <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
           <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
           <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
-          <Route index path={':examType?'} element={<Exams exam={Exam.Ld} />} />
-          <Route path={':examType/:id'} element={<Assignment exam={Exam.Ld} />} />
+          <Route index path={':contentType?'} element={<Exams exam={Exam.Ld} />} />
+          <Route path={':contentType/:id'} element={<Assignment exam={Exam.Ld} />} />
         </Route>
 
         <Route

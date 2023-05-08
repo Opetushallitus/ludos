@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-const examTypes = ['suko', 'puhvi', 'ld']
+const exams = ['suko', 'puhvi', 'ld']
 const assignmentTypes = ['assignments', 'instructions', 'certificates']
 
 const pages = ['etusivu', 'suko', 'puhvi', 'ld', 'feedback']
@@ -18,7 +18,7 @@ test('navigation links work', async ({ page }) => {
 
   await page.goto('/')
 
-  for (const contentType of examTypes) {
+  for (const contentType of exams) {
     const boxRow = page.getByTestId(`/${contentType}`)
 
     for (const assignmentType of assignmentTypes) {

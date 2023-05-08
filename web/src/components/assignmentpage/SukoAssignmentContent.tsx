@@ -1,6 +1,6 @@
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
-import { ExamTypesEng, SukoAssignmentIn } from '../../types'
+import { ContentTypesEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
@@ -9,10 +9,10 @@ import { useState } from 'react'
 
 type SukoAssignmentContentProps = {
   assignment: SukoAssignmentIn
-  examType?: string
+  contentType?: string
 }
 
-export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentContentProps) => {
+export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmentContentProps) => {
   const { t } = useTranslation()
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
@@ -38,7 +38,7 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
         <span
           className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
           onClick={() =>
-            navigate(`../${examType}/update`, {
+            navigate(`../${contentType}/update`, {
               state: {
                 assignment
               }
@@ -49,7 +49,7 @@ export const SukoAssignmentContent = ({ assignment, examType }: SukoAssignmentCo
         </span>
       </div>
       <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
-        {examType !== ExamTypesEng.OHJEET && (
+        {contentType !== ContentTypesEng.OHJEET && (
           <ul>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
