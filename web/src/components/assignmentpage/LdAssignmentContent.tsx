@@ -34,7 +34,7 @@ export const LdAssignmentContent = ({ assignment, contentType }: LdAssignmentCon
         </div>
       </div>
       <div className="row">
-        <StateTag state={assignment.state} />
+        <StateTag state={assignment.publishState} />
         <span
           className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
           onClick={() =>

@@ -2,7 +2,7 @@ package fi.oph.ludos.instruction
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Constants
-import fi.oph.ludos.State
+import fi.oph.ludos.PublishState
 import fi.oph.ludos.Exam
 import fi.oph.ludos.ContentType
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -40,7 +40,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: State,
+        val publishState: PublishState,
         val contentType: ContentType,
         val exam: Exam
     )
@@ -52,7 +52,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val contentFi: String,
         val contentSv: String,
         val contentType: ContentType,
-        val state: State,
+        val publishState: PublishState,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
@@ -64,7 +64,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
             nameSv = "Suko Test Instruction SV",
             contentFi = "Suko Instruction content Fi",
             contentSv = "Suko Instruction content Sv",
-            state = State.PUBLISHED,
+            publishState = PublishState.PUBLISHED,
             contentType = ContentType.INSTRUCTIONS,
             exam = Exam.SUKO
         )
@@ -81,7 +81,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(testInstruction.nameSv, instructionIn.nameSv)
         assertEquals(testInstruction.contentFi, instructionIn.contentFi)
         assertEquals(testInstruction.contentSv, instructionIn.contentSv)
-        assertEquals(testInstruction.state, instructionIn.state)
+        assertEquals(testInstruction.publishState, instructionIn.publishState)
         assertEquals(testInstruction.contentType, instructionIn.contentType)
         assertNotNull(instructionIn.id)
         assertNotNull(instructionIn.createdAt)
@@ -97,7 +97,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Suko Test Instruction FI updated\",\"contentFi\":\"Suko Instruction content Fi updated\",\"nameSv\":\"Suko Test Instruction SV updated\",\"contentSv\":\"Suko Instruction content Sv updated\",\"state\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
+            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Suko Test Instruction FI updated\",\"contentFi\":\"Suko Instruction content Fi updated\",\"nameSv\":\"Suko Test Instruction SV updated\",\"contentSv\":\"Suko Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
 
         val updateResult =
             mockMvc.perform(updateInstruction(Exam.SUKO, instructionIn.id, editedInstruction)).andExpect(status().isOk)
@@ -113,7 +113,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedInstruction.nameSv, "Suko Test Instruction SV updated")
         assertEquals(updatedInstruction.contentFi, "Suko Instruction content Fi updated")
         assertEquals(updatedInstruction.contentSv, "Suko Instruction content Sv updated")
-        assertEquals(updatedInstruction.state, State.PUBLISHED)
+        assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
         assertEquals(updatedInstruction.contentType, ContentType.INSTRUCTIONS)
         assertEquals(updatedInstruction.id, instructionIn.id)
     }
@@ -123,7 +123,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: State,
+        val publishState: PublishState,
         val contentType: ContentType,
         val exam: Exam
     )
@@ -135,7 +135,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val contentFi: String,
         val contentSv: String,
         val contentType: ContentType,
-        val state: State,
+        val publishState: PublishState,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
@@ -146,7 +146,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
             nameSv = "Puhvi Test Instruction SV",
             contentFi = "Puhvi Instruction content Fi",
             contentSv = "Puhvi Instruction content Sv",
-            state = State.PUBLISHED,
+            publishState = PublishState.PUBLISHED,
             contentType = ContentType.INSTRUCTIONS,
             exam = Exam.PUHVI
         )
@@ -163,7 +163,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(testInstruction.nameSv, instructionIn.nameSv)
         assertEquals(testInstruction.contentFi, instructionIn.contentFi)
         assertEquals(testInstruction.contentSv, instructionIn.contentSv)
-        assertEquals(testInstruction.state, instructionIn.state)
+        assertEquals(testInstruction.publishState, instructionIn.publishState)
         assertEquals(testInstruction.contentType, instructionIn.contentType)
         assertNotNull(instructionIn.id)
         assertNotNull(instructionIn.createdAt)
@@ -179,7 +179,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Puhvi Test Instruction FI updated\",\"contentFi\":\"Puhvi Instruction content Fi updated\",\"nameSv\":\"Puhvi Test Instruction SV updated\",\"contentSv\":\"Puhvi Instruction content Sv updated\",\"state\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
+            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Puhvi Test Instruction FI updated\",\"contentFi\":\"Puhvi Instruction content Fi updated\",\"nameSv\":\"Puhvi Test Instruction SV updated\",\"contentSv\":\"Puhvi Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
 
         val updateResult =
             mockMvc.perform(updateInstruction(Exam.PUHVI, instructionIn.id, editedInstruction)).andExpect(status().isOk)
@@ -195,7 +195,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedInstruction.nameSv, "Puhvi Test Instruction SV updated")
         assertEquals(updatedInstruction.contentFi, "Puhvi Instruction content Fi updated")
         assertEquals(updatedInstruction.contentSv, "Puhvi Instruction content Sv updated")
-        assertEquals(updatedInstruction.state, State.PUBLISHED)
+        assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
         assertEquals(updatedInstruction.contentType, ContentType.INSTRUCTIONS)
         assertEquals(updatedInstruction.id, instructionIn.id)
     }
@@ -205,7 +205,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val state: State,
+        val publishState: PublishState,
         val contentType: ContentType,
         val exam: Exam
     )
@@ -217,7 +217,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val contentFi: String,
         val contentSv: String,
         val contentType: ContentType,
-        val state: State,
+        val publishState: PublishState,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
@@ -229,7 +229,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
             nameSv = "Ld Test Instruction SV",
             contentFi = "Ld Instruction content Fi",
             contentSv = "Ld Instruction content Sv",
-            state = State.PUBLISHED,
+            publishState = PublishState.PUBLISHED,
             contentType = ContentType.INSTRUCTIONS,
             exam = Exam.LD
         )
@@ -246,7 +246,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(testInstruction.nameSv, instructionIn.nameSv)
         assertEquals(testInstruction.contentFi, instructionIn.contentFi)
         assertEquals(testInstruction.contentSv, instructionIn.contentSv)
-        assertEquals(testInstruction.state, instructionIn.state)
+        assertEquals(testInstruction.publishState, instructionIn.publishState)
         assertEquals(testInstruction.contentType, instructionIn.contentType)
         assertNotNull(instructionIn.id)
         assertNotNull(instructionIn.createdAt)
@@ -262,7 +262,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Ld Test Instruction FI updated\",\"contentFi\":\"Ld Instruction content Fi updated\",\"nameSv\":\"Ld Test Instruction SV updated\",\"contentSv\":\"Ld Instruction content Sv updated\",\"state\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
+            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Ld Test Instruction FI updated\",\"contentFi\":\"Ld Instruction content Fi updated\",\"nameSv\":\"Ld Test Instruction SV updated\",\"contentSv\":\"Ld Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
 
         val updateResult =
             mockMvc.perform(updateInstruction(Exam.LD, instructionIn.id, editedInstruction)).andExpect(status().isOk)
@@ -278,7 +278,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedInstruction.nameSv, "Ld Test Instruction SV updated")
         assertEquals(updatedInstruction.contentFi, "Ld Instruction content Fi updated")
         assertEquals(updatedInstruction.contentSv, "Ld Instruction content Sv updated")
-        assertEquals(updatedInstruction.state, State.PUBLISHED)
+        assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
         assertEquals(updatedInstruction.contentType, ContentType.INSTRUCTIONS)
         assertEquals(updatedInstruction.id, instructionIn.id)
     }

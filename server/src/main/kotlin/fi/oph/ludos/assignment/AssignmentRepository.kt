@@ -2,7 +2,7 @@ package fi.oph.ludos.assignment
 
 import fi.oph.ludos.ContentType
 import fi.oph.ludos.Exam
-import fi.oph.ludos.State
+import fi.oph.ludos.PublishState
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
@@ -17,7 +17,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_name_sv"),
             rs.getString("assignment_content_fi"),
             rs.getString("assignment_content_sv"),
-            State.valueOf(rs.getString("assignment_state")),
+            PublishState.valueOf(rs.getString("assignment_publish_state")),
             ContentType.ASSIGNMENTS,
             rs.getString("suko_assignment_type"),
             rs.getTimestamp("assignment_created_at"),
@@ -41,7 +41,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_name_sv"),
             rs.getString("assignment_content_fi"),
             rs.getString("assignment_content_sv"),
-            State.valueOf(rs.getString("assignment_state")),
+            PublishState.valueOf(rs.getString("assignment_publish_state")),
             ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
@@ -64,7 +64,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_name_sv"),
             rs.getString("assignment_content_fi"),
             rs.getString("assignment_content_sv"),
-            State.valueOf(rs.getString("assignment_state")),
+            PublishState.valueOf(rs.getString("assignment_publish_state")),
             ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
@@ -112,7 +112,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun saveSukoAssignment(assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut = jdbcTemplate.query(
-        "INSERT INTO suko_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, suko_assignment_type, assignment_state) VALUES (?, ?, ?, ?, ?, ?::state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
+        "INSERT INTO suko_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, suko_assignment_type, assignment_publish_state) VALUES (?, ?, ?, ?, ?, ?::publish_state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
         { rs: ResultSet, _: Int ->
             SukoAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -120,7 +120,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.nameSv,
                 assignment.contentFi,
                 assignment.contentSv,
-                assignment.state,
+                assignment.publishState,
                 assignment.contentType,
                 assignment.assignmentType,
                 rs.getTimestamp("assignment_created_at"),
@@ -132,11 +132,11 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         assignment.contentFi,
         assignment.contentSv,
         assignment.assignmentType,
-        assignment.state.toString(),
+        assignment.publishState.toString(),
     )[0]
 
     fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut = jdbcTemplate.query(
-        "INSERT INTO puhvi_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, assignment_state) VALUES (?, ?, ?, ?, ?::state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
+        "INSERT INTO puhvi_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, assignment_publish_state) VALUES (?, ?, ?, ?, ?::publish_state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
         { rs: ResultSet, _: Int ->
             PuhviAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -144,7 +144,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.nameSv,
                 assignment.contentFi,
                 assignment.contentSv,
-                assignment.state,
+                assignment.publishState,
                 assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
@@ -154,11 +154,11 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         assignment.nameSv,
         assignment.contentFi,
         assignment.contentSv,
-        assignment.state.toString(),
+        assignment.publishState.toString(),
     )[0]
 
     fun saveLdAssignment(assignment: LdAssignmentDtoIn): LdAssignmentDtoOut = jdbcTemplate.query(
-        "INSERT INTO ld_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, assignment_state) VALUES (?, ?, ?, ?, ?::state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
+        "INSERT INTO ld_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, assignment_publish_state) VALUES (?, ?, ?, ?, ?::publish_state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
         { rs: ResultSet, _: Int ->
             LdAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -166,7 +166,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.nameSv,
                 assignment.contentFi,
                 assignment.contentSv,
-                assignment.state,
+                assignment.publishState,
                 assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
@@ -176,7 +176,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         assignment.nameSv,
         assignment.contentFi,
         assignment.contentSv,
-        assignment.state.toString(),
+        assignment.publishState.toString(),
     )[0]
 
     fun getSukoAssignmentById(id: Int): AssignmentOut = try {
@@ -223,7 +223,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updateSukoAssignment(assignment: SukoUpdateAssignmentDtoIn, id: Int): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, suko_assignment_type = ?, assignment_state = ?::state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+            "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, suko_assignment_type = ?, assignment_publish_state = ?::publish_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("assignment_id")
             },
@@ -232,7 +232,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             assignment.contentFi,
             assignment.contentSv,
             assignment.assignmentType,
-            assignment.state.toString(),
+            assignment.publishState.toString(),
             id
         )
 
@@ -248,7 +248,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updatePuhviAssignment(assignment: PuhviUpdateAssignmentDtoIn, id: Int): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE puhvi_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, assignment_state = ?::state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+            "UPDATE puhvi_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, assignment_publish_state = ?::publish_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("assignment_id")
             },
@@ -256,7 +256,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             assignment.nameSv,
             assignment.contentFi,
             assignment.contentSv,
-            assignment.state.toString(),
+            assignment.publishState.toString(),
             id
         )
 
@@ -271,7 +271,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updateLdAssignment(assignment: LdUpdateAssignmentDtoIn, id: Int): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE ld_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, assignment_state = ?::state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+            "UPDATE ld_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, assignment_publish_state = ?::publish_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("assignment_id")
             },
@@ -279,7 +279,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             assignment.nameSv,
             assignment.contentFi,
             assignment.contentSv,
-            assignment.state.toString(),
+            assignment.publishState.toString(),
             id
         )
 

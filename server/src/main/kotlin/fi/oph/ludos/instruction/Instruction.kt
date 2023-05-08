@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.ContentType
-import fi.oph.ludos.State
+import fi.oph.ludos.PublishState
 import java.sql.Timestamp
 
 enum class InstructionFormat {
@@ -22,7 +22,7 @@ interface Instruction {
     val contentFi: String
     val nameSv: String
     val contentSv: String
-    val state: State
+    val publishState: PublishState
     val contentType: ContentType
 }
 
@@ -32,7 +32,7 @@ data class SukoInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val state: State,
+    override val publishState: PublishState,
     override val contentType: ContentType,
 ) : Instruction
 
@@ -42,7 +42,7 @@ data class PuhviInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val state: State,
+    override val publishState: PublishState,
     override val contentType: ContentType,
 ) : Instruction
 
@@ -52,7 +52,7 @@ data class LdInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val state: State,
+    override val publishState: PublishState,
     override val contentType: ContentType,
 ) : Instruction
 
@@ -68,7 +68,7 @@ data class SukoInstructionDtoOut(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val state: State,
+    override val publishState: PublishState,
     override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
@@ -80,7 +80,7 @@ data class PuhviInstructionDtoOut(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val state: State,
+    override val publishState: PublishState,
     override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
@@ -92,7 +92,7 @@ data class LdInstructionDtoOut(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val state: State,
+    override val publishState: PublishState,
     override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
@@ -104,6 +104,6 @@ data class UpdateInstructionDtoIn(
     val nameSv: String,
     val contentFi: String,
     val contentSv: String,
-    val state: State,
+    val publishState: PublishState,
     val contentType: ContentType,
 )

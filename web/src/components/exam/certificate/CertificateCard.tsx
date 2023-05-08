@@ -36,7 +36,7 @@ export const CertificateCard = ({ assignment }: CertificateCardProps) => {
         />
       </div>
       <div className="row mt-3 justify-between">
-        <StateTag state={assignment.state} />
+        <StateTag state={assignment.publishState} />
         <p className="text-center text-xs">{toLocaleDate(assignment.createdAt)}</p>
         <PdfTag />
       </div>

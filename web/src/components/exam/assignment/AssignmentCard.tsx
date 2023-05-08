@@ -23,7 +23,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
         <InternalLink className="text-lg font-semibold text-green-primary" to={`${assignment.id}`}>
           {language === 'fi' ? assignment.nameFi : assignment.nameSv}
         </InternalLink>
-        <StateTag state={assignment.state} />
+        <StateTag state={assignment.publishState} />
         <Icon
           name="muokkaa"
           color="text-green-primary"

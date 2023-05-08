@@ -6,7 +6,7 @@ interface Constants {
     }
 }
 
-enum class State {
+enum class PublishState {
     DRAFT, PUBLISHED, ARCHIVED
 }
 

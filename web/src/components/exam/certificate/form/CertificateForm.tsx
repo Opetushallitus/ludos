@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { AssignmentState, Exam, ContentType, SukoAssignmentIn } from '../../../../types'
+import { Exam, ContentType, SukoAssignmentIn, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { postCertificate, updateCertificate } from '../../../../formUtils'
 import { useEffect, useState } from 'react'
@@ -50,9 +50,9 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
     }
   }, [assignment, exam, contentType, reset, setValue])
 
-  async function submitAssignment({ state }: { state: AssignmentState }) {
+  async function submitAssignment({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: CertificateFormType) => {
-      const body = { ...data, state }
+      const body = { ...data, publishState }
 
       try {
         let resultId: string
@@ -113,8 +113,8 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
       <FormButtonRow
         onCancelClick={() => navigate(-1)}
-        onSaveDraftClick={() => submitAssignment({ state: AssignmentState.Draft })}
-        onSubmitClick={() => submitAssignment({ state: AssignmentState.Published })}
+        onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
+        onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
       />
     </div>
   )

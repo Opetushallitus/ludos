@@ -36,7 +36,7 @@ export const InstructionCard = ({ assignment }: InstructionCardProps) => {
         />
       </div>
       <p className="mb-2 mt-2 text-center text-xs">{toLocaleDate(assignment.createdAt)}</p>
-      <StateTag state={assignment.state} />
+      <StateTag state={assignment.publishState} />
     </div>
   )
 }

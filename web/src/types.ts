@@ -15,13 +15,13 @@ export type AllPages = NavigationPages & {
   create: Page
 }
 
-export const AssignmentState = {
+export const PublishState = {
   Draft: 'DRAFT',
   Published: 'PUBLISHED',
   Archived: 'ARCHIVED'
 } as const
 
-export type AssignmentState = (typeof AssignmentState)[keyof typeof AssignmentState]
+export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
 export const Exam = {
   Suko: 'SUKO',
@@ -37,7 +37,7 @@ export type AssignmentIn = {
   nameSv: string
   contentFi: string
   contentSv: string
-  state: AssignmentState
+  publishState: PublishState
   contentType: Exam
   createdAt: string
   updatedAt: string
