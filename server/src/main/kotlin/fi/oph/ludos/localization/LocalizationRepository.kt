@@ -1,20 +1,32 @@
 package fi.oph.ludos.localization
 
-import fi.oph.ludos.exception.LocalizationException
+import org.apache.http.HttpResponse
+import org.apache.http.client.HttpClient
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClientBuilder
+import org.json.JSONArray
 import org.springframework.stereotype.Repository
-import org.springframework.web.client.RestClientException
-import org.springframework.web.client.RestTemplate
 
 @Repository
-class LocalizationRepository(private val restTemplate: RestTemplate) {
-    fun getLocalizationTexts(): Array<Localization> {
-        val url = "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation?category=ludos"
+class LocalizationRepository {
+    private val httpClient: HttpClient = HttpClientBuilder.create().build()
+    private val url = "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation?category=ludos"
 
-        return try {
-            restTemplate.getForObject(url, Array<Localization>::class.java) ?: emptyArray()
-        } catch (e: RestClientException) {
-            throw LocalizationException("Failed to get localization texts", e)
+    fun getLocalizationTexts(): Array<Localization> {
+        val request = HttpGet(url)
+        val response: HttpResponse = httpClient.execute(request)
+        val json = response.entity.content.bufferedReader().use { it.readText() }
+        val jsonArray = JSONArray(json)
+
+        return Array(jsonArray.length()) { index ->
+            val jsonObject = jsonArray.getJSONObject(index)
+            Localization(
+                key = jsonObject.getString("key"),
+                value = jsonObject.getString("value"),
+                locale = jsonObject.getString("locale"),
+                category = jsonObject.getString("category"),
+                id = jsonObject.getInt("id")
+            )
         }
     }
 }
-
