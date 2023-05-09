@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-net
 
-const BASE_URL = 'http://localhost:8080/api/assignment'
+const BASE_URL = 'http://localhost:8080/api'
 
 const headers = {
   'Content-Type': 'application/json'
@@ -13,7 +13,7 @@ const sukoData = {
   contentSv: 'This is a Suko assignment. Sv',
   state: 'PUBLISHED',
   exam: 'SUKO',
-  examType: '',
+  contentType: '',
   assignmentType: 'LUKEMINEN'
 }
 
@@ -24,7 +24,7 @@ const puhviData = {
   contentSv: 'This is a Puhvi assignment. Sv',
   state: 'PUBLISHED',
   exam: 'PUHVI',
-  examType: ''
+  contentType: ''
 }
 
 const ldData = {
@@ -34,11 +34,11 @@ const ldData = {
   contentSv: 'This is an LD assignment. Sv',
   state: 'PUBLISHED',
   exam: 'LD',
-  examType: ''
+  contentType: ''
 }
 
 const numAssignments = 30
-const examTypes = ['ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES']
+const contentTypes = ['ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES']
 
 const seedData = async () => {
   console.time('seedData')
@@ -49,13 +49,13 @@ const seedData = async () => {
     const origNameFi = data.nameFi
     const origNameSv = data.nameSv
 
-    for (const examType of examTypes) {
+    for (const contentType of contentTypes) {
       for (let i = 0; i < numAssignments; i++) {
-        const nameFi = `${origNameFi} ${examType.toLowerCase()} ${
+        const nameFi = `${origNameFi} ${contentType.toLowerCase()} ${
           exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
         } ${i + 1}`
 
-        const nameSv = `${origNameSv} ${examType.toLowerCase()} ${
+        const nameSv = `${origNameSv} ${contentType.toLowerCase()} ${
           exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
         } ${i + 1}`
 
@@ -63,24 +63,34 @@ const seedData = async () => {
           ...data,
           nameFi,
           nameSv,
-          examType,
+          contentType,
           exam
         }
 
-        const promise = fetch(BASE_URL, {
+        let url = BASE_URL
+
+        if (contentType === 'ASSIGNMENTS') {
+          url += '/assignment'
+        } else if (contentType === 'INSTRUCTIONS') {
+          url += '/instruction'
+        } else {
+          url += '/certificate'
+        }
+
+        const promise = fetch(url, {
           method: 'POST',
           headers,
           body: JSON.stringify(body)
         })
           .then(async (response) => {
             if (response.ok) {
-              console.log(`Assignment created: ${data.nameFi}`)
+              console.log(`${contentType} created: ${data.nameFi}`)
             } else {
-              console.log(`Error creating assignment: ${await response.text()}`)
+              console.log(`Error creating ${contentType}: ${await response.text()}`)
             }
           })
           .catch((error) => {
-            console.log(`Error creating assignment: ${error.message}`)
+            console.log(`Catch error creating ${contentType}: ${error.message}`)
           })
 
         promises.push(promise)

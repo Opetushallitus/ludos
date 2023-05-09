@@ -1,22 +1,22 @@
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { Exam, ContentType, SukoAssignmentIn, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
-import { assignmentTypes, postAssignment, updateAssignment } from '../../../../formUtils'
+import { postCertificate, updateCertificate } from '../../../../formUtils'
 import { useEffect, useState } from 'react'
-import { AssignmentFormType, assignmentSchema } from './assignmentSchema'
 import { Tabs } from '../../../Tabs'
-import { TextAreaInput } from '../../../TextAreaInput'
+import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
+import { TextAreaInput } from '../../../TextAreaInput'
 import { FormHeader } from '../../../formCommon/FormHeader'
 import { FormButtonRow } from '../../../formCommon/FormButtonRow'
 
-type AssignmentFormProps = {
+type CertificateFormProps = {
   action: 'new' | 'update'
 }
 
-export const AssignmentForm = ({ action }: AssignmentFormProps) => {
+export const CertificateForm = ({ action }: CertificateFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
@@ -32,18 +32,9 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     register,
     reset,
     handleSubmit,
-    control,
     setValue,
     formState: { errors }
-  } = useForm<AssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(assignmentSchema) })
-
-  // const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
-  //   setValue(
-  //     'topic',
-  //     newSelectedOptions.map((option) => option.key)
-  //   )
-  // }
-  // const topics = watch('topic') || []
+  } = useForm<CertificateFormType>({ mode: 'onBlur', resolver: zodResolver(certificateSchema) })
 
   // set initial values
   useEffect(() => {
@@ -51,25 +42,25 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
       reset({
         ...assignment,
         exam: exam.toUpperCase() as Exam,
-        contentType: assignment.contentType.toUpperCase() as AssignmentFormType['contentType']
+        contentType: assignment.contentType.toUpperCase() as CertificateFormType['contentType']
       })
     } else {
       setValue('exam', exam.toUpperCase() as Exam)
-      setValue('contentType', contentType.toUpperCase() as AssignmentFormType['contentType'])
+      setValue('contentType', contentType.toUpperCase() as CertificateFormType['contentType'])
     }
   }, [assignment, exam, contentType, reset, setValue])
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
-    await handleSubmit(async (data: AssignmentFormType) => {
+    await handleSubmit(async (data: CertificateFormType) => {
       const body = { ...data, publishState }
 
       try {
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<string>(exam, assignment.id, body)
+          resultId = await updateCertificate<string>(exam, assignment.id, body)
         } else {
-          const { id } = await postAssignment<{ id: string }>(body)
+          const { id } = await postCertificate<{ id: string }>(body)
           resultId = id
         }
 
@@ -83,44 +74,10 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   return (
     <div className="w-10/12 pt-3">
       <FormHeader action={action} contentType={contentType} assignment={assignment} />
+
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
         <input type="hidden" {...register('contentType')} />
-
-        {/*<MultiSelectDropdown*/}
-        {/*  options={TOPIC_OPTIONS}*/}
-        {/*  selectedOptions={TOPIC_OPTIONS.filter((it) => topics.includes(it.key))}*/}
-        {/*  onSelectedOptionsChange={handleMultiSelectChange}*/}
-        {/*  canReset*/}
-        {/*/>*/}
-
-        <div className="mb-6">
-          <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
-          <Controller
-            control={control}
-            name="assignmentType"
-            rules={{ required: true }}
-            render={({ field }) => (
-              <>
-                {assignmentTypes.map((assignmentType, i) => (
-                  <fieldset key={i} className="flex items-center">
-                    <input
-                      type="radio"
-                      {...field}
-                      value={assignmentType.id}
-                      checked={field.value === assignmentType.id}
-                      id={assignmentType.id}
-                      data-testid={`assignmentTypeRadio-${assignmentType.id.toLowerCase()}`}
-                      className="mr-2"
-                    />
-                    <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
-                  </fieldset>
-                ))}
-              </>
-            )}
-          />
-          {errors?.assignmentType && <p className="text-green-primary">{errors.assignmentType.message}</p>}
-        </div>
 
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
@@ -131,25 +88,27 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
         {activeTab === 'fi' && (
           <>
             <TextInput id="nameFi" register={register} required>
-              {t('form.tehtavannimi')}
+              {t('form.todistuksennimi')}
             </TextInput>
             {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
             <TextAreaInput id="contentFi" register={register}>
-              {t('form.tehtavansisalto')}
+              {t('form.todistuksenkuvaus')}
             </TextAreaInput>
           </>
         )}
         {activeTab === 'sv' && (
           <>
             <TextInput id="nameSv" register={register} required>
-              {t('form.tehtavannimi')}
+              {t('form.todistuksennimi')}
             </TextInput>
             {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
             <TextAreaInput id="contentSv" register={register}>
-              {t('form.tehtavansisalto')}
+              {t('form.todistuksenkuvaus')}
             </TextAreaInput>
           </>
         )}
+
+        <div className="mb-2 text-lg font-semibold">Todistus</div>
       </form>
 
       <FormButtonRow

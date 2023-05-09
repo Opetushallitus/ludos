@@ -9,10 +9,10 @@ import { useState } from 'react'
 
 type LdAssignmentContentProps = {
   assignment: AssignmentIn
-  examType?: string
+  contentType?: string
 }
 
-export const LdAssignmentContent = ({ assignment, examType }: LdAssignmentContentProps) => {
+export const LdAssignmentContent = ({ assignment, contentType }: LdAssignmentContentProps) => {
   const { t } = useTranslation()
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
@@ -34,11 +34,11 @@ export const LdAssignmentContent = ({ assignment, examType }: LdAssignmentConten
         </div>
       </div>
       <div className="row">
-        <StateTag state={assignment.state} />
+        <StateTag state={assignment.publishState} />
         <span
           className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
           onClick={() =>
-            navigate(`../${examType}/update`, {
+            navigate(`../${contentType}/update`, {
               state: {
                 assignment
               }

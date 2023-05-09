@@ -1,27 +1,35 @@
-import { ExamsSingular, ExamsKey, ExamType, ExamTypes, AssignmentIn, SukoAssignmentIn } from '../../../types'
+import {
+  ContentTypesSingular,
+  ContentTypeKeys,
+  ContentType,
+  ContentTypes,
+  AssignmentIn,
+  SukoAssignmentIn,
+  Exam
+} from '../../../types'
 
-export function getSingularExamTypeFinnish(s: ExamType) {
-  const key = Object.keys(ExamTypes).find((k) => ExamTypes[k as ExamsKey] === s) as ExamsKey
-  return ExamsSingular[key]
+export function getSingularContentTypeFinnish(s: ContentType) {
+  const key = Object.keys(ContentTypes).find((k) => ContentTypes[k as ContentTypeKeys] === s) as ContentTypeKeys
+  return ContentTypesSingular[key]
 }
 
-export const AssignmentKeyTranslationEnglish = {
+export const ContentTypeTranslationEnglish = {
   koetehtavat: 'assignments',
   ohjeet: 'instructions',
   todistukset: 'certificates'
 } as { [key: string]: string }
 
-export const AssignmentKeyTranslationFinnish = {
+export const ContentTypeTranslationFinnish = {
   assignments: 'koetehtavat',
   instructions: 'ohjeet',
   certificates: 'todistukset'
 } as { [key: string]: string }
 
-export const isSukoAssignment = (assignment: AssignmentIn, exam: string): assignment is SukoAssignmentIn =>
-  exam === 'suko'
-export const isPuhviAssignment = (assignment: AssignmentIn, exam: string): assignment is AssignmentIn =>
-  exam === 'puhvi'
-export const isLdAssignment = (assignment: AssignmentIn, exam: string): assignment is AssignmentIn => exam === 'ld'
+export const isSukoAssignment = (assignment: AssignmentIn, exam: Exam): assignment is SukoAssignmentIn =>
+  exam === Exam.Suko
+export const isPuhviAssignment = (assignment: AssignmentIn, exam: Exam): assignment is AssignmentIn =>
+  exam === Exam.Puhvi
+export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment is AssignmentIn => exam === Exam.Ld
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript

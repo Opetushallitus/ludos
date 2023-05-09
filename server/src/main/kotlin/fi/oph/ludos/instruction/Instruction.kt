@@ -1,4 +1,4 @@
-package fi.oph.ludos.assignment
+package fi.oph.ludos.instruction
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -6,19 +6,18 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import java.sql.Timestamp
-import java.util.*
 
-enum class SukoAssignmentType {
-    LUKEMINEN, TEKSTIN_TIIVISTAMINEN, KESKUSTELU
+enum class InstructionFormat {
+    HTML, PDF
 }
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
-    JsonSubTypes.Type(value = SukoAssignmentDtoIn::class, name = "SUKO"),
-    JsonSubTypes.Type(value = PuhviAssignmentDtoIn::class, name = "PUHVI"),
-    JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
+    JsonSubTypes.Type(value = SukoInstructionDtoIn::class, name = "SUKO"),
+    JsonSubTypes.Type(value = PuhviInstructionDtoIn::class, name = "PUHVI"),
+    JsonSubTypes.Type(value = LdInstructionDtoIn::class, name = "LD")
 )
-interface Assignment {
+interface Instruction {
     val nameFi: String
     val contentFi: String
     val nameSv: String
@@ -28,56 +27,42 @@ interface Assignment {
 }
 
 @JsonTypeName("SUKO")
-data class SukoAssignmentDtoIn(
+data class SukoInstructionDtoIn(
     override val nameFi: String,
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentType: String
-) : Assignment
+) : Instruction
 
 @JsonTypeName("PUHVI")
-data class PuhviAssignmentDtoIn(
+data class PuhviInstructionDtoIn(
     override val nameFi: String,
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-) : Assignment
+) : Instruction
 
 @JsonTypeName("LD")
-data class LdAssignmentDtoIn(
+data class LdInstructionDtoIn(
     override val nameFi: String,
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-) : Assignment
+) : Instruction
 
-interface AssignmentOut {
+interface InstructionOut {
     val id: Int
     val createdAt: Timestamp
     val updatedAt: Timestamp
 }
 
-data class SukoAssignmentDtoOut(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val publishState: PublishState,
-    override val contentType: ContentType,
-    val assignmentType: String,
-    override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
-) : Assignment, AssignmentOut
-
-data class PuhviAssignmentDtoOut(
+data class SukoInstructionDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
@@ -87,9 +72,9 @@ data class PuhviAssignmentDtoOut(
     override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
-) : Assignment, AssignmentOut
+) : Instruction, InstructionOut
 
-data class LdAssignmentDtoOut(
+data class PuhviInstructionDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
@@ -99,19 +84,9 @@ data class LdAssignmentDtoOut(
     override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
-) : Assignment, AssignmentOut
+) : Instruction, InstructionOut
 
-interface UpdateAssignmentDtoIn {
-    val id: Int
-    val nameFi: String
-    val nameSv: String
-    val contentFi: String
-    val contentSv: String
-    val publishState: PublishState
-    val contentType: ContentType
-}
-
-data class SukoUpdateAssignmentDtoIn(
+data class LdInstructionDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
@@ -119,34 +94,16 @@ data class SukoUpdateAssignmentDtoIn(
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentType: String
-) : UpdateAssignmentDtoIn
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp
+) : Instruction, InstructionOut
 
-data class PuhviUpdateAssignmentDtoIn(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val publishState: PublishState,
-    override val contentType: ContentType,
-) : UpdateAssignmentDtoIn
-
-data class LdUpdateAssignmentDtoIn(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val publishState: PublishState,
-    override val contentType: ContentType,
-) : UpdateAssignmentDtoIn
-
-data class AssignmentFilter(
-    val course: String?,
-    val assignmentType: String?,
-    val topic: String?,
-    val language: String?,
-    val orderBy: String?,
-    val orderDirection: String?
+data class UpdateInstructionDtoIn(
+    val id: Int,
+    val nameFi: String,
+    val nameSv: String,
+    val contentFi: String,
+    val contentSv: String,
+    val publishState: PublishState,
+    val contentType: ContentType,
 )

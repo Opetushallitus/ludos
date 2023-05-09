@@ -1,17 +1,15 @@
-CREATE TYPE assignment_state AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
-CREATE TYPE assignment_exam_type AS ENUM ('ASSIGNMENTS', 'INSTRUCTIONS', 'CERTIFICATES');
+CREATE TYPE publish_state AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
 
 CREATE TABLE assignment
 (
-    assignment_id         serial PRIMARY KEY,
-    assignment_name_fi    text                 NOT NULL,
-    assignment_name_sv    text                 NOT NULL,
-    assignment_content_fi text                 NOT NULL,
-    assignment_content_sv text                 NOT NULL,
-    assignment_state      assignment_state     NOT NULL,
-    assignment_exam_type  assignment_exam_type NOT NULL,
-    assignment_created_at timestamptz          NOT NULL default now(),
-    assignment_updated_at timestamptz          NOT NULL default now()
+    assignment_id            serial PRIMARY KEY,
+    assignment_name_fi       text          NOT NULL,
+    assignment_name_sv       text          NOT NULL,
+    assignment_content_fi    text          NOT NULL,
+    assignment_content_sv    text          NOT NULL,
+    assignment_publish_state publish_state NOT NULL,
+    assignment_created_at    timestamptz   NOT NULL default now(),
+    assignment_updated_at    timestamptz   NOT NULL default now()
 );
 
 CREATE TABLE suko_assignment
@@ -25,3 +23,28 @@ CREATE TABLE puhvi_assignment
 CREATE TABLE ld_assignment
 (
 ) INHERITS (assignment);
+
+
+CREATE TABLE instruction
+(
+    instruction_id            serial PRIMARY KEY,
+    instruction_name_fi       text          NOT NULL,
+    instruction_name_sv       text          NOT NULL,
+    instruction_content_fi    text          NOT NULL,
+    instruction_content_sv    text          NOT NULL,
+    instruction_publish_state publish_state NOT NULL,
+    instruction_created_at    timestamptz   NOT NULL default now(),
+    instruction_updated_at    timestamptz   NOT NULL default now()
+);
+
+CREATE TABLE suko_instruction
+(
+) INHERITS (instruction);
+
+CREATE TABLE puhvi_instruction
+(
+) INHERITS (instruction);
+
+CREATE TABLE ld_instruction
+(
+) INHERITS (instruction);

@@ -15,13 +15,13 @@ export type AllPages = NavigationPages & {
   create: Page
 }
 
-export const AssignmentState = {
+export const PublishState = {
   Draft: 'DRAFT',
   Published: 'PUBLISHED',
   Archived: 'ARCHIVED'
 } as const
 
-export type AssignmentState = (typeof AssignmentState)[keyof typeof AssignmentState]
+export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
 export const Exam = {
   Suko: 'SUKO',
@@ -37,8 +37,8 @@ export type AssignmentIn = {
   nameSv: string
   contentFi: string
   contentSv: string
-  state: AssignmentState
-  examType: Exam
+  publishState: PublishState
+  contentType: Exam
   createdAt: string
   updatedAt: string
 }
@@ -47,28 +47,28 @@ export type SukoAssignmentIn = AssignmentIn & {
   assignmentType: string
 }
 
-export const ExamTypes = {
+export const ContentTypes = {
   KOETEHTAVAT: 'koetehtavat',
   OHJEET: 'ohjeet',
   TODISTUKSET: 'todistukset'
 } as const
 
-export const ExamTypesEng = {
+export const ContentTypesEng = {
   KOETEHTAVAT: 'assignments',
   OHJEET: 'instructions',
   TODISTUKSET: 'certificates'
 }
 
-export type ExamsKey = keyof typeof ExamTypes
+export type ContentTypeKeys = keyof typeof ContentTypes
 
 type SingularOptions = {
-  [key in ExamsKey]: string
+  [key in ContentTypeKeys]: string
 }
 
-export const ExamsSingular: SingularOptions = {
+export const ContentTypesSingular: SingularOptions = {
   KOETEHTAVAT: 'koetehtava',
   OHJEET: 'ohje',
   TODISTUKSET: 'todistus'
 }
 
-export type ExamType = (typeof ExamTypes)[keyof typeof ExamTypes]
+export type ContentType = (typeof ContentTypes)[keyof typeof ContentTypes]

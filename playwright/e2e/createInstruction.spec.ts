@@ -1,15 +1,16 @@
 import { expect, test } from '@playwright/test'
-import { fillAssignmentForm } from '../helpers'
+import { fillInstructionForm } from '../helpers'
 
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.getByTestId('nav-link-suko').click()
-    await page.getByTestId('create-koetehtava-button').click()
+    await page.getByTestId('tab-ohjeet').click()
+    await page.getByTestId('create-ohje-button').click()
   })
 
   test('can create a new assignment', async ({ page }) => {
-    await fillAssignmentForm({
+    await fillInstructionForm({
       page,
       nameTextFi: 'Testi tehtävä',
       nameTextSv: 'Testuppgifter',
@@ -26,7 +27,6 @@ test.describe('Assignment form tests', () => {
 
   test('can create draft assignment', async ({ page }) => {
     await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
-    await page.getByTestId('assignmentTypeRadio-lukeminen').click()
     await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
 
     const btn = page.getByTestId('form-draft')

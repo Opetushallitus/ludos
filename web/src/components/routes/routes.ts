@@ -7,7 +7,6 @@ export const feedbackKey = 'feedback'
 export const sukoKey = 'suko'
 export const puhviKey = 'puhvi'
 export const ldKey = 'ld'
-export const contentKey = 'content'
 
 export const navigationPages: NavigationPages = {
   frontpage: {
@@ -16,15 +15,15 @@ export const navigationPages: NavigationPages = {
   },
   suko: {
     titleKey: 'suko',
-    path: `/${contentKey}/${sukoKey}`
+    path: `/${sukoKey}`
   },
   puhvi: {
     titleKey: 'puhvi',
-    path: `/${contentKey}/${puhviKey}`
+    path: `/${puhviKey}`
   },
   ld: {
     titleKey: 'ld',
-    path: `/${contentKey}/${ldKey}`
+    path: `/${ldKey}`
   },
   palautteet: {
     titleKey: 'palautteet',

@@ -5,3 +5,15 @@ interface Constants {
         const val API_PREFIX = "/api"
     }
 }
+
+enum class PublishState {
+    DRAFT, PUBLISHED, ARCHIVED
+}
+
+enum class Exam {
+    SUKO, PUHVI, LD
+}
+
+enum class ContentType {
+    ASSIGNMENTS, INSTRUCTIONS, CERTIFICATES
+}
