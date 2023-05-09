@@ -1,10 +1,10 @@
 import { RefObject, useCallback, useEffect, useState } from 'react'
-import { SelectOption } from '../components/MultiSelectDropdown'
+import { KoodiDtoIn } from '../KoodistoContext'
 
 type UseDropdownStateProps = {
-  options: SelectOption[]
-  selectedOptions: SelectOption[]
-  onSelectedOptionsChange: (selectedOptions: SelectOption[]) => void
+  options: KoodiDtoIn[]
+  selectedOptions: KoodiDtoIn[]
+  onSelectedOptionsChange: (selectedOptions: KoodiDtoIn[]) => void
   containerRef: RefObject<HTMLDivElement>
 }
 
@@ -18,7 +18,7 @@ export const useDropdownState = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
 
   const toggleOption = useCallback(
-    (option: SelectOption) => {
+    (option: KoodiDtoIn) => {
       if (selectedOptions.includes(option)) {
         onSelectedOptionsChange(selectedOptions.filter((selected) => selected !== option))
       } else {
@@ -71,5 +71,5 @@ export const useDropdownState = ({
     }
   }, [isOpen, highlightedIndex, options, containerRef, toggleOption])
 
-  return { isExpanded: isOpen, setExpansion: setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption }
+  return { isOpen: isOpen, setIsOpen: setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption }
 }

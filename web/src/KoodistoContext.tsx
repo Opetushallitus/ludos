@@ -14,7 +14,7 @@ export type KoodiDtoIn = {
   kieli: string
 }
 
-interface Koodisto {
+export type Koodisto = {
   name: LudosKoodistos
   koodit: KoodiDtoIn[]
 }

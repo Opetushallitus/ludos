@@ -1,8 +1,10 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useContext, useState } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
 import { Dropdown } from '../../Dropdown'
 import { LANGUAGE_OPTIONS, SUKO_ASSIGNMENT_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodisto'
 import { useTranslation } from 'react-i18next'
+import { KoodiDtoIn, Koodisto, KoodistoContext, KoodistoMap } from '../../../KoodistoContext'
+import { MultiSelectDropdown } from '../../MultiSelectDropdown'
 
 type ValueOf<T> = T[keyof T]
 
@@ -11,13 +13,30 @@ type AssignmentFiltersProps = {
   setFilters: Dispatch<SetStateAction<FiltersType>>
   language: string
   setLanguage: Dispatch<SetStateAction<string>>
+  setIsMultiselectOpen: (bool: boolean) => void
 }
 
-export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }: AssignmentFiltersProps) => {
+export const AssignmentFilters = ({
+  filters,
+  setFilters,
+  language,
+  setLanguage,
+  setIsMultiselectOpen
+}: AssignmentFiltersProps) => {
   const { t } = useTranslation()
+  const ctx = useContext(KoodistoContext)
+
+  const koodisto = ctx.koodistos
 
   const handleFilterChange = (key: keyof FiltersType, value: ValueOf<FiltersType>) =>
     setFilters((curr) => ({ ...curr, [key]: value }))
+
+  const handleMultiselectFilterChange = (key: keyof FiltersType, value: KoodiDtoIn[]) => {
+    setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
+  }
+
+  const getSelectedOptions = (koodisto?: Koodisto) =>
+    koodisto?.koodit.filter((koodi) => filters.oppimaara?.includes(koodi.koodiArvo)) || []
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -25,27 +44,29 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
       <div className="row w-full flex-wrap justify-start">
         <div className="w-full md:w-56">
           <p className="pl-2">{t('filter.oppimaara')}</p>
-          <Dropdown
-            currentOption={filters.course}
-            onOptionClick={(opt) => handleFilterChange('course', opt)}
-            options={[]}
-            canReset
+          <MultiSelectDropdown
+            options={koodisto?.oppiaineetjaoppimaaratlops2021?.koodit || []}
+            selectedOptions={getSelectedOptions(koodisto?.oppiaineetjaoppimaaratlops2021)}
+            onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
+            onOpen={setIsMultiselectOpen}
+            onClose={() => setIsMultiselectOpen(false)}
           />
         </div>
         <div className="w-full md:w-56">
           <p className="pl-2">{t('filter.tyyppi')}</p>
-          <Dropdown
-            currentOption={SUKO_ASSIGNMENT_OPTIONS.find((opt) => opt.key === filters.assignmentType)?.value || null}
-            onOptionClick={(opt) => handleFilterChange('assignmentType', opt)}
-            options={SUKO_ASSIGNMENT_OPTIONS}
-            canReset
+          <MultiSelectDropdown
+            options={koodisto?.ludostehtavatyypi?.koodit || []}
+            selectedOptions={getSelectedOptions(koodisto?.ludostehtavatyypi)}
+            onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentType', opt)}
+            onOpen={setIsMultiselectOpen}
+            onClose={() => setIsMultiselectOpen(false)}
           />
         </div>
         <div className="w-full md:w-56">
           <p className="pl-2">{t('filter.aihe')}</p>
           <Dropdown
             currentOption={null}
-            onOptionClick={(opt) => handleFilterChange('topic', opt)}
+            onOptionClick={(opt) => handleFilterChange('aihe', opt)}
             options={[]}
             canReset
           />

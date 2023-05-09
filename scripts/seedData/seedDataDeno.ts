@@ -11,7 +11,7 @@ const sukoData = {
   nameSv: 'Suko Assignment Sv',
   contentFi: 'This is a Suko assignment. Fi',
   contentSv: 'This is a Suko assignment. Sv',
-  state: 'PUBLISHED',
+  publishState: 'PUBLISHED',
   exam: 'SUKO',
   contentType: '',
   assignmentType: 'LUKEMINEN'
@@ -22,7 +22,7 @@ const puhviData = {
   nameSv: 'Puhvi Assignment Sv',
   contentFi: 'This is a Puhvi assignment. Fi',
   contentSv: 'This is a Puhvi assignment. Sv',
-  state: 'PUBLISHED',
+  publishState: 'PUBLISHED',
   exam: 'PUHVI',
   contentType: ''
 }
@@ -32,7 +32,7 @@ const ldData = {
   nameSv: 'LD Assignment Sv',
   contentFi: 'This is an LD assignment. Fi',
   contentSv: 'This is an LD assignment. Sv',
-  state: 'PUBLISHED',
+  publishState: 'PUBLISHED',
   exam: 'LD',
   contentType: ''
 }

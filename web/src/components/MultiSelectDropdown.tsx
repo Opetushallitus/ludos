@@ -1,16 +1,14 @@
 import { useRef } from 'react'
 import { Icon } from './Icon'
 import { useDropdownState } from '../hooks/useDropdownState'
-
-export type SelectOption = {
-  value: string
-  key: string
-}
+import { KoodiDtoIn } from '../KoodistoContext'
 
 type MultiSelectProps = {
-  options: SelectOption[]
-  selectedOptions: SelectOption[]
-  onSelectedOptionsChange: (options: SelectOption[]) => void
+  options: KoodiDtoIn[]
+  selectedOptions: KoodiDtoIn[]
+  onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
+  onClose?: (options: KoodiDtoIn[]) => void
+  onOpen?: (bool: boolean) => void
   canReset?: boolean
 }
 
@@ -18,11 +16,13 @@ export const MultiSelectDropdown = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,
+  onClose,
+  onOpen,
   canReset
 }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { isExpanded, setExpansion, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
     options,
     selectedOptions,
     onSelectedOptionsChange,
@@ -35,10 +35,18 @@ export const MultiSelectDropdown = ({
       ref={containerRef}
       onBlur={(e) => {
         e.preventDefault()
-        setExpansion(false)
+        onClose && onClose(selectedOptions)
+        setIsOpen(false)
       }}
       tabIndex={0}>
-      <div className="flex items-center justify-between bg-white px-2" onClick={() => setExpansion(!isExpanded)}>
+      <div
+        className="flex items-center justify-between bg-white px-2"
+        onClick={() => {
+          !isOpen && onOpen && onOpen(true)
+          // don't trigger on close if not expanded
+          isOpen && onClose && onClose(selectedOptions)
+          setIsOpen(!isOpen)
+        }}>
         <div className="row w-full flex-wrap gap-2 p-2">
           {selectedOptions.length ? (
             <>
@@ -50,7 +58,7 @@ export const MultiSelectDropdown = ({
                     toggleOption(opt)
                   }}
                   key={i}>
-                  {opt.value}{' '}
+                  {opt.nimi}{' '}
                   <Icon
                     name="sulje"
                     color="text-white"
@@ -81,7 +89,7 @@ export const MultiSelectDropdown = ({
       </div>
       <ul
         className={`${
-          isExpanded ? '' : 'hidden'
+          isOpen ? '' : 'hidden'
         } absolute -left-1 z-50 mt-2 w-full border border-gray-secondary bg-white px-2 py-1`}>
         {options.map((option, i) => (
           <li
@@ -91,7 +99,7 @@ export const MultiSelectDropdown = ({
             onClick={() => toggleOption(option)}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}>
-            {option.value}
+            {option.nimi}
           </li>
         ))}
       </ul>

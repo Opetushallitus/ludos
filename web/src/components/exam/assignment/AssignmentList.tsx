@@ -20,6 +20,7 @@ export const AssignmentList = ({
   activeTab: string
 }) => {
   const { filters, setFilters } = useFilters()
+  const [isMultiselectOpen, setIsMultiselectOpen] = useState(false)
   const [language, setLanguage] = useState<string>('fi')
 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
@@ -38,7 +39,7 @@ export const AssignmentList = ({
     return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
   }
 
-  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByContentType())
+  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByContentType(), isMultiselectOpen)
 
   // refresh data on tab change
   useEffect(() => {
@@ -51,47 +52,45 @@ export const AssignmentList = ({
 
   return (
     <div>
-      {loading ? (
+      {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
+      {contentType === ContentTypesEng.KOETEHTAVAT && (
+        <AssignmentFilters
+          filters={filters}
+          setFilters={setFilters}
+          language={language}
+          setLanguage={setLanguage}
+          setIsMultiselectOpen={setIsMultiselectOpen}
+        />
+      )}
+      {loading && (
         <div className="mt-10 text-center">
           <Spinner />
         </div>
-      ) : (
+      )}
+      {data && (
         <>
-          {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
-          {data && (
-            <>
-              {contentType === ContentTypesEng.KOETEHTAVAT && (
-                <div>
-                  <AssignmentFilters
-                    filters={filters}
-                    setFilters={setFilters}
-                    language={language}
-                    setLanguage={setLanguage}
-                  />
-                  <ul>
-                    {data?.map((assignment, i) => (
-                      <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {contentType === ContentTypesEng.OHJEET && (
-                <div className="mt-3 flex flex-wrap gap-5">
-                  <>{loading && <Spinner />}</>
-                  {data?.map((assignment, i) => (
-                    <InstructionCard assignment={assignment} exam={exam} key={i} />
-                  ))}
-                </div>
-              )}
-              {contentType === ContentTypesEng.TODISTUKSET && (
-                <div className="mt-3 flex flex-wrap gap-5">
-                  <>{loading && <Spinner />}</>
-                  {data?.map((assignment, i) => (
-                    <CertificateCard assignment={assignment} key={i} />
-                  ))}
-                </div>
-              )}
-            </>
+          {contentType === ContentTypesEng.KOETEHTAVAT && (
+            <ul>
+              {data?.map((assignment, i) => (
+                <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
+              ))}
+            </ul>
+          )}
+          {contentType === ContentTypesEng.OHJEET && (
+            <div className="mt-3 flex flex-wrap gap-5">
+              <>{loading && <Spinner />}</>
+              {data?.map((assignment, i) => (
+                <InstructionCard assignment={assignment} exam={exam} key={i} />
+              ))}
+            </div>
+          )}
+          {contentType === ContentTypesEng.TODISTUKSET && (
+            <div className="mt-3 flex flex-wrap gap-5">
+              <>{loading && <Spinner />}</>
+              {data?.map((assignment, i) => (
+                <CertificateCard assignment={assignment} key={i} />
+              ))}
+            </div>
           )}
         </>
       )}
