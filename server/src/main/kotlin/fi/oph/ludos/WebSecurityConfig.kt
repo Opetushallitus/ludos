@@ -2,6 +2,8 @@ package fi.oph.ludos
 
 import fi.oph.ludos.cas.CasConfig
 import org.jasig.cas.client.session.SingleSignOutFilter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,6 +16,8 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfiguration {
+    val logger: Logger = LoggerFactory.getLogger(WebSecurityConfiguration::class.java)
+
     @Bean
     fun singleSignOutFilter(): SingleSignOutFilter = SingleSignOutFilter().apply {
         setIgnoreInitConfiguration(true)
@@ -31,7 +35,7 @@ class WebSecurityConfiguration {
         // todo: enable csrf for non local environments
         http.csrf().disable()
 
-        println("securityFilterChain: activeProfiles: $activeProfiles")
+        logger.info("Initializing SecurityFilterChain with active profiles: '$activeProfiles'")
 
         if (activeProfiles == "local") {
             http.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
@@ -43,7 +47,10 @@ class WebSecurityConfiguration {
             .logoutUrl(casConfig.logoutUrl)
 
         http.authorizeHttpRequests()
+            .antMatchers("/assets/**").permitAll()
             .antMatchers("/api/health-check").permitAll()
+
+        http.authorizeHttpRequests()
             .antMatchers("/**").authenticated().and().addFilter(casAuthenticationFilter)
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
             .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
