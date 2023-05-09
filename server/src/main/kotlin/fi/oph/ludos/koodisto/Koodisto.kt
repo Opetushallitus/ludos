@@ -1,13 +1,15 @@
 package fi.oph.ludos.koodisto
 
+enum class Language(val code: String) {
+    FI("FI"),
+    SV("SV")
+}
+
 data class Koodisto(
     val koodisto: String,
-    val getFinnishName: Boolean = true,
-    val getSwedishName: Boolean = true,
-    val koodistoVersio: Int? = null
 )
 
-val koodistot = listOf(
+val ludosKoodistos = listOf(
     Koodisto("oppiaineetjaoppimaaratlops2021"),
     Koodisto("laajaalainenosaaminenlops2021"),
     Koodisto("ludostehtavatyypi"),
@@ -16,13 +18,12 @@ val koodistot = listOf(
     Koodisto("ludoslukiodiplomiaine"),
 )
 
-data class KoodistoDtoOut(
-    val koodisto: String,
+data class KoodistoWithKoodit(
+    val name: String,
     val koodit: List<KoodiDtoOut>
 )
 
 data class KoodiDtoOut(
-    val koodiUri: String,
     val koodiArvo: String,
     val nimi: String,
     val kieli: String

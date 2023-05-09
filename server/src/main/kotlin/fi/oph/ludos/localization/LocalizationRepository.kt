@@ -5,12 +5,15 @@ import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import org.json.JSONArray
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
 
 @Repository
-class LocalizationRepository {
+class LocalizationRepository(
+    @Value("\${ludos.opintopolkuHostname}") private val opintopolkuHostname: String
+) {
     private val httpClient: HttpClient = HttpClientBuilder.create().build()
-    private val url = "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation?category=ludos"
+    private val url = "https://${opintopolkuHostname}/lokalisointi/cxf/rest/v1/localisation?category=ludos"
 
     fun getLocalizationTexts(): Array<Localization> {
         val request = HttpGet(url)
