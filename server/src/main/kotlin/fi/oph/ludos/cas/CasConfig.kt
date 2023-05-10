@@ -4,6 +4,8 @@ import fi.oph.ludos.Constants.Companion.API_PREFIX
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter
 import org.jasig.cas.client.validation.Cas30ServiceTicketValidator
 import org.jasig.cas.client.validation.TicketValidator
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -13,12 +15,17 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint
 import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.*
 import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 @Configuration
 class CasConfig {
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
     @Value("\${ludos.appUrl}")
     lateinit var appUrl: String
     @Value("\${ludos.opintopolkuHostname}")
@@ -43,6 +50,7 @@ class CasConfig {
         val casAuthenticationFilter = OpintopolkuCasAuthenticationFilter(serviceProperties)
         casAuthenticationFilter.setAuthenticationManager(authenticationConfiguration.authenticationManager)
         casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check")
+        casAuthenticationFilter.setAuthenticationSuccessHandler(LudosAuthenticationSuccessHandler())
         return casAuthenticationFilter
     }
 
@@ -91,4 +99,16 @@ class CasUserDetails(private val username: String) : UserDetails {
     override fun isAccountNonLocked(): Boolean = true
     override fun isCredentialsNonExpired(): Boolean = true
     override fun isEnabled(): Boolean = true
+}
+
+class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccessHandler() {
+    val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
+    override fun onAuthenticationSuccess(
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
+        authentication: Authentication?
+    ) {
+        ludosLogger.info("Successful login: '${((authentication?.principal as CasUserDetails?)?.username)}'")
+        super.onAuthenticationSuccess(request, response, authentication)
+    }
 }
