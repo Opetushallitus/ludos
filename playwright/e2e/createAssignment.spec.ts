@@ -26,7 +26,7 @@ test.describe('Assignment form tests', () => {
 
   test('can create draft assignment', async ({ page }) => {
     await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
-    await page.getByTestId('assignmentTypeRadio-lukeminen').click()
+    await page.getByTestId('assignmentTypeRadio-002').click()
     await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
 
     const btn = page.getByTestId('form-draft')
