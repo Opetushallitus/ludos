@@ -19,7 +19,7 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
     init {
         // Schedule cache update every 2 minutes
         val scheduler = Executors.newScheduledThreadPool(1)
-        scheduler.scheduleAtFixedRate({ updateCache() }, 0, 10, TimeUnit.MINUTES)
+        scheduler.scheduleAtFixedRate({ updateCache() }, 2, 2, TimeUnit.MINUTES)
 
         try {
             // Init cache
