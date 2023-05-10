@@ -53,20 +53,18 @@ export const MultiSelectDropdown = ({
               {selectedOptions.map((opt, i) => (
                 <div className="flex w-auto flex-col rounded-2xl bg-green-primary">
                   <div className="my-auto flex items-center">
-                    <p
-                      className="px-2 py-1 text-center text-xs text-white"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleOption(opt)
-                      }}
-                      key={i}>
+                    <p className="px-2 py-1 text-center text-xs text-white" key={i}>
                       {opt.nimi}
                     </p>
                     <Icon
                       name="sulje"
                       color="text-white"
                       size="sm"
-                      customClass="hover:cursor-pointer hover:bg-white hover:text-black px-1"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleOption(opt)
+                      }}
+                      customClass="hover:cursor-pointer hover:bg-white hover:text-black mr-3"
                     />
                   </div>
                 </div>
@@ -85,6 +83,7 @@ export const MultiSelectDropdown = ({
                 e.stopPropagation()
                 onSelectedOptionsChange([])
               }}
+              customClass="border-l-2 border-gray-light"
             />
           ) : (
             <Icon name="laajenna" color="text-black" />
@@ -97,9 +96,15 @@ export const MultiSelectDropdown = ({
         } absolute -left-1 z-50 mt-2 max-h-96 w-full overflow-y-scroll border border-gray-secondary bg-white px-2 py-1`}>
         {options.map((option, i) => (
           <li
-            className={`cursor-pointer px-2 hover:text-white ${
-              selectedOptions.includes(option) ? 'bg-green-light text-white' : ''
-            } ${i === highlightedIndex ? 'bg-green-primary text-white' : ''}`}
+            className={`cursor-pointer px-3 ${
+              selectedOptions.includes(option) ? 'bg-green-primary text-white hover:text-white' : ''
+            } ${
+              i === highlightedIndex && selectedOptions.includes(option)
+                ? '!bg-green-light'
+                : i === highlightedIndex
+                ? 'bg-gray-light'
+                : ''
+            }`}
             onClick={() => toggleOption(option)}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}>
