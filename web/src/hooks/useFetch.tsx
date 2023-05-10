@@ -7,7 +7,6 @@ export function useFetch<T>(url: string, stopRequest: boolean = false) {
   const [refresh, setRefresh] = useState(false)
 
   useEffect(() => {
-    console.log('useFetch', url, stopRequest)
     if (!stopRequest) {
       ;(async () => {
         try {

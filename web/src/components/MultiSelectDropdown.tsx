@@ -47,18 +47,18 @@ export const MultiSelectDropdown = ({
           isOpen && onClose && onClose(selectedOptions)
           setIsOpen(!isOpen)
         }}>
-        <div className="row w-full flex-wrap gap-2 p-2">
+        <div className="row w-full flex-wrap gap-2 py-1">
           {selectedOptions.length ? (
             <>
               {selectedOptions.map((opt, i) => (
                 <span
-                  className="flex w-32 items-center justify-center gap-2 rounded-2xl bg-green-primary py-1 text-xs text-white"
+                  className="flex w-32 items-center justify-between rounded-2xl bg-green-primary px-2 py-1 text-center text-xs text-white"
                   onClick={(e) => {
                     e.stopPropagation()
                     toggleOption(opt)
                   }}
                   key={i}>
-                  {opt.nimi}{' '}
+                  {opt.nimi}
                   <Icon
                     name="sulje"
                     color="text-white"
@@ -73,7 +73,7 @@ export const MultiSelectDropdown = ({
           )}
         </div>
         <div>
-          {canReset ? (
+          {selectedOptions.length && canReset ? (
             <Icon
               name="sulje"
               color="text-black"
@@ -90,7 +90,7 @@ export const MultiSelectDropdown = ({
       <ul
         className={`${
           isOpen ? '' : 'hidden'
-        } absolute -left-1 z-50 mt-2 w-full border border-gray-secondary bg-white px-2 py-1`}>
+        } absolute -left-1 z-50 mt-2 max-h-96 w-full overflow-y-scroll border border-gray-secondary bg-white px-2 py-1`}>
         {options.map((option, i) => (
           <li
             className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${

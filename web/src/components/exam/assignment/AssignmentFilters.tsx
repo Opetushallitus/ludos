@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
 import { Dropdown } from '../../Dropdown'
-import { LANGUAGE_OPTIONS, SUKO_ASSIGNMENT_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodisto'
+import { LANGUAGE_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn, Koodisto, KoodistoContext, KoodistoMap } from '../../../KoodistoContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
@@ -35,8 +35,8 @@ export const AssignmentFilters = ({
     setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
   }
 
-  const getSelectedOptions = (koodisto?: Koodisto) =>
-    koodisto?.koodit.filter((koodi) => filters.oppimaara?.includes(koodi.koodiArvo)) || []
+  const getSelectedOptions = (filter: string | null, koodisto?: Koodisto) =>
+    koodisto?.koodit.filter((koodi) => filter?.includes(koodi.koodiArvo)) || []
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -46,20 +46,22 @@ export const AssignmentFilters = ({
           <p className="pl-2">{t('filter.oppimaara')}</p>
           <MultiSelectDropdown
             options={koodisto?.oppiaineetjaoppimaaratlops2021?.koodit || []}
-            selectedOptions={getSelectedOptions(koodisto?.oppiaineetjaoppimaaratlops2021)}
+            selectedOptions={getSelectedOptions(filters.oppimaara, koodisto?.oppiaineetjaoppimaaratlops2021)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
             onOpen={setIsMultiselectOpen}
             onClose={() => setIsMultiselectOpen(false)}
+            canReset
           />
         </div>
         <div className="w-full md:w-56">
           <p className="pl-2">{t('filter.tyyppi')}</p>
           <MultiSelectDropdown
             options={koodisto?.ludostehtavatyypi?.koodit || []}
-            selectedOptions={getSelectedOptions(koodisto?.ludostehtavatyypi)}
-            onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentType', opt)}
+            selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto?.ludostehtavatyypi)}
+            onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentTypeKoodiArvo', opt)}
             onOpen={setIsMultiselectOpen}
             onClose={() => setIsMultiselectOpen(false)}
+            canReset
           />
         </div>
         <div className="w-full md:w-56">

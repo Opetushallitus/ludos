@@ -28,7 +28,7 @@ export const Dropdown = ({
   return (
     <div className="relative mx-2 mb-3 mt-1 border border-gray-secondary" ref={dropdownRef}>
       <Button
-        className="flex w-full items-center justify-between bg-white px-2"
+        className="flex w-full items-center justify-between bg-white px-2 py-1"
         onClick={() => setExpansion(!isExpanded)}
         data-testid={testId}
         variant="buttonGhost">

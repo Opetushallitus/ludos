@@ -4,7 +4,7 @@ import { AssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
-import { LANGUAGE_OPTIONS } from '../../koodisto'
+import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
 import { useState } from 'react'
 
 type LdAssignmentContentProps = {
