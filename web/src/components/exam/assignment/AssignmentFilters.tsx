@@ -1,9 +1,9 @@
-import { Dispatch, SetStateAction, useContext, useState } from 'react'
+import { Dispatch, SetStateAction, useContext } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
 import { Dropdown } from '../../Dropdown'
 import { LANGUAGE_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
-import { KoodiDtoIn, Koodisto, KoodistoContext, KoodistoMap } from '../../../KoodistoContext'
+import { KoodiDtoIn, Koodisto, KoodistoContext } from '../../../KoodistoContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
 
 type ValueOf<T> = T[keyof T]
