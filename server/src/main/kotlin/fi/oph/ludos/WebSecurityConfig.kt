@@ -16,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 class WebSecurityConfiguration {
-    val logger: Logger = LoggerFactory.getLogger(WebSecurityConfiguration::class.java)
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @Bean
     fun singleSignOutFilter(): SingleSignOutFilter = SingleSignOutFilter().apply {

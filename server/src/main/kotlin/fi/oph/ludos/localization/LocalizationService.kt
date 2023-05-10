@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class LocalizationService(val localizationRepository: LocalizationRepository, val cacheManager: CacheManager) {
-    val logger: Logger = LoggerFactory.getLogger(LocalizationService::class.java)
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
     init {
         // Schedule cache update every 2 minutes
         val scheduler = Executors.newScheduledThreadPool(1)
