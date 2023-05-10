@@ -16,14 +16,14 @@ export const Assignment = ({ exam }: AssignmentProps) => {
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: string; id: string }>()
 
-  const url =
+  const contentTypeSingular =
     contentType === ContentTypesEng.KOETEHTAVAT
       ? EXAM_TYPE_ENUM.ASSIGNMENT
       : contentType === ContentTypesEng.OHJEET
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 
-  const { data: assignment, loading, error } = useFetch<AssignmentIn>(`${url}/${exam}/${id}`)
+  const { data: assignment, loading, error } = useFetch<AssignmentIn>(`${contentTypeSingular}/${exam}/${id}`)
 
   if (loading) {
     return <div>Loading...</div>
@@ -58,7 +58,7 @@ export const Assignment = ({ exam }: AssignmentProps) => {
                   variant="buttonSecondary"
                   onClick={() => navigate(`/${exam}/${contentType}`)}
                   data-testid="return">
-                  {t('assignment.palaa')}
+                  {t(`${contentTypeSingular}.palaa`)}
                 </Button>
               </div>
             </div>
