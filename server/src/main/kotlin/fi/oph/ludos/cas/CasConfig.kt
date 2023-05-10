@@ -16,10 +16,12 @@ import org.springframework.security.cas.web.CasAuthenticationEntryPoint
 import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.*
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -51,6 +53,7 @@ class CasConfig {
         casAuthenticationFilter.setAuthenticationManager(authenticationConfiguration.authenticationManager)
         casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check")
         casAuthenticationFilter.setAuthenticationSuccessHandler(LudosAuthenticationSuccessHandler())
+        casAuthenticationFilter.setAuthenticationFailureHandler(LudosAuthenticationFailureHandler())
         return casAuthenticationFilter
     }
 
@@ -110,5 +113,18 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
     ) {
         ludosLogger.info("Successful login: '${((authentication?.principal as CasUserDetails?)?.username)}'")
         super.onAuthenticationSuccess(request, response, authentication)
+    }
+}
+
+class LudosAuthenticationFailureHandler() : SimpleUrlAuthenticationFailureHandler() {
+    val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
+
+    override fun onAuthenticationFailure(
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
+        exception: AuthenticationException?
+    ) {
+        ludosLogger.warn("Login failed: ${exception?.message}")
+        super.onAuthenticationFailure(request, response, exception)
     }
 }
