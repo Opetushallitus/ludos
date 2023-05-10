@@ -14,7 +14,7 @@ const sukoData = {
   publishState: 'PUBLISHED',
   exam: 'SUKO',
   contentType: '',
-  assignmentType: 'LUKEMINEN'
+  assignmentTypeKoodiArvo: '001'
 }
 
 const puhviData = {
@@ -52,11 +52,11 @@ const seedData = async () => {
     for (const contentType of contentTypes) {
       for (let i = 0; i < numAssignments; i++) {
         const nameFi = `${origNameFi} ${contentType.toLowerCase()} ${
-          exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
+          exam === 'SUKO' ? data['assignmentTypeKoodiArvo'].toLowerCase() : ''
         } ${i + 1}`
 
         const nameSv = `${origNameSv} ${contentType.toLowerCase()} ${
-          exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
+          exam === 'SUKO' ? data['assignmentTypeKoodiArvo'].toLowerCase() : ''
         } ${i + 1}`
 
         const body = {

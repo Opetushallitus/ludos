@@ -18,7 +18,7 @@ class AssignmentController(val service: AssignmentService) {
     fun getAssignments(
         @PathVariable exam: Exam,
         @RequestParam(required = false) course: String?,
-        @RequestParam(required = false) assignmentType: String?,
+        @RequestParam(required = false) assignmentTypeKoodiArvo: String?,
         @RequestParam(required = false) title: String?,
         @RequestParam(required = false) language: String?,
         @RequestParam(required = false) orderBy: String?,
@@ -26,7 +26,7 @@ class AssignmentController(val service: AssignmentService) {
     ): List<AssignmentOut> {
 
         val filters = AssignmentFilter(
-            course, assignmentType, title, language, orderBy, orderDirection
+            course, assignmentTypeKoodiArvo, title, language, orderBy, orderDirection
         )
 
         return service.getAssignments(exam, filters)

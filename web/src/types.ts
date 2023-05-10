@@ -44,7 +44,7 @@ export type AssignmentIn = {
 }
 
 export type SukoAssignmentIn = AssignmentIn & {
-  assignmentType: string
+  assignmentTypeKoodiArvo: string
 }
 
 export const ContentTypes = {

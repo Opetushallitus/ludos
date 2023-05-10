@@ -19,7 +19,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("assignment_content_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             ContentType.ASSIGNMENTS,
-            rs.getString("suko_assignment_type"),
+            rs.getString("suko_assignment_type_koodi_arvo"),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at")
         )
@@ -89,9 +89,9 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             //             query += " AND course = ?"
             //             args.add(filters.course)
             //             }
-            if (exam == Exam.SUKO && filters.assignmentType != null) {
-                query1 += " AND suko_assignment_type = ?"
-                args.add(filters.assignmentType)
+            if (exam == Exam.SUKO && filters.assignmentTypeKoodiArvo != null) {
+                query1 += " WHERE suko_assignment_type_koodi_arvo = ?"
+                args.add(filters.assignmentTypeKoodiArvo)
             }
             //            if (filters.topic != null) {
             //                query += " AND assignment_topic ?"
@@ -112,7 +112,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun saveSukoAssignment(assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut = jdbcTemplate.query(
-        "INSERT INTO suko_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, suko_assignment_type, assignment_publish_state) VALUES (?, ?, ?, ?, ?, ?::publish_state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
+        "INSERT INTO suko_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, suko_assignment_type_koodi_arvo, assignment_publish_state) VALUES (?, ?, ?, ?, ?, ?::publish_state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
         { rs: ResultSet, _: Int ->
             SukoAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -122,7 +122,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.contentSv,
                 assignment.publishState,
                 assignment.contentType,
-                assignment.assignmentType,
+                assignment.assignmentTypeKoodiArvo,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
             )
@@ -131,7 +131,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         assignment.nameSv,
         assignment.contentFi,
         assignment.contentSv,
-        assignment.assignmentType,
+        assignment.assignmentTypeKoodiArvo,
         assignment.publishState.toString(),
     )[0]
 
@@ -223,7 +223,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updateSukoAssignment(assignment: SukoUpdateAssignmentDtoIn, id: Int): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, suko_assignment_type = ?, assignment_publish_state = ?::publish_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+            "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, suko_assignment_type_koodi_arvo = ?, assignment_publish_state = ?::publish_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("assignment_id")
             },
@@ -231,7 +231,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             assignment.nameSv,
             assignment.contentFi,
             assignment.contentSv,
-            assignment.assignmentType,
+            assignment.assignmentTypeKoodiArvo,
             assignment.publishState.toString(),
             id
         )

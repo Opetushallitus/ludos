@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 export type FiltersType = {
   oppimaara: string | null
-  assignmentType: string | null
+  assignmentTypeKoodiArvo: string | null
   aihe: string | null
   orderBy: 'assignment_created_at'
   orderDirection: 'asc' | 'desc'
@@ -11,7 +11,7 @@ export type FiltersType = {
 export function useFilters() {
   const [filters, setFilters] = useState<FiltersType>({
     oppimaara: null,
-    assignmentType: null,
+    assignmentTypeKoodiArvo: null,
     aihe: null,
     orderBy: 'assignment_created_at',
     orderDirection: 'desc'
