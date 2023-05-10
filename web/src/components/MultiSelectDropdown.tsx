@@ -40,7 +40,7 @@ export const MultiSelectDropdown = ({
       }}
       tabIndex={0}>
       <div
-        className="flex items-center justify-between bg-white px-2"
+        className="flex bg-white px-2"
         onClick={() => {
           !isOpen && onOpen && onOpen(true)
           // don't trigger on close if not expanded
@@ -51,28 +51,32 @@ export const MultiSelectDropdown = ({
           {selectedOptions.length ? (
             <>
               {selectedOptions.map((opt, i) => (
-                <span
-                  className="flex w-32 items-center justify-between rounded-2xl bg-green-primary px-2 py-1 text-center text-xs text-white"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleOption(opt)
-                  }}
-                  key={i}>
-                  {opt.nimi}
-                  <Icon
-                    name="sulje"
-                    color="text-white"
-                    size="sm"
-                    customClass="hover:cursor-pointer hover:bg-white hover:text-black"
-                  />
-                </span>
+                <div className="flex w-auto flex-col rounded-2xl bg-green-primary">
+                  <div className="my-auto flex items-center">
+                    <p
+                      className="px-2 py-1 text-center text-xs text-white"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleOption(opt)
+                      }}
+                      key={i}>
+                      {opt.nimi}
+                    </p>
+                    <Icon
+                      name="sulje"
+                      color="text-white"
+                      size="sm"
+                      customClass="hover:cursor-pointer hover:bg-white hover:text-black px-1"
+                    />
+                  </div>
+                </div>
               ))}
             </>
           ) : (
             <span className="text-gray-secondary">Valitse...</span>
           )}
         </div>
-        <div>
+        <div className="mt-1">
           {selectedOptions.length && canReset ? (
             <Icon
               name="sulje"
@@ -93,9 +97,9 @@ export const MultiSelectDropdown = ({
         } absolute -left-1 z-50 mt-2 max-h-96 w-full overflow-y-scroll border border-gray-secondary bg-white px-2 py-1`}>
         {options.map((option, i) => (
           <li
-            className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
+            className={`cursor-pointer px-2 hover:text-white ${
               selectedOptions.includes(option) ? 'bg-green-light text-white' : ''
-            } ${i === highlightedIndex ? 'bg-green-primary' : ''}`}
+            } ${i === highlightedIndex ? 'bg-green-primary text-white' : ''}`}
             onClick={() => toggleOption(option)}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}>

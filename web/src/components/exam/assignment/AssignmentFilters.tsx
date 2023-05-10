@@ -42,7 +42,7 @@ export const AssignmentFilters = ({
     <div className="border border-gray-light bg-gray-bg">
       <p className="px-2 py-1">{t('filter.otsikko')}</p>
       <div className="row w-full flex-wrap justify-start">
-        <div className="w-full md:w-56">
+        <div className="w-full md:w-[23%]">
           <p className="pl-2">{t('filter.oppimaara')}</p>
           <MultiSelectDropdown
             options={koodisto?.oppiaineetjaoppimaaratlops2021?.koodit || []}
@@ -53,7 +53,7 @@ export const AssignmentFilters = ({
             canReset
           />
         </div>
-        <div className="w-full md:w-56">
+        <div className="w-full md:w-[23%]">
           <p className="pl-2">{t('filter.tyyppi')}</p>
           <MultiSelectDropdown
             options={koodisto?.ludostehtavatyypi?.koodit || []}
@@ -64,7 +64,7 @@ export const AssignmentFilters = ({
             canReset
           />
         </div>
-        <div className="w-full md:w-56">
+        <div className="w-full md:w-[23%]">
           <p className="pl-2">{t('filter.aihe')}</p>
           <Dropdown
             currentOption={null}
@@ -73,7 +73,7 @@ export const AssignmentFilters = ({
             canReset
           />
         </div>
-        <div className="w-full md:w-40">
+        <div className="w-full md:w-[15%] md:min-w-[10rem]">
           <p className="pl-2">{t('filter.kieli')}</p>
           <Dropdown
             currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
@@ -81,7 +81,7 @@ export const AssignmentFilters = ({
             options={LANGUAGE_OPTIONS}
           />
         </div>
-        <div className="w-full md:w-40">
+        <div className="w-full md:w-[15%] md:min-w-[10rem]">
           <p className="pl-2">{t('filter.jarjesta')}</p>
           <Dropdown
             currentOption={
