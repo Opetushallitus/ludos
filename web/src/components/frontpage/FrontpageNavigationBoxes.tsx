@@ -4,7 +4,7 @@ import { Icon } from '../Icon'
 import { ContentTypeTranslationEnglish } from '../exam/assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 
-export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignments: ContentType[] }) => {
+export const NavigationBoxes = ({ exams, contentTypes }: { exams: Page[]; contentTypes: ContentType[] }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -16,10 +16,10 @@ export const NavigationBoxes = ({ exams, assignments }: { exams: Page[]; assignm
           <div
             className="row flex-wrap gap-3 md:flex-nowrap"
             data-testid={`${contentType.path.replace('/content/', '')}`}>
-            {assignments.map((option, i) => (
+            {contentTypes.map((option, i) => (
               <button
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
-                onClick={() => navigate(contentType.path, { state: { assignmentType: option } })}
+                onClick={() => navigate(contentType.path, { state: { assignmentTypeKoodiArvo: option } })}
                 data-testid={`nav-box-${ContentTypeTranslationEnglish[option]}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">

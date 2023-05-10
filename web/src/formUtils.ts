@@ -68,18 +68,3 @@ export async function updateCertificate<T>(exam: Exam, id: number, body: Certifi
 
   return await result.json()
 }
-
-export const assignmentTypes = [
-  {
-    id: 'LUKEMINEN',
-    label: 'Tekstin lukeminen'
-  },
-  {
-    id: 'TEKSTIN_TIIVISTAMINEN',
-    label: 'Tekstin tiivistäminen'
-  },
-  {
-    id: 'KESKUSTELU',
-    label: 'Ryhmäkeskustelu'
-  }
-]
