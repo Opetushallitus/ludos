@@ -51,11 +51,9 @@ export const MultiSelectDropdown = ({
           {selectedOptions.length ? (
             <>
               {selectedOptions.map((opt, i) => (
-                <div className="flex w-auto flex-col rounded-2xl bg-green-primary">
+                <div className="flex w-auto flex-col rounded-2xl bg-green-primary" key={i}>
                   <div className="my-auto flex items-center">
-                    <p className="px-2 py-1 text-center text-xs text-white" key={i}>
-                      {opt.nimi}
-                    </p>
+                    <p className="px-2 py-1 text-center text-xs text-white">{opt.nimi}</p>
                     <Icon
                       name="sulje"
                       color="text-white"
