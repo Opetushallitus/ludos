@@ -22,14 +22,14 @@ export const Dropdown = ({
   canReset,
   testId
 }: WithReset | WithoutReset | WithOptionalReset) => {
-  const [isExpanded, setExpansion] = useState(false)
-  const dropdownRef = useDropdownCloseOnBlur(false, setExpansion)
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useDropdownCloseOnBlur(false, setIsOpen)
 
   return (
     <div className="relative mx-2 mb-3 mt-1 border border-gray-secondary" ref={dropdownRef}>
       <Button
         className="flex w-full items-center justify-between bg-white px-2 py-1"
-        onClick={() => setExpansion(!isExpanded)}
+        onClick={() => setIsOpen(!isOpen)}
         data-testid={testId}
         variant="buttonGhost">
         {currentOption ? (
@@ -55,24 +55,22 @@ export const Dropdown = ({
           </>
         )}
       </Button>
-      {isExpanded && (
-        <ul className="absolute -left-1 z-50 mt-2 w-full border border-gray-secondary bg-white px-2 py-1">
-          {options.map((option, i) => (
-            <li
-              className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
-                option.value === currentOption ? 'text-green-primary' : ''
-              }`}
-              onClick={() => {
-                onOptionClick(option.key)
-                setExpansion(false)
-              }}
-              key={i}
-              data-testid={`${testId}-option-${option.key}`}>
-              {option.value}
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
+        {options.map((option, i) => (
+          <li
+            className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
+              option.value === currentOption ? 'text-green-primary' : ''
+            }`}
+            onClick={() => {
+              onOptionClick(option.key)
+              setIsOpen(false)
+            }}
+            key={i}
+            data-testid={`${testId}-option-${option.key}`}>
+            {option.value}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

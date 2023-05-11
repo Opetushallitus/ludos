@@ -88,10 +88,7 @@ export const MultiSelectDropdown = ({
           )}
         </div>
       </div>
-      <ul
-        className={`${
-          isOpen ? '' : 'hidden'
-        } absolute -left-1 z-50 mt-2 max-h-96 w-full overflow-y-scroll border border-gray-secondary bg-white px-2 py-1`}>
+      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
         {options.map((option, i) => (
           <li
             className={`cursor-pointer px-3 ${
