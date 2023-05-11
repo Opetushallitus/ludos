@@ -25,8 +25,6 @@ server:
     session:
       timeout: 7200s # Session timeout. If a duration suffix is not specified, seconds are used.
   tomcat:
-    remote-ip-header: x-forwarded-for
-    protocol-header: x-forwarded-proto
     accesslog:
       enabled: true
       directory: /dev
