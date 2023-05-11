@@ -13,16 +13,9 @@ type AssignmentFiltersProps = {
   setFilters: Dispatch<SetStateAction<FiltersType>>
   language: string
   setLanguage: Dispatch<SetStateAction<string>>
-  setIsMultiselectOpen: (bool: boolean) => void
 }
 
-export const AssignmentFilters = ({
-  filters,
-  setFilters,
-  language,
-  setLanguage,
-  setIsMultiselectOpen
-}: AssignmentFiltersProps) => {
+export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
   const ctx = useContext(KoodistoContext)
 
@@ -48,8 +41,6 @@ export const AssignmentFilters = ({
             options={koodisto?.oppiaineetjaoppimaaratlops2021?.koodit || []}
             selectedOptions={getSelectedOptions(filters.oppimaara, koodisto?.oppiaineetjaoppimaaratlops2021)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
-            onOpen={setIsMultiselectOpen}
-            onClose={() => setIsMultiselectOpen(false)}
             canReset
           />
         </div>
@@ -59,8 +50,6 @@ export const AssignmentFilters = ({
             options={koodisto?.ludostehtavatyypi?.koodit || []}
             selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto?.ludostehtavatyypi)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentTypeKoodiArvo', opt)}
-            onOpen={setIsMultiselectOpen}
-            onClose={() => setIsMultiselectOpen(false)}
             canReset
           />
         </div>

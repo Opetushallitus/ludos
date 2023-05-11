@@ -7,8 +7,6 @@ type MultiSelectProps = {
   options: KoodiDtoIn[]
   selectedOptions: KoodiDtoIn[]
   onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
-  onClose?: (options: KoodiDtoIn[]) => void
-  onOpen?: (bool: boolean) => void
   canReset?: boolean
 }
 
@@ -16,8 +14,6 @@ export const MultiSelectDropdown = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,
-  onClose,
-  onOpen,
   canReset
 }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -35,16 +31,12 @@ export const MultiSelectDropdown = ({
       ref={containerRef}
       onBlur={(e) => {
         e.preventDefault()
-        onClose && onClose(selectedOptions)
         setIsOpen(false)
       }}
       tabIndex={0}>
       <div
         className="flex bg-white px-2"
         onClick={() => {
-          !isOpen && onOpen && onOpen(true)
-          // don't trigger on close if not expanded
-          isOpen && onClose && onClose(selectedOptions)
           setIsOpen(!isOpen)
         }}>
         <div className="row w-full flex-wrap gap-2 py-1">

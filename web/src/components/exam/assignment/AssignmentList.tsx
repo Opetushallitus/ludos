@@ -20,7 +20,6 @@ export const AssignmentList = ({
   activeTab: string
 }) => {
   const { filters, setFilters } = useFilters()
-  const [isMultiselectOpen, setIsMultiselectOpen] = useState(false)
   const [language, setLanguage] = useState<string>('fi')
 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
@@ -39,7 +38,7 @@ export const AssignmentList = ({
     return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
   }
 
-  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByContentType(), isMultiselectOpen)
+  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByContentType())
 
   // refresh data on tab change
   useEffect(() => {
@@ -54,13 +53,7 @@ export const AssignmentList = ({
     <div>
       {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
       {contentType === ContentTypesEng.KOETEHTAVAT && (
-        <AssignmentFilters
-          filters={filters}
-          setFilters={setFilters}
-          language={language}
-          setLanguage={setLanguage}
-          setIsMultiselectOpen={setIsMultiselectOpen}
-        />
+        <AssignmentFilters filters={filters} setFilters={setFilters} language={language} setLanguage={setLanguage} />
       )}
       {loading && (
         <div className="mt-10 text-center">
