@@ -84,14 +84,19 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         filters: AssignmentFilter?, exam: Exam, query: String, args: MutableList<Any>
     ): String {
         var query1 = query
+
         if (filters != null) {
             //             if (filters.course != null) {
             //             query += " AND course = ?"
             //             args.add(filters.course)
             //             }
             if (exam == Exam.SUKO && filters.assignmentTypeKoodiArvo != null) {
-                query1 += " WHERE suko_assignment_type_koodi_arvo = ?"
-                args.add(filters.assignmentTypeKoodiArvo)
+                val values = filters.assignmentTypeKoodiArvo.split(",")
+                val placeholders = values.joinToString(",") { "?" }
+
+                query1 += String.format(" WHERE suko_assignment_type_koodi_arvo IN (%s)", placeholders)
+
+                args.addAll(values)
             }
             //            if (filters.topic != null) {
             //                query += " AND assignment_topic ?"
@@ -108,6 +113,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 }
             }
         }
+
         return query1
     }
 
