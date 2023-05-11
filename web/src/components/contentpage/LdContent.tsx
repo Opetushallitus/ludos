@@ -12,7 +12,7 @@ type LdAssignmentContentProps = {
   contentType?: string
 }
 
-export const LdAssignmentContent = ({ assignment, contentType }: LdAssignmentContentProps) => {
+export const LdContent = ({ assignment, contentType }: LdAssignmentContentProps) => {
   const { t } = useTranslation()
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()

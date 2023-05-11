@@ -1,21 +1,19 @@
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
-import { ContentTypesEng, SukoAssignmentIn } from '../../types'
+import { AssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
-import { getAssignmentTypeName, LANGUAGE_OPTIONS } from '../../koodistoUtils'
-import { useContext, useState } from 'react'
-import { KoodistoContext } from '../../KoodistoContext'
+import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
+import { useState } from 'react'
 
-type SukoAssignmentContentProps = {
-  assignment: SukoAssignmentIn
+type PuhviAssignmentContentProps = {
+  assignment: AssignmentIn
   contentType?: string
 }
 
-export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmentContentProps) => {
+export const PuhviContent = ({ assignment, contentType }: PuhviAssignmentContentProps) => {
   const { t } = useTranslation()
-  const ctx = useContext(KoodistoContext)
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
 
@@ -23,10 +21,10 @@ export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmen
     <div className="col min-h-[60vh] w-full">
       <div className="row justify-between">
         <h2 className="pb-3" data-testid="assignment-header">
-          {language === 'fi' ? assignment.nameFi : assignment.nameSv}
+          {assignment.nameFi}
         </h2>
         <div>
-          <p className="pl-2">{t('assignment.kieli')}</p>
+          <p className="pl-2">{t('filter.kieli')}</p>
           <Dropdown
             currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
             onOptionClick={(opt: string) => setLanguage(opt)}
@@ -50,44 +48,38 @@ export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmen
           <p className="text-green-primary">{t('assignment.muokkaa')}</p>
         </span>
       </div>
-      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
-        {contentType !== ContentTypesEng.OHJEET && (
-          <ul>
-            <li>
-              <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
-              {getAssignmentTypeName(assignment, ctx.koodistos.tehtavatyyppisuko)}
-            </li>
-            <li>
-              <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
-              *CEFR*
-            </li>
-            <li>
-              <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
-              *topic*
-            </li>
-            <li>
-              <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
-              *laaja-alainen osaaminen*
-            </li>
-          </ul>
-        )}
+      <div className="my-3 bg-gray-bg p-3">
+        <ul>
+          <li>
+            <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
+            *CEFR*
+          </li>
+          <li>
+            <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
+            *topic*
+          </li>
+          <li>
+            <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
+            *laaja-alainen osaaminen*
+          </li>
+        </ul>
 
         <div className="mt-3 flex gap-3">
           <div className="flex gap-1">
             <Icon name="uusi-valilehti" color="text-green-primary" />
-            <p className="text-green-primary">{t('assignment.katselunakyma')}</p>
+            <p className="text-green-primary">Katselunäkymä</p>
           </div>
           <div className="flex gap-1">
             <Icon name="todistukset" color="text-green-primary" />
-            <p className="text-green-primary">{t('assignment.lataapdf')}</p>
+            <p className="text-green-primary">Lataa pdf</p>
           </div>
           <div className="flex gap-1">
             <Icon name="lisää" color="text-green-primary" />
-            <p className="text-green-primary">{t('assignment.lisaalatauskoriin')}</p>
+            <p className="text-green-primary">Lisää latauskoriin</p>
           </div>
         </div>
       </div>
-      <p className="h-full pb-3">{language === 'fi' ? assignment.contentFi : assignment.contentSv}</p>
+      <p className="h-full pb-3">{assignment.contentFi}</p>
     </div>
   )
 }

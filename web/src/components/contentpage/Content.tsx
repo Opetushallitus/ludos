@@ -3,15 +3,15 @@ import { Button } from '../Button'
 import { AssignmentIn, Exam, ContentTypesEng } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
-import { SukoAssignmentContent } from './SukoAssignmentContent'
+import { SukoContent } from './SukoContent'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
-import { PuhviAssignmentContent } from './PuhviAssignmentContent'
-import { LdAssignmentContent } from './LdAssignmentContent'
+import { PuhviContent } from './PuhviContent'
+import { LdContent } from './LdContent'
 import { EXAM_TYPE_ENUM } from '../../constants'
 
 type AssignmentProps = { exam: Exam }
 
-export const Assignment = ({ exam }: AssignmentProps) => {
+export const Content = ({ exam }: AssignmentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: string; id: string }>()
@@ -44,14 +44,12 @@ export const Assignment = ({ exam }: AssignmentProps) => {
             <div className="col w-9/12 pr-5">
               <div className="row pb-3">
                 {isSukoAssignment(assignment, exam) && (
-                  <SukoAssignmentContent assignment={assignment} contentType={contentType} />
+                  <SukoContent assignment={assignment} contentType={contentType} />
                 )}
                 {isPuhviAssignment(assignment, exam) && (
-                  <PuhviAssignmentContent assignment={assignment} contentType={contentType} />
+                  <PuhviContent assignment={assignment} contentType={contentType} />
                 )}
-                {isLdAssignment(assignment, exam) && (
-                  <LdAssignmentContent assignment={assignment} contentType={contentType} />
-                )}
+                {isLdAssignment(assignment, exam) && <LdContent assignment={assignment} contentType={contentType} />}
               </div>
               <div className="row mb-6">
                 <Button
