@@ -2,9 +2,12 @@ package fi.oph.ludos
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.web.servlet.FilterRegistrationBean
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
+import org.springframework.web.filter.ForwardedHeaderFilter
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
@@ -34,5 +37,13 @@ class Config : WebMvcConfigurer {
                 }
             })
 
+    }
+
+    @Bean
+    fun forwardedHeaderFilter(): FilterRegistrationBean<ForwardedHeaderFilter> {
+        val filterRegistrationBean = FilterRegistrationBean<ForwardedHeaderFilter>()
+        filterRegistrationBean.setFilter(ForwardedHeaderFilter())
+        filterRegistrationBean.setOrder(0)
+        return filterRegistrationBean
     }
 }
