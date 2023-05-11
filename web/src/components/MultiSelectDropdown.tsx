@@ -1,16 +1,12 @@
 import { useRef } from 'react'
 import { Icon } from './Icon'
 import { useDropdownState } from '../hooks/useDropdownState'
-
-export type SelectOption = {
-  value: string
-  key: string
-}
+import { KoodiDtoIn } from '../KoodistoContext'
 
 type MultiSelectProps = {
-  options: SelectOption[]
-  selectedOptions: SelectOption[]
-  onSelectedOptionsChange: (options: SelectOption[]) => void
+  options: KoodiDtoIn[]
+  selectedOptions: KoodiDtoIn[]
+  onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
   canReset?: boolean
 }
 
@@ -22,7 +18,7 @@ export const MultiSelectDropdown = ({
 }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { isExpanded, setExpansion, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
     options,
     selectedOptions,
     onSelectedOptionsChange,
@@ -35,37 +31,41 @@ export const MultiSelectDropdown = ({
       ref={containerRef}
       onBlur={(e) => {
         e.preventDefault()
-        setExpansion(false)
+        setIsOpen(false)
       }}
       tabIndex={0}>
-      <div className="flex items-center justify-between bg-white px-2" onClick={() => setExpansion(!isExpanded)}>
-        <div className="row w-full flex-wrap gap-2 p-2">
+      <div
+        className="flex bg-white px-2"
+        onClick={() => {
+          setIsOpen(!isOpen)
+        }}>
+        <div className="row w-full flex-wrap gap-2 py-1">
           {selectedOptions.length ? (
             <>
               {selectedOptions.map((opt, i) => (
-                <span
-                  className="flex w-32 items-center justify-center gap-2 rounded-2xl bg-green-primary py-1 text-xs text-white"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleOption(opt)
-                  }}
-                  key={i}>
-                  {opt.value}{' '}
-                  <Icon
-                    name="sulje"
-                    color="text-white"
-                    size="sm"
-                    customClass="hover:cursor-pointer hover:bg-white hover:text-black"
-                  />
-                </span>
+                <div className="flex w-auto flex-col rounded-2xl bg-green-primary" key={i}>
+                  <div className="my-auto flex items-center">
+                    <p className="px-2 py-1 text-center text-xs text-white">{opt.nimi}</p>
+                    <Icon
+                      name="sulje"
+                      color="text-white"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleOption(opt)
+                      }}
+                      customClass="hover:cursor-pointer hover:bg-white hover:text-black mr-3"
+                    />
+                  </div>
+                </div>
               ))}
             </>
           ) : (
             <span className="text-gray-secondary">Valitse...</span>
           )}
         </div>
-        <div>
-          {canReset ? (
+        <div className="mt-1">
+          {selectedOptions.length && canReset ? (
             <Icon
               name="sulje"
               color="text-black"
@@ -73,25 +73,29 @@ export const MultiSelectDropdown = ({
                 e.stopPropagation()
                 onSelectedOptionsChange([])
               }}
+              customClass="border-l-2 border-gray-light"
             />
           ) : (
             <Icon name="laajenna" color="text-black" />
           )}
         </div>
       </div>
-      <ul
-        className={`${
-          isExpanded ? '' : 'hidden'
-        } absolute -left-1 z-50 mt-2 w-full border border-gray-secondary bg-white px-2 py-1`}>
+      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
         {options.map((option, i) => (
           <li
-            className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
-              selectedOptions.includes(option) ? 'bg-green-light text-white' : ''
-            } ${i === highlightedIndex ? 'bg-green-primary' : ''}`}
+            className={`cursor-pointer px-3 ${
+              selectedOptions.includes(option) ? 'bg-green-primary text-white hover:text-white' : ''
+            } ${
+              i === highlightedIndex && selectedOptions.includes(option)
+                ? '!bg-green-light'
+                : i === highlightedIndex
+                ? 'bg-gray-light'
+                : ''
+            }`}
             onClick={() => toggleOption(option)}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}>
-            {option.value}
+            {option.nimi}
           </li>
         ))}
       </ul>

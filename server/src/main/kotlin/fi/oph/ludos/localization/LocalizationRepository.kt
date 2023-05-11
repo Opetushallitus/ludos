@@ -1,20 +1,26 @@
 package fi.oph.ludos.localization
 
-import fi.oph.ludos.exception.LocalizationException
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import org.apache.http.HttpResponse
+import org.apache.http.client.HttpClient
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClientBuilder
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
-import org.springframework.web.client.RestClientException
-import org.springframework.web.client.RestTemplate
 
 @Repository
-class LocalizationRepository(private val restTemplate: RestTemplate) {
-    fun getLocalizationTexts(): Array<Localization> {
-        val url = "https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation?category=ludos"
+class LocalizationRepository(
+    @Value("\${ludos.opintopolkuHostname}") private val opintopolkuHostname: String,
+    private val objectMapper: ObjectMapper
+) {
+    private val httpClient: HttpClient = HttpClientBuilder.create().build()
+    private val url = "https://${opintopolkuHostname}/lokalisointi/cxf/rest/v1/localisation?category=ludos"
 
-        return try {
-            restTemplate.getForObject(url, Array<Localization>::class.java) ?: emptyArray()
-        } catch (e: RestClientException) {
-            throw LocalizationException("Failed to get localization texts", e)
-        }
+    fun getLocalizationTexts(): Array<Localization> {
+        val request = HttpGet(url)
+        val response: HttpResponse = httpClient.execute(request)
+
+        return objectMapper.readValue<Array<Localization>>(response.entity.content.bufferedReader())
     }
 }
-

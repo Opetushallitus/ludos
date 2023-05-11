@@ -30,6 +30,10 @@
     h2 {
         @apply text-[1.5rem] leading-[2rem] font-semibold
     }
+
+    .dropdownContent {
+        @apply absolute z-50 max-h-96 w-full overflow-y-auto border border-gray-secondary bg-white px-2 py-1
+    }
 }
 
 :root {

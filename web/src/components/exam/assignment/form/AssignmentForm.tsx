@@ -3,14 +3,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { Exam, ContentType, SukoAssignmentIn, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
-import { assignmentTypes, postAssignment, updateAssignment } from '../../../../formUtils'
-import { useEffect, useState } from 'react'
+import { postAssignment, updateAssignment } from '../../../../formUtils'
+import { useContext, useEffect, useState } from 'react'
 import { AssignmentFormType, assignmentSchema } from './assignmentSchema'
 import { Tabs } from '../../../Tabs'
 import { TextAreaInput } from '../../../TextAreaInput'
 import { TextInput } from '../../../TextInput'
 import { FormHeader } from '../../../formCommon/FormHeader'
 import { FormButtonRow } from '../../../formCommon/FormButtonRow'
+import { KoodistoContext } from '../../../../KoodistoContext'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -18,6 +19,7 @@ type AssignmentFormProps = {
 
 export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const { t } = useTranslation()
+  const ctx = useContext(KoodistoContext)
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
   const match = useMatch(`/:exam/:contentType/${action}`)
@@ -80,6 +82,8 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     })()
   }
 
+  const assignmentTypeKoodisto = ctx.koodistos?.ludostehtavatyypi.koodit
+
   return (
     <div className="w-10/12 pt-3">
       <FormHeader action={action} contentType={contentType} assignment={assignment} />
@@ -98,28 +102,31 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
           <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
           <Controller
             control={control}
-            name="assignmentType"
+            name="assignmentTypeKoodiArvo"
             rules={{ required: true }}
             render={({ field }) => (
               <>
-                {assignmentTypes.map((assignmentType, i) => (
-                  <fieldset key={i} className="flex items-center">
-                    <input
-                      type="radio"
-                      {...field}
-                      value={assignmentType.id}
-                      checked={field.value === assignmentType.id}
-                      id={assignmentType.id}
-                      data-testid={`assignmentTypeRadio-${assignmentType.id.toLowerCase()}`}
-                      className="mr-2"
-                    />
-                    <label htmlFor={assignmentType.id}>{assignmentType.label}</label>
-                  </fieldset>
-                ))}
+                {assignmentTypeKoodisto &&
+                  assignmentTypeKoodisto.map((type, i) => (
+                    <fieldset key={i} className="flex items-center">
+                      <input
+                        type="radio"
+                        {...field}
+                        value={type.koodiArvo}
+                        checked={field.value === type.koodiArvo}
+                        id={type.koodiArvo}
+                        data-testid={`assignmentTypeRadio-${type.koodiArvo.toLowerCase()}`}
+                        className="mr-2"
+                      />
+                      <label htmlFor={type.koodiArvo}>{type.nimi}</label>
+                    </fieldset>
+                  ))}
               </>
             )}
           />
-          {errors?.assignmentType && <p className="text-green-primary">{errors.assignmentType.message}</p>}
+          {errors?.assignmentTypeKoodiArvo && (
+            <p className="text-green-primary">{errors.assignmentTypeKoodiArvo.message}</p>
+          )}
         </div>
 
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>

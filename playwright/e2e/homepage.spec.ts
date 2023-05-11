@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 const exams = ['suko', 'puhvi', 'ld']
-const assignmentTypes = ['assignments', 'instructions', 'certificates']
+const contentTypes = ['assignments', 'instructions', 'certificates']
 
 const pages = ['etusivu', 'suko', 'puhvi', 'ld', 'feedback']
 
@@ -18,14 +18,14 @@ test('navigation links work', async ({ page }) => {
 
   await page.goto('/')
 
-  for (const contentType of exams) {
-    const boxRow = page.getByTestId(`/${contentType}`)
+  for (const exam of exams) {
+    const boxRow = page.getByTestId(`/${exam}`)
 
-    for (const assignmentType of assignmentTypes) {
-      await boxRow.getByTestId(`nav-box-${assignmentType}`).click()
+    for (const contentType of contentTypes) {
+      await boxRow.getByTestId(`nav-box-${contentType}`).click()
       const heading2 = page.locator('h2')
 
-      expect(await heading2.getAttribute('data-testid')).toBe(`page-heading-${contentType.toLocaleUpperCase()}`)
+      expect(await heading2.getAttribute('data-testid')).toBe(`page-heading-${exam.toLocaleUpperCase()}`)
 
       await page.goBack()
     }

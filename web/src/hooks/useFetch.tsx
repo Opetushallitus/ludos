@@ -14,7 +14,7 @@ export function useFetch<T>(url: string) {
         const response = await fetch(`/api/${url}`, { method: 'GET' })
 
         if (!response.ok) {
-          throw new Error('could not fetch tasks')
+          console.error('could not fetch tasks')
         }
 
         const json = await response.json()

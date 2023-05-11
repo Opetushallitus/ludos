@@ -11,10 +11,10 @@ const sukoData = {
   nameSv: 'Suko Assignment Sv',
   contentFi: 'This is a Suko assignment. Fi',
   contentSv: 'This is a Suko assignment. Sv',
-  state: 'PUBLISHED',
+  publishState: 'PUBLISHED',
   exam: 'SUKO',
   contentType: '',
-  assignmentType: 'LUKEMINEN'
+  assignmentTypeKoodiArvo: '001'
 }
 
 const puhviData = {
@@ -22,7 +22,7 @@ const puhviData = {
   nameSv: 'Puhvi Assignment Sv',
   contentFi: 'This is a Puhvi assignment. Fi',
   contentSv: 'This is a Puhvi assignment. Sv',
-  state: 'PUBLISHED',
+  publishState: 'PUBLISHED',
   exam: 'PUHVI',
   contentType: ''
 }
@@ -32,7 +32,7 @@ const ldData = {
   nameSv: 'LD Assignment Sv',
   contentFi: 'This is an LD assignment. Fi',
   contentSv: 'This is an LD assignment. Sv',
-  state: 'PUBLISHED',
+  publishState: 'PUBLISHED',
   exam: 'LD',
   contentType: ''
 }
@@ -52,11 +52,11 @@ const seedData = async () => {
     for (const contentType of contentTypes) {
       for (let i = 0; i < numAssignments; i++) {
         const nameFi = `${origNameFi} ${contentType.toLowerCase()} ${
-          exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
+          exam === 'SUKO' ? data['assignmentTypeKoodiArvo'].toLowerCase() : ''
         } ${i + 1}`
 
         const nameSv = `${origNameSv} ${contentType.toLowerCase()} ${
-          exam === 'SUKO' ? data['assignmentType'].toLowerCase() : ''
+          exam === 'SUKO' ? data['assignmentTypeKoodiArvo'].toLowerCase() : ''
         } ${i + 1}`
 
         const body = {

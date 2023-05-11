@@ -33,7 +33,9 @@ export const Exams = ({ exam }: ExamProps) => {
 
   return (
     <div className="pt-3">
-      <h2 data-testid={`page-heading-${exam}`}>{t(`header.${headingTextKey}`)}</h2>
+      <h2 className="mb-3" data-testid={`page-heading-${exam}`}>
+        {t(`header.${headingTextKey}`)}
+      </h2>
 
       <Tabs
         options={Object.values(ContentTypes)}

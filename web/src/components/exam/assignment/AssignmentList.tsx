@@ -51,47 +51,39 @@ export const AssignmentList = ({
 
   return (
     <div>
-      {loading ? (
+      {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
+      {contentType === ContentTypesEng.KOETEHTAVAT && (
+        <AssignmentFilters filters={filters} setFilters={setFilters} language={language} setLanguage={setLanguage} />
+      )}
+      {loading && (
         <div className="mt-10 text-center">
           <Spinner />
         </div>
-      ) : (
+      )}
+      {data && (
         <>
-          {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
-          {data && (
-            <>
-              {contentType === ContentTypesEng.KOETEHTAVAT && (
-                <div>
-                  <AssignmentFilters
-                    filters={filters}
-                    setFilters={setFilters}
-                    language={language}
-                    setLanguage={setLanguage}
-                  />
-                  <ul>
-                    {data?.map((assignment, i) => (
-                      <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {contentType === ContentTypesEng.OHJEET && (
-                <div className="mt-3 flex flex-wrap gap-5">
-                  <>{loading && <Spinner />}</>
-                  {data?.map((assignment, i) => (
-                    <InstructionCard assignment={assignment} exam={exam} key={i} />
-                  ))}
-                </div>
-              )}
-              {contentType === ContentTypesEng.TODISTUKSET && (
-                <div className="mt-3 flex flex-wrap gap-5">
-                  <>{loading && <Spinner />}</>
-                  {data?.map((assignment, i) => (
-                    <CertificateCard assignment={assignment} key={i} />
-                  ))}
-                </div>
-              )}
-            </>
+          {contentType === ContentTypesEng.KOETEHTAVAT && (
+            <ul>
+              {data?.map((assignment, i) => (
+                <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
+              ))}
+            </ul>
+          )}
+          {contentType === ContentTypesEng.OHJEET && (
+            <div className="mt-3 flex flex-wrap gap-5">
+              <>{loading && <Spinner />}</>
+              {data?.map((assignment, i) => (
+                <InstructionCard assignment={assignment} exam={exam} key={i} />
+              ))}
+            </div>
+          )}
+          {contentType === ContentTypesEng.TODISTUKSET && (
+            <div className="mt-3 flex flex-wrap gap-5">
+              <>{loading && <Spinner />}</>
+              {data?.map((assignment, i) => (
+                <CertificateCard assignment={assignment} key={i} />
+              ))}
+            </div>
           )}
         </>
       )}

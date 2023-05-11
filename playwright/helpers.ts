@@ -13,7 +13,7 @@ export async function fillAssignmentForm({
   contentTextFi: string
   contentTextSv: string
 }) {
-  await page.getByTestId('assignmentTypeRadio-lukeminen').click()
+  await page.getByTestId('assignmentTypeRadio-001').click()
 
   await page.getByTestId('nameFi').fill(nameTextFi)
   await page.getByTestId('contentFi').fill(contentTextFi)

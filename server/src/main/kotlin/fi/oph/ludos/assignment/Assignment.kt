@@ -8,10 +8,6 @@ import fi.oph.ludos.PublishState
 import java.sql.Timestamp
 import java.util.*
 
-enum class SukoAssignmentType {
-    LUKEMINEN, TEKSTIN_TIIVISTAMINEN, KESKUSTELU
-}
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
     JsonSubTypes.Type(value = SukoAssignmentDtoIn::class, name = "SUKO"),
@@ -35,7 +31,7 @@ data class SukoAssignmentDtoIn(
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentType: String
+    val assignmentTypeKoodiArvo: String
 ) : Assignment
 
 @JsonTypeName("PUHVI")
@@ -72,7 +68,7 @@ data class SukoAssignmentDtoOut(
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentType: String,
+    val assignmentTypeKoodiArvo: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
@@ -119,7 +115,7 @@ data class SukoUpdateAssignmentDtoIn(
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentType: String
+    val assignmentTypeKoodiArvo: String
 ) : UpdateAssignmentDtoIn
 
 data class PuhviUpdateAssignmentDtoIn(
@@ -144,7 +140,7 @@ data class LdUpdateAssignmentDtoIn(
 
 data class AssignmentFilter(
     val course: String?,
-    val assignmentType: String?,
+    val assignmentTypeKoodiArvo: String?,
     val topic: String?,
     val language: String?,
     val orderBy: String?,

@@ -4,8 +4,9 @@ import { ContentTypesEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
-import { LANGUAGE_OPTIONS } from '../../koodisto'
-import { useState } from 'react'
+import { getAssignmentTypeName, LANGUAGE_OPTIONS } from '../../koodistoUtils'
+import { useContext, useState } from 'react'
+import { KoodistoContext } from '../../KoodistoContext'
 
 type SukoAssignmentContentProps = {
   assignment: SukoAssignmentIn
@@ -14,6 +15,7 @@ type SukoAssignmentContentProps = {
 
 export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmentContentProps) => {
   const { t } = useTranslation()
+  const ctx = useContext(KoodistoContext)
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
 
@@ -53,7 +55,7 @@ export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmen
           <ul>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
-              {assignment.assignmentType.toLowerCase()}
+              {getAssignmentTypeName(assignment, ctx.koodistos?.ludostehtavatyypi.koodit)}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>

@@ -5,16 +5,16 @@ response = requests.get('https://virkailija.testiopintopolku.fi/lokalisointi/cxf
 data = response.json()
 
 # Filter out objects with missing translations
-translations = {}
+translationsMap = {}
 for obj in data:
     key = obj['key']
     locale = obj['locale']
     value = obj['value']
-    if key not in translations:
-        translations[key] = {'fi': '', 'sv': ''}
-    translations[key][locale] = value
+    if key not in translationsMap:
+        translationsMap[key] = {'fi': '', 'sv': ''}
+    translationsMap[key][locale] = value
 
-missing_sv_translations = {key: value for key, value in translations.items() if value['fi'] != '' and value['sv'] == ''}
-df_missing_sv_translations = pd.DataFrame.from_dict(missing_sv_translations, orient='index', columns=['fi', 'sv'])
+translations = {key: value for key, value in translationsMap.items() if value['fi'] != ''}
+df_missing_translations = pd.DataFrame.from_dict(translations, orient='index', columns=['fi', 'sv'])
 
-df_missing_sv_translations.to_excel('puuttuvat_kaannokset.xlsx')
+df_missing_translations.to_excel('ludos_untuva_kaannokset.xlsx')

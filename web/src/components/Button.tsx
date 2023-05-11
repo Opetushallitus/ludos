@@ -8,7 +8,7 @@ export interface ButtonProps
 }
 
 export const Button = ({ variant, testId, children, ...props }: ButtonProps) => (
-  <button className={`${variant} rounded px-4 py-2`} data-testid={testId} {...props}>
+  <button className={`${variant} rounded-sm px-4 py-2`} data-testid={testId} {...props}>
     {children}
   </button>
 )

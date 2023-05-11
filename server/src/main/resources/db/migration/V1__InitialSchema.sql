@@ -14,7 +14,7 @@ CREATE TABLE assignment
 
 CREATE TABLE suko_assignment
 (
-    suko_assignment_type text NOT NULL
+    suko_assignment_type_koodi_arvo text NOT NULL
 ) INHERITS (assignment);
 
 CREATE TABLE puhvi_assignment

@@ -6,6 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
 import { isSukoAssignment } from './assignmentUtils'
 import { toLocaleDate } from '../../../formatUtils'
+import { KoodistoContext } from '../../../KoodistoContext'
+import { useContext } from 'react'
+import { getAssignmentTypeName } from '../../../koodistoUtils'
 
 type AssignmentCardProps = {
   language: string
@@ -15,6 +18,7 @@ type AssignmentCardProps = {
 
 export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardProps) => {
   const { t } = useTranslation()
+  const ctx = useContext(KoodistoContext)
   const navigate = useNavigate()
 
   return (
@@ -45,8 +49,10 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
           </div>
           <div>
             <p className="text-xs text-gray-secondary">{t('assignment.tyyppi')}</p>
-            <p className="text-xs capitalize text-black">
-              {isSukoAssignment(assignment, exam) ? assignment.assignmentType.toLowerCase() : '*'}
+            <p className="text-xs text-black">
+              {isSukoAssignment(assignment, exam)
+                ? getAssignmentTypeName(assignment, ctx.koodistos?.ludostehtavatyypi.koodit)
+                : '*'}
             </p>
           </div>
           <div>

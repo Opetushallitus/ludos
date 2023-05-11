@@ -1,5 +1,6 @@
 package fi.oph.ludos.localization
 
+import fi.oph.ludos.cache.CacheName
 import fi.oph.ludos.exception.LocalizationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,11 +14,12 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class LocalizationService(val localizationRepository: LocalizationRepository, val cacheManager: CacheManager) {
-    val logger: Logger = LoggerFactory.getLogger(javaClass)
+    private final val logger: Logger = LoggerFactory.getLogger(javaClass)
+
     init {
         // Schedule cache update every 2 minutes
         val scheduler = Executors.newScheduledThreadPool(1)
-        scheduler.scheduleAtFixedRate({ updateCache() }, 0, 2, TimeUnit.MINUTES)
+        scheduler.scheduleAtFixedRate({ updateCache() }, 2, 2, TimeUnit.MINUTES)
 
         try {
             // Init cache
@@ -28,7 +30,7 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
     }
 
     fun getLocalizationTexts(): ResponseEntity<out Map<out Any?, Any?>> {
-        val cachedValue = cacheManager.getCache("localizedTexts")?.get("all")?.get() as? Map<*, *>
+        val cachedValue = cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.get("all")?.get() as? Map<*, *>
 
         if (cachedValue != null) {
             return ResponseEntity.ok(cachedValue)
@@ -53,7 +55,7 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
                 localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
             }
 
-            cacheManager.getCache("localizedTexts")?.put("all", localizedTexts)
+            cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
 
             return localizedTexts
         } catch (e: Exception) {

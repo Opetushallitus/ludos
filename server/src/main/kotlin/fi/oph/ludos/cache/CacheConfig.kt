@@ -1,4 +1,4 @@
-package fi.oph.ludos.localization
+package fi.oph.ludos.cache
 
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
@@ -17,5 +17,10 @@ class LocalizationConfig {
 @EnableCaching
 class CacheConfig {
     @Bean
-    fun cacheManager(): CacheManager = ConcurrentMapCacheManager("localizedTexts")
+    fun cacheManager(): CacheManager = ConcurrentMapCacheManager(CacheName.LOCALIZED_TEXT.key, CacheName.KOODISTO.key)
+}
+
+enum class CacheName(val key: String) {
+    LOCALIZED_TEXT ("localizedText"),
+    KOODISTO ("koodisto")
 }
