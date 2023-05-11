@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
+enum class Locale(val locale: String) {
+    FI("fi"), SV("sv")
+}
 
 @Service
 class LocalizationService(val localizationRepository: LocalizationRepository, val cacheManager: CacheManager) {
@@ -49,13 +52,15 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
         try {
             val unparsedArr = localizationRepository.getLocalizationTexts()
             val localizedTexts = mutableMapOf<String, Map<String, Any>>()
-
-            for (locale in setOf("fi", "sv")) {
+            for (locale in Locale.values().map { it.locale }) {
                 val localeTexts = unparsedArr.filter { it.locale == locale }
                 localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
             }
 
             cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
+
+            val localeStats = Locale.values().map { locale -> "${locale.locale}: ${unparsedArr.filter { it.locale == locale.locale }.count()}" }
+            logger.info("Updated localization cache: $localeStats")
 
             return localizedTexts
         } catch (e: Exception) {

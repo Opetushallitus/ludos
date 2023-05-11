@@ -72,6 +72,9 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
 
             cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoWithKooditMap)
 
+            val koodistoStats = koodistoWithKooditMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoWithKooditMap[koodistoName]?.koodit?.count()}" }
+            logger.info("Updated koodisto cache: $koodistoStats")
+
             return koodistoWithKooditMap
         } catch (e: Exception) {
             throw LocalizationException("${e.message}", e)
