@@ -12,7 +12,17 @@ import org.springframework.web.server.ResponseStatusException
 @Service
 class AssignmentService(val db: AssignmentRepository, val cacheManager: CacheManager) {
     fun getAssignments(exam: Exam, filters: AssignmentFilter?): List<AssignmentOut> = when (exam) {
-        Exam.SUKO -> db.getSukoAssignments(filters)
+        Exam.SUKO -> {
+            // check that assignmentTypeKoodiArvo contains only numbers and commas
+            if (filters?.assignmentTypeKoodiArvo != null) {
+                val regex = Regex("[0-9,]+")
+                if (!regex.matches(filters.assignmentTypeKoodiArvo)) {
+                    throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid assignmentTypeKoodiArvo")
+                }
+            }
+
+            db.getSukoAssignments(filters)
+        }
         Exam.PUHVI -> db.getPuhviAssignments(filters)
         Exam.LD -> db.getLdAssignments(filters)
     }
