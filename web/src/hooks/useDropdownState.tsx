@@ -3,8 +3,8 @@ import { KoodiDtoIn } from '../KoodistoContext'
 
 type UseDropdownStateProps = {
   options: KoodiDtoIn[]
-  selectedOptions: KoodiDtoIn[]
-  onSelectedOptionsChange: (selectedOptions: KoodiDtoIn[]) => void
+  selectedOptions?: KoodiDtoIn | KoodiDtoIn[]
+  onSelectedOptionsChange: (selectedOptions: KoodiDtoIn | KoodiDtoIn[]) => void
   containerRef: RefObject<HTMLDivElement>
 }
 
@@ -19,11 +19,17 @@ export const useDropdownState = ({
 
   const toggleOption = useCallback(
     (option: KoodiDtoIn) => {
-      if (selectedOptions.includes(option)) {
-        onSelectedOptionsChange(selectedOptions.filter((selected) => selected !== option))
-      } else {
-        onSelectedOptionsChange([...selectedOptions, option])
+      const isArr = selectedOptions instanceof Array
+
+      if (!isArr) {
+        return onSelectedOptionsChange(option)
       }
+
+      if (selectedOptions.includes(option)) {
+        return onSelectedOptionsChange(selectedOptions.filter((selected) => selected !== option))
+      }
+
+      return onSelectedOptionsChange([...selectedOptions, option])
     },
     [onSelectedOptionsChange, selectedOptions]
   )

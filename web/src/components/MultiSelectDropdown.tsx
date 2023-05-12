@@ -4,16 +4,20 @@ import { useDropdownState } from '../hooks/useDropdownState'
 import { KoodiDtoIn } from '../KoodistoContext'
 
 type MultiSelectProps = {
+  id: string
   options: KoodiDtoIn[]
   selectedOptions: KoodiDtoIn[]
   onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
+  testId?: string
   canReset?: boolean
 }
 
 export const MultiSelectDropdown = ({
+  id,
   options,
   selectedOptions,
   onSelectedOptionsChange,
+  testId,
   canReset
 }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -21,24 +25,24 @@ export const MultiSelectDropdown = ({
   const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
     options,
     selectedOptions,
-    onSelectedOptionsChange,
+    onSelectedOptionsChange: (opt) => {
+      if (opt instanceof Array) {
+        onSelectedOptionsChange(opt)
+      }
+    },
     containerRef
   })
 
   return (
     <div
-      className="relative mx-2 mb-3 mt-1 border border-gray-secondary"
+      className="relative mb-3 mt-1 border border-gray-secondary"
       ref={containerRef}
       onBlur={(e) => {
         e.preventDefault()
         setIsOpen(false)
       }}
       tabIndex={0}>
-      <div
-        className="flex bg-white px-2"
-        onClick={() => {
-          setIsOpen(!isOpen)
-        }}>
+      <div id={id} className="flex bg-white px-2" role="button" onClick={() => setIsOpen(!isOpen)} data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
           {selectedOptions.length ? (
             <>

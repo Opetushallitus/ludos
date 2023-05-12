@@ -13,7 +13,7 @@ type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
 export type KoodiDtoIn = {
   koodiArvo: string
   nimi: string
-  kieli: string
+  kieli?: string
 }
 
 export type Koodisto = KoodiDtoIn[]
@@ -35,3 +35,30 @@ export const KoodistoContext = createContext<KoodistoContextValue>({
   koodistos: defaultEmptyKoodistoMap,
   setKoodistos: () => {}
 })
+
+export const defaultEmptyKoodisto: KoodistoMap = {
+  oppiaineetjaoppimaaratlops2021: {
+    name: 'oppiaineetjaoppimaaratlops2021',
+    koodit: []
+  },
+  laajaalainenosaaminenlops2021: {
+    name: 'laajaalainenosaaminenlops2021',
+    koodit: []
+  },
+  ludostehtavatyypi: {
+    name: 'ludostehtavatyypi',
+    koodit: []
+  },
+  taitotaso: {
+    name: 'taitotaso',
+    koodit: []
+  },
+  ludoslukuvuosi: {
+    name: 'ludoslukuvuosi',
+    koodit: []
+  },
+  ludoslukiodiplomiaine: {
+    name: 'ludoslukiodiplomiaine',
+    koodit: []
+  }
+}

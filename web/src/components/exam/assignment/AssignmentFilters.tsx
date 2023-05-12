@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction, useContext } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
 import { Dropdown } from '../../Dropdown'
-import { LANGUAGE_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
+import { getSelectedOptions, LANGUAGE_OPTIONS, sortKoodit, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
-import { KoodiDtoIn, Koodisto, KoodistoContext } from '../../../KoodistoContext'
+import { KoodiDtoIn, KoodistoContext } from '../../../KoodistoContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
 
 type ValueOf<T> = T[keyof T]
@@ -21,8 +21,7 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
 
   const koodisto = ctx.koodistos
 
-  const handleFilterChange = (key: keyof FiltersType, value: ValueOf<FiltersType>) =>
-    setFilters((curr) => ({ ...curr, [key]: value }))
+  const handleFilterChange = <T,>(key: keyof FiltersType, value: T) => setFilters((curr) => ({ ...curr, [key]: value }))
 
   const handleMultiselectFilterChange = (key: keyof FiltersType, value: KoodiDtoIn[]) => {
     setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
@@ -35,8 +34,8 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
     <div className="border border-gray-light bg-gray-bg">
       <p className="px-2 py-1">{t('filter.otsikko')}</p>
       <div className="row w-full flex-wrap justify-start">
-        <div className="w-full md:w-[23%]">
-          <p className="pl-2">{t('filter.oppimaara')}</p>
+        <div className="mx-2 w-full md:w-[23%]">
+          <p>{t('filter.oppimaara')}</p>
           <MultiSelectDropdown
             options={koodisto.oppiaineetjaoppimaaratlops2021 || []}
             selectedOptions={getSelectedOptions(filters.oppimaara, koodisto.oppiaineetjaoppimaaratlops2021)}
@@ -44,40 +43,44 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
             canReset
           />
         </div>
-        <div className="w-full md:w-[23%]">
-          <p className="pl-2">{t('filter.tyyppi')}</p>
+        <div className="mx-2 w-full md:w-[23%]">
+          <p>{t('filter.tyyppi')}</p>
           <MultiSelectDropdown
+            id="contentTypeFilter"
             options={koodisto.tehtavatyyppisuko || []}
             selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto.tehtavatyyppisuko)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentTypeKoodiArvo', opt)}
             canReset
           />
         </div>
-        <div className="w-full md:w-[23%]">
-          <p className="pl-2">{t('filter.aihe')}</p>
+        <div className="mx-2 w-full md:w-[23%]">
+          <p>{t('filter.aihe')}</p>
           <Dropdown
-            currentOption={null}
-            onOptionClick={(opt) => handleFilterChange('aihe', opt)}
+            id="aiheFilter"
+            onSelectedOptionsChange={(opt) => handleFilterChange('aihe', opt)}
             options={[]}
             canReset
           />
         </div>
-        <div className="w-full md:w-[15%] md:min-w-[10rem]">
-          <p className="pl-2">{t('filter.kieli')}</p>
+        <div className="mx-2 w-full md:w-[15%] md:min-w-[10rem]">
+          <p>{t('filter.kieli')}</p>
           <Dropdown
-            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
-            onOptionClick={(opt: string) => setLanguage(opt)}
+            id="languageDropdown"
             options={LANGUAGE_OPTIONS}
+            selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
+            onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+            testId="language-dropdown"
           />
         </div>
-        <div className="w-full md:w-[15%] md:min-w-[10rem]">
-          <p className="pl-2">{t('filter.jarjesta')}</p>
+        <div className="mx-2 w-full md:w-[15%] md:min-w-[10rem]">
+          <p>{t('filter.jarjesta')}</p>
           <Dropdown
-            currentOption={
-              SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.key === filters.orderDirection)?.value || null
-            }
-            onOptionClick={(opt: ValueOf<FiltersType>) => handleFilterChange('orderDirection', opt)}
+            id="orderFilter"
             options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
+            selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
+            onSelectedOptionsChange={(opt: string) =>
+              handleFilterChange<ValueOf<FiltersType['orderDirection']>>('orderDirection', opt)
+            }
           />
         </div>
       </div>

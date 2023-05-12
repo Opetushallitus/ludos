@@ -26,9 +26,10 @@ export const PuhviContent = ({ assignment, contentType }: PuhviAssignmentContent
         <div>
           <p className="pl-2">{t('filter.kieli')}</p>
           <Dropdown
-            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
-            onOptionClick={(opt: string) => setLanguage(opt)}
+            id="languageDropdown"
             options={LANGUAGE_OPTIONS}
+            selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
+            onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
             testId={'language-dropdown'}
           />
         </div>

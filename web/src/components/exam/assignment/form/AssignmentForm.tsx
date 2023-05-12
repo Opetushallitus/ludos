@@ -11,7 +11,11 @@ import { TextAreaInput } from '../../../TextAreaInput'
 import { TextInput } from '../../../TextInput'
 import { FormHeader } from '../../../formCommon/FormHeader'
 import { FormButtonRow } from '../../../formCommon/FormButtonRow'
-import { KoodistoContext } from '../../../../KoodistoContext'
+import { KoodiDtoIn, KoodistoContext } from '../../../../KoodistoContext'
+import { Dropdown } from '../../../Dropdown'
+import { AIHE_KOODISTO, getSelectedOptions, sortKoodit } from '../../../../koodistoUtils'
+import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
+import { FieldLabel } from '../../../FieldLabel'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -31,6 +35,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const assignment = (state?.assignment as SukoAssignmentIn) || null
 
   const {
+    watch,
     register,
     reset,
     handleSubmit,
@@ -38,14 +43,6 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     setValue,
     formState: { errors }
   } = useForm<AssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(assignmentSchema) })
-
-  // const handleMultiSelectChange = (newSelectedOptions: SelectOption[]) => {
-  //   setValue(
-  //     'topic',
-  //     newSelectedOptions.map((option) => option.key)
-  //   )
-  // }
-  // const topics = watch('topic') || []
 
   // set initial values
   useEffect(() => {
@@ -82,7 +79,23 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     })()
   }
 
-  const assignmentTypeKoodisto = ctx.koodistos.tehtavatyyppisuko
+  const handleMultiselectOptionChange = (fieldName: keyof AssignmentFormType, selectedOptions: KoodiDtoIn[]) => {
+    setValue(
+      fieldName,
+      selectedOptions.map((it) => it.koodiArvo)
+    )
+  }
+
+  const currentOppimaara = watch('oppimaaraKoodiArvo')
+  const currentTavoitetaso = watch('tavoitetasoKoodiArvo')
+  const currentAihe = watch('aiheKoodiArvo')
+  const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvo')
+
+  const assignmentTypeKoodisto = ctx.koodistos?.tehtavatyyppisuko.koodit
+  const oppimaaraKoodisto = ctx.koodistos?.oppiaineetjaoppimaaratlops2021.koodit
+  const tavoitetasoKoodisto = ctx.koodistos?.taitotaso.koodit
+  const aiheKoodisto = AIHE_KOODISTO.koodit
+  const laajaalainenOsaaminenKoodisto = ctx.koodistos?.laajaalainenosaaminenlops2021.koodit
 
   return (
     <div className="w-10/12 pt-3">
@@ -91,12 +104,16 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
         <input type="hidden" {...register('exam')} />
         <input type="hidden" {...register('contentType')} />
 
-        {/*<MultiSelectDropdown*/}
-        {/*  options={TOPIC_OPTIONS}*/}
-        {/*  selectedOptions={TOPIC_OPTIONS.filter((it) => topics.includes(it.key))}*/}
-        {/*  onSelectedOptionsChange={handleMultiSelectChange}*/}
-        {/*  canReset*/}
-        {/*/>*/}
+        <div className="mb-6">
+          <FieldLabel id="oppimaara" name={t('form.oppimaara')} required />
+          <Dropdown
+            id="oppimaara"
+            selectedOption={oppimaaraKoodisto && oppimaaraKoodisto.find((it) => it.koodiArvo === currentOppimaara)}
+            options={sortKoodit(oppimaaraKoodisto || [])}
+            onSelectedOptionsChange={(opt: string) => setValue('oppimaaraKoodiArvo', opt)}
+          />
+          {errors?.oppimaaraKoodiArvo && <p className="text-green-primary">{errors.oppimaaraKoodiArvo.message}</p>}
+        </div>
 
         <div className="mb-6">
           <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
@@ -126,6 +143,43 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
           />
           {errors?.assignmentTypeKoodiArvo && (
             <p className="text-green-primary">{errors.assignmentTypeKoodiArvo.message}</p>
+          )}
+        </div>
+
+        <div className="mb-6">
+          <FieldLabel id="tavoitetaso" name={t('form.tavoitetaso')} required />
+          <Dropdown
+            id="tavoitetaso"
+            selectedOption={
+              tavoitetasoKoodisto && tavoitetasoKoodisto.find((it) => it.koodiArvo === currentTavoitetaso)
+            }
+            options={sortKoodit(tavoitetasoKoodisto || [])}
+            onSelectedOptionsChange={(opt: string) => setValue('tavoitetasoKoodiArvo', opt)}
+          />
+          {errors?.tavoitetasoKoodiArvo && <p className="text-green-primary">{errors.tavoitetasoKoodiArvo.message}</p>}
+        </div>
+
+        <div className="mb-6">
+          <FieldLabel id="aihe" name={t('form.aihe')} required />
+          <MultiSelectDropdown
+            id="aihe"
+            options={sortKoodit(aiheKoodisto || [])}
+            selectedOptions={getSelectedOptions(currentAihe, aiheKoodisto || [])}
+            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvo', opt)}
+          />
+          {errors?.aiheKoodiArvo && <p className="text-green-primary">{errors.aiheKoodiArvo.message}</p>}
+        </div>
+
+        <div className="mb-6">
+          <FieldLabel id="laajaalainenosaamine" name={t('form.laajaalainenosaaminen')} required />
+          <MultiSelectDropdown
+            id="laajaalainenosaamine"
+            options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}
+            selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
+            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvo', opt)}
+          />
+          {errors?.laajaalainenOsaaminenKoodiArvo && (
+            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvo.message}</p>
           )}
         </div>
 
