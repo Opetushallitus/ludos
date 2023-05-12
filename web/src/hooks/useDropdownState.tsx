@@ -6,13 +6,15 @@ type UseDropdownStateProps = {
   selectedOptions?: KoodiDtoIn | KoodiDtoIn[]
   onSelectedOptionsChange: (selectedOptions: KoodiDtoIn | KoodiDtoIn[]) => void
   containerRef: RefObject<HTMLDivElement>
+  inputRef?: RefObject<HTMLDivElement>
 }
 
 export const useDropdownState = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,
-  containerRef
+  containerRef,
+  inputRef
 }: UseDropdownStateProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(-1)
@@ -35,38 +37,54 @@ export const useDropdownState = ({
   )
 
   useEffect(() => {
-    const container = containerRef.current
-    const handler = (e: KeyboardEvent) => {
-      if (e.target !== container) {
-        return
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (isOpen && containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
       }
+    }
 
-      switch (e.code) {
-        case 'Enter':
-        case 'Space':
-          e.preventDefault()
-          if (isOpen) {
-            toggleOption(options[highlightedIndex])
-          }
-          break
-        case 'ArrowUp':
-        case 'ArrowDown': {
-          if (!isOpen) {
-            setIsOpen(true)
+    document.addEventListener('mousedown', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [isOpen, containerRef, setIsOpen])
+
+  useEffect(() => {
+    const container = containerRef.current
+    const input = inputRef?.current
+    const handler = (e: KeyboardEvent) => {
+      if (e.target === container || (input && e.target === input)) {
+        switch (e.code) {
+          case 'Enter':
+          case 'Space':
+            e.preventDefault()
+            if (isOpen) {
+              toggleOption(options[highlightedIndex])
+            }
+            break
+          case 'ArrowUp':
+          case 'ArrowDown': {
+            // stop scrolling the page with arrow keys
+            e.preventDefault()
+
+            if (!isOpen) {
+              setIsOpen(true)
+              break
+            }
+
+            const newValue = highlightedIndex + (e.code === 'ArrowDown' ? 1 : -1)
+
+            if (newValue >= 0 && newValue < options.length) {
+              setHighlightedIndex(newValue)
+            }
+
             break
           }
-
-          const newValue = highlightedIndex + (e.code === 'ArrowDown' ? 1 : -1)
-
-          if (newValue >= 0 && newValue < options.length) {
-            setHighlightedIndex(newValue)
-          }
-
-          break
+          case 'Escape':
+            setIsOpen(false)
+            break
         }
-        case 'Escape':
-          setIsOpen(false)
-          break
       }
     }
 
@@ -75,7 +93,7 @@ export const useDropdownState = ({
     return () => {
       container?.removeEventListener('keydown', handler)
     }
-  }, [isOpen, highlightedIndex, options, containerRef, toggleOption])
+  }, [isOpen, highlightedIndex, options, containerRef, toggleOption, inputRef])
 
-  return { isOpen: isOpen, setIsOpen: setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption }
+  return { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption }
 }

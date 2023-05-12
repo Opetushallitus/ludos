@@ -166,6 +166,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
             options={sortKoodit(aiheKoodisto || [])}
             selectedOptions={getSelectedOptions(currentAihe, aiheKoodisto || [])}
             onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvo', opt)}
+            canReset
           />
           {errors?.aiheKoodiArvo && <p className="text-green-primary">{errors.aiheKoodiArvo.message}</p>}
         </div>
@@ -177,6 +178,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
             options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}
             selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
             onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvo', opt)}
+            canReset
           />
           {errors?.laajaalainenOsaaminenKoodiArvo && (
             <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvo.message}</p>

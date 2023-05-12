@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { useDropdownState } from '../hooks/useDropdownState'
 import { KoodiDtoIn } from '../KoodistoContext'
@@ -18,33 +18,37 @@ export const MultiSelectDropdown = ({
   selectedOptions,
   onSelectedOptionsChange,
   testId,
-  canReset
+  canReset = false
 }: MultiSelectProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [searchText, setSearchText] = useState<string>('')
+
+  const filteredOptions = options.filter((option) => option.nimi.toLowerCase().includes(searchText.toLowerCase()))
 
   const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
-    options,
+    options: filteredOptions,
     selectedOptions,
     onSelectedOptionsChange: (opt) => {
       if (opt instanceof Array) {
         onSelectedOptionsChange(opt)
       }
     },
-    containerRef
+    containerRef,
+    inputRef
   })
+
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => setSearchText(event.target.value)
 
   return (
     <div
       className="relative mb-3 mt-1 border border-gray-secondary"
       ref={containerRef}
-      onBlur={(e) => {
-        e.preventDefault()
-        setIsOpen(false)
-      }}
+      onClick={() => setIsOpen(true)}
       tabIndex={0}>
-      <div id={id} className="flex bg-white px-2" role="button" onClick={() => setIsOpen(!isOpen)} data-testid={testId}>
+      <div id={id} className="flex bg-white px-2" role="button" data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
-          {selectedOptions.length ? (
+          {selectedOptions.length > 0 && (
             <>
               {selectedOptions.map((opt, i) => (
                 <div className="flex w-auto flex-col rounded-2xl bg-green-primary" key={i}>
@@ -64,18 +68,25 @@ export const MultiSelectDropdown = ({
                 </div>
               ))}
             </>
-          ) : (
-            <span className="text-gray-secondary">Valitse...</span>
           )}
+          <input
+            type="search"
+            value={searchText}
+            onChange={handleSearchChange}
+            placeholder="Valitse.." // todo: localize
+            className="rounded-md p-1"
+            ref={inputRef}
+          />
         </div>
         <div className="mt-1">
-          {selectedOptions.length && canReset ? (
+          {selectedOptions.length > 0 && canReset ? (
             <Icon
               name="sulje"
               color="text-black"
               onClick={(e) => {
                 e.stopPropagation()
                 onSelectedOptionsChange([])
+                setSearchText('')
               }}
               customClass="border-l-2 border-gray-light"
             />
@@ -85,7 +96,7 @@ export const MultiSelectDropdown = ({
         </div>
       </div>
       <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
-        {options.map((option, i) => (
+        {filteredOptions.map((option, i) => (
           <li
             className={`cursor-pointer px-3 ${
               selectedOptions.includes(option) ? 'bg-green-primary text-white hover:text-white' : ''
@@ -96,7 +107,10 @@ export const MultiSelectDropdown = ({
                 ? 'bg-gray-light'
                 : ''
             }`}
-            onClick={() => toggleOption(option)}
+            onClick={() => {
+              toggleOption(option)
+              setSearchText('')
+            }}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}>
             {option.nimi}
