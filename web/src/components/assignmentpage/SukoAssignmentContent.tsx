@@ -55,7 +55,7 @@ export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmen
           <ul>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
-              {getAssignmentTypeName(assignment, ctx.koodistos?.ludostehtavatyypi.koodit)}
+              {getAssignmentTypeName(assignment, ctx.koodistos.tehtavatyyppisuko)}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>

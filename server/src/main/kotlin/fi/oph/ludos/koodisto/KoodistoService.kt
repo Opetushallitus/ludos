@@ -25,35 +25,41 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
         }
     }
 
-    fun getKoodit(language: Language): Map<String, KoodistoWithKoodit> {
-        val cachedKoodisto =
-            cacheManager.getCache(CacheName.KOODISTO.key)?.get("all")?.get() as? Map<String, KoodistoWithKoodit>?
+    fun getKoodistos(): Map<KoodistoName, List<KoodiDtoOut>> {
+        val cachedKoodistosAny =
+            cacheManager.getCache(CacheName.KOODISTO.key)?.get("all")?.get()
 
-        if (cachedKoodisto != null) {
-            // filter out koodit by language. Language can be either FI or SV
-            return filterKooditByLanguage(cachedKoodisto, language)
+        if (cachedKoodistosAny != null) {
+            if (cachedKoodistosAny is Map<*, *>) {
+                return cachedKoodistosAny as Map<KoodistoName, List<KoodiDtoOut>>
+            } else {
+                throw Exception("Cached koodistos is not a map")
+            }
         }
+        throw Exception("Koodistos not found in cache")
+    }
+    fun getKoodistos(language: Language): Map<KoodistoName, List<KoodiDtoOut>> = filterKooditByLanguage(getKoodistos(), language)
 
-        return try {
-            // filter out koodit by language. Language can be either FI or SV
-            filterKooditByLanguage(updateCache(), language)
-        } catch (e: Exception) {
-            throw e
-        }
+    fun getKoodisto(koodistoName: KoodistoName) : List<KoodiDtoOut> {
+        return getKoodistos()[koodistoName] ?: throw Exception("Koodisto ${koodistoName.koodistoUri} not found in cache")
+    }
+
+    fun isKoodiArvoInKoodisto(koodistoName: KoodistoName, koodiArvo: String) : Boolean {
+        return getKoodisto(koodistoName).any { it.koodiArvo == koodiArvo }
     }
 
     fun filterKooditByLanguage(
-        koodistos: Map<String, KoodistoWithKoodit>, language: Language
-    ): Map<String, KoodistoWithKoodit> = koodistos.mapValues { (_, koodisto) ->
-        koodisto.copy(koodit = koodisto.koodit.filter { it.kieli == language.name })
+        koodistos: Map<KoodistoName, List<KoodiDtoOut>>, language: Language
+    ): Map<KoodistoName, List<KoodiDtoOut>> = koodistos.mapValues { (_, koodisto) ->
+        koodisto.filter { it.kieli == language.name }
     }
 
 
-    private fun updateCache(): Map<String, KoodistoWithKoodit> {
+    private fun updateCache(): Map<KoodistoName, List<KoodiDtoOut>> {
         try {
-            val koodistoWithKooditMap = mutableMapOf<String, KoodistoWithKoodit>()
+            val koodistoMap = mutableMapOf<KoodistoName, List<KoodiDtoOut>>()
 
-            for (koodisto in ludosKoodistos) {
+            for (koodisto in KoodistoName.values()) {
                 val koodistotIn = koodistoRepository.getKoodistot(koodisto)
 
                 val kooditOut = mutableListOf<KoodiDtoOut>()
@@ -65,17 +71,15 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
                     }
                 }
 
-                val koodistoWithKoodit = KoodistoWithKoodit(koodisto.koodisto, kooditOut)
-
-                koodistoWithKooditMap[koodisto.koodisto] = koodistoWithKoodit
+                koodistoMap[koodisto] = kooditOut
             }
 
-            cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoWithKooditMap)
+            cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
 
-            val koodistoStats = koodistoWithKooditMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoWithKooditMap[koodistoName]?.koodit?.count()}" }
+            val koodistoStats = koodistoMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
             logger.info("Updated koodisto cache: $koodistoStats")
 
-            return koodistoWithKooditMap
+            return koodistoMap
         } catch (e: Exception) {
             throw LocalizationException("${e.message}", e)
         }

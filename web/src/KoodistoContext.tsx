@@ -1,12 +1,14 @@
 import { createContext } from 'react'
 
-type LudosKoodistos =
-  | 'oppiaineetjaoppimaaratlops2021'
-  | 'laajaalainenosaaminenlops2021'
-  | 'ludostehtavatyypi'
-  | 'taitotaso'
-  | 'ludoslukuvuosi'
-  | 'ludoslukiodiplomiaine'
+const KoodistoName = {
+  OPPIAINEET_JA_OPPIMAARAT_LOPS2021: 'oppiaineetjaoppimaaratlops2021',
+  LAAJA_ALAINEN_OSAAMINEN_LOPS2021: 'laajaalainenosaaminenlops2021',
+  TEHTAVATYYPPI_SUKO: 'tehtavatyyppisuko',
+  TAITOTASO: 'taitotaso',
+  LUDOS_LUKUVUOSI: 'ludoslukuvuosi',
+  LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine'
+} as const
+type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
 
 export type KoodiDtoIn = {
   koodiArvo: string
@@ -14,48 +16,22 @@ export type KoodiDtoIn = {
   kieli: string
 }
 
-export type Koodisto = {
-  name: LudosKoodistos
-  koodit: KoodiDtoIn[]
-}
+export type Koodisto = KoodiDtoIn[]
 
 export type KoodistoMap = {
-  [key in LudosKoodistos]: Koodisto
+  [key in KoodistoName]: Koodisto
 }
 
 interface KoodistoContextValue {
-  koodistos: KoodistoMap | null
+  koodistos: KoodistoMap
   setKoodistos: (koodistos: KoodistoMap) => void
 }
 
+export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
+  Object.values(KoodistoName).map((name) => [name, []])
+) as unknown as KoodistoMap
+
 export const KoodistoContext = createContext<KoodistoContextValue>({
-  koodistos: null,
+  koodistos: defaultEmptyKoodistoMap,
   setKoodistos: () => {}
 })
-
-export const defaultEmptyKoodisto: KoodistoMap = {
-  oppiaineetjaoppimaaratlops2021: {
-    name: 'oppiaineetjaoppimaaratlops2021',
-    koodit: []
-  },
-  laajaalainenosaaminenlops2021: {
-    name: 'laajaalainenosaaminenlops2021',
-    koodit: []
-  },
-  ludostehtavatyypi: {
-    name: 'ludostehtavatyypi',
-    koodit: []
-  },
-  taitotaso: {
-    name: 'taitotaso',
-    koodit: []
-  },
-  ludoslukuvuosi: {
-    name: 'ludoslukuvuosi',
-    koodit: []
-  },
-  ludoslukiodiplomiaine: {
-    name: 'ludoslukiodiplomiaine',
-    koodit: []
-  }
-}

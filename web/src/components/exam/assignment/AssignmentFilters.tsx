@@ -28,8 +28,8 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
     setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
   }
 
-  const getSelectedOptions = (filter: string | null, koodisto?: Koodisto) =>
-    koodisto?.koodit.filter((koodi) => filter?.includes(koodi.koodiArvo)) || []
+  const getSelectedOptions = (filter: string | null, koodisto: Koodisto) =>
+    koodisto.filter((koodi) => filter?.includes(koodi.koodiArvo)) || []
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -38,8 +38,8 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
         <div className="w-full md:w-[23%]">
           <p className="pl-2">{t('filter.oppimaara')}</p>
           <MultiSelectDropdown
-            options={koodisto?.oppiaineetjaoppimaaratlops2021?.koodit || []}
-            selectedOptions={getSelectedOptions(filters.oppimaara, koodisto?.oppiaineetjaoppimaaratlops2021)}
+            options={koodisto.oppiaineetjaoppimaaratlops2021 || []}
+            selectedOptions={getSelectedOptions(filters.oppimaara, koodisto.oppiaineetjaoppimaaratlops2021)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
             canReset
           />
@@ -47,8 +47,8 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
         <div className="w-full md:w-[23%]">
           <p className="pl-2">{t('filter.tyyppi')}</p>
           <MultiSelectDropdown
-            options={koodisto?.ludostehtavatyypi?.koodit || []}
-            selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto?.ludostehtavatyypi)}
+            options={koodisto.tehtavatyyppisuko || []}
+            selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto.tehtavatyyppisuko)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentTypeKoodiArvo', opt)}
             canReset
           />
