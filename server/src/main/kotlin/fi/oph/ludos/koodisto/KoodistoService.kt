@@ -13,12 +13,10 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
     private final val logger: org.slf4j.Logger = LoggerFactory.getLogger(javaClass)
 
     init {
-        // Schedule cache update every 2 minutes
         val scheduler = Executors.newScheduledThreadPool(1)
         scheduler.scheduleAtFixedRate({ updateCache() }, 10, 10, TimeUnit.MINUTES)
 
         try {
-            // Init cache
             updateCache()
         } catch (e: Exception) {
             logger.error("Failed to update koodisto cache", e)
@@ -56,32 +54,18 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
 
 
     private fun updateCache(): Map<KoodistoName, List<KoodiDtoOut>> {
-        try {
-            val koodistoMap = mutableMapOf<KoodistoName, List<KoodiDtoOut>>()
-
-            for (koodisto in KoodistoName.values()) {
-                val koodistotIn = koodistoRepository.getKoodistot(koodisto)
-
-                val kooditOut = mutableListOf<KoodiDtoOut>()
-
-                koodistotIn.forEach { koodi ->
-                    koodi.metadata.forEach { metadata ->
-                        val koodiOut = KoodiDtoOut(koodi.koodiArvo, metadata.nimi, metadata.kieli)
-                        kooditOut.add(koodiOut)
-                    }
+        val koodistoMap = KoodistoName.values().associateWith {
+            koodistoName -> koodistoRepository.getKoodisto(koodistoName).flatMap {
+                koodi -> koodi.metadata.map {
+                    metadatum -> KoodiDtoOut(koodi.koodiArvo, metadatum.nimi, metadatum.kieli)
                 }
-
-                koodistoMap[koodisto] = kooditOut
             }
-
-            cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
-
-            val koodistoStats = koodistoMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
-            logger.info("Updated koodisto cache: $koodistoStats")
-
-            return koodistoMap
-        } catch (e: Exception) {
-            throw LocalizationException("${e.message}", e)
         }
+        cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
+
+        val koodistoStats = koodistoMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
+        logger.info("Updated koodisto cache: $koodistoStats")
+
+        return koodistoMap
     }
 }
