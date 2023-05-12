@@ -8,4 +8,4 @@ runs:
       run: cd server && ./gradlew build
     - name: Start backend
       shell: bash
-      run: cd server && ./gradlew bootRun --args='--spring.profiles.active=local' &
+      run: cd server && ./gradlew bootRun --args='--spring.profiles.active=local' 2>&1 | tee bootRun.log &
