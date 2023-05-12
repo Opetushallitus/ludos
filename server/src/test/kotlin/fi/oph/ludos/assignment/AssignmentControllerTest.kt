@@ -35,46 +35,42 @@ fun updateAssignment(exam: Exam, id: Int, body: String) =
 class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
 
-    data class TestSukoIn(
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val publishState: PublishState,
-        val contentType: ContentType,
-        val assignmentTypeKoodiArvo: String,
-        val exam: Exam
-    )
-
     data class TestSukoOut(
         val id: Int,
         val nameFi: String,
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
-        val contentType: ContentType,
         val publishState: PublishState,
+        val contentType: ContentType,
         val assignmentTypeKoodiArvo: String,
+        val oppimaaraKoodiArvo: String,
+        val tavoitetasoKoodiArvo: String,
+        val aiheKoodiArvo: Array<String>,
+        val laajaalainenOsaaminenKoodiArvo: Array<String>,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
 
     @Test
     fun sukoAssignmentTest() {
-        val testAssignment = TestSukoIn(
-            nameFi = "Suko Test Assignment FI",
-            nameSv = "Suko Test Assignment SV",
-            contentFi = "Suko assignment content Fi",
-            contentSv = "Suko assignment content Sv",
-            publishState = PublishState.PUBLISHED,
-            contentType = ContentType.ASSIGNMENTS,
-            assignmentTypeKoodiArvo = "001",
-            exam = Exam.SUKO
-        )
+        val testAssignmentStr = """{
+            "exam": "SUKO",
+            "contentType": "ASSIGNMENTS",
+            "assignmentTypeKoodiArvo": "003",
+            "oppimaaraKoodiArvo": "ET",
+            "tavoitetasoKoodiArvo": "04",
+            "aiheKoodiArvo": ["02", "03"],
+            "laajaalainenOsaaminenKoodiArvo": ["06", "03"],
+            "nameFi": "suomi",
+            "nameSv": "ruotsi",
+            "contentFi": "suomi",
+            "contentSv": "ruotsi",
+            "publishState": "PUBLISHED"
+        }""".trimIndent()
 
-        val testAssignmentToString: String = objectMapper.writeValueAsString(testAssignment)
         // post assignment DTO IN
-        val postResult = mockMvc.perform(postAssignment(testAssignmentToString)).andExpect(status().isOk())
+        val postResult = mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isOk())
             .andReturn().response.contentAsString
         val assignmentIn = objectMapper.readValue(postResult, TestSukoOut::class.java)
 
@@ -83,11 +79,38 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             .andReturn().response.contentAsString
         val assignmentOut = objectMapper.readValue(getResult, TestSukoOut::class.java)
 
-        assertEquals(assignmentIn, assignmentOut)
+        assertEquals(assignmentIn.id, assignmentOut.id)
+        assertEquals(assignmentIn.nameFi, assignmentOut.nameFi)
+        assertEquals(assignmentIn.nameSv, assignmentOut.nameSv)
+        assertEquals(assignmentIn.contentFi, assignmentOut.contentFi)
+        assertEquals(assignmentIn.contentSv, assignmentOut.contentSv)
+        assertEquals(assignmentIn.publishState, assignmentOut.publishState)
+        assertEquals(assignmentIn.contentType, assignmentOut.contentType)
+        assertEquals(assignmentIn.assignmentTypeKoodiArvo, assignmentOut.assignmentTypeKoodiArvo)
+        assertEquals(assignmentIn.oppimaaraKoodiArvo, assignmentOut.oppimaaraKoodiArvo)
+        assertEquals(assignmentIn.tavoitetasoKoodiArvo, assignmentOut.tavoitetasoKoodiArvo)
+        assertEquals(assignmentIn.aiheKoodiArvo[0], assignmentOut.aiheKoodiArvo[0])
+        assertEquals(assignmentIn.aiheKoodiArvo[1], assignmentOut.aiheKoodiArvo[1])
+        assertEquals(assignmentIn.laajaalainenOsaaminenKoodiArvo[0], assignmentOut.laajaalainenOsaaminenKoodiArvo[0])
+        assertEquals(assignmentIn.laajaalainenOsaaminenKoodiArvo[1], assignmentOut.laajaalainenOsaaminenKoodiArvo[1])
+        assertEquals(assignmentIn.createdAt, assignmentOut.createdAt)
+        assertEquals(assignmentIn.updatedAt, assignmentOut.updatedAt)
 
         // update request
-        val editedAssignment =
-            "{\"id\": \"${assignmentOut.id}\",\"nameFi\":\"New test name\",\"contentFi\":\"${assignmentOut.contentFi}\",\"nameSv\":\"New test name\",\"contentSv\":\"content\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.ASSIGNMENTS}\",\"assignmentTypeKoodiArvo\": \"001\"}\n"
+        val editedAssignment = """{
+                "id": "${assignmentOut.id}",
+                "nameFi": "New test name",
+                "contentFi": "${assignmentOut.contentFi}",
+                "nameSv": "New test name",
+                "contentSv": "content",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "assignmentTypeKoodiArvo": "001",
+                "oppimaaraKoodiArvo": "ET",
+                "tavoitetasoKoodiArvo": "04",
+                "aiheKoodiArvo": ["2", "3"],
+                "laajaalainenOsaaminenKoodiArvo": ["06", "03"]
+            }"""
 
         val updatedAssignmentId =
             mockMvc.perform(updateAssignment(Exam.SUKO, assignmentOut.id, editedAssignment)).andExpect(status().isOk())
@@ -100,7 +123,20 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     fun failAssignmentUpdate() {
         val nonExistentId = -1
         val editedAssignmentFail =
-            "{\"id\": \"$nonExistentId\",\"nameFi\":\"New test name\",\"contentFi\":\"content\",\"nameSv\":\"New test name\",\"contentSv\":\"content\",\"publishState\":\"PUBLISHED\",\"contentType\": \"${ContentType.ASSIGNMENTS}\",\"assignmentTypeKoodiArvo\": \"002\"}\n"
+            """{
+                "id": "$nonExistentId",
+                "nameFi": "New test name",
+                "contentFi": "content",
+                "nameSv": "New test name",
+                "contentSv": "content",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "assignmentTypeKoodiArvo": "001",
+                "oppimaaraKoodiArvo": "ET",
+                "tavoitetasoKoodiArvo": "04",
+                "aiheKoodiArvo": ["2", "3"],
+                "laajaalainenOsaaminenKoodiArvo": ["06", "03"]
+            }"""
 
         val failUpdate = mockMvc.perform(updateAssignment(Exam.SUKO, nonExistentId, editedAssignmentFail))
             .andReturn().response.contentAsString

@@ -10,6 +10,13 @@ import java.sql.ResultSet
 
 @Component
 class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
+    private inline fun <reified T> ResultSet.getArrayAsArray(columnLabel: String): Array<T> {
+        val array = this.getArray(columnLabel).array
+        require(array is Array<*>) { "Column '$columnLabel' is not an array" }
+        @Suppress("UNCHECKED_CAST")
+        return array as Array<T>
+    }
+
     val mapSukoResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut? = { rs: ResultSet, _: Int ->
         SukoAssignmentDtoOut(
             rs.getInt("assignment_id"),
@@ -20,6 +27,10 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             ContentType.ASSIGNMENTS,
             rs.getString("suko_assignment_type_koodi_arvo"),
+            rs.getString("suko_oppimaara_koodi_arvo"),
+            rs.getString("suko_tavoitetaso_koodi_arvo"),
+            rs.getArrayAsArray<String>("suko_aihe_koodi_arvo"),
+            rs.getArrayAsArray<String>("suko_laajaalainen_osaaminen_koodi_arvo"),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at")
         )
@@ -118,7 +129,19 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun saveSukoAssignment(assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut = jdbcTemplate.query(
-        "INSERT INTO suko_assignment (assignment_name_fi, assignment_name_sv, assignment_content_fi, assignment_content_sv, suko_assignment_type_koodi_arvo, assignment_publish_state) VALUES (?, ?, ?, ?, ?, ?::publish_state) RETURNING assignment_id, assignment_created_at, assignment_updated_at",
+        """INSERT INTO suko_assignment (
+            |assignment_name_fi,
+            |assignment_name_sv,
+            |assignment_content_fi,
+            |assignment_content_sv,
+            |assignment_publish_state,
+            |suko_aihe_koodi_arvo, 
+            |suko_assignment_type_koodi_arvo, 
+            |suko_oppimaara_koodi_arvo, 
+            |suko_tavoitetaso_koodi_arvo,
+            |suko_laajaalainen_osaaminen_koodi_arvo) 
+            |VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?) 
+            |RETURNING assignment_id, assignment_created_at, assignment_updated_at""".trimMargin(),
         { rs: ResultSet, _: Int ->
             SukoAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -129,6 +152,10 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.publishState,
                 assignment.contentType,
                 assignment.assignmentTypeKoodiArvo,
+                assignment.oppimaaraKoodiArvo,
+                assignment.tavoitetasoKoodiArvo,
+                assignment.aiheKoodiArvo,
+                assignment.laajaalainenOsaaminenKoodiArvo,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
             )
@@ -137,8 +164,12 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         assignment.nameSv,
         assignment.contentFi,
         assignment.contentSv,
-        assignment.assignmentTypeKoodiArvo,
         assignment.publishState.toString(),
+        assignment.aiheKoodiArvo,
+        assignment.assignmentTypeKoodiArvo,
+        assignment.oppimaaraKoodiArvo,
+        assignment.tavoitetasoKoodiArvo,
+        assignment.laajaalainenOsaaminenKoodiArvo
     )[0]
 
     fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut = jdbcTemplate.query(
@@ -186,8 +217,7 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     )[0]
 
     fun getSukoAssignmentById(id: Int): AssignmentOut = try {
-        val results =
-            jdbcTemplate.query("SELECT * FROM suko_assignment WHERE assignment_id = ?", mapSukoResultSet, id)
+        val results = jdbcTemplate.query("SELECT * FROM suko_assignment WHERE assignment_id = ?", mapSukoResultSet, id)
 
         if (results.isEmpty()) {
             throw NotFoundException()
@@ -229,7 +259,21 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun updateSukoAssignment(assignment: SukoUpdateAssignmentDtoIn, id: Int): Int = try {
         val results = jdbcTemplate.query(
-            "UPDATE suko_assignment SET assignment_name_fi = ?, assignment_name_sv = ?, assignment_content_fi = ?, assignment_content_sv = ?, suko_assignment_type_koodi_arvo = ?, assignment_publish_state = ?::publish_state, assignment_updated_at = now() WHERE assignment_id = ? RETURNING assignment_id",
+            """UPDATE suko_assignment 
+                |SET 
+                |assignment_name_fi = ?, 
+                |assignment_name_sv = ?, 
+                |assignment_content_fi = ?, 
+                |assignment_content_sv = ?, 
+                |assignment_publish_state = ?::publish_state,
+                |suko_aihe_koodi_arvo = ?,
+                |suko_laajaalainen_osaaminen_koodi_arvo = ?,
+                |suko_assignment_type_koodi_arvo = ?,
+                |suko_oppimaara_koodi_arvo = ?,
+                |suko_tavoitetaso_koodi_arvo = ?,
+                |assignment_updated_at = now()
+                |WHERE assignment_id = ?
+                |RETURNING assignment_id""".trimMargin(),
             { rs: ResultSet, _: Int ->
                 rs.getInt("assignment_id")
             },
@@ -237,8 +281,12 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             assignment.nameSv,
             assignment.contentFi,
             assignment.contentSv,
-            assignment.assignmentTypeKoodiArvo,
             assignment.publishState.toString(),
+            assignment.aiheKoodiArvo,
+            assignment.laajaalainenOsaaminenKoodiArvo,
+            assignment.assignmentTypeKoodiArvo,
+            assignment.oppimaaraKoodiArvo,
+            assignment.tavoitetasoKoodiArvo,
             id
         )
 

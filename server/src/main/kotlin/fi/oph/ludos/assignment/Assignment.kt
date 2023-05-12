@@ -31,7 +31,11 @@ data class SukoAssignmentDtoIn(
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentTypeKoodiArvo: String
+    val assignmentTypeKoodiArvo: String,
+    val oppimaaraKoodiArvo: String,
+    val tavoitetasoKoodiArvo: String,
+    val aiheKoodiArvo: Array<String>,
+    val laajaalainenOsaaminenKoodiArvo: Array<String>,
 ) : Assignment
 
 @JsonTypeName("PUHVI")
@@ -69,6 +73,10 @@ data class SukoAssignmentDtoOut(
     override val publishState: PublishState,
     override val contentType: ContentType,
     val assignmentTypeKoodiArvo: String,
+    val oppimaaraKoodiArvo: String,
+    val tavoitetasoKoodiArvo: String,
+    val aiheKoodiArvo: Array<String>,
+    val laajaalainenOsaaminenKoodiArvo: Array<String>,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
@@ -115,7 +123,11 @@ data class SukoUpdateAssignmentDtoIn(
     override val contentSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
-    val assignmentTypeKoodiArvo: String
+    val assignmentTypeKoodiArvo: String,
+    val oppimaaraKoodiArvo: String,
+    val tavoitetasoKoodiArvo: String,
+    val aiheKoodiArvo: Array<String>,
+    val laajaalainenOsaaminenKoodiArvo: Array<String>,
 ) : UpdateAssignmentDtoIn
 
 data class PuhviUpdateAssignmentDtoIn(
