@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { fillAssignmentForm } from '../helpers'
+import { fillAssignmentForm, updateAssignmentForm } from '../helpers'
 
 test.describe('Assignment form tests', () => {
   let createdAssignmentId: number
@@ -37,7 +37,7 @@ test.describe('Assignment form tests', () => {
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    await fillAssignmentForm({
+    await updateAssignmentForm({
       page,
       nameTextFi: 'Testi tehtävä muokattu',
       nameTextSv: 'Testuppgifter muokattu',

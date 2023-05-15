@@ -61,6 +61,63 @@ export async function fillAssignmentForm({
   await page.getByTestId('contentSv').fill(contentTextSv)
 }
 
+export async function updateAssignmentForm({
+  page,
+  contentTextFi,
+  contentTextSv,
+  nameTextFi,
+  nameTextSv
+}: {
+  page: Page
+  nameTextFi: string
+  nameTextSv: string
+  contentTextFi: string
+  contentTextSv: string
+}) {
+  await page.getByTestId('oppimaara').click()
+  await page.getByTestId('oppimaara-option-KT8').click()
+
+  await page.getByTestId('assignmentTypeRadio-002').click()
+
+  await page.getByTestId('tavoitetaso').click()
+  await page.getByTestId('tavoitetaso-option-0003').click()
+
+  // remove first selected option
+  await page.getByTestId('remove-selected-option').first().click()
+
+  await page.getByTestId('aihe').click()
+  // Verify that a option has been removed
+  const selectedOptionsAihe = await page.getByTestId('selected-option-aihe').count()
+  expect(selectedOptionsAihe).toBe(1)
+
+  // remove all selected options
+  await page.getByTestId('reset-selected-options').first().click()
+
+  await page.getByTestId('aihe-label').click()
+
+  // Verify that all options have been removed
+  const selectedOptionsAiheResetted = await page.getByTestId('selected-option-aihe').count()
+
+  expect(selectedOptionsAiheResetted).toBe(0)
+
+  await page.getByTestId('aihe').click()
+  await page.getByTestId('aihe-option-3').click()
+
+  // Close dropdown onBlur
+  await page.getByTestId('aihe-label').click()
+
+  // Close dropdown onBlur
+  await page.getByTestId('aihe-label').click()
+
+  await page.getByTestId('nameFi').fill(nameTextFi)
+  await page.getByTestId('contentFi').fill(contentTextFi)
+
+  await page.getByTestId('tab-sv').click()
+
+  await page.getByTestId('nameSv').fill(nameTextSv)
+  await page.getByTestId('contentSv').fill(contentTextSv)
+}
+
 export async function fillInstructionForm({
   page,
   contentTextFi,

@@ -51,7 +51,10 @@ export const MultiSelectDropdown = ({
           {selectedOptions.length > 0 && (
             <>
               {selectedOptions.map((opt, i) => (
-                <div className="flex w-auto flex-col rounded-2xl bg-green-primary" key={i}>
+                <div
+                  className="flex w-auto flex-col rounded-2xl bg-green-primary"
+                  key={i}
+                  data-testid={`selected-option-${testId}`}>
                   <div className="my-auto flex items-center">
                     <p className="px-2 py-1 text-center text-xs text-white">{opt.nimi}</p>
                     <Icon
@@ -62,6 +65,7 @@ export const MultiSelectDropdown = ({
                         e.stopPropagation()
                         toggleOption(opt)
                       }}
+                      dataTestId="remove-selected-option"
                       customClass="hover:cursor-pointer hover:bg-white hover:text-black mr-3"
                     />
                   </div>
@@ -90,6 +94,7 @@ export const MultiSelectDropdown = ({
                 setSearchText('')
               }}
               customClass="border-l-2 border-gray-light"
+              dataTestId="reset-selected-options"
             />
           ) : (
             <Icon name="laajenna" color="text-black" />
