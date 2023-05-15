@@ -4,6 +4,8 @@ on: push
 jobs:
   tests:
     runs-on: "ubuntu-22.04"
+    container:
+      image: mcr.microsoft.com/playwright:v1.33.0-jammy
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
