@@ -6,9 +6,6 @@ runs:
   steps:
     - shell: bash
       run: echo "🎉 playwright action. ${{ github.event_name }} event."
-    - name: '🐘 Start database'
-      shell: bash
-      run: docker compose up -d
     - name: '🔨 Start frontend and backend'
       uses: ./.github/actions/start_frontend_and_backend
     - name: Cache Playwright browser

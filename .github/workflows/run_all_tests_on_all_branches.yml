@@ -16,6 +16,15 @@ jobs:
         with:
           java-version: 17
           distribution: zulu
+      - name: Install postgres
+        shell: bash
+        run: apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql
+      - name: 'Start database'
+        uses: ikalnytskyi/action-setup-postgres@v4
+        with:
+          username: oph
+          password: oph
+          database: ludos
       - name: Cache Node modules
         uses: actions/cache@v3
         with:
