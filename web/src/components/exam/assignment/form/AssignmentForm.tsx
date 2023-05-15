@@ -111,6 +111,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
             selectedOption={oppimaaraKoodisto && oppimaaraKoodisto.find((it) => it.koodiArvo === currentOppimaara)}
             options={sortKoodit(oppimaaraKoodisto || [])}
             onSelectedOptionsChange={(opt: string) => setValue('oppimaaraKoodiArvo', opt)}
+            testId="oppimaara"
           />
           {errors?.oppimaaraKoodiArvo && <p className="text-green-primary">{errors.oppimaaraKoodiArvo.message}</p>}
         </div>
@@ -155,6 +156,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
             }
             options={sortKoodit(tavoitetasoKoodisto || [])}
             onSelectedOptionsChange={(opt: string) => setValue('tavoitetasoKoodiArvo', opt)}
+            testId="tavoitetaso"
           />
           {errors?.tavoitetasoKoodiArvo && <p className="text-green-primary">{errors.tavoitetasoKoodiArvo.message}</p>}
         </div>
@@ -166,18 +168,20 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
             options={sortKoodit(aiheKoodisto || [])}
             selectedOptions={getSelectedOptions(currentAihe, aiheKoodisto || [])}
             onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvo', opt)}
+            testId="aihe"
             canReset
           />
           {errors?.aiheKoodiArvo && <p className="text-green-primary">{errors.aiheKoodiArvo.message}</p>}
         </div>
 
         <div className="mb-6">
-          <FieldLabel id="laajaalainenosaamine" name={t('form.laajaalainenosaaminen')} required />
+          <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} required />
           <MultiSelectDropdown
-            id="laajaalainenosaamine"
+            id="laajaalainenOsaamine"
             options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}
             selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
             onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvo', opt)}
+            testId="laajaalainenOsaaminen"
             canReset
           />
           {errors?.laajaalainenOsaaminenKoodiArvo && (

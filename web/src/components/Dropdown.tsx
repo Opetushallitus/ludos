@@ -92,6 +92,7 @@ export const Dropdown = ({
             }}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}
+            role="option"
             data-testid={`${testId}-option-${option.koodiArvo}`}>
             {option.nimi}
           </li>

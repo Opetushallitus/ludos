@@ -41,6 +41,11 @@ export type AssignmentIn = {
   contentType: Exam
   createdAt: string
   updatedAt: string
+  aiheKoodiArvo: string[]
+  assignmentTypeKoodiArvo: string
+  laajaalainenOsaaminenKoodiArvo: string[]
+  oppimaaraKoodiArvo: string
+  tavoitetasoKoodiArvo: string
 }
 
 export type SukoAssignmentIn = AssignmentIn & {

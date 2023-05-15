@@ -74,8 +74,9 @@ export const MultiSelectDropdown = ({
             value={searchText}
             onChange={handleSearchChange}
             placeholder="Valitse.." // todo: localize
-            className="rounded-md"
+            className="w-10/12 rounded-md"
             ref={inputRef}
+            data-testid={`${testId}-input`}
           />
         </div>
         <div className="mt-1">
@@ -107,12 +108,14 @@ export const MultiSelectDropdown = ({
                 ? 'bg-gray-light'
                 : ''
             }`}
+            role="option"
             onClick={() => {
               toggleOption(option)
               setSearchText('')
             }}
             onMouseEnter={() => setHighlightedIndex(i)}
-            key={i}>
+            key={i}
+            data-testid={`${testId}-option-${option.koodiArvo}`}>
             {option.nimi}
           </li>
         ))}

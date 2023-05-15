@@ -1,4 +1,4 @@
-import { SukoAssignmentIn } from './types'
+import { AssignmentIn, SukoAssignmentIn } from './types'
 import { KoodiDtoIn, Koodisto } from './KoodistoContext'
 
 // todo: this is not localized
@@ -18,10 +18,14 @@ export const LANGUAGE_OPTIONS: KoodiDtoIn[] = [
   { nimi: 'Ruotsiksi', koodiArvo: 'sv' }
 ]
 
-export function getAssignmentTypeName(assignment: SukoAssignmentIn, koodit: KoodiDtoIn[] | undefined) {
-  const koodi = koodit?.find((type) => type.koodiArvo === assignment.assignmentTypeKoodiArvo)
+export function getKoodiLabel(koodiArvo: string, koodit: KoodiDtoIn[] | undefined) {
+  const koodi = koodit?.find((type) => type.koodiArvo === koodiArvo)
 
   return koodi?.nimi || ''
+}
+
+export function getKoodisLabel(koodiArvo: string[], koodit: KoodiDtoIn[] | undefined) {
+  return koodiArvo.map((koodi) => getKoodiLabel(koodi, koodit)).join(', ')
 }
 
 export const AIHE_KOODISTO: Koodisto = [
