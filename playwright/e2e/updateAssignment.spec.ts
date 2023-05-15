@@ -51,6 +51,10 @@ test.describe('Assignment form tests', () => {
 
     await expect(updatedAssignmentHeader).toHaveText('Testi tehtävä muokattu')
 
+    page.getByText('Tehtävätyyppi: Tekstin tiivistäminen')
+    page.getByText('Tavoitetaso:A1.2 Kehittyvä alkeiskielitaito')
+    page.getByText('Laaja-alainen osaaminen:Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, V')
+
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
