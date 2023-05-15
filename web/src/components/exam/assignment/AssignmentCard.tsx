@@ -51,7 +51,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
             <p className="text-xs text-gray-secondary">{t('assignment.tyyppi')}</p>
             <p className="text-xs text-black">
               {isSukoAssignment(assignment, exam)
-                ? getAssignmentTypeName(assignment, ctx.koodistos?.ludostehtavatyypi.koodit)
+                ? getAssignmentTypeName(assignment, ctx.koodistos.tehtavatyyppisuko)
                 : '*'}
             </p>
           </div>

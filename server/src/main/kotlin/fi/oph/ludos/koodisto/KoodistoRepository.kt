@@ -16,8 +16,8 @@ class KoodistoRepository(
 
     private val baseUrl = "https://${opintopolkuHostname}/koodisto-service/rest/json"
 
-    fun getKoodistot(koodisto: Koodisto): Array<Koodi> {
-        val url = "$baseUrl/${koodisto.koodisto}/koodi?onlyValidKoodis=true"
+    fun getKoodisto(koodisto: KoodistoName): Array<Koodi> {
+        val url = "$baseUrl/${koodisto.koodistoUri}/koodi?onlyValidKoodis=true"
         val httpGet = HttpGet(url)
         val response = httpClient.execute(httpGet)
         val entity = response.entity.content.bufferedReader().use { it.readText() }

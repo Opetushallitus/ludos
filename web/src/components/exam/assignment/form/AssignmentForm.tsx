@@ -82,7 +82,7 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     })()
   }
 
-  const assignmentTypeKoodisto = ctx.koodistos?.ludostehtavatyypi.koodit
+  const assignmentTypeKoodisto = ctx.koodistos.tehtavatyyppisuko
 
   return (
     <div className="w-10/12 pt-3">

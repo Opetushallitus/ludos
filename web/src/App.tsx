@@ -1,13 +1,13 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { LudosRoutes } from './components/routes/LudosRoutes'
-import { defaultEmptyKoodisto, KoodistoContext, KoodistoMap } from './KoodistoContext'
+import { defaultEmptyKoodistoMap, KoodistoContext, KoodistoMap } from './KoodistoContext'
 import { useTranslation } from 'react-i18next'
 
 const App = () => {
   const KoodistotContextProvider = ({ children }: { children: ReactNode }) => {
     const { i18n } = useTranslation()
-    const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodisto)
+    const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
 
     useEffect(() => {
       ;(async () => {

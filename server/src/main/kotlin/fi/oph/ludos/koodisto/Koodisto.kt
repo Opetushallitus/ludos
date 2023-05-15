@@ -1,27 +1,23 @@
 package fi.oph.ludos.koodisto
 
+import com.fasterxml.jackson.annotation.JsonValue
+
 enum class Language(val code: String) {
     FI("FI"),
     SV("SV")
 }
 
-data class Koodisto(
-    val koodisto: String,
-)
+enum class KoodistoName(@JsonValue val koodistoUri: String) {
+    OPPIAINEET_JA_OPPIMAARAT_LOPS2021("oppiaineetjaoppimaaratlops2021"),
+    LAAJA_ALAINEN_OSAAMINEN_LOPS2021("laajaalainenosaaminenlops2021"),
+    TEHTAVATYYPPI_SUKO("tehtavatyyppisuko"),
+    TAITOTASO("taitotaso"),
+    LUDOS_LUKUVUOSI("ludoslukuvuosi"),
+    LUDOS_LUKIODIPLOMI_AINE("ludoslukiodiplomiaine");
 
-val ludosKoodistos = listOf(
-    Koodisto("oppiaineetjaoppimaaratlops2021"),
-    Koodisto("laajaalainenosaaminenlops2021"),
-    Koodisto("ludostehtavatyypi"),
-    Koodisto("taitotaso"),
-    Koodisto("ludoslukuvuosi"),
-    Koodisto("ludoslukiodiplomiaine"),
-)
-
-data class KoodistoWithKoodit(
-    val name: String,
-    val koodit: List<KoodiDtoOut>
-)
+    override fun toString(): String {
+        return koodistoUri
+    }}
 
 data class KoodiDtoOut(
     val koodiArvo: String,
