@@ -24,23 +24,20 @@ export function getAssignmentTypeName(assignment: SukoAssignmentIn, koodit: Kood
   return koodi?.nimi || ''
 }
 
-export const AIHE_KOODISTO: Koodisto = {
-  name: 'aihe',
-  koodit: [
-    {
-      koodiArvo: '1',
-      nimi: 'Ihmisoikeudet'
-    },
-    {
-      koodiArvo: '2',
-      nimi: 'Media'
-    },
-    {
-      koodiArvo: '3',
-      nimi: 'Ympäristö'
-    }
-  ]
-}
+export const AIHE_KOODISTO: Koodisto = [
+  {
+    koodiArvo: '1',
+    nimi: 'Ihmisoikeudet'
+  },
+  {
+    koodiArvo: '2',
+    nimi: 'Media'
+  },
+  {
+    koodiArvo: '3',
+    nimi: 'Ympäristö'
+  }
+]
 
 export const getSelectedOptions = (selectedKoodisto: string[] | null, koodit?: KoodiDtoIn[]) =>
   koodit?.filter((koodi) => selectedKoodisto?.includes(koodi.koodiArvo)) || []

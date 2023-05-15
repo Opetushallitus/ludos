@@ -1,6 +1,6 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useRef, useState } from 'react'
 import { Icon } from './Icon'
-import { useDropdownState } from '../hooks/useDropdownState'
+import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../KoodistoContext'
 
 type MultiSelectProps = {
@@ -26,7 +26,7 @@ export const MultiSelectDropdown = ({
 
   const filteredOptions = options.filter((option) => option.nimi.toLowerCase().includes(searchText.toLowerCase()))
 
-  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdown({
     options: filteredOptions,
     selectedOptions,
     onSelectedOptionsChange: (opt) => {
@@ -74,7 +74,7 @@ export const MultiSelectDropdown = ({
             value={searchText}
             onChange={handleSearchChange}
             placeholder="Valitse.." // todo: localize
-            className="rounded-md p-1"
+            className="rounded-md"
             ref={inputRef}
           />
         </div>

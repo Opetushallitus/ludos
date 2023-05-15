@@ -1,8 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { Button } from './Button'
+import { useRef } from 'react'
 import { Icon } from './Icon'
-import { useDropdownCloseOnBlur } from '../hooks/useDropdownCloseOnBlur'
-import { useDropdownState } from '../hooks/useDropdownState'
+import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../KoodistoContext'
 
 type DropdownProps<C extends boolean | undefined> = {
@@ -28,7 +26,7 @@ export const Dropdown = ({
 }: WithReset | WithoutReset | WithOptionalReset) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdownState({
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdown({
     options,
     selectedOptions: selectedOption,
     onSelectedOptionsChange: (opt) => {

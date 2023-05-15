@@ -91,11 +91,11 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const currentAihe = watch('aiheKoodiArvo')
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvo')
 
-  const assignmentTypeKoodisto = ctx.koodistos?.tehtavatyyppisuko.koodit
-  const oppimaaraKoodisto = ctx.koodistos?.oppiaineetjaoppimaaratlops2021.koodit
-  const tavoitetasoKoodisto = ctx.koodistos?.taitotaso.koodit
-  const aiheKoodisto = AIHE_KOODISTO.koodit
-  const laajaalainenOsaaminenKoodisto = ctx.koodistos?.laajaalainenosaaminenlops2021.koodit
+  const assignmentTypeKoodisto = ctx.koodistos.tehtavatyyppisuko
+  const oppimaaraKoodisto = ctx.koodistos.oppiaineetjaoppimaaratlops2021
+  const tavoitetasoKoodisto = ctx.koodistos.taitotaso
+  const aiheKoodisto = AIHE_KOODISTO
+  const laajaalainenOsaaminenKoodisto = ctx.koodistos.laajaalainenosaaminenlops2021
 
   return (
     <div className="w-10/12 pt-3">

@@ -6,7 +6,8 @@ const KoodistoName = {
   TEHTAVATYYPPI_SUKO: 'tehtavatyyppisuko',
   TAITOTASO: 'taitotaso',
   LUDOS_LUKUVUOSI: 'ludoslukuvuosi',
-  LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine'
+  LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine',
+  AIHE: 'aihe'
 } as const
 type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
 
@@ -35,30 +36,3 @@ export const KoodistoContext = createContext<KoodistoContextValue>({
   koodistos: defaultEmptyKoodistoMap,
   setKoodistos: () => {}
 })
-
-export const defaultEmptyKoodisto: KoodistoMap = {
-  oppiaineetjaoppimaaratlops2021: {
-    name: 'oppiaineetjaoppimaaratlops2021',
-    koodit: []
-  },
-  laajaalainenosaaminenlops2021: {
-    name: 'laajaalainenosaaminenlops2021',
-    koodit: []
-  },
-  ludostehtavatyypi: {
-    name: 'ludostehtavatyypi',
-    koodit: []
-  },
-  taitotaso: {
-    name: 'taitotaso',
-    koodit: []
-  },
-  ludoslukuvuosi: {
-    name: 'ludoslukuvuosi',
-    koodit: []
-  },
-  ludoslukiodiplomiaine: {
-    name: 'ludoslukiodiplomiaine',
-    koodit: []
-  }
-}

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useContext } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
 import { Dropdown } from '../../Dropdown'
-import { getSelectedOptions, LANGUAGE_OPTIONS, sortKoodit, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
+import { LANGUAGE_OPTIONS, sortKoodit, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn, KoodistoContext } from '../../../KoodistoContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
@@ -27,7 +27,7 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
     setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
   }
 
-  const getSelectedOptions = (filter: string | null, koodisto: Koodisto) =>
+  const getSelectedOptions = (filter: string[] | null, koodisto: KoodiDtoIn[]) =>
     koodisto.filter((koodi) => filter?.includes(koodi.koodiArvo)) || []
 
   return (
@@ -37,7 +37,8 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
         <div className="mx-2 w-full md:w-[23%]">
           <p>{t('filter.oppimaara')}</p>
           <MultiSelectDropdown
-            options={koodisto.oppiaineetjaoppimaaratlops2021 || []}
+            id="oppimaaraFilter"
+            options={sortKoodit(koodisto.oppiaineetjaoppimaaratlops2021 || [])}
             selectedOptions={getSelectedOptions(filters.oppimaara, koodisto.oppiaineetjaoppimaaratlops2021)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
             canReset
@@ -47,7 +48,7 @@ export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }
           <p>{t('filter.tyyppi')}</p>
           <MultiSelectDropdown
             id="contentTypeFilter"
-            options={koodisto.tehtavatyyppisuko || []}
+            options={sortKoodit(koodisto.tehtavatyyppisuko || [])}
             selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto.tehtavatyyppisuko)}
             onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentTypeKoodiArvo', opt)}
             canReset

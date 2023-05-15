@@ -9,7 +9,7 @@ type UseDropdownStateProps = {
   inputRef?: RefObject<HTMLDivElement>
 }
 
-export const useDropdownState = ({
+export const useDropdown = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,

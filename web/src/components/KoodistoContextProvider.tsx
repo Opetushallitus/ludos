@@ -1,10 +1,10 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { defaultEmptyKoodisto, KoodistoContext, KoodistoMap } from '../KoodistoContext'
+import { defaultEmptyKoodistoMap, KoodistoContext, KoodistoMap } from '../KoodistoContext'
 
 export const KoodistotContextProvider = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation()
-  const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodisto)
+  const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
 
   useEffect(() => {
     ;(async () => {
