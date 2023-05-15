@@ -3,9 +3,12 @@ description: Starts up the frontend and backend
 runs:
   using: composite
   steps:
+    - name: Set DB_URL
+      shell: bash
+      run: echo "DB_URL=jdbc:postgresql://postgres:5432/ludos" >> $GITHUB_ENV
     - name: Build frontend and backend
       shell: bash
       run: cd server && ./gradlew build
     - name: Start backend
       shell: bash
-      run: cd server && ./gradlew bootRun --args='--spring.profiles.active=local' 2>&1 | tee bootRun.log &
+      run: cd server && echo "DB_URL=$DB_URL" && ./gradlew bootRun --args='--spring.profiles.active=local' 2>&1 | tee bootRun.log &
