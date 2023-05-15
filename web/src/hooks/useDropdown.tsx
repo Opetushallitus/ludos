@@ -58,8 +58,7 @@ export const useDropdown = ({
         switch (e.code) {
           case 'Enter':
           case 'Space':
-            e.preventDefault()
-            if (isOpen) {
+            if (isOpen && e.target !== input) {
               toggleOption(options[highlightedIndex])
             }
             break
