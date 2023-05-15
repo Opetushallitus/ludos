@@ -8,8 +8,8 @@ runs:
       run: echo "🎉 playwright action. ${{ github.event_name }} event."
     - name: '🔨 Start frontend and backend'
       uses: ./.github/actions/start_frontend_and_backend
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+#    - name: Setup tmate session
+#      uses: mxschmitt/action-tmate@v3
     - name: Run Playwright tests
       shell: bash
       run: yarn playwright
