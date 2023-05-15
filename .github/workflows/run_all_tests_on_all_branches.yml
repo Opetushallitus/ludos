@@ -1,6 +1,8 @@
 name: Pull request
 run-name: Run all tests on all branches 🦉
-on: push
+on:
+  push:
+  workflow_dispatch:
 jobs:
   tests:
     runs-on: "ubuntu-22.04"
