@@ -5,7 +5,7 @@ import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 
-export const HeaderMobile = () => {
+export const HeaderMobile = ({ username }: { username?: string }) => {
   const { t, i18n } = useTranslation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -27,7 +27,7 @@ export const HeaderMobile = () => {
                 <Header onClick={toggleMenu} />
               </div>
               <div className="bg-white p-3" onClick={(e) => e.stopPropagation}>
-                <p className="font-semibold">Yrjö Ylivoima</p>
+                <p className="font-semibold">{username || ''}</p>
                 <p className="text-gray-secondary">Ylläpitäjä</p>
               </div>
 
@@ -80,7 +80,7 @@ function Header(props: { onClick: () => void }) {
   const { t } = useTranslation()
 
   return (
-    <div className="row ml-1 w-full p-1">
+    <div className="row w-full px-2 py-1">
       <div className="col w-1/12">
         <button
           className="hover:bg-gray-200 focus:bg-gray-200 flex flex-col items-center justify-center rounded-md p-2"
@@ -89,7 +89,7 @@ function Header(props: { onClick: () => void }) {
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
-          <span className="text-[10px] text-white">Valikko</span>
+          <span className="text-[10px] text-white">{t('mobile.valikko')}</span>
         </button>
       </div>
       <div className="col mb-auto ml-4 w-9/12">
