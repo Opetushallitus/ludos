@@ -16,9 +16,11 @@ import java.util.*
 )
 interface Assignment {
     val nameFi: String
-    val contentFi: String
     val nameSv: String
+    val contentFi: String
     val contentSv: String
+    val instructionFi: String
+    val instructionSv: String
     val publishState: PublishState
     val contentType: ContentType
 }
@@ -29,6 +31,8 @@ data class SukoAssignmentDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
     val assignmentTypeKoodiArvo: String,
@@ -44,6 +48,8 @@ data class PuhviAssignmentDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
 ) : Assignment
@@ -54,6 +60,8 @@ data class LdAssignmentDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
 ) : Assignment
@@ -70,6 +78,8 @@ data class SukoAssignmentDtoOut(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
     val assignmentTypeKoodiArvo: String,
@@ -87,6 +97,8 @@ data class PuhviAssignmentDtoOut(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
     override val createdAt: Timestamp,
@@ -99,6 +111,8 @@ data class LdAssignmentDtoOut(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
     override val createdAt: Timestamp,
@@ -111,6 +125,8 @@ interface UpdateAssignmentDtoIn {
     val nameSv: String
     val contentFi: String
     val contentSv: String
+    val instructionFi: String
+    val instructionSv: String
     val publishState: PublishState
     val contentType: ContentType
 }
@@ -121,6 +137,8 @@ data class SukoUpdateAssignmentDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
     val assignmentTypeKoodiArvo: String,
@@ -136,6 +154,8 @@ data class PuhviUpdateAssignmentDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
 ) : UpdateAssignmentDtoIn
@@ -146,6 +166,8 @@ data class LdUpdateAssignmentDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
     override val publishState: PublishState,
     override val contentType: ContentType,
 ) : UpdateAssignmentDtoIn

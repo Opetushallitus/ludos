@@ -41,6 +41,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
+        val instructionFi: String,
+        val instructionSv: String,
         val publishState: PublishState,
         val contentType: ContentType,
         val assignmentTypeKoodiArvo: String,
@@ -66,6 +68,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             "nameSv": "ruotsi",
             "contentFi": "suomi",
             "contentSv": "ruotsi",
+            "instructionFi": "suomi",
+            "instructionSv": "ruotsi",
             "publishState": "PUBLISHED"
         }""".trimIndent()
 
@@ -101,8 +105,10 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "id": "${assignmentOut.id}",
                 "nameFi": "New test name",
                 "contentFi": "${assignmentOut.contentFi}",
+                "instructionFi": "${assignmentOut.instructionFi}",
                 "nameSv": "New test name",
                 "contentSv": "content",
+                "instructionSv": "${assignmentOut.instructionSv}",
                 "publishState": "PUBLISHED",
                 "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
@@ -122,13 +128,14 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     fun failAssignmentUpdate() {
         val nonExistentId = -1
-        val editedAssignmentFail =
-            """{
+        val editedAssignmentFail = """{
                 "id": "$nonExistentId",
                 "nameFi": "New test name",
                 "contentFi": "content",
+                "instructionFi": "instruction",
                 "nameSv": "New test name",
                 "contentSv": "content",
+                "instructionSv": "instruction",
                 "publishState": "PUBLISHED",
                 "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
@@ -150,6 +157,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
+        val instructionFi: String,
+        val instructionSv: String,
         val publishState: PublishState,
         val contentType: ContentType,
         val createdAt: Timestamp,
@@ -161,6 +170,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
+        val instructionFi: String,
+        val instructionSv: String,
         val publishState: PublishState,
         val contentType: ContentType,
         val exam: Exam
@@ -171,8 +182,10 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val testAssignment = TestLdIn(
             nameFi = "Lukiodiplomi assignment FI",
             contentFi = "Lukiodiplomi assignment content FI",
+            instructionFi = "Lukiodiplomi assignment instruction FI",
             nameSv = "Lukiodiplomi assignment SV",
             contentSv = "Lukiodiplomi assignment content SV",
+            instructionSv = "Lukiodiplomi assignment instruction SV",
             publishState = PublishState.PUBLISHED,
             contentType = ContentType.ASSIGNMENTS,
             exam = Exam.LD
@@ -202,6 +215,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
+        val instructionFi: String,
+        val instructionSv: String,
         val publishState: PublishState,
         val contentType: ContentType,
         val createdAt: Timestamp,
@@ -210,8 +225,19 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     fun puhviAssignmentTest() {
-        val body =
-            "{\"nameFi\":\"Puhvi assignment\",\"nameSv\":\"Puhvi assignment\",\"contentFi\":\"Puhvi assignment content\",\"contentSv\":\"Puhvi assignment content\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.ASSIGNMENTS}\",\"exam\":\"PUHVI\"}\n"
+        val body = """
+            {
+                "nameFi": "Puhvi assignment",
+                "nameSv": "Puhvi assignment",
+                "contentFi": "Puhvi assignment content",
+                "contentSv": "Puhvi assignment content",
+                "instructionFi": "Puhvi assignment instruction",
+                "instructionSv": "Puhvi assignment instruction",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "exam": "PUHVI"
+            }
+        """
         // post assignment DTO IN
         val postResult =
             mockMvc.perform(postAssignment(body)).andExpect(status().isOk()).andReturn().response.contentAsString
@@ -226,6 +252,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentOut.nameSv, "Puhvi assignment")
         assertEquals(assignmentOut.contentFi, "Puhvi assignment content")
         assertEquals(assignmentOut.contentSv, "Puhvi assignment content")
+        assertEquals(assignmentOut.instructionFi, "Puhvi assignment instruction")
+        assertEquals(assignmentOut.instructionSv, "Puhvi assignment instruction")
         assertEquals(assignmentOut.publishState, PublishState.PUBLISHED)
     }
 

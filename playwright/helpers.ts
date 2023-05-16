@@ -5,13 +5,17 @@ export async function fillAssignmentForm({
   contentTextFi,
   contentTextSv,
   nameTextFi,
-  nameTextSv
+  nameTextSv,
+  instructionTextFi,
+  instructionTextSv
 }: {
   page: Page
   nameTextFi: string
   nameTextSv: string
   contentTextFi: string
   contentTextSv: string
+  instructionTextFi: string
+  instructionTextSv: string
 }) {
   await page.getByTestId('oppimaara').click()
   await page.getByTestId('oppimaara-option-KT7').click()
@@ -33,6 +37,7 @@ export async function fillAssignmentForm({
 
   // Test searching for non-existing option
   await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
+  // eslint-disable-next-line no-magic-numbers
   await page.waitForTimeout(500) // Wait for search results to update
 
   // Verify that no options are selected
@@ -40,6 +45,7 @@ export async function fillAssignmentForm({
   expect(selectedOptions).toHaveLength(0)
 
   await page.getByTestId('laajaalainenOsaaminen-input').fill('globa')
+  // eslint-disable-next-line no-magic-numbers
   await page.waitForTimeout(500) // Wait for search results to update
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
 
@@ -53,11 +59,13 @@ export async function fillAssignmentForm({
   await page.getByTestId('laajaalainenOsaaminen-label').click()
 
   await page.getByTestId('nameFi').fill(nameTextFi)
+  await page.getByTestId('instructionFi').fill(instructionTextFi)
   await page.getByTestId('contentFi').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
   await page.getByTestId('nameSv').fill(nameTextSv)
+  await page.getByTestId('instructionSv').fill(instructionTextSv)
   await page.getByTestId('contentSv').fill(contentTextSv)
 }
 
@@ -66,13 +74,17 @@ export async function updateAssignmentForm({
   contentTextFi,
   contentTextSv,
   nameTextFi,
-  nameTextSv
+  nameTextSv,
+  instructionTextFi,
+  instructionTextSv
 }: {
   page: Page
   nameTextFi: string
   nameTextSv: string
   contentTextFi: string
   contentTextSv: string
+  instructionTextFi: string
+  instructionTextSv: string
 }) {
   await page.getByTestId('oppimaara').click()
   await page.getByTestId('oppimaara-option-KT8').click()
@@ -110,11 +122,13 @@ export async function updateAssignmentForm({
   await page.getByTestId('aihe-label').click()
 
   await page.getByTestId('nameFi').fill(nameTextFi)
+  await page.getByTestId('instructionFi').fill(instructionTextFi)
   await page.getByTestId('contentFi').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
   await page.getByTestId('nameSv').fill(nameTextSv)
+  await page.getByTestId('instructionSv').fill(instructionTextSv)
   await page.getByTestId('contentSv').fill(contentTextSv)
 }
 

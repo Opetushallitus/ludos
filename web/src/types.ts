@@ -37,6 +37,8 @@ export type AssignmentIn = {
   nameSv: string
   contentFi: string
   contentSv: string
+  instructionFi: string
+  instructionSv: string
   publishState: PublishState
   contentType: Exam
   createdAt: string

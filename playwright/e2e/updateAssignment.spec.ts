@@ -16,7 +16,9 @@ test.describe('Assignment form tests', () => {
       nameTextFi: 'Testi tehtävä',
       nameTextSv: 'Testuppgifter',
       contentTextFi: 'Testi sisältö',
-      contentTextSv: 'Testa innehåll'
+      contentTextSv: 'Testa innehåll',
+      instructionTextFi: 'Testi ohjeet',
+      instructionTextSv: 'Testa instruktioner'
     })
 
     await page.getByTestId('form-submit').click()
@@ -42,7 +44,9 @@ test.describe('Assignment form tests', () => {
       nameTextFi: 'Testi tehtävä muokattu',
       nameTextSv: 'Testuppgifter muokattu',
       contentTextFi: 'Testi sisältö muokattu',
-      contentTextSv: 'Testa innehåll muokattu'
+      contentTextSv: 'Testa innehåll muokattu',
+      instructionTextFi: 'Testi ohjeet muokattu',
+      instructionTextSv: 'Testa instruktioner muokattu'
     })
 
     await page.getByTestId('form-submit').click()

@@ -2,14 +2,16 @@ CREATE TYPE publish_state AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
 
 CREATE TABLE assignment
 (
-    assignment_id            serial PRIMARY KEY,
-    assignment_name_fi       text          NOT NULL,
-    assignment_name_sv       text          NOT NULL,
-    assignment_content_fi    text          NOT NULL,
-    assignment_content_sv    text          NOT NULL,
-    assignment_publish_state publish_state NOT NULL,
-    assignment_created_at    timestamptz   NOT NULL default now(),
-    assignment_updated_at    timestamptz   NOT NULL default now()
+    assignment_id             serial PRIMARY KEY,
+    assignment_name_fi        text          NOT NULL,
+    assignment_name_sv        text          NOT NULL,
+    assignment_content_fi     text          NOT NULL,
+    assignment_content_sv     text          NOT NULL,
+    assignment_instruction_fi text          NOT NULL,
+    assignment_instruction_sv text          NOT NULL,
+    assignment_publish_state  publish_state NOT NULL,
+    assignment_created_at     timestamptz   NOT NULL default now(),
+    assignment_updated_at     timestamptz   NOT NULL default now()
 );
 
 CREATE TABLE suko_assignment

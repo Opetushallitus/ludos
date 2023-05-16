@@ -55,6 +55,22 @@ export function ContentIconRow() {
   )
 }
 
+export function ContentInstruction({
+  language,
+  instructionFi,
+  instructionSv
+}: {
+  language: string
+  instructionFi: string
+  instructionSv: string
+}) {
+  return (
+    <div className="mb-4 mt-3">
+      <p className="text-sm font-semibold">{language === 'fi' ? instructionFi : instructionSv}</p>
+    </div>
+  )
+}
+
 export function ContentContent({
   language,
   contentFi,
@@ -64,5 +80,5 @@ export function ContentContent({
   contentFi: string
   contentSv: string
 }) {
-  return <p className="h-full pb-3">{language === 'fi' ? contentFi : contentSv}</p>
+  return <p className="h-full pb-3 text-sm">{language === 'fi' ? contentFi : contentSv}</p>
 }

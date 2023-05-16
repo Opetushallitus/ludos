@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { getKoodiLabel, getKoodisLabel } from '../../koodistoUtils'
 import { useContext, useState } from 'react'
 import { KoodistoContext } from '../../KoodistoContext'
-import { ContentContent, ContentHeader, ContentIconRow } from './ContentCommon'
+import { ContentContent, ContentHeader, ContentIconRow, ContentInstruction } from './ContentCommon'
 
 type SukoAssignmentContentProps = {
   assignment: SukoAssignmentIn
@@ -65,6 +65,15 @@ export const SukoContent = ({ assignment, contentType }: SukoAssignmentContentPr
 
         <ContentIconRow />
       </div>
+
+      <ContentInstruction
+        language={language}
+        instructionFi={assignment.instructionFi}
+        instructionSv={assignment.instructionSv}
+      />
+
+      <div className="mb-4 border-b border-gray-separator" />
+
       <ContentContent language={language} contentFi={assignment.contentFi} contentSv={assignment.contentSv} />
     </div>
   )
