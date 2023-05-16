@@ -21,7 +21,7 @@ export function ContentHeader({
       <h2 className="pb-3" data-testid="assignment-header">
         {language === 'fi' ? nameFi : nameSv}
       </h2>
-      <div>
+      <div className="hidden md:block">
         <p className="pl-2">{t('assignment.kieli')}</p>
         <Dropdown
           id="languageDropdown"
@@ -38,7 +38,7 @@ export function ContentHeader({
 export function ContentIconRow() {
   const { t } = useTranslation()
   return (
-    <div className="mt-3 flex gap-3">
+    <div className="row mt-3 w-full flex-wrap gap-3">
       <div className="flex gap-1">
         <Icon name="uusi-valilehti" color="text-green-primary" />
         <p className="text-green-primary">{t('assignment.katselunakyma')}</p>

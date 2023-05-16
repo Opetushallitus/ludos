@@ -41,7 +41,7 @@ export const Content = ({ exam }: AssignmentProps) => {
             <p>{new Date(assignment.createdAt).toLocaleDateString('fi-FI')}</p>
           </div>
           <div className="row">
-            <div className="col w-9/12 pr-5">
+            <div className="col w-full pr-5 md:w-9/12">
               <div className="row pb-3">
                 {isSukoAssignment(assignment, exam) && (
                   <SukoContent assignment={assignment} contentType={contentType} />
@@ -60,7 +60,7 @@ export const Content = ({ exam }: AssignmentProps) => {
                 </Button>
               </div>
             </div>
-            <div className="col w-3/12 border-l border-gray-separator"></div>
+            <div className="hidden w-3/12 flex-col border-l border-gray-separator md:flex" />
           </div>
         </>
       )}
