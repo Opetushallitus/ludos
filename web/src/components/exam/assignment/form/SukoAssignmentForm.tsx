@@ -51,6 +51,8 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
     } else {
       setValue('exam', exam)
       setValue('contentType', contentType.toUpperCase() as SukoAssignmentFormType['contentType'])
+      setValue('aiheKoodiArvo', [])
+      setValue('laajaalainenOsaaminenKoodiArvo', [])
     }
   }, [assignment, contentType, exam, reset, setValue])
 
@@ -157,7 +159,7 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
         </div>
 
         <div className="mb-6">
-          <FieldLabel id="aihe" name={t('form.aihe')} required />
+          <FieldLabel id="aihe" name={t('form.aihe')} />
           <MultiSelectDropdown
             id="aihe"
             options={sortKoodit(aiheKoodisto || [])}
@@ -170,7 +172,7 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
         </div>
 
         <div className="mb-6">
-          <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} required />
+          <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} />
           <MultiSelectDropdown
             id="laajaalainenOsaamine"
             options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}

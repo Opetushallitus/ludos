@@ -11,8 +11,8 @@ import java.sql.ResultSet
 @Component
 class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
     private inline fun <reified T> ResultSet.getArrayAsArray(columnLabel: String): Array<T> {
-        val array = this.getArray(columnLabel).array
-        require(array is Array<*>) { "Column '$columnLabel' is not an array" }
+        val array = this.getArray(columnLabel)?.array ?: return emptyArray()
+
         @Suppress("UNCHECKED_CAST")
         return array as Array<T>
     }

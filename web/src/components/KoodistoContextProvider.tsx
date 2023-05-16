@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { defaultEmptyKoodistoMap, KoodistoContext, KoodistoMap } from '../KoodistoContext'
+import { AIHE_KOODISTO } from '../koodistoUtils'
 
 export const KoodistotContextProvider = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation()
@@ -18,7 +19,8 @@ export const KoodistotContextProvider = ({ children }: { children: ReactNode }) 
 
         const json = await response.json()
 
-        setKoodistos(json)
+        // fixme: temporary adding constant aihe koodisto to koodistos ctx
+        setKoodistos({ ...json, aihe: AIHE_KOODISTO })
       } catch (e) {
         console.error('could not fetch koodistos', e)
       }

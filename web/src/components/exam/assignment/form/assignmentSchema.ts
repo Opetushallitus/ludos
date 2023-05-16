@@ -18,8 +18,8 @@ export const sukoAssignmentSchema = commonSchema.merge(
     assignmentTypeKoodiArvo: z.string({ required_error: 'Required' }),
     oppimaaraKoodiArvo: z.string({ required_error: 'Required' }),
     tavoitetasoKoodiArvo: z.string({ required_error: 'Required' }),
-    aiheKoodiArvo: z.array(z.string()).min(1, { message: 'Required' }),
-    laajaalainenOsaaminenKoodiArvo: z.array(z.string()).min(1, { message: 'Required' })
+    aiheKoodiArvo: z.array(z.string()),
+    laajaalainenOsaaminenKoodiArvo: z.array(z.string())
   })
 )
 
@@ -27,7 +27,7 @@ export type SukoAssignmentFormType = z.infer<typeof sukoAssignmentSchema>
 
 export const puhviAndLdAssignmentSchema = commonSchema.merge(
   z.object({
-    laajaalainenOsaaminenKoodiArvo: z.array(z.string()).min(1, { message: 'Required' }),
+    laajaalainenOsaaminenKoodiArvo: z.array(z.string()),
     lukuvuosiKoodiArvo: z.string({ required_error: 'Required' })
   })
 )

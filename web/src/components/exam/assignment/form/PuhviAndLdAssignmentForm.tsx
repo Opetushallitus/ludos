@@ -56,6 +56,7 @@ export const PuhviAndLdAssignmentForm = ({
     } else {
       setValue('exam', exam)
       setValue('contentType', contentType.toUpperCase() as PuhviAndLdAssignmentFormType['contentType'])
+      setValue('laajaalainenOsaaminenKoodiArvo', [])
     }
   }, [assignment, contentType, exam, reset, setValue])
 
@@ -122,7 +123,6 @@ export const PuhviAndLdAssignmentForm = ({
             selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
             onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvo', opt)}
             testId="laajaalainenOsaaminen"
-            canReset
           />
           {errors?.laajaalainenOsaaminenKoodiArvo && (
             <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvo.message}</p>
