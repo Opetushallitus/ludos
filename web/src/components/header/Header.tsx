@@ -17,9 +17,8 @@ const authOptions: LocaleDropdownOptions = {
   logout: { name: 'Kirjaudu ulos' }
 }
 
-export const Header = () => {
+export const Header = ({ username }: { username?: string }) => {
   const { t, i18n } = useTranslation()
-  const { data } = useFetch<{ name: string }>('auth')
   const [currentOption, setCurrentOption] = useState<string | null>(null)
 
   const currentLanguageKey = i18n.language
@@ -29,10 +28,10 @@ export const Header = () => {
   }
 
   useEffect(() => {
-    if (data && data.name) {
-      setCurrentOption(data.name)
+    if (username) {
+      setCurrentOption(username)
     }
-  }, [data])
+  }, [username])
 
   const handleOptionClick = (opt: string | null) => {
     if (opt === 'logout') {

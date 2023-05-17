@@ -6,33 +6,26 @@ import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
 import { useState } from 'react'
+import { ContentContent, ContentHeader, ContentIconRow } from './ContentCommon'
 
-type LdAssignmentContentProps = {
+type PuhviAssignmentContentProps = {
   assignment: AssignmentIn
   contentType?: string
 }
 
-export const LdAssignmentContent = ({ assignment, contentType }: LdAssignmentContentProps) => {
+export const PuhviContent = ({ assignment, contentType }: PuhviAssignmentContentProps) => {
   const { t } = useTranslation()
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
 
   return (
     <div className="col min-h-[60vh] w-full">
-      <div className="row justify-between">
-        <h2 className="pb-3" data-testid="assignment-header">
-          {assignment.nameFi}
-        </h2>
-        <div>
-          <p className="pl-2">{t('assignment.kieli')}</p>
-          <Dropdown
-            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
-            onOptionClick={(opt: string) => setLanguage(opt)}
-            options={LANGUAGE_OPTIONS}
-            testId={'language-dropdown'}
-          />
-        </div>
-      </div>
+      <ContentHeader
+        language={language}
+        nameFi={assignment.nameFi}
+        nameSv={assignment.nameSv}
+        onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+      />
       <div className="row">
         <StateTag state={assignment.publishState} />
         <span
@@ -64,22 +57,9 @@ export const LdAssignmentContent = ({ assignment, contentType }: LdAssignmentCon
           </li>
         </ul>
 
-        <div className="mt-3 flex gap-3">
-          <div className="flex gap-1">
-            <Icon name="uusi-valilehti" color="text-green-primary" />
-            <p className="text-green-primary">Katselunäkymä</p>
-          </div>
-          <div className="flex gap-1">
-            <Icon name="todistukset" color="text-green-primary" />
-            <p className="text-green-primary">Lataa pdf</p>
-          </div>
-          <div className="flex gap-1">
-            <Icon name="lisää" color="text-green-primary" />
-            <p className="text-green-primary">Lisää latauskoriin</p>
-          </div>
-        </div>
+        <ContentIconRow />
       </div>
-      <p className="h-full pb-3">{assignment.contentFi}</p>
+      <ContentContent language={language} contentFi={assignment.contentFi} contentSv={assignment.contentSv} />
     </div>
   )
 }

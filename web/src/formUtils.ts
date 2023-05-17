@@ -1,5 +1,4 @@
 import { Exam } from './types'
-import { AssignmentFormType } from './components/exam/assignment/form/assignmentSchema'
 import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
 import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
 
@@ -10,7 +9,7 @@ const doRequest = async (url: string, method: string, body?: string) =>
     headers: { 'Content-Type': 'application/json' }
   })
 
-export async function postAssignment<T>(body: AssignmentFormType): Promise<T> {
+export async function postAssignment<T>(body: T): Promise<{ id: string }> {
   const result = await doRequest('/api/assignment', 'POST', JSON.stringify(body))
 
   if (!result.ok) {
@@ -20,7 +19,7 @@ export async function postAssignment<T>(body: AssignmentFormType): Promise<T> {
   return await result.json()
 }
 
-export async function updateAssignment<T>(exam: Exam, id: number, body: AssignmentFormType): Promise<T> {
+export async function updateAssignment<T>(exam: Exam, id: number, body: T): Promise<string> {
   const result = await doRequest(`/api/assignment/${exam!.toUpperCase()}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {

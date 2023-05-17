@@ -3,17 +3,16 @@ import { Icon } from '../Icon'
 import { ContentTypesEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Dropdown } from '../Dropdown'
-import { getAssignmentTypeName, LANGUAGE_OPTIONS } from '../../koodistoUtils'
+import { getKoodiLabel, getKoodisLabel } from '../../koodistoUtils'
 import { useContext, useState } from 'react'
 import { KoodistoContext } from '../../KoodistoContext'
+import { ContentContent, ContentHeader, ContentIconRow, ContentInstruction } from './ContentCommon'
 
 type SukoAssignmentContentProps = {
   assignment: SukoAssignmentIn
   contentType?: string
 }
-
-export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmentContentProps) => {
+export const SukoContent = ({ assignment, contentType }: SukoAssignmentContentProps) => {
   const { t } = useTranslation()
   const ctx = useContext(KoodistoContext)
   const [language, setLanguage] = useState<string>('fi')
@@ -21,20 +20,12 @@ export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmen
 
   return (
     <div className="col min-h-[60vh] w-full">
-      <div className="row justify-between">
-        <h2 className="pb-3" data-testid="assignment-header">
-          {language === 'fi' ? assignment.nameFi : assignment.nameSv}
-        </h2>
-        <div>
-          <p className="pl-2">{t('assignment.kieli')}</p>
-          <Dropdown
-            currentOption={LANGUAGE_OPTIONS.find((opt) => opt.key === language)?.value || null}
-            onOptionClick={(opt: string) => setLanguage(opt)}
-            options={LANGUAGE_OPTIONS}
-            testId={'language-dropdown'}
-          />
-        </div>
-      </div>
+      <ContentHeader
+        language={language}
+        nameFi={assignment.nameFi}
+        nameSv={assignment.nameSv}
+        onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+      />
       <div className="row">
         <StateTag state={assignment.publishState} />
         <span
@@ -55,39 +46,42 @@ export const SukoAssignmentContent = ({ assignment, contentType }: SukoAssignmen
           <ul>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
-              {getAssignmentTypeName(assignment, ctx.koodistos.tehtavatyyppisuko)}
+              {getKoodiLabel(assignment.assignmentTypeKoodiArvo, ctx.koodistos.tehtavatyyppisuko)}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
-              *CEFR*
+              {getKoodiLabel(assignment.tavoitetasoKoodiArvo, ctx.koodistos.taitotaso)}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
-              *topic*
+              {assignment.aiheKoodiArvos.length > 0
+                ? getKoodisLabel(assignment.aiheKoodiArvos, ctx.koodistos.aihe)
+                : '-'}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
-              *laaja-alainen osaaminen*
+              {assignment.laajaalainenOsaaminenKoodiArvos.length > 0
+                ? getKoodisLabel(
+                    assignment.laajaalainenOsaaminenKoodiArvos,
+                    ctx.koodistos.laajaalainenosaaminenlops2021
+                  )
+                : '-'}
             </li>
           </ul>
         )}
 
-        <div className="mt-3 flex gap-3">
-          <div className="flex gap-1">
-            <Icon name="uusi-valilehti" color="text-green-primary" />
-            <p className="text-green-primary">{t('assignment.katselunakyma')}</p>
-          </div>
-          <div className="flex gap-1">
-            <Icon name="todistukset" color="text-green-primary" />
-            <p className="text-green-primary">{t('assignment.lataapdf')}</p>
-          </div>
-          <div className="flex gap-1">
-            <Icon name="lisää" color="text-green-primary" />
-            <p className="text-green-primary">{t('assignment.lisaalatauskoriin')}</p>
-          </div>
-        </div>
+        <ContentIconRow />
       </div>
-      <p className="h-full pb-3">{language === 'fi' ? assignment.contentFi : assignment.contentSv}</p>
+
+      <ContentInstruction
+        language={language}
+        instructionFi={assignment.instructionFi}
+        instructionSv={assignment.instructionSv}
+      />
+
+      <div className="mb-4 border-b border-gray-separator" />
+
+      <ContentContent language={language} contentFi={assignment.contentFi} contentSv={assignment.contentSv} />
     </div>
   )
 }

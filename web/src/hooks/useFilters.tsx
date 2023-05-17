@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
 export type FiltersType = {
-  oppimaara: string | null
-  assignmentTypeKoodiArvo: string | null
-  aihe: string | null
+  oppimaara: string[] | null
+  assignmentTypeKoodiArvo: string[] | null
+  aihe: string[] | null
   orderBy: 'assignment_created_at'
   orderDirection: 'asc' | 'desc'
 }

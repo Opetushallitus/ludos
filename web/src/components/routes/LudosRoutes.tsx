@@ -6,7 +6,7 @@ import { newKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey, updateKey 
 import { Frontpage } from '../frontpage/Frontpage'
 import { Exams } from '../exam/Exams'
 import { AssignmentForm } from '../exam/assignment/form/AssignmentForm'
-import { Assignment } from '../assignmentpage/Assignment'
+import { Content } from '../contentpage/Content'
 import { HeaderMobile } from '../header/HeaderMobile'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { useTranslation } from 'react-i18next'
@@ -14,15 +14,20 @@ import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { Exam } from '../../types'
 import { CertificateForm } from '../exam/certificate/form/CertificateForm'
 import { InstructionForm } from '../exam/instruction/form/InstructionForm'
+import { useFetch } from '../../hooks/useFetch'
 
 export const LudosRoutes = () => {
   const { t } = useTranslation()
+  const { data } = useFetch<{ name: string }>('auth')
+
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   return (
-    <Layout header={isMobile ? <HeaderMobile /> : <Header />} footer={<Footer t={t} />}>
+    <Layout
+      header={isMobile ? <HeaderMobile username={data?.name} /> : <Header username={data?.name} />}
+      footer={<Footer t={t} />}>
       <Routes>
-        <Route path={`/${frontpageKey}`} element={<Frontpage />} />
+        <Route path={`/${frontpageKey}`} element={<Frontpage username={data?.name} />} />
         <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
         <Route
           path={`/${feedbackKey}`}
@@ -40,7 +45,7 @@ export const LudosRoutes = () => {
           <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
           <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
           <Route index path={':contentType?'} element={<Exams exam={Exam.Suko} />} />
-          <Route path={':contentType/:id'} element={<Assignment exam={Exam.Suko} />} />
+          <Route path={':contentType/:id'} element={<Content exam={Exam.Suko} />} />
         </Route>
         <Route path={`/${puhviKey}`}>
           <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
@@ -50,7 +55,7 @@ export const LudosRoutes = () => {
           <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
           <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
           <Route index path={':contentType?'} element={<Exams exam={Exam.Puhvi} />} />
-          <Route path={':contentType/:id'} element={<Assignment exam={Exam.Puhvi} />} />
+          <Route path={':contentType/:id'} element={<Content exam={Exam.Puhvi} />} />
         </Route>
         <Route path={`/${ldKey}`}>
           <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
@@ -60,7 +65,7 @@ export const LudosRoutes = () => {
           <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
           <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
           <Route index path={':contentType?'} element={<Exams exam={Exam.Ld} />} />
-          <Route path={':contentType/:id'} element={<Assignment exam={Exam.Ld} />} />
+          <Route path={':contentType/:id'} element={<Content exam={Exam.Ld} />} />
         </Route>
 
         <Route

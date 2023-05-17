@@ -13,7 +13,7 @@ export const FormButtonRow = ({
   const { t } = useTranslation()
 
   return (
-    <div className="mt-4 flex justify-end gap-3">
+    <div className="row mt-4 flex-wrap justify-center gap-3 md:justify-end">
       <Button variant="buttonGhost" type="button" onClick={onCancelClick} testId="form-cancel">
         {t('button.peruuta')}
       </Button>

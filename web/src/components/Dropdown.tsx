@@ -1,12 +1,13 @@
-import { useState } from 'react'
-import { Button } from './Button'
+import { useRef } from 'react'
 import { Icon } from './Icon'
-import { useDropdownCloseOnBlur } from '../hooks/useDropdownCloseOnBlur'
+import { useDropdown } from '../hooks/useDropdown'
+import { KoodiDtoIn } from '../KoodistoContext'
 
 type DropdownProps<C extends boolean | undefined> = {
-  currentOption: string | null
-  options: { key: string; value: string }[]
-  onOptionClick: (option: C extends true ? string | null : string) => void
+  id: string
+  options: KoodiDtoIn[]
+  selectedOption?: KoodiDtoIn
+  onSelectedOptionsChange: (option: C extends true ? string | null : string) => void
   canReset?: C
   testId?: string
 }
@@ -16,58 +17,84 @@ type WithoutReset = DropdownProps<false>
 type WithOptionalReset = DropdownProps<undefined>
 
 export const Dropdown = ({
-  currentOption,
+  id,
+  selectedOption,
   options,
-  onOptionClick,
+  onSelectedOptionsChange,
   canReset,
   testId
 }: WithReset | WithoutReset | WithOptionalReset) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useDropdownCloseOnBlur(false, setIsOpen)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdown({
+    options,
+    selectedOptions: selectedOption,
+    onSelectedOptionsChange: (opt) => {
+      if (opt instanceof Array) {
+        return
+      }
+      onSelectedOptionsChange(opt.koodiArvo)
+    },
+    containerRef
+  })
 
   return (
-    <div className="relative mx-2 mb-3 mt-1 border border-gray-secondary" ref={dropdownRef}>
-      <Button
-        className="flex w-full items-center justify-between bg-white px-2 py-1"
-        onClick={() => setIsOpen(!isOpen)}
-        data-testid={testId}
-        variant="buttonGhost">
-        {currentOption ? (
-          <>
-            {currentOption}
-            {canReset ? (
-              <Icon
-                name="sulje"
-                color="text-black"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onOptionClick(null)
-                }}
-              />
-            ) : (
-              <Icon name="laajenna" color="text-black" />
-            )}
-          </>
-        ) : (
-          <>
-            <span className="text-gray-secondary">Valitse...</span>
+    <div
+      className="relative mb-3 mt-1 border border-gray-secondary"
+      ref={containerRef}
+      onBlur={(e) => {
+        e.preventDefault()
+        setIsOpen(false)
+      }}
+      tabIndex={0}>
+      <div id={id} className="flex bg-white px-2" role="button" onClick={() => setIsOpen(!isOpen)} data-testid={testId}>
+        <div className="row w-full flex-wrap gap-2 py-1">
+          {selectedOption ? (
+            <div className="flex w-auto flex-col">
+              <div className="my-auto flex items-center">{selectedOption.nimi}</div>
+            </div>
+          ) : (
+            <>
+              <span className="text-gray-secondary">Valitse...</span>
+            </>
+          )}
+        </div>
+        <div className="mt-1">
+          {canReset ? (
+            <Icon
+              name="sulje"
+              color="text-black"
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelectedOptionsChange(null)
+              }}
+            />
+          ) : (
             <Icon name="laajenna" color="text-black" />
-          </>
-        )}
-      </Button>
+          )}
+        </div>
+      </div>
       <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
         {options.map((option, i) => (
           <li
-            className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
-              option.value === currentOption ? 'text-green-primary' : ''
+            className={`cursor-pointer px-3 ${
+              selectedOption === option ? 'bg-green-primary text-white hover:text-white' : ''
+            } ${
+              i === highlightedIndex && selectedOption === option
+                ? '!bg-green-light'
+                : i === highlightedIndex
+                ? 'bg-gray-light'
+                : ''
             }`}
             onClick={() => {
-              onOptionClick(option.key)
+              onSelectedOptionsChange(option.koodiArvo)
               setIsOpen(false)
             }}
+            onMouseEnter={() => setHighlightedIndex(i)}
             key={i}
-            data-testid={`${testId}-option-${option.key}`}>
-            {option.value}
+            role="option"
+            data-testid={`${testId}-option-${option.koodiArvo}`}>
+            {option.nimi}
           </li>
         ))}
       </ul>

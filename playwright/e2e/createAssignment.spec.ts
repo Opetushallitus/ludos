@@ -14,7 +14,9 @@ test.describe('Assignment form tests', () => {
       nameTextFi: 'Testi tehtävä',
       nameTextSv: 'Testuppgifter',
       contentTextFi: 'Testi sisältö',
-      contentTextSv: 'Testa innehåll'
+      contentTextSv: 'Testa innehåll',
+      instructionTextFi: 'Testi ohje',
+      instructionTextSv: 'Testa instruktion'
     })
 
     await page.getByTestId('form-submit').click()

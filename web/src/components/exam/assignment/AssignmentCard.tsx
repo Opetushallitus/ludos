@@ -8,7 +8,7 @@ import { isSukoAssignment } from './assignmentUtils'
 import { toLocaleDate } from '../../../formatUtils'
 import { KoodistoContext } from '../../../KoodistoContext'
 import { useContext } from 'react'
-import { getAssignmentTypeName } from '../../../koodistoUtils'
+import { getKoodiLabel } from '../../../koodistoUtils'
 
 type AssignmentCardProps = {
   language: string
@@ -45,13 +45,15 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
         <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-6/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">
           <div>
             <p className="text-xs text-gray-secondary">{t('assignment.oppimaara')}</p>
-            <p className="text-xs text-black">*oppimäärä*</p>
+            <p className="text-xs text-black">
+              {getKoodiLabel(assignment.oppimaaraKoodiArvo, ctx.koodistos.oppiaineetjaoppimaaratlops2021)}
+            </p>
           </div>
           <div>
             <p className="text-xs text-gray-secondary">{t('assignment.tyyppi')}</p>
             <p className="text-xs text-black">
               {isSukoAssignment(assignment, exam)
-                ? getAssignmentTypeName(assignment, ctx.koodistos.tehtavatyyppisuko)
+                ? getKoodiLabel(assignment.assignmentTypeKoodiArvo, ctx.koodistos.tehtavatyyppisuko)
                 : '*'}
             </p>
           </div>

@@ -37,10 +37,17 @@ export type AssignmentIn = {
   nameSv: string
   contentFi: string
   contentSv: string
+  instructionFi: string
+  instructionSv: string
   publishState: PublishState
   contentType: Exam
   createdAt: string
   updatedAt: string
+  aiheKoodiArvos: string[]
+  assignmentTypeKoodiArvo: string
+  laajaalainenOsaaminenKoodiArvos: string[]
+  oppimaaraKoodiArvo: string
+  tavoitetasoKoodiArvo: string
 }
 
 export type SukoAssignmentIn = AssignmentIn & {
