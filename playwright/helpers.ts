@@ -37,16 +37,14 @@ export async function fillAssignmentForm({
 
   // Test searching for non-existing option
   await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
-  // eslint-disable-next-line no-magic-numbers
-  await page.waitForTimeout(500) // Wait for search results to update
 
   // Verify that no options are selected
   const selectedOptions = await page.$$('li[role="option"][aria-selected="true"]')
   expect(selectedOptions).toHaveLength(0)
 
+  // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
   await page.getByTestId('laajaalainenOsaaminen-input').fill('globa')
-  // eslint-disable-next-line no-magic-numbers
-  await page.waitForTimeout(500) // Wait for search results to update
+
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
 
   // Close dropdown onBlur
