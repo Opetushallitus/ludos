@@ -38,8 +38,8 @@ data class SukoAssignmentDtoIn(
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String,
-    val aiheKoodiArvo: Array<String>,
-    val laajaalainenOsaaminenKoodiArvo: Array<String>,
+    val aiheKoodiArvos: Array<String>,
+    val laajaalainenOsaaminenKoodiArvos: Array<String>,
 ) : Assignment
 
 @JsonTypeName("PUHVI")
@@ -85,8 +85,8 @@ data class SukoAssignmentDtoOut(
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String,
-    val aiheKoodiArvo: Array<String>,
-    val laajaalainenOsaaminenKoodiArvo: Array<String>,
+    val aiheKoodiArvos: Array<String>,
+    val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Assignment, AssignmentOut
@@ -144,8 +144,8 @@ data class SukoUpdateAssignmentDtoIn(
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String,
-    val aiheKoodiArvo: Array<String>,
-    val laajaalainenOsaaminenKoodiArvo: Array<String>,
+    val aiheKoodiArvos: Array<String>,
+    val laajaalainenOsaaminenKoodiArvos: Array<String>,
 ) : UpdateAssignmentDtoIn
 
 data class PuhviUpdateAssignmentDtoIn(

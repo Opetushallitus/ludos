@@ -43,9 +43,9 @@ export type AssignmentIn = {
   contentType: Exam
   createdAt: string
   updatedAt: string
-  aiheKoodiArvo: string[]
+  aiheKoodiArvos: string[]
   assignmentTypeKoodiArvo: string
-  laajaalainenOsaaminenKoodiArvo: string[]
+  laajaalainenOsaaminenKoodiArvos: string[]
   oppimaaraKoodiArvo: string
   tavoitetasoKoodiArvo: string
 }

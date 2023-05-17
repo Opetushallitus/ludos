@@ -16,9 +16,9 @@ const sukoData = {
   publishState: 'PUBLISHED',
   exam: 'SUKO',
   contentType: '',
-  aiheKoodiArvo: ['1', '2'],
+  aiheKoodiArvos: ['1', '2'],
   assignmentTypeKoodiArvo: '001',
-  laajaalainenOsaaminenKoodiArvo: ['04'],
+  laajaalainenOsaaminenKoodiArvos: ['04'],
   oppimaaraKoodiArvo: 'MU',
   tavoitetasoKoodiArvo: '0008'
 }

@@ -10,7 +10,7 @@ import java.sql.ResultSet
 
 @Component
 class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
-    private inline fun <reified T> ResultSet.getArrayAsArray(columnLabel: String): Array<T> {
+    private inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
         val array = this.getArray(columnLabel)?.array ?: return emptyArray()
 
         @Suppress("UNCHECKED_CAST")
@@ -31,8 +31,8 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("suko_assignment_type_koodi_arvo"),
             rs.getString("suko_oppimaara_koodi_arvo"),
             rs.getString("suko_tavoitetaso_koodi_arvo"),
-            rs.getArrayAsArray<String>("suko_aihe_koodi_arvo"),
-            rs.getArrayAsArray<String>("suko_laajaalainen_osaaminen_koodi_arvo"),
+            rs.getKotlinArray<String>("suko_aihe_koodi_arvos"),
+            rs.getKotlinArray<String>("suko_laajaalainen_osaaminen_koodi_arvos"),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at")
         )
@@ -143,11 +143,11 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             |assignment_instruction_fi,
             |assignment_instruction_sv,
             |assignment_publish_state,
-            |suko_aihe_koodi_arvo, 
+            |suko_aihe_koodi_arvos, 
             |suko_assignment_type_koodi_arvo, 
             |suko_oppimaara_koodi_arvo, 
             |suko_tavoitetaso_koodi_arvo,
-            |suko_laajaalainen_osaaminen_koodi_arvo) 
+            |suko_laajaalainen_osaaminen_koodi_arvos) 
             |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?) 
             |RETURNING assignment_id, assignment_created_at, assignment_updated_at""".trimMargin(),
         { rs: ResultSet, _: Int ->
@@ -164,8 +164,8 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 assignment.assignmentTypeKoodiArvo,
                 assignment.oppimaaraKoodiArvo,
                 assignment.tavoitetasoKoodiArvo,
-                assignment.aiheKoodiArvo,
-                assignment.laajaalainenOsaaminenKoodiArvo,
+                assignment.aiheKoodiArvos,
+                assignment.laajaalainenOsaaminenKoodiArvos,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at")
             )
@@ -177,11 +177,11 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
         assignment.instructionFi,
         assignment.instructionSv,
         assignment.publishState.toString(),
-        assignment.aiheKoodiArvo,
+        assignment.aiheKoodiArvos,
         assignment.assignmentTypeKoodiArvo,
         assignment.oppimaaraKoodiArvo,
         assignment.tavoitetasoKoodiArvo,
-        assignment.laajaalainenOsaaminenKoodiArvo
+        assignment.laajaalainenOsaaminenKoodiArvos
     )[0]
 
     fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut = jdbcTemplate.query(
@@ -308,8 +308,8 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
                 |assignment_instruction_fi = ?,
                 |assignment_instruction_sv = ?,
                 |assignment_publish_state = ?::publish_state,
-                |suko_aihe_koodi_arvo = ?,
-                |suko_laajaalainen_osaaminen_koodi_arvo = ?,
+                |suko_aihe_koodi_arvos = ?,
+                |suko_laajaalainen_osaaminen_koodi_arvos = ?,
                 |suko_assignment_type_koodi_arvo = ?,
                 |suko_oppimaara_koodi_arvo = ?,
                 |suko_tavoitetaso_koodi_arvo = ?,
@@ -326,8 +326,8 @@ class AssignmentRepository(private val jdbcTemplate: JdbcTemplate) {
             assignment.instructionFi,
             assignment.instructionSv,
             assignment.publishState.toString(),
-            assignment.aiheKoodiArvo,
-            assignment.laajaalainenOsaaminenKoodiArvo,
+            assignment.aiheKoodiArvos,
+            assignment.laajaalainenOsaaminenKoodiArvos,
             assignment.assignmentTypeKoodiArvo,
             assignment.oppimaaraKoodiArvo,
             assignment.tavoitetasoKoodiArvo,

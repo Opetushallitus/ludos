@@ -56,7 +56,7 @@ export const PuhviAndLdAssignmentForm = ({
     } else {
       setValue('exam', exam)
       setValue('contentType', contentType.toUpperCase() as PuhviAndLdAssignmentFormType['contentType'])
-      setValue('laajaalainenOsaaminenKoodiArvo', [])
+      setValue('laajaalainenOsaaminenKoodiArvos', [])
     }
   }, [assignment, contentType, exam, reset, setValue])
 
@@ -82,7 +82,7 @@ export const PuhviAndLdAssignmentForm = ({
   }
 
   const handleMultiselectOptionChange = (
-    fieldName: 'laajaalainenOsaaminenKoodiArvo',
+    fieldName: 'laajaalainenOsaaminenKoodiArvos',
     selectedOptions: KoodiDtoIn[]
   ) => {
     setValue(
@@ -91,7 +91,7 @@ export const PuhviAndLdAssignmentForm = ({
     )
   }
 
-  const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvo')
+  const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const currentLukuvuosi = watch('lukuvuosiKoodiArvo')
 
   const lukuvuosiKoodisto = ctx.koodistos.ludoslukuvuosi
@@ -121,11 +121,11 @@ export const PuhviAndLdAssignmentForm = ({
             id="laajaalainenOsaamine"
             options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}
             selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvo', opt)}
+            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
             testId="laajaalainenOsaaminen"
           />
-          {errors?.laajaalainenOsaaminenKoodiArvo && (
-            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvo.message}</p>
+          {errors?.laajaalainenOsaaminenKoodiArvos && (
+            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvos.message}</p>
           )}
         </div>
 

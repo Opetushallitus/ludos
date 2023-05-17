@@ -48,8 +48,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val assignmentTypeKoodiArvo: String,
         val oppimaaraKoodiArvo: String,
         val tavoitetasoKoodiArvo: String,
-        val aiheKoodiArvo: Array<String>,
-        val laajaalainenOsaaminenKoodiArvo: Array<String>,
+        val aiheKoodiArvos: Array<String>,
+        val laajaalainenOsaaminenKoodiArvos: Array<String>,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
@@ -62,8 +62,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             "assignmentTypeKoodiArvo": "003",
             "oppimaaraKoodiArvo": "ET",
             "tavoitetasoKoodiArvo": "04",
-            "aiheKoodiArvo": ["02", "03"],
-            "laajaalainenOsaaminenKoodiArvo": ["06", "03"],
+            "aiheKoodiArvos": ["02", "03"],
+            "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
             "nameFi": "suomi",
             "nameSv": "ruotsi",
             "contentFi": "suomi",
@@ -93,10 +93,10 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentIn.assignmentTypeKoodiArvo, assignmentOut.assignmentTypeKoodiArvo)
         assertEquals(assignmentIn.oppimaaraKoodiArvo, assignmentOut.oppimaaraKoodiArvo)
         assertEquals(assignmentIn.tavoitetasoKoodiArvo, assignmentOut.tavoitetasoKoodiArvo)
-        assertEquals(assignmentIn.aiheKoodiArvo[0], assignmentOut.aiheKoodiArvo[0])
-        assertEquals(assignmentIn.aiheKoodiArvo[1], assignmentOut.aiheKoodiArvo[1])
-        assertEquals(assignmentIn.laajaalainenOsaaminenKoodiArvo[0], assignmentOut.laajaalainenOsaaminenKoodiArvo[0])
-        assertEquals(assignmentIn.laajaalainenOsaaminenKoodiArvo[1], assignmentOut.laajaalainenOsaaminenKoodiArvo[1])
+        assertEquals(assignmentIn.aiheKoodiArvos[0], assignmentOut.aiheKoodiArvos[0])
+        assertEquals(assignmentIn.aiheKoodiArvos[1], assignmentOut.aiheKoodiArvos[1])
+        assertEquals(assignmentIn.laajaalainenOsaaminenKoodiArvos[0], assignmentOut.laajaalainenOsaaminenKoodiArvos[0])
+        assertEquals(assignmentIn.laajaalainenOsaaminenKoodiArvos[1], assignmentOut.laajaalainenOsaaminenKoodiArvos[1])
         assertEquals(assignmentIn.createdAt, assignmentOut.createdAt)
         assertEquals(assignmentIn.updatedAt, assignmentOut.updatedAt)
 
@@ -114,8 +114,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
                 "tavoitetasoKoodiArvo": "04",
-                "aiheKoodiArvo": ["2", "3"],
-                "laajaalainenOsaaminenKoodiArvo": ["06", "03"]
+                "aiheKoodiArvos": ["2", "3"],
+                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
             }"""
 
         val updatedAssignmentId =
@@ -141,8 +141,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
                 "tavoitetasoKoodiArvo": "04",
-                "aiheKoodiArvo": ["2", "3"],
-                "laajaalainenOsaaminenKoodiArvo": ["06", "03"]
+                "aiheKoodiArvos": ["2", "3"],
+                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
             }"""
 
         val failUpdate = mockMvc.perform(updateAssignment(Exam.SUKO, nonExistentId, editedAssignmentFail))

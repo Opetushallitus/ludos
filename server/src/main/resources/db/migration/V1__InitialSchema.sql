@@ -16,11 +16,11 @@ CREATE TABLE assignment
 
 CREATE TABLE suko_assignment
 (
-    suko_aihe_koodi_arvo                   text[] NOT NULL,
-    suko_laajaalainen_osaaminen_koodi_arvo text[] NOT NULL,
-    suko_assignment_type_koodi_arvo        text   NOT NULL,
-    suko_oppimaara_koodi_arvo              text   NOT NULL,
-    suko_tavoitetaso_koodi_arvo            text   NOT NULL,
+    suko_aihe_koodi_arvos                   text[] NOT NULL,
+    suko_laajaalainen_osaaminen_koodi_arvos text[] NOT NULL,
+    suko_assignment_type_koodi_arvo         text   NOT NULL,
+    suko_oppimaara_koodi_arvo               text   NOT NULL,
+    suko_tavoitetaso_koodi_arvo             text   NOT NULL,
     PRIMARY KEY (assignment_id)
 ) INHERITS (assignment);
 

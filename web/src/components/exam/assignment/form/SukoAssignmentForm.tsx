@@ -51,8 +51,8 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
     } else {
       setValue('exam', exam)
       setValue('contentType', contentType.toUpperCase() as SukoAssignmentFormType['contentType'])
-      setValue('aiheKoodiArvo', [])
-      setValue('laajaalainenOsaaminenKoodiArvo', [])
+      setValue('aiheKoodiArvos', [])
+      setValue('laajaalainenOsaaminenKoodiArvos', [])
     }
   }, [assignment, contentType, exam, reset, setValue])
 
@@ -86,8 +86,8 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
 
   const currentOppimaara = watch('oppimaaraKoodiArvo')
   const currentTavoitetaso = watch('tavoitetasoKoodiArvo')
-  const currentAihe = watch('aiheKoodiArvo')
-  const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvo')
+  const currentAihe = watch('aiheKoodiArvos')
+  const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
 
   const assignmentTypeKoodisto = ctx.koodistos.tehtavatyyppisuko
   const oppimaaraKoodisto = ctx.koodistos.oppiaineetjaoppimaaratlops2021
@@ -164,11 +164,11 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
             id="aihe"
             options={sortKoodit(aiheKoodisto || [])}
             selectedOptions={getSelectedOptions(currentAihe, aiheKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvo', opt)}
+            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvos', opt)}
             testId="aihe"
             canReset
           />
-          {errors?.aiheKoodiArvo && <p className="text-green-primary">{errors.aiheKoodiArvo.message}</p>}
+          {errors?.aiheKoodiArvos && <p className="text-green-primary">{errors.aiheKoodiArvos.message}</p>}
         </div>
 
         <div className="mb-6">
@@ -177,12 +177,12 @@ export const SukoAssignmentForm = ({ action, assignment, contentType, pathname }
             id="laajaalainenOsaamine"
             options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}
             selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvo', opt)}
+            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
             testId="laajaalainenOsaaminen"
             canReset
           />
-          {errors?.laajaalainenOsaaminenKoodiArvo && (
-            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvo.message}</p>
+          {errors?.laajaalainenOsaaminenKoodiArvos && (
+            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvos.message}</p>
           )}
         </div>
 

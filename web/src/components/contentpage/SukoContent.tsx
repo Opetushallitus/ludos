@@ -54,12 +54,17 @@ export const SukoContent = ({ assignment, contentType }: SukoAssignmentContentPr
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
-              {assignment.aiheKoodiArvo.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvo, ctx.koodistos.aihe) : '-'}
+              {assignment.aiheKoodiArvos.length > 0
+                ? getKoodisLabel(assignment.aiheKoodiArvos, ctx.koodistos.aihe)
+                : '-'}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
-              {assignment.laajaalainenOsaaminenKoodiArvo.length > 0
-                ? getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvo, ctx.koodistos.laajaalainenosaaminenlops2021)
+              {assignment.laajaalainenOsaaminenKoodiArvos.length > 0
+                ? getKoodisLabel(
+                    assignment.laajaalainenOsaaminenKoodiArvos,
+                    ctx.koodistos.laajaalainenosaaminenlops2021
+                  )
                 : '-'}
             </li>
           </ul>
