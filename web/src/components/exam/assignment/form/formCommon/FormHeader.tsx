@@ -1,5 +1,5 @@
-import { ContentTypeTranslationFinnish } from '../exam/assignment/assignmentUtils'
-import { AssignmentIn, ContentType, ContentTypeKeys, ContentTypesSingular } from '../../types'
+import { ContentTypeTranslationFinnish } from '../../assignmentUtils'
+import { AssignmentIn, ContentType, ContentTypeKeys, ContentTypesSingular } from '../../../../../types'
 import { useTranslation } from 'react-i18next'
 
 export const FormHeader = ({

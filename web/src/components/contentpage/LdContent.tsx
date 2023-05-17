@@ -1,13 +1,14 @@
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
-import { AssignmentIn } from '../../types'
+import { LdAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { ContentContent, ContentHeader, ContentIconRow } from './ContentCommon'
+import { useKoodisto } from '../../hooks/useKoodisto'
 
 type LdAssignmentContentProps = {
-  assignment: AssignmentIn
+  assignment: LdAssignmentIn
   contentType?: string
 }
 
@@ -15,6 +16,8 @@ export const LdContent = ({ assignment, contentType }: LdAssignmentContentProps)
   const { t } = useTranslation()
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
+
+  const { getKoodisLabel, getKoodiLabel } = useKoodisto()
 
   return (
     <div className="col min-h-[60vh] w-full">
@@ -42,16 +45,16 @@ export const LdContent = ({ assignment, contentType }: LdAssignmentContentProps)
       <div className="my-3 bg-gray-bg p-3">
         <ul>
           <li>
-            <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
-            *CEFR*
+            <span className="pr-1 font-semibold">{t('assignment.lukuvuosi')}:</span>
+            {getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi')}
           </li>
           <li>
-            <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
-            *topic*
+            <span className="pr-1 font-semibold">{t('assignment.aine')}:</span>
+            {getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine')}
           </li>
           <li>
             <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
-            *laaja-alainen osaaminen*
+            {getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')}
           </li>
         </ul>
 

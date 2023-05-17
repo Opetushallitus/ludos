@@ -13,7 +13,9 @@ enum class KoodistoName(@JsonValue val koodistoUri: String) {
     TEHTAVATYYPPI_SUKO("tehtavatyyppisuko"),
     TAITOTASO("taitotaso"),
     LUDOS_LUKUVUOSI("ludoslukuvuosi"),
-    LUDOS_LUKIODIPLOMI_AINE("ludoslukiodiplomiaine");
+    LUDOS_LUKIODIPLOMI_AINE("ludoslukiodiplomiaine"),
+    TEHTAVATYYPPI_PUHVI("tehtavatyyppipuhvi"),
+    AIHE_SUKO("aihesuko");
 
     override fun toString(): String {
         return koodistoUri

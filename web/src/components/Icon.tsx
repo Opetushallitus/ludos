@@ -9,7 +9,7 @@ type IconProps = {
   customClass?: string
 }
 
-type Icons =
+export type Icons =
   | 'koetehtavat'
   | 'ohjeet'
   | 'todistukset'

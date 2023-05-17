@@ -17,13 +17,13 @@ export const navigationPages: NavigationPages = {
     titleKey: 'suko',
     path: `/${sukoKey}`
   },
-  puhvi: {
-    titleKey: 'puhvi',
-    path: `/${puhviKey}`
-  },
   ld: {
     titleKey: 'ld',
     path: `/${ldKey}`
+  },
+  puhvi: {
+    titleKey: 'puhvi',
+    path: `/${puhviKey}`
   },
   palautteet: {
     titleKey: 'palautteet',

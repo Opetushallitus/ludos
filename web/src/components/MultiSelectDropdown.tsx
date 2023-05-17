@@ -2,6 +2,7 @@ import { ChangeEvent, useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../KoodistoContext'
+import { useTranslation } from 'react-i18next'
 
 type MultiSelectProps = {
   id: string
@@ -20,6 +21,7 @@ export const MultiSelectDropdown = ({
   testId,
   canReset = false
 }: MultiSelectProps) => {
+  const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [searchText, setSearchText] = useState<string>('')
@@ -48,6 +50,15 @@ export const MultiSelectDropdown = ({
       tabIndex={0}>
       <div id={id} className="flex bg-white px-2" role="button" data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
+          <input
+            type="search"
+            value={searchText}
+            onChange={handleSearchChange}
+            placeholder={t('filter.valitse') as string}
+            className="w-full rounded-md"
+            ref={inputRef}
+            data-testid={`${testId}-input`}
+          />
           {selectedOptions.length > 0 && (
             <>
               {selectedOptions.map((opt, i) => (
@@ -73,15 +84,6 @@ export const MultiSelectDropdown = ({
               ))}
             </>
           )}
-          <input
-            type="search"
-            value={searchText}
-            onChange={handleSearchChange}
-            placeholder="Valitse.." // todo: localize
-            className="w-10/12 rounded-md"
-            ref={inputRef}
-            data-testid={`${testId}-input`}
-          />
         </div>
         <div className="mt-1">
           {selectedOptions.length > 0 && canReset ? (

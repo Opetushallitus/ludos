@@ -1,6 +1,5 @@
-import { Button } from '../Button'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { newKey, navigationPages } from '../routes/routes'
+import { useNavigate, useParams } from 'react-router-dom'
+import { navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
 import { ContentTypes, Exam, ContentType } from '../../types'
 import { Tabs } from '../Tabs'
@@ -18,8 +17,6 @@ type ExamProps = {
 
 export const Exams = ({ exam }: ExamProps) => {
   const { t } = useTranslation()
-  const location = useLocation()
-  const navigate = useNavigate()
   const { contentType } = useParams<{ contentType: string }>()
 
   const defaultContentType = (ContentTypeTranslationFinnish[contentType!] as ContentType) || ContentTypes.KOETEHTAVAT
@@ -28,7 +25,6 @@ export const Exams = ({ exam }: ExamProps) => {
     exam
   })
 
-  const singularActiveTab = getSingularContentTypeFinnish(activeTab)
   const headingTextKey = navigationPages[exam.toLowerCase()].titleKey
 
   return (
@@ -44,14 +40,6 @@ export const Exams = ({ exam }: ExamProps) => {
       />
 
       <div role="tabpanel">
-        <div className="my-5">
-          <Button
-            variant="buttonPrimary"
-            onClick={() => navigate(`${location.pathname}/${newKey}`)}
-            data-testid={`create-${singularActiveTab}-button`}>
-            {t(`button.lisaa${singularActiveTab}`)}
-          </Button>
-        </div>
         {contentType && activeTab && <AssignmentList exam={exam} contentType={contentType} activeTab={activeTab} />}
       </div>
     </div>

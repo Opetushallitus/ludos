@@ -7,9 +7,10 @@ const KoodistoName = {
   TAITOTASO: 'taitotaso',
   LUDOS_LUKUVUOSI: 'ludoslukuvuosi',
   LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine',
-  AIHE: 'aihe'
+  TEHTAVATYYPPI_PUHVI: 'tehtavatyyppipuhvi',
+  AIHE_SUKO: 'aihesuko'
 } as const
-type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
+export type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
 
 export type KoodiDtoIn = {
   koodiArvo: string

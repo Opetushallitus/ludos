@@ -7,6 +7,7 @@ import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
+import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,8 +26,8 @@ fun postAssignment(body: String) =
 fun getAssignment(exam: Exam, id: Int) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
 
-fun updateAssignment(exam: Exam, id: Int, body: String) =
-    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
+fun updateAssignment(id: Int, body: String) =
+    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
 @SpringBootTest
@@ -61,8 +62,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             "contentType": "ASSIGNMENTS",
             "assignmentTypeKoodiArvo": "003",
             "oppimaaraKoodiArvo": "ET",
-            "tavoitetasoKoodiArvo": "04",
-            "aiheKoodiArvos": ["02", "03"],
+            "tavoitetasoKoodiArvo": "0004",
+            "aiheKoodiArvos": ["002", "003"],
             "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
             "nameFi": "suomi",
             "nameSv": "ruotsi",
@@ -103,6 +104,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         // update request
         val editedAssignment = """{
                 "id": "${assignmentOut.id}",
+                "exam": "SUKO",
                 "nameFi": "New test name",
                 "contentFi": "${assignmentOut.contentFi}",
                 "instructionFi": "${assignmentOut.instructionFi}",
@@ -113,13 +115,13 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
-                "tavoitetasoKoodiArvo": "04",
-                "aiheKoodiArvos": ["2", "3"],
+                "tavoitetasoKoodiArvo": "0010",
+                "aiheKoodiArvos": ["002", "003"],
                 "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
             }"""
 
         val updatedAssignmentId =
-            mockMvc.perform(updateAssignment(Exam.SUKO, assignmentOut.id, editedAssignment)).andExpect(status().isOk())
+            mockMvc.perform(updateAssignment(assignmentOut.id, editedAssignment)).andExpect(status().isOk())
                 .andReturn().response.contentAsString
 
         assertEquals(updatedAssignmentId, assignmentOut.id.toString())
@@ -130,6 +132,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val nonExistentId = -1
         val editedAssignmentFail = """{
                 "id": "$nonExistentId",
+                "exam": "SUKO",
                 "nameFi": "New test name",
                 "contentFi": "content",
                 "instructionFi": "instruction",
@@ -140,15 +143,73 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
-                "tavoitetasoKoodiArvo": "04",
-                "aiheKoodiArvos": ["2", "3"],
+                "tavoitetasoKoodiArvo": "0004",
+                "aiheKoodiArvos": ["002", "003"],
                 "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
             }"""
 
-        val failUpdate = mockMvc.perform(updateAssignment(Exam.SUKO, nonExistentId, editedAssignmentFail))
-            .andReturn().response.contentAsString
+        val failUpdate =
+            mockMvc.perform(updateAssignment(nonExistentId, editedAssignmentFail)).andReturn().response.contentAsString
 
         assertThat(failUpdate).isEqualTo("404 NOT_FOUND \"Assignment not found $nonExistentId\"")
+    }
+
+    @Test
+    fun failKoodistoValidation() {
+        val assignmentFail = """{
+                "exam": "SUKO",
+                "nameFi": "New test name",
+                "contentFi": "content",
+                "instructionFi": "instruction",
+                "nameSv": "New test name",
+                "contentSv": "content",
+                "instructionSv": "instruction",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "assignmentTypeKoodiArvo": "👃",
+                "oppimaaraKoodiArvo": "👁️",
+                "tavoitetasoKoodiArvo": "🫣",
+                "aiheKoodiArvos": ["🥸", "🫡"],
+                "laajaalainenOsaaminenKoodiArvos": ["😧", "👺"]
+            }"""
+
+        val errorMessage =
+            mockMvc.perform(postAssignment(assignmentFail)).andReturn().response.contentAsString.trimIndent()
+
+        assertThat(errorMessage).isEqualTo(
+            """
+                aiheKoodiArvos: Invalid KoodiArvos
+                assignmentTypeKoodiArvo: Invalid KoodiArvo
+                laajaalainenOsaaminenKoodiArvos: Invalid KoodiArvos
+                oppimaaraKoodiArvo: Invalid KoodiArvo
+                tavoitetasoKoodiArvo: Invalid KoodiArvo
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun failForMissingField() {
+        val assignmentFail = """{
+                "exam": "SUKO",
+                "contentFi": "content",
+                "instructionFi": "instruction",
+                "nameSv": "New test name",
+                "contentSv": "content",
+                "instructionSv": "instruction",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "assignmentTypeKoodiArvo": "001",
+                "oppimaaraKoodiArvo": "ET",
+                "tavoitetasoKoodiArvo": "0004",
+                "aiheKoodiArvos": ["003", "002"],
+                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
+            }"""
+
+        val errorMessage = mockMvc.perform(postAssignment(assignmentFail)).andReturn().response.contentAsString
+
+        val substring = "failed for JSON property nameFi due to missing (therefore NULL)"
+
+        assertTrue(errorMessage.contains(substring), "Error message should contain substring: $substring")
     }
 
     data class TestLdOut(
@@ -162,39 +223,33 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val publishState: PublishState,
         val contentType: ContentType,
         val createdAt: Timestamp,
-        val updatedAt: Timestamp
-    )
-
-    data class TestLdIn(
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val instructionFi: String,
-        val instructionSv: String,
-        val publishState: PublishState,
-        val contentType: ContentType,
-        val exam: Exam
+        val updatedAt: Timestamp,
+        val laajaalainenOsaaminenKoodiArvos: Array<String>,
+        val lukuvuosiKoodiArvos: Array<String>,
+        val aineKoodiArvo: String
     )
 
     @Test
     fun ldAssignmentTest() {
-        val testAssignment = TestLdIn(
-            nameFi = "Lukiodiplomi assignment FI",
-            contentFi = "Lukiodiplomi assignment content FI",
-            instructionFi = "Lukiodiplomi assignment instruction FI",
-            nameSv = "Lukiodiplomi assignment SV",
-            contentSv = "Lukiodiplomi assignment content SV",
-            instructionSv = "Lukiodiplomi assignment instruction SV",
-            publishState = PublishState.PUBLISHED,
-            contentType = ContentType.ASSIGNMENTS,
-            exam = Exam.LD
-        )
-
-        val testAssignmentToString: String = objectMapper.writeValueAsString(testAssignment)
+        val testAssignment = """
+            {
+              "nameFi": "Lukiodiplomi assignment FI",
+              "contentFi": "Lukiodiplomi assignment content FI",
+              "instructionFi": "Lukiodiplomi assignment instruction FI",
+              "nameSv": "Lukiodiplomi assignment SV",
+              "contentSv": "Lukiodiplomi assignment content SV",
+              "instructionSv": "Lukiodiplomi assignment instruction SV",
+              "publishState": "PUBLISHED",
+              "contentType": "ASSIGNMENTS",
+              "exam": "LD",
+              "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
+              "lukuvuosiKoodiArvos": ["20202021", "20222023"],
+              "aineKoodiArvo": "1"
+            }
+        """.trimIndent()
 
         // post assignment DTO IN
-        val postResult = mockMvc.perform(postAssignment(testAssignmentToString)).andExpect(status().isOk())
+        val postResult = mockMvc.perform(postAssignment(testAssignment)).andExpect(status().isOk())
             .andReturn().response.contentAsString
         val assignmentIn = objectMapper.readValue(postResult, TestLdOut::class.java)
 
@@ -204,9 +259,56 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val assignmentOut = objectMapper.readValue(getResult, TestLdOut::class.java)
 
         assertEquals(assignmentOut.id, assignmentOut.id)
-        assertEquals(assignmentOut.nameFi, testAssignment.nameFi)
-        assertEquals(assignmentOut.contentFi, testAssignment.contentFi)
-        assertEquals(assignmentOut.publishState, testAssignment.publishState)
+        assertEquals(assignmentOut.nameFi, "Lukiodiplomi assignment FI")
+        assertEquals(assignmentOut.contentFi, "Lukiodiplomi assignment content FI")
+        assertEquals(assignmentOut.publishState, PublishState.PUBLISHED)
+        assertEquals(assignmentOut.contentType, ContentType.ASSIGNMENTS)
+        assertEquals(
+            assignmentOut.laajaalainenOsaaminenKoodiArvos[0], "06"
+        )
+        assertEquals(
+            assignmentOut.laajaalainenOsaaminenKoodiArvos[1], "03"
+        )
+        assertEquals(assignmentOut.lukuvuosiKoodiArvos[0], "20202021")
+        assertEquals(assignmentOut.aineKoodiArvo, "1")
+
+        // update assignment
+        val editedAssignment = """{
+                "id": "${assignmentOut.id}",
+                "exam": "${Exam.LD}",
+                "nameFi": "New test name",
+                "contentFi": "content",
+                "instructionFi": "${assignmentOut.instructionFi}",
+                "nameSv": "New test name",
+                "contentSv": "content",
+                "instructionSv": "${assignmentOut.instructionSv}",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "laajaalainenOsaaminenKoodiArvos": ["02"],
+                "lukuvuosiKoodiArvos": ["20222023"],
+                "aineKoodiArvo": "2"
+            }"""
+
+        mockMvc.perform(updateAssignment(assignmentOut.id, editedAssignment)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+
+        val getUpdatedAssignment = mockMvc.perform(getAssignment(Exam.LD, assignmentOut.id)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+
+        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestLdOut::class.java)
+
+        assertEquals(updatedAssignment.nameFi, "New test name")
+        assertEquals(updatedAssignment.contentFi, "content")
+        assertEquals(updatedAssignment.instructionFi, assignmentOut.instructionFi)
+        assertEquals(updatedAssignment.nameSv, "New test name")
+        assertEquals(updatedAssignment.contentSv, "content")
+        assertEquals(updatedAssignment.instructionSv, assignmentOut.instructionSv)
+        assertEquals(updatedAssignment.publishState, PublishState.PUBLISHED)
+        assertEquals(updatedAssignment.contentType, ContentType.ASSIGNMENTS)
+        assertEquals(updatedAssignment.laajaalainenOsaaminenKoodiArvos[0], "02")
+        assertEquals(updatedAssignment.lukuvuosiKoodiArvos[0], "20222023")
+        assertEquals(updatedAssignment.aineKoodiArvo, "2")
+
     }
 
     data class TestPuhviOut(
@@ -218,6 +320,9 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val instructionFi: String,
         val instructionSv: String,
         val publishState: PublishState,
+        val laajaalainenOsaaminenKoodiArvos: Array<String>,
+        val assignmentTypeKoodiArvo: String,
+        val lukuvuosiKoodiArvos: Array<String>,
         val contentType: ContentType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
@@ -235,9 +340,13 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "instructionSv": "Puhvi assignment instruction",
                 "publishState": "PUBLISHED",
                 "contentType": "${ContentType.ASSIGNMENTS}",
-                "exam": "PUHVI"
+                "exam": "PUHVI",
+                "assignmentTypeKoodiArvo": "001",
+                "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
+                "lukuvuosiKoodiArvos": ["20222023"]
             }
         """
+
         // post assignment DTO IN
         val postResult =
             mockMvc.perform(postAssignment(body)).andExpect(status().isOk()).andReturn().response.contentAsString
@@ -255,6 +364,49 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentOut.instructionFi, "Puhvi assignment instruction")
         assertEquals(assignmentOut.instructionSv, "Puhvi assignment instruction")
         assertEquals(assignmentOut.publishState, PublishState.PUBLISHED)
+        assertEquals(assignmentOut.lukuvuosiKoodiArvos[0], "20222023")
+        assertEquals(assignmentOut.assignmentTypeKoodiArvo, "001")
+        assertEquals(assignmentOut.laajaalainenOsaaminenKoodiArvos[0], "06")
+
+        // update assignment
+        val editedAssignment = """{
+                "id": "${assignmentOut.id}",
+                "exam": "${Exam.PUHVI}",
+                "nameFi": "Puhvi assignment edited",
+                "nameSv": "Puhvi assignment edited",
+                "contentFi": "Puhvi assignment content edited",
+                "contentSv": "Puhvi assignment content edited",
+                "instructionFi": "Puhvi assignment instruction",
+                "instructionSv": "Puhvi assignment instruction",
+                "publishState": "PUBLISHED",
+                "contentType": "${ContentType.ASSIGNMENTS}",
+                "exam": "PUHVI",
+                "assignmentTypeKoodiArvo": "002",
+                "laajaalainenOsaaminenKoodiArvos": ["06", "01"],
+                "lukuvuosiKoodiArvos": ["20202021"]
+            }"""
+
+        mockMvc.perform(updateAssignment(assignmentOut.id, editedAssignment)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+
+        val getUpdatedAssignment =
+            mockMvc.perform(getAssignment(Exam.PUHVI, assignmentOut.id)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+
+        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestPuhviOut::class.java)
+
+        assertEquals(updatedAssignment.nameFi, "Puhvi assignment edited")
+        assertEquals(updatedAssignment.contentFi, "Puhvi assignment content edited")
+        assertEquals(updatedAssignment.instructionFi, assignmentOut.instructionFi)
+        assertEquals(updatedAssignment.nameSv, "Puhvi assignment edited")
+        assertEquals(updatedAssignment.contentSv, "Puhvi assignment content edited")
+        assertEquals(updatedAssignment.instructionSv, assignmentOut.instructionSv)
+        assertEquals(updatedAssignment.publishState, PublishState.PUBLISHED)
+        assertEquals(updatedAssignment.contentType, ContentType.ASSIGNMENTS)
+        assertEquals(updatedAssignment.assignmentTypeKoodiArvo, "002")
+        assertEquals(updatedAssignment.laajaalainenOsaaminenKoodiArvos[0], "06")
+        assertEquals(updatedAssignment.laajaalainenOsaaminenKoodiArvos[1], "01")
+        assertEquals(updatedAssignment.lukuvuosiKoodiArvos[0], "20202021")
     }
 
     @Test

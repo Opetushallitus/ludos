@@ -26,8 +26,8 @@ fun postInstruction(body: String) =
 fun getInstruction(exam: Exam, id: Int) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id").contentType(MediaType.APPLICATION_JSON)
 
-fun updateInstruction(exam: Exam, id: Int, body: String) =
-    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/instruction/$exam/$id").contentType(MediaType.APPLICATION_JSON)
+fun updateInstruction(id: Int, body: String) =
+    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/instruction/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
 @SpringBootTest
@@ -98,10 +98,10 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Suko Test Instruction FI updated\",\"contentFi\":\"Suko Instruction content Fi updated\",\"nameSv\":\"Suko Test Instruction SV updated\",\"contentSv\":\"Suko Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
+            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Suko Test Instruction FI updated\",\"exam\":\"SUKO\",\"contentFi\":\"Suko Instruction content Fi updated\",\"nameSv\":\"Suko Test Instruction SV updated\",\"contentSv\":\"Suko Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
 
         val updateResult =
-            mockMvc.perform(updateInstruction(Exam.SUKO, instructionIn.id, editedInstruction)).andExpect(status().isOk)
+            mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
         val getUpdatedResult =
@@ -180,10 +180,10 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Puhvi Test Instruction FI updated\",\"contentFi\":\"Puhvi Instruction content Fi updated\",\"nameSv\":\"Puhvi Test Instruction SV updated\",\"contentSv\":\"Puhvi Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
+            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Puhvi Test Instruction FI updated\",\"exam\":\"PUHVI\",\"contentFi\":\"Puhvi Instruction content Fi updated\",\"nameSv\":\"Puhvi Test Instruction SV updated\",\"contentSv\":\"Puhvi Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
 
         val updateResult =
-            mockMvc.perform(updateInstruction(Exam.PUHVI, instructionIn.id, editedInstruction)).andExpect(status().isOk)
+            mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
         val getUpdatedResult =
@@ -263,10 +263,10 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         // update request
         val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Ld Test Instruction FI updated\",\"contentFi\":\"Ld Instruction content Fi updated\",\"nameSv\":\"Ld Test Instruction SV updated\",\"contentSv\":\"Ld Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
+            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Ld Test Instruction FI updated\",\"exam\":\"LD\",\"contentFi\":\"Ld Instruction content Fi updated\",\"nameSv\":\"Ld Test Instruction SV updated\",\"contentSv\":\"Ld Instruction content Sv updated\",\"publishState\":\"PUBLISHED\",\"contentType\":\"${ContentType.INSTRUCTIONS}\"}"
 
         val updateResult =
-            mockMvc.perform(updateInstruction(Exam.LD, instructionIn.id, editedInstruction)).andExpect(status().isOk)
+            mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
         val getUpdatedResult =
@@ -288,9 +288,9 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun failInstructionsUpdate() {
         val nonExistentId = -1
         val editedInstruction =
-            "{\"id\": \"$nonExistentId\",\"nameFi\":\"New test name\",\"contentFi\":\"content\",\"nameSv\":\"New test name\",\"contentSv\":\"content\",\"publishState\":\"PUBLISHED\",\"contentType\": \"${ContentType.INSTRUCTIONS}\"}\n"
+            "{\"id\": \"$nonExistentId\",\"exam\":\"SUKO\",\"nameFi\":\"New test name\",\"contentFi\":\"content\",\"nameSv\":\"New test name\",\"contentSv\":\"content\",\"publishState\":\"PUBLISHED\",\"contentType\": \"${ContentType.INSTRUCTIONS}\"}\n"
 
-        val failUpdate = mockMvc.perform(updateInstruction(Exam.SUKO, nonExistentId, editedInstruction))
+        val failUpdate = mockMvc.perform(updateInstruction(nonExistentId, editedInstruction))
             .andReturn().response.contentAsString
 
         Assertions.assertThat(failUpdate).isEqualTo("404 NOT_FOUND \"Instruction not found $nonExistentId\"")
@@ -311,7 +311,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun invalidState() {
         // Invalid assignment type
         val body =
-            "{\"name\":\"Suko Test Assignment\",\"content\":\"Instructions content\",\"publishState\":\"TEST\",\"contentType\": \"${ContentType.INSTRUCTIONS}\",\"exam\":\"SUKO\"}\n"
+            "{\"name\":\"Suko Test Assignment\",\"exam\":\"SUKO\",\"content\":\"Instructions content\",\"publishState\":\"TEST\",\"contentType\": \"${ContentType.INSTRUCTIONS}\",\"exam\":\"SUKO\"}\n"
 
         val postResult = mockMvc.perform(postInstruction(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString

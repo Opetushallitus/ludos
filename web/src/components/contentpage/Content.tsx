@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import { AssignmentIn, Exam, ContentTypesEng } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
@@ -15,6 +15,7 @@ export const Content = ({ exam }: AssignmentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: string; id: string }>()
+  const location = useLocation()
 
   const contentTypeSingular =
     contentType === ContentTypesEng.KOETEHTAVAT
@@ -23,14 +24,14 @@ export const Content = ({ exam }: AssignmentProps) => {
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 
-  const { data: assignment, loading, error } = useFetch<AssignmentIn>(`${contentTypeSingular}/${exam}/${id}`)
+  const { data: assignment } = useFetch<AssignmentIn>(`${contentTypeSingular}/${exam}/${id}`)
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
+  const handleNavigation = () => {
+    const pathName = `/${exam.toLowerCase()}/${contentType}`
+    const backNavigationSearchString = new URLSearchParams(location.state?.searchValuesString)
+    const navigateToString = `${pathName}?${backNavigationSearchString.toString()}`
 
-  if (error) {
-    return <div>error</div>
+    navigate(navigateToString, { replace: true })
   }
 
   return (
@@ -52,10 +53,7 @@ export const Content = ({ exam }: AssignmentProps) => {
                 {isLdAssignment(assignment, exam) && <LdContent assignment={assignment} contentType={contentType} />}
               </div>
               <div className="row mb-6">
-                <Button
-                  variant="buttonSecondary"
-                  onClick={() => navigate(`/${exam}/${contentType}`)}
-                  data-testid="return">
+                <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
                   {t(`${contentTypeSingular}.palaa`)}
                 </Button>
               </div>

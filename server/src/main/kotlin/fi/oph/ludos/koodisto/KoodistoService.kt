@@ -1,10 +1,13 @@
 package fi.oph.ludos.koodisto
 
+import fi.oph.ludos.assignment.SukoAssignmentDtoIn
 import fi.oph.ludos.cache.CacheName
 import fi.oph.ludos.exception.LocalizationException
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -44,6 +47,10 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
 
     fun isKoodiArvoInKoodisto(koodistoName: KoodistoName, koodiArvo: String) : Boolean {
         return getKoodisto(koodistoName).any { it.koodiArvo == koodiArvo }
+    }
+
+    fun isKoodiArvosInKoodisto(koodistoName: KoodistoName, koodiArvos: Array<String>) : Boolean {
+        return koodiArvos.all { isKoodiArvoInKoodisto(koodistoName, it) }
     }
 
     fun filterKooditByLanguage(

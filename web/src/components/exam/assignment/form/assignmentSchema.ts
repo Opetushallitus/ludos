@@ -10,7 +10,8 @@ const commonSchema = z.object({
   instructionFi: z.string().nullable(),
   instructionSv: z.string().nullable(),
   contentFi: z.string().nullable(),
-  contentSv: z.string().nullable()
+  contentSv: z.string().nullable(),
+  laajaalainenOsaaminenKoodiArvos: z.array(z.string())
 })
 
 export const sukoAssignmentSchema = commonSchema.merge(
@@ -18,18 +19,26 @@ export const sukoAssignmentSchema = commonSchema.merge(
     assignmentTypeKoodiArvo: z.string({ required_error: 'Required' }),
     oppimaaraKoodiArvo: z.string({ required_error: 'Required' }),
     tavoitetasoKoodiArvo: z.string({ required_error: 'Required' }),
-    aiheKoodiArvos: z.array(z.string()),
-    laajaalainenOsaaminenKoodiArvos: z.array(z.string())
+    aiheKoodiArvos: z.array(z.string())
   })
 )
 
 export type SukoAssignmentFormType = z.infer<typeof sukoAssignmentSchema>
 
-export const puhviAndLdAssignmentSchema = commonSchema.merge(
+export const LdAssignmentSchema = commonSchema.merge(
   z.object({
-    laajaalainenOsaaminenKoodiArvos: z.array(z.string()),
-    lukuvuosiKoodiArvo: z.string({ required_error: 'Required' })
+    aineKoodiArvo: z.string({ required_error: 'Required' }),
+    lukuvuosiKoodiArvos: z.array(z.string())
   })
 )
 
-export type PuhviAndLdAssignmentFormType = z.infer<typeof puhviAndLdAssignmentSchema>
+export type LdAssignmentFormType = z.infer<typeof LdAssignmentSchema>
+
+export const PuhviAssignmentSchema = commonSchema.merge(
+  z.object({
+    assignmentTypeKoodiArvo: z.string({ required_error: 'Required' }),
+    lukuvuosiKoodiArvos: z.array(z.string())
+  })
+)
+
+export type PuhviAssignmentFormType = z.infer<typeof PuhviAssignmentSchema>

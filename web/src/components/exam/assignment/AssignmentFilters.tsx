@@ -1,89 +1,119 @@
-import { Dispatch, SetStateAction, useContext } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
-import { Dropdown } from '../../Dropdown'
-import { LANGUAGE_OPTIONS, sortKoodit, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
+import { sortKooditAlphabetically, sortKooditByArvo } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
-import { KoodiDtoIn, KoodistoContext } from '../../../KoodistoContext'
+import { KoodiDtoIn } from '../../../KoodistoContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
-
-type ValueOf<T> = T[keyof T]
+import { useFetch } from '../../../hooks/useFetch'
+import { Exam } from '../../../types'
+import { useKoodisto } from '../../../hooks/useKoodisto'
 
 type AssignmentFiltersProps = {
+  exam: Exam
   filters: FiltersType
   setFilters: Dispatch<SetStateAction<FiltersType>>
-  language: string
-  setLanguage: Dispatch<SetStateAction<string>>
 }
 
-export const AssignmentFilters = ({ filters, setFilters, language, setLanguage }: AssignmentFiltersProps) => {
+export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
-  const ctx = useContext(KoodistoContext)
+  const { koodistos, getSelectedOptions } = useKoodisto()
 
-  const koodisto = ctx.koodistos
-
-  const handleFilterChange = <T,>(key: keyof FiltersType, value: T) => setFilters((curr) => ({ ...curr, [key]: value }))
+  const { data } = useFetch<string[]>('assignment/oppimaaras')
 
   const handleMultiselectFilterChange = (key: keyof FiltersType, value: KoodiDtoIn[]) => {
     setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
   }
 
-  const getSelectedOptions = (filter: string[] | null, koodisto: KoodiDtoIn[]) =>
-    koodisto.filter((koodi) => filter?.includes(koodi.koodiArvo)) || []
-
   return (
     <div className="border border-gray-light bg-gray-bg">
       <p className="px-2 py-1">{t('filter.otsikko')}</p>
-      <div className="row w-full flex-wrap justify-start">
-        <div className="mx-2 w-full md:w-[23%]">
-          <p>{t('filter.oppimaara')}</p>
-          <MultiSelectDropdown
-            id="oppimaaraFilter"
-            options={sortKoodit(koodisto.oppiaineetjaoppimaaratlops2021 || [])}
-            selectedOptions={getSelectedOptions(filters.oppimaara, koodisto.oppiaineetjaoppimaaratlops2021)}
-            onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
-            canReset
-          />
-        </div>
-        <div className="mx-2 w-full md:w-[23%]">
-          <p>{t('filter.tyyppi')}</p>
-          <MultiSelectDropdown
-            id="contentTypeFilter"
-            options={sortKoodit(koodisto.tehtavatyyppisuko || [])}
-            selectedOptions={getSelectedOptions(filters.assignmentTypeKoodiArvo, koodisto.tehtavatyyppisuko)}
-            onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('assignmentTypeKoodiArvo', opt)}
-            canReset
-          />
-        </div>
-        <div className="mx-2 w-full md:w-[23%]">
-          <p>{t('filter.aihe')}</p>
-          <Dropdown
-            id="aiheFilter"
-            onSelectedOptionsChange={(opt) => handleFilterChange('aihe', opt)}
-            options={[]}
-            canReset
-          />
-        </div>
-        <div className="mx-2 w-full md:w-[15%] md:min-w-[10rem]">
-          <p>{t('filter.kieli')}</p>
-          <Dropdown
-            id="languageDropdown"
-            options={LANGUAGE_OPTIONS}
-            selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-            onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-            testId="language-dropdown"
-          />
-        </div>
-        <div className="mx-2 w-full md:w-[15%] md:min-w-[10rem]">
-          <p>{t('filter.jarjesta')}</p>
-          <Dropdown
-            id="orderFilter"
-            options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
-            selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
-            onSelectedOptionsChange={(opt: string) =>
-              handleFilterChange<ValueOf<FiltersType['orderDirection']>>('orderDirection', opt)
-            }
-          />
-        </div>
+      <div className="row flex-wrap justify-start">
+        {exam === Exam.Suko && (
+          <>
+            <div className="w-full px-2 md:w-3/12">
+              <p>{t('filter.oppimaara')}</p>
+              <MultiSelectDropdown
+                id="oppimaaraFilter"
+                options={
+                  data
+                    ? sortKooditAlphabetically(
+                        koodistos.oppiaineetjaoppimaaratlops2021.filter((it) => data.includes(it.koodiArvo))
+                      )
+                    : []
+                }
+                selectedOptions={getSelectedOptions(filters.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
+                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
+                canReset
+              />
+            </div>
+            <div className="w-full px-2 md:w-3/12">
+              <p>{t('filter.tyyppi')}</p>
+              <MultiSelectDropdown
+                id="contentTypeFilter"
+                options={sortKooditAlphabetically(koodistos.tehtavatyyppisuko || [])}
+                selectedOptions={getSelectedOptions(filters.tehtavatyyppisuko, 'tehtavatyyppisuko')}
+                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
+                canReset
+              />
+            </div>
+            <div className="w-full px-2 md:w-3/12">
+              <p>{t('filter.aihe')}</p>
+              <MultiSelectDropdown
+                id="aihe"
+                options={sortKooditAlphabetically(koodistos.aihesuko)}
+                selectedOptions={getSelectedOptions(filters.aihe, 'aihesuko')}
+                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
+                canReset
+              />
+            </div>
+            <div className="w-full px-2 md:w-3/12">
+              <p>{t('filter.tavoitetaso')}</p>
+              <MultiSelectDropdown
+                id="tavoitetaitotaso"
+                options={sortKooditByArvo(koodistos.taitotaso || [])}
+                selectedOptions={getSelectedOptions(filters.tavoitetaitotaso, 'taitotaso')}
+                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tavoitetaitotaso', opt)}
+                canReset
+              />
+            </div>
+          </>
+        )}
+        {(exam === Exam.Ld || exam === Exam.Puhvi) && (
+          <div className="w-full px-2 md:w-3/12">
+            <p>{t('filter.lukuvuosi')}</p>
+            <MultiSelectDropdown
+              id="lukuvuosi"
+              options={sortKooditAlphabetically(koodistos.ludoslukuvuosi || [])}
+              selectedOptions={getSelectedOptions(filters.lukuvuosi, 'ludoslukuvuosi')}
+              onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
+              canReset
+            />
+          </div>
+        )}
+        {exam === Exam.Ld && (
+          <div className="w-full px-2 md:w-3/12">
+            <p>{t('filter.aine')}</p>
+            <MultiSelectDropdown
+              id="aine"
+              options={sortKooditAlphabetically(koodistos.ludoslukiodiplomiaine || [])}
+              selectedOptions={getSelectedOptions(filters.aine, 'ludoslukiodiplomiaine')}
+              onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aine', opt)}
+              canReset
+            />
+          </div>
+        )}
+        {exam === Exam.Puhvi && (
+          <div className="w-full px-2 md:w-3/12">
+            <p>{t('filter.tehtavatyyppi')}</p>
+            <MultiSelectDropdown
+              id="tehtavatyyppiPuhvi"
+              options={sortKooditAlphabetically(koodistos.tehtavatyyppipuhvi || [])}
+              selectedOptions={getSelectedOptions(filters.tehtavatyyppipuhvi, 'tehtavatyyppipuhvi')}
+              onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
+              canReset
+            />
+          </div>
+        )}
       </div>
     </div>
   )

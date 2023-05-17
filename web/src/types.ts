@@ -3,7 +3,7 @@ export type Page = {
   path: string
 }
 
-export const EXAM_TYPES = ['suko', 'puhvi', 'ld']
+export const EXAM_TYPES = ['suko', 'ld', 'puhvi']
 
 export const PAGE_HEADERS = ['frontpage', ...EXAM_TYPES, 'palautteet'] as const
 
@@ -54,6 +54,16 @@ export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
 }
 
+export type LdAssignmentIn = AssignmentIn & {
+  aineKoodiArvo: string
+  lukuvuosiKoodiArvos: string[]
+}
+
+export type PuhviAssignmentIn = AssignmentIn & {
+  assignmentTypeKoodiArvo: string
+  lukuvuosiKoodiArvos: string[]
+}
+
 export const ContentTypes = {
   KOETEHTAVAT: 'koetehtavat',
   OHJEET: 'ohjeet',
@@ -79,3 +89,5 @@ export const ContentTypesSingular: SingularOptions = {
 }
 
 export type ContentType = (typeof ContentTypes)[keyof typeof ContentTypes]
+
+export type ValueOf<T> = T[keyof T]

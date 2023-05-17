@@ -9,8 +9,8 @@ import { Tabs } from '../../../Tabs'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { FormHeader } from '../../../formCommon/FormHeader'
-import { FormButtonRow } from '../../../formCommon/FormButtonRow'
+import { FormHeader } from '../../assignment/form/formCommon/FormHeader'
+import { FormButtonRow } from '../../assignment/form/formCommon/FormButtonRow'
 
 type CertificateFormProps = {
   action: 'new' | 'update'

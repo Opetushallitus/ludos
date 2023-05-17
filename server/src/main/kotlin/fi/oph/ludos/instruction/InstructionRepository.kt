@@ -186,7 +186,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         throw NotFoundException()
     }
 
-    fun updateSukoInstruction(id: Int, instruction: UpdateInstructionDtoIn): Int = try {
+    fun updateSukoInstruction(id: Int, instruction: SukoInstructionDtoIn): Int = try {
         val results = jdbcTemplate.query(
             "UPDATE suko_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_publish_state = ?::publish_state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->
@@ -209,7 +209,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         throw NotFoundException()
     }
 
-    fun updatePuhviInstruction(id: Int, instruction: UpdateInstructionDtoIn): Int = try {
+    fun updatePuhviInstruction(id: Int, instruction: PuhviInstructionDtoIn): Int = try {
         val results = jdbcTemplate.query(
             "UPDATE puhvi_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_publish_state = ?::publish_state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->
@@ -232,7 +232,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         throw NotFoundException()
     }
 
-    fun updateLdInstruction(id: Int, instruction: UpdateInstructionDtoIn): Int = try {
+    fun updateLdInstruction(id: Int, instruction: LdInstructionDtoIn): Int = try {
         val results = jdbcTemplate.query(
             "UPDATE ld_instruction SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_publish_state = ?::publish_state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->

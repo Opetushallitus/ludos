@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
-import { Icon } from '../Icon'
+import { Icon, Icons } from '../Icon'
 
 export function ContentHeader({
   onSelectedOptionsChange,
@@ -37,20 +37,30 @@ export function ContentHeader({
 
 export function ContentIconRow() {
   const { t } = useTranslation()
+
+  const icons: { name: Icons; text: string }[] = [
+    {
+      name: 'uusi-valilehti',
+      text: t('assignment.katselunakyma')
+    },
+    {
+      name: 'todistukset',
+      text: t('assignment.lataapdf')
+    },
+    {
+      name: 'lisää',
+      text: t('assignment.lisaalatauskoriin')
+    }
+  ]
+
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
-      <div className="flex gap-1">
-        <Icon name="uusi-valilehti" color="text-green-primary" />
-        <p className="text-green-primary">{t('assignment.katselunakyma')}</p>
-      </div>
-      <div className="flex gap-1">
-        <Icon name="todistukset" color="text-green-primary" />
-        <p className="text-green-primary">{t('assignment.lataapdf')}</p>
-      </div>
-      <div className="flex gap-1">
-        <Icon name="lisää" color="text-green-primary" />
-        <p className="text-green-primary">{t('assignment.lisaalatauskoriin')}</p>
-      </div>
+      {icons.map((icon) => (
+        <div className="flex gap-1" key={icon.name}>
+          <Icon name={icon.name} color="text-green-primary" />
+          <p className="text-green-primary">{icon.text}</p>
+        </div>
+      ))}
     </div>
   )
 }
