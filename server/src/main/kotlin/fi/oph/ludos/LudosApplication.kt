@@ -22,6 +22,14 @@ fun main(args: Array<String>) {
 
 @Configuration
 class Config : WebMvcConfigurer {
+    companion object {
+        val indexHtml = ClassPathResource("/static/index.html")
+    }
+    init {
+        if (!indexHtml.exists()) {
+            throw IllegalStateException("index.html not found")
+        }
+    }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/**").resourceChain(true)
@@ -32,7 +40,7 @@ class Config : WebMvcConfigurer {
                     return if (requestedResource.exists() && requestedResource.isReadable) {
                         requestedResource
                     } else {
-                        ClassPathResource("/static/index.html")
+                        indexHtml
                     }
                 }
             })
