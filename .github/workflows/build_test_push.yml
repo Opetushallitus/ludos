@@ -1,4 +1,4 @@
-name: Run all tests, build docker image and push to ECR
+name: Build+Test(+Push)
 run-name: ${{ github.workflow }} run ${{github.run_number}} from ${{github.event_name}} (${{github.head_ref || github.ref}})
 on:
   push:
@@ -72,3 +72,42 @@ jobs:
           path: server/build/libs
       - name: Playwright
         uses: ./.github/actions/playwright
+  build-docker-image-and-push:
+    runs-on: "ubuntu-22.04"
+    needs: ["build-jar-and-test-api", "playwright"]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - name: calculate short sha
+        id: short_sha
+        run: echo "short_sha=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_OUTPUT
+      - uses: actions/download-artifact@v3
+        with:
+          name: jar
+          path: server/build/libs
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
+          role-to-assume: arn:aws:iam::505953557276:role/ludos-gh-actions-ecr-push-role
+          aws-region: eu-west-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push docker image
+        uses: docker/build-push-action@v4
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ludos
+          IMAGE_TAG: ludos-${{ github.ref_name }}-${{ github.run_number }}-${{ steps.short_sha.outputs.short_sha }}
+        with:
+          file: docker-build/Dockerfile
+          context: .
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
