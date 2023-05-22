@@ -1,14 +1,11 @@
-name: Start frontend and backend
+name: Start service
 description: Starts up the frontend and backend
 runs:
   using: composite
   steps:
-    - name: Build frontend and backend
-      shell: bash
-      run: cd server && ./gradlew build
     - name: Start service
       shell: bash
-      run: cd server && ./gradlew bootRun --args='--spring.profiles.active=local' 2>&1 | tee bootRun.log &
+      run: ENV_NAME=local docker-build/run.sh 2>&1 | tee service.log &
     - name: Wait until service is online
       shell: bash
       run: timeout 120 bash -c "while true; do curl -sS -o /dev/null http://localhost:8080/ && break; sleep 2; done; echo 'Service responding, continuing'"

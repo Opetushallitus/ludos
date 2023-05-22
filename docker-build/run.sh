@@ -1,6 +1,9 @@
 #!/bin/sh
 
-set -euo pipefail
+if [ -z "$ENV_NAME" ]; then
+    echo "ENV_NAME is not set"
+    exit 1
+fi
 
 if [ -r "ludos.jar" ]; then
     JAR_PATH=ludos.jar

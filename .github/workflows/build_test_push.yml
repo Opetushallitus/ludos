@@ -1,0 +1,74 @@
+name: Run all tests, build docker image and push to ECR
+run-name: ${{ github.workflow }} run ${{github.run_number}} from ${{github.event_name}} (${{github.head_ref || github.ref}})
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-(${{github.ref}}-${{github.event_name}}
+  cancel-in-progress: true
+
+jobs:
+  code_check:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      - name: Code check
+        uses: ./.github/actions/code_check
+  build-jar-and-test-api:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: zulu
+      - name: 'Start database for API tests'
+        run: docker compose up -d
+      - name: Gradle build, including API tests
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+          build-root-directory: server
+      - uses: actions/upload-artifact@v3
+        with:
+          name: jar
+          path: server/build/libs/ludos-0.0.1-SNAPSHOT.jar
+          retention-days: 30
+          if-no-files-found: error
+  playwright:
+    runs-on: "ubuntu-22.04"
+    needs: ["build-jar-and-test-api"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: zulu
+      - uses: actions/download-artifact@v3
+        with:
+          name: jar
+          path: server/build/libs
+      - name: Playwright
+        uses: ./.github/actions/playwright

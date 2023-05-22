@@ -4,13 +4,11 @@ description: Run playwright tests
 runs:
   using: composite
   steps:
-    - shell: bash
-      run: echo "🎉 playwright action. ${{ github.event_name }} event."
-    - name: '🐘 Start database'
+    - name: 'Start database'
       shell: bash
       run: docker compose up -d
     - name: '🔨 Start frontend and backend'
-      uses: ./.github/actions/start_frontend_and_backend
+      uses: ./.github/actions/start_service
     - name: Cache Playwright browser
       uses: actions/cache@v3
       with:
@@ -18,9 +16,12 @@ runs:
         key: ${{ runner.os }}-playwright-${{ hashFiles('./playwright/playwright.config.ts') }}
         restore-keys: |
           ${{ runner.os }}-playwright-
+    - name: yarn install
+      shell: bash
+      run: yarn install --frozen-lockfile
     - name: Install Playwright Browsers
       shell: bash
-      run: npx playwright install --with-deps
+      run: npx playwright install --with-deps chromium
     - name: Run Playwright tests
       shell: bash
       run: yarn playwright
@@ -30,5 +31,5 @@ runs:
         name: playwright-report
         path: |
           playwright/playwright-report/
-          server/bootRun.log
+          service.log
         retention-days: 30
