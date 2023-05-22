@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.springframework.boot") version "2.7.11"
@@ -42,17 +43,28 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
-val ensureStaticFolderExistsTask = task<Exec>("buildWeb") {
-    workingDir("../web")
-    commandLine("sh", "-c", "if [ ! -d ../server/build/resources/main/static ]; then yarn && yarn build; fi")
-}
-
 tasks.withType<KotlinCompile> {
-    dependsOn(ensureStaticFolderExistsTask)
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
         jvmTarget = "17"
     }
+}
+
+val buildWeb = tasks.register("buildWeb") {
+    dependsOn(tasks.withType<KotlinCompile>())
+
+    doLast {
+        val pathToStatic = "../server/build/resources/main/static"
+        File(pathToStatic).deleteRecursively()
+        exec {
+            workingDir("../web")
+            commandLine("sh", "-c", "yarn && yarn build")
+        }
+    }
+}
+
+tasks.withType<BootJar> {
+    dependsOn(buildWeb)
 }
 
 tasks.withType<Test> {

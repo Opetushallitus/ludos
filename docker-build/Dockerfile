@@ -1,15 +1,10 @@
 FROM amazoncorretto:17-alpine3.17
 
-EXPOSE 8080
+# NOTE! gradle build must be done before docker build
 
 WORKDIR /ludos
+COPY docker-build/run.sh run.sh
+COPY server/build/libs/ludos-0.0.1-SNAPSHOT.jar ludos.jar
 
-COPY . .
-COPY docker-build/run.sh .
-
-RUN cd server && ./gradlew build -x test
-
-RUN apk add nodejs yarn
-RUN cd web && yarn install && yarn build && cd ..
-
+EXPOSE 8080
 ENTRYPOINT [ "./run.sh" ]
