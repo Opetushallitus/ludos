@@ -9,16 +9,20 @@ runs:
       run: docker compose up -d
     - name: '🔨 Start frontend and backend'
       uses: ./.github/actions/start_service
+    - name: yarn install
+      shell: bash
+      run: yarn install --frozen-lockfile
+    - name: 'Get playwright version'
+      id: playwright_version
+      shell: bash
+      run: echo "playwright_version=$(npx playwright --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
     - name: Cache Playwright browser
       uses: actions/cache@v3
       with:
         path: ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('./playwright/playwright.config.ts') }}
+        key: ${{ runner.os }}-playwright-${{ steps.playwright_version.outputs.playwright_version }}
         restore-keys: |
           ${{ runner.os }}-playwright-
-    - name: yarn install
-      shell: bash
-      run: yarn install --frozen-lockfile
     - name: Install Playwright Browsers
       shell: bash
       run: npx playwright install --with-deps chromium
