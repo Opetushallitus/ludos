@@ -1,5 +1,5 @@
 name: Build+Test(+Push)
-run-name: ${{ github.workflow }} run ${{github.run_number}} from ${{github.event_name}} (${{github.head_ref || github.ref}})
+run-name: ${{ github.workflow }} run ${{github.run_number}} from ${{github.event_name}} (${{github.head_ref || github.ref_name}})
 on:
   push:
     branches:
