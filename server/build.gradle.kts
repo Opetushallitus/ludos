@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
+import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     id("org.springframework.boot") version "2.7.11"
@@ -64,6 +65,9 @@ val buildWeb = tasks.register("buildWeb") {
 }
 
 tasks.withType<BootJar> {
+    dependsOn(buildWeb)
+}
+tasks.withType<BootRun> {
     dependsOn(buildWeb)
 }
 
