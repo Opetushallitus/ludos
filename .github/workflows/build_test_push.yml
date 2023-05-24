@@ -103,7 +103,7 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ludos
-          IMAGE_TAG: ludos-${{ github.ref_name }}-${{ github.run_number }}-${{ steps.short_sha.outputs.short_sha }}
+          IMAGE_TAG: ludos-${{ github.run_number }}-${{ github.ref_name }}-${{ steps.short_sha.outputs.short_sha }}
         with:
           file: docker-build/Dockerfile
           context: .
