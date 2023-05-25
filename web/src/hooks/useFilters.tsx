@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ContentTypesEng } from '../types'
+import { ContentTypeEng } from '../types'
 
 export type FiltersType = {
   oppimaara: string[] | null
@@ -54,7 +54,7 @@ export function useFilters(initialSearchFilters: string, contentType: string) {
 
   useEffect(() => {
     // only run effect on content type assignment
-    if (contentType !== ContentTypesEng.KOETEHTAVAT) {
+    if (contentType !== ContentTypeEng.KOETEHTAVAT) {
       return
     }
 

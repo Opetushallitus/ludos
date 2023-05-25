@@ -1,5 +1,5 @@
 import { useLocation, useMatch } from 'react-router-dom'
-import { ContentType, Exam } from '../../../../types'
+import { ContentTypeEng, Exam } from '../../../../types'
 import { FormHeader } from './formCommon/FormHeader'
 import { SukoAssignmentForm } from './SukoAssignmentForm'
 import { PuhviAssignmentForm } from './PuhviAssignmentForm'
@@ -14,14 +14,13 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const match = useMatch(`/:exam/:contentType/${action}`)
   const assignment = state?.assignment
 
-  const contentType = match!.params.contentType as ContentType
   const exam = match!.params.exam!.toUpperCase() as Exam
 
-  const formProps = { action, assignment, contentType, pathname, exam }
+  const formProps = { action, assignment, pathname, exam }
 
   return (
     <div className="w-10/12 pt-3">
-      <FormHeader action={action} contentType={contentType} assignment={assignment} />
+      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} assignment={assignment} />
       {exam === Exam.Suko ? (
         <SukoAssignmentForm {...formProps} />
       ) : exam === Exam.Puhvi ? (

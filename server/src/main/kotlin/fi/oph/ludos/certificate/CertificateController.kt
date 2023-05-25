@@ -2,7 +2,6 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
-import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,7 +25,6 @@ class CertificateController {
         nameSv = "nameSv",
         contentSv = "contentSv",
         publishState = PublishState.DRAFT,
-        contentType = ContentType.CERTIFICATES
     )
 }
 
@@ -36,5 +34,4 @@ data class Certificate(
     val nameSv: String,
     val contentSv: String,
     val publishState: PublishState,
-    val contentType: ContentType
 )

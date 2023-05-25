@@ -24,7 +24,6 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
   const [activeTab, setActiveTab] = useState('fi')
 
   const exam = match!.params.exam as Exam
-  const contentType = match!.params.contentType as ContentType
 
   const assignment = (state?.assignment as SukoAssignmentIn) || null
 
@@ -41,14 +40,12 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
     if (assignment) {
       reset({
         ...assignment,
-        exam: exam.toUpperCase() as Exam,
-        contentType: assignment.contentType.toUpperCase() as CertificateFormType['contentType']
+        exam: exam.toUpperCase() as Exam
       })
     } else {
       setValue('exam', exam.toUpperCase() as Exam)
-      setValue('contentType', contentType.toUpperCase() as CertificateFormType['contentType'])
     }
-  }, [assignment, exam, contentType, reset, setValue])
+  }, [assignment, exam, reset, setValue])
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: CertificateFormType) => {
@@ -73,11 +70,10 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
   return (
     <div className="w-10/12 pt-3">
-      <FormHeader action={action} contentType={contentType} assignment={assignment} />
+      <FormHeader action={action} contentType={ContentType.TODISTUKSET} assignment={assignment} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
-        <input type="hidden" {...register('contentType')} />
 
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 

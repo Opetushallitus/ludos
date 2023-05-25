@@ -3,7 +3,6 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
-import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -30,6 +29,8 @@ fun updateAssignment(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
+fun seedDb() = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/seed").contentType(MediaType.APPLICATION_JSON)
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -45,7 +46,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val instructionFi: String,
         val instructionSv: String,
         val publishState: PublishState,
-        val contentType: ContentType,
         val assignmentTypeKoodiArvo: String,
         val oppimaaraKoodiArvo: String,
         val tavoitetasoKoodiArvo: String,
@@ -71,7 +71,12 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             "contentSv": "ruotsi",
             "instructionFi": "suomi",
             "instructionSv": "ruotsi",
-            "publishState": "PUBLISHED"
+            "publishState": "PUBLISHED",
+            "assignmentTypeKoodiArvo": "003",
+            "oppimaaraKoodiArvo": "ET",
+            "tavoitetasoKoodiArvo": "0004",
+            "aiheKoodiArvos": ["002", "003"],
+            "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
         }""".trimIndent()
 
         // post assignment DTO IN
@@ -90,7 +95,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentIn.contentFi, assignmentOut.contentFi)
         assertEquals(assignmentIn.contentSv, assignmentOut.contentSv)
         assertEquals(assignmentIn.publishState, assignmentOut.publishState)
-        assertEquals(assignmentIn.contentType, assignmentOut.contentType)
         assertEquals(assignmentIn.assignmentTypeKoodiArvo, assignmentOut.assignmentTypeKoodiArvo)
         assertEquals(assignmentIn.oppimaaraKoodiArvo, assignmentOut.oppimaaraKoodiArvo)
         assertEquals(assignmentIn.tavoitetasoKoodiArvo, assignmentOut.tavoitetasoKoodiArvo)
@@ -112,7 +116,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "${assignmentOut.instructionSv}",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
                 "tavoitetasoKoodiArvo": "0010",
@@ -140,7 +143,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "instruction",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
                 "tavoitetasoKoodiArvo": "0004",
@@ -165,7 +167,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "instruction",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "👃",
                 "oppimaaraKoodiArvo": "👁️",
                 "tavoitetasoKoodiArvo": "🫣",
@@ -197,7 +198,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "instruction",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "assignmentTypeKoodiArvo": "001",
                 "oppimaaraKoodiArvo": "ET",
                 "tavoitetasoKoodiArvo": "0004",
@@ -221,7 +221,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val instructionFi: String,
         val instructionSv: String,
         val publishState: PublishState,
-        val contentType: ContentType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp,
         val laajaalainenOsaaminenKoodiArvos: Array<String>,
@@ -240,7 +239,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
               "contentSv": "Lukiodiplomi assignment content SV",
               "instructionSv": "Lukiodiplomi assignment instruction SV",
               "publishState": "PUBLISHED",
-              "contentType": "ASSIGNMENTS",
               "exam": "LD",
               "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
               "lukuvuosiKoodiArvos": ["20202021", "20222023"],
@@ -262,7 +260,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentOut.nameFi, "Lukiodiplomi assignment FI")
         assertEquals(assignmentOut.contentFi, "Lukiodiplomi assignment content FI")
         assertEquals(assignmentOut.publishState, PublishState.PUBLISHED)
-        assertEquals(assignmentOut.contentType, ContentType.ASSIGNMENTS)
         assertEquals(
             assignmentOut.laajaalainenOsaaminenKoodiArvos[0], "06"
         )
@@ -283,7 +280,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "${assignmentOut.instructionSv}",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "laajaalainenOsaaminenKoodiArvos": ["02"],
                 "lukuvuosiKoodiArvos": ["20222023"],
                 "aineKoodiArvo": "2"
@@ -304,7 +300,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedAssignment.contentSv, "content")
         assertEquals(updatedAssignment.instructionSv, assignmentOut.instructionSv)
         assertEquals(updatedAssignment.publishState, PublishState.PUBLISHED)
-        assertEquals(updatedAssignment.contentType, ContentType.ASSIGNMENTS)
         assertEquals(updatedAssignment.laajaalainenOsaaminenKoodiArvos[0], "02")
         assertEquals(updatedAssignment.lukuvuosiKoodiArvos[0], "20222023")
         assertEquals(updatedAssignment.aineKoodiArvo, "2")
@@ -323,7 +318,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val laajaalainenOsaaminenKoodiArvos: Array<String>,
         val assignmentTypeKoodiArvo: String,
         val lukuvuosiKoodiArvos: Array<String>,
-        val contentType: ContentType,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
@@ -339,7 +333,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "instructionFi": "Puhvi assignment instruction",
                 "instructionSv": "Puhvi assignment instruction",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "exam": "PUHVI",
                 "assignmentTypeKoodiArvo": "001",
                 "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
@@ -379,7 +372,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "instructionFi": "Puhvi assignment instruction",
                 "instructionSv": "Puhvi assignment instruction",
                 "publishState": "PUBLISHED",
-                "contentType": "${ContentType.ASSIGNMENTS}",
                 "exam": "PUHVI",
                 "assignmentTypeKoodiArvo": "002",
                 "laajaalainenOsaaminenKoodiArvos": ["06", "01"],
@@ -402,7 +394,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedAssignment.contentSv, "Puhvi assignment content edited")
         assertEquals(updatedAssignment.instructionSv, assignmentOut.instructionSv)
         assertEquals(updatedAssignment.publishState, PublishState.PUBLISHED)
-        assertEquals(updatedAssignment.contentType, ContentType.ASSIGNMENTS)
         assertEquals(updatedAssignment.assignmentTypeKoodiArvo, "002")
         assertEquals(updatedAssignment.laajaalainenOsaaminenKoodiArvos[0], "06")
         assertEquals(updatedAssignment.laajaalainenOsaaminenKoodiArvos[1], "01")
@@ -413,7 +404,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     fun invalidExam() {
         // Invalid exam type
         val body =
-            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"publishState\":\"PUBLISHED\",\"contentType\": \"${ContentType.ASSIGNMENTS}\",\"assignmentTypeKoodiArvo\":\"LUKEMINEN\",\"exam\":\"WRONG\"}\n"
+            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"publishState\":\"PUBLISHED\",\"assignmentTypeKoodiArvo\":\"LUKEMINEN\",\"exam\":\"WRONG\"}\n"
 
         val postResult = mockMvc.perform(postAssignment(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString
@@ -425,7 +416,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     fun invalidState() {
         // Invalid assignment type
         val body =
-            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"publishState\":\"TEST\",\"contentType\": \"${ContentType.ASSIGNMENTS}\",\"exam\":\"SUKO\"}\n"
+            "{\"name\":\"Suko Test Assignment\",\"content\":\"Suko assignment content\",\"publishState\":\"TEST\",\"exam\":\"SUKO\"}\n"
 
         val postResult = mockMvc.perform(postAssignment(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString
@@ -439,6 +430,20 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val responseContent = getResult.response.contentAsString
 
         assertThat(responseContent).isEqualTo("404 NOT_FOUND \"Assignment not found 999\"")
+    }
+
+    @Test
+    fun testFilters() {
+        seedDb()
+
+        val sukoFilters = SukoAssignmentFilter(
+            orderDirection = "desc",
+            oppimaara = "TKFIA1",
+            tehtavatyyppisuko = "002",
+            aihe = "",
+            tavoitetaitotaso = ""
+        )
+
     }
 
 }

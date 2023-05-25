@@ -2,7 +2,6 @@ import {
   ContentTypesSingular,
   ContentTypeKeys,
   ContentType,
-  ContentTypes,
   AssignmentIn,
   SukoAssignmentIn,
   Exam,
@@ -11,7 +10,7 @@ import {
 } from '../../../types'
 
 export function getSingularContentTypeFinnish(s: ContentType) {
-  const key = Object.keys(ContentTypes).find((k) => ContentTypes[k as ContentTypeKeys] === s) as ContentTypeKeys
+  const key = Object.keys(ContentType).find((k) => ContentType[k as ContentTypeKeys] === s) as ContentTypeKeys
   return ContentTypesSingular[key]
 }
 

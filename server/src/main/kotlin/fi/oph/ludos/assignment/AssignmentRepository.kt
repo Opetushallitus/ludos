@@ -1,6 +1,5 @@
 package fi.oph.ludos.assignment
 
-import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
@@ -33,7 +32,6 @@ class AssignmentRepository(
             rs.getString("assignment_instruction_fi"),
             rs.getString("assignment_instruction_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
-            ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
@@ -54,7 +52,6 @@ class AssignmentRepository(
             rs.getString("assignment_instruction_fi"),
             rs.getString("assignment_instruction_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
-            ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
@@ -73,7 +70,6 @@ class AssignmentRepository(
             rs.getString("assignment_instruction_fi"),
             rs.getString("assignment_instruction_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
-            ContentType.ASSIGNMENTS,
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
@@ -219,7 +215,6 @@ class AssignmentRepository(
                 assignment.instructionFi,
                 assignment.instructionSv,
                 assignment.publishState,
-                assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
@@ -268,7 +263,6 @@ class AssignmentRepository(
                 assignment.instructionFi,
                 assignment.instructionSv,
                 assignment.publishState,
-                assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
@@ -313,7 +307,6 @@ class AssignmentRepository(
                 assignment.instructionFi,
                 assignment.instructionSv,
                 assignment.publishState,
-                assignment.contentType,
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,

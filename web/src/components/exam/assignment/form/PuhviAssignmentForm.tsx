@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../KoodistoContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentType, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
+import { Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from './formCommon/FormButtonRow'
 import { postAssignment, updateAssignment } from '../../../../formUtils'
@@ -19,12 +19,11 @@ import { useKoodisto } from '../../../../hooks/useKoodisto'
 type PuhviAssignmentFormProps = {
   action: 'new' | 'update'
   assignment?: PuhviAssignmentIn
-  contentType: ContentType
   pathname: string
   exam: Exam
 }
 
-export const PuhviAssignmentForm = ({ action, assignment, contentType, pathname, exam }: PuhviAssignmentFormProps) => {
+export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: PuhviAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
@@ -45,15 +44,13 @@ export const PuhviAssignmentForm = ({ action, assignment, contentType, pathname,
     if (assignment) {
       reset({
         ...assignment,
-        exam,
-        contentType: assignment.contentType.toUpperCase() as PuhviAssignmentFormType['contentType']
+        exam
       })
     } else {
       setValue('exam', exam)
-      setValue('contentType', contentType.toUpperCase() as PuhviAssignmentFormType['contentType'])
       setValue('laajaalainenOsaaminenKoodiArvos', [])
     }
-  }, [assignment, contentType, exam, reset, setValue])
+  }, [assignment, exam, reset, setValue])
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: PuhviAssignmentFormType) => {
@@ -94,7 +91,6 @@ export const PuhviAssignmentForm = ({ action, assignment, contentType, pathname,
     <>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
-        <input type="hidden" {...register('contentType')} />
 
         <div className="mb-6">
           <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>

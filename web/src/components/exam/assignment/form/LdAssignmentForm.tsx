@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../KoodistoContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentType, Exam, LdAssignmentIn, PublishState } from '../../../../types'
+import { Exam, LdAssignmentIn, PublishState } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from './formCommon/FormButtonRow'
 import { postAssignment, updateAssignment } from '../../../../formUtils'
@@ -20,12 +20,11 @@ import { useKoodisto } from '../../../../hooks/useKoodisto'
 type LdAssignmentFormProps = {
   action: 'new' | 'update'
   assignment?: LdAssignmentIn
-  contentType: ContentType
   pathname: string
   exam: Exam
 }
 
-export const LdAssignmentForm = ({ action, assignment, contentType, pathname, exam }: LdAssignmentFormProps) => {
+export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
@@ -45,15 +44,13 @@ export const LdAssignmentForm = ({ action, assignment, contentType, pathname, ex
     if (assignment) {
       reset({
         ...assignment,
-        exam,
-        contentType: assignment.contentType.toUpperCase() as LdAssignmentFormType['contentType']
+        exam
       })
     } else {
       setValue('exam', exam)
-      setValue('contentType', contentType.toUpperCase() as LdAssignmentFormType['contentType'])
       setValue('laajaalainenOsaaminenKoodiArvos', [])
     }
-  }, [assignment, contentType, exam, reset, setValue])
+  }, [assignment, exam, reset, setValue])
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: LdAssignmentFormType) => {
@@ -98,7 +95,6 @@ export const LdAssignmentForm = ({ action, assignment, contentType, pathname, ex
     <>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
-        <input type="hidden" {...register('contentType')} />
 
         <div className="mb-6">
           <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />

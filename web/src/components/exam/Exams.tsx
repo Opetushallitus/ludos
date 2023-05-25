@@ -1,13 +1,9 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
-import { ContentTypes, Exam, ContentType } from '../../types'
+import { Exam, ContentType } from '../../types'
 import { Tabs } from '../Tabs'
-import {
-  ContentTypeTranslationEnglish,
-  ContentTypeTranslationFinnish,
-  getSingularContentTypeFinnish
-} from './assignment/assignmentUtils'
+import { ContentTypeTranslationEnglish, ContentTypeTranslationFinnish } from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 import { AssignmentList } from './assignment/AssignmentList'
 
@@ -19,7 +15,7 @@ export const Exams = ({ exam }: ExamProps) => {
   const { t } = useTranslation()
   const { contentType } = useParams<{ contentType: string }>()
 
-  const defaultContentType = (ContentTypeTranslationFinnish[contentType!] as ContentType) || ContentTypes.KOETEHTAVAT
+  const defaultContentType = (ContentTypeTranslationFinnish[contentType!] as ContentType) || ContentType.KOETEHTAVAT
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
     contentType: defaultContentType,
     exam
@@ -34,7 +30,7 @@ export const Exams = ({ exam }: ExamProps) => {
       </h2>
 
       <Tabs
-        options={Object.values(ContentTypes)}
+        options={Object.values(ContentType)}
         activeTab={activeTab}
         setActiveTab={(opt) => setActiveTab(opt as ContentType)}
       />

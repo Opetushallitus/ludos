@@ -4,7 +4,6 @@ const MIN_LENGTH = 3
 
 const commonSchema = z.object({
   exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: 'Required' }),
-  contentType: z.string({ required_error: 'Required' }),
   nameFi: z.string().min(MIN_LENGTH, { message: 'Too short' }),
   nameSv: z.string().min(MIN_LENGTH, { message: 'Too short' }),
   instructionFi: z.string().nullable(),

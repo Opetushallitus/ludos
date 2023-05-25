@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { AssignmentIn, Exam, ContentTypesEng } from '../../types'
+import { AssignmentIn, Exam, ContentTypeEng } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import { SukoContent } from './SukoContent'
@@ -18,9 +18,9 @@ export const Content = ({ exam }: AssignmentProps) => {
   const location = useLocation()
 
   const contentTypeSingular =
-    contentType === ContentTypesEng.KOETEHTAVAT
+    contentType === ContentTypeEng.KOETEHTAVAT
       ? EXAM_TYPE_ENUM.ASSIGNMENT
-      : contentType === ContentTypesEng.OHJEET
+      : contentType === ContentTypeEng.OHJEET
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 

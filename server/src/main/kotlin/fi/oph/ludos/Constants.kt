@@ -13,7 +13,3 @@ enum class PublishState {
 enum class Exam {
     SUKO, PUHVI, LD
 }
-
-enum class ContentType {
-    ASSIGNMENTS, INSTRUCTIONS, CERTIFICATES
-}

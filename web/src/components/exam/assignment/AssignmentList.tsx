@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentIn, Exam, ContentTypesEng, ValueOf, ContentType } from '../../../types'
+import { AssignmentIn, Exam, ContentTypeEng, ValueOf, ContentType } from '../../../types'
 import { AssignmentCard } from './AssignmentCard'
 import { FiltersType, useFilters } from '../../../hooks/useFilters'
 import { ContentTypeTranslationEnglish, getSingularContentTypeFinnish, removeEmpty } from './assignmentUtils'
@@ -34,13 +34,13 @@ export const AssignmentList = ({
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
 
   const urlByContentType = () => {
-    if (contentType === ContentTypesEng.KOETEHTAVAT) {
+    if (contentType === ContentTypeEng.KOETEHTAVAT) {
       return `${EXAM_TYPE_ENUM.ASSIGNMENT}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
         removeNullsFromFilterObj
       ).toString()}`
     }
 
-    if (contentType === ContentTypesEng.OHJEET) {
+    if (contentType === ContentTypeEng.OHJEET) {
       return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}`
     }
 
@@ -104,7 +104,7 @@ export const AssignmentList = ({
           </div>
         </div>
       </div>
-      {contentType === ContentTypesEng.KOETEHTAVAT && (
+      {contentType === ContentTypeEng.KOETEHTAVAT && (
         <AssignmentFilters exam={exam} filters={filters} setFilters={setFilters} />
       )}
       {loading && (
@@ -114,14 +114,14 @@ export const AssignmentList = ({
       )}
       {data && (
         <>
-          {contentType === ContentTypesEng.KOETEHTAVAT && (
+          {contentType === ContentTypeEng.KOETEHTAVAT && (
             <ul>
               {data?.map((assignment, i) => (
                 <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
               ))}
             </ul>
           )}
-          {contentType === ContentTypesEng.OHJEET && (
+          {contentType === ContentTypeEng.OHJEET && (
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
               {data?.map((assignment, i) => (
@@ -129,7 +129,7 @@ export const AssignmentList = ({
               ))}
             </div>
           )}
-          {contentType === ContentTypesEng.TODISTUKSET && (
+          {contentType === ContentTypeEng.TODISTUKSET && (
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
               {data?.map((assignment, i) => (

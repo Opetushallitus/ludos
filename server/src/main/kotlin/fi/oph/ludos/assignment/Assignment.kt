@@ -3,7 +3,6 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
@@ -29,7 +28,6 @@ interface Assignment {
     val instructionFi: String
     val instructionSv: String
     val publishState: PublishState
-    val contentType: ContentType
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
     val laajaalainenOsaaminenKoodiArvos: Array<String>
 }
@@ -43,7 +41,6 @@ data class SukoAssignmentDtoIn(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_SUKO)
     val assignmentTypeKoodiArvo: String,
@@ -64,7 +61,6 @@ data class PuhviAssignmentDtoIn(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_PUHVI)
     val assignmentTypeKoodiArvo: String,
@@ -81,7 +77,6 @@ data class LdAssignmentDtoIn(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
     val lukuvuosiKoodiArvos: Array<String>,
@@ -104,7 +99,6 @@ data class SukoAssignmentDtoOut(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
@@ -123,7 +117,6 @@ data class PuhviAssignmentDtoOut(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
@@ -140,7 +133,6 @@ data class LdAssignmentDtoOut(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,

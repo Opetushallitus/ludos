@@ -1,6 +1,6 @@
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
-import { ContentTypesEng, SukoAssignmentIn } from '../../types'
+import { ContentTypeEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
@@ -41,7 +41,7 @@ export const SukoContent = ({ assignment, contentType }: SukoAssignmentContentPr
         </span>
       </div>
       <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
-        {contentType !== ContentTypesEng.OHJEET && (
+        {contentType !== ContentTypeEng.OHJEET && (
           <ul>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}

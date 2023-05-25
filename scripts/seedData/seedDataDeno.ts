@@ -10,7 +10,6 @@ const commonFields = {
   instructionFi: 'Instructions Fi',
   instructionSv: 'Instructions Sv',
   publishState: 'PUBLISHED',
-  contentType: '',
   laajaalainenOsaaminenKoodiArvos: ['04']
 }
 
