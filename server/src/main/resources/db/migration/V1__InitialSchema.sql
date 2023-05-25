@@ -24,6 +24,9 @@ CREATE TABLE suko_assignment
     PRIMARY KEY (assignment_id)
 ) INHERITS (assignment);
 
+CREATE INDEX suko_assignment_suko_oppimaara_koodi_arvo_index on suko_assignment (suko_oppimaara_koodi_arvo);
+COMMENT ON INDEX suko_assignment_suko_oppimaara_koodi_arvo_index IS 'For AssignmentRepository.getOppimaarasInUse()';
+
 CREATE TABLE puhvi_assignment
 (
     puhvi_assignment_type_koodi_arvo text   NOT NULL,

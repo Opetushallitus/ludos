@@ -504,7 +504,18 @@ class AssignmentRepository(
     }
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(
-        "SELECT distinct suko_oppimaara_koodi_arvo FROM suko_assignment"
+        // The same as `SELECT DISTINCT suko_oppimaara_koodi_arvo FROM suko_assignment` but 10x faster
+        // since postgres SELECT DISINCT is slow, see https://wiki.postgresql.org/wiki/Loose_indexscan
+        """
+        WITH RECURSIVE t AS (
+           (SELECT suko_oppimaara_koodi_arvo FROM suko_assignment ORDER BY suko_oppimaara_koodi_arvo LIMIT 1)
+           UNION ALL
+           SELECT (SELECT suko_oppimaara_koodi_arvo FROM suko_assignment WHERE suko_oppimaara_koodi_arvo > t.suko_oppimaara_koodi_arvo ORDER BY suko_oppimaara_koodi_arvo LIMIT 1)
+           FROM t
+           WHERE t.suko_oppimaara_koodi_arvo IS NOT NULL
+           )
+        SELECT suko_oppimaara_koodi_arvo FROM t WHERE suko_oppimaara_koodi_arvo IS NOT NULL;
+        """.trimIndent()
     ) { rs: ResultSet, _: Int ->
         rs.getString("suko_oppimaara_koodi_arvo")
     }
