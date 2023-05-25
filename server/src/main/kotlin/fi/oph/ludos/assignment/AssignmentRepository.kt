@@ -113,9 +113,9 @@ class AssignmentRepository(
         }
 
         if (filters.aihe != null) {
-            query += " AND ARRAY[:aiheKoodiArvo ] && suko_aihe_koodi_arvos"
-            val arr = dataSource.connection.createArrayOf("text", filters.aihe.split(",").toTypedArray())
-            parameters.addValue("aiheKoodiArvo", arr)
+            query += " AND ARRAY[:aiheKoodiArvo ]::text[] && suko_aihe_koodi_arvos"
+
+            parameters.addValue("aiheKoodiArvo", filters.aihe.split(","))
         }
 
         if (filters.tavoitetaitotaso != null) {
@@ -147,9 +147,8 @@ class AssignmentRepository(
         }
 
         if (filters.lukuvuosi != null) {
-            query += " AND ARRAY[:lukuvuosiKoodiArvo ] && puhvi_lukuvuosi_koodi_arvos"
-            val arr = dataSource.connection.createArrayOf("text", filters.lukuvuosi.split(",").toTypedArray())
-            parameters.addValue("lukuvuosiKoodiArvo", arr)
+            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && puhvi_lukuvuosi_koodi_arvos"
+            parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
         }
 
         query += " ORDER BY assignment_created_at"
@@ -167,9 +166,8 @@ class AssignmentRepository(
         var query = "SELECT * FROM ld_assignment WHERE true"
 
         if (filters.lukuvuosi != null) {
-            query += " AND ARRAY[:lukuvuosiKoodiArvo ] && ld_lukuvuosi_koodi_arvos"
-            val arr = dataSource.connection.createArrayOf("text", filters.lukuvuosi.split(",").toTypedArray())
-            parameters.addValue("lukuvuosiKoodiArvo", arr)
+            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && ld_lukuvuosi_koodi_arvos"
+            parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
         }
 
         if (filters.aine != null) {

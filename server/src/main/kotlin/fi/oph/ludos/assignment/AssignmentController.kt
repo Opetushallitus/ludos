@@ -14,21 +14,7 @@ import javax.validation.Valid
 @RequestMapping("${Constants.API_PREFIX}/assignment")
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
-    fun createAssignment(@Valid @RequestBody assignment: Assignment): ResponseEntity<out Any> = when (assignment) {
-        is SukoAssignmentDtoIn -> {
-            ResponseEntity.status(HttpStatus.OK).body(service.createSukoAssignment(assignment))
-        }
-
-        is PuhviAssignmentDtoIn -> {
-            ResponseEntity.status(HttpStatus.OK).body(service.createPuhviAssignment(assignment))
-        }
-
-        is LdAssignmentDtoIn -> {
-            ResponseEntity.status(HttpStatus.OK).body(service.createLdAssignment(assignment))
-        }
-
-        else -> throw UnknownError("Unreachable")
-    }
+    fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut = service.createAssignment(assignment)
 
     @GetMapping("oppimaaras")
     fun getOppimaarasInUse(): List<String> = service.getOppimaarasInUse()

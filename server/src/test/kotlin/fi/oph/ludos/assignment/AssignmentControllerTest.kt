@@ -16,11 +16,13 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.sql.Timestamp
 
 fun postAssignment(body: String) =
     MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment").contentType(MediaType.APPLICATION_JSON)
         .content(body)
+
+fun getAssignmentsWithAnyFilter(exam: Exam, str: String) =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam$str").contentType(MediaType.APPLICATION_JSON)
 
 fun getAssignment(exam: Exam, id: Int) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
@@ -29,42 +31,16 @@ fun updateAssignment(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-fun seedDb() = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/seed").contentType(MediaType.APPLICATION_JSON)
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
 
-    data class TestSukoOut(
-        val id: Int,
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val instructionFi: String,
-        val instructionSv: String,
-        val publishState: PublishState,
-        val assignmentTypeKoodiArvo: String,
-        val oppimaaraKoodiArvo: String,
-        val tavoitetasoKoodiArvo: String,
-        val aiheKoodiArvos: Array<String>,
-        val laajaalainenOsaaminenKoodiArvos: Array<String>,
-        val createdAt: Timestamp,
-        val updatedAt: Timestamp
-    )
-
     @Test
     fun sukoAssignmentTest() {
         val testAssignmentStr = """{
             "exam": "SUKO",
-            "contentType": "ASSIGNMENTS",
-            "assignmentTypeKoodiArvo": "003",
-            "oppimaaraKoodiArvo": "ET",
-            "tavoitetasoKoodiArvo": "0004",
-            "aiheKoodiArvos": ["002", "003"],
-            "laajaalainenOsaaminenKoodiArvos": ["06", "03"],
             "nameFi": "suomi",
             "nameSv": "ruotsi",
             "contentFi": "suomi",
@@ -212,22 +188,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertTrue(errorMessage.contains(substring), "Error message should contain substring: $substring")
     }
 
-    data class TestLdOut(
-        val id: Int,
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val instructionFi: String,
-        val instructionSv: String,
-        val publishState: PublishState,
-        val createdAt: Timestamp,
-        val updatedAt: Timestamp,
-        val laajaalainenOsaaminenKoodiArvos: Array<String>,
-        val lukuvuosiKoodiArvos: Array<String>,
-        val aineKoodiArvo: String
-    )
-
     @Test
     fun ldAssignmentTest() {
         val testAssignment = """
@@ -305,22 +265,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedAssignment.aineKoodiArvo, "2")
 
     }
-
-    data class TestPuhviOut(
-        val id: Int,
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val instructionFi: String,
-        val instructionSv: String,
-        val publishState: PublishState,
-        val laajaalainenOsaaminenKoodiArvos: Array<String>,
-        val assignmentTypeKoodiArvo: String,
-        val lukuvuosiKoodiArvos: Array<String>,
-        val createdAt: Timestamp,
-        val updatedAt: Timestamp
-    )
 
     @Test
     fun puhviAssignmentTest() {
@@ -431,19 +375,4 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
         assertThat(responseContent).isEqualTo("404 NOT_FOUND \"Assignment not found 999\"")
     }
-
-    @Test
-    fun testFilters() {
-        seedDb()
-
-        val sukoFilters = SukoAssignmentFilter(
-            orderDirection = "desc",
-            oppimaara = "TKFIA1",
-            tehtavatyyppisuko = "002",
-            aihe = "",
-            tavoitetaitotaso = ""
-        )
-
-    }
-
 }

@@ -147,28 +147,29 @@ interface AssignmentFilter {
 
 data class SukoAssignmentFilter(
     override val orderDirection: String?,
-    @Pattern(regexp = "^[a-zA-Z]+\$")
+    // allow alphabetical letters, numbers and commas
+    @field:Pattern(regexp = "^[a-zA-Z0-9,]+\$")
     val oppimaara: String?,
-    @Pattern(regexp = "^[0-9,]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppisuko: String?,
-    @Pattern(regexp = "^[0-9,]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val aihe: String?,
-    @Pattern(regexp = "^[0-9,]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val tavoitetaitotaso: String?,
 ): AssignmentFilter
 
 data class LdAssignmentFilter(
     override val orderDirection: String?,
-    @Pattern(regexp = "^[0-9]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
-    @Pattern(regexp = "^[0-9,]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val aine: String?,
 ): AssignmentFilter
 
 data class PuhviAssignmentFilter(
     override val orderDirection: String?,
-    @Pattern(regexp = "^[0-9,]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppipuhvi: String?,
-    @Pattern(regexp = "^[0-9]+\$")
+    @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
 ): AssignmentFilter

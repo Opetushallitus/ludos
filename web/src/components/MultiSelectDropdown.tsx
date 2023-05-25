@@ -18,7 +18,7 @@ export const MultiSelectDropdown = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,
-  testId,
+  testId = id,
   canReset = false
 }: MultiSelectProps) => {
   const { t } = useTranslation()
@@ -40,7 +40,12 @@ export const MultiSelectDropdown = ({
     inputRef
   })
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => setSearchText(event.target.value)
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!isOpen) {
+      setIsOpen(true)
+    }
+    setSearchText(event.target.value)
+  }
 
   return (
     <div
@@ -106,13 +111,13 @@ export const MultiSelectDropdown = ({
       <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
         {filteredOptions.map((option, i) => (
           <li
-            className={`cursor-pointer px-3 ${
-              selectedOptions.includes(option) ? 'bg-green-primary text-white hover:text-white' : ''
+            className={`cursor-pointer px-3${
+              selectedOptions.includes(option) ? ' bg-green-primary text-white hover:text-white' : ''
             } ${
               i === highlightedIndex && selectedOptions.includes(option)
-                ? '!bg-green-light'
+                ? ' !bg-green-light'
                 : i === highlightedIndex
-                ? 'bg-gray-light'
+                ? ' bg-gray-light'
                 : ''
             }`}
             role="option"

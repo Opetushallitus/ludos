@@ -43,6 +43,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                 }
                 selectedOptions={getSelectedOptions(filters.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
+                testId="oppimaara"
                 canReset
               />
             </div>
@@ -53,6 +54,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                 options={sortKooditAlphabetically(koodistos.tehtavatyyppisuko || [])}
                 selectedOptions={getSelectedOptions(filters.tehtavatyyppisuko, 'tehtavatyyppisuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
+                testId="contentType"
                 canReset
               />
             </div>

@@ -9,9 +9,6 @@ const eslintConfig = {
   },
   rules: {
     curly: 'error',
-    'no-magic-numbers': ['error', {
-      enforceConst: true, ignoreDefaultValues: true, ignoreArrayIndexes: true, ignore: [-1, 0, 1]
-    }],
     eqeqeq: 'error',
     'no-undef-init': 'error',
     'no-unneeded-ternary': 'error',

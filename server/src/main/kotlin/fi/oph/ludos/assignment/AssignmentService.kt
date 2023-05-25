@@ -10,11 +10,12 @@ import org.springframework.web.server.ResponseStatusException
 class AssignmentService(val db: AssignmentRepository) {
     fun getAssignments(filters: AssignmentFilter): List<AssignmentOut> = db.getAssignments(filters)
 
-    fun createSukoAssignment(assignment: SukoAssignmentDtoIn): AssignmentOut = db.saveSukoAssignment(assignment)
-
-    fun createLdAssignment(assignment: LdAssignmentDtoIn): AssignmentOut = db.saveLdAssignment(assignment)
-
-    fun createPuhviAssignment(assignment: PuhviAssignmentDtoIn): AssignmentOut = db.savePuhviAssignment(assignment)
+    fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {
+        is SukoAssignmentDtoIn -> db.saveSukoAssignment(assignment)
+        is PuhviAssignmentDtoIn -> db.savePuhviAssignment(assignment)
+        is LdAssignmentDtoIn -> db.saveLdAssignment(assignment)
+        else -> throw UnknownError("Unreachable")
+    }
 
     fun getAssignmentById(exam: Exam, id: Int): AssignmentOut = try {
         when (exam) {

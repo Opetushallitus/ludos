@@ -26,7 +26,9 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
   const isLd = isLdAssignment(assignment, exam)
 
   return (
-    <li className="my-2 rounded-lg border-2 border-gray-light" data-testid={`assignment-${assignment.id.toString()}`}>
+    <li
+      className="my-2 rounded-lg border-2 border-gray-light"
+      data-testid={`assignment-list-item-${assignment.id.toString()}`}>
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
         <InternalLink
           className="text-lg font-semibold text-green-primary"
@@ -65,6 +67,14 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
                   <p className="text-xs text-gray-secondary">{t('assignment.aine')}</p>
                   <p className="text-xs text-black">
                     {getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine') || '*'}
+                  </p>
+                </div>
+              )}
+              {isPuhvi && (
+                <div>
+                  <p className="text-xs text-gray-secondary">{t('assignment.aine')}</p>
+                  <p className="text-xs text-black">
+                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi') || '*'}
                   </p>
                 </div>
               )}

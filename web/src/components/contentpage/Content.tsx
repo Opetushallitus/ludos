@@ -8,6 +8,7 @@ import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/ass
 import { PuhviContent } from './PuhviContent'
 import { LdContent } from './LdContent'
 import { EXAM_TYPE_ENUM } from '../../constants'
+import { Spinner } from '../Spinner'
 
 type AssignmentProps = { exam: Exam }
 
@@ -24,7 +25,7 @@ export const Content = ({ exam }: AssignmentProps) => {
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 
-  const { data: assignment } = useFetch<AssignmentIn>(`${contentTypeSingular}/${exam}/${id}`)
+  const { data: assignment, loading } = useFetch<AssignmentIn>(`${contentTypeSingular}/${exam}/${id}`)
 
   const handleNavigation = () => {
     const pathName = `/${exam.toLowerCase()}/${contentType}`
@@ -36,6 +37,11 @@ export const Content = ({ exam }: AssignmentProps) => {
 
   return (
     <div className="min-h-[80vh]">
+      {!assignment && loading && (
+        <div className="mt-32 text-center">
+          <Spinner />
+        </div>
+      )}
       {assignment && (
         <>
           <div className="row mt-5">
