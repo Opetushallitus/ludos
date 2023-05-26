@@ -1,11 +1,15 @@
 name: Start service
 description: Starts up the frontend and backend
+inputs:
+  ludos-profiles:
+    description: Ludos profiles as comma separated list
+    required: true
 runs:
   using: composite
   steps:
     - name: Start service
       shell: bash
-      run: ENV_NAME=local docker-build/run.sh 2>&1 | tee service.log &
+      run: ENV_NAME="${{ inputs.ludos-profiles }}" docker-build/run.sh 2>&1 | tee service.log &
     - name: Wait until service is online
       shell: bash
       run: timeout 120 bash -c "while true; do curl -sS -o /dev/null http://localhost:8080/ && break; sleep 2; done; echo 'Service responding, continuing'"

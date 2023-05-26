@@ -1,14 +1,35 @@
 name: Playwright Tests
 description: Run playwright tests
-
+inputs:
+  ludos-profiles:
+    description: Ludos profiles as comma separated list
+    required: true
+  projects:
+    description: The playwright projects to run as a space separated list
+    required: true
 runs:
   using: composite
   steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        cache: yarn
+    - name: Set up Java 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: zulu
     - name: 'Start database'
       shell: bash
       run: docker compose up -d
+    - uses: actions/download-artifact@v3
+      with:
+        name: jar
+        path: server/build/libs
     - name: '🔨 Start frontend and backend'
       uses: ./.github/actions/start_service
+      with:
+        ludos-profiles: ${{ inputs.ludos-profiles }}
     - name: yarn install
       shell: bash
       run: yarn install --frozen-lockfile
@@ -28,12 +49,12 @@ runs:
       run: npx playwright install --with-deps chromium
     - name: Run Playwright tests
       shell: bash
-      run: yarn playwright
+      run: yarn playwright --project ${{ inputs.projects }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: playwright-report
+        name: playwright-debug-artifacts
         path: |
-          playwright/playwright-report/
+          playwright/test-results/
           service.log
         retention-days: 30
