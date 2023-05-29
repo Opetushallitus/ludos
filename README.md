@@ -39,26 +39,37 @@ Minimissään tarvitset nämä:
 
 ## Ajaminen paikallisesti
 
-## Tietokanta
-
-```shell
-docker compose up
-```
-
 ### Backend
 
-Aja main-luokka IDEAsta, tai käynnistä vaihtoehtoisesti komentoriviltä
+Backend tarttee possun: `docker compose up`
+
+Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
+- `local` = devaus ja testaus osoitteessa localhost:8080, autentikaatio on disabloitu
+- `local-untuvacas` = devaus ja testaus osoitteessa localhost:8080, oikea CAS-autentikaatio Untuva-ympäristössä
+- `untuva` = https://ludos.untuvaopintopolku.fi/ = AWS Fargatessa pyörivä Untuva-cas
+
+Vaihtoehtoja backendin ajamiseen:
+1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local`
+1) `server/gradlew bootRun -p server bootRun --args='--spring.profiles.active=local'`
+1) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
+  * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta.
+  * Frontend ei kuitenkaan päivity itsestään vaikka `yarn dev` ois päällä
+    `web`-kansiossa, vaan siellä on ajettava `yarn build` erikseen joka kerta.
+  * Fronttia devatessa onkin suositeltavaa ajaa `web`-kansiossa `yarn dev` ja
+    käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
+1) `build:docker` + `run:docker` (profiili kovakoodattu `local`)
 
 ### Frontend
 
-```shell
-yarn dev
-```
+Vaihtoehtoja:
+1) `yarn dev` käynnistää viten porttiin 8000
+1) `yarn build` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
 
 ### Playwright e2e
 - Ympäristö
-  - Lokaalissa backend pystyssä ja frontend buildattuna komennolla `yarn build:ci`
-  - Tai vaihtoehtoisesti `yarn dev` ja muutos playwright configissa `baseUrl: 'http://localhost:8080'` 
+  - Repon juuressa `.env`, jossa tarvittavat salaisuudet
+  - Lokaalissa backend pystyssä ja frontend buildattuna komennolla `yarn build:web`
+  - Tai vaihtoehtoisesti `yarn dev:web` ja muutos playwright configissa `baseUrl: 'http://localhost:8000'`
 - Ajo
   - vs coden testing näkymästä
-  - Komentoriviltä `yarn test:e2e`
+  - Komentoriviltä `yarn playwright`
