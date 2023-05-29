@@ -64,7 +64,7 @@ runs:
     - uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: playwright-debug-artifacts
+        name: playwright-debug-artifacts-${{ inputs.projects }}
         path: |
           playwright/test-results/
           service.log
