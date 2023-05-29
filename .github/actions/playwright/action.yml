@@ -11,6 +11,14 @@ inputs:
     description: The browsers to install
     required: false
     default: chromium
+  testikayttaja-yllapitaja-username:
+    description: Ylläpitäjä-testikäyttäjän käyttäjätunnus
+    default: "username"
+    required: false
+  testikayttaja-yllapitaja-password:
+    description: Ylläpitäjä-testikäyttäjän salasana
+    default: "password"
+    required: false
 runs:
   using: composite
   steps:
@@ -60,6 +68,9 @@ runs:
       run: npx playwright install ${{ inputs.browsers }}
     - name: Run Playwright tests
       shell: bash
+      env:
+        TESTIKAYTTAJA_YLLAPITAJA_USERNAME: ${{ inputs.testikayttaja-yllapitaja-username }}
+        TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
       run: yarn playwright --project ${{ inputs.projects }}
     - uses: actions/upload-artifact@v3
       if: always()

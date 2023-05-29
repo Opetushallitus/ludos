@@ -67,7 +67,7 @@ Vaihtoehtoja:
 
 ### Playwright e2e
 - Ympäristö
-  - Repon juuressa `.env`, jossa tarvittavat salaisuudet
+  - Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-utility sso login && yarn generate:secret_file`
   - Lokaalissa backend pystyssä ja frontend buildattuna komennolla `yarn build:web`
   - Tai vaihtoehtoisesti `yarn dev:web` ja muutos playwright configissa `baseUrl: 'http://localhost:8000'`
 - Ajo

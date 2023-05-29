@@ -72,6 +72,8 @@ jobs:
         with:
           ludos-profiles: local-untuvacas
           projects: cas_auth
+          testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
+          testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
   build-docker-image-and-push:
     runs-on: "ubuntu-22.04"
     needs: ["build-jar-and-test-api", "playwright-mock-auth", "playwright-cas-auth"]
