@@ -1,14 +1,47 @@
 name: Playwright Tests
 description: Run playwright tests
-
+inputs:
+  ludos-profiles:
+    description: Ludos profiles as comma separated list
+    required: true
+  projects:
+    description: The playwright projects to run as a space separated list
+    required: true
+  browsers:
+    description: The browsers to install
+    required: false
+    default: chromium
+  testikayttaja-yllapitaja-username:
+    description: Ylläpitäjä-testikäyttäjän käyttäjätunnus
+    default: "username"
+    required: false
+  testikayttaja-yllapitaja-password:
+    description: Ylläpitäjä-testikäyttäjän salasana
+    default: "password"
+    required: false
 runs:
   using: composite
   steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        cache: yarn
+    - name: Set up Java 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: zulu
     - name: 'Start database'
       shell: bash
       run: docker compose up -d
+    - uses: actions/download-artifact@v3
+      with:
+        name: jar
+        path: server/build/libs
     - name: '🔨 Start frontend and backend'
       uses: ./.github/actions/start_service
+      with:
+        ludos-profiles: ${{ inputs.ludos-profiles }}
     - name: yarn install
       shell: bash
       run: yarn install --frozen-lockfile
@@ -16,6 +49,10 @@ runs:
       id: playwright_version
       shell: bash
       run: echo "playwright_version=$(npx playwright --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+    - name: List Playwright Ubuntu dependencies
+      id: playwright-ubuntu-deps
+      shell: bash
+      run: echo playwright-ubuntu-deps=$(npx playwright install-deps --dry-run ${{ inputs.browsers }} 2>&1 | grep -Po '(?<=no-install-recommends ).*(?=")') >> $GITHUB_OUTPUT
     - name: Cache Playwright browser
       uses: actions/cache@v3
       with:
@@ -23,17 +60,23 @@ runs:
         key: ${{ runner.os }}-playwright-${{ steps.playwright_version.outputs.playwright_version }}
         restore-keys: |
           ${{ runner.os }}-playwright-
+    - uses: tecolicom/actions-use-apt-tools@v1
+      with:
+        tools: ${{ steps.playwright-ubuntu-deps.outputs.playwright-ubuntu-deps }}
     - name: Install Playwright Browsers
       shell: bash
-      run: npx playwright install --with-deps chromium
+      run: npx playwright install ${{ inputs.browsers }}
     - name: Run Playwright tests
       shell: bash
-      run: yarn playwright
+      env:
+        TESTIKAYTTAJA_YLLAPITAJA_USERNAME: ${{ inputs.testikayttaja-yllapitaja-username }}
+        TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
+      run: yarn playwright --project ${{ inputs.projects }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: playwright-report
+        name: playwright-debug-artifacts-${{ inputs.projects }}
         path: |
-          playwright/playwright-report/
+          playwright/test-results/
           service.log
         retention-days: 30
