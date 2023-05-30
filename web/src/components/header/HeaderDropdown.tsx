@@ -8,15 +8,20 @@ interface LocaleDropdownProps {
   currentOption: string
   options: LocaleDropdownOptions
   onOptionClick: (lang: string) => void
+  testId: string
 }
 
-export const HeaderDropdown = ({ currentOption, options, onOptionClick }: LocaleDropdownProps) => {
+export const HeaderDropdown = ({ currentOption, options, onOptionClick, testId }: LocaleDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useDropdownCloseOnBlur<boolean>(false, setIsOpen)
 
   return (
     <div ref={dropdownRef}>
-      <Button className="flex items-center text-green-primary" onClick={() => setIsOpen(!isOpen)} variant="buttonGhost">
+      <Button
+        className="flex items-center text-green-primary"
+        data-testid={`${testId}-expand`}
+        onClick={() => setIsOpen(!isOpen)}
+        variant="buttonGhost">
         {currentOption}
         <Icon name="laajenna" color="text-black" />
       </Button>
@@ -27,6 +32,7 @@ export const HeaderDropdown = ({ currentOption, options, onOptionClick }: Locale
               className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
                 options[option].name === currentOption ? 'text-green-primary' : ''
               }`}
+              data-testid={options[option].testId ?? undefined}
               key={i}
               onClick={() => {
                 onOptionClick(option)

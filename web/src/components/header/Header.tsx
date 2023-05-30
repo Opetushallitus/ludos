@@ -5,7 +5,7 @@ import { HeaderDropdown } from './HeaderDropdown'
 import { useEffect, useState } from 'react'
 import { useFetch } from '../../hooks/useFetch'
 
-export type LocaleDropdownOptions = Record<string, { name: string }>
+export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
 const languageOptions: LocaleDropdownOptions = {
   fi: { name: 'Suomi' },
@@ -14,7 +14,7 @@ const languageOptions: LocaleDropdownOptions = {
 }
 
 const authOptions: LocaleDropdownOptions = {
-  logout: { name: 'Kirjaudu ulos' }
+  logout: { name: 'Kirjaudu ulos', testId: 'logout-button' }
 }
 
 export const Header = ({ username }: { username?: string }) => {
@@ -50,6 +50,7 @@ export const Header = ({ username }: { username?: string }) => {
                 currentOption={currentOption || ''}
                 options={authOptions}
                 onOptionClick={handleOptionClick}
+                testId="header-user-dropdown"
               />
             </div>
             <p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>
@@ -58,6 +59,7 @@ export const Header = ({ username }: { username?: string }) => {
                 currentOption={languageOptions[currentLanguageKey].name}
                 options={languageOptions}
                 onOptionClick={(str) => changeLanguage(str)}
+                testId="header-language-dropdown"
               />
             </div>
           </div>
