@@ -9,7 +9,7 @@ runs:
   steps:
     - name: Start service
       shell: bash
-      run: ENV_NAME="${{ inputs.ludos-profiles }}" docker-build/run.sh 2>&1 | tee service.log &
+      run: LUDOS_PROFILES="${{ inputs.ludos-profiles }}" docker-build/run.sh 2>&1 | tee service.log &
     - name: Wait until service is online
       shell: bash
       run: timeout 120 bash -c "while true; do curl -sS -o /dev/null http://localhost:8080/ && break; sleep 2; done; echo 'Service responding, continuing'"
