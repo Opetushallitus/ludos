@@ -3,10 +3,14 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.koodisto.KoodistoName
+import fi.oph.ludos.koodisto.ValidKoodiArvo
+import fi.oph.ludos.koodisto.ValidKoodiArvos
 import java.sql.Timestamp
 import java.util.*
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Pattern
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -15,14 +19,17 @@ import java.util.*
     JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
 )
 interface Assignment {
+    @get:NotBlank
     val nameFi: String
+    @get:NotBlank
     val nameSv: String
     val contentFi: String
     val contentSv: String
     val instructionFi: String
     val instructionSv: String
     val publishState: PublishState
-    val contentType: ContentType
+    @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
+    val laajaalainenOsaaminenKoodiArvos: Array<String>
 }
 
 @JsonTypeName("SUKO")
@@ -34,12 +41,15 @@ data class SukoAssignmentDtoIn(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_SUKO)
     val assignmentTypeKoodiArvo: String,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021)
     val oppimaaraKoodiArvo: String,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.TAITOTASO)
     val tavoitetasoKoodiArvo: String,
+    @field:ValidKoodiArvos(koodisto = KoodistoName.AIHE_SUKO)
     val aiheKoodiArvos: Array<String>,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
 ) : Assignment
 
 @JsonTypeName("PUHVI")
@@ -51,7 +61,11 @@ data class PuhviAssignmentDtoIn(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_PUHVI)
+    val assignmentTypeKoodiArvo: String,
+    @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
+    val lukuvuosiKoodiArvos: Array<String>,
 ) : Assignment
 
 @JsonTypeName("LD")
@@ -63,7 +77,11 @@ data class LdAssignmentDtoIn(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
+    val lukuvuosiKoodiArvos: Array<String>,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
+    val aineKoodiArvo: String
 ) : Assignment
 
 interface AssignmentOut {
@@ -81,14 +99,13 @@ data class SukoAssignmentDtoOut(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String,
-    val aiheKoodiArvos: Array<String>,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
+    val aiheKoodiArvos: Array<String>
 ) : Assignment, AssignmentOut
 
 data class PuhviAssignmentDtoOut(
@@ -100,9 +117,11 @@ data class PuhviAssignmentDtoOut(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
+    override val updatedAt: Timestamp,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val assignmentTypeKoodiArvo: String,
+    val lukuvuosiKoodiArvos: Array<String>
 ) : Assignment, AssignmentOut
 
 data class LdAssignmentDtoOut(
@@ -114,69 +133,43 @@ data class LdAssignmentDtoOut(
     override val instructionFi: String,
     override val instructionSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
+    override val updatedAt: Timestamp,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val lukuvuosiKoodiArvos: Array<String>,
+    val aineKoodiArvo: String
 ) : Assignment, AssignmentOut
 
-interface UpdateAssignmentDtoIn {
-    val id: Int
-    val nameFi: String
-    val nameSv: String
-    val contentFi: String
-    val contentSv: String
-    val instructionFi: String
-    val instructionSv: String
-    val publishState: PublishState
-    val contentType: ContentType
+interface AssignmentFilter {
+    @get:Pattern(regexp = "^(asc|desc)\$")
+    val orderDirection: String?
 }
 
-data class SukoUpdateAssignmentDtoIn(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val instructionFi: String,
-    override val instructionSv: String,
-    override val publishState: PublishState,
-    override val contentType: ContentType,
-    val assignmentTypeKoodiArvo: String,
-    val oppimaaraKoodiArvo: String,
-    val tavoitetasoKoodiArvo: String,
-    val aiheKoodiArvos: Array<String>,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
-) : UpdateAssignmentDtoIn
+data class SukoAssignmentFilter(
+    override val orderDirection: String?,
+    // allow alphabetical letters, numbers and commas
+    @field:Pattern(regexp = "^[a-zA-Z0-9,]+\$")
+    val oppimaara: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val tehtavatyyppisuko: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val aihe: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val tavoitetaitotaso: String?,
+): AssignmentFilter
 
-data class PuhviUpdateAssignmentDtoIn(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val instructionFi: String,
-    override val instructionSv: String,
-    override val publishState: PublishState,
-    override val contentType: ContentType,
-) : UpdateAssignmentDtoIn
+data class LdAssignmentFilter(
+    override val orderDirection: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val lukuvuosi: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val aine: String?,
+): AssignmentFilter
 
-data class LdUpdateAssignmentDtoIn(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val instructionFi: String,
-    override val instructionSv: String,
-    override val publishState: PublishState,
-    override val contentType: ContentType,
-) : UpdateAssignmentDtoIn
-
-data class AssignmentFilter(
-    val course: String?,
-    val assignmentTypeKoodiArvo: String?,
-    val topic: String?,
-    val language: String?,
-    val orderBy: String?,
-    val orderDirection: String?
-)
+data class PuhviAssignmentFilter(
+    override val orderDirection: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val tehtavatyyppipuhvi: String?,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val lukuvuosi: String?,
+): AssignmentFilter

@@ -21,43 +21,26 @@ class InstructionService(val db: InstructionRepository) {
         Exam.LD -> db.getLdInstructions()
     }
 
-    fun getInstructionById(exam: Exam, id: Int): InstructionOut = when (exam) {
-        Exam.SUKO -> try {
-            db.getSukoInstructionById(id)
-        } catch (e: NotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
+    fun getInstructionById(exam: Exam, id: Int): InstructionOut = try {
+        when (exam) {
+            Exam.SUKO -> db.getSukoInstructionById(id)
+            Exam.PUHVI -> db.getPuhviInstructionById(id)
+            Exam.LD -> db.getLdInstructionById(id)
         }
 
-        Exam.PUHVI -> try {
-            db.getPuhviInstructionById(id)
-        } catch (e: NotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
-        }
-
-        Exam.LD -> try {
-            db.getLdInstructionById(id)
-        } catch (e: NotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
-        }
+    } catch (e: NotFoundException) {
+        throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
     }
 
-    fun updateInstruction(exam: Exam, id: Int, instruction: UpdateInstructionDtoIn): Int = when (exam) {
-        Exam.SUKO -> try {
-            db.updateSukoInstruction(id, instruction)
-        } catch (e: NotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
+    fun updateInstruction(id: Int, instruction: Instruction): Int = try {
+        when (instruction) {
+            is SukoInstructionDtoIn -> db.updateSukoInstruction(id, instruction)
+            is PuhviInstructionDtoIn -> db.updatePuhviInstruction(id, instruction)
+            is LdInstructionDtoIn -> db.updateLdInstruction(id, instruction)
+            else -> throw UnknownError("Unreachable")
         }
 
-        Exam.PUHVI -> try {
-            db.updatePuhviInstruction(id, instruction)
-        } catch (e: NotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
-        }
-
-        Exam.LD -> try {
-            db.updateLdInstruction(id, instruction)
-        } catch (e: NotFoundException) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
-        }
+    } catch (e: NotFoundException) {
+        throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
     }
 }

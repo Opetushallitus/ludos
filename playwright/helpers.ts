@@ -26,8 +26,8 @@ export async function fillAssignmentForm({
   await page.getByTestId('tavoitetaso-option-0002').click()
 
   await page.getByTestId('aihe').click()
-  await page.getByTestId('aihe-option-1').click()
-  await page.getByTestId('aihe-option-2').click()
+  await page.getByTestId('aihe-option-001').click()
+  await page.getByTestId('aihe-option-002').click()
 
   // Close dropdown onBlur
   await page.getByTestId('aihe-label').click()
@@ -111,7 +111,7 @@ export async function updateAssignmentForm({
   expect(selectedOptionsAiheResetted).toBe(0)
 
   await page.getByTestId('aihe').click()
-  await page.getByTestId('aihe-option-3').click()
+  await page.getByTestId('aihe-option-003').click()
 
   // Close dropdown onBlur
   await page.getByTestId('aihe-label').click()

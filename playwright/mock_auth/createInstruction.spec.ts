@@ -9,7 +9,7 @@ test.describe('Assignment form tests', () => {
     await page.getByTestId('create-ohje-button').click()
   })
 
-  test('can create a new assignment', async ({ page }) => {
+  test('can create a new instruction', async ({ page }) => {
     await fillInstructionForm({
       page,
       nameTextFi: 'Testi tehtävä',
@@ -25,7 +25,7 @@ test.describe('Assignment form tests', () => {
     await expect(header).toHaveText('Testi tehtävä')
   })
 
-  test('can create draft assignment', async ({ page }) => {
+  test('can create draft instruction', async ({ page }) => {
     await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
     await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
 

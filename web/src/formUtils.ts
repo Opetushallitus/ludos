@@ -1,6 +1,7 @@
 import { Exam } from './types'
 import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
 import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
+import { assignmentUrl, baseApiUrl, certificateUrl, instructionUrl } from './constants'
 
 const doRequest = async (url: string, method: string, body?: string) =>
   await fetch(url, {
@@ -10,7 +11,7 @@ const doRequest = async (url: string, method: string, body?: string) =>
   })
 
 export async function postAssignment<T>(body: T): Promise<{ id: string }> {
-  const result = await doRequest('/api/assignment', 'POST', JSON.stringify(body))
+  const result = await doRequest(assignmentUrl, 'POST', JSON.stringify(body))
 
   if (!result.ok) {
     throw new Error()
@@ -20,7 +21,7 @@ export async function postAssignment<T>(body: T): Promise<{ id: string }> {
 }
 
 export async function updateAssignment<T>(exam: Exam, id: number, body: T): Promise<string> {
-  const result = await doRequest(`/api/assignment/${exam!.toUpperCase()}/${id}`, 'PUT', JSON.stringify(body))
+  const result = await doRequest(`${assignmentUrl}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
     throw new Error()
@@ -30,7 +31,7 @@ export async function updateAssignment<T>(exam: Exam, id: number, body: T): Prom
 }
 
 export async function postInstruction<T>(body: InstructionFormType): Promise<T> {
-  const result = await doRequest('/api/instruction', 'POST', JSON.stringify(body))
+  const result = await doRequest(instructionUrl, 'POST', JSON.stringify(body))
 
   if (!result.ok) {
     throw new Error()
@@ -40,7 +41,7 @@ export async function postInstruction<T>(body: InstructionFormType): Promise<T> 
 }
 
 export async function updateInstruction<T>(exam: Exam, id: number, body: InstructionFormType): Promise<T> {
-  const result = await doRequest(`/api/instruction/${exam!.toUpperCase()}/${id}`, 'PUT', JSON.stringify(body))
+  const result = await doRequest(`${instructionUrl}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
     throw new Error()
@@ -49,7 +50,7 @@ export async function updateInstruction<T>(exam: Exam, id: number, body: Instruc
   return await result.json()
 }
 export async function postCertificate<T>(body: CertificateFormType): Promise<T> {
-  const result = await doRequest('/api/certificate', 'POST', JSON.stringify(body))
+  const result = await doRequest(certificateUrl, 'POST', JSON.stringify(body))
 
   if (!result.ok) {
     throw new Error()

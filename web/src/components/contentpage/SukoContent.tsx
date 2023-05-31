@@ -1,12 +1,11 @@
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
-import { ContentTypesEng, SukoAssignmentIn } from '../../types'
+import { ContentTypeEng, SukoAssignmentIn } from '../../types'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { getKoodiLabel, getKoodisLabel } from '../../koodistoUtils'
-import { useContext, useState } from 'react'
-import { KoodistoContext } from '../../KoodistoContext'
+import { useState } from 'react'
 import { ContentContent, ContentHeader, ContentIconRow, ContentInstruction } from './ContentCommon'
+import { useKoodisto } from '../../hooks/useKoodisto'
 
 type SukoAssignmentContentProps = {
   assignment: SukoAssignmentIn
@@ -14,9 +13,9 @@ type SukoAssignmentContentProps = {
 }
 export const SukoContent = ({ assignment, contentType }: SukoAssignmentContentProps) => {
   const { t } = useTranslation()
-  const ctx = useContext(KoodistoContext)
   const [language, setLanguage] = useState<string>('fi')
   const navigate = useNavigate()
+  const { getKoodisLabel, getKoodiLabel } = useKoodisto()
 
   return (
     <div className="col min-h-[60vh] w-full">
@@ -42,29 +41,24 @@ export const SukoContent = ({ assignment, contentType }: SukoAssignmentContentPr
         </span>
       </div>
       <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
-        {contentType !== ContentTypesEng.OHJEET && (
+        {contentType !== ContentTypeEng.OHJEET && (
           <ul>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
-              {getKoodiLabel(assignment.assignmentTypeKoodiArvo, ctx.koodistos.tehtavatyyppisuko)}
+              {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
-              {getKoodiLabel(assignment.tavoitetasoKoodiArvo, ctx.koodistos.taitotaso)}
+              {getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
-              {assignment.aiheKoodiArvos.length > 0
-                ? getKoodisLabel(assignment.aiheKoodiArvos, ctx.koodistos.aihe)
-                : '-'}
+              {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}
             </li>
             <li>
               <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
               {assignment.laajaalainenOsaaminenKoodiArvos.length > 0
-                ? getKoodisLabel(
-                    assignment.laajaalainenOsaaminenKoodiArvos,
-                    ctx.koodistos.laajaalainenosaaminenlops2021
-                  )
+                ? getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')
                 : '-'}
             </li>
           </ul>

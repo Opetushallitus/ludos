@@ -3,7 +3,7 @@ export type Page = {
   path: string
 }
 
-export const EXAM_TYPES = ['suko', 'puhvi', 'ld']
+export const EXAM_TYPES = ['suko', 'ld', 'puhvi']
 
 export const PAGE_HEADERS = ['frontpage', ...EXAM_TYPES, 'palautteet'] as const
 
@@ -40,7 +40,6 @@ export type AssignmentIn = {
   instructionFi: string
   instructionSv: string
   publishState: PublishState
-  contentType: Exam
   createdAt: string
   updatedAt: string
   aiheKoodiArvos: string[]
@@ -54,19 +53,31 @@ export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
 }
 
-export const ContentTypes = {
+export type LdAssignmentIn = AssignmentIn & {
+  aineKoodiArvo: string
+  lukuvuosiKoodiArvos: string[]
+}
+
+export type PuhviAssignmentIn = AssignmentIn & {
+  assignmentTypeKoodiArvo: string
+  lukuvuosiKoodiArvos: string[]
+}
+
+export const ContentType = {
   KOETEHTAVAT: 'koetehtavat',
   OHJEET: 'ohjeet',
   TODISTUKSET: 'todistukset'
 } as const
+export type ContentType = (typeof ContentType)[keyof typeof ContentType]
 
-export const ContentTypesEng = {
+export const ContentTypeEng = {
   KOETEHTAVAT: 'assignments',
   OHJEET: 'instructions',
   TODISTUKSET: 'certificates'
 }
+export type ContentTypeEng = (typeof ContentTypeEng)[keyof typeof ContentTypeEng]
 
-export type ContentTypeKeys = keyof typeof ContentTypes
+export type ContentTypeKeys = keyof typeof ContentType
 
 type SingularOptions = {
   [key in ContentTypeKeys]: string
@@ -78,4 +89,4 @@ export const ContentTypesSingular: SingularOptions = {
   TODISTUKSET: 'todistus'
 }
 
-export type ContentType = (typeof ContentTypes)[keyof typeof ContentTypes]
+export type ValueOf<T> = T[keyof T]

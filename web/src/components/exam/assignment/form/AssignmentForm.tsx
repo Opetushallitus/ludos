@@ -1,8 +1,9 @@
 import { useLocation, useMatch } from 'react-router-dom'
-import { ContentType, Exam, SukoAssignmentIn } from '../../../../types'
-import { FormHeader } from '../../../formCommon/FormHeader'
+import { ContentTypeEng, Exam } from '../../../../types'
+import { FormHeader } from './formCommon/FormHeader'
 import { SukoAssignmentForm } from './SukoAssignmentForm'
-import { PuhviAndLdAssignmentForm } from './PuhviAndLdAssignmentForm'
+import { PuhviAssignmentForm } from './PuhviAssignmentForm'
+import { LdAssignmentForm } from './LdAssignmentForm'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -11,24 +12,21 @@ type AssignmentFormProps = {
 export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const { pathname, state } = useLocation()
   const match = useMatch(`/:exam/:contentType/${action}`)
-  const assignment = (state?.assignment as SukoAssignmentIn) || null
+  const assignment = state?.assignment
 
-  const contentType = match!.params.contentType as ContentType
   const exam = match!.params.exam!.toUpperCase() as Exam
+
+  const formProps = { action, assignment, pathname, exam }
 
   return (
     <div className="w-10/12 pt-3">
-      <FormHeader action={action} contentType={contentType} assignment={assignment} />
+      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} assignment={assignment} />
       {exam === Exam.Suko ? (
-        <SukoAssignmentForm action={action} assignment={assignment} contentType={contentType} pathname={pathname} />
+        <SukoAssignmentForm {...formProps} />
+      ) : exam === Exam.Puhvi ? (
+        <PuhviAssignmentForm {...formProps} />
       ) : (
-        <PuhviAndLdAssignmentForm
-          action={action}
-          assignment={assignment}
-          contentType={contentType}
-          pathname={pathname}
-          exam={exam}
-        />
+        <LdAssignmentForm {...formProps} />
       )}
     </div>
   )

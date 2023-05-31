@@ -1,38 +1,32 @@
 import { FieldLabel } from '../../../FieldLabel'
-import { Dropdown } from '../../../Dropdown'
-import { getSelectedOptions, sortKoodit } from '../../../../koodistoUtils'
+import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
 import { useForm } from 'react-hook-form'
 import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
 import { Tabs } from '../../../Tabs'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { PuhviAndLdAssignmentFormType, puhviAndLdAssignmentSchema } from './assignmentSchema'
+import { LdAssignmentFormType, LdAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { KoodiDtoIn, KoodistoContext } from '../../../../KoodistoContext'
-import { useContext, useEffect, useState } from 'react'
+import { KoodiDtoIn } from '../../../../KoodistoContext'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentType, Exam, PublishState, SukoAssignmentIn } from '../../../../types'
+import { Exam, LdAssignmentIn, PublishState } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FormButtonRow } from '../../../formCommon/FormButtonRow'
+import { FormButtonRow } from './formCommon/FormButtonRow'
 import { postAssignment, updateAssignment } from '../../../../formUtils'
+import { Dropdown } from '../../../Dropdown'
+import { useKoodisto } from '../../../../hooks/useKoodisto'
 
-type SukoAssignmentFormProps = {
+type LdAssignmentFormProps = {
   action: 'new' | 'update'
-  assignment: SukoAssignmentIn
-  contentType: ContentType
+  assignment?: LdAssignmentIn
   pathname: string
   exam: Exam
 }
 
-export const PuhviAndLdAssignmentForm = ({
-  action,
-  assignment,
-  contentType,
-  pathname,
-  exam
-}: SukoAssignmentFormProps) => {
+export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
-  const ctx = useContext(KoodistoContext)
+  const { koodistos } = useKoodisto()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('fi')
 
@@ -43,34 +37,32 @@ export const PuhviAndLdAssignmentForm = ({
     handleSubmit,
     setValue,
     formState: { errors }
-  } = useForm<PuhviAndLdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(puhviAndLdAssignmentSchema) })
+  } = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(LdAssignmentSchema) })
 
   // set initial values
   useEffect(() => {
     if (assignment) {
       reset({
         ...assignment,
-        exam,
-        contentType: assignment.contentType.toUpperCase() as PuhviAndLdAssignmentFormType['contentType']
+        exam
       })
     } else {
       setValue('exam', exam)
-      setValue('contentType', contentType.toUpperCase() as PuhviAndLdAssignmentFormType['contentType'])
       setValue('laajaalainenOsaaminenKoodiArvos', [])
     }
-  }, [assignment, contentType, exam, reset, setValue])
+  }, [assignment, exam, reset, setValue])
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
-    await handleSubmit(async (data: PuhviAndLdAssignmentFormType) => {
+    await handleSubmit(async (data: LdAssignmentFormType) => {
       const body = { ...data, publishState }
 
       try {
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<PuhviAndLdAssignmentFormType>(exam, assignment.id, body)
+          resultId = await updateAssignment<LdAssignmentFormType>(exam, assignment.id, body)
         } else {
-          const { id } = await postAssignment<PuhviAndLdAssignmentFormType>(body)
+          const { id } = await postAssignment<LdAssignmentFormType>(body)
           resultId = id
         }
 
@@ -82,7 +74,7 @@ export const PuhviAndLdAssignmentForm = ({
   }
 
   const handleMultiselectOptionChange = (
-    fieldName: 'laajaalainenOsaaminenKoodiArvos',
+    fieldName: 'laajaalainenOsaaminenKoodiArvos' | 'lukuvuosiKoodiArvos' | 'aineKoodiArvo',
     selectedOptions: KoodiDtoIn[]
   ) => {
     setValue(
@@ -92,37 +84,52 @@ export const PuhviAndLdAssignmentForm = ({
   }
 
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
-  const currentLukuvuosi = watch('lukuvuosiKoodiArvo')
+  const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
+  const currentAine = watch('aineKoodiArvo')
 
-  const lukuvuosiKoodisto = ctx.koodistos.ludoslukuvuosi
-  const laajaalainenOsaaminenKoodisto = ctx.koodistos.laajaalainenosaaminenlops2021
+  const lukuvuosiKoodisto = sortKooditAlphabetically(koodistos.ludoslukuvuosi || [])
+  const laajaalainenOsaaminenKoodisto = sortKooditAlphabetically(koodistos.laajaalainenosaaminenlops2021 || [])
+  const aineKoodisto = sortKooditAlphabetically(koodistos.ludoslukiodiplomiaine || [])
 
   return (
     <>
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
-        <input type="hidden" {...register('contentType')} />
 
         <div className="mb-6">
-          <FieldLabel id="tavoitetaso" name={t('form.lukuvuosi')} required />
+          <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />
           <Dropdown
-            id="lukuvuosi"
-            selectedOption={lukuvuosiKoodisto && lukuvuosiKoodisto.find((it) => it.koodiArvo === currentLukuvuosi)}
-            options={sortKoodit(lukuvuosiKoodisto || [])}
-            onSelectedOptionsChange={(opt: string) => setValue('lukuvuosiKoodiArvo', opt)}
-            testId="lukuvuosi"
+            id="aineKoodiArvo"
+            selectedOption={aineKoodisto.find((it) => it.koodiArvo === currentAine)}
+            options={aineKoodisto}
+            onSelectedOptionsChange={(opt: string) => setValue('aineKoodiArvo', opt)}
+            testId="aineKoodiArvo"
           />
-          {errors?.lukuvuosiKoodiArvo && <p className="text-green-primary">{errors.lukuvuosiKoodiArvo.message}</p>}
+          {errors?.lukuvuosiKoodiArvos && <p className="text-green-primary">{errors.lukuvuosiKoodiArvos.message}</p>}
         </div>
 
         <div className="mb-6">
-          <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} required />
+          <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
           <MultiSelectDropdown
-            id="laajaalainenOsaamine"
-            options={sortKoodit(laajaalainenOsaaminenKoodisto || [])}
+            id="lukuvuosiKoodiArvos"
+            options={lukuvuosiKoodisto}
+            selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
+            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
+            testId="lukuvuosiKoodiArvos"
+            canReset
+          />
+          {errors?.lukuvuosiKoodiArvos && <p className="text-green-primary">{errors.lukuvuosiKoodiArvos.message}</p>}
+        </div>
+
+        <div className="mb-6">
+          <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
+          <MultiSelectDropdown
+            id="laajaalainenOsaaminenKoodiArvos"
+            options={laajaalainenOsaaminenKoodisto}
             selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
             onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
-            testId="laajaalainenOsaaminen"
+            testId="laajaalainenOsaaminenKoodiArvos"
+            canReset
           />
           {errors?.laajaalainenOsaaminenKoodiArvos && (
             <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvos.message}</p>
@@ -155,7 +162,7 @@ export const PuhviAndLdAssignmentForm = ({
               {t('form.tehtavannimi')}
             </TextInput>
             {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
-            <TextAreaInput id="instructioSv" register={register}>
+            <TextAreaInput id="instructionSv" register={register}>
               {t('form.tehtavan_ohje')}
             </TextAreaInput>
             <TextAreaInput id="contentSv" register={register}>

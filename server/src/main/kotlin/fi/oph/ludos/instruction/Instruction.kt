@@ -3,7 +3,6 @@ package fi.oph.ludos.instruction
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import fi.oph.ludos.ContentType
 import fi.oph.ludos.PublishState
 import java.sql.Timestamp
 
@@ -23,7 +22,6 @@ interface Instruction {
     val nameSv: String
     val contentSv: String
     val publishState: PublishState
-    val contentType: ContentType
 }
 
 @JsonTypeName("SUKO")
@@ -33,7 +31,6 @@ data class SukoInstructionDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
 ) : Instruction
 
 @JsonTypeName("PUHVI")
@@ -43,7 +40,6 @@ data class PuhviInstructionDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
 ) : Instruction
 
 @JsonTypeName("LD")
@@ -53,7 +49,6 @@ data class LdInstructionDtoIn(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
 ) : Instruction
 
 interface InstructionOut {
@@ -69,7 +64,6 @@ data class SukoInstructionDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
@@ -81,7 +75,6 @@ data class PuhviInstructionDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
@@ -93,17 +86,6 @@ data class LdInstructionDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
-    override val contentType: ContentType,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
-
-data class UpdateInstructionDtoIn(
-    val id: Int,
-    val nameFi: String,
-    val nameSv: String,
-    val contentFi: String,
-    val contentSv: String,
-    val publishState: PublishState,
-    val contentType: ContentType,
-)
