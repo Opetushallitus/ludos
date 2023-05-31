@@ -52,8 +52,9 @@ Vaihtoehtoja backendin ajamiseen:
 1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local`
 1) `server/gradlew bootRun -p server bootRun --args='--spring.profiles.active=local'`
 1) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
-  * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta.
-  * Frontend ei kuitenkaan päivity itsestään vaikka `yarn dev` ois päällä
+  * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta spring
+    bootin kautta kuten tuotannossa.
+  * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev` ois päällä
     `web`-kansiossa, vaan siellä on ajettava `yarn build` erikseen joka kerta.
   * Fronttia devatessa onkin suositeltavaa ajaa `web`-kansiossa `yarn dev` ja
     käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
@@ -62,14 +63,14 @@ Vaihtoehtoja backendin ajamiseen:
 ### Frontend
 
 Vaihtoehtoja:
-1) `yarn dev` käynnistää viten porttiin 8000
-1) `yarn build` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
+1) `yarn dev:web` käynnistää viten porttiin 8000
+1) `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
 
 ### Playwright e2e
 - Ympäristö
   - Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-utility sso login && yarn generate:secret_file`
-  - Lokaalissa backend pystyssä ja frontend buildattuna komennolla `yarn build:web`
-  - Tai vaihtoehtoisesti `yarn dev:web` ja muutos playwright configissa `baseUrl: 'http://localhost:8000'`
+  - Lokaalissa backend pystyssä ja frontend käynnissä viten kautta: `yarn dev:web`
 - Ajo
   - vs coden testing näkymästä
   - Komentoriviltä `yarn playwright`
+  - Huom: CI:llä playwright ajetaan buildattua fronttia ja porttia 8080 vasten
