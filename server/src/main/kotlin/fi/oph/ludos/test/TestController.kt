@@ -3,6 +3,7 @@ package fi.oph.ludos.test
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
+import fi.oph.ludos.DisableableSecurityFilterChain
 import fi.oph.ludos.assignment.Assignment
 import fi.oph.ludos.assignment.AssignmentService
 import org.springframework.beans.factory.annotation.Value
@@ -52,5 +53,11 @@ class TestController(
         seedAssignmentRepository.nukeAssignments()
 
         return httpServletResponse.sendRedirect(appUrl)
+    }
+
+    @PostMapping("/setAuthenticationEnabled")
+    fun setAuthenticationEnabled(@RequestBody isAuthenticationEnabled: Boolean): ResponseEntity<String> {
+        DisableableSecurityFilterChain.setAuthenticationEnabled(isAuthenticationEnabled)
+        return ResponseEntity.status(HttpStatus.OK).body("OK")
     }
 }

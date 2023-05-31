@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import javax.servlet.Filter
+import javax.servlet.http.HttpServletRequest
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +27,8 @@ class WebSecurityConfiguration {
 
     @Bean
     fun securityFilterChain(
-        http: HttpSecurity,
+        realHttpSecurity: HttpSecurity,
+        dummyHttpSecurity: HttpSecurity,
         authenticationEntryPoint: AuthenticationEntryPoint,
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
@@ -33,28 +36,50 @@ class WebSecurityConfiguration {
         @Value("\${spring.profiles.active}") activeProfiles: String
     ): SecurityFilterChain {
         // todo: enable csrf for non local environments
-        http.csrf().disable()
+        realHttpSecurity.csrf().disable()
+        dummyHttpSecurity.csrf().disable()
 
         logger.info("Initializing SecurityFilterChain with active profiles: '$activeProfiles'")
 
-        if (activeProfiles == "local") {
-            http.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
-            return http.build()
-        }
+        println("$realHttpSecurity, $dummyHttpSecurity")
 
-        http.logout()
+        dummyHttpSecurity.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
+
+        realHttpSecurity.logout()
             .logoutSuccessUrl(casConfig.getCasLogoutUrl())
             .logoutUrl(casConfig.logoutUrl)
 
-        http.authorizeHttpRequests()
+        realHttpSecurity.authorizeHttpRequests()
             .antMatchers("/assets/**").permitAll()
             .antMatchers("/api/health-check").permitAll()
+            .antMatchers("/api/test/setAuthenticationEnabled").permitAll()
 
-        http.authorizeHttpRequests()
+        realHttpSecurity.authorizeHttpRequests()
             .antMatchers("/**").authenticated().and().addFilter(casAuthenticationFilter)
             .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
             .addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
 
-        return http.build()
+        if (activeProfiles == "local") {
+            DisableableSecurityFilterChain.setAuthenticationEnabled(false)
+        }
+
+        return DisableableSecurityFilterChain(realHttpSecurity.build(), dummyHttpSecurity.build())
+    }
+}
+
+class DisableableSecurityFilterChain(val realChain: SecurityFilterChain, val dummyChain: SecurityFilterChain) : SecurityFilterChain {
+    companion object {
+        private var isAuthenticationEnabled = true
+
+        fun setAuthenticationEnabled(isAuthenticationEnabled: Boolean) {
+            this.isAuthenticationEnabled = isAuthenticationEnabled
+        }
+    }
+    override fun matches(request: HttpServletRequest?): Boolean {
+        return if (isAuthenticationEnabled) realChain.matches(request) else dummyChain.matches(request)
+    }
+
+    override fun getFilters(): MutableList<Filter> {
+        return if (isAuthenticationEnabled) realChain.filters else dummyChain.filters
     }
 }
