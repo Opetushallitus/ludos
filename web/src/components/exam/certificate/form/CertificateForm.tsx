@@ -4,13 +4,15 @@ import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { Exam, ContentType, SukoAssignmentIn, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { postCertificate, updateCertificate } from '../../../../formUtils'
-import { useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { Tabs } from '../../../Tabs'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { FormHeader } from '../../assignment/form/formCommon/FormHeader'
-import { FormButtonRow } from '../../assignment/form/formCommon/FormButtonRow'
+import { FormHeader } from '../../../formCommon/FormHeader'
+import { FormButtonRow } from '../../../formCommon/FormButtonRow'
+import { Button } from '../../../Button'
+import { Icon } from '../../../Icon'
 
 type CertificateFormProps = {
   action: 'new' | 'update'
@@ -18,6 +20,7 @@ type CertificateFormProps = {
 
 export const CertificateForm = ({ action }: CertificateFormProps) => {
   const { t } = useTranslation()
+  const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const { pathname, state } = useLocation()
   const match = useMatch(`/:exam/:contentType/${action}`)
@@ -68,6 +71,12 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
     })()
   }
 
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    // Perform necessary operations with the uploaded file
+    console.log('Uploaded file:', file)
+  }
+
   return (
     <div className="w-10/12 pt-3">
       <FormHeader action={action} contentType={ContentType.TODISTUKSET} assignment={assignment} />
@@ -104,7 +113,43 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
           </>
         )}
 
-        <div className="mb-2 text-lg font-semibold">Todistus</div>
+        <div className="mt-10 w-full md:w-2/3">
+          <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
+            <p className="col-span-3 md:col-span-3">Tiedoston nimi</p>
+            <p className="hidden md:col-span-3 md:block">Lisätty</p>
+          </div>
+
+          <div className="border-y border-gray-light" />
+
+          <div className="grid grid-cols-5 gap-2 py-2 md:grid-cols-6">
+            <p className="col-span-4 text-green-primary md:col-span-3">Suullinenkilitaito-12-10-2020.pdf</p>
+            <p className="hidden md:col-span-2 md:block">12.10.2020</p>
+            <div className="text-center">
+              <Icon name="poista" color="text-green-primary" />
+            </div>
+            <p className="col-span-4 text-green-primary md:col-span-3">Suullinenkilitaito-12-10-2020.pdf</p>
+            <p className="hidden md:col-span-2 md:block">12.10.2020</p>
+            <div className="text-center">
+              <Icon name="poista" color="text-green-primary" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <input
+            type="file"
+            id="fileInput"
+            ref={hiddenFileInputRef}
+            accept="application/pdf"
+            style={{ display: 'none' }}
+            onChange={handleFileUpload}
+          />
+          <label htmlFor="fileInput">
+            <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()}>
+              Lisää liitetiedosto
+            </Button>
+          </label>
+        </div>
       </form>
 
       <FormButtonRow
