@@ -1,5 +1,7 @@
 package fi.oph.ludos
 
+import io.github.cdimascio.dotenv.Dotenv
+import io.github.cdimascio.dotenv.dotenv
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.FilterRegistrationBean
@@ -17,6 +19,12 @@ import org.springframework.web.servlet.resource.PathResourceResolver
 class LudosApplication
 
 fun main(args: Array<String>) {
+    val dotenv: Dotenv = dotenv {
+        filename = ".env"
+    }
+
+    dotenv.entries(Dotenv.Filter.DECLARED_IN_ENV_FILE).forEach { System.setProperty(it.key, it.value) }
+
     runApplication<LudosApplication>(*args)
 }
 
@@ -25,6 +33,7 @@ class Config : WebMvcConfigurer {
     companion object {
         val indexHtml = ClassPathResource("/static/index.html")
     }
+
     init {
         if (!indexHtml.exists()) {
             throw IllegalStateException("index.html not found")
@@ -50,8 +59,8 @@ class Config : WebMvcConfigurer {
     @Bean
     fun forwardedHeaderFilter(): FilterRegistrationBean<ForwardedHeaderFilter> {
         val filterRegistrationBean = FilterRegistrationBean<ForwardedHeaderFilter>()
-        filterRegistrationBean.setFilter(ForwardedHeaderFilter())
-        filterRegistrationBean.setOrder(0)
+        filterRegistrationBean.filter = ForwardedHeaderFilter()
+        filterRegistrationBean.order = 0
         return filterRegistrationBean
     }
 }

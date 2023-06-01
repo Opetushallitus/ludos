@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
+import { useUserDetails } from '../../hooks/useUserDetails'
 
-export const HeaderMobile = ({ username }: { username?: string }) => {
+export const HeaderMobile = () => {
   const { t, i18n } = useTranslation()
+  const { name, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
@@ -27,8 +29,8 @@ export const HeaderMobile = ({ username }: { username?: string }) => {
                 <Header onClick={toggleMenu} />
               </div>
               <div className="bg-white p-3" onClick={(e) => e.stopPropagation}>
-                <p className="font-semibold">{username || ''}</p>
-                <p className="text-gray-secondary">Ylläpitäjä</p>
+                <p className="font-semibold">{name || ''}</p>
+                <p className="text-gray-secondary">{role}</p>
               </div>
 
               <nav className="flex h-full flex-col bg-white">

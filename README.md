@@ -50,7 +50,7 @@ Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
 
 Vaihtoehtoja backendin ajamiseen:
 1) Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
-1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local`
+1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
 1) `server/gradlew bootRun -p server bootRun --args='--spring.profiles.active=local'`
 1) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
   * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta spring

@@ -1,7 +1,7 @@
 import { ChangeEvent, useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { useDropdown } from '../hooks/useDropdown'
-import { KoodiDtoIn } from '../KoodistoContext'
+import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
 
 type MultiSelectProps = {

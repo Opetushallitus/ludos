@@ -17,7 +17,6 @@ import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.*
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
@@ -25,13 +24,16 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+
 @Configuration
 class CasConfig {
-    val logger: Logger = LoggerFactory.getLogger(javaClass)
+
     @Value("\${ludos.appUrl}")
     lateinit var appUrl: String
+
     @Value("\${ludos.opintopolkuHostname}")
     lateinit var opintopolkuHostname: String
+
     val logoutUrl = "${API_PREFIX}/logout"
 
     @Bean
@@ -58,8 +60,7 @@ class CasConfig {
     }
 
     @Bean
-    fun ticketValidator(): TicketValidator =
-        Cas30ServiceTicketValidator("https://$opintopolkuHostname/cas")
+    fun ticketValidator(): TicketValidator = Cas30ServiceTicketValidator("https://$opintopolkuHostname/cas")
 
     @Bean
     fun authenticationEntryPoint(
@@ -82,47 +83,30 @@ class CasConfig {
         setTicketValidator(ticketValidator)
         setKey("ludos")
     }
-
-    @Bean
-    fun userDetailsService(): AuthenticationUserDetailsService<CasAssertionAuthenticationToken> =
-        CasUserDetailsService()
-}
-
-class CasUserDetailsService : AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
-    override fun loadUserDetails(token: CasAssertionAuthenticationToken): UserDetails {
-        return CasUserDetails(token.name)
-    }
-}
-
-class CasUserDetails(private val username: String) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf()
-    override fun getPassword(): String? = null
-    override fun getUsername(): String = username
-    override fun isAccountNonExpired(): Boolean = true
-    override fun isAccountNonLocked(): Boolean = true
-    override fun isCredentialsNonExpired(): Boolean = true
-    override fun isEnabled(): Boolean = true
 }
 
 class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccessHandler() {
-    val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
+    private val ludosLogger = LoggerFactory.getLogger(javaClass)
     override fun onAuthenticationSuccess(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
-        authentication: Authentication?
+        request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication?
     ) {
-        ludosLogger.info("Successful login: '${((authentication?.principal as CasUserDetails?)?.username)}'")
+        val principal = authentication?.principal as? Kayttajatiedot
+
+        if (principal != null) {
+            ludosLogger.info("✅ Successful login: '${principal.username}'")
+        } else {
+            ludosLogger.warn("✅ Successful login: principal was null 🤔")
+        }
+
         super.onAuthenticationSuccess(request, response, authentication)
     }
 }
 
 class LudosAuthenticationFailureHandler() : SimpleUrlAuthenticationFailureHandler() {
-    val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
+    private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
-        exception: AuthenticationException?
+        request: HttpServletRequest?, response: HttpServletResponse?, exception: AuthenticationException?
     ) {
         ludosLogger.warn("Login failed: ${exception?.message}")
         super.onAuthenticationFailure(request, response, exception)

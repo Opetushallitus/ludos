@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '../Button'
-import { LocaleDropdownOptions } from './Header'
+import { LocaleDropdownOptions } from './HeaderDesktop'
 import { Icon } from '../Icon'
 import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
 

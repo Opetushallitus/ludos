@@ -1,5 +1,5 @@
 import { RefObject, useCallback, useEffect, useState } from 'react'
-import { KoodiDtoIn } from '../KoodistoContext'
+import { KoodiDtoIn } from '../LudosContext'
 
 type UseDropdownStateProps = {
   options: KoodiDtoIn[]
