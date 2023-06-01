@@ -68,7 +68,7 @@ Vaihtoehtoja:
 
 ### Playwright e2e
 - Ympäristö
-  - Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-utility sso login && yarn generate:secret_file`
+  - Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && yarn generate:secret_file`
   - Lokaalissa backend pystyssä ja frontend käynnissä viten kautta: `yarn dev:web`
 - Ajo
   - vs coden testing näkymästä
