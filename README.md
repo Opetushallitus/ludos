@@ -49,6 +49,7 @@ Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
 - `untuva` = https://ludos.untuvaopintopolku.fi/ = AWS Fargatessa pyörivä Untuva-cas
 
 Vaihtoehtoja backendin ajamiseen:
+1) Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
 1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local`
 1) `server/gradlew bootRun -p server bootRun --args='--spring.profiles.active=local'`
 1) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
@@ -68,7 +69,7 @@ Vaihtoehtoja:
 
 ### Playwright e2e
 - Ympäristö
-  - Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && yarn generate:secret_file`
+  - Varmista että .env tiedostot ovat ajantasalla (ks backend)
   - Lokaalissa backend pystyssä ja frontend käynnissä viten kautta: `yarn dev:web`
 - Ajo
   - vs coden testing näkymästä

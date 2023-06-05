@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' })
+require('dotenv').config({ path: '.env' })
 import { test, expect } from '@playwright/test'
 
 const casLoginUrl =
