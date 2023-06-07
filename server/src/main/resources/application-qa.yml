@@ -1,0 +1,7 @@
+ludos:
+  appUrl: "https://ludos.testiopintopolku.fi"
+  opintopolkuHostname: "virkailija.testiopintopolku.fi"
+
+server:
+  tomcat:
+      pattern: "%{X-Forwarded-For}i %l %u %t \"%r\" %s %b"
