@@ -1,10 +1,9 @@
 package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import javax.transaction.Transactional
+import fi.oph.ludos.WithYllapitajaRole
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -12,25 +11,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import javax.transaction.Transactional
 
-fun postAssignment(body: String) =
-    MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment").contentType(MediaType.APPLICATION_JSON)
-        .content(body)
-
-fun getAssignmentsWithAnyFilter(exam: Exam, str: String) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam$str").contentType(MediaType.APPLICATION_JSON)
-
-fun getAssignment(exam: Exam, id: Int) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id").contentType(MediaType.APPLICATION_JSON)
-
-fun updateAssignment(id: Int, body: String) =
-    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
-        .content(body)
-
+@TestPropertySource(
+    properties = ["LUDOS_PALVELUKAYTTAJA_USERNAME=test_usernameasdad", "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"]
+)
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -38,7 +26,9 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
 
     @Test
+    @WithYllapitajaRole
     fun sukoAssignmentTest() {
+
         val testAssignmentStr = """{
             "exam": "SUKO",
             "nameFi": "suomi",
@@ -107,6 +97,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun failAssignmentUpdate() {
         val nonExistentId = -1
         val editedAssignmentFail = """{
@@ -133,6 +124,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun failKoodistoValidation() {
         val assignmentFail = """{
                 "exam": "SUKO",
@@ -165,6 +157,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun failForMissingField() {
         val assignmentFail = """{
                 "exam": "SUKO",
@@ -189,6 +182,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun ldAssignmentTest() {
         val testAssignment = """
             {
@@ -267,6 +261,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun puhviAssignmentTest() {
         val body = """
             {
@@ -345,6 +340,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun invalidExam() {
         // Invalid exam type
         val body =
@@ -357,6 +353,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun invalidState() {
         // Invalid assignment type
         val body =
@@ -369,6 +366,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun assignmentNotFound() {
         val getResult = mockMvc.perform(getAssignment(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
