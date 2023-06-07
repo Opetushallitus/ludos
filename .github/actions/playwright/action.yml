@@ -19,6 +19,12 @@ inputs:
     description: Ylläpitäjä-testikäyttäjän salasana
     default: "password"
     required: false
+  ludos-palvelukayttaja-username:
+    description: Ludos-palvelukäyttäjän käyttäjätunnus
+    required: true
+  ludos-palvelukayttaja-password:
+    description: Ludos-palvelukäyttäjän salasana
+    required: true
 runs:
   using: composite
   steps:
@@ -42,6 +48,8 @@ runs:
       uses: ./.github/actions/start_service
       with:
         ludos-profiles: ${{ inputs.ludos-profiles }}
+        ludos-palvelukayttaja-username: ${{ inputs.ludos-palvelukayttaja-username }}
+        ludos-palvelukayttaja-password: ${{ inputs.ludos-palvelukayttaja-password }}
     - name: yarn install
       shell: bash
       run: yarn install --frozen-lockfile

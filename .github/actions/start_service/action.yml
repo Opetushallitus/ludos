@@ -4,11 +4,20 @@ inputs:
   ludos-profiles:
     description: Ludos profiles as comma separated list
     required: true
+  ludos-palvelukayttaja-username:
+    description: Ludos-palvelukäyttäjän käyttäjätunnus
+    required: true
+  ludos-palvelukayttaja-password:
+    description: Ludos-palvelukäyttäjän salasana
+    required: true
 runs:
   using: composite
   steps:
     - name: Start service
       shell: bash
+      env:
+        LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ inputs.ludos-palvelukayttaja-username }}
+        LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ inputs.ludos-palvelukayttaja-password }}
       run: LUDOS_PROFILES="${{ inputs.ludos-profiles }}" docker-build/run.sh 2>&1 | tee service.log &
     - name: Wait until service is online
       shell: bash

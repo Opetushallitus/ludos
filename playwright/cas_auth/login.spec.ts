@@ -10,7 +10,9 @@ test('yllapitaja can login and logout', async ({ page }) => {
   await page.locator('#username').fill(process.env.TESTIKAYTTAJA_YLLAPITAJA_USERNAME!)
   await page.locator('#password').fill(process.env.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD!)
   await page.locator('input[type=submit]').click()
-  await expect(page.getByTestId('page-heading-etusivu')).toContainText(process.env.TESTIKAYTTAJA_YLLAPITAJA_USERNAME!)
+  await expect(page.getByTestId('page-heading-etusivu')).toContainText(
+    'Hei Ludos Ylläpitäjä, tervetuloa Koepankin ylläpitoon!'
+  )
 
   await page.getByTestId('header-user-dropdown-expand').click()
   await page.getByTestId('logout-button').click()
