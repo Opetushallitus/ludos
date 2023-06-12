@@ -46,7 +46,6 @@ class WithKayttajatiedotSecurityContextFactory : WithSecurityContextFactory<With
             listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", annotation.role)))),
             "Teppo",
             "Testaaja",
-            null,
             null
         )
         return UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
