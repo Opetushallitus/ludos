@@ -6,7 +6,9 @@ import {
   SukoAssignmentIn,
   Exam,
   PuhviAssignmentIn,
-  LdAssignmentIn
+  LdAssignmentIn,
+  ContentTypeEng,
+  CertificateIn
 } from '../../../types'
 
 export function getSingularContentTypeFinnish(s: ContentType) {
@@ -31,6 +33,9 @@ export const isSukoAssignment = (assignment: AssignmentIn, exam: Exam): assignme
 export const isPuhviAssignment = (assignment: AssignmentIn, exam: Exam): assignment is PuhviAssignmentIn =>
   exam === Exam.Puhvi
 export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment is LdAssignmentIn => exam === Exam.Ld
+
+export const isCertificate = (assignment: AssignmentIn, contentType: string): assignment is CertificateIn =>
+  contentType === ContentTypeEng.TODISTUKSET
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript

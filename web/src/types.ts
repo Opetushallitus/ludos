@@ -53,6 +53,12 @@ export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
 }
 
+export type CertificateIn = AssignmentIn & {
+  fileName: string
+  fileUrl: string
+  fileUploadDate: string
+}
+
 export type LdAssignmentIn = AssignmentIn & {
   aineKoodiArvo: string
   lukuvuosiKoodiArvos: string[]

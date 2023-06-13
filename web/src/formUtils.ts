@@ -1,7 +1,7 @@
 import { Exam } from './types'
 import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
 import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
-import { assignmentUrl, baseApiUrl, certificateUrl, instructionUrl } from './constants'
+import { assignmentUrl, certificateUrl, instructionUrl } from './constants'
 
 const doRequest = async (url: string, method: string, body?: string) =>
   await fetch(url, {
@@ -60,7 +60,23 @@ export async function postCertificate<T>(body: CertificateFormType): Promise<T> 
 }
 
 export async function updateCertificate<T>(exam: Exam, id: number, body: CertificateFormType): Promise<T> {
-  const result = await doRequest(`/api/certificate/${exam!.toUpperCase()}/${id}`, 'PUT', JSON.stringify(body))
+  const result = await doRequest(`${certificateUrl}/${id}`, 'PUT', JSON.stringify(body))
+
+  if (!result.ok) {
+    throw new Error()
+  }
+
+  return await result.json()
+}
+
+export async function uploadFile<T>(file: File): Promise<T> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const result = await fetch('/api/certificate/upload', {
+    method: 'POST',
+    body: formData
+  })
 
   if (!result.ok) {
     throw new Error()

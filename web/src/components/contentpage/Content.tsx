@@ -9,6 +9,10 @@ import { PuhviContent } from './PuhviContent'
 import { LdContent } from './LdContent'
 import { EXAM_TYPE_ENUM } from '../../constants'
 import { Spinner } from '../Spinner'
+import { ContentHeader } from './ContentCommon'
+import { useState } from 'react'
+import { StateTag } from '../StateTag'
+import { Icon } from '../Icon'
 
 type AssignmentProps = { exam: Exam }
 
@@ -25,6 +29,7 @@ export const Content = ({ exam }: AssignmentProps) => {
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 
+  // todo: refactor so that we already here would know if is assignment, instruction or certificate
   const { data: assignment, loading } = useFetch<AssignmentIn>(`${contentTypeSingular}/${exam}/${id}`)
 
   const handleNavigation = () => {
@@ -35,6 +40,8 @@ export const Content = ({ exam }: AssignmentProps) => {
     navigate(navigateToString, { replace: true })
   }
 
+  const [language, setLanguage] = useState<string>('fi')
+
   return (
     <div className="min-h-[80vh]">
       {!assignment && loading && (
@@ -44,19 +51,42 @@ export const Content = ({ exam }: AssignmentProps) => {
       )}
       {assignment && (
         <>
-          <div className="row mt-5">
-            <p>{new Date(assignment.createdAt).toLocaleDateString('fi-FI')}</p>
-          </div>
           <div className="row">
             <div className="col w-full pr-5 md:w-9/12">
               <div className="row pb-3">
-                {isSukoAssignment(assignment, exam) && (
-                  <SukoContent assignment={assignment} contentType={contentType} />
-                )}
-                {isPuhviAssignment(assignment, exam) && (
-                  <PuhviContent assignment={assignment} contentType={contentType} />
-                )}
-                {isLdAssignment(assignment, exam) && <LdContent assignment={assignment} contentType={contentType} />}
+                <div className="col min-h-[60vh] w-full">
+                  <ContentHeader
+                    language={language}
+                    nameFi={assignment.nameFi}
+                    nameSv={assignment.nameSv}
+                    onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+                    contentType={contentType}
+                  />
+                  <div className="row">
+                    <StateTag state={assignment.publishState} />
+                    <span
+                      className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
+                      onClick={() =>
+                        navigate(`../${contentType}/update`, {
+                          state: {
+                            assignment
+                          }
+                        })
+                      }>
+                      <Icon name="muokkaa" color="text-green-primary" />
+                      <p className="text-green-primary">{t('assignment.muokkaa')}</p>
+                    </span>
+                  </div>
+                  {isSukoAssignment(assignment, exam) && (
+                    <SukoContent assignment={assignment} contentType={contentType || ''} language={language} />
+                  )}
+                  {isPuhviAssignment(assignment, exam) && (
+                    <PuhviContent assignment={assignment} contentType={contentType || ''} language={language} />
+                  )}
+                  {isLdAssignment(assignment, exam) && (
+                    <LdContent assignment={assignment} contentType={contentType || ''} language={language} />
+                  )}
+                </div>
               </div>
               <div className="row mb-6">
                 <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
