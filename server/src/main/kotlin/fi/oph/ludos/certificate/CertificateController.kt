@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
 
@@ -48,8 +49,14 @@ class CertificateController(val service: CertificateService) {
 
         return ResponseEntity.status(HttpStatus.OK).body(
             FileUpload(
-                file.originalFilename!!, "https://amazon_url.com/${key}", Date()
+                file.originalFilename!!, "https://amazon_url.com/${key}", getCurrentDate()
             )
         )
+    }
+
+    fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val currentDate = Date()
+        return dateFormat.format(currentDate)
     }
 }

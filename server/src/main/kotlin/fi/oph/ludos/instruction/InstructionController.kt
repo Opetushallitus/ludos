@@ -33,8 +33,8 @@ class InstructionController(val service: InstructionService) {
     fun updateInstruction(
         @PathVariable("id") id: Int, @RequestBody instruction: Instruction
     ): ResponseEntity<Int> = try {
-        val updatedAssignmentId = service.updateInstruction(id, instruction)
-        ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
+        val updatedInstructionId = service.updateInstruction(id, instruction)
+        ResponseEntity.status(HttpStatus.OK).body(updatedInstructionId)
     } catch (e: NotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).build()
     }

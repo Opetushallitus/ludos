@@ -66,7 +66,6 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun createCertificateTest() {
-        // todo: figure out what to do with dates
         val testCertificate = TestCertificateIn(
             exam = Exam.SUKO,
             nameFi = "Test Certificate FI",
@@ -74,7 +73,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             publishState = PublishState.PUBLISHED,
             fileName = "test_certificate.pdf",
             fileUrl = "https://amazon_url.com/test_certificate.pdf",
-            fileUploadDate = "2023-06-13T09:40:57.559+00:00"
+            fileUploadDate = "2023-06-13"
         )
 
         val testCertificateStr = objectMapper.writeValueAsString(testCertificate)
@@ -157,7 +156,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 "publishState": "PUBLISHED",
                 "fileName": "updated_certificate.pdf",
                 "fileUrl": "https://amazon_url.com/updated_certificate.pdf",
-                "fileUploadDate": "2023-06-13T09:40:57.559+00:00"
+                "fileUploadDate": "2023-06-13"
             }
         """.trimMargin()
 
@@ -178,7 +177,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 "exam": "WRONG",
                 "fileName": "test_certificate.pdf",
                 "fileUrl": "https://amazon_url.com/test_certificate.pdf",
-                "fileUploadDate": "2023-06-13T09:40:57.559+00:00"
+                "fileUploadDate": "2023-06-13"
             }
         """
 
@@ -196,7 +195,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             "exam": "SUKO",
             "fileName": "test_certificate.pdf",
             "fileUrl": "https://amazon_url.com/test_certificate.pdf",
-            "fileUploadDate": "2023-06-13T09:40:57.559+00:00"
+            "fileUploadDate": "2023-06-13"
         }
         """
 

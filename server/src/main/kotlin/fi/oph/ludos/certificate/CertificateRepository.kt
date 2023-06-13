@@ -6,8 +6,6 @@ import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Component
 class CertificateRepository(
@@ -20,8 +18,6 @@ class CertificateRepository(
             Exam.LD -> "ld_certificate"
         }
 
-        println(certificate.fileUploadDate)
-
         return jdbcTemplate.query(
             """INSERT INTO $table (
             |certificate_name_fi, 
@@ -30,7 +26,7 @@ class CertificateRepository(
             |certificate_file_name,
             |certificate_file_url,
             |certificate_file_upload_date)
-            |VALUES (?, ?, ?::publish_state, ?, ?, ?::timestamp) 
+            |VALUES (?, ?, ?::publish_state, ?, ?, to_timestamp(?, 'YYYY-MM-DD')) 
             |RETURNING certificate_id, 
             |certificate_created_at,
             |certificate_updated_at""".trimMargin(),
@@ -53,7 +49,7 @@ class CertificateRepository(
             certificate.publishState.toString(),
             certificate.fileName,
             certificate.fileUrl,
-            LocalDateTime.parse(certificate.fileUploadDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            certificate.fileUploadDate
         )[0]
     }
 
@@ -120,7 +116,7 @@ class CertificateRepository(
                 |certificate_updated_at = now(),
                 |certificate_file_name = ?,
                 |certificate_file_url = ?,
-                |certificate_file_upload_date = ?::timestamp
+                |certificate_file_upload_date = to_timestamp(?, 'YYYY-MM-DD')
                 |WHERE certificate_id = ? RETURNING certificate_id""".trimMargin(),
             { rs: ResultSet, _: Int ->
                 rs.getInt("certificate_id")
@@ -130,7 +126,7 @@ class CertificateRepository(
             certificate.publishState.toString(),
             certificate.fileName,
             certificate.fileUrl,
-            LocalDateTime.parse(certificate.fileUploadDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+            certificate.fileUploadDate,
             id
         )
 

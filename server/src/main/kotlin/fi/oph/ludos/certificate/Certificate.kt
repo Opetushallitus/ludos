@@ -49,5 +49,5 @@ data class CertificateDtoOut(
 data class FileUpload (
     val fileName: String,
     val fileUrl: String,
-    val fileUploadDate: Date
+    val fileUploadDate: String
 )
