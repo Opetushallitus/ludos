@@ -7,14 +7,12 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
-import javax.sql.DataSource
 
 
 @Component
 class AssignmentRepository(
     private val namedJdbcTemplate: NamedParameterJdbcTemplate,
     private val jdbcTemplate: JdbcTemplate,
-    private val dataSource: DataSource
 ) {
     private inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
         val array = this.getArray(columnLabel)?.array ?: return emptyArray()
