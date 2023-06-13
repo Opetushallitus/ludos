@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { fillAssignmentForm } from '../helpers'
+import { fillAssignmentForm } from '../../helpers'
 
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
