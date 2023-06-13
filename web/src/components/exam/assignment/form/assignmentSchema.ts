@@ -10,7 +10,7 @@ const commonSchema = z.object({
   instructionSv: z.string().nullable(),
   contentFi: z.string().nullable(),
   contentSv: z.string().nullable(),
-  laajaalainenOsaaminenKoodiArvos: z.array(z.string())
+  laajaalainenOsaaminenKoodiArvos: z.array(z.string()).nullable()
 })
 
 export const sukoAssignmentSchema = commonSchema.merge(
@@ -18,7 +18,7 @@ export const sukoAssignmentSchema = commonSchema.merge(
     assignmentTypeKoodiArvo: z.string({ required_error: 'Required' }),
     oppimaaraKoodiArvo: z.string({ required_error: 'Required' }),
     tavoitetasoKoodiArvo: z.string({ required_error: 'Required' }),
-    aiheKoodiArvos: z.array(z.string())
+    aiheKoodiArvos: z.array(z.string()).nullable()
   })
 )
 

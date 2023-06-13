@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { fillSukoAssignmentForm, updateSukoAssignmentForm } from '../../helpers'
+import { fillSukoAssignmentForm, updateSukoAssignmentForm } from './assignmentHelpers'
 
 test.describe('Assignment form tests', () => {
   let createdAssignmentId: number
