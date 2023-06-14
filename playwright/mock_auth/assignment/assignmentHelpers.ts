@@ -110,14 +110,8 @@ export async function updateSukoAssignmentForm({
 
   expect(selectedOptionsAiheResetted).toBe(0)
 
-  await fillLaajalainenOsaaminen(page)
-
   await page.getByTestId('aihe').click()
   await page.getByTestId('aihe-option-003').click()
-
-  // Close dropdown onBlur
-  await page.getByTestId('aihe-label').click()
-
   // Close dropdown onBlur
   await page.getByTestId('aihe-label').click()
 
