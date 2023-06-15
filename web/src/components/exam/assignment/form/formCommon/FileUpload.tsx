@@ -3,10 +3,12 @@ import { Button } from '../../../../Button'
 import { Icon } from '../../../../Icon'
 import { uploadFile } from '../../../../../formUtils'
 import { toLocaleDate } from '../../../../../formatUtils'
+import { ExternalLink } from '../../../../ExternalLink'
+import { PREVIEW_CERTIFICATION_PDF_URL } from '../../../../../constants'
 
 export type UploadFile = {
   fileName: string
-  fileUrl: string
+  fileKey: string
   fileUploadDate: string
 }
 
@@ -71,7 +73,11 @@ export const UploadedFile = ({ file, canDelete }: { file: UploadFile; canDelete?
 
     <div className="border-y border-gray-light" />
     <div className="grid grid-cols-5 gap-2 py-2 md:grid-cols-6">
-      <p className="col-span-4 text-green-primary md:col-span-3">{file.fileName}</p>
+      <ExternalLink
+        className="col-span-4 text-green-primary md:col-span-3"
+        url={`${PREVIEW_CERTIFICATION_PDF_URL}/${file.fileKey}`}>
+        {file.fileName}
+      </ExternalLink>
       <p className="hidden md:col-span-2 md:block">{toLocaleDate(file.fileUploadDate)}</p>
       {canDelete && (
         <div className="text-center">

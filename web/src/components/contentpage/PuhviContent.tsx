@@ -50,7 +50,7 @@ export const PuhviContent = ({ assignment, contentType, language }: PuhviAssignm
           <UploadedFile
             file={{
               fileName: assignment.fileName,
-              fileUrl: assignment.fileUrl,
+              fileKey: assignment.fileKey,
               fileUploadDate: assignment.fileUploadDate
             }}
           />

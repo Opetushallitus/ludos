@@ -6,7 +6,7 @@ export const certificateSchema = z.object({
   nameFi: z.string().min(MIN_LENGTH, { message: 'Too short' }),
   contentFi: z.string().nullable(),
   fileName: z.string().min(MIN_LENGTH, { message: 'Too short' }),
-  fileUrl: z.string(),
+  fileKey: z.string(),
   fileUploadDate: z.string()
 })
 

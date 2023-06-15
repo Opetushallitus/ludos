@@ -55,7 +55,7 @@ export type SukoAssignmentIn = AssignmentIn & {
 
 export type CertificateIn = AssignmentIn & {
   fileName: string
-  fileUrl: string
+  fileKey: string
   fileUploadDate: string
 }
 

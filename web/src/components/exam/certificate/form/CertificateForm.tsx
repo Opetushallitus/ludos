@@ -45,7 +45,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
       })
       setUploadedFile({
         fileName: assignment.fileName,
-        fileUrl: assignment.fileUrl,
+        fileKey: assignment.fileKey,
         fileUploadDate: assignment.fileUploadDate
       })
     } else {
@@ -56,7 +56,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
   const handleUploadedFile = (file: UploadFile) => {
     setUploadedFile(file)
     setValue('fileName', file.fileName)
-    setValue('fileUrl', file.fileUrl)
+    setValue('fileKey', file.fileKey)
     setValue('fileUploadDate', file.fileUploadDate)
   }
 

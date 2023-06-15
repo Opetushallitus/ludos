@@ -55,7 +55,7 @@ export const SukoContent = ({ assignment, contentType, language }: SukoAssignmen
           <UploadedFile
             file={{
               fileName: assignment.fileName,
-              fileUrl: assignment.fileUrl,
+              fileKey: assignment.fileKey,
               fileUploadDate: assignment.fileUploadDate
             }}
           />
