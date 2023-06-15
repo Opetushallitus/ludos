@@ -7,7 +7,7 @@ CREATE TABLE certificate
     certificate_created_at       timestamptz   NOT NULL default now(),
     certificate_updated_at       timestamptz   NOT NULL default now(),
     certificate_file_name        text          NOT NULL,
-    certificate_file_url         text          NOT NULL,
+    certificate_file_key  text          NOT NULL,
     certificate_file_upload_date timestamptz   NOT NULL default now()
 );
 
