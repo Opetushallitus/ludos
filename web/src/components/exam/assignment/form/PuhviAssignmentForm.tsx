@@ -1,20 +1,20 @@
 import { FieldLabel } from '../../../FieldLabel'
 import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
-import { Controller, useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
-import { Tabs } from '../../../Tabs'
-import { TextInput } from '../../../TextInput'
-import { TextAreaInput } from '../../../TextAreaInput'
 import { PuhviAssignmentFormType, PuhviAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from './formCommon/FormButtonRow'
 import { postAssignment, updateAssignment } from '../../../../formUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { AssignmentTypeField } from './formCommon/AssignmentFileTypeRadio'
+import { FormError } from './formCommon/FormErrors'
+import { FormContentInput } from './formCommon/FormContentInput'
 
 type PuhviAssignmentFormProps = {
   action: 'new' | 'update'
@@ -27,7 +27,8 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('fi')
+
+  const methods = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(PuhviAssignmentSchema) })
 
   const {
     watch,
@@ -36,14 +37,16 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
     reset,
     handleSubmit,
     setValue,
+    clearErrors,
     formState: { errors }
-  } = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(PuhviAssignmentSchema) })
+  } = methods
 
   // set initial values
   useEffect(() => {
     if (assignment) {
       reset({
         ...assignment,
+        lukuvuosiKoodiArvos: assignment.lukuvuosiKoodiArvos.length > 0 ? assignment.lukuvuosiKoodiArvos : undefined,
         exam
       })
     } else {
@@ -78,6 +81,7 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
       fieldName,
       selectedOptions.map((it) => it.koodiArvo)
     )
+    clearErrors(fieldName)
   }
 
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
@@ -89,103 +93,49 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
 
   return (
     <>
-      <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
-        <input type="hidden" {...register('exam')} />
+      <FormProvider {...methods}>
+        <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+          <input type="hidden" {...register('exam')} />
 
-        <div className="mb-6">
-          <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')}</legend>
-          <Controller
+          <AssignmentTypeField
             control={control}
             name="assignmentTypeKoodiArvo"
-            rules={{ required: true }}
-            render={({ field }) => (
-              <>
-                {assignmentTypeKoodisto &&
-                  assignmentTypeKoodisto.map((type, i) => (
-                    <fieldset key={i} className="flex items-center">
-                      <input
-                        type="radio"
-                        {...field}
-                        value={type.koodiArvo}
-                        checked={field.value === type.koodiArvo}
-                        id={type.koodiArvo}
-                        data-testid={`assignmentTypeRadio-${type.koodiArvo.toLowerCase()}`}
-                        className="mr-2"
-                      />
-                      <label htmlFor={type.koodiArvo}>{type.nimi}</label>
-                    </fieldset>
-                  ))}
-              </>
-            )}
+            required
+            options={assignmentTypeKoodisto}
+            requiredError={!!errors.assignmentTypeKoodiArvo}
           />
-          {errors?.assignmentTypeKoodiArvo && (
-            <p className="text-green-primary">{errors.assignmentTypeKoodiArvo.message}</p>
-          )}
-        </div>
 
-        <div className="mb-6">
-          <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
-          <MultiSelectDropdown
-            id="lukuvuosiKoodiArvos"
-            options={sortKooditAlphabetically(lukuvuosiKoodisto || [])}
-            selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
-            testId="lukuvuosiKoodiArvos"
-            canReset
-          />
-          {errors?.lukuvuosiKoodiArvos && <p className="text-green-primary">{errors.lukuvuosiKoodiArvos.message}</p>}
-        </div>
+          <div className="mb-6">
+            <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
+            <MultiSelectDropdown
+              id="lukuvuosiKoodiArvos"
+              options={sortKooditAlphabetically(lukuvuosiKoodisto || [])}
+              selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
+              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
+              testId="lukuvuosiKoodiArvos"
+              canReset
+              requiredError={!!errors.lukuvuosiKoodiArvos}
+            />
+            <FormError error={errors.lukuvuosiKoodiArvos?.message} />
+          </div>
 
-        <div className="mb-6">
-          <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
-          <MultiSelectDropdown
-            id="laajaalainenOsaaminenKoodiArvos"
-            options={sortKooditAlphabetically(laajaalainenOsaaminenKoodisto || [])}
-            selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
-            testId="laajaalainenOsaaminenKoodiArvos"
-            canReset
-          />
-          {errors?.laajaalainenOsaaminenKoodiArvos && (
-            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvos.message}</p>
-          )}
-        </div>
+          <div className="mb-6">
+            <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
+            <MultiSelectDropdown
+              id="laajaalainenOsaaminenKoodiArvos"
+              options={sortKooditAlphabetically(laajaalainenOsaaminenKoodisto || [])}
+              selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
+              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
+              testId="laajaalainenOsaaminenKoodiArvos"
+              canReset
+            />
+          </div>
 
-        <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-        <div className="mb-6">
-          <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
-        </div>
-
-        {activeTab === 'fi' && (
-          <>
-            <TextInput id="nameFi" register={register} required>
-              {t('form.tehtavannimi')}
-            </TextInput>
-            {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
-            <TextAreaInput id="instructionFi" register={register}>
-              {t('form.tehtavan_ohje')}
-            </TextAreaInput>
-            <TextAreaInput id="contentFi" register={register}>
-              {t('form.tehtavansisalto')}
-            </TextAreaInput>
-          </>
-        )}
-        {activeTab === 'sv' && (
-          <>
-            <TextInput id="nameSv" register={register} required>
-              {t('form.tehtavannimi')}
-            </TextInput>
-            {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
-            <TextAreaInput id="instructionSv" register={register}>
-              {t('form.tehtavan_ohje')}
-            </TextAreaInput>
-            <TextAreaInput id="contentSv" register={register}>
-              {t('form.tehtavansisalto')}
-            </TextAreaInput>
-          </>
-        )}
-      </form>
+          <FormContentInput hasInstruction />
+        </form>
+      </FormProvider>
       <FormButtonRow
         onCancelClick={() => navigate(-1)}
         onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}

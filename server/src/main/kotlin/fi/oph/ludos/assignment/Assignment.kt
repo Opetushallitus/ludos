@@ -21,8 +21,8 @@ import javax.validation.constraints.Pattern
 interface Assignment {
     @get:NotBlank
     val nameFi: String
-    @get:NotBlank
     val nameSv: String
+    @get:NotBlank
     val contentFi: String
     val contentSv: String
     val instructionFi: String

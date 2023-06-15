@@ -10,6 +10,7 @@ type DropdownProps<C extends boolean | undefined> = {
   onSelectedOptionsChange: (option: C extends true ? string | null : string) => void
   canReset?: C
   testId?: string
+  requiredError?: boolean
 }
 
 type WithReset = DropdownProps<true>
@@ -22,7 +23,8 @@ export const Dropdown = ({
   options,
   onSelectedOptionsChange,
   canReset,
-  testId
+  testId,
+  requiredError
 }: WithReset | WithoutReset | WithOptionalReset) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -47,7 +49,12 @@ export const Dropdown = ({
         setIsOpen(false)
       }}
       tabIndex={0}>
-      <div id={id} className="flex bg-white px-2" role="button" onClick={() => setIsOpen(!isOpen)} data-testid={testId}>
+      <div
+        id={id}
+        className={`flex ${requiredError ? 'border border-red' : ''} bg-white px-2`}
+        role="button"
+        onClick={() => setIsOpen(!isOpen)}
+        data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
           {selectedOption ? (
             <div className="flex w-auto flex-col">

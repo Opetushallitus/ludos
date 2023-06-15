@@ -1,10 +1,7 @@
 import { FieldLabel } from '../../../FieldLabel'
 import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
-import { Tabs } from '../../../Tabs'
-import { TextInput } from '../../../TextInput'
-import { TextAreaInput } from '../../../TextAreaInput'
 import { LdAssignmentFormType, LdAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
@@ -16,6 +13,8 @@ import { FormButtonRow } from './formCommon/FormButtonRow'
 import { postAssignment, updateAssignment } from '../../../../formUtils'
 import { Dropdown } from '../../../Dropdown'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { FormError } from './formCommon/FormErrors'
+import { FormContentInput } from './formCommon/FormContentInput'
 
 type LdAssignmentFormProps = {
   action: 'new' | 'update'
@@ -30,14 +29,17 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('fi')
 
+  const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(LdAssignmentSchema) })
+
   const {
     watch,
     register,
     reset,
     handleSubmit,
     setValue,
+    clearErrors,
     formState: { errors }
-  } = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(LdAssignmentSchema) })
+  } = methods
 
   // set initial values
   useEffect(() => {
@@ -73,14 +75,12 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
     })()
   }
 
-  const handleMultiselectOptionChange = (
-    fieldName: 'laajaalainenOsaaminenKoodiArvos' | 'lukuvuosiKoodiArvos' | 'aineKoodiArvo',
-    selectedOptions: KoodiDtoIn[]
-  ) => {
+  const handleMultiselectOptionChange = (fieldName: keyof LdAssignmentFormType, selectedOptions: KoodiDtoIn[]) => {
     setValue(
       fieldName,
       selectedOptions.map((it) => it.koodiArvo)
     )
+    clearErrors(fieldName)
   }
 
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
@@ -93,84 +93,57 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
 
   return (
     <>
-      <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
-        <input type="hidden" {...register('exam')} />
+      <FormProvider {...methods}>
+        <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+          <input type="hidden" {...register('exam')} />
 
-        <div className="mb-6">
-          <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />
-          <Dropdown
-            id="aineKoodiArvo"
-            selectedOption={aineKoodisto.find((it) => it.koodiArvo === currentAine)}
-            options={aineKoodisto}
-            onSelectedOptionsChange={(opt: string) => setValue('aineKoodiArvo', opt)}
-            testId="aineKoodiArvo"
-          />
-          {errors?.lukuvuosiKoodiArvos && <p className="text-green-primary">{errors.lukuvuosiKoodiArvos.message}</p>}
-        </div>
+          <div className="mb-6">
+            <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />
+            <Dropdown
+              id="aineKoodiArvo"
+              selectedOption={aineKoodisto.find((it) => it.koodiArvo === currentAine)}
+              options={aineKoodisto}
+              onSelectedOptionsChange={(opt: string) => {
+                setValue('aineKoodiArvo', opt)
+                clearErrors('aineKoodiArvo')
+              }}
+              testId="aineKoodiArvo"
+              requiredError={!!errors.aineKoodiArvo}
+            />
+            <FormError error={errors.aineKoodiArvo?.message} />
+          </div>
 
-        <div className="mb-6">
-          <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
-          <MultiSelectDropdown
-            id="lukuvuosiKoodiArvos"
-            options={lukuvuosiKoodisto}
-            selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
-            testId="lukuvuosiKoodiArvos"
-            canReset
-          />
-          {errors?.lukuvuosiKoodiArvos && <p className="text-green-primary">{errors.lukuvuosiKoodiArvos.message}</p>}
-        </div>
+          <div className="mb-6">
+            <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
+            <MultiSelectDropdown
+              id="lukuvuosiKoodiArvos"
+              options={lukuvuosiKoodisto}
+              selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
+              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
+              testId="lukuvuosiKoodiArvos"
+              canReset
+              requiredError={!!errors.lukuvuosiKoodiArvos}
+            />
+            <FormError error={errors.lukuvuosiKoodiArvos?.message} />
+          </div>
 
-        <div className="mb-6">
-          <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
-          <MultiSelectDropdown
-            id="laajaalainenOsaaminenKoodiArvos"
-            options={laajaalainenOsaaminenKoodisto}
-            selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-            onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
-            testId="laajaalainenOsaaminenKoodiArvos"
-            canReset
-          />
-          {errors?.laajaalainenOsaaminenKoodiArvos && (
-            <p className="text-green-primary">{errors.laajaalainenOsaaminenKoodiArvos.message}</p>
-          )}
-        </div>
+          <div className="mb-6">
+            <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
+            <MultiSelectDropdown
+              id="laajaalainenOsaaminenKoodiArvos"
+              options={laajaalainenOsaaminenKoodisto}
+              selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
+              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
+              testId="laajaalainenOsaaminenKoodiArvos"
+              canReset
+            />
+          </div>
 
-        <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-        <div className="mb-6">
-          <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
-        </div>
-
-        {activeTab === 'fi' && (
-          <>
-            <TextInput id="nameFi" register={register} required>
-              {t('form.tehtavannimi')}
-            </TextInput>
-            {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
-            <TextAreaInput id="instructionFi" register={register}>
-              {t('form.tehtavan_ohje')}
-            </TextAreaInput>
-            <TextAreaInput id="contentFi" register={register}>
-              {t('form.tehtavansisalto')}
-            </TextAreaInput>
-          </>
-        )}
-        {activeTab === 'sv' && (
-          <>
-            <TextInput id="nameSv" register={register} required>
-              {t('form.tehtavannimi')}
-            </TextInput>
-            {errors?.nameSv && <p className="text-green-primary">{errors.nameSv.message}</p>}
-            <TextAreaInput id="instructionSv" register={register}>
-              {t('form.tehtavan_ohje')}
-            </TextAreaInput>
-            <TextAreaInput id="contentSv" register={register}>
-              {t('form.tehtavansisalto')}
-            </TextAreaInput>
-          </>
-        )}
-      </form>
+          <FormContentInput hasInstruction />
+        </form>
+      </FormProvider>
       <FormButtonRow
         onCancelClick={() => navigate(-1)}
         onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}

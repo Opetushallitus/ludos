@@ -110,3 +110,10 @@ export type UserDetails = {
   name: string
   role: RolesType
 }
+
+export const ErrorMessages = {
+  REQUIRED: 'required',
+  SHORT: 'short'
+} as const
+
+export type ErrorMessagesType = (typeof ErrorMessages)[keyof typeof ErrorMessages]
