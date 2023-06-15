@@ -1,8 +1,12 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.*
+import fi.oph.ludos.s3.S3Service
+import org.springframework.core.io.InputStreamResource
 import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -14,7 +18,10 @@ import javax.validation.Valid
 @RestController
 @Validated
 @RequestMapping("${Constants.API_PREFIX}/certificate")
-class CertificateController(val service: CertificateService) {
+class CertificateController(
+    val service: CertificateService,
+    val s3Service: S3Service
+) {
     @PostMapping("")
     @HasYllapitajaRole
     fun createCertification(@Valid @RequestBody certificate: CertificateDtoIn) = service.createCertificate(certificate)
@@ -42,15 +49,19 @@ class CertificateController(val service: CertificateService) {
 
     @PostMapping("/upload")
     @HasYllapitajaRole
-    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<FileUpload> {
+    fun uploadFile(@RequestParam("file") file: MultipartFile) = try {
         val key = "todistus_pohja_${UUID.randomUUID()}"
 
-        // here will come s3 upload logic
+        s3Service.putObject(file, key)
 
-        return ResponseEntity.status(HttpStatus.OK).body(
+        ResponseEntity.status(HttpStatus.OK).body(
             FileUpload(
-                file.originalFilename!!, "https://amazon_url.com/${key}", getCurrentDate()
+                file.originalFilename!!, key, getCurrentDate()
             )
+        )
+    } catch (e: Exception) {
+        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+            "Failed to upload file: ${e.message}"
         )
     }
 
@@ -58,5 +69,21 @@ class CertificateController(val service: CertificateService) {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd")
         val currentDate = Date()
         return dateFormat.format(currentDate)
+    }
+
+    @GetMapping("/preview/{key}")
+    @HasAnyRole
+    fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
+        val responseInputStream = s3Service.getObject(key)
+
+        return if (responseInputStream != null) {
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_PDF
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=$key")
+
+            ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
+        } else {
+            ResponseEntity(HttpStatus.NOT_FOUND)
+        }
     }
 }
