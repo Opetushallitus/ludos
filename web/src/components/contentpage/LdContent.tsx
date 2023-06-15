@@ -1,9 +1,8 @@
 import { ContentTypeEng, LdAssignmentIn } from '../../types'
 import { useTranslation } from 'react-i18next'
-import { ContentContent, ContentIconRow, ContentInstruction } from './ContentCommon'
+import { CertificateContent, ContentContent, ContentIconRow, ContentInstruction } from './ContentCommon'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { isCertificate } from '../exam/assignment/assignmentUtils'
-import { UploadedFile } from '../exam/assignment/form/formCommon/FileUpload'
 
 type LdAssignmentContentProps = {
   assignment: LdAssignmentIn
@@ -42,20 +41,7 @@ export const LdContent = ({ assignment, contentType, language }: LdAssignmentCon
       )}
 
       {isCertificate(assignment, contentType) ? (
-        <div>
-          <h3 className="mt-8 font-semibold">nimi</h3>
-          <p>{assignment.nameFi}</p>
-          <h3 className="mt-8 font-semibold">kuvaus</h3>
-          <p>{assignment.contentFi}</p>
-          <h3 className="mb-3 mt-8 font-semibold">Todistus</h3>
-          <UploadedFile
-            file={{
-              fileName: assignment.fileName,
-              fileKey: assignment.fileKey,
-              fileUploadDate: assignment.fileUploadDate
-            }}
-          />
-        </div>
+        <CertificateContent certificate={assignment} />
       ) : (
         <>
           <ContentInstruction

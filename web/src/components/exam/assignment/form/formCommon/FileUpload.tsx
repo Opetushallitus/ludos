@@ -1,10 +1,8 @@
-import React, { ChangeEvent, useRef, useState } from 'react'
+import { ChangeEvent, useRef, useState } from 'react'
 import { Button } from '../../../../Button'
-import { Icon } from '../../../../Icon'
 import { uploadFile } from '../../../../../formUtils'
-import { toLocaleDate } from '../../../../../formatUtils'
-import { ExternalLink } from '../../../../ExternalLink'
-import { PREVIEW_CERTIFICATION_PDF_URL } from '../../../../../constants'
+import { useTranslation } from 'react-i18next'
+import { FileUploaded } from './FileUploaded'
 
 export type UploadFile = {
   fileName: string
@@ -12,15 +10,16 @@ export type UploadFile = {
   fileUploadDate: string
 }
 
-export const FileUpload = ({
-  uploadedFile,
-  setUploadedFile
-}: {
+type FileUploadProps = {
   uploadedFile: UploadFile | null
   setUploadedFile: (file: UploadFile) => void
-}) => {
+}
+
+export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) => {
+  const { t } = useTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -29,13 +28,13 @@ export const FileUpload = ({
       throw new Error('No file selected')
     }
 
-    // upload the file to backend
     try {
       setLoading(true)
       const res = await uploadFile<UploadFile>(file)
       setUploadedFile(res)
     } catch (error) {
       console.error(error)
+      setError('Tiedoston lataaminen epäonnistui')
     } finally {
       setLoading(false)
     }
@@ -54,36 +53,14 @@ export const FileUpload = ({
         />
         <label htmlFor="fileInput">
           <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()} disabled={loading}>
-            Lisää liitetiedosto
+            {t('button.lisaa-liitetiedosto')}
           </Button>
         </label>
       </div>
 
-      {uploadedFile && <UploadedFile file={uploadedFile} canDelete />}
+      <FileUploaded file={uploadedFile} loading={loading} canDelete />
+
+      {error && <p className="text-red">{error}</p>}
     </div>
   )
 }
-
-export const UploadedFile = ({ file, canDelete }: { file: UploadFile; canDelete?: boolean }) => (
-  <div className="w-full md:w-1/2">
-    <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
-      <p className="col-span-3 md:col-span-3">Tiedoston nimi</p>
-      <p className="hidden md:col-span-3 md:block">Lisätty</p>
-    </div>
-
-    <div className="border-y border-gray-light" />
-    <div className="grid grid-cols-5 gap-2 py-2 md:grid-cols-6">
-      <ExternalLink
-        className="col-span-4 text-green-primary md:col-span-3"
-        url={`${PREVIEW_CERTIFICATION_PDF_URL}/${file.fileKey}`}>
-        {file.fileName}
-      </ExternalLink>
-      <p className="hidden md:col-span-2 md:block">{toLocaleDate(file.fileUploadDate)}</p>
-      {canDelete && (
-        <div className="text-center">
-          <Icon name="poista" color="text-green-primary" />
-        </div>
-      )}
-    </div>
-  </div>
-)

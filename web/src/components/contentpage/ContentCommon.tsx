@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
 import { Icon, Icons } from '../Icon'
-import { ContentTypeEng } from '../../types'
+import { CertificateIn, ContentTypeEng } from '../../types'
+import { FileUploaded } from '../exam/assignment/form/formCommon/FileUploaded'
 
 type ContentHeaderProps = {
   language: string
@@ -99,4 +100,25 @@ export function ContentContent({
   contentSv: string
 }) {
   return <p className="h-full pb-3 text-sm">{language === 'fi' ? contentFi : contentSv}</p>
+}
+
+export function CertificateContent({ certificate }: { certificate: CertificateIn }) {
+  const { t } = useTranslation()
+
+  return (
+    <div>
+      <h3 className="mt-8 font-semibold">{t('certificate.nimi')}</h3>
+      <p>{certificate.nameFi}</p>
+      <h3 className="mt-8 font-semibold">{t('certificate.kuvaus')}</h3>
+      <p>{certificate.contentFi}</p>
+      <h3 className="mb-3 mt-8 font-semibold">{t('certificate.todistus')}</h3>
+      <FileUploaded
+        file={{
+          fileName: certificate.fileName,
+          fileKey: certificate.fileKey,
+          fileUploadDate: certificate.fileUploadDate
+        }}
+      />
+    </div>
+  )
 }

@@ -11,6 +11,7 @@ import { TextAreaInput } from '../../../TextAreaInput'
 import { FormHeader } from '../../assignment/form/formCommon/FormHeader'
 import { FormButtonRow } from '../../assignment/form/formCommon/FormButtonRow'
 import { FileUpload, UploadFile } from '../../assignment/form/formCommon/FileUpload'
+import { FormError } from '../../assignment/form/formCommon/FormErrors'
 
 type CertificateFormProps = {
   action: 'new' | 'update'
@@ -84,6 +85,10 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
     })()
   }
 
+  const nameError = errors.nameFi?.message
+  const contentError = errors.contentFi?.message
+  const fileError = errors.fileKey?.message
+
   return (
     <div className="w-10/12 pt-3">
       <FormHeader action={action} contentType={ContentTypeEng.TODISTUKSET} assignment={assignment} />
@@ -93,18 +98,21 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-        <TextInput id="nameFi" register={register} required>
+        <TextInput id="nameFi" register={register} required error={!!nameError}>
           {t('form.todistuksennimi')}
         </TextInput>
-        {errors?.nameFi && <p className="text-green-primary">{errors.nameFi.message}</p>}
-        <TextAreaInput id="contentFi" register={register}>
+        <FormError error={nameError} />
+
+        <TextAreaInput id="contentFi" register={register} required error={!!contentError}>
           {t('form.todistuksenkuvaus')}
         </TextAreaInput>
+        <FormError error={contentError} />
 
-        <div className="mb-2 mt-6 font-semibold">Todistus</div>
-        <p>Lisää todistuspohja pdf-muotoisena.</p>
+        <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
+        <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
         <FileUpload uploadedFile={uploadedFile} setUploadedFile={handleUploadedFile} />
+        <FormError error={fileError} />
       </form>
 
       <FormButtonRow

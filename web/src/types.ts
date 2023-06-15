@@ -113,7 +113,8 @@ export type UserDetails = {
 
 export const ErrorMessages = {
   REQUIRED: 'required',
-  SHORT: 'short'
+  SHORT: 'short',
+  NO_FILE: 'no_file'
 } as const
 
 export type ErrorMessagesType = (typeof ErrorMessages)[keyof typeof ErrorMessages]

@@ -1,8 +1,7 @@
 import { ContentTypeEng, SukoAssignmentIn } from '../../types'
 import { useTranslation } from 'react-i18next'
-import { ContentContent, ContentIconRow, ContentInstruction } from './ContentCommon'
+import { CertificateContent, ContentContent, ContentIconRow, ContentInstruction } from './ContentCommon'
 import { useKoodisto } from '../../hooks/useKoodisto'
-import { UploadedFile } from '../exam/assignment/form/formCommon/FileUpload'
 import { isCertificate } from '../exam/assignment/assignmentUtils'
 
 type SukoAssignmentContentProps = {
@@ -46,20 +45,7 @@ export const SukoContent = ({ assignment, contentType, language }: SukoAssignmen
       )}
 
       {isCertificate(assignment, contentType) ? (
-        <div>
-          <h3 className="mt-8 font-semibold">nimi</h3>
-          <p>{assignment.nameFi}</p>
-          <h3 className="mt-8 font-semibold">kuvaus</h3>
-          <p>{assignment.contentFi}</p>
-          <h3 className="mb-3 mt-8 font-semibold">Todistus</h3>
-          <UploadedFile
-            file={{
-              fileName: assignment.fileName,
-              fileKey: assignment.fileKey,
-              fileUploadDate: assignment.fileUploadDate
-            }}
-          />
-        </div>
+        <CertificateContent certificate={assignment} />
       ) : (
         <>
           <ContentInstruction

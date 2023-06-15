@@ -15,6 +15,9 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
     formState: { errors }
   } = useFormContext()
 
+  const nameError = errors.nameFi?.message as string
+  const contentError = errors.contentFi?.message as string
+
   return (
     <>
       <div className="mb-6">
@@ -25,7 +28,7 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
         <TextInput id="nameFi" register={register} required>
           {t('form.tehtavannimi')} *
         </TextInput>
-        <FormError error={errors.nameFi?.message as string} />
+        <FormError error={nameError} />
 
         {hasInstruction && (
           <TextAreaInput id="instructionFi" register={register}>
@@ -36,7 +39,7 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
         <TextAreaInput id="contentFi" register={register}>
           {t('form.tehtavansisalto')} *
         </TextAreaInput>
-        <FormError error={errors.contentFi?.message as string} />
+        <FormError error={contentError} />
       </div>
 
       <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
