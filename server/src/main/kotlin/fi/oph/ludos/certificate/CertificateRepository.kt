@@ -24,7 +24,7 @@ class CertificateRepository(
             |certificate_content_fi,
             |certificate_publish_state,
             |certificate_file_name,
-            |certificate_file_url,
+            |certificate_file_key,
             |certificate_file_upload_date)
             |VALUES (?, ?, ?::publish_state, ?, ?, to_timestamp(?, 'YYYY-MM-DD')) 
             |RETURNING certificate_id, 
@@ -38,7 +38,7 @@ class CertificateRepository(
                     certificate.contentFi,
                     certificate.publishState,
                     certificate.fileName,
-                    certificate.fileUrl,
+                    certificate.fileKey,
                     certificate.fileUploadDate,
                     rs.getTimestamp("certificate_created_at"),
                     rs.getTimestamp("certificate_updated_at")
@@ -48,7 +48,7 @@ class CertificateRepository(
             certificate.contentFi,
             certificate.publishState.toString(),
             certificate.fileName,
-            certificate.fileUrl,
+            certificate.fileKey,
             certificate.fileUploadDate
         )[0]
     }
@@ -61,7 +61,7 @@ class CertificateRepository(
             rs.getString("certificate_content_fi"),
             PublishState.valueOf(rs.getString("certificate_publish_state")),
             rs.getString("certificate_file_name"),
-            rs.getString("certificate_file_url"),
+            rs.getString("certificate_file_key"),
             rs.getString("certificate_file_upload_date"),
             rs.getTimestamp("certificate_created_at"),
             rs.getTimestamp("certificate_updated_at")
@@ -115,7 +115,7 @@ class CertificateRepository(
                 |certificate_publish_state = ?::publish_state, 
                 |certificate_updated_at = now(),
                 |certificate_file_name = ?,
-                |certificate_file_url = ?,
+                |certificate_file_key = ?,
                 |certificate_file_upload_date = to_timestamp(?, 'YYYY-MM-DD')
                 |WHERE certificate_id = ? RETURNING certificate_id""".trimMargin(),
             { rs: ResultSet, _: Int ->
@@ -125,7 +125,7 @@ class CertificateRepository(
             certificate.contentFi,
             certificate.publishState.toString(),
             certificate.fileName,
-            certificate.fileUrl,
+            certificate.fileKey,
             certificate.fileUploadDate,
             id
         )

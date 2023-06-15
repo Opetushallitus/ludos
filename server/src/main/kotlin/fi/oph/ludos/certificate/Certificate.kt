@@ -3,7 +3,6 @@ package fi.oph.ludos.certificate
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import java.sql.Timestamp
-import java.util.*
 import javax.validation.constraints.NotBlank
 
 interface Certificate {
@@ -16,7 +15,7 @@ interface Certificate {
     @get:NotBlank
     val fileName: String
     @get:NotBlank
-    val fileUrl: String
+    val fileKey: String
     @get:NotBlank
     val fileUploadDate: String
 }
@@ -28,7 +27,7 @@ data class CertificateDtoIn(
     override val contentFi: String,
     override val publishState: PublishState,
     override val fileName: String,
-    override val fileUrl: String,
+    override val fileKey: String,
     override val fileUploadDate: String,
 ) : Certificate
 
@@ -40,7 +39,7 @@ data class CertificateDtoOut(
     override val contentFi: String,
     override val publishState: PublishState,
     override val fileName: String,
-    override val fileUrl: String,
+    override val fileKey: String,
     override val fileUploadDate: String,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
@@ -48,6 +47,6 @@ data class CertificateDtoOut(
 
 data class FileUpload (
     val fileName: String,
-    val fileUrl: String,
+    val fileKey: String,
     val fileUploadDate: String
 )
