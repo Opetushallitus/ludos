@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
-import { logoutUrl } from '../../constants'
+import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
 
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
@@ -24,7 +24,7 @@ export const HeaderDesktop = () => {
   }
   const handleOptionClick = (opt: string | null) => {
     if (opt === 'logout') {
-      document.location = logoutUrl
+      document.location = LOGOUT_URL
     }
   }
 
