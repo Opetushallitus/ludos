@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
+import javax.validation.constraints.Size
 
 @RestController
 @Validated
@@ -48,8 +49,15 @@ class CertificateController(
     }
 
     @PostMapping("/upload")
+    @Validated @Size(max = 10 * 1024 * 1024, message = "File size exceeds the maximum limit.") // 10mb
     @HasYllapitajaRole
     fun uploadFile(@RequestParam("file") file: MultipartFile) = try {
+        if (file.contentType != MediaType.APPLICATION_PDF_VALUE) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                "Invalid file type. Only PDF files are allowed."
+            )
+        }
+
         val key = "todistus_pohja_${UUID.randomUUID()}"
 
         s3Service.putObject(file, key)
