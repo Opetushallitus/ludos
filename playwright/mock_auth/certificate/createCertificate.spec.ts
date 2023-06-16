@@ -19,6 +19,8 @@ test.describe('Suko certificate form tests', () => {
 
     await page.locator('#fileInput').setInputFiles(filePath)
 
+    await expect(page.getByTestId('fixture.pdf')).toHaveText('fixture.pdfopen_in_new16.6.2023delete')
+
     await page.getByTestId('form-submit').click()
 
     const header = page.getByTestId('assignment-header')
@@ -62,6 +64,8 @@ test.describe('Puhvi certificate form tests', () => {
 
     await page.locator('#fileInput').setInputFiles(filePath)
 
+    await expect(page.getByTestId('fixture.pdf')).toHaveText('fixture.pdfopen_in_new16.6.2023delete')
+
     await page.getByTestId('form-submit').click()
 
     const header = page.getByTestId('assignment-header')
@@ -104,6 +108,8 @@ test.describe('Ld certificate form tests', () => {
     const filePath = path.resolve(__dirname, '../../fixtures/fixture.pdf')
 
     await page.locator('#fileInput').setInputFiles(filePath)
+
+    await expect(page.getByTestId('fixture.pdf')).toHaveText('fixture.pdfopen_in_new16.6.2023delete')
 
     await page.getByTestId('form-submit').click()
 

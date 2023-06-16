@@ -30,7 +30,7 @@ export const FileUploaded = ({ file, loading, canDelete }: UploadedFileProps) =>
       ) : (
         <>
           {file && (
-            <div className="grid grid-cols-5 gap-2 py-2 md:grid-cols-6">
+            <div className="grid grid-cols-5 gap-2 py-2 md:grid-cols-6" data-testid={file.fileName}>
               <ExternalLink
                 className="col-span-4 text-green-primary md:col-span-3"
                 url={`${PREVIEW_CERTIFICATION_PDF_URL}/${file.fileKey}`}>
