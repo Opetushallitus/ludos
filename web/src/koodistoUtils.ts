@@ -1,4 +1,4 @@
-import { KoodiDtoIn } from './KoodistoContext'
+import { KoodiDtoIn } from './LudosContext'
 
 // todo: this is not localized
 export const SUKO_ASSIGNMENT_ORDER_OPTIONS: KoodiDtoIn[] = [

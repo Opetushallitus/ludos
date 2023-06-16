@@ -1,5 +1,4 @@
 import { Layout } from '../layout/Layout'
-import { Header } from '../header/Header'
 import { Footer } from '../Footer'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { newKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey, updateKey } from './routes'
@@ -7,27 +6,44 @@ import { Frontpage } from '../frontpage/Frontpage'
 import { Exams } from '../exam/Exams'
 import { AssignmentForm } from '../exam/assignment/form/AssignmentForm'
 import { Content } from '../contentpage/Content'
-import { HeaderMobile } from '../header/HeaderMobile'
-import { IS_MOBILE_QUERY } from '../../constants'
 import { useTranslation } from 'react-i18next'
-import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { Exam } from '../../types'
 import { CertificateForm } from '../exam/certificate/form/CertificateForm'
 import { InstructionForm } from '../exam/instruction/form/InstructionForm'
-import { useFetch } from '../../hooks/useFetch'
+import { Header } from '../header/Header'
+import { useUserDetails } from '../../hooks/useUserDetails'
 
 export const LudosRoutes = () => {
-  const { t } = useTranslation()
-  const { data } = useFetch<{ name: string }>('auth')
+  const { role } = useUserDetails()
 
-  const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
+  const isAuthorized = role === 'YLLAPITAJA' || role === 'LAATIJA' || role === 'OPETTAJA'
 
   return (
-    <Layout
-      header={isMobile ? <HeaderMobile username={data?.name} /> : <Header username={data?.name} />}
-      footer={<Footer t={t} />}>
+    <>
+      {isAuthorized ? (
+        <AuthorizedRoutes />
+      ) : (
+        <>
+          {role === 'UNAUTHORIZED' ? (
+            <UnauthorizedRoutes />
+          ) : (
+            <Routes>
+              <Route path="*" element={<div />} />
+            </Routes>
+          )}
+        </>
+      )}
+    </>
+  )
+}
+
+function AuthorizedRoutes() {
+  const { t } = useTranslation()
+
+  return (
+    <Layout header={<Header />} footer={<Footer t={t} />}>
       <Routes>
-        <Route path={`/${frontpageKey}`} element={<Frontpage username={data?.name} />} />
+        <Route path={`/${frontpageKey}`} element={<Frontpage />} />
         <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
         <Route
           path={`/${feedbackKey}`}
@@ -67,17 +83,34 @@ export const LudosRoutes = () => {
           <Route index path={':contentType?'} element={<Exams exam={Exam.Ld} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Ld} />} />
         </Route>
-
         <Route
           path="*"
           element={
             <div className="p-10">
               <h2 className="text-green-primary">404</h2>
-              <p>Valitettavasti sivua ei löytynyt.</p>
+              <p>{t('error.sivua-ei-loydy')}</p>
             </div>
           }
         />
       </Routes>
     </Layout>
+  )
+}
+
+function UnauthorizedRoutes() {
+  const { t } = useTranslation()
+
+  return (
+    <Routes>
+      <Route
+        path="*"
+        element={
+          <div className="p-10">
+            <h2 className="text-green-primary">401</h2>
+            <p>{t('error.paasy-evatty')}</p>
+          </div>
+        }
+      />
+    </Routes>
   )
 }

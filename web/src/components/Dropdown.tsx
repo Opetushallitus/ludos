@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Icon } from './Icon'
 import { useDropdown } from '../hooks/useDropdown'
-import { KoodiDtoIn } from '../KoodistoContext'
+import { KoodiDtoIn } from '../LudosContext'
 
 type DropdownProps<C extends boolean | undefined> = {
   id: string

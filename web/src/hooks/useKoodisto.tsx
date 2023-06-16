@@ -1,8 +1,8 @@
-import { KoodistoContext, KoodistoName } from '../KoodistoContext'
+import { LudosContext, KoodistoName } from '../LudosContext'
 import { useContext } from 'react'
 
 export function useKoodisto() {
-  const koodistos = useContext(KoodistoContext).koodistos
+  const { koodistos } = useContext(LudosContext)
 
   function getKoodiLabel(koodiArvo: string, koodistoName: KoodistoName) {
     const koodi = koodistos[koodistoName]?.find((type) => type.koodiArvo === koodiArvo)

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Constants
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.Exam
+import fi.oph.ludos.WithYllapitajaRole
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -29,6 +31,12 @@ fun updateInstruction(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/instruction/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
+@TestPropertySource(
+    properties = [
+        "LUDOS_PALVELUKAYTTAJA_USERNAME=test_username",
+        "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"
+    ]
+)
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -56,6 +64,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     )
 
     @Test
+    @WithYllapitajaRole
     fun sukoInstructionTest() {
         val testInstruction = TestSukoIn(
             nameFi = "Suko Test Instruction FI",
@@ -133,6 +142,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val updatedAt: Timestamp
     )
     @Test
+    @WithYllapitajaRole
     fun puhviInstructionTest() {
         val testInstruction = TestPuhviIn(
             nameFi = "Puhvi Test Instruction FI",
@@ -211,6 +221,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     )
 
     @Test
+    @WithYllapitajaRole
     fun ldInstructionTest() {
         val testInstruction = TestLdIn(
             nameFi = "Ld Test Instruction FI",
@@ -269,6 +280,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun failInstructionsUpdate() {
         val nonExistentId = -1
         val editedInstruction =
@@ -281,6 +293,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun invalidExam() {
         val body =
             "{\"name\":\"Suko Test Assignment\",\"content\":\"Instructions content\",\"publishState\":\"PUBLISHED\",\"exam\":\"WRONG\"}\n"
@@ -292,6 +305,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun invalidState() {
         // Invalid assignment type
         val body =
@@ -304,6 +318,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun assignmentNotFound() {
         val getResult = mockMvc.perform(getInstruction(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString

@@ -62,6 +62,8 @@ jobs:
         with:
           ludos-profiles: local
           projects: mock_auth
+          ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   playwright-cas-auth:
     runs-on: "ubuntu-22.04"
     needs: ["build-jar-and-test-api"]
@@ -74,6 +76,8 @@ jobs:
           projects: cas_auth
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
+          ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   build-docker-image-and-push:
     runs-on: "ubuntu-22.04"
     needs: ["build-jar-and-test-api", "playwright-mock-auth", "playwright-cas-auth"]

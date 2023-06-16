@@ -1,9 +1,8 @@
 package fi.oph.ludos.assignment
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
+import fi.oph.ludos.WithYllapitajaRole
 import fi.oph.ludos.test.CreateTestData
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -11,52 +10,17 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.web.util.UriComponentsBuilder
 import javax.transaction.Transactional
 
-fun getSukoAssignments(exam: Exam, filter: SukoAssignmentFilter): MockHttpServletRequestBuilder {
-    val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
-
-    filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
-    filter.oppimaara?.let { uriBuilder.queryParam("oppimaara", it) }
-    filter.tehtavatyyppisuko?.let { uriBuilder.queryParam("tehtavatyyppisuko", it) }
-    filter.aihe?.let { uriBuilder.queryParam("aihe", it) }
-    filter.tavoitetaitotaso?.let { uriBuilder.queryParam("tavoitetaitotaso", it) }
-
-    return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
-}
-
-fun getPuhviAssignments(exam: Exam, filter: PuhviAssignmentFilter): MockHttpServletRequestBuilder {
-    val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
-
-    filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
-    filter.tehtavatyyppipuhvi?.let { uriBuilder.queryParam("tehtavatyyppipuhvi", it) }
-    filter.lukuvuosi?.let { uriBuilder.queryParam("lukuvuosi", it) }
-
-    return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
-}
-
-fun getLdAssignments(exam: Exam, filter: LdAssignmentFilter): MockHttpServletRequestBuilder {
-    val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
-
-    filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
-    filter.aine?.let { uriBuilder.queryParam("aine", it) }
-    filter.lukuvuosi?.let { uriBuilder.queryParam("lukuvuosi", it) }
-
-    return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
-}
-
-fun seedDb(data: String): MockHttpServletRequestBuilder =
-    MockMvcRequestBuilders.post("${Constants.API_PREFIX}/test/seed").contentType(MediaType.APPLICATION_JSON)
-        .content(ObjectMapper().writeValueAsString(data))
-
-fun emptyDb() = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/empty").contentType(MediaType.APPLICATION_JSON)
-
+@TestPropertySource(
+    properties = [
+        "LUDOS_PALVELUKAYTTAJA_USERNAME=test_username",
+        "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"
+    ]
+)
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -75,6 +39,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun testSukoFilters() {
         // No filters applied
         testSukoFilterOptions(null, null, null, null, listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
@@ -114,6 +79,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun testLdFilters() {
         testLdFilterOptions(null, null, listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
         testLdFilterOptions("1", null, listOf(0, 9))
@@ -122,6 +88,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun testPuhviFilters() {
         testPuhviFilterOptions(null, null, listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
         testPuhviFilterOptions("001", null, listOf(1, 3, 5, 7, 9, 11))
@@ -130,6 +97,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun sukoFiltersWithNonExistingValues() {
         testSukoFilterOptions(null, "999", null, null, emptyList())
         testSukoFilterOptions(null, null, "999", null, emptyList())
@@ -137,12 +105,14 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun ldFiltersWithNonExistingValues() {
         testLdFilterOptions("999", null, emptyList())
         testLdFilterOptions(null, "99999999", emptyList())
     }
 
     @Test
+    @WithYllapitajaRole
     fun puhviFiltersWithNonExistingValues() {
         testPuhviFilterOptions("999", null, emptyList())
         testPuhviFilterOptions(null, "99999999", emptyList())

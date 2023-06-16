@@ -1,4 +1,5 @@
 import { createContext } from 'react'
+import { UserDetails } from './types'
 
 const KoodistoName = {
   OPPIAINEET_JA_OPPIMAARAT_LOPS2021: 'oppiaineetjaoppimaaratlops2021',
@@ -24,16 +25,20 @@ export type KoodistoMap = {
   [key in KoodistoName]: Koodisto
 }
 
-interface KoodistoContextValue {
+interface LudosContextValue {
   koodistos: KoodistoMap
   setKoodistos: (koodistos: KoodistoMap) => void
+  userDetails?: UserDetails
+  setUserDetails: (userDetails: UserDetails) => void
 }
 
 export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
   Object.values(KoodistoName).map((name) => [name, []])
 ) as unknown as KoodistoMap
 
-export const KoodistoContext = createContext<KoodistoContextValue>({
+export const LudosContext = createContext<LudosContextValue>({
   koodistos: defaultEmptyKoodistoMap,
-  setKoodistos: () => {}
+  setKoodistos: () => {},
+  userDetails: undefined,
+  setUserDetails: () => {}
 })

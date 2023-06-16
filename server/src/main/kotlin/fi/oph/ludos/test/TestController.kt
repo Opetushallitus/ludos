@@ -9,11 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -31,7 +27,6 @@ class TestController(
     fun seedDatabase(httpServletResponse: HttpServletResponse) {
         seedAssignmentRepository.seedDatabase()
 
-
         return httpServletResponse.sendRedirect(appUrl)
     }
 
@@ -45,7 +40,6 @@ class TestController(
     } catch (e: Exception) {
         ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong ${e.message}")
     }
-
 
     @GetMapping("/empty")
     fun emptyDatabase(httpServletResponse: HttpServletResponse) {
