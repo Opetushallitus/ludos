@@ -31,17 +31,20 @@ export const Exam = {
 
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
-export type AssignmentIn = {
+export type BaseIn = {
   id: number
   nameFi: string
   nameSv: string
   contentFi: string
   contentSv: string
-  instructionFi: string
-  instructionSv: string
   publishState: PublishState
   createdAt: string
   updatedAt: string
+}
+
+export type AssignmentIn = BaseIn & {
+  instructionFi: string
+  instructionSv: string
   aiheKoodiArvos: string[]
   assignmentTypeKoodiArvo: string
   laajaalainenOsaaminenKoodiArvos: string[]
