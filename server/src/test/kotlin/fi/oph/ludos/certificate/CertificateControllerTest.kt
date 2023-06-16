@@ -31,9 +31,7 @@ fun updateCertificate(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/certificate/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-@TestPropertySource(
-    properties = ["LUDOS_PALVELUKAYTTAJA_USERNAME=test_username", "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"]
-)
+@TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -46,7 +44,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val contentFi: String,
         val publishState: PublishState,
         val fileName: String,
-        val fileUrl: String,
+        val fileKey: String,
         val fileUploadDate: String,
     )
 
@@ -57,7 +55,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val contentFi: String,
         val publishState: PublishState,
         val fileName: String,
-        val fileUrl: String,
+        val fileKey: String,
         val fileUploadDate: String,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
@@ -72,7 +70,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             contentFi = "Certificate content Fi",
             publishState = PublishState.PUBLISHED,
             fileName = "test_certificate.pdf",
-            fileUrl = "https://amazon_url.com/test_certificate.pdf",
+            fileKey = "https://amazon_url.com/test_certificate.pdf",
             fileUploadDate = "2023-06-13"
         )
 
@@ -88,7 +86,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(testCertificate.contentFi, certificateIn.contentFi)
         assertEquals(testCertificate.publishState, certificateIn.publishState)
         assertEquals(testCertificate.fileName, certificateIn.fileName)
-        assertEquals(testCertificate.fileUrl, certificateIn.fileUrl)
+        assertEquals(testCertificate.fileKey, certificateIn.fileKey)
         assertNotNull(testCertificate.fileUploadDate)
         assertNotNull(certificateIn.id)
         assertNotNull(certificateIn.createdAt)
@@ -104,7 +102,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(certificateIn.contentFi, certificateOut.contentFi)
         assertEquals(certificateIn.publishState, certificateOut.publishState)
         assertEquals(certificateIn.fileName, certificateOut.fileName)
-        assertEquals(certificateIn.fileUrl, certificateOut.fileUrl)
+        assertEquals(certificateIn.fileKey, certificateOut.fileKey)
         assertNotNull(certificateOut.fileUploadDate)
         assertNotNull(certificateOut.createdAt)
         assertNotNull(certificateOut.updatedAt)
@@ -117,7 +115,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             "contentFi": "Suko Certificate content Fi updated",
             "publishState": "PUBLISHED",
             "fileName": "updated_certificate.pdf",
-            "fileUrl": "https://amazon_url.com/updated_certificate.pdf",
+            "fileKey": "https://amazon_url.com/updated_certificate.pdf",
             "fileUploadDate": "${testCertificate.fileUploadDate}"
         }
         """.trimMargin()
@@ -135,7 +133,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals("Suko Certificate content Fi updated", updatedCertificate.contentFi)
         assertEquals(PublishState.PUBLISHED, updatedCertificate.publishState)
         assertEquals("updated_certificate.pdf", updatedCertificate.fileName)
-        assertEquals("https://amazon_url.com/updated_certificate.pdf", updatedCertificate.fileUrl)
+        assertEquals("https://amazon_url.com/updated_certificate.pdf", updatedCertificate.fileKey)
         assertNotNull(updatedCertificate.fileUploadDate)
         assertEquals(certificateIn.id, updatedCertificate.id)
     }
@@ -155,7 +153,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "publishState": "PUBLISHED",
                 "fileName": "updated_certificate.pdf",
-                "fileUrl": "https://amazon_url.com/updated_certificate.pdf",
+                "fileKey": "https://amazon_url.com/updated_certificate.pdf",
                 "fileUploadDate": "2023-06-13"
             }
         """.trimMargin()
@@ -176,7 +174,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 "publishState": "PUBLISHED",
                 "exam": "WRONG",
                 "fileName": "test_certificate.pdf",
-                "fileUrl": "https://amazon_url.com/test_certificate.pdf",
+                "fileKey": "https://amazon_url.com/test_certificate.pdf",
                 "fileUploadDate": "2023-06-13"
             }
         """
@@ -194,7 +192,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             "publishState": "",
             "exam": "SUKO",
             "fileName": "test_certificate.pdf",
-            "fileUrl": "https://amazon_url.com/test_certificate.pdf",
+            "fileKey": "https://amazon_url.com/test_certificate.pdf",
             "fileUploadDate": "2023-06-13"
         }
         """

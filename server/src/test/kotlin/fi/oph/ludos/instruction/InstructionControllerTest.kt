@@ -31,12 +31,7 @@ fun updateInstruction(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/instruction/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-@TestPropertySource(
-    properties = [
-        "LUDOS_PALVELUKAYTTAJA_USERNAME=test_username",
-        "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"
-    ]
-)
+@TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
