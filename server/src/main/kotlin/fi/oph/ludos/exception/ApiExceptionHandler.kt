@@ -10,28 +10,31 @@ import org.springframework.validation.BindException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.server.ResponseStatusException
 
 @ControllerAdvice
 class ApiExceptionHandler {
     private final val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    @ExceptionHandler(Exception::class)
-    fun handleException(ex: Exception): ResponseEntity<Any> = when (ex) {
-        is ApiRequestException -> {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ApiRequestException: ${ex.message}")
+    @ExceptionHandler(BindException::class)
+    fun handleBindException(ex: BindException): ResponseEntity<Any> {
+        val errors = ex.bindingResult.fieldErrors.map { fieldError: FieldError ->
+            "${fieldError.field}: ${fieldError.defaultMessage}"
         }
 
-        is HttpMessageNotReadableException -> {
-            if (ex.cause is InvalidTypeIdException) {
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid type: ${ex.message}")
-            } else {
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JSON payload: ${ex.message}")
-            }
-        }
+        logger.error(ex.message)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.sorted().joinToString("\n"))
+    }
 
-        is ResponseStatusException -> {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.message)
+    @ExceptionHandler(ApiRequestException::class)
+    fun handleApiRequestException(ex: ApiRequestException) =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ApiRequestException: ${ex.message}")
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException) =
+        if (ex.cause is InvalidTypeIdException) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid type: ${ex.message}")
+        } else {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid JSON payload: ${ex.message}")
         }
 
         is BindException -> {

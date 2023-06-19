@@ -284,7 +284,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val failUpdate = mockMvc.perform(updateInstruction(nonExistentId, editedInstruction))
             .andReturn().response.contentAsString
 
-        Assertions.assertThat(failUpdate).isEqualTo("404 NOT_FOUND \"Instruction not found $nonExistentId\"")
+        Assertions.assertThat(failUpdate).isEqualTo("Instruction not found $nonExistentId")
     }
 
     @Test
@@ -318,6 +318,6 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val getResult = mockMvc.perform(getInstruction(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
-        Assertions.assertThat(responseContent).isEqualTo("404 NOT_FOUND \"Instruction not found 999\"")
+        Assertions.assertThat(responseContent).isEqualTo("Instruction not found 999")
     }
 }

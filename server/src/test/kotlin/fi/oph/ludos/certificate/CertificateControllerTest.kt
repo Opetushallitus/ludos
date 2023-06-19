@@ -161,7 +161,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val failUpdate =
             mockMvc.perform(updateCertificate(nonExistentId, editedCertificate)).andReturn().response.contentAsString
 
-        assertEquals(failUpdate, "404 NOT_FOUND \"Certificate not found $nonExistentId\"")
+        assertEquals(failUpdate, "Certificate not found $nonExistentId")
     }
 
     @Test
@@ -209,6 +209,6 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val getResult = mockMvc.perform(getCertificate(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
-        assertEquals(responseContent, "404 NOT_FOUND \"Certificate not found 999\"")
+        assertEquals(responseContent, "Certificate not found 999")
     }
 }
