@@ -5,22 +5,25 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 import java.io.InputStream
 import java.util.*
+import javax.annotation.PostConstruct
 
 @Service
-class S3Service(
-    s3Config: S3Config,
-    @Value("\${aws.profile}") profile: String
-) {
-
-    @Value("\${s3.bucketName}")
+class S3Service(val s3: S3Client) {
+    @Value("\${ludos.certificate-bucket-name}")
     lateinit var bucket: String
 
-    private val s3 = s3Config.s3Client(profile)
+    @PostConstruct
+    fun checkS3Credentials() {
+        val objectRequest =
+            PutObjectRequest.builder().bucket(bucket).key("ludos_apps3_client_initialization_test").build()
+        s3.putObject(objectRequest, RequestBody.empty())
+    }
 
     fun putObject(file: MultipartFile, key: String): String? {
         val inputStream: InputStream = file.inputStream

@@ -41,9 +41,3 @@ ludos:
   service-user:
     username: ${LUDOS_PALVELUKAYTTAJA_USERNAME}
     password: ${LUDOS_PALVELUKAYTTAJA_PASSWORD}
-
-aws:
-  profile: ${LUDOS_AWS_PROFILE}
-
-s3:
-  bucketName: ${LUDOS_CERTIFICATE_BUCKET_NAME}
