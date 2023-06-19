@@ -11,17 +11,16 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.server.ResponseStatusException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
-import javax.validation.constraints.Size
 
 @RestController
 @Validated
 @RequestMapping("${Constants.API_PREFIX}/certificate")
 class CertificateController(
-    val service: CertificateService,
-    val s3Service: S3Service
+    val service: CertificateService, val s3Service: S3Service
 ) {
     @PostMapping("")
     @HasYllapitajaRole
@@ -50,35 +49,33 @@ class CertificateController(
 
     @PostMapping("/upload")
     @HasYllapitajaRole
-    fun uploadFile(@RequestParam("file") file: MultipartFile) = try {
-        if (file.contentType != MediaType.APPLICATION_PDF_VALUE) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                "Invalid file type. Only PDF files are allowed."
-            )
-        }
+    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<FileUpload> {
 
+        if (file.contentType.toString() != MediaType.APPLICATION_PDF_VALUE) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_FILE_TYPE")
+        }
         // 5MB
         val maxFileSize = 5 * 1024 * 1024
 
         if (file.size > maxFileSize) {
-            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                "File size exceeds the limit. Maximum file size allowed is 5MB."
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "FILE_TOO_LARGE"
             )
         }
 
-        val key = "todistus_${UUID.randomUUID()}"
+        try {
+            val key = "todistuspohja_${UUID.randomUUID()}"
 
-        s3Service.putObject(file, key)
+            s3Service.putObject(file, key)
 
-        ResponseEntity.status(HttpStatus.OK).body(
-            FileUpload(
-                file.originalFilename!!, key, getCurrentDate()
+            return ResponseEntity.status(HttpStatus.OK).body(
+                FileUpload(
+                    file.originalFilename!!, key, getCurrentDate()
+                )
             )
-        )
-    } catch (e: Exception) {
-        ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-            "Failed to upload file: ${e.message}"
-        )
+        } catch (e: Exception) {
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload file: ${e.message}")
+        }
     }
 
     fun getCurrentDate(): String {
