@@ -2,7 +2,7 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -83,12 +83,12 @@ class CertificateRepository(
         )
 
         if (results.isEmpty()) {
-            throw ChangeSetPersister.NotFoundException()
+            throw NotFoundException()
         }
 
         results[0]
-    } catch (e: ChangeSetPersister.NotFoundException) {
-        throw ChangeSetPersister.NotFoundException()
+    } catch (e: NotFoundException) {
+        throw NotFoundException()
     }
 
     fun getCertificates(exam: Exam): List<CertificateDtoOut> = try {
@@ -103,8 +103,8 @@ class CertificateRepository(
         ) { rs, _ ->
             mapResultSet(rs, exam)
         }
-    } catch (e: ChangeSetPersister.NotFoundException) {
-        throw ChangeSetPersister.NotFoundException()
+    } catch (e: NotFoundException) {
+        throw NotFoundException()
     }
 
     fun updateCertificate(id: Int, certificate: CertificateDtoIn): Int = try {
@@ -131,11 +131,11 @@ class CertificateRepository(
         )
 
         if (results.isEmpty()) {
-            throw ChangeSetPersister.NotFoundException()
+            throw NotFoundException()
         }
 
         results[0]
-    } catch (e: ChangeSetPersister.NotFoundException) {
-        throw ChangeSetPersister.NotFoundException()
+    } catch (e: NotFoundException) {
+        throw NotFoundException()
     }
 }

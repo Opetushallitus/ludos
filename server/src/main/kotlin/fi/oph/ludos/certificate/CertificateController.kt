@@ -1,9 +1,8 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.*
-import fi.oph.ludos.s3.S3Service
 import org.springframework.core.io.InputStreamResource
-import org.springframework.data.crossstore.ChangeSetPersister
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -12,16 +11,13 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.validation.Valid
 
 @RestController
 @Validated
 @RequestMapping("${Constants.API_PREFIX}/certificate")
-class CertificateController(
-    val service: CertificateService, val s3Service: S3Service
-) {
+class CertificateController(val service: CertificateService) {
     @PostMapping("")
     @HasYllapitajaRole
     fun createCertification(@Valid @RequestBody certificate: CertificateDtoIn) = service.createCertificate(certificate)
@@ -43,7 +39,7 @@ class CertificateController(
     ): ResponseEntity<Int> = try {
         val updatedCertificateId = service.updateCertificate(id, certificate)
         ResponseEntity.status(HttpStatus.OK).body(updatedCertificateId)
-    } catch (e: ChangeSetPersister.NotFoundException) {
+    } catch (e: NotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).build()
     }
 
@@ -63,31 +59,18 @@ class CertificateController(
             )
         }
 
-        try {
-            val key = "todistuspohja_${UUID.randomUUID()}"
+        val uploadedFile = service.uploadFile(file) ?: throw ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "S3_ERROR_UPLOADING_FILE"
+        )
 
-            s3Service.putObject(file, key)
-
-            return ResponseEntity.status(HttpStatus.OK).body(
-                FileUpload(
-                    file.originalFilename!!, key, getCurrentDate()
-                )
-            )
-        } catch (e: Exception) {
-            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload file: ${e.message}")
-        }
-    }
-
-    fun getCurrentDate(): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val currentDate = Date()
-        return dateFormat.format(currentDate)
+        return ResponseEntity.status(HttpStatus.OK).body(uploadedFile)
     }
 
     @GetMapping("/preview/{key}")
     @HasAnyRole
     fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
-        val responseInputStream = s3Service.getObject(key)
+        val responseInputStream = service.getFile(key)
 
         return if (responseInputStream != null) {
             val headers = HttpHeaders()
