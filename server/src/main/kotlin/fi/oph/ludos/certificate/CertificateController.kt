@@ -49,12 +49,20 @@ class CertificateController(
     }
 
     @PostMapping("/upload")
-    @Validated @Size(max = 10 * 1024 * 1024, message = "File size exceeds the maximum limit.") // 10mb
     @HasYllapitajaRole
     fun uploadFile(@RequestParam("file") file: MultipartFile) = try {
         if (file.contentType != MediaType.APPLICATION_PDF_VALUE) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 "Invalid file type. Only PDF files are allowed."
+            )
+        }
+
+        // 5MB
+        val maxFileSize = 5 * 1024 * 1024
+
+        if (file.size > maxFileSize) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                "File size exceeds the limit. Maximum file size allowed is 5MB."
             )
         }
 
