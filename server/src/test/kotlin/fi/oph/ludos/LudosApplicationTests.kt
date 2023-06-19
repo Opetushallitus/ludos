@@ -14,7 +14,7 @@ import org.springframework.security.test.context.support.WithSecurityContextFact
 import org.springframework.test.context.ContextConfiguration
 
 @SpringBootTest
-@ContextConfiguration(classes = [TestPropertiesConfig::class])
+@ContextConfiguration
 class LudosApplicationTests {
 
     @Test

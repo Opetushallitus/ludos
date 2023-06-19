@@ -1,6 +1,5 @@
 package fi.oph.ludos.s3
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
@@ -15,7 +14,7 @@ import software.amazon.awssdk.services.s3.S3Client
 class S3Config {
     @Bean
     fun s3Client(
-        @Value("\${ludos.local-dev-aws-profile}") profile: String, environment: Environment
+        environment: Environment
     ): S3Client {
         val defaultRegion = Region.EU_WEST_1
         val localProfile = environment.getProperty("ludos.local-dev-aws-profile")
@@ -25,7 +24,7 @@ class S3Config {
             .addCredentialsProvider(ContainerCredentialsProvider.builder().build())
 
         if (localProfile != null) {
-            providerChain.addCredentialsProvider(ProfileCredentialsProvider.builder().profileName(profile).build())
+            providerChain.addCredentialsProvider(ProfileCredentialsProvider.builder().profileName(localProfile).build())
         }
 
         return S3Client.builder().region(defaultRegion).credentialsProvider(providerChain.build()).build()

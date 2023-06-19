@@ -81,4 +81,7 @@ tasks.withType<BootRun> {
 tasks.withType<Test> {
     useJUnitPlatform()
     systemProperty("spring.profiles.active", "local")
+    testLogging {
+        showStandardStreams = true
+    }
 }
