@@ -1,8 +1,9 @@
 import { ChangeEvent, useRef, useState } from 'react'
 import { Button } from '../../../../Button'
-import { uploadFile } from '../../../../../formUtils'
+import { uploadFile } from '../../../../../request'
 import { useTranslation } from 'react-i18next'
 import { FileUploaded } from './FileUploaded'
+import { FILE_UPLOAD_ERRORS, getErrorMessage } from '../../../../../errorUtils'
 
 export type UploadFile = {
   fileName: string
@@ -25,7 +26,15 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
     const file = event.target.files?.[0]
 
     if (!file) {
-      throw new Error('No file selected')
+      setError('NO_FILE')
+      return
+    }
+
+    const fileSizeInBytes = file.size
+    const maxSizeInBytes = 5 * 1024 * 1024 // 5MB
+    if (fileSizeInBytes > maxSizeInBytes) {
+      setError('FILE_TOO_LARGE')
+      return
     }
 
     try {
@@ -33,10 +42,24 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
       const res = await uploadFile<UploadFile>(file)
       setUploadedFile(res)
     } catch (error) {
-      console.error(error)
-      setError('Tiedoston lataaminen epäonnistui')
+      setError(getErrorMessage(error))
     } finally {
       setLoading(false)
+    }
+  }
+
+  const errorMessage = (error: string) => {
+    // if error is in FILE_UPLOAD_ERRORS then return error message from translation
+    if (Object.keys(FILE_UPLOAD_ERRORS).includes(error)) {
+      const tKey = error as keyof typeof FILE_UPLOAD_ERRORS
+
+      if (tKey === 'FILE_TOO_LARGE') {
+        return t(`error.${FILE_UPLOAD_ERRORS[tKey]}`, { maxSize: '5mb' })
+      }
+
+      return t(`error.${FILE_UPLOAD_ERRORS[tKey]}`)
+    } else {
+      return t('error.laatiminen-epaonnistui')
     }
   }
 
@@ -60,7 +83,7 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
 
       <FileUploaded file={uploadedFile} loading={loading} canDelete />
 
-      {error && <p className="text-red">{error}</p>}
+      {error && <p className="text-red">{errorMessage(error)}</p>}
     </div>
   )
 }
