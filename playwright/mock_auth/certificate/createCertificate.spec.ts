@@ -1,5 +1,21 @@
-import { expect, test } from '@playwright/test'
+import { Page, expect, test } from '@playwright/test'
 import path from 'path'
+
+async function uploadFile(page: Page) {
+  const filePath = path.resolve(__dirname, '../../fixtures/fixture.pdf')
+
+  await page.locator('#fileInput').setInputFiles(filePath)
+
+  const currentDate = new Date()
+
+  const day = currentDate.getDate()
+  const month = currentDate.getMonth() + 1
+  const year = currentDate.getFullYear()
+
+  const formattedDate = `${day}.${month}.${year}`
+
+  await expect(page.getByTestId('fixture.pdf')).toHaveText(`fixture.pdfopen_in_new${formattedDate}delete`)
+}
 
 test.describe('Suko certificate form tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -15,11 +31,7 @@ test.describe('Suko certificate form tests', () => {
     await page.getByTestId('nameFi').press('Tab')
     await page.getByTestId('contentFi').fill('Todistuksen kuvaus')
 
-    const filePath = path.resolve(__dirname, '../../fixtures/fixture.pdf')
-
-    await page.locator('#fileInput').setInputFiles(filePath)
-
-    await expect(page.getByTestId('fixture.pdf')).toHaveText('fixture.pdfopen_in_new16.6.2023delete')
+    await uploadFile(page)
 
     await page.getByTestId('form-submit').click()
 
@@ -60,11 +72,7 @@ test.describe('Puhvi certificate form tests', () => {
     await page.getByTestId('nameFi').press('Tab')
     await page.getByTestId('contentFi').fill('Todistuksen kuvaus')
 
-    const filePath = path.resolve(__dirname, '../../fixtures/fixture.pdf')
-
-    await page.locator('#fileInput').setInputFiles(filePath)
-
-    await expect(page.getByTestId('fixture.pdf')).toHaveText('fixture.pdfopen_in_new16.6.2023delete')
+    await uploadFile(page)
 
     await page.getByTestId('form-submit').click()
 
@@ -105,11 +113,7 @@ test.describe('Ld certificate form tests', () => {
     await page.getByTestId('nameFi').press('Tab')
     await page.getByTestId('contentFi').fill('Todistuksen kuvaus')
 
-    const filePath = path.resolve(__dirname, '../../fixtures/fixture.pdf')
-
-    await page.locator('#fileInput').setInputFiles(filePath)
-
-    await expect(page.getByTestId('fixture.pdf')).toHaveText('fixture.pdfopen_in_new16.6.2023delete')
+    await uploadFile(page)
 
     await page.getByTestId('form-submit').click()
 
