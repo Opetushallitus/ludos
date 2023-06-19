@@ -66,7 +66,7 @@ class CertificateController(
             )
         }
 
-        val key = "todistus_pohja_${UUID.randomUUID()}"
+        val key = "todistus_${UUID.randomUUID()}"
 
         s3Service.putObject(file, key)
 
