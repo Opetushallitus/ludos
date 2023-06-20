@@ -14,7 +14,7 @@ async function uploadFile(page: Page) {
 
   const formattedDate = `${day}.${month}.${year}`
 
-  await expect(page.getByTestId('fixture.pdf')).toHaveText(`fixture.pdfopen_in_new${formattedDate}delete`)
+  await expect(page.getByTestId('fixture.pdf')).toHaveText(`fixture.pdfopen_in_new${formattedDate}`)
 }
 
 test.describe('Suko certificate form tests', () => {
