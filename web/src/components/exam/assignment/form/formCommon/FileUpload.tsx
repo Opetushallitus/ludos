@@ -59,7 +59,7 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
 
       return t(`error.${FILE_UPLOAD_ERRORS[tKey]}`)
     } else {
-      return t('error.laatiminen-epaonnistui')
+      return t('error.lataaminen-epaonnistui')
     }
   }
 
@@ -76,12 +76,12 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
         />
         <label htmlFor="fileInput">
           <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()} disabled={loading}>
-            {t('button.lisaa-liitetiedosto')}
+            {t(`button.${!uploadedFile ? 'lisaa' : 'vaihda'}-liitetiedosto`)}
           </Button>
         </label>
       </div>
 
-      <FileUploaded file={uploadedFile} loading={loading} canDelete />
+      <FileUploaded file={uploadedFile} loading={loading} />
 
       {error && <p className="text-red">{errorMessage(error)}</p>}
     </div>
