@@ -2,7 +2,6 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.*
 import org.springframework.core.io.InputStreamResource
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -30,17 +29,28 @@ class CertificateController(val service: CertificateService) {
 
     @GetMapping("/{exam}/{id}")
     @HasAnyRole
-    fun getCertificate(@PathVariable exam: Exam, @PathVariable("id") id: Int) = service.getCertificateById(id, exam)
+    fun getCertificate(@PathVariable exam: Exam, @PathVariable("id") id: Int): ResponseEntity<out Any> {
+        val certificateDtoOut = service.getCertificateById(id, exam)
+
+        return if (certificateDtoOut == null) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Certificate not found $id")
+        } else {
+            ResponseEntity.status(HttpStatus.OK).body(certificateDtoOut)
+        }
+    }
 
     @PutMapping("/{id}")
     @HasYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int, @RequestBody certificate: CertificateDtoIn
-    ): ResponseEntity<Int> = try {
+    ): ResponseEntity<Any> {
         val updatedCertificateId = service.updateCertificate(id, certificate)
-        ResponseEntity.status(HttpStatus.OK).body(updatedCertificateId)
-    } catch (e: NotFoundException) {
-        ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+
+        return if (updatedCertificateId == null) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Certificate not found $id")
+        } else {
+            ResponseEntity.status(HttpStatus.OK).body(updatedCertificateId)
+        }
     }
 
     @PostMapping("/upload")
@@ -60,8 +70,7 @@ class CertificateController(val service: CertificateService) {
         }
 
         val uploadedFile = service.uploadFile(file) ?: throw ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            "S3_ERROR_UPLOADING_FILE"
+            HttpStatus.INTERNAL_SERVER_ERROR, "S3_ERROR_UPLOADING_FILE"
         )
 
         return ResponseEntity.status(HttpStatus.OK).body(uploadedFile)

@@ -161,7 +161,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val failUpdate =
             mockMvc.perform(updateCertificate(nonExistentId, editedCertificate)).andReturn().response.contentAsString
 
-        assertEquals(failUpdate, "Certificate not found $nonExistentId")
+        assertEquals("Certificate not found $nonExistentId", failUpdate)
     }
 
     @Test

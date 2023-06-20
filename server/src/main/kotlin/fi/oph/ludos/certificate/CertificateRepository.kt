@@ -2,7 +2,6 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -53,23 +52,20 @@ class CertificateRepository(
         )[0]
     }
 
-    fun mapResultSet(rs: ResultSet, exam: Exam): CertificateDtoOut? {
-        return CertificateDtoOut(
-            rs.getInt("certificate_id"),
-            exam,
-            rs.getString("certificate_name_fi"),
-            rs.getString("certificate_content_fi"),
-            PublishState.valueOf(rs.getString("certificate_publish_state")),
-            rs.getString("certificate_file_name"),
-            rs.getString("certificate_file_key"),
-            rs.getString("certificate_file_upload_date"),
-            rs.getTimestamp("certificate_created_at"),
-            rs.getTimestamp("certificate_updated_at")
-        )
-    }
+    fun mapResultSet(rs: ResultSet, exam: Exam): CertificateDtoOut? = CertificateDtoOut(
+        rs.getInt("certificate_id"),
+        exam,
+        rs.getString("certificate_name_fi"),
+        rs.getString("certificate_content_fi"),
+        PublishState.valueOf(rs.getString("certificate_publish_state")),
+        rs.getString("certificate_file_name"),
+        rs.getString("certificate_file_key"),
+        rs.getString("certificate_file_upload_date"),
+        rs.getTimestamp("certificate_created_at"),
+        rs.getTimestamp("certificate_updated_at")
+    )
 
-
-    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut = try {
+    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? {
         val table = when (exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
@@ -82,32 +78,28 @@ class CertificateRepository(
             }, id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
-    fun getCertificates(exam: Exam): List<CertificateDtoOut> = try {
+    fun getCertificates(exam: Exam): List<CertificateDtoOut> {
         val table = when (exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
             Exam.LD -> "ld_certificate"
         }
 
-        jdbcTemplate.query(
+        return jdbcTemplate.query(
             "SELECT * FROM $table"
         ) { rs, _ ->
             mapResultSet(rs, exam)
         }
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
-    fun updateCertificate(id: Int, certificate: CertificateDtoIn): Int = try {
+    fun updateCertificate(id: Int, certificate: CertificateDtoIn): Int? {
         val results = jdbcTemplate.query(
             """UPDATE suko_certificate SET 
                 |certificate_name_fi = ?, 
@@ -130,12 +122,11 @@ class CertificateRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
 
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 }
