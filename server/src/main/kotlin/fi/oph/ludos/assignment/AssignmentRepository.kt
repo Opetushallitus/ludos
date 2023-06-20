@@ -1,7 +1,6 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.PublishState
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -322,48 +321,41 @@ class AssignmentRepository(
         assignment.aineKoodiArvo
     )[0]
 
-    fun getSukoAssignmentById(id: Int): AssignmentOut = try {
+    fun getSukoAssignmentById(id: Int): AssignmentOut? {
         val results = jdbcTemplate.query("SELECT * FROM suko_assignment WHERE assignment_id = ?", mapSukoResultSet, id)
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
-
-    fun getPuhviAssignmentById(id: Int): AssignmentOut = try {
+    fun getPuhviAssignmentById(id: Int): AssignmentOut? {
         val results = jdbcTemplate.query(
             "SELECT * FROM puhvi_assignment WHERE assignment_id = ?", mapPuhviResultSet, id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
-    fun getLdAssignmentById(id: Int): AssignmentOut = try {
+    fun getLdAssignmentById(id: Int): AssignmentOut? {
         val results = jdbcTemplate.query(
             "SELECT * FROM ld_assignment WHERE assignment_id = ?", mapLdResultSet, id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
-    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int = try {
+    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? {
         val results = jdbcTemplate.query(
             """UPDATE suko_assignment 
                 |SET 
@@ -400,17 +392,15 @@ class AssignmentRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
 
-    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int = try {
+    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? {
         val results = jdbcTemplate.query(
             """UPDATE puhvi_assignment 
                 |SET assignment_name_fi = ?, 
@@ -442,16 +432,14 @@ class AssignmentRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
-    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int = try {
+    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? {
         val results = jdbcTemplate.query(
             """UPDATE ld_assignment 
                 |SET assignment_name_fi = ?, 
@@ -483,13 +471,11 @@ class AssignmentRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results[0]
         }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
     }
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(

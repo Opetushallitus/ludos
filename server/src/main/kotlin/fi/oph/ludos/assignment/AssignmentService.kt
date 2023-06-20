@@ -17,25 +17,17 @@ class AssignmentService(val db: AssignmentRepository) {
         else -> throw UnknownError("Unreachable")
     }
 
-    fun getAssignmentById(exam: Exam, id: Int): AssignmentOut = try {
-        when (exam) {
-            Exam.SUKO -> db.getSukoAssignmentById(id)
-            Exam.PUHVI -> db.getPuhviAssignmentById(id)
-            Exam.LD -> db.getLdAssignmentById(id)
-        }
-    } catch (e: NotFoundException) {
-        throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+    fun getAssignmentById(exam: Exam, id: Int): AssignmentOut? = when (exam) {
+        Exam.SUKO -> db.getSukoAssignmentById(id)
+        Exam.PUHVI -> db.getPuhviAssignmentById(id)
+        Exam.LD -> db.getLdAssignmentById(id)
     }
 
-    fun updateAssignment(id: Int, assignment: Assignment): Int = try {
-        when (assignment) {
-            is SukoAssignmentDtoIn -> db.updateSukoAssignment(assignment, id)
-            is PuhviAssignmentDtoIn -> db.updatePuhviAssignment(assignment, id)
-            is LdAssignmentDtoIn -> db.updateLdAssignment(assignment, id)
-            else -> throw UnknownError("Unreachable")
-        }
-    } catch (e: NotFoundException) {
-        throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+    fun updateAssignment(id: Int, assignment: Assignment): Int? = when (assignment) {
+        is SukoAssignmentDtoIn -> db.updateSukoAssignment(assignment, id)
+        is PuhviAssignmentDtoIn -> db.updatePuhviAssignment(assignment, id)
+        is LdAssignmentDtoIn -> db.updateLdAssignment(assignment, id)
+        else -> throw UnknownError("Unreachable")
     }
 
     fun getOppimaarasInUse(): List<String> = db.getOppimaarasInUse()

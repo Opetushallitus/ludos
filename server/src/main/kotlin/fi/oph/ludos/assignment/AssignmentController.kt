@@ -14,7 +14,8 @@ import javax.validation.Valid
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
     @HasYllapitajaRole
-    fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut = service.createAssignment(assignment)
+    fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut =
+        service.createAssignment(assignment)
 
     @GetMapping("oppimaaras")
     @HasAnyRole
@@ -40,16 +41,26 @@ class AssignmentController(val service: AssignmentService) {
 
     @GetMapping("{exam}/{id}")
     @HasAnyRole
-    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
-        service.getAssignmentById(exam, id)
+    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): ResponseEntity<Any> {
+
+        val assignmentDtoOut = service.getAssignmentById(exam, id)
+
+        return if (assignmentDtoOut == null) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment not found $id")
+        } else {
+            ResponseEntity.status(HttpStatus.OK).body(assignmentDtoOut)
+        }
+    }
 
     @PutMapping("{id}")
     @HasYllapitajaRole
-    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): ResponseEntity<Int> =
-        try {
-            val updatedAssignmentId = service.updateAssignment(id, assignment)
+    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): ResponseEntity<Any> {
+        val updatedAssignmentId = service.updateAssignment(id, assignment)
+
+        return if (updatedAssignmentId == null) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment not found $id")
+        } else {
             ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
-        } catch (e: NotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         }
+    }
 }
