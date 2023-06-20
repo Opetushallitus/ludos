@@ -75,34 +75,36 @@ export const AssignmentList = ({
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
-        <div className="row gap-6">
-          <div className="flex flex-col gap-2 md:flex-row">
-            <p className="mt-2">{t('filter.kieli')}</p>
-            <div className="w-36">
-              <Dropdown
-                id="languageDropdown"
-                options={LANGUAGE_OPTIONS}
-                selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-                onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-                testId="language-dropdown"
-              />
+        {contentType !== ContentTypeEng.TODISTUKSET && (
+          <div className="row gap-6">
+            <div className="flex flex-col gap-2 md:flex-row">
+              <p className="mt-2">{t('filter.kieli')}</p>
+              <div className="w-36">
+                <Dropdown
+                  id="languageDropdown"
+                  options={LANGUAGE_OPTIONS}
+                  selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
+                  onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+                  testId="language-dropdown"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 md:flex-row">
-            <p className="mt-2">{t('filter.jarjesta')}</p>
-            <div className="w-36">
-              <Dropdown
-                id="orderFilter"
-                options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
-                selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
-                onSelectedOptionsChange={(opt: string) =>
-                  handleFilterChange<ValueOf<FiltersType['orderDirection']>>('orderDirection', opt)
-                }
-              />
+            <div className="flex flex-col gap-2 md:flex-row">
+              <p className="mt-2">{t('filter.jarjesta')}</p>
+              <div className="w-36">
+                <Dropdown
+                  id="orderFilter"
+                  options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
+                  selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
+                  onSelectedOptionsChange={(opt: string) =>
+                    handleFilterChange<ValueOf<FiltersType['orderDirection']>>('orderDirection', opt)
+                  }
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       {contentType === ContentTypeEng.KOETEHTAVAT && (
         <AssignmentFilters exam={exam} filters={filters} setFilters={setFilters} />
