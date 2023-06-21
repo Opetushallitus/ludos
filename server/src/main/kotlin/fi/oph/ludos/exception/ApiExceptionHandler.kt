@@ -43,7 +43,10 @@ class ApiExceptionHandler {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.sorted().joinToString("\n"))
         }
 
-        else -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: ${ex.message}")
+        else -> {
+            logger.error("Unexpected error", ex)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: ${ex.message}")
+        }
     }
 }
 
