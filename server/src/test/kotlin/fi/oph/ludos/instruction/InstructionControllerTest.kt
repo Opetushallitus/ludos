@@ -5,7 +5,7 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.Exam
 import fi.oph.ludos.WithYllapitajaRole
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
@@ -284,7 +284,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val failUpdate = mockMvc.perform(updateInstruction(nonExistentId, editedInstruction))
             .andReturn().response.contentAsString
 
-        Assertions.assertThat(failUpdate).isEqualTo("Instruction not found $nonExistentId")
+        assertEquals("Instruction not found $nonExistentId", failUpdate)
     }
 
     @Test
@@ -296,7 +296,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val postResult = mockMvc.perform(postInstruction(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString
 
-        Assertions.assertThat(responseContent).contains("Could not resolve type id 'WRONG' as a subtype")
+        assertThat(responseContent).contains("Could not resolve type id 'WRONG' as a subtype")
     }
 
     @Test
@@ -309,7 +309,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val postResult = mockMvc.perform(postInstruction(body)).andExpect(status().isBadRequest()).andReturn()
         val responseContent = postResult.response.contentAsString
 
-        Assertions.assertThat(responseContent).contains("Cannot deserialize value of type")
+        assertThat(responseContent).contains("Cannot deserialize value of type")
     }
 
     @Test
@@ -318,6 +318,6 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val getResult = mockMvc.perform(getInstruction(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
-        Assertions.assertThat(responseContent).isEqualTo("Instruction not found 999")
+        assertThat(responseContent).isEqualTo("Instruction not found 999")
     }
 }

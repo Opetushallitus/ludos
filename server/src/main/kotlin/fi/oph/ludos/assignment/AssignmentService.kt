@@ -1,10 +1,8 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Exam
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
-import org.springframework.http.HttpStatus
+import fi.oph.ludos.validateExamValue
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AssignmentService(val db: AssignmentRepository) {
@@ -17,10 +15,9 @@ class AssignmentService(val db: AssignmentRepository) {
         else -> throw UnknownError("Unreachable")
     }
 
-    fun getAssignmentById(exam: Exam, id: Int): AssignmentOut? = when (exam) {
-        Exam.SUKO -> db.getSukoAssignmentById(id)
-        Exam.PUHVI -> db.getPuhviAssignmentById(id)
-        Exam.LD -> db.getLdAssignmentById(id)
+    fun getAssignmentById(exam: Exam, id: Int): AssignmentOut? {
+        validateExamValue(exam)
+        return db.getAssignmentById(id, exam)
     }
 
     fun updateAssignment(id: Int, assignment: Assignment): Int? = when (assignment) {

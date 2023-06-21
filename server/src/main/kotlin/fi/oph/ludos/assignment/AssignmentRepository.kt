@@ -1,5 +1,6 @@
 package fi.oph.ludos.assignment
 
+import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -321,32 +322,17 @@ class AssignmentRepository(
         assignment.aineKoodiArvo
     )[0]
 
-    fun getSukoAssignmentById(id: Int): AssignmentOut? {
-        val results = jdbcTemplate.query("SELECT * FROM suko_assignment WHERE assignment_id = ?", mapSukoResultSet, id)
-
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
+    fun getAssignmentById(id: Int, exam: Exam): AssignmentOut? {
+        val tableAndMapper = when (exam) {
+            Exam.SUKO -> "suko_assignment" to mapSukoResultSet
+            Exam.PUHVI -> "puhvi_assignment" to mapPuhviResultSet
+            Exam.LD -> "ld_assignment" to mapLdResultSet
         }
-    }
 
-    fun getPuhviAssignmentById(id: Int): AssignmentOut? {
-        val results = jdbcTemplate.query(
-            "SELECT * FROM puhvi_assignment WHERE assignment_id = ?", mapPuhviResultSet, id
-        )
+        val table = tableAndMapper.first
+        val mapper = tableAndMapper.second
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
-    }
-
-    fun getLdAssignmentById(id: Int): AssignmentOut? {
-        val results = jdbcTemplate.query(
-            "SELECT * FROM ld_assignment WHERE assignment_id = ?", mapLdResultSet, id
-        )
+        val results = jdbcTemplate.query("SELECT * FROM $table WHERE assignment_id = ?", mapper, id)
 
         return if (results.isEmpty()) {
             null

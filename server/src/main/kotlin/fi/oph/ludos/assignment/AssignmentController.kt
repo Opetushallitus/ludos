@@ -1,7 +1,6 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.*
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated

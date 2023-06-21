@@ -100,8 +100,14 @@ class CertificateRepository(
     }
 
     fun updateCertificate(id: Int, certificate: CertificateDtoIn): Int? {
+        val table = when (certificate.exam) {
+            Exam.SUKO -> "suko_certificate"
+            Exam.PUHVI -> "puhvi_certificate"
+            Exam.LD -> "ld_certificate"
+        }
+
         val results = jdbcTemplate.query(
-            """UPDATE suko_certificate SET 
+            """UPDATE $table SET 
                 |certificate_name_fi = ?, 
                 |certificate_content_fi = ?, 
                 |certificate_publish_state = ?::publish_state, 
