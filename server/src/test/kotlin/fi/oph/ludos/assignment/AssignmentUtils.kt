@@ -1,6 +1,5 @@
 package fi.oph.ludos.assignment
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
@@ -75,6 +74,12 @@ fun updateAssignment(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
+fun getAllAssignments(exam: Exam) =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam").contentType(MediaType.APPLICATION_JSON)
+
+fun getAllInstructions(exam: Exam) =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instructions/$exam").contentType(MediaType.APPLICATION_JSON)
+
 // filter test utils
 fun getSukoAssignments(exam: Exam, filter: SukoAssignmentFilter): MockHttpServletRequestBuilder {
     val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
@@ -110,6 +115,6 @@ fun getLdAssignments(exam: Exam, filter: LdAssignmentFilter): MockHttpServletReq
 
 fun seedDb(data: String): MockHttpServletRequestBuilder =
     MockMvcRequestBuilders.post("${Constants.API_PREFIX}/test/seed").contentType(MediaType.APPLICATION_JSON)
-        .content(ObjectMapper().writeValueAsString(data))
+        .content(data)
 
 fun emptyDb() = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/empty").contentType(MediaType.APPLICATION_JSON)

@@ -1,6 +1,9 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.*
+import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
+import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import fi.oph.ludos.auth.RequireYllapitajaRoleByDefault
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -9,37 +12,38 @@ import javax.validation.Valid
 
 @RestController
 @Validated
+@RequireYllapitajaRoleByDefault
 @RequestMapping("${Constants.API_PREFIX}/assignment")
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
-    @HasYllapitajaRole
+    @RequireAtLeastYllapitajaRole
     fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut =
         service.createAssignment(assignment)
 
     @GetMapping("oppimaaras")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getOppimaarasInUse(): List<String> = service.getOppimaarasInUse()
 
     @GetMapping("SUKO")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getSukoAssignments(
         @Valid filters: SukoAssignmentFilter
     ): List<AssignmentOut> = service.getAssignments(filters)
 
     @GetMapping("PUHVI")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getPuhviAssignments(
         @Valid filters: PuhviAssignmentFilter
     ): List<AssignmentOut> = service.getAssignments(filters)
 
     @GetMapping("LD")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getLdAssignments(
         @Valid filters: LdAssignmentFilter
     ): List<AssignmentOut> = service.getAssignments(filters)
 
     @GetMapping("{exam}/{id}")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut {
         val assignmentDtoOut = service.getAssignmentById(exam, id)
 
@@ -47,7 +51,7 @@ class AssignmentController(val service: AssignmentService) {
     }
 
     @PutMapping("{id}")
-    @HasYllapitajaRole
+    @RequireAtLeastYllapitajaRole
     fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int {
         val updatedAssignmentId = service.updateAssignment(id, assignment)
 

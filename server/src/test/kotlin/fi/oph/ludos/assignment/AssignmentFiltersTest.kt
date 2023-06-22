@@ -3,6 +3,7 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Exam
 import fi.oph.ludos.WithYllapitajaRole
+import fi.oph.ludos.authenticateAsYllapitaja
 import fi.oph.ludos.test.CreateTestData
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -18,19 +19,21 @@ import javax.transaction.Transactional
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
-    val createTestData = CreateTestData()
     val objectMapper = jacksonObjectMapper()
 
     @BeforeAll
     fun setup() {
+        authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
+        val testData = CreateTestData().prepareTestData()
+        mockMvc.perform(seedDb(testData))
+    }
 
-        val testData = createTestData.prepareTestData()
-
-        mockMvc.perform(seedDb(testData)).andReturn().response.contentAsString
+    @AfterAll
+    fun tearDown() {
+        mockMvc.perform(emptyDb())
     }
 
     @Test
@@ -209,6 +212,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun testFiltersWithNonAllowedValues() {
         // suko
         testNonAllowedFilterOptions(

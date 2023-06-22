@@ -1,4 +1,4 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken

@@ -1,4 +1,4 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.apache.http.client.methods.HttpGet

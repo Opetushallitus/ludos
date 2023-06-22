@@ -1,6 +1,9 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.*
+import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
+import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import fi.oph.ludos.auth.RequireYllapitajaRoleByDefault
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -15,23 +18,24 @@ import javax.validation.Valid
 
 @RestController
 @Validated
+@RequireYllapitajaRoleByDefault
 @RequestMapping("${Constants.API_PREFIX}/certificate")
 class CertificateController(val service: CertificateService) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    @HasYllapitajaRole
+    @RequireAtLeastYllapitajaRole
     fun createCertificate(
         @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
         @RequestPart("attachment") attachment: MultipartFile
     ): CertificateDtoOut? = service.createCertificate(certificate, attachment)
 
     @GetMapping("/{exam}")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getCertificates(
         @PathVariable exam: Exam
     ) = service.getCertificates(exam)
 
     @GetMapping("/{exam}/{id}")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateDtoOut? {
         val certificateDtoOut = service.getCertificateById(id, exam)
 
@@ -39,7 +43,7 @@ class CertificateController(val service: CertificateService) {
     }
 
     @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    @HasYllapitajaRole
+    @RequireAtLeastYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int,
         @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
@@ -47,7 +51,7 @@ class CertificateController(val service: CertificateService) {
     ) = service.updateCertificate(id, certificate, attachment)
 
     @GetMapping("/preview/{key}")
-    @HasAnyRole
+    @RequireAtLeastOpettajaRole
     fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
         val (uploadFile, responseInputStream) = service.getAttachment(key)
 

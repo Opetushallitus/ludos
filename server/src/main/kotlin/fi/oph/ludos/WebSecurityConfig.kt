@@ -1,14 +1,14 @@
 package fi.oph.ludos
 
-import fi.oph.ludos.cas.CasConfig
+import fi.oph.ludos.auth.CasConfig
+import fi.oph.ludos.auth.Role
+import fi.oph.ludos.auth.RoleChecker
 import org.jasig.cas.client.session.SingleSignOutFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.env.Environment
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -47,11 +47,6 @@ class WebSecurityConfiguration {
 
         logger.info("Initializing SecurityFilterChain with active profiles: '$activeProfiles'")
 
-        if (activeProfiles == "local") {
-            http.authorizeHttpRequests().antMatchers("/**").permitAll().anyRequest().authenticated()
-            return http.build()
-        }
-
         http.logout()
             .logoutSuccessUrl(casConfig.getCasLogoutUrl())
             .logoutUrl(casConfig.logoutUrl)
@@ -70,14 +65,19 @@ class WebSecurityConfiguration {
 }
 
 class CustomPermissionEvaluator : PermissionEvaluator {
-    @Autowired
-    lateinit var environment: Environment
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
     override fun hasPermission(authentication: Authentication?, targetDomainObject: Any?, permission: Any?): Boolean {
-        val strArr = permission.toString().split(",")
-
-        val result = strArr.map { RoleChecker.hasRole(it.trim(), environment) }
-
-        return result.any { it }
+        if (permission == null || permission !is String) {
+            logger.warn("Null or non-string permission value '${permission}'")
+            return false
+        }
+        val minimumRequiredRole = try {
+            Role.valueOf(permission)
+        } catch (e: IllegalArgumentException) {
+            logger.warn("Invalid permission value: '${permission}'")
+            return false
+        }
+        return RoleChecker.hasAtLeastRole(minimumRequiredRole)
     }
 
     override fun hasPermission(
@@ -85,5 +85,5 @@ class CustomPermissionEvaluator : PermissionEvaluator {
         targetId: Serializable?,
         targetType: String?,
         permission: Any?
-    ) = false
+    ) = hasPermission(authentication, null, permission)
 }

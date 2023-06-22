@@ -1,8 +1,7 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fi.oph.ludos.Config
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.client.protocol.HttpClientContext

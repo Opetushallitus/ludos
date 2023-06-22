@@ -238,6 +238,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun putNonExistentCertificate() {
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,

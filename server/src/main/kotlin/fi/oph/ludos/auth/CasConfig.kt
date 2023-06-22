@@ -1,4 +1,4 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import fi.oph.ludos.Constants.Companion.API_PREFIX
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter

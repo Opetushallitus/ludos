@@ -16,13 +16,12 @@ export const LudosContextProvider = ({ children }: { children: ReactNode }) => {
           fetch(`/api/auth/user`, { method: 'GET' })
         ])
 
-        if (!koodistosResponse.ok) {
+        if (koodistosResponse.ok) {
+          const koodistosJson = await koodistosResponse.json()
+          setKoodistos(koodistosJson)
+        } else {
           console.error('Could not fetch koodistos')
-          return
         }
-
-        const koodistosJson = await koodistosResponse.json()
-        setKoodistos(koodistosJson)
 
         if (userDetailsResponse.status === 401) {
           setUserDetails({ role: 'UNAUTHORIZED', name: '' })
