@@ -2,7 +2,6 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.s3.S3Service
-import fi.oph.ludos.validateExamValue
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.ResponseInputStream
@@ -12,25 +11,13 @@ import java.util.*
 
 @Service
 class CertificateService(val db: CertificateRepository, val s3Service: S3Service) {
-    fun getCertificates(exam: Exam): List<CertificateDtoOut> {
-        validateExamValue(exam)
-        return db.getCertificates(exam)
-    }
+    fun getCertificates(exam: Exam): List<CertificateDtoOut> = db.getCertificates(exam)
 
-    fun createCertificate(certificate: CertificateDtoIn): CertificateDtoOut {
-        validateExamValue(certificate.exam)
-        return db.saveCertificate(certificate)
-    }
+    fun createCertificate(certificate: CertificateDtoIn): CertificateDtoOut = db.createCertificate(certificate)
 
-    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? {
-        validateExamValue(exam)
-        return db.getCertificateById(id, exam)
-    }
+    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? = db.getCertificateById(id, exam)
 
-    fun updateCertificate(id: Int, certificate: CertificateDtoIn): Int? {
-        validateExamValue(certificate.exam)
-        return db.updateCertificate(id, certificate)
-    }
+    fun updateCertificate(id: Int, certificate: CertificateDtoIn): Int? = db.updateCertificate(id, certificate)
 
     fun uploadFile(file: MultipartFile): FileUpload? = try {
         val key = "todistuspohja_${UUID.randomUUID()}"

@@ -1,7 +1,6 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Exam
-import fi.oph.ludos.validateExamValue
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,10 +14,7 @@ class AssignmentService(val db: AssignmentRepository) {
         else -> throw UnknownError("Unreachable")
     }
 
-    fun getAssignmentById(exam: Exam, id: Int): AssignmentOut? {
-        validateExamValue(exam)
-        return db.getAssignmentById(id, exam)
-    }
+    fun getAssignmentById(exam: Exam, id: Int): AssignmentOut? = db.getAssignmentById(id, exam)
 
     fun updateAssignment(id: Int, assignment: Assignment): Int? = when (assignment) {
         is SukoAssignmentDtoIn -> db.updateSukoAssignment(assignment, id)

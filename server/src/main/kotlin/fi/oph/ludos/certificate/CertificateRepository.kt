@@ -10,7 +10,7 @@ import java.sql.ResultSet
 class CertificateRepository(
     private val jdbcTemplate: JdbcTemplate,
 ) {
-    fun saveCertificate(certificate: CertificateDtoIn): CertificateDtoOut {
+    fun createCertificate(certificate: CertificateDtoIn): CertificateDtoOut {
         val table = when (certificate.exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
