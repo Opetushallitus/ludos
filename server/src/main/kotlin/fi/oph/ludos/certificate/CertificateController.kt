@@ -29,28 +29,20 @@ class CertificateController(val service: CertificateService) {
 
     @GetMapping("/{exam}/{id}")
     @HasAnyRole
-    fun getCertificate(@PathVariable exam: Exam, @PathVariable("id") id: Int): ResponseEntity<out Any> {
+    fun getCertificate(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateDtoOut {
         val certificateDtoOut = service.getCertificateById(id, exam)
 
-        return if (certificateDtoOut == null) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Certificate not found $id")
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(certificateDtoOut)
-        }
+        return certificateDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
     }
 
     @PutMapping("/{id}")
     @HasYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int, @RequestBody certificate: CertificateDtoIn
-    ): ResponseEntity<Any> {
+    ): Int {
         val updatedCertificateId = service.updateCertificate(id, certificate)
 
-        return if (updatedCertificateId == null) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Certificate not found $id")
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(updatedCertificateId)
-        }
+        return updatedCertificateId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
     }
 
     @PostMapping("/upload")

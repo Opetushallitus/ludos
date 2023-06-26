@@ -2,9 +2,9 @@ package fi.oph.ludos.assignment
 
 import fi.oph.ludos.*
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import javax.validation.Valid
 
 @RestController
@@ -40,26 +40,17 @@ class AssignmentController(val service: AssignmentService) {
 
     @GetMapping("{exam}/{id}")
     @HasAnyRole
-    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): ResponseEntity<Any> {
-
+    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut {
         val assignmentDtoOut = service.getAssignmentById(exam, id)
 
-        return if (assignmentDtoOut == null) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment not found $id")
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(assignmentDtoOut)
-        }
+        return assignmentDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
     }
 
     @PutMapping("{id}")
     @HasYllapitajaRole
-    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): ResponseEntity<Any> {
+    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int {
         val updatedAssignmentId = service.updateAssignment(id, assignment)
 
-        return if (updatedAssignmentId == null) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Assignment not found $id")
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
-        }
+        return updatedAssignmentId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
     }
 }

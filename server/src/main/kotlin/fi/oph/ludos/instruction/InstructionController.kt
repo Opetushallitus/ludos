@@ -5,16 +5,15 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.HasAnyRole
 import fi.oph.ludos.HasYllapitajaRole
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/instruction")
 class InstructionController(val service: InstructionService) {
     @PostMapping("")
     @HasYllapitajaRole
-    fun createInstruction(@RequestBody instruction: Instruction): ResponseEntity<out Any> =
-        ResponseEntity.ok().body(service.createInstruction(instruction))
+    fun createInstruction(@RequestBody instruction: Instruction) = service.createInstruction(instruction)
 
     @GetMapping("/{exam}")
     @HasAnyRole
@@ -24,27 +23,19 @@ class InstructionController(val service: InstructionService) {
 
     @GetMapping("/{exam}/{id}")
     @HasAnyRole
-    fun getInstruction(@PathVariable exam: Exam, @PathVariable("id") id: Int): ResponseEntity<out Any> {
+    fun getInstruction(@PathVariable exam: Exam, @PathVariable("id") id: Int): InstructionOut {
         val instructionDtoOut = service.getInstructionById(exam, id)
 
-        return if (instructionDtoOut == null) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Instruction not found $id")
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(instructionDtoOut)
-        }
+        return instructionDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
     }
 
     @PutMapping("/{id}")
     @HasYllapitajaRole
     fun updateInstruction(
         @PathVariable("id") id: Int, @RequestBody instruction: Instruction
-    ): ResponseEntity<Any> {
+    ): Int {
         val updatedInstructionId = service.updateInstruction(id, instruction)
 
-        return if (updatedInstructionId == null) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body("Instruction not found $id")
-        } else {
-            ResponseEntity.status(HttpStatus.OK).body(updatedInstructionId)
-        }
+        return updatedInstructionId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
     }
 }
