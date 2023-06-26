@@ -8,10 +8,10 @@ import { useEffect, useState } from 'react'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { FormHeader } from '../../assignment/form/formCommon/FormHeader'
-import { FormButtonRow } from '../../assignment/form/formCommon/FormButtonRow'
-import { FileUpload, UploadFile } from '../../assignment/form/formCommon/FileUpload'
-import { FormError } from '../../assignment/form/formCommon/FormErrors'
+import { FormHeader } from '../../formCommon/FormHeader'
+import { FormButtonRow } from '../../formCommon/FormButtonRow'
+import { FileUpload, UploadFile } from '../../formCommon/FileUpload'
+import { FormError } from '../../formCommon/FormErrors'
 
 type CertificateFormProps = {
   action: 'new' | 'update'
@@ -27,7 +27,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
   const exam = match!.params.exam as Exam
 
-  const assignment = (state?.assignment as CertificateIn) || null
+  const certificate = state?.assignment as CertificateIn | undefined
 
   const {
     register,
@@ -39,20 +39,20 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
   // set initial values
   useEffect(() => {
-    if (assignment) {
+    if (certificate) {
       reset({
-        ...assignment,
+        ...certificate,
         exam: exam.toUpperCase() as Exam
       })
       setUploadedFile({
-        fileName: assignment.fileName,
-        fileKey: assignment.fileKey,
-        fileUploadDate: assignment.fileUploadDate
+        fileName: certificate.fileName,
+        fileKey: certificate.fileKey,
+        fileUploadDate: certificate.fileUploadDate
       })
     } else {
       setValue('exam', exam.toUpperCase() as Exam)
     }
-  }, [assignment, exam, reset, setValue])
+  }, [certificate, exam, reset, setValue])
 
   const handleUploadedFile = (file: UploadFile) => {
     setUploadedFile(file)
@@ -68,9 +68,9 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
       try {
         setLoading(true)
         let resultId: string
-        // When updating we need to have the assignment
-        if (action === 'update' && assignment) {
-          resultId = await updateCertificate<string>(exam, assignment.id, body)
+        // When updating we need to have the certificate
+        if (action === 'update' && certificate) {
+          resultId = await updateCertificate<string>(exam, certificate.id, body)
         } else {
           const { id } = await postCertificate<{ id: string }>(body)
           resultId = id
@@ -85,25 +85,25 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
     })()
   }
 
-  const nameError = errors.nameFi?.message
-  const contentError = errors.contentFi?.message
+  const nameError = errors.name?.message
+  const contentError = errors.description?.message
   const fileError = errors.fileKey?.message
 
   return (
     <div className="w-10/12 pt-3">
-      <FormHeader action={action} contentType={ContentTypeEng.TODISTUKSET} assignment={assignment} />
+      <FormHeader action={action} contentType={ContentTypeEng.TODISTUKSET} name={certificate?.name} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
 
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-        <TextInput id="nameFi" register={register} required error={!!nameError}>
+        <TextInput id="name" register={register} required error={!!nameError}>
           {t('form.todistuksennimi')}
         </TextInput>
         <FormError error={nameError} />
 
-        <TextAreaInput id="contentFi" register={register} required error={!!contentError}>
+        <TextAreaInput id="description" register={register} required error={!!contentError}>
           {t('form.todistuksenkuvaus')}
         </TextAreaInput>
         <FormError error={contentError} />

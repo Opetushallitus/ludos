@@ -19,8 +19,8 @@ class CertificateRepository(
 
         return jdbcTemplate.query(
             """INSERT INTO $table (
-            |certificate_name_fi, 
-            |certificate_content_fi,
+            |certificate_name, 
+            |certificate_description,
             |certificate_publish_state,
             |certificate_file_name,
             |certificate_file_key,
@@ -33,8 +33,8 @@ class CertificateRepository(
                 CertificateDtoOut(
                     rs.getInt("certificate_id"),
                     certificate.exam,
-                    certificate.nameFi,
-                    certificate.contentFi,
+                    certificate.name,
+                    certificate.description,
                     certificate.publishState,
                     certificate.fileName,
                     certificate.fileKey,
@@ -43,8 +43,8 @@ class CertificateRepository(
                     rs.getTimestamp("certificate_updated_at")
                 )
             },
-            certificate.nameFi,
-            certificate.contentFi,
+            certificate.name,
+            certificate.description,
             certificate.publishState.toString(),
             certificate.fileName,
             certificate.fileKey,
@@ -55,8 +55,8 @@ class CertificateRepository(
     fun mapResultSet(rs: ResultSet, exam: Exam): CertificateDtoOut? = CertificateDtoOut(
         rs.getInt("certificate_id"),
         exam,
-        rs.getString("certificate_name_fi"),
-        rs.getString("certificate_content_fi"),
+        rs.getString("certificate_name"),
+        rs.getString("certificate_description"),
         PublishState.valueOf(rs.getString("certificate_publish_state")),
         rs.getString("certificate_file_name"),
         rs.getString("certificate_file_key"),
@@ -108,8 +108,8 @@ class CertificateRepository(
 
         val results = jdbcTemplate.query(
             """UPDATE $table SET 
-                |certificate_name_fi = ?, 
-                |certificate_content_fi = ?, 
+                |certificate_name = ?, 
+                |certificate_description = ?, 
                 |certificate_publish_state = ?::publish_state, 
                 |certificate_updated_at = now(),
                 |certificate_file_name = ?,
@@ -119,8 +119,8 @@ class CertificateRepository(
             { rs: ResultSet, _: Int ->
                 rs.getInt("certificate_id")
             },
-            certificate.nameFi,
-            certificate.contentFi,
+            certificate.name,
+            certificate.description,
             certificate.publishState.toString(),
             certificate.fileName,
             certificate.fileKey,

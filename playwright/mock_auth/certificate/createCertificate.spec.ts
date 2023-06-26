@@ -34,9 +34,9 @@ async function createCertificate(page: Page, event: string) {
     return
   }
 
-  await page.getByTestId('nameFi').click()
-  await page.getByTestId('nameFi').fill('Testi todistus')
-  await page.getByTestId('contentFi').fill('Todistuksen kuvaus')
+  await page.getByTestId('name').click()
+  await page.getByTestId('name').fill('Testi todistus')
+  await page.getByTestId('description').fill('Todistuksen kuvaus')
 
   await uploadFile(page)
 

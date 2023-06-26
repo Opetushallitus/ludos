@@ -2,28 +2,29 @@ import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
 import { Icon, Icons } from '../Icon'
-import { ContentTypeEng } from '../../types'
+import { BaseIn, ContentTypeEng } from '../../types'
+import { getContentName } from '../exam/assignment/assignmentUtils'
+import { toLocaleDate } from '../../formatUtils'
 
 type ContentHeaderProps = {
   language: string
-  nameFi: string
-  nameSv: string
+  data: BaseIn
   onSelectedOptionsChange: (opt: string) => void
-  contentType?: string
+  contentType: string
 }
 
-export function ContentHeader({ onSelectedOptionsChange, nameFi, nameSv, language, contentType }: ContentHeaderProps) {
+export function ContentHeader({ onSelectedOptionsChange, data, language, contentType }: ContentHeaderProps) {
   const { t } = useTranslation()
 
   return (
     <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
       <div className="flex w-2/3 flex-col">
         <div className="row my-1">
-          <p>{new Date().toLocaleDateString('fi-FI')}</p>
+          <p>{toLocaleDate(data.createdAt)}</p>
         </div>
         <div className="row">
           <h2 className="w-full md:w-1/2" data-testid="assignment-header">
-            {language === 'fi' ? nameFi : nameSv}
+            {getContentName(data, contentType, language)}
           </h2>
         </div>
       </div>

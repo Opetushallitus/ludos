@@ -8,9 +8,9 @@ import javax.validation.constraints.NotBlank
 interface Certificate {
     val exam: Exam
     @get:NotBlank
-    val nameFi: String
+    val name: String
     @get:NotBlank
-    val contentFi: String
+    val description: String
     val publishState: PublishState
     @get:NotBlank
     val fileName: String
@@ -23,8 +23,8 @@ interface Certificate {
 data class CertificateDtoIn(
     val id: Int,
     override val exam: Exam,
-    override val nameFi: String,
-    override val contentFi: String,
+    override val name: String,
+    override val description: String,
     override val publishState: PublishState,
     override val fileName: String,
     override val fileKey: String,
@@ -35,8 +35,8 @@ data class CertificateDtoIn(
 data class CertificateDtoOut(
     val id: Int,
     override val exam: Exam,
-    override val nameFi: String,
-    override val contentFi: String,
+    override val name: String,
+    override val description: String,
     override val publishState: PublishState,
     override val fileName: String,
     override val fileKey: String,

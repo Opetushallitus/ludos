@@ -40,8 +40,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     data class TestCertificateIn(
         val exam: Exam,
-        val nameFi: String,
-        val contentFi: String,
+        val name: String,
+        val description: String,
         val publishState: PublishState,
         val fileName: String,
         val fileKey: String,
@@ -51,8 +51,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     data class TestCertificateOut(
         val id: Int,
         val exam: Exam,
-        val nameFi: String,
-        val contentFi: String,
+        val name: String,
+        val description: String,
         val publishState: PublishState,
         val fileName: String,
         val fileKey: String,
@@ -66,8 +66,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     fun createCertificateTest() {
         val testCertificate = TestCertificateIn(
             exam = Exam.SUKO,
-            nameFi = "Test Certificate FI",
-            contentFi = "Certificate content Fi",
+            name = "Test Certificate FI",
+            description = "Certificate content Fi",
             publishState = PublishState.PUBLISHED,
             fileName = "test_certificate.pdf",
             fileKey = "https://amazon_url.com/test_certificate.pdf",
@@ -81,9 +81,9 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val certificateIn = objectMapper.readValue(postResult, TestCertificateOut::class.java)
 
-        assertEquals(testCertificate.nameFi, certificateIn.nameFi)
+        assertEquals(testCertificate.name, certificateIn.name)
         assertEquals(testCertificate.exam, certificateIn.exam)
-        assertEquals(testCertificate.contentFi, certificateIn.contentFi)
+        assertEquals(testCertificate.description, certificateIn.description)
         assertEquals(testCertificate.publishState, certificateIn.publishState)
         assertEquals(testCertificate.fileName, certificateIn.fileName)
         assertEquals(testCertificate.fileKey, certificateIn.fileKey)
@@ -98,8 +98,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val certificateOut = objectMapper.readValue(getResult, TestCertificateOut::class.java)
 
         assertEquals(certificateIn.id, certificateOut.id)
-        assertEquals(certificateIn.nameFi, certificateOut.nameFi)
-        assertEquals(certificateIn.contentFi, certificateOut.contentFi)
+        assertEquals(certificateIn.name, certificateOut.name)
+        assertEquals(certificateIn.description, certificateOut.description)
         assertEquals(certificateIn.publishState, certificateOut.publishState)
         assertEquals(certificateIn.fileName, certificateOut.fileName)
         assertEquals(certificateIn.fileKey, certificateOut.fileKey)
@@ -110,9 +110,9 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val editedCertificate = """
         {
             "id": "${certificateIn.id}",
-            "nameFi": "Suko Test Certificate FI updated",
+            "name": "Suko Test Certificate FI updated",
             "exam": "SUKO",
-            "contentFi": "Suko Certificate content Fi updated",
+            "description": "Suko Certificate content Fi updated",
             "publishState": "PUBLISHED",
             "fileName": "updated_certificate.pdf",
             "fileKey": "https://amazon_url.com/updated_certificate.pdf",
@@ -129,8 +129,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val updatedCertificate = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
 
-        assertEquals("Suko Test Certificate FI updated", updatedCertificate.nameFi)
-        assertEquals("Suko Certificate content Fi updated", updatedCertificate.contentFi)
+        assertEquals("Suko Test Certificate FI updated", updatedCertificate.name)
+        assertEquals("Suko Certificate content Fi updated", updatedCertificate.description)
         assertEquals(PublishState.PUBLISHED, updatedCertificate.publishState)
         assertEquals("updated_certificate.pdf", updatedCertificate.fileName)
         assertEquals("https://amazon_url.com/updated_certificate.pdf", updatedCertificate.fileKey)
@@ -148,9 +148,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             {
                 "id": "$nonExistentId",
                 "exam": "SUKO",
-                "nameFi": "New test name",
-                "contentFi": "content",
-                "contentSv": "content",
+                "name": "New test name",
+                "description": "content",
                 "publishState": "PUBLISHED",
                 "fileName": "updated_certificate.pdf",
                 "fileKey": "https://amazon_url.com/updated_certificate.pdf",
@@ -169,8 +168,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     fun invalidExam() {
         val body = """
             {
-                "nameFi": "Test Certificate",
-                "contentFi": "Certificate content",
+                "name": "Test Certificate",
+                "description": "Certificate content",
                 "publishState": "PUBLISHED",
                 "exam": "WRONG",
                 "fileName": "test_certificate.pdf",
@@ -187,8 +186,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     fun invalidState() {
         val body = """
         {
-            "nameFi": "Test Certificate",
-            "contentFi": "Certificate content",
+            "name": "Test Certificate",
+            "description": "Certificate content",
             "publishState": "",
             "exam": "SUKO",
             "fileName": "test_certificate.pdf",

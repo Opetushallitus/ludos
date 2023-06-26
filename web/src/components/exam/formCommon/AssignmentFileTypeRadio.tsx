@@ -1,8 +1,8 @@
 import { Control, Controller } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { Koodisto } from '../../../../../LudosContext'
+import { Koodisto } from '../../../LudosContext'
 import { FormError } from './FormErrors'
-import { ErrorMessages } from '../../../../../types'
+import { ErrorMessages } from '../../../types'
 
 interface AssignmentTypeFieldProps {
   control: Control<any>

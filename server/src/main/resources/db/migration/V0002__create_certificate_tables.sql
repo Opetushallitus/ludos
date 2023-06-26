@@ -1,8 +1,8 @@
 CREATE TABLE certificate
 (
     certificate_id               serial PRIMARY KEY,
-    certificate_name_fi          text          NOT NULL,
-    certificate_content_fi       text          NOT NULL,
+    certificate_name             text          NOT NULL,
+    certificate_description      text          NOT NULL,
     certificate_publish_state    publish_state NOT NULL,
     certificate_created_at       timestamptz   NOT NULL default now(),
     certificate_updated_at       timestamptz   NOT NULL default now(),

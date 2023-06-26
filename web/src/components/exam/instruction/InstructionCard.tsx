@@ -6,37 +6,37 @@ import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
 
 type InstructionCardProps = {
-  assignment: AssignmentIn
+  instruction: AssignmentIn
   exam: string
 }
 
-export const InstructionCard = ({ assignment }: InstructionCardProps) => {
+export const InstructionCard = ({ instruction }: InstructionCardProps) => {
   const navigate = useNavigate()
 
   return (
     <div
       className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary"
-      data-testid={`instruction-${assignment.id.toString()}`}>
+      data-testid={`instruction-${instruction.id.toString()}`}>
       <div className="text-center">
-        <InternalLink className="text-sm font-semibold text-green-primary" to={`${assignment.id}`}>
-          {assignment.nameFi}
+        <InternalLink className="text-sm font-semibold text-green-primary" to={`${instruction.id}`}>
+          {instruction.nameFi}
         </InternalLink>
         <Icon
           name="muokkaa"
           color="text-green-primary"
-          dataTestId={`instruction-${assignment.id.toString()}-edit`}
+          dataTestId={`instruction-${instruction.id.toString()}-edit`}
           onClick={() =>
             navigate('update', {
               state: {
-                assignment
+                instruction: instruction
               }
             })
           }
           customClass="ml-2"
         />
       </div>
-      <p className="mb-2 mt-2 text-center text-xs">{toLocaleDate(assignment.createdAt)}</p>
-      <StateTag state={assignment.publishState} />
+      <p className="mb-2 mt-2 text-center text-xs">{toLocaleDate(instruction.createdAt)}</p>
+      <StateTag state={instruction.publishState} />
     </div>
   )
 }

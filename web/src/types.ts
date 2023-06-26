@@ -33,18 +33,21 @@ export type Exam = (typeof Exam)[keyof typeof Exam]
 
 export type BaseIn = {
   id: number
-  nameFi: string
-  nameSv: string
-  contentFi: string
-  contentSv: string
   publishState: PublishState
   createdAt: string
   updatedAt: string
 }
 
-export type AssignmentIn = BaseIn & {
+export type BaseAssignmentAndInstructionIn = BaseIn & {
+  nameFi: string
+  nameSv: string
+  contentFi: string
+  contentSv: string
   instructionFi: string
   instructionSv: string
+}
+
+export type AssignmentIn = BaseAssignmentAndInstructionIn & {
   aiheKoodiArvos: string[]
   assignmentTypeKoodiArvo: string
   laajaalainenOsaaminenKoodiArvos: string[]
@@ -56,7 +59,9 @@ export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
 }
 
-export type CertificateIn = AssignmentIn & {
+export type CertificateIn = BaseIn & {
+  name: string
+  description: string
   fileName: string
   fileKey: string
   fileUploadDate: string

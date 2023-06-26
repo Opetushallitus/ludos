@@ -3,7 +3,7 @@ import { Button } from '../Button'
 import { BaseIn, ContentTypeEng, Exam } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
-import { isAssignment, isCertificate, isInstructions } from '../exam/assignment/assignmentUtils'
+import { isAssignment, isCertificate, isInstruction } from '../exam/assignment/assignmentUtils'
 import { EXAM_TYPE_ENUM } from '../../constants'
 import { Spinner } from '../Spinner'
 import { ContentHeader } from './ContentCommon'
@@ -56,10 +56,9 @@ export const Content = ({ exam }: AssignmentProps) => {
                 <div className="col min-h-[60vh] w-full">
                   <ContentHeader
                     language={language}
-                    nameFi={data.nameFi}
-                    nameSv={data.nameSv}
+                    data={data}
                     onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-                    contentType={contentType}
+                    contentType={contentType!} // fixme: could this ever be undefined?
                   />
                   <div className="row">
                     <StateTag state={data.publishState} />
@@ -83,7 +82,7 @@ export const Content = ({ exam }: AssignmentProps) => {
 
                   {contentType && isCertificate(data, contentType) && <CertificateContent certificate={data} />}
 
-                  {contentType && isInstructions(data, contentType) && (
+                  {contentType && isInstruction(data, contentType) && (
                     <InstructionContent instruction={data} language={language} />
                   )}
                 </div>

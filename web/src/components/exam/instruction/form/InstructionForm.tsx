@@ -70,7 +70,7 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
 
   return (
     <div className="w-10/12 pt-3">
-      <FormHeader action={action} contentType={ContentTypeEng.OHJEET} assignment={assignment} />
+      <FormHeader action={action} contentType={ContentTypeEng.OHJEET} name={assignment?.nameFi} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
