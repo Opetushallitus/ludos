@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { Icon } from './Icon'
 import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../LudosContext'
+import { useTranslation } from 'react-i18next'
 
 type DropdownProps<C extends boolean | undefined> = {
   id: string
@@ -26,6 +27,7 @@ export const Dropdown = ({
   testId,
   requiredError
 }: WithReset | WithoutReset | WithOptionalReset) => {
+  const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdown({
@@ -62,7 +64,7 @@ export const Dropdown = ({
             </div>
           ) : (
             <>
-              <span className="text-gray-secondary">Valitse...</span>
+              <span className="text-gray-secondary">{t('filter.valitse')}</span>
             </>
           )}
         </div>
