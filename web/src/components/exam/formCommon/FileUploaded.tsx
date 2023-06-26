@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { Spinner } from '../../../../Spinner'
-import { ExternalLink } from '../../../../ExternalLink'
-import { PREVIEW_CERTIFICATION_PDF_URL } from '../../../../../constants'
-import { toLocaleDate } from '../../../../../formatUtils'
+import { Spinner } from '../../Spinner'
+import { ExternalLink } from '../../ExternalLink'
+import { PREVIEW_CERTIFICATION_PDF_URL } from '../../../constants'
+import { toLocaleDate } from '../../../formatUtils'
 import { UploadFile } from './FileUpload'
 
 type UploadedFileProps = {

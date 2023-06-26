@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { ErrorMessages, ErrorMessagesType } from '../../../../../types'
-import { MIN_LENGTH } from '../assignmentSchema'
+import { ErrorMessages, ErrorMessagesType } from '../../../types'
+import { MIN_LENGTH } from '../assignment/form/assignmentSchema'
 
 export const FormError = ({ error }: { error?: string }) => {
   const { t } = useTranslation()

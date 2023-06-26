@@ -1,15 +1,15 @@
-import { ContentTypeTranslationFinnish } from '../../assignmentUtils'
-import { AssignmentIn, ContentTypeKeys, ContentTypeEng, ContentTypesSingular } from '../../../../../types'
+import { ContentTypeTranslationFinnish } from '../assignment/assignmentUtils'
+import { AssignmentIn, ContentTypeKeys, ContentTypeEng, ContentTypesSingular } from '../../../types'
 import { useTranslation } from 'react-i18next'
 
 export const FormHeader = ({
   action,
-  assignment,
-  contentType
+  contentType,
+  name
 }: {
   action: 'new' | 'update'
   contentType: ContentTypeEng
-  assignment: AssignmentIn
+  name?: string
 }) => {
   const { t } = useTranslation()
 
@@ -20,7 +20,7 @@ export const FormHeader = ({
   return (
     <div className="mb-6">
       <h2 className="mb-3" data-testid="heading">
-        {action === 'new' ? t(`form.otsikko${contentTypeTextVariable}`) : assignment?.nameFi}
+        {action === 'new' ? t(`form.otsikko${contentTypeTextVariable}`) : name}
       </h2>
       {action === 'new' ? <p>{t(`form.kuvaus${contentTypeTextVariable}`)}</p> : <p>{t('form.muokkauskuvaus')}</p>}
     </div>

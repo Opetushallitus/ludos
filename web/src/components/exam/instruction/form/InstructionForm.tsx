@@ -9,8 +9,8 @@ import { Tabs } from '../../../Tabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { FormHeader } from '../../assignment/form/formCommon/FormHeader'
-import { FormButtonRow } from '../../assignment/form/formCommon/FormButtonRow'
+import { FormHeader } from '../../formCommon/FormHeader'
+import { FormButtonRow } from '../../formCommon/FormButtonRow'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'

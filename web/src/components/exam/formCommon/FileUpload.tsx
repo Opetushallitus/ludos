@@ -1,9 +1,9 @@
 import { ChangeEvent, useRef, useState } from 'react'
-import { Button } from '../../../../Button'
-import { uploadFile } from '../../../../../request'
+import { Button } from '../../Button'
+import { uploadFile } from '../../../request'
 import { useTranslation } from 'react-i18next'
 import { FileUploaded } from './FileUploaded'
-import { FILE_UPLOAD_ERRORS, getErrorMessage } from '../../../../../errorUtils'
+import { FILE_UPLOAD_ERRORS, getErrorMessage } from '../../../errorUtils'
 
 export type UploadFile = {
   fileName: string

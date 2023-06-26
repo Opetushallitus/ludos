@@ -1,9 +1,9 @@
-import { TextInput } from '../../../../TextInput'
+import { TextInput } from '../../TextInput'
 import { FormError } from './FormErrors'
-import { TextAreaInput } from '../../../../TextAreaInput'
+import { TextAreaInput } from '../../TextAreaInput'
 import { useTranslation } from 'react-i18next'
 import { useFormContext } from 'react-hook-form'
-import { Tabs } from '../../../../Tabs'
+import { Tabs } from '../../Tabs'
 import { useState } from 'react'
 
 export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean }) => {
