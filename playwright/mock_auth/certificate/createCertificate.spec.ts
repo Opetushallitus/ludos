@@ -24,12 +24,14 @@ async function uploadFile(page: Page) {
   await expect(page.getByTestId('fixture.pdf')).toHaveText(`fixture.pdfopen_in_new${formattedDate}`)
 }
 
-async function createCertificate(page: Page, certificateType: string) {
-  if (certificateType === 'cancel') {
+async function createCertificate(page: Page, event: string) {
+  if (event === 'cancel') {
     const btn = page.getByTestId('form-cancel')
     await expect(btn).toHaveText('Peruuta')
     await btn.click()
     await page.getByTestId('create-todistus-button')
+
+    return
   }
 
   await page.getByTestId('nameFi').click()
@@ -42,7 +44,7 @@ async function createCertificate(page: Page, certificateType: string) {
     await page.getByTestId('form-submit').click()
     const header = page.getByTestId('assignment-header')
     await expect(header).toHaveText('Testi todistus')
-  } else if (certificateType === 'draft') {
+  } else if (event === 'draft') {
     const btn = page.getByTestId('form-draft')
     await expect(btn).toHaveText('Tallenna luonnoksena')
     await btn.click()
