@@ -21,7 +21,7 @@ class S3Service(val s3: S3Client) {
     @PostConstruct
     fun checkS3Credentials() {
         val objectRequest =
-            PutObjectRequest.builder().bucket(bucket).key("ludos_apps3_client_initialization_test").build()
+            PutObjectRequest.builder().bucket(bucket).key("ludos_app_s3_client_initialization_test").build()
         s3.putObject(objectRequest, RequestBody.empty())
     }
 
