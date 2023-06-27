@@ -204,7 +204,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    @WithYllapitajaRole
+    @WithOpettajaRole
     fun certificateNotFound() {
         val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
