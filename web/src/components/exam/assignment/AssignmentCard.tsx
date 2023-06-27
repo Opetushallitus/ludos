@@ -46,7 +46,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
           onClick={() =>
             navigate('update', {
               state: {
-                assignment
+                data: assignment
               }
             })
           }

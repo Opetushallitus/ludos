@@ -60,14 +60,13 @@ export async function postCertificate<T>(body: CertificateFormType): Promise<T> 
   return await result.json()
 }
 
-export async function updateCertificate<T>(exam: Exam, id: number, body: CertificateFormType): Promise<T> {
+export async function updateCertificate<T>(exam: Exam, id: number, body: CertificateFormType): Promise<void> {
+  console.log(body)
   const result = await doRequest(`${CERTIFICATE_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
     throw new Error(await result.text())
   }
-
-  return await result.json()
 }
 
 export async function uploadFile<T>(file: File): Promise<T> {

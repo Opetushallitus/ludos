@@ -27,7 +27,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
   const exam = match!.params.exam as Exam
 
-  const certificate = state?.assignment as CertificateIn | undefined
+  const certificate = state?.data as CertificateIn | undefined
 
   const {
     register,
@@ -70,7 +70,8 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         let resultId: string
         // When updating we need to have the certificate
         if (action === 'update' && certificate) {
-          resultId = await updateCertificate<string>(exam, certificate.id, body)
+          await updateCertificate<void>(exam, certificate.id, body)
+          resultId = certificate.id.toString()
         } else {
           const { id } = await postCertificate<{ id: string }>(body)
           resultId = id

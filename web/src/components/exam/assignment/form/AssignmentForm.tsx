@@ -12,7 +12,7 @@ type AssignmentFormProps = {
 export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const { pathname, state } = useLocation()
   const match = useMatch(`/:exam/:contentType/${action}`)
-  const assignment = state?.assignment
+  const assignment = state?.data
 
   const exam = match!.params.exam!.toUpperCase() as Exam
 

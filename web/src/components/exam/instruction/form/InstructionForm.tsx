@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { Exam, SukoAssignmentIn, PublishState, ContentTypeEng } from '../../../../types'
+import { AssignmentIn, ContentTypeEng, Exam, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { postInstruction, updateInstruction } from '../../../../request'
 import { useEffect, useState } from 'react'
@@ -25,7 +25,7 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
 
   const exam = match!.params.exam as Exam
 
-  const assignment = (state?.assignment as SukoAssignmentIn) || null
+  const assignment = (state?.data as AssignmentIn) || null
 
   const {
     register,

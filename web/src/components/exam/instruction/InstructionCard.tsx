@@ -28,7 +28,7 @@ export const InstructionCard = ({ instruction }: InstructionCardProps) => {
           onClick={() =>
             navigate('update', {
               state: {
-                instruction: instruction
+                data: instruction
               }
             })
           }

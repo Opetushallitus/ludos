@@ -67,7 +67,7 @@ export const Content = ({ exam }: AssignmentProps) => {
                       onClick={() =>
                         navigate(`../${contentType}/update`, {
                           state: {
-                            assignment: data
+                            data
                           }
                         })
                       }>
