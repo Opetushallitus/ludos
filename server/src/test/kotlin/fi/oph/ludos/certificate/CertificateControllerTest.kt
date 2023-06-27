@@ -65,7 +65,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun createCertificateTest() {
+    fun publishAndUpdateCertificate() {
         val testCertificate = TestCertificateIn(
             exam = Exam.SUKO,
             name = "Test Certificate FI",
@@ -109,20 +109,20 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(certificateOut.createdAt)
         assertNotNull(certificateOut.updatedAt)
 
-        val editedCertificate = """
-        {
-            "id": "${certificateIn.id}",
-            "name": "Suko Test Certificate FI updated",
-            "exam": "SUKO",
-            "description": "Suko Certificate content Fi updated",
-            "publishState": "PUBLISHED",
-            "fileName": "updated_certificate.pdf",
-            "fileKey": "https://amazon_url.com/updated_certificate.pdf",
-            "fileUploadDate": "${testCertificate.fileUploadDate}"
-        }
-        """.trimMargin()
+        val editedCertificate = TestCertificateIn(
+            exam = Exam.SUKO,
+            name = "Suko Test Certificate FI updated",
+            description = "Suko Certificate content Fi updated",
+            publishState = PublishState.PUBLISHED,
+            fileName = "updated_certificate.pdf",
+            fileKey = "https://amazon_url.com/updated_certificate.pdf",
+            fileUploadDate = testCertificate.fileUploadDate
+        )
 
-        mockMvc.perform(updateCertificate(certificateIn.id, editedCertificate)).andExpect(status().isOk)
+        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
+
+
+        mockMvc.perform(updateCertificate(certificateIn.id, editedCertificateStr)).andExpect(status().isOk)
             .andReturn().response.contentAsString
 
         val getUpdatedResult = mockMvc.perform(getCertificateById(Exam.SUKO, certificateIn.id)).andExpect(status().isOk)
@@ -141,7 +141,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun failCertificateUpdate() {
+    fun putCertificateWithNonExistentId() {
         val nonExistentId = -1
 
 
@@ -166,7 +166,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun invalidExam() {
+    fun postCertificateWithInvalidExam() {
         val body = """
             {
                 "name": "Test Certificate",
@@ -184,7 +184,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun invalidState() {
+    fun postCertificateWithInvalidPublishState() {
         val body = """
         {
             "name": "Test Certificate",
@@ -204,8 +204,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
-    @WithOpettajaRole
-    fun certificateNotFound() {
+    @WithYllapitajaRole
+    fun getCertificateByIdWhenExamDoesNotExist() {
         val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
