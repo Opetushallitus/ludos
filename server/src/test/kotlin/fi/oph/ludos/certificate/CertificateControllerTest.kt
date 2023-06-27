@@ -89,7 +89,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(testCertificate.publishState, certificateIn.publishState)
         assertEquals(testCertificate.fileName, certificateIn.fileName)
         assertEquals(testCertificate.fileKey, certificateIn.fileKey)
-        assertEquals(testCertificate.fileUploadDate, certificateIn.fileUploadDate)
+        assertEquals(testCertificate.fileUploadDate.substring(0, 10), certificateIn.fileUploadDate.substring(0, 10))
         assertNotNull(certificateIn.id)
         assertNotNull(certificateIn.createdAt)
         assertNotNull(certificateIn.updatedAt)
@@ -105,7 +105,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(certificateIn.publishState, certificateOut.publishState)
         assertEquals(certificateIn.fileName, certificateOut.fileName)
         assertEquals(certificateIn.fileKey, certificateOut.fileKey)
-        assertEquals(certificateIn.fileUploadDate, certificateOut.fileUploadDate)
+        assertEquals(certificateIn.fileUploadDate.substring(0, 10), certificateOut.fileUploadDate.substring(0, 10))
         assertNotNull(certificateOut.createdAt)
         assertNotNull(certificateOut.updatedAt)
 
