@@ -334,11 +334,7 @@ class AssignmentRepository(
 
         val results = jdbcTemplate.query("SELECT * FROM $table WHERE assignment_id = ?", mapper, id)
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
+        return results.firstOrNull()
     }
 
     fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? {
@@ -378,11 +374,7 @@ class AssignmentRepository(
             id
         )
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
+        return results.firstOrNull()
     }
 
 
@@ -418,11 +410,7 @@ class AssignmentRepository(
             id
         )
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
+        return results.firstOrNull()
     }
 
     fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? {
@@ -457,11 +445,7 @@ class AssignmentRepository(
             id
         )
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
+        return results.firstOrNull()
     }
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(

@@ -18,13 +18,15 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.sql.Timestamp
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import javax.transaction.Transactional
 
 fun postCertificate(body: String) =
     MockMvcRequestBuilders.post("${Constants.API_PREFIX}/certificate").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-fun getCertificate(exam: Exam, id: Int) =
+fun getCertificateById(exam: Exam, id: Int) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/$id").contentType(MediaType.APPLICATION_JSON)
 
 fun updateCertificate(id: Int, body: String) =
@@ -71,7 +73,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             publishState = PublishState.PUBLISHED,
             fileName = "test_certificate.pdf",
             fileKey = "https://amazon_url.com/test_certificate.pdf",
-            fileUploadDate = "2023-06-13"
+            fileUploadDate = ZonedDateTime.now(ZoneOffset.UTC).toString()
         )
 
         val testCertificateStr = objectMapper.writeValueAsString(testCertificate)
@@ -92,7 +94,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(certificateIn.createdAt)
         assertNotNull(certificateIn.updatedAt)
 
-        val getResult = mockMvc.perform(getCertificate(Exam.SUKO, certificateIn.id)).andExpect(status().isOk)
+        val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, certificateIn.id)).andExpect(status().isOk)
             .andReturn().response.contentAsString
 
         val certificateOut = objectMapper.readValue(getResult, TestCertificateOut::class.java)
@@ -120,11 +122,10 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         }
         """.trimMargin()
 
-        val updateResult =
-            mockMvc.perform(updateCertificate(certificateIn.id, editedCertificate)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        mockMvc.perform(updateCertificate(certificateIn.id, editedCertificate)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
-        val getUpdatedResult = mockMvc.perform(getCertificate(Exam.SUKO, updateResult.toInt())).andExpect(status().isOk)
+        val getUpdatedResult = mockMvc.perform(getCertificateById(Exam.SUKO, certificateIn.id)).andExpect(status().isOk)
             .andReturn().response.contentAsString
 
         val updatedCertificate = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
@@ -153,7 +154,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 "publishState": "PUBLISHED",
                 "fileName": "updated_certificate.pdf",
                 "fileKey": "https://amazon_url.com/updated_certificate.pdf",
-                "fileUploadDate": "2023-06-13"
+                "fileUploadDate": "${ZonedDateTime.now(ZoneOffset.UTC)}"
             }
         """.trimMargin()
 
@@ -205,7 +206,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun certificateNotFound() {
-        val getResult = mockMvc.perform(getCertificate(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
+        val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
         assertEquals(responseContent, "Certificate not found 999")

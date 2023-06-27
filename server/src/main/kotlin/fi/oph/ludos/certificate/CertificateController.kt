@@ -29,7 +29,7 @@ class CertificateController(val service: CertificateService) {
 
     @GetMapping("/{exam}/{id}")
     @HasAnyRole
-    fun getCertificate(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateDtoOut {
+    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateDtoOut? {
         val certificateDtoOut = service.getCertificateById(id, exam)
 
         return certificateDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
@@ -39,10 +39,12 @@ class CertificateController(val service: CertificateService) {
     @HasYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int, @RequestBody certificate: CertificateDtoIn
-    ): Int {
-        val updatedCertificateId = service.updateCertificate(id, certificate)
+    ) {
+        val success = service.updateCertificate(id, certificate)
 
-        return updatedCertificateId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
+        if (!success) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
+        }
     }
 
     @PostMapping("/upload")

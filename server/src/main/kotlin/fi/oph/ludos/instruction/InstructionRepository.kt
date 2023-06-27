@@ -62,11 +62,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             "SELECT * FROM $table WHERE instruction_id = ?", mapResultSet, id
         )
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
+        return results.firstOrNull()
     }
 
     fun getInstructions(exam: Exam): List<InstructionDtoOut> {
@@ -102,10 +98,6 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             id
         )
 
-        return if (results.isEmpty()) {
-            null
-        } else {
-            results[0]
-        }
+        return results.firstOrNull()
     }
 }
