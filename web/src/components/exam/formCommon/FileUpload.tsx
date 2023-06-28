@@ -17,7 +17,7 @@ type FileUploadProps = {
   setUploadedFile: (file: UploadFile) => void
 }
 
-export const FileUpload = ({ oldFileKey, uploadedFile, setUploadedFile }: FileUploadProps) => {
+export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) => {
   const { t } = useTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
@@ -40,7 +40,7 @@ export const FileUpload = ({ oldFileKey, uploadedFile, setUploadedFile }: FileUp
 
     try {
       setLoading(true)
-      const res = await uploadFile<UploadFile>(file, oldFileKey)
+      const res = await uploadFile<UploadFile>(file)
       setUploadedFile(res)
     } catch (error) {
       setError(getErrorMessage(error))

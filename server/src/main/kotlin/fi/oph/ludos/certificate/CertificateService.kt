@@ -39,20 +39,8 @@ class CertificateService(val db: CertificateRepository, val s3Service: S3Service
         }
 
         val fileToCreate = FileUpload(file.originalFilename!!, key, ZonedDateTime.now(ZoneOffset.UTC))
-        val result = db.createAttachment(fileToCreate)
 
-        return try {
-//            if (oldFileKey != null) {
-//                logger.info("Cleaning up old certificate attachment '$oldFileKey', replaced by '$key'")
-//                s3Service.deleteObject(oldFileKey)
-//                db.deleteAttachment(oldFileKey)
-//            }
-
-            result
-        } catch (e: SdkException) {
-            logger.warn("Failed to clean up old file '$oldFileKey' after file upload")
-            null
-        }
+        return db.createAttachment(fileToCreate)
     }
 
     fun getFile(key: String): Pair<FileUpload, ResponseInputStream<GetObjectResponse>> {

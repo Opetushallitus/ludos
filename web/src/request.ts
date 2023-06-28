@@ -68,13 +68,9 @@ export async function updateCertificate<T>(exam: Exam, id: number, body: Certifi
   }
 }
 
-export async function uploadFile<T>(file: File, oldFileKey?: string): Promise<T> {
+export async function uploadFile<T>(file: File): Promise<T> {
   const formData = new FormData()
   formData.append('file', file)
-
-  if (oldFileKey) {
-    formData.append('oldFileKey', oldFileKey.toString())
-  }
 
   const result = await fetch(`${CERTIFICATE_URL}/upload`, {
     method: 'POST',

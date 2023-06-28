@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.mock.web.MockMultipartFile
-import org.springframework.mock.web.MockPart
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder
@@ -39,16 +38,8 @@ fun updateCertificate(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/certificate/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-fun postAttachment(file: MockMultipartFile, oldFileKey: String?): MockMultipartHttpServletRequestBuilder {
-    val baseRequest = MockMvcRequestBuilders.multipart("${Constants.API_PREFIX}/certificate/upload").file(file)
-
-    return if (oldFileKey == null) {
-        baseRequest
-    } else {
-        val part = MockPart("oldFileKey", oldFileKey.toByteArray())
-        baseRequest.part(part)
-    }
-}
+fun postAttachment(file: MockMultipartFile): MockMultipartHttpServletRequestBuilder =
+    MockMvcRequestBuilders.multipart("${Constants.API_PREFIX}/certificate/upload").file(file)
 
 fun getAttachmentPreview(fileKey: String) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/preview/$fileKey")
@@ -88,12 +79,12 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     val keyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
 
-    private fun uploadFixtureFile(fileName: String, oldKey: String?): TestFileUploadOut {
+    private fun uploadFixtureFile(fileName: String): TestFileUploadOut {
         val pdfFile = Paths.get("src/test/resources/fixtures/$fileName")
         val fileContent = Files.readAllBytes(pdfFile)
         val file = MockMultipartFile("file", "fixture2.pdf", MediaType.APPLICATION_PDF_VALUE, fileContent)
         val uploadedFileOutStr =
-            mockMvc.perform(postAttachment(file, oldKey)).andExpect(status().isOk).andReturn().response.contentAsString
+            mockMvc.perform(postAttachment(file)).andExpect(status().isOk).andReturn().response.contentAsString
         val uploadedFileOut = objectMapper.readValue(uploadedFileOutStr, TestFileUploadOut::class.java)
 
         assertTrue(uploadedFileOut.fileKey.matches(keyRegex), "Invalid fileKey: ${uploadedFileOut.fileKey}")
@@ -102,21 +93,18 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             uploadedFileOut.fileUploadDate.toString().substring(0, 10), ZonedDateTime.now().toString().substring(0, 10)
         )
 
-        val attachmentPreviewResponse = mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey)).andExpect(status().isOk).andReturn().response
+        val attachmentPreviewResponse =
+            mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey)).andExpect(status().isOk).andReturn().response
 
         assertArrayEquals(fileContent, attachmentPreviewResponse.contentAsByteArray)
         assertEquals("application/pdf", attachmentPreviewResponse.contentType)
         assertEquals("inline; filename=fixture2.pdf", attachmentPreviewResponse.getHeader("content-disposition"))
 
-//        if (oldKey != null) {
-//            mockMvc.perform(getAttachmentPreview(oldKey)).andExpect(status().isInternalServerError)
-//        }
-
         return uploadedFileOut
     }
 
     private fun createCertificate(): TestCertificateOut {
-        val uploadedFileOut = uploadFixtureFile("fixture.pdf", null)
+        val uploadedFileOut = uploadFixtureFile("fixture.pdf")
 
         val certificateIn = TestCertificateIn(
             exam = Exam.SUKO,
@@ -198,7 +186,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     fun publishAndUpdateCertificateWithUpdatedAttachment() {
         val certificateOut = createCertificate()
 
-        val uploadedFileOut = uploadFixtureFile("fixture2.pdf", certificateOut.fileKey)
+        val uploadedFileOut = uploadFixtureFile("fixture2.pdf")
 
         mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey))
 
