@@ -1,7 +1,5 @@
 package fi.oph.ludos.certificate
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.datatype.jsr310.ser.ZonedDateTimeSerializer
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import java.sql.Timestamp
@@ -16,10 +14,7 @@ interface Certificate {
     val description: String
     val publishState: PublishState
     @get:NotBlank
-    val fileName: String
-    @get:NotBlank
     val fileKey: String
-    val fileUploadDate: ZonedDateTime
 }
 
 data class CertificateDtoIn(
@@ -27,10 +22,7 @@ data class CertificateDtoIn(
     override val name: String,
     override val description: String,
     override val publishState: PublishState,
-    override val fileName: String,
     override val fileKey: String,
-    @field:JsonSerialize(using = ZonedDateTimeSerializer::class)
-    override val fileUploadDate: ZonedDateTime,
 ) : Certificate
 
 
@@ -40,9 +32,9 @@ data class CertificateDtoOut(
     override val name: String,
     override val description: String,
     override val publishState: PublishState,
-    override val fileName: String,
     override val fileKey: String,
-    override val fileUploadDate: ZonedDateTime,
+    val fileName: String,
+    val fileUploadDate: ZonedDateTime,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 ) : Certificate

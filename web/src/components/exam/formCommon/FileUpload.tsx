@@ -12,11 +12,12 @@ export type UploadFile = {
 }
 
 type FileUploadProps = {
+  assignmentId?: number
   uploadedFile: UploadFile | null
   setUploadedFile: (file: UploadFile) => void
 }
 
-export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) => {
+export const FileUpload = ({ assignmentId, uploadedFile, setUploadedFile }: FileUploadProps) => {
   const { t } = useTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
@@ -39,7 +40,7 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
 
     try {
       setLoading(true)
-      const res = await uploadFile<UploadFile>(file)
+      const res = await uploadFile<UploadFile>(file, assignmentId)
       setUploadedFile(res)
     } catch (error) {
       setError(getErrorMessage(error))

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.util.EntityUtils
 import org.springframework.stereotype.Component
-import java.util.logging.Logger
 
 @Component
 class OppijanumerorekisteriClient: CasAuthenticationClient("oppijanumerorekisteri-service") {

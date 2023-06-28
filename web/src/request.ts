@@ -61,7 +61,6 @@ export async function postCertificate<T>(body: CertificateFormType): Promise<T> 
 }
 
 export async function updateCertificate<T>(exam: Exam, id: number, body: CertificateFormType): Promise<void> {
-  console.log(body)
   const result = await doRequest(`${CERTIFICATE_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
@@ -69,9 +68,13 @@ export async function updateCertificate<T>(exam: Exam, id: number, body: Certifi
   }
 }
 
-export async function uploadFile<T>(file: File): Promise<T> {
+export async function uploadFile<T>(file: File, id?: number): Promise<T> {
   const formData = new FormData()
   formData.append('file', file)
+
+  if (id) {
+    formData.append('id', id.toString())
+  }
 
   const result = await fetch(`${CERTIFICATE_URL}/upload`, {
     method: 'POST',

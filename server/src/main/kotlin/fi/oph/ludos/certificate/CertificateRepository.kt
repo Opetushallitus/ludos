@@ -2,6 +2,7 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.exception.ApiRequestException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
@@ -19,17 +20,22 @@ class CertificateRepository(
             Exam.PUHVI -> "puhvi_certificate"
             Exam.LD -> "ld_certificate"
         }
-        val attachmentInsertSql = """
-    INSERT INTO certificate_attachment (attachment_file_key, attachment_file_name, attachment_upload_date)
-    VALUES (?, ?, ?::timestamptz)
-""".trimIndent()
 
-        jdbcTemplate.update(
-            attachmentInsertSql,
-            certificateDtoIn.fileKey,
-            certificateDtoIn.fileName,
-            certificateDtoIn.fileUploadDate.toOffsetDateTime(),
-        )
+        val getCertificateAttachmentSql = """
+            SELECT attachment_file_name, attachment_upload_date
+            FROM certificate_attachment
+            WHERE attachment_file_key = ?
+        """.trimIndent()
+
+        val certificateAttachment = jdbcTemplate.query(
+            getCertificateAttachmentSql, { rs: ResultSet, _: Int ->
+                FileUpload(
+                    rs.getString("attachment_file_name"),
+                    certificateDtoIn.fileKey,
+                    getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                )
+            }, certificateDtoIn.fileKey
+        ).firstOrNull() ?: throw ApiRequestException("Attachment not found")
 
         val certificateInsertSql = """
             INSERT INTO $table (
@@ -51,9 +57,9 @@ class CertificateRepository(
                     certificateDtoIn.name,
                     certificateDtoIn.description,
                     certificateDtoIn.publishState,
-                    certificateDtoIn.fileName,
                     certificateDtoIn.fileKey,
-                    certificateDtoIn.fileUploadDate,
+                    certificateAttachment.fileName,
+                    certificateAttachment.fileUploadDate,
                     rs.getTimestamp("certificate_created_at"),
                     rs.getTimestamp("certificate_updated_at")
                 )
@@ -63,6 +69,27 @@ class CertificateRepository(
             certificateDtoIn.publishState.toString(),
             certificateDtoIn.fileKey
         )[0]
+    }
+
+    fun createAttachment(file: FileUpload): FileUpload {
+        val sql = """
+            INSERT INTO certificate_attachment (attachment_file_key, attachment_file_name, attachment_upload_date)
+            VALUES (?, ?, now())
+            RETURNING attachment_file_key, attachment_file_name, attachment_upload_date
+        """.trimIndent()
+
+        val result = jdbcTemplate.query(
+            sql,
+            { rs: ResultSet, _: Int ->
+                FileUpload(
+                    file.fileName, file.fileKey, getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                )
+            },
+            file.fileKey,
+            file.fileName,
+        )
+
+        return result[0]
     }
 
     fun getZonedDateTimeFromResultSet(rs: ResultSet, columnName: String): ZonedDateTime {
@@ -76,8 +103,8 @@ class CertificateRepository(
         rs.getString("certificate_name"),
         rs.getString("certificate_description"),
         PublishState.valueOf(rs.getString("certificate_publish_state")),
-        rs.getString("attachment_file_name"),
         rs.getString("attachment_file_key"),
+        rs.getString("attachment_file_name"),
         getZonedDateTimeFromResultSet(rs, "attachment_upload_date"),
         rs.getTimestamp("certificate_created_at"),
         rs.getTimestamp("certificate_updated_at")
@@ -91,10 +118,12 @@ class CertificateRepository(
         }
 
         val results = jdbcTemplate.query(
-            """SELECT c.*, a.attachment_file_key, a.attachment_file_name, a.attachment_upload_date
-           FROM $table c
-           JOIN certificate_attachment a ON c.attachment_file_key = a.attachment_file_key
-           WHERE c.certificate_id = ?""", { rs, _ -> mapResultSet(rs, exam) }, id
+            """
+            SELECT c.*, ca.attachment_file_key, ca.attachment_file_name, ca.attachment_upload_date
+            FROM $table c
+            NATURAL JOIN certificate_attachment ca
+            WHERE c.certificate_id = ?
+            """.trimIndent(), { rs, _ -> mapResultSet(rs, exam) }, id
         )
 
         return results.firstOrNull()
@@ -109,13 +138,15 @@ class CertificateRepository(
         }
 
         return jdbcTemplate.query(
-            """SELECT 
-            |c.*, 
-            |ca.attachment_file_key AS attachment_file_key, 
-            |ca.attachment_file_name AS attachment_file_name, 
-            |ca.attachment_upload_date AS attachment_upload_date 
-            |FROM $table AS c 
-            |JOIN certificate_attachment AS ca ON c.attachment_file_key = ca.attachment_file_key""".trimMargin()
+            """
+            SELECT 
+                c.*, 
+                ca.attachment_file_key AS attachment_file_key, 
+                ca.attachment_file_name AS attachment_file_name, 
+                ca.attachment_upload_date AS attachment_upload_date 
+            FROM $table AS c 
+            NATURAL JOIN certificate_attachment AS ca
+            """.trimIndent()
         ) { rs, _ ->
             mapResultSet(rs, exam)
         }
@@ -128,31 +159,8 @@ class CertificateRepository(
             Exam.LD -> "ld_certificate"
         }
 
-        val transactionResult = transactionTemplate.execute { status ->
-            try {
-                val currentCert = getCertificateById(id, certificateDtoIn.exam) ?: return@execute false
-
-                if (certificateDtoIn.fileKey != currentCert.fileKey) {
-                    jdbcTemplate.update(
-                        """
-                        INSERT INTO certificate_attachment (
-                            attachment_file_key,
-                            attachment_file_name,
-                            attachment_upload_date
-                        )
-                        VALUES(?, ?, now())
-                        """.trimIndent(), certificateDtoIn.fileKey, certificateDtoIn.fileName
-                    )
-
-                    jdbcTemplate.update(
-                        """
-                        DELETE FROM certificate_attachment WHERE attachment_file_key = ?
-                    """.trimIndent(), currentCert.fileKey
-                    )
-                }
-
-                jdbcTemplate.update(
-                    """
+        val result = jdbcTemplate.update(
+            """
                         UPDATE $table
                         SET
                             certificate_name = ?,
@@ -163,20 +171,13 @@ class CertificateRepository(
                         WHERE
                             certificate_id = ?
                     """.trimIndent(),
-                    certificateDtoIn.name,
-                    certificateDtoIn.description,
-                    certificateDtoIn.publishState.toString(),
-                    certificateDtoIn.fileKey,
-                    id
-                )
+            certificateDtoIn.name,
+            certificateDtoIn.description,
+            certificateDtoIn.publishState.toString(),
+            certificateDtoIn.fileKey,
+            id
+        )
 
-                true
-            } catch (ex: Exception) {
-                status.setRollbackOnly()
-                throw ex
-            }
-        }
-
-        return transactionResult ?: false
+        return result == 1
     }
 }

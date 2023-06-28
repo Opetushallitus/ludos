@@ -56,9 +56,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
   const handleUploadedFile = (file: UploadFile) => {
     setUploadedFile(file)
-    setValue('fileName', file.fileName)
     setValue('fileKey', file.fileKey)
-    setValue('fileUploadDate', file.fileUploadDate)
   }
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
@@ -112,7 +110,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
-        <FileUpload uploadedFile={uploadedFile} setUploadedFile={handleUploadedFile} />
+        <FileUpload assignmentId={certificate?.id} uploadedFile={uploadedFile} setUploadedFile={handleUploadedFile} />
         <FormError error={fileError} />
       </form>
 

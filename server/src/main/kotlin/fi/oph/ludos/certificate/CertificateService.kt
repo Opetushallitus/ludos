@@ -20,14 +20,25 @@ class CertificateService(val db: CertificateRepository, val s3Service: S3Service
 
     fun updateCertificate(id: Int, certificate: CertificateDtoIn): Boolean = db.updateCertificate(id, certificate)
 
-    fun uploadFile(file: MultipartFile): FileUpload? = try {
-        val key = "todistuspohja_${UUID.randomUUID()}"
-        s3Service.putObject(file, key)
+    fun uploadFile(file: MultipartFile, certificateId: Int?): FileUpload? {
+        return try {
+            val key = "todistuspohja_${UUID.randomUUID()}"
+            s3Service.putObject(file, key)
 
-        // todo: when form is 1 step upload remove timestamp
-        FileUpload(file.originalFilename!!, key, ZonedDateTime.now(ZoneOffset.UTC))
-    } catch (e: Exception) {
-        null
+            val fileToCreate = FileUpload(file.originalFilename!!, key, ZonedDateTime.now(ZoneOffset.UTC))
+            val result = db.createAttachment(fileToCreate)
+//             todo: delete after update
+//            if (certificateId != null) {
+//                val oldFileKey = db.getCertificateAttachmentByCertificateId(certificateId)
+//                if (oldFileKey != null) {
+//                    s3Service.deleteObject(oldFileKey)
+//                }
+//            }
+
+            result
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun getFile(key: String): ResponseInputStream<GetObjectResponse>? = s3Service.getObject(key)

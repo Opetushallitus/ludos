@@ -1,24 +1,28 @@
 package fi.oph.ludos.certificate
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.WithYllapitajaRole
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.sql.Timestamp
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import javax.transaction.Transactional
 
@@ -33,21 +37,23 @@ fun updateCertificate(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/certificate/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
+fun postAttachment(file: MockMultipartFile) =
+    MockMvcRequestBuilders.multipart("${Constants.API_PREFIX}/certificate/upload").file(file)
+
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
-    val objectMapper = jacksonObjectMapper()
+    val objectMapper: ObjectMapper =
+        Jackson2ObjectMapperBuilder.json().modules(JavaTimeModule(), kotlinModule()).build()
 
     data class TestCertificateIn(
         val exam: Exam,
         val name: String,
         val description: String,
         val publishState: PublishState,
-        val fileName: String,
         val fileKey: String,
-        val fileUploadDate: String,
     )
 
     data class TestCertificateOut(
@@ -63,87 +69,103 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val updatedAt: Timestamp
     )
 
+    data class TestFileUploadOut(
+        val fileName: String, val fileKey: String, val fileUploadDate: ZonedDateTime
+    )
+
+    val keyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
+
     @Test
     @WithYllapitajaRole
     fun publishAndUpdateCertificate() {
-        val testCertificate = TestCertificateIn(
+        val pdfFile = Paths.get("src/test/resources/fixtures/fixture.pdf")
+
+        val fileContent = Files.readAllBytes(pdfFile)
+
+        val file = MockMultipartFile("file", "fixture.pdf", MediaType.APPLICATION_PDF_VALUE, fileContent)
+
+        val uploadedFileOutStr =
+            mockMvc.perform(postAttachment(file)).andExpect(status().isOk).andReturn().response.contentAsString
+
+        val uploadedFileOut = objectMapper.readValue(uploadedFileOutStr, TestFileUploadOut::class.java)
+
+        assertTrue(uploadedFileOut.fileKey.matches(keyRegex), "Invalid fileKey: ${uploadedFileOut.fileKey}")
+        assertEquals(uploadedFileOut.fileName, "fixture.pdf")
+        assertEquals(
+            uploadedFileOut.fileUploadDate.toString().substring(0, 10), ZonedDateTime.now().toString().substring(0, 10)
+        )
+
+        val certificateIn = TestCertificateIn(
             exam = Exam.SUKO,
             name = "Test Certificate FI",
             description = "Certificate content Fi",
             publishState = PublishState.PUBLISHED,
-            fileName = "test_certificate.pdf",
-            fileKey = "https://amazon_url.com/test_certificate.pdf",
-            fileUploadDate = ZonedDateTime.now(ZoneOffset.UTC).toString()
+            fileKey = uploadedFileOut.fileKey,
         )
 
-        val testCertificateStr = objectMapper.writeValueAsString(testCertificate)
+        val testCertificateStr = objectMapper.writeValueAsString(certificateIn)
 
         val postResult = mockMvc.perform(postCertificate(testCertificateStr)).andExpect(status().isOk)
             .andReturn().response.contentAsString
 
-        val certificateIn = objectMapper.readValue(postResult, TestCertificateOut::class.java)
+        val certificateOut = objectMapper.readValue(postResult, TestCertificateOut::class.java)
 
-        assertEquals(testCertificate.name, certificateIn.name)
-        assertEquals(testCertificate.exam, certificateIn.exam)
-        assertEquals(testCertificate.description, certificateIn.description)
-        assertEquals(testCertificate.publishState, certificateIn.publishState)
-        assertEquals(testCertificate.fileName, certificateIn.fileName)
-        assertEquals(testCertificate.fileKey, certificateIn.fileKey)
-        assertEquals(testCertificate.fileUploadDate.substring(0, 10), certificateIn.fileUploadDate.substring(0, 10))
-        assertNotNull(certificateIn.id)
-        assertNotNull(certificateIn.createdAt)
-        assertNotNull(certificateIn.updatedAt)
-
-        val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, certificateIn.id)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val certificateOut = objectMapper.readValue(getResult, TestCertificateOut::class.java)
-
-        assertEquals(certificateIn.id, certificateOut.id)
         assertEquals(certificateIn.name, certificateOut.name)
+        assertEquals(certificateIn.exam, certificateOut.exam)
         assertEquals(certificateIn.description, certificateOut.description)
         assertEquals(certificateIn.publishState, certificateOut.publishState)
-        assertEquals(certificateIn.fileName, certificateOut.fileName)
-        assertEquals(certificateIn.fileKey, certificateOut.fileKey)
-        assertEquals(certificateIn.fileUploadDate.substring(0, 10), certificateOut.fileUploadDate.substring(0, 10))
+        assertEquals(certificateOut.fileKey, uploadedFileOut.fileKey)
+        assertNotNull(certificateOut.id)
         assertNotNull(certificateOut.createdAt)
         assertNotNull(certificateOut.updatedAt)
+
+        val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, certificateOut.id)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        val certificateByIdOut = objectMapper.readValue(getResult, TestCertificateOut::class.java)
+
+        assertEquals(certificateOut.id, certificateByIdOut.id)
+        assertEquals(certificateOut.name, certificateByIdOut.name)
+        assertEquals(certificateOut.description, certificateByIdOut.description)
+        assertEquals(certificateOut.publishState, certificateByIdOut.publishState)
+        assertEquals(certificateOut.fileName, certificateByIdOut.fileName)
+        assertEquals(certificateByIdOut.fileKey, certificateOut.fileKey)
+        assertEquals(certificateOut.fileUploadDate.substring(0, 10), certificateByIdOut.fileUploadDate.substring(0, 10))
+        assertNotNull(certificateByIdOut.createdAt)
+        assertNotNull(certificateByIdOut.updatedAt)
 
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,
             name = "Suko Test Certificate FI updated",
             description = "Suko Certificate content Fi updated",
             publishState = PublishState.PUBLISHED,
-            fileName = "updated_certificate.pdf",
-            fileKey = "https://amazon_url.com/updated_certificate.pdf",
-            fileUploadDate = testCertificate.fileUploadDate
+            fileKey = certificateOut.fileKey, //fixme: we did not update the file
         )
 
         val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
 
-
-        mockMvc.perform(updateCertificate(certificateIn.id, editedCertificateStr)).andExpect(status().isOk)
+        mockMvc.perform(updateCertificate(certificateOut.id, editedCertificateStr)).andExpect(status().isOk)
             .andReturn().response.contentAsString
 
-        val getUpdatedResult = mockMvc.perform(getCertificateById(Exam.SUKO, certificateIn.id)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
+        val getUpdatedResult =
+            mockMvc.perform(getCertificateById(Exam.SUKO, certificateOut.id)).andExpect(status().isOk)
+                .andReturn().response.contentAsString
 
         val updatedCertificate = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
 
         assertEquals("Suko Test Certificate FI updated", updatedCertificate.name)
         assertEquals("Suko Certificate content Fi updated", updatedCertificate.description)
         assertEquals(PublishState.PUBLISHED, updatedCertificate.publishState)
-        assertEquals("updated_certificate.pdf", updatedCertificate.fileName)
-        assertEquals("https://amazon_url.com/updated_certificate.pdf", updatedCertificate.fileKey)
+        assertEquals("fixture.pdf", updatedCertificate.fileName)
+        assertEquals(certificateOut.fileKey, updatedCertificate.fileKey)
         assertNotNull(updatedCertificate.fileUploadDate)
-        assertEquals(certificateIn.id, updatedCertificate.id)
+        assertEquals(certificateOut.id, updatedCertificate.id)
     }
 
     @Test
     @WithYllapitajaRole
     fun putCertificateWithNonExistentId() {
         val nonExistentId = -1
-
 
         val editedCertificate = """
             {
@@ -152,9 +174,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 "name": "New test name",
                 "description": "content",
                 "publishState": "PUBLISHED",
-                "fileName": "updated_certificate.pdf",
-                "fileKey": "https://amazon_url.com/updated_certificate.pdf",
-                "fileUploadDate": "${ZonedDateTime.now(ZoneOffset.UTC)}"
+                "fileKey": "https://amazon_url.com/updated_certificate.pdf"
             }
         """.trimMargin()
 
