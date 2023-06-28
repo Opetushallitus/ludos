@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.ResponseInputStream
+import software.amazon.awssdk.core.exception.SdkException
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
@@ -17,8 +18,8 @@ import javax.annotation.PostConstruct
 class S3Service(val s3: S3Client) {
     @Value("\${ludos.certificate-bucket-name}")
     lateinit var bucket: String
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    private final val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @PostConstruct
     fun checkS3Credentials() {
@@ -40,12 +41,19 @@ class S3Service(val s3: S3Client) {
     fun getObject(key: String): ResponseInputStream<GetObjectResponse>? {
         val objectRequest = GetObjectRequest.builder().bucket(bucket).key(key).build()
 
-        return s3.getObject(objectRequest)
+        return try {
+            s3.getObject(objectRequest)
+        } catch (ex: NoSuchKeyException) {
+            null
+        } catch (ex: SdkException) {
+            logger.error("Unexpected error getting object '$key' from S3")
+
+            throw ex
+        }
     }
 
     fun deleteObject(key: String) {
         val objectRequest = DeleteObjectRequest.builder().bucket(bucket).key(key).build()
-        logger.info("Deleting object with key $key from bucket $bucket")
 
         s3.deleteObject(objectRequest)
     }

@@ -16,8 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.mock.web.MockMultipartFile
+import org.springframework.mock.web.MockPart
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.nio.file.Files
@@ -31,14 +33,25 @@ fun postCertificate(body: String) =
         .content(body)
 
 fun getCertificateById(exam: Exam, id: Int) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/$id").contentType(MediaType.APPLICATION_JSON)
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/$id")
 
 fun updateCertificate(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/certificate/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-fun postAttachment(file: MockMultipartFile) =
-    MockMvcRequestBuilders.multipart("${Constants.API_PREFIX}/certificate/upload").file(file)
+fun postAttachment(file: MockMultipartFile, oldFileKey: String?): MockMultipartHttpServletRequestBuilder {
+    val baseRequest = MockMvcRequestBuilders.multipart("${Constants.API_PREFIX}/certificate/upload").file(file)
+
+    return if (oldFileKey == null) {
+        baseRequest
+    } else {
+        val part = MockPart("oldFileKey", oldFileKey.toByteArray())
+        baseRequest.part(part)
+    }
+}
+
+fun getAttachmentPreview(fileKey: String) =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/preview/$fileKey")
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -75,25 +88,35 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     val keyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
 
-    @Test
-    @WithYllapitajaRole
-    fun publishAndUpdateCertificate() {
-        val pdfFile = Paths.get("src/test/resources/fixtures/fixture.pdf")
-
+    private fun uploadFixtureFile(fileName: String, oldKey: String?): TestFileUploadOut {
+        val pdfFile = Paths.get("src/test/resources/fixtures/$fileName")
         val fileContent = Files.readAllBytes(pdfFile)
-
-        val file = MockMultipartFile("file", "fixture.pdf", MediaType.APPLICATION_PDF_VALUE, fileContent)
-
+        val file = MockMultipartFile("file", "fixture2.pdf", MediaType.APPLICATION_PDF_VALUE, fileContent)
         val uploadedFileOutStr =
-            mockMvc.perform(postAttachment(file)).andExpect(status().isOk).andReturn().response.contentAsString
-
+            mockMvc.perform(postAttachment(file, oldKey)).andExpect(status().isOk).andReturn().response.contentAsString
         val uploadedFileOut = objectMapper.readValue(uploadedFileOutStr, TestFileUploadOut::class.java)
 
         assertTrue(uploadedFileOut.fileKey.matches(keyRegex), "Invalid fileKey: ${uploadedFileOut.fileKey}")
-        assertEquals(uploadedFileOut.fileName, "fixture.pdf")
+        assertEquals(uploadedFileOut.fileName, "fixture2.pdf")
         assertEquals(
             uploadedFileOut.fileUploadDate.toString().substring(0, 10), ZonedDateTime.now().toString().substring(0, 10)
         )
+
+        val attachmentPreviewResponse = mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey)).andExpect(status().isOk).andReturn().response
+
+        assertArrayEquals(fileContent, attachmentPreviewResponse.contentAsByteArray)
+        assertEquals("application/pdf", attachmentPreviewResponse.contentType)
+        assertEquals("inline; filename=fixture2.pdf", attachmentPreviewResponse.getHeader("content-disposition"))
+
+//        if (oldKey != null) {
+//            mockMvc.perform(getAttachmentPreview(oldKey)).andExpect(status().isInternalServerError)
+//        }
+
+        return uploadedFileOut
+    }
+
+    private fun createCertificate(): TestCertificateOut {
+        val uploadedFileOut = uploadFixtureFile("fixture.pdf", null)
 
         val certificateIn = TestCertificateIn(
             exam = Exam.SUKO,
@@ -129,17 +152,25 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(certificateOut.description, certificateByIdOut.description)
         assertEquals(certificateOut.publishState, certificateByIdOut.publishState)
         assertEquals(certificateOut.fileName, certificateByIdOut.fileName)
-        assertEquals(certificateByIdOut.fileKey, certificateOut.fileKey)
+        assertEquals(certificateOut.fileKey, certificateByIdOut.fileKey)
         assertEquals(certificateOut.fileUploadDate.substring(0, 10), certificateByIdOut.fileUploadDate.substring(0, 10))
         assertNotNull(certificateByIdOut.createdAt)
         assertNotNull(certificateByIdOut.updatedAt)
+
+        return certificateByIdOut
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun publishAndUpdateCertificateWithoutUpdatingAttachment() {
+        val certificateOut = createCertificate()
 
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,
             name = "Suko Test Certificate FI updated",
             description = "Suko Certificate content Fi updated",
             publishState = PublishState.PUBLISHED,
-            fileKey = certificateOut.fileKey, //fixme: we did not update the file
+            fileKey = certificateOut.fileKey
         )
 
         val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
@@ -153,10 +184,10 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val updatedCertificate = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
 
-        assertEquals("Suko Test Certificate FI updated", updatedCertificate.name)
-        assertEquals("Suko Certificate content Fi updated", updatedCertificate.description)
+        assertEquals(editedCertificate.name, updatedCertificate.name)
+        assertEquals(editedCertificate.description, updatedCertificate.description)
         assertEquals(PublishState.PUBLISHED, updatedCertificate.publishState)
-        assertEquals("fixture.pdf", updatedCertificate.fileName)
+        assertEquals(certificateOut.fileName, updatedCertificate.fileName)
         assertEquals(certificateOut.fileKey, updatedCertificate.fileKey)
         assertNotNull(updatedCertificate.fileUploadDate)
         assertEquals(certificateOut.id, updatedCertificate.id)
@@ -164,24 +195,83 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun putCertificateWithNonExistentId() {
-        val nonExistentId = -1
+    fun publishAndUpdateCertificateWithUpdatedAttachment() {
+        val certificateOut = createCertificate()
 
-        val editedCertificate = """
-            {
-                "id": "$nonExistentId",
-                "exam": "SUKO",
-                "name": "New test name",
-                "description": "content",
-                "publishState": "PUBLISHED",
-                "fileKey": "https://amazon_url.com/updated_certificate.pdf"
-            }
-        """.trimMargin()
+        val uploadedFileOut = uploadFixtureFile("fixture2.pdf", certificateOut.fileKey)
 
-        val failUpdate =
-            mockMvc.perform(updateCertificate(nonExistentId, editedCertificate)).andReturn().response.contentAsString
+        mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey))
 
-        assertEquals("Certificate not found $nonExistentId", failUpdate)
+
+        val editedCertificate = TestCertificateIn(
+            exam = Exam.SUKO,
+            name = "Suko Test Certificate FI updated",
+            description = "Suko Certificate content Fi updated",
+            publishState = PublishState.PUBLISHED,
+            fileKey = uploadedFileOut.fileKey
+        )
+
+        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
+
+        mockMvc.perform(updateCertificate(certificateOut.id, editedCertificateStr)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        val getUpdatedResult =
+            mockMvc.perform(getCertificateById(Exam.SUKO, certificateOut.id)).andExpect(status().isOk)
+                .andReturn().response.contentAsString
+
+        val updatedCertificate = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
+
+        assertEquals(editedCertificate.name, updatedCertificate.name)
+        assertEquals(editedCertificate.description, updatedCertificate.description)
+        assertEquals(PublishState.PUBLISHED, updatedCertificate.publishState)
+        assertEquals(certificateOut.fileName, updatedCertificate.fileName)
+        assertEquals(uploadedFileOut.fileKey, updatedCertificate.fileKey)
+        assertNotNull(updatedCertificate.fileUploadDate)
+        assertEquals(certificateOut.id, updatedCertificate.id)
+    }
+
+    @Test
+    fun putCertificateWithMissingAttachment() {
+        val certificateOut = createCertificate()
+
+        val editedCertificate = TestCertificateIn(
+            exam = Exam.SUKO,
+            name = certificateOut.name,
+            description = certificateOut.description,
+            publishState = certificateOut.publishState,
+            fileKey = "does not exist"
+        )
+
+        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
+
+        val result =
+            mockMvc.perform(updateCertificate(certificateOut.id, editedCertificateStr)).andExpect(status().isBadRequest)
+                .andReturn().response.contentAsString
+
+        assertEquals(
+            "Attachment '${editedCertificate.fileKey}' not found for certificate id: ${certificateOut.id}", result
+        )
+    }
+
+    @Test
+    fun putCertificateWithMissingCertificate() {
+        val certificateOut = createCertificate()
+
+        val editedCertificate = TestCertificateIn(
+            exam = Exam.SUKO,
+            name = certificateOut.name,
+            description = certificateOut.description,
+            publishState = certificateOut.publishState,
+            fileKey = "does not exist"
+        )
+
+        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
+
+        val result = mockMvc.perform(updateCertificate(-1, editedCertificateStr)).andExpect(status().isNotFound)
+            .andReturn().response.contentAsString
+
+        assertEquals("Certificate -1 not found", result)
     }
 
     @Test

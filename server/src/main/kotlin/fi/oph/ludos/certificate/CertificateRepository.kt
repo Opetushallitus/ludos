@@ -3,9 +3,11 @@ package fi.oph.ludos.certificate
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.exception.ApiRequestException
+import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.web.server.ResponseStatusException
 import java.sql.ResultSet
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -92,6 +94,14 @@ class CertificateRepository(
         return result[0]
     }
 
+    fun deleteAttachment(oldFileKey: String) {
+        val sql = """
+            DELETE FROM certificate_attachment WHERE attachment_file_key = ?
+        """.trimIndent()
+
+        jdbcTemplate.update(sql, oldFileKey)
+    }
+
     fun getZonedDateTimeFromResultSet(rs: ResultSet, columnName: String): ZonedDateTime {
         val timestamp = rs.getTimestamp(columnName)
         return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneOffset.UTC)
@@ -129,6 +139,23 @@ class CertificateRepository(
         return results.firstOrNull()
     }
 
+    fun getCertificateAttachmentByFileKey(fileKey: String): FileUpload? {
+        val results = jdbcTemplate.query(
+            """
+            SELECT attachment_file_key, attachment_file_name, attachment_upload_date
+            FROM certificate_attachment
+            WHERE attachment_file_key = ?
+            """.trimIndent(), { rs, _ ->
+                FileUpload(
+                    rs.getString("attachment_file_name"),
+                    rs.getString("attachment_file_key"),
+                    getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                )
+            }, fileKey
+        )
+
+        return results.firstOrNull()
+    }
 
     fun getCertificates(exam: Exam): List<CertificateDtoOut> {
         val table = when (exam) {
@@ -152,32 +179,48 @@ class CertificateRepository(
         }
     }
 
-    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn): Boolean {
+    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn) {
         val table = when (certificateDtoIn.exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
             Exam.LD -> "ld_certificate"
         }
 
-        val result = jdbcTemplate.update(
-            """
-                        UPDATE $table
-                        SET
-                            certificate_name = ?,
-                            certificate_description = ?,
-                            certificate_publish_state = ?::publish_state,
-                            certificate_updated_at = now(),
-                            attachment_file_key = ?
-                        WHERE
-                            certificate_id = ?
-                    """.trimIndent(),
-            certificateDtoIn.name,
-            certificateDtoIn.description,
-            certificateDtoIn.publishState.toString(),
-            certificateDtoIn.fileKey,
-            id
-        )
+        transactionTemplate.execute { status ->
+            try {
+                getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Certificate $id not found"
+                )
 
-        return result == 1
+                getCertificateAttachmentByFileKey(certificateDtoIn.fileKey) ?: throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "Attachment '${certificateDtoIn.fileKey}' not found for certificate id: $id"
+                )
+
+                val result = jdbcTemplate.update(
+                    """
+                UPDATE $table
+                SET
+                    certificate_name = ?,
+                    certificate_description = ?,
+                    certificate_publish_state = ?::publish_state,
+                    certificate_updated_at = now(),
+                    attachment_file_key = ?
+                WHERE
+                    certificate_id = ?
+                """.trimIndent(),
+                    certificateDtoIn.name,
+                    certificateDtoIn.description,
+                    certificateDtoIn.publishState.toString(),
+                    certificateDtoIn.fileKey,
+                    id
+                )
+
+                result == 1
+            } catch (ex: Exception) {
+                status.setRollbackOnly()
+                throw ex
+            }
+        }
     }
+
 }

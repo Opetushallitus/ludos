@@ -110,7 +110,11 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
-        <FileUpload assignmentId={certificate?.id} uploadedFile={uploadedFile} setUploadedFile={handleUploadedFile} />
+        <FileUpload
+          oldFileKey={uploadedFile?.fileKey}
+          uploadedFile={uploadedFile}
+          setUploadedFile={handleUploadedFile}
+        />
         <FormError error={fileError} />
       </form>
 
