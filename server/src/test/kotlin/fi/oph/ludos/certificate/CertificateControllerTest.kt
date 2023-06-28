@@ -103,14 +103,14 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         return uploadedFileOut
     }
 
-    private fun createCertificate(): TestCertificateOut {
+    private fun createCertificate(publishState: PublishState): TestCertificateOut {
         val uploadedFileOut = uploadFixtureFile("fixture.pdf")
 
         val certificateIn = TestCertificateIn(
             exam = Exam.SUKO,
             name = "Test Certificate FI",
             description = "Certificate content Fi",
-            publishState = PublishState.PUBLISHED,
+            publishState = publishState,
             fileKey = uploadedFileOut.fileKey,
         )
 
@@ -151,7 +151,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun publishAndUpdateCertificateWithoutUpdatingAttachment() {
-        val certificateOut = createCertificate()
+        val certificateOut = createCertificate(PublishState.PUBLISHED)
 
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,
@@ -184,7 +184,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun publishAndUpdateCertificateWithUpdatedAttachment() {
-        val certificateOut = createCertificate()
+        val certificateOut = createCertificate(PublishState.PUBLISHED)
 
         val uploadedFileOut = uploadFixtureFile("fixture2.pdf")
 
@@ -219,9 +219,15 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(certificateOut.id, updatedCertificate.id)
     }
 
+   @Test
+   @WithYllapitajaRole
+   fun createDraftCertificate() {
+       createCertificate(PublishState.DRAFT)
+   }
+
     @Test
     fun putCertificateWithMissingAttachment() {
-        val certificateOut = createCertificate()
+        val certificateOut = createCertificate(PublishState.PUBLISHED)
 
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,
@@ -244,7 +250,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     fun putCertificateWithMissingCertificate() {
-        val certificateOut = createCertificate()
+        val certificateOut = createCertificate(PublishState.PUBLISHED)
 
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,
