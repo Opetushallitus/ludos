@@ -31,17 +31,23 @@ export const Exam = {
 
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
-export type AssignmentIn = {
+export type BaseIn = {
   id: number
+  publishState: PublishState
+  createdAt: string
+  updatedAt: string
+}
+
+export type BaseAssignmentAndInstructionIn = BaseIn & {
   nameFi: string
   nameSv: string
   contentFi: string
   contentSv: string
   instructionFi: string
   instructionSv: string
-  publishState: PublishState
-  createdAt: string
-  updatedAt: string
+}
+
+export type AssignmentIn = BaseAssignmentAndInstructionIn & {
   aiheKoodiArvos: string[]
   assignmentTypeKoodiArvo: string
   laajaalainenOsaaminenKoodiArvos: string[]
@@ -51,6 +57,14 @@ export type AssignmentIn = {
 
 export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
+}
+
+export type CertificateIn = BaseIn & {
+  name: string
+  description: string
+  fileName: string
+  fileKey: string
+  fileUploadDate: string
 }
 
 export type LdAssignmentIn = AssignmentIn & {
@@ -104,3 +118,11 @@ export type UserDetails = {
   name: string
   role: RolesType
 }
+
+export const ErrorMessages = {
+  REQUIRED: 'required',
+  SHORT: 'short',
+  NO_FILE: 'no_file'
+} as const
+
+export type ErrorMessagesType = (typeof ErrorMessages)[keyof typeof ErrorMessages]

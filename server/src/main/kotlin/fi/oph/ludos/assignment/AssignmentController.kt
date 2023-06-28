@@ -1,11 +1,10 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.*
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import javax.validation.Valid
 
 @RestController
@@ -14,7 +13,8 @@ import javax.validation.Valid
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
     @HasYllapitajaRole
-    fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut = service.createAssignment(assignment)
+    fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut =
+        service.createAssignment(assignment)
 
     @GetMapping("oppimaaras")
     @HasAnyRole
@@ -40,16 +40,17 @@ class AssignmentController(val service: AssignmentService) {
 
     @GetMapping("{exam}/{id}")
     @HasAnyRole
-    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
-        service.getAssignmentById(exam, id)
+    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut {
+        val assignmentDtoOut = service.getAssignmentById(exam, id)
+
+        return assignmentDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+    }
 
     @PutMapping("{id}")
     @HasYllapitajaRole
-    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): ResponseEntity<Int> =
-        try {
-            val updatedAssignmentId = service.updateAssignment(id, assignment)
-            ResponseEntity.status(HttpStatus.OK).body(updatedAssignmentId)
-        } catch (e: NotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).build()
-        }
+    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int {
+        val updatedAssignmentId = service.updateAssignment(id, assignment)
+
+        return updatedAssignmentId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+    }
 }

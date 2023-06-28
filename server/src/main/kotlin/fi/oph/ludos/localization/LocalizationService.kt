@@ -5,8 +5,6 @@ import fi.oph.ludos.exception.LocalizationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -32,19 +30,14 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
         }
     }
 
-    fun getLocalizationTexts(): ResponseEntity<out Map<out Any?, Any?>> {
+    fun getLocalizationTexts(): Map<*, *>? {
         val cachedValue = cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.get("all")?.get() as? Map<*, *>
 
         if (cachedValue != null) {
-            return ResponseEntity.ok(cachedValue)
+            return cachedValue
         }
 
-        return try {
-            val localizedTexts = updateCache()
-            ResponseEntity.ok(localizedTexts)
-        } catch (e: LocalizationException) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(mapOf("error" to e.message))
-        }
+        return updateCache()
     }
 
 
@@ -59,7 +52,8 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
 
             cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
 
-            val localeStats = Locale.values().map { locale -> "${locale.locale}: ${unparsedArr.filter { it.locale == locale.locale }.count()}" }
+            val localeStats = Locale.values()
+                .map { locale -> "${locale.locale}: ${unparsedArr.filter { it.locale == locale.locale }.count()}" }
             logger.info("Updated localization cache: $localeStats")
 
             return localizedTexts

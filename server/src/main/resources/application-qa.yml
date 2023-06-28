@@ -1,6 +1,7 @@
 ludos:
   appUrl: "https://ludos.testiopintopolku.fi"
   opintopolkuHostname: "virkailija.testiopintopolku.fi"
+  certificate-bucket-name: ludos-application-certificate-bucket-qa
 
 server:
   tomcat:

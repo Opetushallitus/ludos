@@ -57,7 +57,7 @@ interface InstructionOut {
     val updatedAt: Timestamp
 }
 
-data class SukoInstructionDtoOut(
+data class InstructionDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
@@ -68,24 +68,3 @@ data class SukoInstructionDtoOut(
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
 
-data class PuhviInstructionDtoOut(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val publishState: PublishState,
-    override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
-) : Instruction, InstructionOut
-
-data class LdInstructionDtoOut(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val publishState: PublishState,
-    override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
-) : Instruction, InstructionOut

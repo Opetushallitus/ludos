@@ -16,9 +16,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import javax.transaction.Transactional
 
-@TestPropertySource(
-    properties = ["LUDOS_PALVELUKAYTTAJA_USERNAME=test_usernameasdad", "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"]
-)
+@TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -120,7 +118,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val failUpdate =
             mockMvc.perform(updateAssignment(nonExistentId, editedAssignmentFail)).andReturn().response.contentAsString
 
-        assertThat(failUpdate).isEqualTo("404 NOT_FOUND \"Assignment not found $nonExistentId\"")
+        assertThat(failUpdate).isEqualTo("Assignment not found $nonExistentId")
     }
 
     @Test
@@ -371,6 +369,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val getResult = mockMvc.perform(getAssignment(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
-        assertThat(responseContent).isEqualTo("404 NOT_FOUND \"Assignment not found 999\"")
+        assertThat(responseContent).isEqualTo("Assignment not found 999")
     }
 }

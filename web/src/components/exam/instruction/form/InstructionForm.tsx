@@ -1,16 +1,16 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { Exam, SukoAssignmentIn, PublishState, ContentTypeEng } from '../../../../types'
+import { AssignmentIn, ContentTypeEng, Exam, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
-import { postInstruction, updateInstruction } from '../../../../formUtils'
+import { postInstruction, updateInstruction } from '../../../../request'
 import { useEffect, useState } from 'react'
 import { Tabs } from '../../../Tabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
-import { FormHeader } from '../../assignment/form/formCommon/FormHeader'
-import { FormButtonRow } from '../../assignment/form/formCommon/FormButtonRow'
+import { FormHeader } from '../../formCommon/FormHeader'
+import { FormButtonRow } from '../../formCommon/FormButtonRow'
 
 type AssignmentFormProps = {
   action: 'new' | 'update'
@@ -25,7 +25,7 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
 
   const exam = match!.params.exam as Exam
 
-  const assignment = (state?.assignment as SukoAssignmentIn) || null
+  const assignment = (state?.data as AssignmentIn) || null
 
   const {
     register,
@@ -70,7 +70,7 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
 
   return (
     <div className="w-10/12 pt-3">
-      <FormHeader action={action} contentType={ContentTypeEng.OHJEET} assignment={assignment} />
+      <FormHeader action={action} contentType={ContentTypeEng.OHJEET} name={assignment?.nameFi} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />

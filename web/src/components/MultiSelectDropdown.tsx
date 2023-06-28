@@ -11,6 +11,7 @@ type MultiSelectProps = {
   onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
   testId?: string
   canReset?: boolean
+  requiredError?: boolean
 }
 
 export const MultiSelectDropdown = ({
@@ -19,7 +20,8 @@ export const MultiSelectDropdown = ({
   selectedOptions,
   onSelectedOptionsChange,
   testId = id,
-  canReset = false
+  canReset = false,
+  requiredError
 }: MultiSelectProps) => {
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -53,7 +55,11 @@ export const MultiSelectDropdown = ({
       ref={containerRef}
       onClick={() => setIsOpen(true)}
       tabIndex={0}>
-      <div id={id} className="flex bg-white px-2" role="button" data-testid={testId}>
+      <div
+        id={id}
+        className={`flex bg-white px-2 ${requiredError ? 'border border-red' : ''}`}
+        role="button"
+        data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
           <input
             type="search"

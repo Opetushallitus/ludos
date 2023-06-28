@@ -1,22 +1,21 @@
 import { expect, test } from '@playwright/test'
-import { fillAssignmentForm } from '../helpers'
+import { fillInstructionForm } from './instructionHelpers'
 
 test.describe('Assignment form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.getByTestId('nav-link-suko').click()
-    await page.getByTestId('create-koetehtava-button').click()
+    await page.getByTestId('tab-ohjeet').click()
+    await page.getByTestId('create-ohje-button').click()
   })
 
-  test('can create a new assignment', async ({ page }) => {
-    await fillAssignmentForm({
+  test('can create a new instruction', async ({ page }) => {
+    await fillInstructionForm({
       page,
       nameTextFi: 'Testi tehtävä',
       nameTextSv: 'Testuppgifter',
       contentTextFi: 'Testi sisältö',
-      contentTextSv: 'Testa innehåll',
-      instructionTextFi: 'Testi ohje',
-      instructionTextSv: 'Testa instruktion'
+      contentTextSv: 'Testa innehåll'
     })
 
     await page.getByTestId('form-submit').click()
@@ -26,9 +25,8 @@ test.describe('Assignment form tests', () => {
     await expect(header).toHaveText('Testi tehtävä')
   })
 
-  test('can create draft assignment', async ({ page }) => {
+  test('can create draft instruction', async ({ page }) => {
     await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
-    await page.getByTestId('assignmentTypeRadio-002').click()
     await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
 
     const btn = page.getByTestId('form-draft')

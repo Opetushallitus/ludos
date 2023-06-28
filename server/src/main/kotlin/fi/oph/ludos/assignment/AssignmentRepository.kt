@@ -1,20 +1,18 @@
 package fi.oph.ludos.assignment
 
+import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
-import javax.sql.DataSource
 
 
 @Component
 class AssignmentRepository(
     private val namedJdbcTemplate: NamedParameterJdbcTemplate,
     private val jdbcTemplate: JdbcTemplate,
-    private val dataSource: DataSource
 ) {
     private inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
         val array = this.getArray(columnLabel)?.array ?: return emptyArray()
@@ -324,48 +322,22 @@ class AssignmentRepository(
         assignment.aineKoodiArvo
     )[0]
 
-    fun getSukoAssignmentById(id: Int): AssignmentOut = try {
-        val results = jdbcTemplate.query("SELECT * FROM suko_assignment WHERE assignment_id = ?", mapSukoResultSet, id)
-
-        if (results.isEmpty()) {
-            throw NotFoundException()
+    fun getAssignmentById(id: Int, exam: Exam): AssignmentOut? {
+        val tableAndMapper = when (exam) {
+            Exam.SUKO -> "suko_assignment" to mapSukoResultSet
+            Exam.PUHVI -> "puhvi_assignment" to mapPuhviResultSet
+            Exam.LD -> "ld_assignment" to mapLdResultSet
         }
 
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
+        val table = tableAndMapper.first
+        val mapper = tableAndMapper.second
+
+        val results = jdbcTemplate.query("SELECT * FROM $table WHERE assignment_id = ?", mapper, id)
+
+        return results.firstOrNull()
     }
 
-
-    fun getPuhviAssignmentById(id: Int): AssignmentOut = try {
-        val results = jdbcTemplate.query(
-            "SELECT * FROM puhvi_assignment WHERE assignment_id = ?", mapPuhviResultSet, id
-        )
-
-        if (results.isEmpty()) {
-            throw NotFoundException()
-        }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
-    }
-
-    fun getLdAssignmentById(id: Int): AssignmentOut = try {
-        val results = jdbcTemplate.query(
-            "SELECT * FROM ld_assignment WHERE assignment_id = ?", mapLdResultSet, id
-        )
-
-        if (results.isEmpty()) {
-            throw NotFoundException()
-        }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
-    }
-
-    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int = try {
+    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? {
         val results = jdbcTemplate.query(
             """UPDATE suko_assignment 
                 |SET 
@@ -402,17 +374,11 @@ class AssignmentRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
-        }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
+        return results.firstOrNull()
     }
 
 
-    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int = try {
+    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? {
         val results = jdbcTemplate.query(
             """UPDATE puhvi_assignment 
                 |SET assignment_name_fi = ?, 
@@ -444,16 +410,10 @@ class AssignmentRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
-        }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
+        return results.firstOrNull()
     }
 
-    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int = try {
+    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? {
         val results = jdbcTemplate.query(
             """UPDATE ld_assignment 
                 |SET assignment_name_fi = ?, 
@@ -485,13 +445,7 @@ class AssignmentRepository(
             id
         )
 
-        if (results.isEmpty()) {
-            throw NotFoundException()
-        }
-
-        results[0]
-    } catch (e: NotFoundException) {
-        throw NotFoundException()
+        return results.firstOrNull()
     }
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(

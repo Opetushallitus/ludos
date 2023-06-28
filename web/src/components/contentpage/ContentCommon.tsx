@@ -2,35 +2,44 @@ import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
 import { Icon, Icons } from '../Icon'
+import { BaseIn, ContentTypeEng } from '../../types'
+import { getContentName } from '../exam/assignment/assignmentUtils'
+import { toLocaleDate } from '../../formatUtils'
 
-export function ContentHeader({
-  onSelectedOptionsChange,
-  nameFi,
-  nameSv,
-  language
-}: {
+type ContentHeaderProps = {
   language: string
-  nameFi: string
-  nameSv: string
+  data: BaseIn
   onSelectedOptionsChange: (opt: string) => void
-}) {
+  contentType: string
+}
+
+export function ContentHeader({ onSelectedOptionsChange, data, language, contentType }: ContentHeaderProps) {
   const { t } = useTranslation()
 
   return (
-    <div className="row justify-between">
-      <h2 className="pb-3" data-testid="assignment-header">
-        {language === 'fi' ? nameFi : nameSv}
-      </h2>
-      <div className="hidden md:block">
-        <p className="pl-2">{t('assignment.kieli')}</p>
-        <Dropdown
-          id="languageDropdown"
-          options={LANGUAGE_OPTIONS}
-          selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-          onSelectedOptionsChange={onSelectedOptionsChange}
-          testId={'language-dropdown'}
-        />
+    <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
+      <div className="flex w-2/3 flex-col">
+        <div className="row my-1">
+          <p>{toLocaleDate(data.createdAt)}</p>
+        </div>
+        <div className="row">
+          <h2 className="w-full md:w-1/2" data-testid="assignment-header">
+            {getContentName(data, contentType, language)}
+          </h2>
+        </div>
       </div>
+      {contentType !== ContentTypeEng.TODISTUKSET && (
+        <div>
+          <p className="pl-2">{t('assignment.kieli')}</p>
+          <Dropdown
+            id="languageDropdown"
+            options={LANGUAGE_OPTIONS}
+            selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
+            onSelectedOptionsChange={onSelectedOptionsChange}
+            testId={'language-dropdown'}
+          />
+        </div>
+      )}
     </div>
   )
 }

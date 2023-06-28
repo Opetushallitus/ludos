@@ -2,15 +2,22 @@ package fi.oph.ludos.localization
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.HasAnyRole
-import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/localization")
 class LocalizationController(val localizationService: LocalizationService) {
     @GetMapping("")
     @HasAnyRole
-    fun getLocalizationTexts(): ResponseEntity<out Map<out Any?, Any?>> = localizationService.getLocalizationTexts()
+    fun getLocalizationTexts(): Map<*, *> {
+        val localizationDtoOut = localizationService.getLocalizationTexts()
+
+        return localizationDtoOut ?: throw ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR, "Could not get localizations"
+        )
+    }
 }

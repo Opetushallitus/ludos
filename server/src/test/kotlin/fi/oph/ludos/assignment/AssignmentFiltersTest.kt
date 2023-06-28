@@ -15,12 +15,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import javax.transaction.Transactional
 
-@TestPropertySource(
-    properties = [
-        "LUDOS_PALVELUKAYTTAJA_USERNAME=test_username",
-        "LUDOS_PALVELUKAYTTAJA_PASSWORD=test_password"
-    ]
-)
+@TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional

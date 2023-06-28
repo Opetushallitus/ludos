@@ -1,6 +1,6 @@
 import { Page, expect } from '@playwright/test'
 
-export async function fillAssignmentForm({
+export async function fillSukoAssignmentForm({
   page,
   contentTextFi,
   contentTextSv,
@@ -67,7 +67,7 @@ export async function fillAssignmentForm({
   await page.getByTestId('contentSv').fill(contentTextSv)
 }
 
-export async function updateAssignmentForm({
+export async function updateSukoAssignmentForm({
   page,
   contentTextFi,
   contentTextSv,
@@ -112,10 +112,6 @@ export async function updateAssignmentForm({
 
   await page.getByTestId('aihe').click()
   await page.getByTestId('aihe-option-003').click()
-
-  // Close dropdown onBlur
-  await page.getByTestId('aihe-label').click()
-
   // Close dropdown onBlur
   await page.getByTestId('aihe-label').click()
 
@@ -130,7 +126,14 @@ export async function updateAssignmentForm({
   await page.getByTestId('contentSv').fill(contentTextSv)
 }
 
-export async function fillInstructionForm({
+async function fillLaajalainenOsaaminen(page: Page) {
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos').click()
+  // Eettisyys ja ympäristöosaaminen
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-05').click()
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-label').click()
+}
+
+export async function fillLdAssignmentForm({
   page,
   contentTextFi,
   contentTextSv,
@@ -143,6 +146,51 @@ export async function fillInstructionForm({
   contentTextFi: string
   contentTextSv: string
 }) {
+  await page.getByTestId('aineKoodiArvo').click()
+  // Kotitalous
+  await page.getByTestId('aineKoodiArvo-option-1').click()
+
+  await page.getByTestId('lukuvuosiKoodiArvos').click()
+  // 2020-2021
+  await page.getByTestId('lukuvuosiKoodiArvos-option-20202021').click()
+  // Close dropdown onBlur
+  await page.getByTestId('lukuvuosiKoodiArvos-label').click()
+
+  await fillLaajalainenOsaaminen(page)
+
+  await page.getByTestId('nameFi').fill(nameTextFi)
+  await page.getByTestId('contentFi').fill(contentTextFi)
+
+  await page.getByTestId('tab-sv').click()
+
+  await page.getByTestId('nameSv').fill(nameTextSv)
+  await page.getByTestId('contentSv').fill(contentTextSv)
+}
+
+export async function fillPuhviAssignmentForm({
+  page,
+  contentTextFi,
+  contentTextSv,
+  nameTextFi,
+  nameTextSv
+}: {
+  page: Page
+  nameTextFi: string
+  nameTextSv: string
+  contentTextFi: string
+  contentTextSv: string
+}) {
+  // Esiintymistaidot
+  await page.getByTestId('assignmentTypeRadio-002').click()
+
+  await page.getByTestId('lukuvuosiKoodiArvos').click()
+  // 2020-2021
+  await page.getByTestId('lukuvuosiKoodiArvos-option-20202021').click()
+  // Close dropdown onBlur
+  await page.getByTestId('lukuvuosiKoodiArvos-label').click()
+
+  await fillLaajalainenOsaaminen(page)
+
   await page.getByTestId('nameFi').fill(nameTextFi)
   await page.getByTestId('contentFi').fill(contentTextFi)
 

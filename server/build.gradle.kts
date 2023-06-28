@@ -38,10 +38,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.flywaydb:flyway-core:9.16.1")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("software.amazon.awssdk:s3:2.20.56")
+    implementation("software.amazon.awssdk:sso:2.20.56")
+    implementation("software.amazon.awssdk:ssooidc:2.20.56")
     runtimeOnly("org.postgresql:postgresql:42.6.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -78,4 +82,7 @@ tasks.withType<BootRun> {
 tasks.withType<Test> {
     useJUnitPlatform()
     systemProperty("spring.profiles.active", "local")
+    testLogging {
+        showStandardStreams = true
+    }
 }

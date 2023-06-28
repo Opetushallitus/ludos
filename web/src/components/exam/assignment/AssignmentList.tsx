@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentIn, Exam, ContentTypeEng, ValueOf, ContentType } from '../../../types'
+import { BaseIn, ContentType, ContentTypeEng, Exam, ValueOf } from '../../../types'
 import { AssignmentCard } from './AssignmentCard'
 import { FiltersType, useFilters } from '../../../hooks/useFilters'
-import { ContentTypeTranslationEnglish, getSingularContentTypeFinnish, removeEmpty } from './assignmentUtils'
+import {
+  ContentTypeTranslationEnglish,
+  getSingularContentTypeFinnish,
+  isAssignmentsArr,
+  isCertificatesArr,
+  isInstructionsArr,
+  removeEmpty
+} from './assignmentUtils'
 import { InstructionCard } from '../instruction/InstructionCard'
 import { AssignmentFilters } from './AssignmentFilters'
 import { Spinner } from '../../Spinner'
@@ -47,7 +54,7 @@ export const AssignmentList = ({
     return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
   }
 
-  const { data, loading, error, refresh } = useFetch<AssignmentIn[]>(urlByContentType())
+  const { data, loading, error, refresh } = useFetch<BaseIn[]>(urlByContentType())
 
   // refresh data on tab change
   useEffect(() => {
@@ -75,34 +82,36 @@ export const AssignmentList = ({
             {t(`button.lisaa${singularActiveTab}`)}
           </Button>
         </div>
-        <div className="row gap-6">
-          <div className="flex flex-col gap-2 md:flex-row">
-            <p className="mt-2">{t('filter.kieli')}</p>
-            <div className="w-36">
-              <Dropdown
-                id="languageDropdown"
-                options={LANGUAGE_OPTIONS}
-                selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-                onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-                testId="language-dropdown"
-              />
+        {contentType !== ContentTypeEng.TODISTUKSET && (
+          <div className="row gap-6">
+            <div className="flex flex-col gap-2 md:flex-row">
+              <p className="mt-2">{t('filter.kieli')}</p>
+              <div className="w-36">
+                <Dropdown
+                  id="languageDropdown"
+                  options={LANGUAGE_OPTIONS}
+                  selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
+                  onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+                  testId="language-dropdown"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 md:flex-row">
-            <p className="mt-2">{t('filter.jarjesta')}</p>
-            <div className="w-36">
-              <Dropdown
-                id="orderFilter"
-                options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
-                selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
-                onSelectedOptionsChange={(opt: string) =>
-                  handleFilterChange<ValueOf<FiltersType['orderDirection']>>('orderDirection', opt)
-                }
-              />
+            <div className="flex flex-col gap-2 md:flex-row">
+              <p className="mt-2">{t('filter.jarjesta')}</p>
+              <div className="w-36">
+                <Dropdown
+                  id="orderFilter"
+                  options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
+                  selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
+                  onSelectedOptionsChange={(opt: string) =>
+                    handleFilterChange<ValueOf<FiltersType['orderDirection']>>('orderDirection', opt)
+                  }
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       {contentType === ContentTypeEng.KOETEHTAVAT && (
         <AssignmentFilters exam={exam} filters={filters} setFilters={setFilters} />
@@ -114,26 +123,26 @@ export const AssignmentList = ({
       )}
       {data && (
         <>
-          {contentType === ContentTypeEng.KOETEHTAVAT && (
+          {isAssignmentsArr(data, contentType) && (
             <ul>
               {data?.map((assignment, i) => (
                 <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
               ))}
             </ul>
           )}
-          {contentType === ContentTypeEng.OHJEET && (
+          {isInstructionsArr(data, contentType) && (
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
-              {data?.map((assignment, i) => (
-                <InstructionCard assignment={assignment} exam={exam} key={i} />
+              {data?.map((instruction, i) => (
+                <InstructionCard instruction={instruction} exam={exam} key={i} />
               ))}
             </div>
           )}
-          {contentType === ContentTypeEng.TODISTUKSET && (
+          {isCertificatesArr(data, contentType) && (
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
-              {data?.map((assignment, i) => (
-                <CertificateCard assignment={assignment} key={i} />
+              {data?.map((certificate, i) => (
+                <CertificateCard certificate={certificate} key={i} />
               ))}
             </div>
           )}

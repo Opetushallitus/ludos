@@ -26,6 +26,9 @@ jobs:
         uses: ./.github/actions/code_check
   build-jar-and-test-api:
     runs-on: "ubuntu-22.04"
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -39,8 +42,13 @@ jobs:
         with:
           java-version: 17
           distribution: zulu
-      - name: 'Start database for API tests'
+      - name: Start database for API tests
         run: docker compose up -d
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
       - name: Gradle build, including API tests
         uses: gradle/gradle-build-action@v2
         with:
@@ -54,7 +62,10 @@ jobs:
           if-no-files-found: error
   playwright-mock-auth:
     runs-on: "ubuntu-22.04"
-    needs: ["build-jar-and-test-api"]
+    needs: [ "build-jar-and-test-api" ]
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: Playwright
@@ -66,7 +77,10 @@ jobs:
           ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   playwright-cas-auth:
     runs-on: "ubuntu-22.04"
-    needs: ["build-jar-and-test-api"]
+    needs: [ "build-jar-and-test-api" ]
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: Playwright
@@ -80,7 +94,7 @@ jobs:
           ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   build-docker-image-and-push:
     runs-on: "ubuntu-22.04"
-    needs: ["build-jar-and-test-api", "playwright-mock-auth", "playwright-cas-auth"]
+    needs: [ "build-jar-and-test-api", "playwright-mock-auth", "playwright-cas-auth" ]
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
@@ -94,7 +108,7 @@ jobs:
         with:
           name: jar
           path: server/build/libs
-      - name: Configure AWS credentials
+      - name: Configure utility AWS credentials
         uses: aws-actions/configure-aws-credentials@v2 # More information on this action can be found below in the 'AWS Credentials' section
         with:
           role-to-assume: arn:aws:iam::505953557276:role/ludos-gh-actions-ecr-push-role
