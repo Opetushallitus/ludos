@@ -1,1 +1,488 @@
-[{"koodiUri":"ludoslukiodiplomiaine_1","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_1","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"1","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Huslig ekonomi","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Huslig ekonomi","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Kotitalous","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"ludoslukiodiplomiaine_3","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_3","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"3","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Slöjd","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Käsityö","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"Slöjd","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"ludoslukiodiplomiaine_2","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_2","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"2","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Bildkonst","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Bildkonst","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Kuvataide","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"ludoslukiodiplomiaine_5","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_5","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"5","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Media","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"Media","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Media","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]},{"koodiUri":"ludoslukiodiplomiaine_4","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_4","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"4","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Gymnastik","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Gymnastik","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Liikunta","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"ludoslukiodiplomiaine_7","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_7","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"7","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Dans","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Dans","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Tanssi","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"ludoslukiodiplomiaine_6","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_6","version":1,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"6","paivitysPvm":"2023-05-09","paivittajaOid":"1.2.246.562.24.95066770648","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Musiikki","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"Musik","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Musik","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"ludoslukiodiplomiaine_9","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_9","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"9","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Gemensam","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Gemensam","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Yhteinen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"ludoslukiodiplomiaine_8","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_8","version":0,"versio":1,"koodisto":{"koodistoUri":"ludoslukiodiplomiaine","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"8","paivitysPvm":"2023-04-28","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-04-28","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Teaterkonst","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Teatteri","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"Teaterkonst","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]}]
+[
+  {
+    "koodiUri": "ludoslukiodiplomiaine_6",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_6",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": " 6",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Musiikki",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Musik",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Musik",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_1",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_1",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "1",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Huslig ekonomi",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Kotitalous",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Huslig ekonomi",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_2",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_2",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "2",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Kuvataide",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Bildkonst",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Bildkonst",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_3",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_3",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "3",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Slöjd",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Slöjd",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Käsityö",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_4",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_4",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "4",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Liikunta",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Gymnastik",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Gymnastik",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_5",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_5",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "5",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Media",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Media",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Media",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_7",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_7",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "7",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Dans",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tanssi",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Dans",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_8",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_8",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "8",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Teaterkonst",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Teatteri",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Teaterkonst",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  },
+  {
+    "koodiUri": "ludoslukiodiplomiaine_9",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukiodiplomiaine_9",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "ludoslukiodiplomiaine",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "9",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-04-27",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Yhteinen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Gemensam",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Gemensam",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  }
+]

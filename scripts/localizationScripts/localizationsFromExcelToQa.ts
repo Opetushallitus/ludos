@@ -1,6 +1,17 @@
-#!/usr/bin/env -S deno run --allow-read --allow-write --allow-net --unstable
+#!/usr/bin/env -S deno run --allow-read --allow-write --allow-net --unstable --allow-run
 
 import * as XLSX from 'https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs'
+
+const __dirname = new URL('.', import.meta.url).pathname;
+const p = Deno.run({ cmd: [`${__dirname}/../update_backups.sh`] });
+
+console.log("Backing up koodistos and localizations...")
+const backupResult = await p.status()
+if (backupResult.success) {
+  console.log("Succesfully backed up koodistos and localizations")
+} else {
+  throw new Error("Was unable to run backup, quitting")
+}
 
 const file_path = 'ludos_qa_kaannokset.xlsx'
 
