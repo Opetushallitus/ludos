@@ -38,7 +38,7 @@ fun updateCertificate(id: Int, body: String) =
     MockMvcRequestBuilders.put("${Constants.API_PREFIX}/certificate/$id").contentType(MediaType.APPLICATION_JSON)
         .content(body)
 
-fun postAttachment(file: MockMultipartFile): MockMultipartHttpServletRequestBuilder =
+fun postAttachment(file: MockMultipartFile) =
     MockMvcRequestBuilders.multipart("${Constants.API_PREFIX}/certificate/upload").file(file)
 
 fun getAttachmentPreview(fileKey: String) =
@@ -85,6 +85,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val file = MockMultipartFile("file", "fixture2.pdf", MediaType.APPLICATION_PDF_VALUE, fileContent)
         val uploadedFileOutStr =
             mockMvc.perform(postAttachment(file)).andExpect(status().isOk).andReturn().response.contentAsString
+
         val uploadedFileOut = objectMapper.readValue(uploadedFileOutStr, TestFileUploadOut::class.java)
 
         assertTrue(uploadedFileOut.fileKey.matches(keyRegex), "Invalid fileKey: ${uploadedFileOut.fileKey}")
@@ -188,8 +189,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val uploadedFileOut = uploadFixtureFile("fixture2.pdf")
 
-        mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey))
-
+        mockMvc.perform(getAttachmentPreview(uploadedFileOut.fileKey)).andExpect(status().isOk).andReturn().response
 
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,
@@ -219,11 +219,11 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(certificateOut.id, updatedCertificate.id)
     }
 
-   @Test
-   @WithYllapitajaRole
-   fun createDraftCertificate() {
-       createCertificate(PublishState.DRAFT)
-   }
+    @Test
+    @WithYllapitajaRole
+    fun createDraftCertificate() {
+        createCertificate(PublishState.DRAFT)
+    }
 
     @Test
     fun putCertificateWithMissingAttachment() {

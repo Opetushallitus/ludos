@@ -12,7 +12,6 @@ export type UploadFile = {
 }
 
 type FileUploadProps = {
-  oldFileKey?: string
   uploadedFile: UploadFile | null
   setUploadedFile: (file: UploadFile) => void
 }

@@ -43,10 +43,7 @@ class CertificateController(val service: CertificateService) {
 
     @PostMapping("/upload")
     @HasYllapitajaRole
-    fun uploadFile(
-        @RequestParam("file") file: MultipartFile, @RequestParam("oldFileKey") oldFileKey: String?
-    ): ResponseEntity<FileUpload> {
-
+    fun uploadFile(@RequestParam("file") file: MultipartFile): ResponseEntity<FileUpload> {
         if (file.contentType.toString() != MediaType.APPLICATION_PDF_VALUE) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_FILE_TYPE")
         }
@@ -59,7 +56,7 @@ class CertificateController(val service: CertificateService) {
             )
         }
 
-        val uploadedFile = service.uploadFile(file, oldFileKey) ?: throw ResponseStatusException(
+        val uploadedFile = service.uploadFile(file) ?: throw ResponseStatusException(
             HttpStatus.INTERNAL_SERVER_ERROR, "S3_ERROR_UPLOADING_FILE"
         )
 
@@ -69,7 +66,7 @@ class CertificateController(val service: CertificateService) {
     @GetMapping("/preview/{key}")
     @HasAnyRole
     fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
-        val (uploadFile, responseInputStream) = service.getFile(key)
+        val (uploadFile, responseInputStream) = service.getAttachment(key)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
