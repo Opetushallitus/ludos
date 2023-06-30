@@ -70,7 +70,8 @@ export const Content = ({ exam }: AssignmentProps) => {
                             data
                           }
                         })
-                      }>
+                      }
+                      data-testid="edit-content-btn">
                       <Icon name="muokkaa" color="text-green-primary" />
                       <p className="text-green-primary">{t('assignment.muokkaa')}</p>
                     </span>
