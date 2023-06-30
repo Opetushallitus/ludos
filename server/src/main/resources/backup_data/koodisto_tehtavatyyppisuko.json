@@ -1,1 +1,164 @@
-[{"koodiUri":"tehtavatyyppisuko_002","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_002","version":0,"versio":1,"koodisto":{"koodistoUri":"tehtavatyyppisuko","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"002","paivitysPvm":"2023-05-12","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-12","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Tekstin tiivistäminen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Tekstin tiivistäminen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Tekstin tiivistäminen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"tehtavatyyppisuko_001","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_001","version":0,"versio":1,"koodisto":{"koodistoUri":"tehtavatyyppisuko","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"001","paivitysPvm":"2023-05-12","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-12","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Ääneen lukeminen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Ääneen lukeminen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"Ääneen lukeminen","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"tehtavatyyppisuko_003","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_003","version":0,"versio":1,"koodisto":{"koodistoUri":"tehtavatyyppisuko","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"003","paivitysPvm":"2023-05-12","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-12","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"Keskustelu","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"Keskustelu","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"Keskustelu","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]}]
+[
+  {
+    "koodiUri": "tehtavatyyppisuko_1",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_1",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "tehtavatyyppisuko",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "1",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Ääneen lukeminen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Ääneen lukeminen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Ääneen lukeminen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "tehtavatyyppisuko_2",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_2",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "tehtavatyyppisuko",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "2",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Tekstin tiivistäminen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "Tekstin tiivistäminen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Tekstin tiivistäminen",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "tehtavatyyppisuko_3",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_3",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "tehtavatyyppisuko",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "3",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "Keskustelu",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "Keskustelu",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "Keskustelu",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  }
+]

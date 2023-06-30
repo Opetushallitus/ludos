@@ -1,1 +1,650 @@
-[{"koodiUri":"taitotaso_0010","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0010","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0010","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"B2.2 Fungerande självständig språkfärdighet","kuvaus":"","kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"B2.2 Toimiva itsenäinen kielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"B2.2 Toimiva itsenäinen kielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]},{"koodiUri":"taitotaso_0009","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0009","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0009","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"B2.1 Itsenäisen kielitaidon perustaso","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"B2.1 Itsenäisen kielitaidon perustaso","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"B2.1 Självständig språkfärdighet, grundnivå","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"taitotaso_0012","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0012","version":1,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0012","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"yli C1.1","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"yli C1.1","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"över C1.1","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"taitotaso_0011","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0011","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0011","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"C1.1 Avancerad språkfärdighet, grundnivå ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"C1.1 Taitavan kielitaidon perustaso","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"C1.1 Taitavan kielitaidon perustaso","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]},{"koodiUri":"taitotaso_0002","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0002","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0002","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"A1.1 Kielitaidon alkeiden hallinta ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"A1.1 De första grunderna i språket","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"A1.1 Kielitaidon alkeiden hallinta ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]},{"koodiUri":"taitotaso_0001","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0001","version":1,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0001","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"alle A1.1","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"alle A1.1","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"under A1.1","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"taitotaso_0004","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0004","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0004","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"A1.3 Toimiva alkeiskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"A1.3 Toimiva alkeiskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"A1.3 Fungerande elementär språkfärdighet","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"taitotaso_0003","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0003","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0003","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"A1.2 Kehittyvä alkeiskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"A1.2 Kehittyvä alkeiskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"A1.2 Elementär språkfärdighet stadd i utveckling","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"taitotaso_0006","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0006","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0006","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"A2.2 Grundläggande språkfärdighet stadd i utveckling","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"A2.2 Kehittyvä peruskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"A2.2 Kehittyvä peruskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"}]},{"koodiUri":"taitotaso_0005","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0005","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0005","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"A2.1 Peruskielitaidon alkuvaihe ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"A2.1 Peruskielitaidon alkuvaihe ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"},{"nimi":"A2.1 Den grundläggande språkfärdighetens begynnelseskede ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"}]},{"koodiUri":"taitotaso_0008","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0008","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0008","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"B1.2 Sujuva peruskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":" Flytande grundläggande språkfärdighet","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"B1.2 Sujuva peruskielitaito","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]},{"koodiUri":"taitotaso_0007","resourceUri":"https://virkailija.untuvaopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0007","version":0,"versio":1,"koodisto":{"koodistoUri":"taitotaso","organisaatioOid":"1.2.246.562.10.00000000001","koodistoVersios":[1]},"koodiArvo":"0007","paivitysPvm":"2023-05-05","paivittajaOid":"1.2.246.562.24.77925329174","voimassaAlkuPvm":"2023-05-05","voimassaLoppuPvm":null,"tila":"LUONNOS","metadata":[{"nimi":"B1.1 Fungerande grundläggande språkfärdighet","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"SV"},{"nimi":"B1.1  Toimiva peruskielitaito ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"EN"},{"nimi":"B1.1  Toimiva peruskielitaito ","kuvaus":null,"kayttoohje":null,"kasite":null,"sisaltaaMerkityksen":null,"eiSisallaMerkitysta":null,"huomioitavaKoodi":null,"sisaltaaKoodiston":null,"kieli":"FI"}]}]
+[
+  {
+    "koodiUri": "taitotaso_0001",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0001",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0001",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "alle A1.1",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "under A1.1",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "alle A1.1",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0002",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0002",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0002",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "A1.1 Kielitaidon alkeiden hallinta ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "A1.1 De första grunderna i språket",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "A1.1 Kielitaidon alkeiden hallinta ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0003",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0003",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0003",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "A1.2 Kehittyvä alkeiskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "A1.2 Kehittyvä alkeiskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "A1.2 Elementär språkfärdighet stadd i utveckling",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0004",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0004",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0004",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "A1.3 Fungerande elementär språkfärdighet",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "A1.3 Toimiva alkeiskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "A1.3 Toimiva alkeiskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0005",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0005",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0005",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "A2.1 Peruskielitaidon alkuvaihe ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "A2.1 Peruskielitaidon alkuvaihe ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "A2.1 Den grundläggande språkfärdighetens begynnelseskede ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0006",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0006",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0006",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "A2.2 Grundläggande språkfärdighet stadd i utveckling",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "A2.2 Kehittyvä peruskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "A2.2 Kehittyvä peruskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0007",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0007",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0007",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "B1.1 Fungerande grundläggande språkfärdighet",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "B1.1  Toimiva peruskielitaito ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "B1.1  Toimiva peruskielitaito ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0008",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0008",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0008",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": " Flytande grundläggande språkfärdighet",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "B1.2 Sujuva peruskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "B1.2 Sujuva peruskielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0009",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0009",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0009",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "B2.1 Itsenäisen kielitaidon perustaso",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      },
+      {
+        "nimi": "B2.1 Itsenäisen kielitaidon perustaso",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "B2.1 Självständig språkfärdighet, grundnivå",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0010",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0010",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0010",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "B2.2 Fungerande självständig språkfärdighet",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "B2.2 Toimiva itsenäinen kielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "B2.2 Toimiva itsenäinen kielitaito",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0011",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0011",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0011",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "C1.1 Avancerad språkfärdighet, grundnivå ",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "C1.1 Taitavan kielitaidon perustaso",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "C1.1 Taitavan kielitaidon perustaso",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  },
+  {
+    "koodiUri": "taitotaso_0012",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/taitotaso_0012",
+    "version": 0,
+    "versio": 1,
+    "koodisto": {
+      "koodistoUri": "taitotaso",
+      "organisaatioOid": "1.2.246.562.10.00000000001",
+      "koodistoVersios": [
+        1
+      ]
+    },
+    "koodiArvo": "0012",
+    "paivitysPvm": "2023-06-02",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null,
+    "tila": "LUONNOS",
+    "metadata": [
+      {
+        "nimi": "över C1.1",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "SV"
+      },
+      {
+        "nimi": "yli C1.1",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "EN"
+      },
+      {
+        "nimi": "yli C1.1",
+        "kuvaus": null,
+        "kayttoohje": null,
+        "kasite": null,
+        "sisaltaaMerkityksen": null,
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "sisaltaaKoodiston": null,
+        "kieli": "FI"
+      }
+    ]
+  }
+]
