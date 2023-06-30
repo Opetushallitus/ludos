@@ -64,7 +64,6 @@ async function createCertificate(page: Page, context: BrowserContext, event: str
     const header = page.getByTestId('assignment-header')
     await expect(header).toHaveText(nameText)
 
-    await page.getByText(nameText, { exact: true })
     await page.getByText(descriptionText, { exact: true })
 
     const attachment = await page.getByTestId('fixture.pdf').allTextContents()
