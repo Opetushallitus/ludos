@@ -2,7 +2,7 @@
   {
     "koodiUri": "tehtavatyyppisuko_1",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_1",
-    "version": 0,
+    "version": 1,
     "versio": 1,
     "koodisto": {
       "koodistoUri": "tehtavatyyppisuko",
@@ -11,9 +11,9 @@
         1
       ]
     },
-    "koodiArvo": "1",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "koodiArvo": "001",
+    "paivitysPvm": "2023-07-03",
+    "paivittajaOid": "1.2.246.562.24.20745323310",
     "voimassaAlkuPvm": "2023-05-11",
     "voimassaLoppuPvm": null,
     "tila": "LUONNOS",
@@ -56,7 +56,7 @@
   {
     "koodiUri": "tehtavatyyppisuko_2",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_2",
-    "version": 0,
+    "version": 1,
     "versio": 1,
     "koodisto": {
       "koodistoUri": "tehtavatyyppisuko",
@@ -65,9 +65,9 @@
         1
       ]
     },
-    "koodiArvo": "2",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "koodiArvo": "002",
+    "paivitysPvm": "2023-07-03",
+    "paivittajaOid": "1.2.246.562.24.20745323310",
     "voimassaAlkuPvm": "2023-05-11",
     "voimassaLoppuPvm": null,
     "tila": "LUONNOS",
@@ -110,7 +110,7 @@
   {
     "koodiUri": "tehtavatyyppisuko_3",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_3",
-    "version": 0,
+    "version": 1,
     "versio": 1,
     "koodisto": {
       "koodistoUri": "tehtavatyyppisuko",
@@ -119,9 +119,9 @@
         1
       ]
     },
-    "koodiArvo": "3",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "koodiArvo": "003",
+    "paivitysPvm": "2023-07-03",
+    "paivittajaOid": "1.2.246.562.24.20745323310",
     "voimassaAlkuPvm": "2023-05-11",
     "voimassaLoppuPvm": null,
     "tila": "LUONNOS",

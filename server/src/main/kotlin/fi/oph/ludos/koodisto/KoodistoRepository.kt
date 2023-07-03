@@ -16,13 +16,17 @@ class KoodistoRepository(
 
     private val baseUrl = "https://${opintopolkuHostname}/koodisto-service/rest/json"
 
-    fun getKoodisto(koodisto: KoodistoName): Array<Koodi> {
+    fun getKoodistoFromKoodistopalvelu(koodisto: KoodistoName): Array<Koodi> {
         val url = "$baseUrl/${koodisto.koodistoUri}/koodi?onlyValidKoodis=true"
         val httpGet = HttpGet(url)
         val response = httpClient.execute(httpGet)
-        val entity = response.entity.content.bufferedReader().use { it.readText() }
 
-        return objectMapper.readValue(entity, Array<Koodi>::class.java)
+        return objectMapper.readValue(response.entity.content.bufferedReader(), Array<Koodi>::class.java)
     }
-}
 
+    fun getKoodistoFromResource(koodisto: KoodistoName): Array<Koodi> {
+        val resourceStream = Thread.currentThread().contextClassLoader.getResourceAsStream("backup_data/koodisto_${koodisto.koodistoUri}.json")
+        return objectMapper.readValue(resourceStream, Array<Koodi>::class.java)
+    }
+
+}

@@ -1,13 +1,10 @@
 package fi.oph.ludos.koodisto
 
-import fi.oph.ludos.assignment.SukoAssignmentDtoIn
 import fi.oph.ludos.cache.CacheName
-import fi.oph.ludos.exception.LocalizationException
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.server.ResponseStatusException
+import java.lang.IllegalStateException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -16,14 +13,15 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
     private final val logger: org.slf4j.Logger = LoggerFactory.getLogger(javaClass)
 
     init {
-        val scheduler = Executors.newScheduledThreadPool(1)
-        scheduler.scheduleAtFixedRate({ updateCache() }, 10, 10, TimeUnit.MINUTES)
-
         try {
-            updateCache()
+            upateCacheFromResources()
         } catch (e: Exception) {
-            logger.error("Failed to update koodisto cache", e)
+            logger.error("Failed to initialize koodisto cache", e)
+            throw e
         }
+
+        val scheduler = Executors.newScheduledThreadPool(1)
+        scheduler.scheduleAtFixedRate({ updateCacheFromKoodistopalvelu() }, 0, 600, TimeUnit.SECONDS)
     }
 
     fun getKoodistos(): Map<KoodistoName, List<KoodiDtoOut>> {
@@ -34,10 +32,10 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
             if (cachedKoodistosAny is Map<*, *>) {
                 return cachedKoodistosAny as Map<KoodistoName, List<KoodiDtoOut>>
             } else {
-                throw Exception("Cached koodistos is not a map")
+                throw IllegalStateException("Cached koodistos is not a map")
             }
         }
-        throw Exception("Koodistos not found in cache")
+        throw IllegalStateException("Koodistos accessed before initialization")
     }
     fun getKoodistos(language: Language): Map<KoodistoName, List<KoodiDtoOut>> = filterKooditByLanguage(getKoodistos(), language)
 
@@ -59,10 +57,9 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
         koodisto.filter { it.kieli == language.name }
     }
 
-
-    private fun updateCache(): Map<KoodistoName, List<KoodiDtoOut>> {
+    private fun readKoodistos(koodistoGetter: (KoodistoName) -> Array<Koodi>, sourceName: String) {
         val koodistoMap = KoodistoName.values().associateWith {
-            koodistoName -> koodistoRepository.getKoodisto(koodistoName).flatMap {
+                koodistoName -> koodistoGetter(koodistoName).flatMap {
                 koodi -> koodi.metadata.map {
                     metadatum -> KoodiDtoOut(koodi.koodiArvo, metadatum.nimi, metadatum.kieli)
                 }
@@ -71,8 +68,14 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
         cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
 
         val koodistoStats = koodistoMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
-        logger.info("Updated koodisto cache: $koodistoStats")
+        logger.info("Updated koodisto cache from $sourceName: $koodistoStats")
+    }
 
-        return koodistoMap
+    private fun upateCacheFromResources() {
+        readKoodistos({ koodistoName -> koodistoRepository.getKoodistoFromResource(koodistoName) }, "resource files")
+    }
+
+    private fun updateCacheFromKoodistopalvelu() {
+        readKoodistos({ koodistoName -> koodistoRepository.getKoodistoFromKoodistopalvelu(koodistoName) }, "koodistopalvelu")
     }
 }
