@@ -17,10 +17,15 @@ class LocalizationRepository(
     private val httpClient: HttpClient = HttpClientBuilder.create().build()
     private val url = "https://${opintopolkuHostname}/lokalisointi/cxf/rest/v1/localisation?category=ludos"
 
-    fun getLocalizationTexts(): Array<Localization> {
+    fun getLocalizationTextsFromLokalisointipalvelu(): Array<Localization> {
         val request = HttpGet(url)
         val response: HttpResponse = httpClient.execute(request)
 
         return objectMapper.readValue<Array<Localization>>(response.entity.content.bufferedReader())
+    }
+
+    fun getLocalizationTextsFromResourceFile(): Array<Localization> {
+        val resourceStream = Thread.currentThread().contextClassLoader.getResourceAsStream("backup_data/lokalisointi.json")
+        return objectMapper.readValue(resourceStream, Array<Localization>::class.java)
     }
 }

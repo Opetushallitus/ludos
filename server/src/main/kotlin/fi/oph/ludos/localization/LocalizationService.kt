@@ -6,6 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
+import java.lang.IllegalStateException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -18,49 +19,47 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
     private final val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     init {
-        // Schedule cache update every 2 minutes
-        val scheduler = Executors.newScheduledThreadPool(1)
-        scheduler.scheduleAtFixedRate({ updateCache() }, 2, 2, TimeUnit.MINUTES)
-
         try {
-            // Init cache
-            updateCache()
+            updateCacheFromResourceFile()
         } catch (e: Exception) {
-            logger.error("Failed to update localization cache", e)
+            logger.error("Failed to initialize localization cache", e)
+            throw e
         }
+
+        val scheduler = Executors.newScheduledThreadPool(1)
+        scheduler.scheduleAtFixedRate({ updateCacheFromLokalisointipalvelu() }, 0, 120, TimeUnit.SECONDS)
     }
 
-    fun getLocalizationTexts(): Map<*, *>? {
+    fun getLocalizationTexts(): Map<*, *> {
         val cachedValue = cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.get("all")?.get() as? Map<*, *>
 
-        if (cachedValue != null) {
-            return cachedValue
-        }
-
-        return updateCache()
+        return cachedValue ?: throw IllegalStateException("Reading localizations before cache initialized")
     }
 
-
-    private fun updateCache(): Map<String, Map<String, Any>> {
+    private fun updateCache(localizations: Array<Localization>, sourceName: String) {
         try {
-            val unparsedArr = localizationRepository.getLocalizationTexts()
             val localizedTexts = mutableMapOf<String, Map<String, Any>>()
             for (locale in Locale.values().map { it.locale }) {
-                val localeTexts = unparsedArr.filter { it.locale == locale }
+                val localeTexts = localizations.filter { it.locale == locale }
                 localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
             }
 
             cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
 
             val localeStats = Locale.values()
-                .map { locale -> "${locale.locale}: ${unparsedArr.filter { it.locale == locale.locale }.count()}" }
-            logger.info("Updated localization cache: $localeStats")
-
-            return localizedTexts
+                .map { locale -> "${locale.locale}: ${localizations.filter { it.locale == locale.locale }.count()}" }
+            logger.info("Updated localization cache from $sourceName: $localeStats")
         } catch (e: Exception) {
             throw LocalizationException("${e.message}", e)
         }
+    }
 
+    private fun updateCacheFromLokalisointipalvelu() {
+        updateCache(localizationRepository.getLocalizationTextsFromLokalisointipalvelu(), "lokalisointipalvelu")
+    }
+
+    private fun updateCacheFromResourceFile() {
+        updateCache(localizationRepository.getLocalizationTextsFromResourceFile(), "resource file")
     }
 
     private fun parseLocalizationTexts(texts: List<Localization>): Map<String, Any> {

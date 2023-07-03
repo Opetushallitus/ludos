@@ -14,10 +14,6 @@ class LocalizationController(val localizationService: LocalizationService) {
     @GetMapping("")
     @HasAnyRole
     fun getLocalizationTexts(): Map<*, *> {
-        val localizationDtoOut = localizationService.getLocalizationTexts()
-
-        return localizationDtoOut ?: throw ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR, "Could not get localizations"
-        )
+        return localizationService.getLocalizationTexts()
     }
 }
