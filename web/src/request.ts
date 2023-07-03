@@ -50,8 +50,14 @@ export async function updateInstruction<T>(exam: Exam, id: number, body: Instruc
   return await result.json()
 }
 
-export async function postCertificate<T>(body: CertificateFormType): Promise<T> {
-  const result = await doRequest(CERTIFICATE_URL, 'POST', JSON.stringify(body))
+export async function createCertificate<T>(certificateIn: CertificateFormType, newAttachment: File): Promise<T> {
+  const formData = new FormData()
+
+  const certificatePart = new Blob([JSON.stringify(certificateIn)], { type: 'application/json' })
+  formData.append('certificate', certificatePart)
+  formData.append('attachment', newAttachment)
+
+  const result = await fetch(CERTIFICATE_URL, { method: 'POST', body: formData })
 
   if (!result.ok) {
     throw new Error(await result.text())
@@ -60,12 +66,27 @@ export async function postCertificate<T>(body: CertificateFormType): Promise<T> 
   return await result.json()
 }
 
-export async function updateCertificate<T>(exam: Exam, id: number, body: CertificateFormType): Promise<void> {
-  const result = await doRequest(`${CERTIFICATE_URL}/${id}`, 'PUT', JSON.stringify(body))
+export async function updateCertificate<T>(
+  exam: Exam,
+  id: number,
+  certificateIn: CertificateFormType,
+  newAttachment: File | null
+): Promise<void> {
+  const formData = new FormData()
+
+  const certificatePart = new Blob([JSON.stringify(certificateIn)], { type: 'application/json' })
+  formData.append('certificate', certificatePart)
+  if (newAttachment) {
+    formData.append('attachment', newAttachment)
+  }
+
+  const result = await fetch(`${CERTIFICATE_URL}/${id}`, { method: 'PUT', body: formData })
 
   if (!result.ok) {
     throw new Error(await result.text())
   }
+
+  return
 }
 
 export async function uploadFile<T>(file: File): Promise<T> {

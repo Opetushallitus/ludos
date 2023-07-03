@@ -10,7 +10,7 @@ export const certificateSchema = z.object({
     .refine((val) => val !== '', { message: ErrorMessages.REQUIRED })
     .refine((val) => val.length >= MIN_LENGTH, { message: ErrorMessages.SHORT }),
   description: z.string().refine((val) => val !== '', { message: ErrorMessages.REQUIRED }),
-  fileKey: z.string({ required_error: ErrorMessages.NO_FILE })
+  certificateHasAttachment: z.boolean().refine((val) => val === true, ErrorMessages.NO_FILE)
 })
 
 export type CertificateFormType = z.infer<typeof certificateSchema>

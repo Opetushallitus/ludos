@@ -3,14 +3,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { Exam, PublishState, ContentTypeEng, CertificateIn } from '../../../../types'
 import { useTranslation } from 'react-i18next'
-import { postCertificate, updateCertificate } from '../../../../request'
+import { createCertificate, updateCertificate } from '../../../../request'
 import { useEffect, useState } from 'react'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
-import { FileUpload, UploadFile } from '../../formCommon/FileUpload'
+import { AttachmentSelector } from '../../formCommon/AttachmentSelector'
 import { FormError } from '../../formCommon/FormErrors'
 
 type CertificateFormProps = {
@@ -23,7 +23,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
   const { pathname, state } = useLocation()
   const match = useMatch(`/:exam/:contentType/${action}`)
   const [loading, setLoading] = useState(false)
-  const [uploadedFile, setUploadedFile] = useState<UploadFile | null>(null)
+  const [newAttachment, setNewAttachment] = useState<File | null>(null)
 
   const exam = match!.params.exam as Exam
 
@@ -44,34 +44,25 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         ...certificate,
         exam: exam.toUpperCase() as Exam
       })
-      setUploadedFile({
-        fileName: certificate.fileName,
-        fileKey: certificate.fileKey,
-        fileUploadDate: certificate.fileUploadDate
-      })
     } else {
       setValue('exam', exam.toUpperCase() as Exam)
     }
+    setValue('certificateHasAttachment', !!certificate)
   }, [certificate, exam, reset, setValue])
 
-  const handleUploadedFile = (file: UploadFile) => {
-    setUploadedFile(file)
-    setValue('fileKey', file.fileKey)
-  }
-
-  async function submitAssignment({ publishState }: { publishState: PublishState }) {
+  async function submitCertificate({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: CertificateFormType) => {
-      const body = { ...data, publishState }
+      const certificateIn = { ...data, publishState }
 
       try {
         setLoading(true)
         let resultId: string
         // When updating we need to have the certificate
         if (action === 'update' && certificate) {
-          await updateCertificate<void>(exam, certificate.id, body)
+          await updateCertificate<void>(exam, certificate.id, certificateIn, newAttachment)
           resultId = certificate.id.toString()
         } else {
-          const { id } = await postCertificate<{ id: string }>(body)
+          const { id } = await createCertificate<{ id: string }>(certificateIn, newAttachment!)
           resultId = id
         }
 
@@ -86,7 +77,12 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
 
   const nameError = errors.name?.message
   const contentError = errors.description?.message
-  const fileError = errors.fileKey?.message
+  const fileError = errors.certificateHasAttachment?.message
+
+  function handleNewAttachmentSelected(newAttachment: File) {
+    setNewAttachment(newAttachment)
+    setValue('certificateHasAttachment', true)
+  }
 
   return (
     <div className="w-10/12 pt-3">
@@ -110,15 +106,27 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
-        <FileUpload uploadedFile={uploadedFile} setUploadedFile={handleUploadedFile} />
+        <AttachmentSelector
+          currentAttachment={
+            certificate
+              ? {
+                  fileKey: certificate.fileKey,
+                  fileName: certificate.fileName,
+                  fileUploadDate: certificate.fileUploadDate
+                }
+              : null
+          }
+          newAttachment={newAttachment}
+          setNewAttachment={handleNewAttachmentSelected}
+        />
 
         <FormError error={fileError} />
       </form>
 
       <FormButtonRow
         onCancelClick={() => navigate(-1)}
-        onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
-        onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
+        onSaveDraftClick={() => submitCertificate({ publishState: PublishState.Draft })}
+        onSubmitClick={() => submitCertificate({ publishState: PublishState.Published })}
         isLoading={loading}
       />
     </div>

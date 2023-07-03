@@ -21,7 +21,7 @@ async function uploadFile(page: Page) {
 
   const formattedDate = `${day}.${month}.${year}`
 
-  await expect(page.getByTestId('fixture.pdf')).toHaveText(`fixture.pdfopen_in_new${formattedDate}`)
+  await expect(page.getByTestId('fixture.pdf')).toHaveText(`fixture.pdf${formattedDate}`)
 }
 
 async function createCertificate(page: Page, event: string) {

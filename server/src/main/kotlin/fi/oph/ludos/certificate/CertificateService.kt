@@ -18,15 +18,15 @@ class CertificateService(val repository: CertificateRepository, val s3Helper: S3
 
     fun getCertificates(exam: Exam): List<CertificateDtoOut> = repository.getCertificates(exam)
 
-    fun createCertificate(certificate: CertificateDtoIn): CertificateDtoOut = repository.createCertificate(certificate)
+    fun createCertificate(certificate: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut =
+        repository.createCertificate(certificate, attachment)
 
     fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? = repository.getCertificateById(id, exam)
 
-    fun updateCertificate(id: Int, certificate: CertificateDtoIn) = repository.updateCertificate(id, certificate)
+    fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?) =
+        repository.updateCertificate(id, certificate, attachment)
 
-    fun uploadFile(file: MultipartFile): FileUpload? = repository.createAttachment(file)
-
-    fun getAttachment(key: String): Pair<FileUpload, ResponseInputStream<GetObjectResponse>> {
+    fun getAttachment(key: String): Pair<CertificateAttachment, ResponseInputStream<GetObjectResponse>> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND, "Certificate attachment '${key}' not found in db"
         )

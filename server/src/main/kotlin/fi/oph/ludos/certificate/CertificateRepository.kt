@@ -2,7 +2,6 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import fi.oph.ludos.exception.ApiRequestException
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,28 +25,14 @@ class CertificateRepository(
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun createCertificate(certificateDtoIn: CertificateDtoIn): CertificateDtoOut {
+    fun createCertificate(certificateDtoIn: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut {
         val table = when (certificateDtoIn.exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
             Exam.LD -> "ld_certificate"
         }
 
-        val getCertificateAttachmentSql = """
-            SELECT attachment_file_name, attachment_upload_date
-            FROM certificate_attachment
-            WHERE attachment_file_key = ?
-        """.trimIndent()
-
-        val certificateAttachment = jdbcTemplate.query(
-            getCertificateAttachmentSql, { rs: ResultSet, _: Int ->
-                FileUpload(
-                    rs.getString("attachment_file_name"),
-                    certificateDtoIn.fileKey,
-                    getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
-                )
-            }, certificateDtoIn.fileKey
-        ).firstOrNull() ?: throw ApiRequestException("Attachment not found")
+        val certificateAttachment = createAttachment(attachment)
 
         val certificateInsertSql = """
             INSERT INTO $table (
@@ -69,7 +54,7 @@ class CertificateRepository(
                     certificateDtoIn.name,
                     certificateDtoIn.description,
                     certificateDtoIn.publishState,
-                    certificateDtoIn.fileKey,
+                    certificateAttachment.fileKey,
                     certificateAttachment.fileName,
                     certificateAttachment.fileUploadDate,
                     rs.getTimestamp("certificate_created_at"),
@@ -79,41 +64,56 @@ class CertificateRepository(
             certificateDtoIn.name,
             certificateDtoIn.description,
             certificateDtoIn.publishState.toString(),
-            certificateDtoIn.fileKey
+            certificateAttachment.fileKey
         )[0]
     }
 
-    fun createAttachment(file: MultipartFile): FileUpload {
-        val key = "todistuspohja_${UUID.randomUUID()}"
+    fun createAttachment(file: MultipartFile): CertificateAttachment {
+        val fileKey = "todistuspohja_${UUID.randomUUID()}"
 
         try {
-            s3Helper.putObject(file, key)
+            s3Helper.putObject(file, fileKey)
         } catch (ex: SdkException) {
             val errorMsg = "Failed to upload file '${file.originalFilename}' to S3"
             logger.error(errorMsg, ex)
             throw ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMsg)
         }
 
-        val fileToCreate = FileUpload(file.originalFilename!!, key, ZonedDateTime.now(ZoneOffset.UTC))
+        val fileName = file.originalFilename!!
 
         val result = jdbcTemplate.query(
             """
                 INSERT INTO certificate_attachment (attachment_file_key, attachment_file_name, attachment_upload_date)
-                VALUES (?, ?, now())
-                RETURNING attachment_file_key, attachment_file_name, attachment_upload_date
+                VALUES (?, ?, clock_timestamp())
+                RETURNING attachment_upload_date
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
-                FileUpload(
-                    fileToCreate.fileName,
-                    fileToCreate.fileKey,
+                CertificateAttachment(
+                    fileName,
+                    fileKey,
                     getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
                 )
             },
-            fileToCreate.fileKey,
-            fileToCreate.fileName,
+            fileKey,
+            fileName,
         )
 
         return result[0]
+    }
+
+    fun deleteAttachment(fileKey: String) {
+        val sql = "DELETE FROM certificate_attachment WHERE attachment_file_key = ?"
+
+        val updatedRowCount = jdbcTemplate.update(sql, fileKey)
+        if (updatedRowCount != 1) {
+            logger.warn("Tried to delete non-existent certificate attachment '${fileKey}'. Ignoring error.")
+        }
+
+        try {
+            s3Helper.deleteObject(fileKey)
+        } catch (ex: SdkException) {
+            logger.warn("Failed to delete certificate attachment '${fileKey}' from S3. Ignoring error.", ex)
+        }
     }
 
     fun getZonedDateTimeFromResultSet(rs: ResultSet, columnName: String): ZonedDateTime {
@@ -153,14 +153,14 @@ class CertificateRepository(
         return results.firstOrNull()
     }
 
-    fun getCertificateAttachmentByFileKey(fileKey: String): FileUpload? {
+    fun getCertificateAttachmentByFileKey(fileKey: String): CertificateAttachment? {
         val results = jdbcTemplate.query(
             """
             SELECT attachment_file_key, attachment_file_name, attachment_upload_date
             FROM certificate_attachment
             WHERE attachment_file_key = ?
             """.trimIndent(), { rs, _ ->
-                FileUpload(
+                CertificateAttachment(
                     rs.getString("attachment_file_name"),
                     rs.getString("attachment_file_key"),
                     getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
@@ -193,20 +193,7 @@ class CertificateRepository(
         }
     }
 
-    fun deleteAttachment(oldFileKey: String) {
-        // check if file key is in use by another certificate
-        val count = jdbcTemplate.queryForObject(
-            "SELECT COUNT(*) FROM certificate_attachment WHERE attachment_file_key = ?", Int::class.java, oldFileKey
-        )
-        // if not, delete the file from S3
-        if (count == 0) {
-            val sql = "DELETE FROM certificate_attachment WHERE attachment_file_key = ?"
-
-            jdbcTemplate.update(sql, oldFileKey)
-        }
-    }
-
-    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn) {
+    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn, attachment: MultipartFile?) {
         val table = when (certificateDtoIn.exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
@@ -215,15 +202,12 @@ class CertificateRepository(
 
         transactionTemplate.execute { status ->
             try {
-                // get attachment of the certificate which will be deleted and replaced with the new one
-                val currentCertificateWithAttachment =
+                val currentCertificate =
                     getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Certificate $id not found"
                     )
 
-                getCertificateAttachmentByFileKey(certificateDtoIn.fileKey) ?: throw ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "Attachment '${certificateDtoIn.fileKey}' not found for certificate id: $id"
-                )
+                val newAttachment: CertificateAttachment? = attachment?.let { createAttachment(it) }
 
                 val result = jdbcTemplate.update(
                     """
@@ -232,7 +216,7 @@ class CertificateRepository(
                     certificate_name = ?,
                     certificate_description = ?,
                     certificate_publish_state = ?::publish_state,
-                    certificate_updated_at = now(),
+                    certificate_updated_at = clock_timestamp(),
                     attachment_file_key = ?
                 WHERE
                     certificate_id = ?
@@ -240,13 +224,12 @@ class CertificateRepository(
                     certificateDtoIn.name,
                     certificateDtoIn.description,
                     certificateDtoIn.publishState.toString(),
-                    certificateDtoIn.fileKey,
+                    newAttachment?.fileKey ?: currentCertificate.fileKey,
                     id
                 )
 
-                // if fileKeys are not equal, delete old attachment from db
-                if (currentCertificateWithAttachment.fileKey != certificateDtoIn.fileKey) {
-                    deleteAttachment(currentCertificateWithAttachment.fileKey)
+                if (newAttachment != null) {
+                    deleteAttachment(currentCertificate.fileKey)
                 }
 
                 result == 1
