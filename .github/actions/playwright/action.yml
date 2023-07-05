@@ -79,7 +79,7 @@ runs:
       env:
         TESTIKAYTTAJA_YLLAPITAJA_USERNAME: ${{ inputs.testikayttaja-yllapitaja-username }}
         TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
-      run: yarn playwright --project ${{ inputs.projects }}
+      run: yarn workspace playwright test --project ${{ inputs.projects }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
