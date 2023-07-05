@@ -25,47 +25,52 @@ class CertificateRepository(
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun createCertificate(certificateDtoIn: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut {
-        val table = when (certificateDtoIn.exam) {
+    fun tableNameFromExam(exam: Exam): String =
+        when (exam) {
             Exam.SUKO -> "suko_certificate"
             Exam.PUHVI -> "puhvi_certificate"
             Exam.LD -> "ld_certificate"
         }
 
-        val certificateAttachment = createAttachment(attachment)
+    fun createCertificate(certificateDtoIn: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut {
+        val createdCertificate = transactionTemplate.execute { _ ->
+            val certificateAttachment = createAttachment(attachment)
 
-        val certificateInsertSql = """
-            INSERT INTO $table (
-                certificate_name, 
-                certificate_description,
-                certificate_publish_state,
-                attachment_file_key
-            )
-            VALUES (?, ?, ?::publish_state, ?)
-            RETURNING certificate_id, certificate_created_at, certificate_updated_at
-         """.trimIndent()
-
-        return jdbcTemplate.query(
-            certificateInsertSql,
-            { rs: ResultSet, _: Int ->
-                CertificateDtoOut(
-                    rs.getInt("certificate_id"),
-                    certificateDtoIn.exam,
-                    certificateDtoIn.name,
-                    certificateDtoIn.description,
-                    certificateDtoIn.publishState,
-                    certificateAttachment.fileKey,
-                    certificateAttachment.fileName,
-                    certificateAttachment.fileUploadDate,
-                    rs.getTimestamp("certificate_created_at"),
-                    rs.getTimestamp("certificate_updated_at")
+            val certificateInsertSql = """
+                INSERT INTO ${tableNameFromExam(certificateDtoIn.exam)} (
+                    certificate_name,
+                    certificate_description,
+                    certificate_publish_state,
+                    attachment_file_key
                 )
-            },
-            certificateDtoIn.name,
-            certificateDtoIn.description,
-            certificateDtoIn.publishState.toString(),
-            certificateAttachment.fileKey
-        )[0]
+                VALUES (?, ?, ?::publish_state, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_updated_at
+            """.trimIndent()
+
+            jdbcTemplate.query(
+                certificateInsertSql,
+                { rs: ResultSet, _: Int ->
+                    CertificateDtoOut(
+                        rs.getInt("certificate_id"),
+                        certificateDtoIn.exam,
+                        certificateDtoIn.name,
+                        certificateDtoIn.description,
+                        certificateDtoIn.publishState,
+                        certificateAttachment.fileKey,
+                        certificateAttachment.fileName,
+                        certificateAttachment.fileUploadDate,
+                        rs.getTimestamp("certificate_created_at"),
+                        rs.getTimestamp("certificate_updated_at")
+                    )
+                },
+                certificateDtoIn.name,
+                certificateDtoIn.description,
+                certificateDtoIn.publishState.toString(),
+                certificateAttachment.fileKey
+            )[0]
+        }!!
+
+        return createdCertificate
     }
 
     fun createAttachment(file: MultipartFile): CertificateAttachment {
@@ -135,16 +140,10 @@ class CertificateRepository(
     )
 
     fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? {
-        val table = when (exam) {
-            Exam.SUKO -> "suko_certificate"
-            Exam.PUHVI -> "puhvi_certificate"
-            Exam.LD -> "ld_certificate"
-        }
-
         val results = jdbcTemplate.query(
             """
             SELECT c.*, ca.attachment_file_key, ca.attachment_file_name, ca.attachment_upload_date
-            FROM $table c
+            FROM ${tableNameFromExam(exam)} c
             NATURAL JOIN certificate_attachment ca
             WHERE c.certificate_id = ?
             """.trimIndent(), { rs, _ -> mapResultSet(rs, exam) }, id
@@ -172,12 +171,6 @@ class CertificateRepository(
     }
 
     fun getCertificates(exam: Exam): List<CertificateDtoOut> {
-        val table = when (exam) {
-            Exam.SUKO -> "suko_certificate"
-            Exam.PUHVI -> "puhvi_certificate"
-            Exam.LD -> "ld_certificate"
-        }
-
         return jdbcTemplate.query(
             """
             SELECT 
@@ -185,7 +178,7 @@ class CertificateRepository(
                 ca.attachment_file_key AS attachment_file_key, 
                 ca.attachment_file_name AS attachment_file_name, 
                 ca.attachment_upload_date AS attachment_upload_date 
-            FROM $table AS c 
+            FROM ${tableNameFromExam(exam)} AS c 
             NATURAL JOIN certificate_attachment AS ca
             """.trimIndent()
         ) { rs, _ ->
@@ -194,24 +187,17 @@ class CertificateRepository(
     }
 
     fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn, attachment: MultipartFile?) {
-        val table = when (certificateDtoIn.exam) {
-            Exam.SUKO -> "suko_certificate"
-            Exam.PUHVI -> "puhvi_certificate"
-            Exam.LD -> "ld_certificate"
-        }
+        transactionTemplate.execute { _ ->
+            val currentCertificate =
+                getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Certificate $id not found"
+                )
 
-        transactionTemplate.execute { status ->
-            try {
-                val currentCertificate =
-                    getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Certificate $id not found"
-                    )
+            val createdAttachment: CertificateAttachment? = attachment?.let { createAttachment(it) }
 
-                val newAttachment: CertificateAttachment? = attachment?.let { createAttachment(it) }
-
-                val result = jdbcTemplate.update(
-                    """
-                UPDATE $table
+            val updatedRowCount = jdbcTemplate.update(
+                """
+                UPDATE ${tableNameFromExam(certificateDtoIn.exam)}
                 SET
                     certificate_name = ?,
                     certificate_description = ?,
@@ -221,21 +207,19 @@ class CertificateRepository(
                 WHERE
                     certificate_id = ?
                 """.trimIndent(),
-                    certificateDtoIn.name,
-                    certificateDtoIn.description,
-                    certificateDtoIn.publishState.toString(),
-                    newAttachment?.fileKey ?: currentCertificate.fileKey,
-                    id
-                )
+                certificateDtoIn.name,
+                certificateDtoIn.description,
+                certificateDtoIn.publishState.toString(),
+                createdAttachment?.fileKey ?: currentCertificate.fileKey,
+                id
+            )
 
-                if (newAttachment != null) {
-                    deleteAttachment(currentCertificate.fileKey)
-                }
+            if (updatedRowCount != 1) {
+                throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Updated row count was $updatedRowCount but 1 was expected when updating Certificate $id")
+            }
 
-                result == 1
-            } catch (ex: Exception) {
-                status.setRollbackOnly()
-                throw ex
+            if (attachment != null) {
+                deleteAttachment(currentCertificate.fileKey)
             }
         }
     }
