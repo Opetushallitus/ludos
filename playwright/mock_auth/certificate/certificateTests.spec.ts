@@ -3,13 +3,6 @@ import path from 'path'
 
 type Event = 'submit' | 'draft' | 'cancel'
 
-async function beforeEach(page: Page, exam: string) {
-  await page.goto('/')
-  await page.getByTestId(`nav-link-${exam}`).click()
-  await page.getByTestId('tab-todistukset').click()
-  await page.getByTestId('create-todistus-button').click()
-}
-
 async function selectAttachmentFile(page: Page, context: BrowserContext, file: string) {
   const filePath = path.resolve(__dirname, `../../fixtures/${file}`)
 
@@ -89,6 +82,8 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   const attachment = await page.getByTestId('fixture.pdf').allTextContents()
   await expect(attachment[0]).toContain('fixture.pdf')
 
+  await testAttachmentLink(page, context, 'fixture.pdf')
+
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
   return responseData.id
 }
@@ -137,6 +132,8 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
 
     await page.getByText('Luonnos', { exact: true })
   }
+
+  await testAttachmentLink(page, context, 'fixture2.pdf')
 }
 
 async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Event) {
