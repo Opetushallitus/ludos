@@ -1,6 +1,8 @@
 import { BrowserContext, Page, expect, test } from '@playwright/test'
 import path from 'path'
 
+type Event = 'submit' | 'draft' | 'cancel'
+
 async function beforeEach(page: Page, exam: string) {
   await page.goto('/')
   await page.getByTestId(`nav-link-${exam}`).click()
@@ -8,7 +10,7 @@ async function beforeEach(page: Page, exam: string) {
   await page.getByTestId('create-todistus-button').click()
 }
 
-async function uploadFile(page: Page, context: BrowserContext, file: string) {
+async function selectAttachmentFile(page: Page, context: BrowserContext, file: string) {
   const filePath = path.resolve(__dirname, `../../fixtures/${file}`)
 
   await page.locator('#fileInput').setInputFiles(filePath)
@@ -20,8 +22,11 @@ async function uploadFile(page: Page, context: BrowserContext, file: string) {
   const year = currentDate.getFullYear()
   const formattedDate = `${day}.${month}.${year}`
 
-  await expect(page.getByTestId(file)).toHaveText(`${file}open_in_new${formattedDate}`)
-  await page.getByRole('link', { name: `${file} open_in_new` }).click()
+  await expect(page.getByTestId(file)).toHaveText(`${file}${formattedDate}`)
+}
+
+async function testAttachmentLink(page: Page, context: BrowserContext, filename: string) {
+  await page.getByRole('link', { name: `${filename} open_in_new` }).click()
   await context.waitForEvent('page', { predicate: (newPage) => newPage !== page })
   const pages = await context.pages()
   const newTab = pages[pages.length - 1]
@@ -34,7 +39,18 @@ async function uploadFile(page: Page, context: BrowserContext, file: string) {
   await newTab.close()
 }
 
-async function createCertificate(page: Page, context: BrowserContext, event: string): Promise<string | undefined> {
+function certificateNameByEvent(event: Event): string {
+  switch (event) {
+    case 'submit':
+      return 'Testi todistus'
+    case 'draft':
+      return 'Testi todistus draft'
+    case 'cancel':
+      return 'Testi todistus cancel'
+  }
+}
+
+async function createCertificate(page: Page, context: BrowserContext, event: Event): Promise<string | undefined> {
   if (event === 'cancel') {
     const btn = page.getByTestId('form-cancel')
     await expect(btn).toHaveText('Peruuta')
@@ -44,70 +60,43 @@ async function createCertificate(page: Page, context: BrowserContext, event: str
     return
   }
 
-  await uploadFile(page, context, 'fixture.pdf')
+  await selectAttachmentFile(page, context, 'fixture.pdf')
 
-  if ('submit') {
-    const nameText = 'Testi todistus'
-    const descriptionText = 'Todistuksen kuvaus'
+  const nameText = certificateNameByEvent(event)
+  const descriptionText = 'Todistuksen kuvaus'
 
-    await page.getByTestId('name').fill(nameText)
-    await page.getByTestId('description').fill(descriptionText)
+  await page.getByTestId('name').fill(nameText)
+  await page.getByTestId('description').fill(descriptionText)
 
+  if (event === 'submit') {
     await page.getByTestId('form-submit').click()
-
-    const response = await page.waitForResponse(
-      (response) => response.url().includes('/api/certificate') && response.ok()
-    )
-
-    const responseData = await response.json()
-
-    const header = page.getByTestId('assignment-header')
-    await expect(header).toHaveText(nameText)
-
-    await page.getByText(descriptionText, { exact: true })
-
-    const attachment = await page.getByTestId('fixture.pdf').allTextContents()
-    await expect(attachment[0]).toContain('fixture.pdf')
-
-    return responseData.id
-  } else if (event === 'draft') {
-    const nameText = 'Testi todistus draft'
-    const descriptionText = 'Todistuksen kuvaus draft'
-
-    await page.getByTestId('name').fill(nameText)
-    await page.getByTestId('description').fill(descriptionText)
-
-    const btn = page.getByTestId('form-draft')
-    await expect(btn).toHaveText('Tallenna luonnoksena')
-    await btn.click()
-
-    const response = await page.waitForResponse(
-      (response) => response.url().includes('/api/certificate') && response.ok()
-    )
-
-    const responseData = await response.json()
-
-    const header = page.getByTestId('assignment-header')
-    await expect(header).toHaveText(nameText)
-
-    await page.getByText(nameText, { exact: true })
-    await page.getByText(descriptionText, { exact: true })
-
-    const attachment = await page.getByTestId('fixture.pdf').allTextContents()
-    await expect(attachment[0]).toContain('fixture.pdf')
-
-    await page.getByText('Luonnos', { exact: true })
-
-    return responseData.id
+  } else {
+    const draftButton = page.getByTestId('form-draft')
+    await expect(draftButton).toHaveText('Tallenna luonnoksena')
+    await draftButton.click()
   }
 
-  await page.getByTestId('return').click()
+  const response = await page.waitForResponse(
+    (response) => response.url().includes('/api/certificate') && response.ok()
+  )
+
+  const responseData = await response.json()
+
+  const header = page.getByTestId('assignment-header')
+  await expect(header).toHaveText(nameText)
+  await page.getByText(descriptionText, { exact: true })
+
+  const attachment = await page.getByTestId('fixture.pdf').allTextContents()
+  await expect(attachment[0]).toContain('fixture.pdf')
+
+  await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
+  return responseData.id
 }
 
-async function updateCertificate(page: Page, context: BrowserContext, event: string, certificateId: string) {
+async function updateCertificate(page: Page, context: BrowserContext, event: Event, certificateId: string) {
   await page.getByTestId(`certificate-${certificateId}`).getByRole('link', { name: 'Testi todistus' })
   const header = page.getByTestId('assignment-header')
-  await expect(header).toHaveText('Testi todistus')
+  await expect(header).toHaveText(certificateNameByEvent(event))
 
   await page.getByTestId('edit-content-btn').click()
 
@@ -120,7 +109,7 @@ async function updateCertificate(page: Page, context: BrowserContext, event: str
     return
   }
 
-  await uploadFile(page, context, 'fixture2.pdf')
+  await selectAttachmentFile(page, context, 'fixture2.pdf')
 
   if (event === 'submit') {
     const nameText = 'Updated Testi todistus'
@@ -150,34 +139,30 @@ async function updateCertificate(page: Page, context: BrowserContext, event: str
   }
 }
 
-async function doCreateAndUpdate(page: Page, context: BrowserContext) {
-  const certificateId = await createCertificate(page, context, 'submit')
+async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Event) {
+  const certificateId = await createCertificate(page, context, event)
 
   if (certificateId) {
-    await updateCertificate(page, context, 'submit', certificateId)
+    await updateCertificate(page, context, event, certificateId)
   }
 }
 
-test.describe('Suko certificate form tests', () => {
-  test.beforeEach(async ({ page }) => await beforeEach(page, 'suko'))
+const exams = ['suko', 'ld', 'puhvi']
 
-  test('can create a new Suko certification', async ({ page, context }) => await doCreateAndUpdate(page, context))
-  test('can create draft certificate', async ({ page, context }) => await doCreateAndUpdate(page, context))
-  test('can cancel certificate creation', async ({ page, context }) => await doCreateAndUpdate(page, context))
-})
+exams.forEach((exam) => {
+  test.describe(`${exam} certificate form tests`, () => {
+    test.beforeEach(async ({ page }) => {
+      await page.goto('/')
+      await page.getByTestId(`nav-link-${exam}`).click()
+      await page.getByTestId('tab-todistukset').click()
+      await page.getByTestId('create-todistus-button').click()
+    })
 
-test.describe('Puhvi certificate form tests', () => {
-  test.beforeEach(async ({ page }) => await beforeEach(page, 'puhvi'))
-
-  test('can create a new Puhvi certification', async ({ page, context }) => await doCreateAndUpdate(page, context))
-  test('can create draft certificate', async ({ page, context }) => await doCreateAndUpdate(page, context))
-  test('can cancel certificate creation', async ({ page, context }) => await doCreateAndUpdate(page, context))
-})
-
-test.describe('Ld certificate form tests', () => {
-  test.beforeEach(async ({ page }) => await beforeEach(page, 'ld'))
-
-  test('can create a new Ld certification', async ({ page, context }) => await doCreateAndUpdate(page, context))
-  test('can create draft certificate', async ({ page, context }) => await doCreateAndUpdate(page, context))
-  test('can cancel certificate creation', async ({ page, context }) => await doCreateAndUpdate(page, context))
+    test(`can create and update a new published ${exam} certificate`, async ({ page, context }) =>
+      await doCreateAndUpdate(page, context, 'submit'))
+    test(`can create and update a new draft ${exam} certificate`, async ({ page, context }) =>
+      await doCreateAndUpdate(page, context, 'draft'))
+    test(`can cancel ${exam} certificate creation`, async ({ page, context }) =>
+      await doCreateAndUpdate(page, context, 'cancel'))
+  })
 })
