@@ -17,9 +17,12 @@ import javax.validation.Valid
 @Validated
 @RequestMapping("${Constants.API_PREFIX}/certificate")
 class CertificateController(val service: CertificateService) {
-    @PostMapping("")
+    @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @HasYllapitajaRole
-    fun createCertification(@Valid @RequestBody certificate: CertificateDtoIn) = service.createCertificate(certificate)
+    fun createCertificate(
+        @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
+        @RequestPart("attachment") attachment: MultipartFile
+    ): CertificateDtoOut? = service.createCertificate(certificate, attachment)
 
     @GetMapping("/{exam}")
     @HasAnyRole
@@ -35,41 +38,18 @@ class CertificateController(val service: CertificateService) {
         return certificateDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @HasYllapitajaRole
     fun updateCertificate(
-        @PathVariable("id") id: Int, @RequestBody certificate: CertificateDtoIn
-    ) = service.updateCertificate(id, certificate)
-
-    @PostMapping("/upload")
-    @HasYllapitajaRole
-    fun uploadFile(
-        @RequestParam("file") file: MultipartFile, @RequestParam("oldFileKey") oldFileKey: String?
-    ): ResponseEntity<FileUpload> {
-
-        if (file.contentType.toString() != MediaType.APPLICATION_PDF_VALUE) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "INVALID_FILE_TYPE")
-        }
-        // 5MB
-        val maxFileSize = 5 * 1024 * 1024
-
-        if (file.size > maxFileSize) {
-            throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "FILE_TOO_LARGE"
-            )
-        }
-
-        val uploadedFile = service.uploadFile(file, oldFileKey) ?: throw ResponseStatusException(
-            HttpStatus.INTERNAL_SERVER_ERROR, "S3_ERROR_UPLOADING_FILE"
-        )
-
-        return ResponseEntity.status(HttpStatus.OK).body(uploadedFile)
-    }
+        @PathVariable("id") id: Int,
+        @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
+        @RequestPart("attachment") attachment: MultipartFile?
+    ) = service.updateCertificate(id, certificate, attachment)
 
     @GetMapping("/preview/{key}")
     @HasAnyRole
     fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
-        val (uploadFile, responseInputStream) = service.getFile(key)
+        val (uploadFile, responseInputStream) = service.getAttachment(key)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF

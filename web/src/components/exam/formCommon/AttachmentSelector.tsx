@@ -1,37 +1,36 @@
 import { ChangeEvent, useRef, useState } from 'react'
 import { Button } from '../../Button'
-import { uploadFile } from '../../../request'
 import { useTranslation } from 'react-i18next'
-import { FileUploaded } from './FileUploaded'
+import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 import { FILE_UPLOAD_ERRORS, getErrorMessage } from '../../../errorUtils'
 
-export type UploadFile = {
+export interface Attachment {
   fileName: string
-  fileKey: string
+  fileKey?: string
   fileUploadDate: string
 }
 
-type FileUploadProps = {
-  oldFileKey?: string
-  uploadedFile: UploadFile | null
-  setUploadedFile: (file: UploadFile) => void
+interface AttachmentSelectorProps {
+  currentAttachment: Attachment | null
+  newAttachment: File | null
+  setNewAttachment: (newAttachment: File) => void
 }
 
-export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) => {
+export const AttachmentSelector = ({ currentAttachment, newAttachment, setNewAttachment }: AttachmentSelectorProps) => {
   const { t } = useTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+  const handleAttachmentSelected = async (event: ChangeEvent<HTMLInputElement>) => {
+    const attachmentFile = event.target.files?.length === 1 && event.target.files[0]
 
-    if (!file) {
+    if (!attachmentFile) {
       setError('NO_FILE')
       return
     }
 
-    const fileSizeInBytes = file.size
+    const fileSizeInBytes = attachmentFile.size
     const maxSizeInBytes = 5 * 1024 * 1024 // 5MB
     if (fileSizeInBytes > maxSizeInBytes) {
       setError('FILE_TOO_LARGE')
@@ -40,8 +39,7 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
 
     try {
       setLoading(true)
-      const res = await uploadFile<UploadFile>(file)
-      setUploadedFile(res)
+      setNewAttachment(attachmentFile)
     } catch (error) {
       setError(getErrorMessage(error))
     } finally {
@@ -73,16 +71,16 @@ export const FileUpload = ({ uploadedFile, setUploadedFile }: FileUploadProps) =
           ref={hiddenFileInputRef}
           accept="application/pdf"
           style={{ display: 'none' }}
-          onChange={handleFileUpload}
+          onChange={handleAttachmentSelected}
         />
         <label htmlFor="fileInput">
           <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()} disabled={loading}>
-            {t(`button.${!uploadedFile ? 'lisaa' : 'vaihda'}-liitetiedosto`)}
+            {t(`button.${!currentAttachment ? 'lisaa-liitetiedosto' : 'vaihda-liitetiedosto'}`)}
           </Button>
         </label>
       </div>
 
-      <FileUploaded file={uploadedFile} loading={loading} />
+      <AttachmentFileDetailView currentAttachment={currentAttachment} newAttachment={newAttachment} loading={loading} />
 
       {error && <p className="text-red">{errorMessage(error)}</p>}
     </div>

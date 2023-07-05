@@ -13,8 +13,6 @@ interface Certificate {
     @get:NotBlank
     val description: String
     val publishState: PublishState
-    @get:NotBlank
-    val fileKey: String
 }
 
 data class CertificateDtoIn(
@@ -22,9 +20,7 @@ data class CertificateDtoIn(
     override val name: String,
     override val description: String,
     override val publishState: PublishState,
-    override val fileKey: String,
 ) : Certificate
-
 
 data class CertificateDtoOut(
     val id: Int,
@@ -32,15 +28,13 @@ data class CertificateDtoOut(
     override val name: String,
     override val description: String,
     override val publishState: PublishState,
-    override val fileKey: String,
-    val fileName: String,
-    val fileUploadDate: ZonedDateTime,
+    val attachment: CertificateAttachment,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 ) : Certificate
 
-data class FileUpload (
-    val fileName: String,
+data class CertificateAttachment (
     val fileKey: String,
+    val fileName: String,
     val fileUploadDate: ZonedDateTime
 )
