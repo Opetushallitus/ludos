@@ -4,6 +4,7 @@ import { ExternalLink } from '../../ExternalLink'
 import { PREVIEW_CERTIFICATION_PDF_URL } from '../../../constants'
 import { toLocaleDate } from '../../../formatUtils'
 import { Attachment } from './AttachmentSelector'
+import { CertificateAttachmentIn } from '../../../types'
 
 interface AttachmentFileDetailViewProps {
   currentAttachment: Attachment | null
@@ -11,10 +12,8 @@ interface AttachmentFileDetailViewProps {
   loading: boolean
 }
 
-interface FileDetails {
+type FileDetails = Partial<CertificateAttachmentIn> & {
   fileName: string
-  fileKey?: string
-  fileUploadDate?: string
 }
 
 function fileDetailsFromProps({ currentAttachment, newAttachment }: AttachmentFileDetailViewProps): FileDetails | null {

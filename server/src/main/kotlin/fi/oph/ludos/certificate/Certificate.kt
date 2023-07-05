@@ -28,15 +28,13 @@ data class CertificateDtoOut(
     override val name: String,
     override val description: String,
     override val publishState: PublishState,
-    val fileKey: String,
-    val fileName: String,
-    val fileUploadDate: ZonedDateTime,
+    val attachment: CertificateAttachment,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 ) : Certificate
 
 data class CertificateAttachment (
-    val fileName: String,
     val fileKey: String,
+    val fileName: String,
     val fileUploadDate: ZonedDateTime
 )

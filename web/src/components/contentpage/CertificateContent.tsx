@@ -15,15 +15,7 @@ export const CertificateContent = ({ certificate }: CertificateContentProps) => 
       <h3 className="mt-6 font-semibold">{t('certificate.kuvaus')}</h3>
       <p>{certificate.description}</p>
       <h3 className="mb-3 mt-8 font-semibold">{t('certificate.todistus')}</h3>
-      <AttachmentFileDetailView
-        currentAttachment={{
-          fileName: certificate.fileName,
-          fileKey: certificate.fileKey,
-          fileUploadDate: certificate.fileUploadDate
-        }}
-        newAttachment={null}
-        loading={false}
-      />
+      <AttachmentFileDetailView currentAttachment={certificate.attachment} newAttachment={null} loading={false} />
     </div>
   )
 }

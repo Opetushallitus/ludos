@@ -107,15 +107,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
         <AttachmentSelector
-          currentAttachment={
-            certificate
-              ? {
-                  fileKey: certificate.fileKey,
-                  fileName: certificate.fileName,
-                  fileUploadDate: certificate.fileUploadDate
-                }
-              : null
-          }
+          currentAttachment={certificate?.attachment ?? null}
           newAttachment={newAttachment}
           setNewAttachment={handleNewAttachmentSelected}
         />

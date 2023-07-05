@@ -37,15 +37,19 @@ data class TestCertificateIn(
     val publishState: PublishState,
 )
 
+data class TestCertificateAttachmentOut(
+    val fileKey: String,
+    val fileName: String,
+    val fileUploadDate: String,
+)
+
 data class TestCertificateOut(
     val id: Int,
     val exam: Exam,
     val name: String,
     val description: String,
     val publishState: PublishState,
-    val fileName: String,
-    val fileKey: String,
-    val fileUploadDate: String,
+    val attachment: TestCertificateAttachmentOut,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 )
@@ -120,13 +124,14 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val certificateOut = objectMapper.readValue(postResult, TestCertificateOut::class.java)
 
+        assertNotNull(certificateOut.id)
         assertEquals(certificateIn.name, certificateOut.name)
         assertEquals(certificateIn.exam, certificateOut.exam)
         assertEquals(certificateIn.description, certificateOut.description)
         assertEquals(certificateIn.publishState, certificateOut.publishState)
-        assertEquals(certificateOut.fileName, attachmentFileName)
-        validateFileKey(certificateOut.fileKey)
-        assertNotNull(certificateOut.id)
+        assertEquals(certificateOut.attachment.fileName, attachmentFileName)
+        validateFileKey(certificateOut.attachment.fileKey)
+        assertNotNull(certificateOut.attachment.fileUploadDate)
         assertNotNull(certificateOut.createdAt)
         assertNotNull(certificateOut.updatedAt)
 
@@ -139,13 +144,11 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(certificateIn.name, certificateByIdOut.name)
         assertEquals(certificateIn.description, certificateByIdOut.description)
         assertEquals(certificateIn.publishState, certificateByIdOut.publishState)
-        assertEquals(certificateOut.fileName, certificateByIdOut.fileName)
-        assertEquals(certificateOut.fileKey, certificateByIdOut.fileKey)
-        assertEquals(certificateOut.fileUploadDate, certificateByIdOut.fileUploadDate)
+        assertEquals(certificateOut.attachment, certificateByIdOut.attachment)
         assertNotNull(certificateByIdOut.createdAt)
         assertNotNull(certificateByIdOut.updatedAt)
 
-        assertPreviewReturnsExpectedAttachment(certificateByIdOut.fileKey, attachmentFileName, attachmentPart.bytes)
+        assertPreviewReturnsExpectedAttachment(certificateByIdOut.attachment.fileKey, attachmentFileName, attachmentPart.bytes)
 
         return certificateByIdOut
     }
@@ -182,9 +185,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(editedCertificate.name, updatedCertificateById.name)
         assertEquals(editedCertificate.description, updatedCertificateById.description)
         assertEquals(PublishState.PUBLISHED, updatedCertificateById.publishState)
-        assertEquals(createdCertificateOut.fileName, updatedCertificateById.fileName)
-        assertEquals(createdCertificateOut.fileKey, updatedCertificateById.fileKey)
-        assertEquals(createdCertificateOut.fileUploadDate, updatedCertificateById.fileUploadDate)
+        assertEquals(createdCertificateOut.attachment, updatedCertificateById.attachment)
         assertEquals(createdCertificateOut.id, updatedCertificateById.id)
         assertNotEquals(createdCertificateOut.updatedAt, updatedCertificateById.updatedAt)
     }
@@ -218,16 +219,16 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(editedCertificate.name, updatedCertificateById.name)
         assertEquals(editedCertificate.description, updatedCertificateById.description)
         assertEquals(editedCertificate.publishState, updatedCertificateById.publishState)
-        assertEquals(newAttachmentFixtureFileName, updatedCertificateById.fileName)
-        validateFileKey(updatedCertificateById.fileKey)
-        assertNotEquals(updatedCertificateById.fileKey, createdCertificateOut.fileKey)
-        assertNotNull(updatedCertificateById.fileUploadDate)
-        assertNotEquals(updatedCertificateById.fileUploadDate, createdCertificateOut.fileUploadDate)
+        assertEquals(newAttachmentFixtureFileName, updatedCertificateById.attachment.fileName)
+        validateFileKey(updatedCertificateById.attachment.fileKey)
+        assertNotEquals(updatedCertificateById.attachment.fileKey, createdCertificateOut.attachment.fileKey)
+        assertNotNull(updatedCertificateById.attachment.fileUploadDate)
+        assertNotEquals(updatedCertificateById.attachment.fileUploadDate, createdCertificateOut.attachment.fileUploadDate)
         assertEquals(createdCertificateOut.id, updatedCertificateById.id)
 
-        assertPreviewReturnsExpectedAttachment(updatedCertificateById.fileKey, newAttachmentFixtureFileName, newAttachment.bytes)
+        assertPreviewReturnsExpectedAttachment(updatedCertificateById.attachment.fileKey, newAttachmentFixtureFileName, newAttachment.bytes)
 
-        mockMvc.perform(getAttachmentPreview(createdCertificateOut.fileKey)).andExpect(status().isNotFound)
+        mockMvc.perform(getAttachmentPreview(createdCertificateOut.attachment.fileKey)).andExpect(status().isNotFound)
     }
 
     @Test

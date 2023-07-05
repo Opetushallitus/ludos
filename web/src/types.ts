@@ -59,12 +59,16 @@ export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
 }
 
-export type CertificateIn = BaseIn & {
-  name: string
-  description: string
+export type CertificateAttachmentIn = {
   fileName: string
   fileKey: string
   fileUploadDate: string
+}
+
+export type CertificateIn = BaseIn & {
+  name: string
+  description: string
+  attachment: CertificateAttachmentIn
 }
 
 export type LdAssignmentIn = AssignmentIn & {

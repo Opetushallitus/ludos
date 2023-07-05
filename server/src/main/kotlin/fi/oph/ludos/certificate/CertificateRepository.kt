@@ -56,9 +56,7 @@ class CertificateRepository(
                         certificateDtoIn.name,
                         certificateDtoIn.description,
                         certificateDtoIn.publishState,
-                        certificateAttachment.fileKey,
-                        certificateAttachment.fileName,
-                        certificateAttachment.fileUploadDate,
+                        certificateAttachment,
                         rs.getTimestamp("certificate_created_at"),
                         rs.getTimestamp("certificate_updated_at")
                     )
@@ -94,8 +92,8 @@ class CertificateRepository(
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
                 CertificateAttachment(
-                    fileName,
                     fileKey,
+                    fileName,
                     getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
                 )
             },
@@ -132,9 +130,11 @@ class CertificateRepository(
         rs.getString("certificate_name"),
         rs.getString("certificate_description"),
         PublishState.valueOf(rs.getString("certificate_publish_state")),
-        rs.getString("attachment_file_key"),
-        rs.getString("attachment_file_name"),
-        getZonedDateTimeFromResultSet(rs, "attachment_upload_date"),
+        CertificateAttachment(
+            rs.getString("attachment_file_key"),
+            rs.getString("attachment_file_name"),
+            getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+        ),
         rs.getTimestamp("certificate_created_at"),
         rs.getTimestamp("certificate_updated_at")
     )
@@ -160,8 +160,8 @@ class CertificateRepository(
             WHERE attachment_file_key = ?
             """.trimIndent(), { rs, _ ->
                 CertificateAttachment(
-                    rs.getString("attachment_file_name"),
                     rs.getString("attachment_file_key"),
+                    rs.getString("attachment_file_name"),
                     getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
                 )
             }, fileKey
@@ -210,7 +210,7 @@ class CertificateRepository(
                 certificateDtoIn.name,
                 certificateDtoIn.description,
                 certificateDtoIn.publishState.toString(),
-                createdAttachment?.fileKey ?: currentCertificate.fileKey,
+                createdAttachment?.fileKey ?: currentCertificate.attachment.fileKey,
                 id
             )
 
@@ -219,7 +219,7 @@ class CertificateRepository(
             }
 
             if (attachment != null) {
-                deleteAttachment(currentCertificate.fileKey)
+                deleteAttachment(currentCertificate.attachment.fileKey)
             }
         }
     }
