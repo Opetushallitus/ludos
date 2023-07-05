@@ -96,6 +96,7 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
   await page.getByTestId('edit-content-btn').click()
 
   if (event === 'cancel') {
+    // TODO: We never go here, add a test that creates a draft and then cancels the update
     const btn = page.getByTestId('form-cancel')
     await expect(btn).toHaveText('Peruuta')
     await btn.click()
@@ -106,32 +107,23 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
 
   await selectAttachmentFile(page, context, 'fixture2.pdf')
 
+  const nameText = certificateNameByEvent(event) + ' päivitetty'
+  const descriptionText = 'Todistuksen kuvaus päivitetty'
+
+  await page.getByTestId('name').fill(nameText)
+  await page.getByTestId('description').fill(descriptionText)
   if (event === 'submit') {
-    const nameText = 'Updated Testi todistus'
-    const descriptionText = 'Updated Todistuksen kuvaus'
-
-    await page.getByTestId('name').fill(nameText)
-    await page.getByTestId('description').fill(descriptionText)
-
     await page.getByTestId('form-submit').click()
-
-    const header = page.getByTestId('assignment-header')
-    await expect(header).toHaveText('Updated Testi todistus')
-    await page.getByText(nameText, { exact: true })
-    await page.getByText(descriptionText, { exact: true })
   } else if (event === 'draft') {
-    const nameText = 'Updated Testi todistus draft'
-    const descriptionText = 'Updated Todistuksen kuvaus draft'
-
-    await page.getByTestId('name').fill(nameText)
-    await page.getByTestId('description').fill(descriptionText)
-
     const btn = page.getByTestId('form-draft')
     await expect(btn).toHaveText('Tallenna luonnoksena')
     await btn.click()
-
-    await page.getByText('Luonnos', { exact: true })
   }
+
+  await expect(header).toHaveText(nameText)
+  await page.getByText(nameText, { exact: true })
+  await page.getByText(descriptionText, { exact: true })
+  await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
 
   await testAttachmentLink(page, context, 'fixture2.pdf')
 }
