@@ -55,6 +55,13 @@ jobs:
           arguments: build
           build-root-directory: server
       - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: build-debug-artifacts
+          path: |
+            server/build/reports/
+          retention-days: 7
+      - uses: actions/upload-artifact@v3
         with:
           name: jar
           path: server/build/libs/ludos-0.0.1-SNAPSHOT.jar
