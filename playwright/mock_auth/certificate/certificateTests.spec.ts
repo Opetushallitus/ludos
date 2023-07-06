@@ -18,18 +18,19 @@ async function selectAttachmentFile(page: Page, context: BrowserContext, file: s
   await expect(page.getByTestId(file)).toHaveText(`${file}${formattedDate}`)
 }
 
-async function testAttachmentLink(page: Page, context: BrowserContext, filename: string) {
-  await page.getByRole('link', { name: `${filename} open_in_new` }).click()
-  await context.waitForEvent('page', { predicate: (newPage) => newPage !== page })
-  const pages = await context.pages()
-  const newTab = pages[pages.length - 1]
-  await newTab.waitForLoadState('domcontentloaded')
-  const pdfContent = await newTab.content()
+async function testAttachmentLink(page: Page, context: BrowserContext, filename: string, expectedSize: number) {
+  const attachmentLink = await page.getByRole('link', { name: `${filename} open_in_new` })
+  const attachmentLinkTarget = await attachmentLink.evaluate((l) => l.getAttribute('target'))
+  const attachmentLinkHref = await attachmentLink.evaluate((l) => l.getAttribute('href'))
 
-  expect(pdfContent).toContain('embed')
-  expect(pdfContent).toContain('type="application/pdf"')
+  expect(attachmentLinkTarget).toBe('_blank')
+  expect(attachmentLinkHref).not.toBeNull()
 
-  await newTab.close()
+  const attachmentResponse = await context.request.get(attachmentLinkHref!)
+  expect(attachmentResponse.status()).toBe(200)
+  expect(attachmentResponse.headers()['content-type']).toBe('application/pdf')
+  expect(attachmentResponse.headers()['content-disposition']).toBe(`inline; filename="${filename}"`)
+  expect(Buffer.byteLength(await attachmentResponse.body())).toBe(expectedSize)
 }
 
 function certificateNameByEvent(event: Event): string {
@@ -82,7 +83,7 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   const attachment = await page.getByTestId('fixture.pdf').allTextContents()
   await expect(attachment[0]).toContain('fixture.pdf')
 
-  await testAttachmentLink(page, context, 'fixture.pdf')
+  await testAttachmentLink(page, context, 'fixture.pdf', 1799)
 
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
   return responseData.id
@@ -125,7 +126,7 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
   await page.getByText(descriptionText, { exact: true })
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
 
-  await testAttachmentLink(page, context, 'fixture2.pdf')
+  await testAttachmentLink(page, context, 'fixture2.pdf', 1805)
 }
 
 async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Event) {

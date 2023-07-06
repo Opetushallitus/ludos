@@ -53,7 +53,7 @@ class CertificateController(val service: CertificateService) {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=${uploadFile.fileName}")
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
 
         return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
     }
