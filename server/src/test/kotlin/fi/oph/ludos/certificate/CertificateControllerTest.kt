@@ -104,7 +104,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
         assertArrayEquals(expectedFileContent, attachmentPreviewResponse.contentAsByteArray)
         assertEquals("application/pdf", attachmentPreviewResponse.contentType)
-        assertEquals("inline; filename=${expectedFileName}", attachmentPreviewResponse.getHeader("content-disposition"))
+        assertEquals("inline; filename=\"${expectedFileName}\"", attachmentPreviewResponse.getHeader("content-disposition"))
     }
 
     private fun createCertificateAndCheckIt(publishState: PublishState): TestCertificateOut {
