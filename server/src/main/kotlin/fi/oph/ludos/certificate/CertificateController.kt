@@ -3,7 +3,6 @@ package fi.oph.ludos.certificate
 import fi.oph.ludos.*
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
-import fi.oph.ludos.auth.RequireYllapitajaRoleByDefault
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -18,7 +17,7 @@ import javax.validation.Valid
 
 @RestController
 @Validated
-@RequireYllapitajaRoleByDefault
+@RequireAtLeastYllapitajaRole
 @RequestMapping("${Constants.API_PREFIX}/certificate")
 class CertificateController(val service: CertificateService) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])

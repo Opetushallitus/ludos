@@ -3,7 +3,6 @@ package fi.oph.ludos.assignment
 import fi.oph.ludos.*
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
-import fi.oph.ludos.auth.RequireYllapitajaRoleByDefault
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -12,7 +11,7 @@ import javax.validation.Valid
 
 @RestController
 @Validated
-@RequireYllapitajaRoleByDefault
+@RequireAtLeastYllapitajaRole
 @RequestMapping("${Constants.API_PREFIX}/assignment")
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")

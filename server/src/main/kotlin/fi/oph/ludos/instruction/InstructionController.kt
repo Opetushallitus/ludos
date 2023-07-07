@@ -5,14 +5,13 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
-import fi.oph.ludos.auth.RequireYllapitajaRoleByDefault
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/instruction")
-@RequireYllapitajaRoleByDefault
+@RequireAtLeastYllapitajaRole
 class InstructionController(val service: InstructionService) {
     @PostMapping("")
     @RequireAtLeastYllapitajaRole

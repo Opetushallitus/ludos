@@ -4,10 +4,7 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.LudosApplication
 import fi.oph.ludos.assignment.Assignment
 import fi.oph.ludos.assignment.AssignmentService
-import fi.oph.ludos.auth.Kayttajatiedot
-import fi.oph.ludos.auth.Kayttooikeus
-import fi.oph.ludos.auth.Organisaatio
-import fi.oph.ludos.auth.Role
+import fi.oph.ludos.auth.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -17,6 +14,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
@@ -29,6 +27,7 @@ import kotlin.system.exitProcess
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/test")
 @Profile("local", "untuva")
+@RequireAtLeastYllapitajaRole
 class TestController(
     val seedAssignmentRepository: SeedAssignmentRepository,
     val assignmentService: AssignmentService,
@@ -58,6 +57,7 @@ class TestController(
 
     // this endpoint is used by playwright
     @GetMapping("/seed")
+    @RequireAtLeastYllapitajaRole
     fun seedDatabase(httpServletResponse: HttpServletResponse) {
         seedAssignmentRepository.seedDatabase()
 
@@ -66,6 +66,7 @@ class TestController(
 
     // this endpoint is used by api tests
     @PostMapping("/seed")
+    @RequireAtLeastYllapitajaRole
     fun seedDatabasePost(@RequestBody assignments: Array<Assignment>) = try {
         assignments.forEach { assignmentService.createAssignment(it) }
         ResponseEntity.status(HttpStatus.OK).body("OK")
@@ -74,6 +75,7 @@ class TestController(
     }
 
     @GetMapping("/empty")
+    @RequireAtLeastYllapitajaRole
     fun emptyDatabase(httpServletResponse: HttpServletResponse) {
         seedAssignmentRepository.nukeAssignments()
 
@@ -81,6 +83,7 @@ class TestController(
     }
 
     @GetMapping("/mocklogin/{role}")
+    @PreAuthorize("permitAll()")
     fun mockLogin(@Valid @PathVariable("role") role: Role): ResponseEntity<Unit> {
         val userDetails = Kayttajatiedot(
             "1.2.246.562.24.10000000001",
@@ -94,5 +97,28 @@ class TestController(
         val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
         SecurityContextHolder.getContext().authentication = authentication
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/")).build()
+    }
+
+    @GetMapping("/testOpettajaRequired")
+    @RequireAtLeastOpettajaRole
+    fun testOpettajaRequired(): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.OK).body(Unit)
+    }
+
+    @GetMapping("/testLaatijaRequired")
+    @RequireAtLeastLaatijaRole
+    fun testLaatijaRequired(): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.OK).body(Unit)
+    }
+
+    @GetMapping("/testYllapitajaRequired")
+    @RequireAtLeastYllapitajaRole
+    fun testYllapitajaRequired(): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.OK).body(Unit)
+    }
+
+    @GetMapping("/testYllapitajaRequiredByDefault")
+    fun testYllapitajaRequiredByDefault(): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.OK).body(Unit)
     }
 }

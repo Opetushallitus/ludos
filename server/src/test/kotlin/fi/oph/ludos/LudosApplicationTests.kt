@@ -18,13 +18,18 @@ annotation class WithUnauhtorizedRole
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@WithSecurityContext(factory = YllapitajaSecurityContextFactory::class)
-annotation class WithYllapitajaRole
+@WithSecurityContext(factory = OpettajaSecurityContextFactory::class)
+annotation class WithOpettajaRole
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@WithSecurityContext(factory = OpettajaSecurityContextFactory::class)
-annotation class WithOpettajaRole
+@WithSecurityContext(factory = LaatijaSecurityContextFactory::class)
+annotation class WithLaatijaRole
+
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+@WithSecurityContext(factory = YllapitajaSecurityContextFactory::class)
+annotation class WithYllapitajaRole
 
 abstract class LudosSecurityContextFactory : WithSecurityContextFactory<Annotation> {
     override fun createSecurityContext(annotation: Annotation): SecurityContext {
@@ -54,26 +59,37 @@ class UnauthorizedSecurityContextFactory : LudosSecurityContextFactory() {
     )
 }
 
-class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
-    override fun kayttajatiedot() = Kayttajatiedot(
-        "1.2.246.562.24.00000000002",
-        "YrjoYllapitaja",
-        "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.YLLAPITAJA.oikeus)))),
-        "Yrjö",
-        "Ylläpitäjä",
-        null
-    )
-}
-
 class OpettajaSecurityContextFactory : LudosSecurityContextFactory() {
     override fun kayttajatiedot() = Kayttajatiedot(
-        "1.2.246.562.24.00000000004",
+        "1.2.246.562.24.00000000002",
         "OonaOpettaja",
         "VIRKAILIJA",
         listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.OPETTAJA.oikeus)))),
         "Oona",
         "Opettaja",
+        null
+    )
+}
+
+class LaatijaSecurityContextFactory : LudosSecurityContextFactory() {
+    override fun kayttajatiedot() = Kayttajatiedot(
+        "1.2.246.562.24.00000000003",
+        "LauraLaatija",
+        "VIRKAILIJA",
+        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.LAATIJA.oikeus)))),
+        "Laura",
+        "Laatija",
+        null
+    )
+}
+class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
+    override fun kayttajatiedot() = Kayttajatiedot(
+        "1.2.246.562.24.00000000004",
+        "YrjoYllapitaja",
+        "VIRKAILIJA",
+        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.YLLAPITAJA.oikeus)))),
+        "Yrjö",
+        "Ylläpitäjä",
         null
     )
 }

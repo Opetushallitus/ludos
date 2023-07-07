@@ -45,23 +45,17 @@ object RoleChecker {
 }
 
 
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@customPermissionEvaluator.hasPermission(null, null, 'YLLAPITAJA')")
 annotation class RequireAtLeastYllapitajaRole
 
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@customPermissionEvaluator.hasPermission(null, null, 'LAATIJA')")
 annotation class RequireAtLeastLaatijaRole
 
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@customPermissionEvaluator.hasPermission(null, null, 'OPETTAJA')")
 annotation class RequireAtLeastOpettajaRole
-
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-@MustBeDocumented
-@PreAuthorize("@customPermissionEvaluator.hasPermission(null, null, 'YLLAPITAJA')")
-annotation class RequireYllapitajaRoleByDefault
