@@ -43,7 +43,9 @@ export const HeaderDesktop = () => {
                 onOptionClick={handleOptionClick}
                 testId="header-user-dropdown"
               />
-              <p className="text-xss">{role}</p>
+              <p className="text-xss" data-testid="header-user-role">
+                {role}
+              </p>
             </div>
             {/*<p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>*/}
             <div className="relative border-l-2 border-green-primary pl-5">

@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { fillSukoAssignmentForm, updateSukoAssignmentForm } from './assignmentHelpers'
+import { Role, loginTestGroup } from '../../helpers'
+
+loginTestGroup(test, Role.YLLAPITAJA)
 
 test.describe('Assignment form tests', () => {
   let createdAssignmentId: number

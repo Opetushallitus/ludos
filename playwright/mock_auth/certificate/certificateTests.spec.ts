@@ -1,5 +1,6 @@
 import { BrowserContext, Page, expect, test } from '@playwright/test'
 import path from 'path'
+import { Role, loginTestGroup } from '../../helpers'
 
 type Event = 'submit' | 'draft' | 'cancel'
 
@@ -136,6 +137,8 @@ async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Eve
     await updateCertificate(page, context, event, certificateId)
   }
 }
+
+loginTestGroup(test, Role.YLLAPITAJA)
 
 const exams = ['suko', 'ld', 'puhvi']
 

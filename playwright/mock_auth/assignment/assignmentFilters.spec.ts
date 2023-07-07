@@ -1,4 +1,7 @@
 import { expect, test } from '@playwright/test'
+import { Role, loginTestGroup } from '../../helpers'
+
+loginTestGroup(test, Role.YLLAPITAJA)
 
 test('Suko, ld and puhvi assignment filters', async ({ page }) => {
   await page.goto('/api/test/empty')
