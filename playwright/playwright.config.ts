@@ -46,14 +46,8 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/
     },
     {
-      name: 'mock_auth',
-      testDir: 'mock_auth',
-      use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup']
-    },
-    {
-      name: 'cas_auth',
-      testDir: 'cas_auth',
+      name: 'all_tests',
+      testDir: 'all_tests',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup']
     }

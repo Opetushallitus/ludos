@@ -1,8 +1,4 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": [
-    "mock_auth",
-    "cas_auth",
-    "playwright.config.ts"
-  ]
+  "include": ["all_tests", "*.ts"]
 }

@@ -4,9 +4,6 @@ inputs:
   ludos-profiles:
     description: Ludos profiles as comma separated list
     required: true
-  projects:
-    description: The playwright projects to run as a space separated list
-    required: true
   browsers:
     description: The browsers to install
     required: false
@@ -79,11 +76,11 @@ runs:
       env:
         TESTIKAYTTAJA_YLLAPITAJA_USERNAME: ${{ inputs.testikayttaja-yllapitaja-username }}
         TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
-      run: yarn workspace playwright test --project ${{ inputs.projects }}
+      run: yarn workspace playwright test
     - uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: playwright-debug-artifacts-${{ inputs.projects }}
+        name: playwright-debug-artifacts
         path: |
           playwright/test-results/
           service.log
