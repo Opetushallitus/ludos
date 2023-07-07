@@ -23,13 +23,12 @@ import org.springframework.web.bind.annotation.*
 import java.net.URI
 import javax.annotation.PostConstruct
 import javax.servlet.http.HttpServletResponse
-import javax.swing.Spring
 import javax.validation.Valid
 import kotlin.system.exitProcess
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/test")
-@Profile("local", "local-untuvacas", "untuva")
+@Profile("local", "untuva")
 class TestController(
     val seedAssignmentRepository: SeedAssignmentRepository,
     val assignmentService: AssignmentService,

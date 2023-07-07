@@ -44,9 +44,9 @@ Minimissään tarvitset nämä:
 Backend tarttee possun: `docker compose up`
 
 Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
-- `local` = devaus ja testaus osoitteessa localhost:8080, autentikaatio on disabloitu
-- `local-untuvacas` = devaus ja testaus osoitteessa localhost:8080, oikea CAS-autentikaatio Untuva-ympäristössä
-- `untuva` = https://ludos.untuvaopintopolku.fi/ = AWS Fargatessa pyörivä Untuva-cas
+- `local` = devaus ja testaus osoitteessa localhost:8080
+- `untuva` = https://ludos.untuvaopintopolku.fi/ = AWS Fargatessa pyörivä Untuva-LUDOS
+- `qa` = https://ludos.testiopintopolku.fi/ = AWS Fargatessa pyörivä QA-LUDOS
 
 Vaihtoehtoja backendin ajamiseen:
 1) Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`

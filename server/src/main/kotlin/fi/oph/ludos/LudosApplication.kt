@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
         logger.error("No profiles set!")
         exitProcess(1)
     }
-    if (activeProfiles.contains("local") || activeProfiles.contains("local-untuvacas")) {
+    if (activeProfiles.contains("local")) {
         try {
             val dotenv: Dotenv = dotenv {
                 filename = ".env"
