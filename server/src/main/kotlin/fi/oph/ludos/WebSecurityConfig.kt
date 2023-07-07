@@ -7,10 +7,8 @@ import fi.oph.ludos.test.TestController
 import org.jasig.cas.client.session.SingleSignOutFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import org.springframework.security.access.PermissionEvaluator
 import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -36,14 +34,6 @@ class WebSecurityConfiguration {
         setIgnoreInitConfiguration(true)
     }
 
-    fun isTestControllerEnabled(activeProfilesString: String): Boolean {
-        val testControllerProfileAnnotation: Profile = TestController::class.annotations.find { it.annotationClass == Profile::class } as Profile?
-            ?: throw AssertionError("@Profile annotation missing from TestController")
-        val activeProfiles = activeProfilesString.split(",").toSet()
-        val testControllerEnabledForProfiles = testControllerProfileAnnotation.value.toSet()
-        return testControllerEnabledForProfiles.intersect(activeProfiles).isNotEmpty()
-    }
-
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
@@ -51,12 +41,9 @@ class WebSecurityConfiguration {
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
         casConfig: CasConfig,
-        @Value("\${spring.profiles.active}") activeProfiles: String
     ): SecurityFilterChain {
         // todo: enable csrf for non local environments
         http.csrf().disable()
-
-        logger.info("Initializing SecurityFilterChain with active profiles: '$activeProfiles'")
 
         http.logout()
             .logoutSuccessUrl(casConfig.getCasLogoutUrl())
@@ -66,7 +53,7 @@ class WebSecurityConfiguration {
             .antMatchers("/assets/**").permitAll()
             .antMatchers("/api/health-check").permitAll()
 
-        if (isTestControllerEnabled(activeProfiles)) {
+        if (TestController.isEnabled()) {
             logger.info("TestController is enabled")
             http.authorizeHttpRequests()
                 .antMatchers("/api/test/mocklogin/**").permitAll().and()

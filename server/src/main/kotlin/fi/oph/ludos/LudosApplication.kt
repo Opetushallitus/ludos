@@ -3,6 +3,8 @@ package fi.oph.ludos
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvException
 import io.github.cdimascio.dotenv.dotenv
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.servlet.FilterRegistrationBean
@@ -14,16 +16,27 @@ import org.springframework.web.filter.ForwardedHeaderFilter
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
-import java.util.logging.Logger
+import kotlin.system.exitProcess
 
 @SpringBootApplication
-class LudosApplication
+class LudosApplication {
+    companion object {
+        fun activeProfiles(): List<String> {
+            val activeProfilesString = System.getProperty("spring.profiles.active") ?: System.getenv("SPRING_PROFILES_ACTIVE")
+            return activeProfilesString?.split(",") ?: emptyList()
+        }
+    }
+}
 
 fun main(args: Array<String>) {
-    val logger: Logger = Logger.getLogger(LudosApplication::class.java.name)
-    val profile = System.getProperty("spring.profiles.active") ?: System.getenv("SPRING_PROFILES_ACTIVE")
-
-    if (profile == "local" || profile == "local-untuvacas") {
+    val logger: Logger = LoggerFactory.getLogger(LudosApplication::class.java)
+    val activeProfiles = LudosApplication.activeProfiles()
+    logger.info("Initializing LudosApplication with active profiles: '$activeProfiles'")
+    if (activeProfiles.isEmpty()) {
+        logger.error("No profiles set!")
+        exitProcess(1)
+    }
+    if (activeProfiles.contains("local") || activeProfiles.contains("local-untuvacas")) {
         try {
             val dotenv: Dotenv = dotenv {
                 filename = ".env"
