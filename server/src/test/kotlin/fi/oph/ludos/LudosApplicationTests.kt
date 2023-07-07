@@ -59,7 +59,7 @@ class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
         "1.2.246.562.24.00000000002",
         "YrjoYllapitaja",
         "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.YLLAPITAJA.oikeus!!)))),
+        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.YLLAPITAJA.oikeus)))),
         "Yrjö",
         "Ylläpitäjä",
         null
@@ -71,7 +71,7 @@ class OpettajaSecurityContextFactory : LudosSecurityContextFactory() {
         "1.2.246.562.24.00000000004",
         "OonaOpettaja",
         "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.OPETTAJA.oikeus!!)))),
+        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.OPETTAJA.oikeus)))),
         "Oona",
         "Opettaja",
         null

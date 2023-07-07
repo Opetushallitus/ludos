@@ -5,15 +5,15 @@ import org.slf4j.LoggerFactory
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 
-enum class Role(val oikeus: String?) {
+enum class Role(val oikeus: String) {
     // Order matters: later ones are accepted when earlier ones are required
-    UNAUTHORIZED(null),
+    UNAUTHORIZED("UNAUTHORIZED"),
     OPETTAJA("LUKU"),
     LAATIJA("LUKU_MUOKKAUS"),
     YLLAPITAJA("LUKU_MUOKKAUS_POISTO");
 
     companion object {
-        private val roleByOikeus = values().filter { it.oikeus != null }.associateBy { it.oikeus }
+        private val roleByOikeus = values().associateBy { it.oikeus }
         fun fromOikeus(oikeus: String): Role? = roleByOikeus[oikeus]
     }
 }
