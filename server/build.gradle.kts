@@ -50,6 +50,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.reflections:reflections:0.10.2")
 }
 
 tasks.withType<KotlinCompile> {

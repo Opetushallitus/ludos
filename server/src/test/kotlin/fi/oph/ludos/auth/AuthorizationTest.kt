@@ -4,26 +4,51 @@ import fi.oph.ludos.*
 import fi.oph.ludos.test.TestController
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.CoreMatchers.*
+import org.hamcrest.Description
+import org.hamcrest.Matchers.greaterThan
+import org.hamcrest.Matchers.hasSize
+import org.hamcrest.TypeSafeMatcher
+import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
+import org.reflections.Reflections
+import org.reflections.scanners.Scanners
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.stereotype.Controller
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.web.bind.annotation.RestController
 import javax.transaction.Transactional
 import kotlin.reflect.full.functions
-
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 class AuthorizationTest(@Autowired val mockMvc: MockMvc) {
+    @Test
+    fun `all controllers should have @RequireAtLeastYllapitajaRole annotation`() {
+        val reflections = Reflections("fi.oph.ludos", Scanners.SubTypes.filterResultsBy { _ -> true })
+
+        val controllers = reflections.getSubTypesOf(Any::class.java)
+            .filter { clazz -> clazz.isAnnotationPresent(Controller::class.java) || clazz.isAnnotationPresent(RestController::class.java) }
+
+        assertThat("Suspiciously low number of controllers found", controllers, hasSize(greaterThan(6)))
+
+        controllers.forEach { controller ->
+            assertThat(
+                "Controller ${controller.name} is not annotated with @RequireAtLeastYllapitajaRole",
+                controller.annotations.asIterable(),
+                hasItem(instanceOf<Annotation>(RequireAtLeastYllapitajaRole::class.java))
+            )
+        }
+    }
 
     fun getRequireRoleAnnotationClassByRole(role: Role): Class<*> =
         when (role) {

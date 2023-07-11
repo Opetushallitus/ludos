@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/auth")
+@RequireAtLeastYllapitajaRole
 class CasController {
     @GetMapping("/user", produces = ["application/json"])
     @ResponseBody
