@@ -133,11 +133,11 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "instruction",
                 "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "👃",
-                "oppimaaraKoodiArvo": "👁️",
-                "tavoitetasoKoodiArvo": "🫣",
-                "aiheKoodiArvos": ["🥸", "🫡"],
-                "laajaalainenOsaaminenKoodiArvos": ["😧", "👺"]
+                "assignmentTypeKoodiArvo": "epavalidi",
+                "oppimaaraKoodiArvo": "epavalidi",
+                "tavoitetasoKoodiArvo": "epavalidi",
+                "aiheKoodiArvos": ["epavalidi1", "epavalidi2"],
+                "laajaalainenOsaaminenKoodiArvos": ["epavalidi1", "epavalidi2"]
             }"""
 
         val errorMessage =

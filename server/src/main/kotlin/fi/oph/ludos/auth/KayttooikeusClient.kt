@@ -36,7 +36,7 @@ data class KayttooikeusServiceKayttaja(
 
 data class Asiointikieli(val kieliKoodi: String, val kieliTyyppi: String)
 
-// 🆘 If you do changes on this data class you must truncate spring_session table 🆘
+// NOTE If you do changes on this data class you must truncate spring_session table NOTE
 data class Kayttajatiedot(
     val oidHenkilo: String,
     private val username: String,
