@@ -6,10 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.PublishState
 import java.sql.Timestamp
 
-enum class InstructionFormat {
-    HTML, PDF
-}
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
     JsonSubTypes.Type(value = SukoInstructionDtoIn::class, name = "SUKO"),

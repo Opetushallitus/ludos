@@ -54,7 +54,7 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
     fun filterKooditByLanguage(
         koodistos: Map<KoodistoName, List<KoodiDtoOut>>, language: Language
     ): Map<KoodistoName, List<KoodiDtoOut>> = koodistos.mapValues { (_, koodisto) ->
-        koodisto.filter { it.kieli == language.name }
+        koodisto.filter { it.kieli == language.code }
     }
 
     private fun readKoodistos(koodistoGetter: (KoodistoName) -> Array<Koodi>, sourceName: String) {

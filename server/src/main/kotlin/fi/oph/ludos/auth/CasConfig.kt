@@ -102,7 +102,7 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
     }
 }
 
-class LudosAuthenticationFailureHandler() : SimpleUrlAuthenticationFailureHandler() {
+class LudosAuthenticationFailureHandler : SimpleUrlAuthenticationFailureHandler() {
     private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(

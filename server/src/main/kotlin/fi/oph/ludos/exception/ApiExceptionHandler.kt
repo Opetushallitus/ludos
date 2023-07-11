@@ -27,10 +27,6 @@ class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.sorted().joinToString("\n"))
     }
 
-    @ExceptionHandler(ApiRequestException::class)
-    fun handleApiRequestException(ex: ApiRequestException): ResponseEntity<String> =
-        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("ApiRequestException: ${ex.message}")
-
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<String> =
         if (ex.cause is InvalidTypeIdException) {

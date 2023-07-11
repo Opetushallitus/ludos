@@ -19,6 +19,7 @@ import javax.transaction.Transactional
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
@@ -29,11 +30,6 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
         mockMvc.perform(emptyDb())
         val testData = CreateTestData().prepareTestData()
         mockMvc.perform(seedDb(testData))
-    }
-
-    @AfterAll
-    fun tearDown() {
-        mockMvc.perform(emptyDb())
     }
 
     @Test
