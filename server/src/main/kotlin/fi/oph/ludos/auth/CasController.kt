@@ -14,10 +14,11 @@ class CasController {
     @ResponseBody
     @RequireAtLeastOpettajaRole
     fun user(): ResponseEntity<User> {
-        val userDetails = RoleChecker.getUserDetails()
+        val kayttajatiedot = Kayttajatiedot.fromSecurityContext()
 
+        val role = Role.fromKayttajatiedot(kayttajatiedot)
         val user =
-            User("${userDetails.etunimet} ${userDetails.sukunimi}", RoleChecker.getRole(), userDetails.asiointiKieli)
+            User("${kayttajatiedot.etunimet} ${kayttajatiedot.sukunimi}", role, kayttajatiedot.asiointiKieli)
 
         return ResponseEntity.ok(user)
     }

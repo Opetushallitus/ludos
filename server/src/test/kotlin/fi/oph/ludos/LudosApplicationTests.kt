@@ -31,6 +31,11 @@ annotation class WithLaatijaRole
 @WithSecurityContext(factory = YllapitajaSecurityContextFactory::class)
 annotation class WithYllapitajaRole
 
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+@WithSecurityContext(factory = OpettajaAndLaatijaSecurityContextFactory::class)
+annotation class WithOpettajaAndLaatijaRoles
+
 abstract class LudosSecurityContextFactory : WithSecurityContextFactory<Annotation> {
     override fun createSecurityContext(annotation: Annotation): SecurityContext {
         val authentication = createAuthentication()
@@ -64,7 +69,7 @@ class OpettajaSecurityContextFactory : LudosSecurityContextFactory() {
         "1.2.246.562.24.00000000002",
         "OonaOpettaja",
         "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.OPETTAJA.oikeus)))),
+        listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(Role.OPETTAJA.oikeus)))),
         "Oona",
         "Opettaja",
         null
@@ -76,7 +81,7 @@ class LaatijaSecurityContextFactory : LudosSecurityContextFactory() {
         "1.2.246.562.24.00000000003",
         "LauraLaatija",
         "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.LAATIJA.oikeus)))),
+        listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(Role.LAATIJA.oikeus)))),
         "Laura",
         "Laatija",
         null
@@ -87,9 +92,24 @@ class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
         "1.2.246.562.24.00000000004",
         "YrjoYllapitaja",
         "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", Role.YLLAPITAJA.oikeus)))),
+        listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(Role.YLLAPITAJA.oikeus)))),
         "Yrjö",
         "Ylläpitäjä",
+        null
+    )
+}
+
+class OpettajaAndLaatijaSecurityContextFactory : LudosSecurityContextFactory() {
+    override fun kayttajatiedot() = Kayttajatiedot(
+        "1.2.246.562.24.00000000005",
+        "OpettajaLaatija",
+        "VIRKAILIJA",
+        listOf(Organisaatio("123", listOf(
+            Kayttooikeus.ludosOikeus(Role.OPETTAJA.oikeus),
+            Kayttooikeus.ludosOikeus(Role.LAATIJA.oikeus))
+        )),
+        "Opettaja",
+        "Laatija",
         null
     )
 }

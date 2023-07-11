@@ -17,7 +17,7 @@ class CasUserDetailsService(
         val user =
             users.find { it.username == username } ?: throw UsernameNotFoundException("User '$username' not found")
 
-        val details = user.let { oppijanumerorekisteriClient.getUserDetailsByOid(it.oidHenkilo) }
+        val details = oppijanumerorekisteriClient.getUserDetailsByOid(user.oidHenkilo)
 
         return Kayttajatiedot(
             oidHenkilo = user.oidHenkilo,

@@ -89,7 +89,7 @@ class TestController(
             "1.2.246.562.24.10000000001",
             "ValeKayttaja",
             "VIRKAILIJA",
-            listOf(Organisaatio("123", listOf(Kayttooikeus("LUDOS", role.oikeus)))),
+            listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(role.oikeus)))),
             "Vale",
             "Käyttäjä",
             null
