@@ -1,4 +1,4 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken
@@ -17,7 +17,7 @@ class CasUserDetailsService(
         val user =
             users.find { it.username == username } ?: throw UsernameNotFoundException("User '$username' not found")
 
-        val details = user.let { oppijanumerorekisteriClient.getUserDetailsByOid(it.oidHenkilo) }
+        val details = oppijanumerorekisteriClient.getUserDetailsByOid(user.oidHenkilo)
 
         return Kayttajatiedot(
             oidHenkilo = user.oidHenkilo,

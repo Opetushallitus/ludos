@@ -1,4 +1,4 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import fi.oph.ludos.Constants.Companion.API_PREFIX
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter
@@ -93,16 +93,16 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
         val principal = authentication?.principal as? Kayttajatiedot
 
         if (principal != null) {
-            ludosLogger.info("✅ Successful login: '${principal.username}'")
+            ludosLogger.info("Successful login: '${principal.username}'")
         } else {
-            ludosLogger.warn("✅ Successful login: principal was null 🤔")
+            ludosLogger.warn("Successful login but principal was null")
         }
 
         super.onAuthenticationSuccess(request, response, authentication)
     }
 }
 
-class LudosAuthenticationFailureHandler() : SimpleUrlAuthenticationFailureHandler() {
+class LudosAuthenticationFailureHandler : SimpleUrlAuthenticationFailureHandler() {
     private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(

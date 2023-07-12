@@ -55,12 +55,19 @@ jobs:
           arguments: build
           build-root-directory: server
       - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: build-debug-artifacts
+          path: |
+            server/build/reports/
+          retention-days: 7
+      - uses: actions/upload-artifact@v3
         with:
           name: jar
           path: server/build/libs/ludos-0.0.1-SNAPSHOT.jar
           retention-days: 30
           if-no-files-found: error
-  playwright-mock-auth:
+  playwright:
     runs-on: "ubuntu-22.04"
     needs: [ "build-jar-and-test-api" ]
     permissions:
@@ -72,29 +79,13 @@ jobs:
         uses: ./.github/actions/playwright
         with:
           ludos-profiles: local
-          projects: mock_auth
-          ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
-          ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
-  playwright-cas-auth:
-    runs-on: "ubuntu-22.04"
-    needs: [ "build-jar-and-test-api" ]
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-      - name: Playwright
-        uses: ./.github/actions/playwright
-        with:
-          ludos-profiles: local-untuvacas
-          projects: cas_auth
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
           ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   build-docker-image-and-push:
     runs-on: "ubuntu-22.04"
-    needs: [ "build-jar-and-test-api", "playwright-mock-auth", "playwright-cas-auth" ]
+    needs: [ "build-jar-and-test-api", "playwright" ]
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write

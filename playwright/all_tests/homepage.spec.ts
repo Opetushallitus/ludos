@@ -1,9 +1,12 @@
 import { expect, test } from '@playwright/test'
+import { loginTestGroup, Role } from '../helpers'
 
 const exams = ['suko', 'puhvi', 'ld']
 const contentTypes = ['assignments', 'instructions', 'certificates']
 
 const pages = ['etusivu', 'suko', 'puhvi', 'ld', 'feedback']
+
+loginTestGroup(test, Role.YLLAPITAJA)
 
 test('navigation links work', async ({ page }) => {
   await page.goto('/')

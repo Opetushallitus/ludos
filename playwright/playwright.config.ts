@@ -42,14 +42,14 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'mock_auth',
-      testDir: 'mock_auth',
-      use: { ...devices['Desktop Chrome'] }
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/
     },
     {
-      name: 'cas_auth',
-      testDir: 'cas_auth',
-      use: { ...devices['Desktop Chrome'] }
+      name: 'all_tests',
+      testDir: 'all_tests',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup']
     }
   ]
 

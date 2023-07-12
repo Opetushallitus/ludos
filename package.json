@@ -7,8 +7,7 @@
   "scripts": {
     "dev:server": "server/up.sh",
     "dev:web": "yarn workspace web dev",
-    "playwright:mock_auth": "yarn workspace playwright test --project mock_auth",
-    "playwright:cas_auth": "yarn workspace playwright test --project cas_auth",
+    "playwright": "yarn workspace playwright test",
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
     "lint:playwright": "yarn workspace playwright lint",

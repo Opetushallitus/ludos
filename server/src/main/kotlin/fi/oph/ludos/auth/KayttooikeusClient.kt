@@ -1,9 +1,10 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.util.EntityUtils
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 import java.io.Serializable
@@ -35,7 +36,7 @@ data class KayttooikeusServiceKayttaja(
 
 data class Asiointikieli(val kieliKoodi: String, val kieliTyyppi: String)
 
-// 🆘 If you do changes on this data class you must truncate spring_session table 🆘
+// NOTE If you do changes on this data class you must truncate spring_session table NOTE
 data class Kayttajatiedot(
     val oidHenkilo: String,
     private val username: String,
@@ -45,13 +46,19 @@ data class Kayttajatiedot(
     val sukunimi: String,
     val asiointiKieli: String?,
 ) : UserDetails {
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> = mutableListOf()
+    private val role: Role = Role.fromKayttajatiedot(this)
+    override fun getAuthorities(): Collection<GrantedAuthority> = role.getAuthorities()
     override fun getPassword(): String? = null
     override fun getUsername(): String = username
     override fun isAccountNonExpired(): Boolean = true
     override fun isAccountNonLocked(): Boolean = true
     override fun isCredentialsNonExpired(): Boolean = true
     override fun isEnabled(): Boolean = true
+
+    companion object {
+        fun fromSecurityContext(): Kayttajatiedot =
+            requireNotNull(SecurityContextHolder.getContext().authentication?.principal as? Kayttajatiedot) { "User details not available" }
+    }
 }
 
 data class Organisaatio(
@@ -61,5 +68,10 @@ data class Organisaatio(
 
 data class Kayttooikeus(
     val palvelu: String,
-    val oikeus: String,
-) : Serializable
+    val oikeus: String
+) : Serializable {
+    companion object {
+        const val LUDOS_PALVELU = "LUDOS"
+        fun ludosOikeus(oikeus: String): Kayttooikeus = Kayttooikeus(LUDOS_PALVELU, oikeus)
+    }
+}

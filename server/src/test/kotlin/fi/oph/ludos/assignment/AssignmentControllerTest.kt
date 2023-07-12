@@ -3,6 +3,7 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.WithOpettajaRole
 import fi.oph.ludos.WithYllapitajaRole
 import org.assertj.core.api.Assertions.assertThat
 import org.hibernate.validator.internal.util.Contracts.assertTrue
@@ -26,7 +27,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun sukoAssignmentTest() {
-
         val testAssignmentStr = """{
             "exam": "SUKO",
             "nameFi": "suomi",
@@ -133,11 +133,11 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
                 "contentSv": "content",
                 "instructionSv": "instruction",
                 "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "👃",
-                "oppimaaraKoodiArvo": "👁️",
-                "tavoitetasoKoodiArvo": "🫣",
-                "aiheKoodiArvos": ["🥸", "🫡"],
-                "laajaalainenOsaaminenKoodiArvos": ["😧", "👺"]
+                "assignmentTypeKoodiArvo": "epavalidi",
+                "oppimaaraKoodiArvo": "epavalidi",
+                "tavoitetasoKoodiArvo": "epavalidi",
+                "aiheKoodiArvos": ["epavalidi1", "epavalidi2"],
+                "laajaalainenOsaaminenKoodiArvos": ["epavalidi1", "epavalidi2"]
             }"""
 
         val errorMessage =
@@ -370,5 +370,39 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val responseContent = getResult.response.contentAsString
 
         assertThat(responseContent).isEqualTo("Assignment not found 999")
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun testInsufficientRole() {
+        val testAssignmentStr = """{
+            "exam": "SUKO",
+            "nameFi": "suomi",
+            "nameSv": "ruotsi",
+            "contentFi": "suomi",
+            "contentSv": "ruotsi",
+            "instructionFi": "suomi",
+            "instructionSv": "ruotsi",
+            "publishState": "PUBLISHED",
+            "assignmentTypeKoodiArvo": "003",
+            "oppimaaraKoodiArvo": "ET",
+            "tavoitetasoKoodiArvo": "0004",
+            "aiheKoodiArvos": ["002", "003"],
+            "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
+        }""".trimIndent()
+
+        mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isUnauthorized())
+        mockMvc.perform(updateAssignment(1, testAssignmentStr)).andExpect(status().isUnauthorized())
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun getAssignmentsAsOpettaja() {
+        mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
+    }
+
+    @Test
+    fun getAssignmentsWithNoRole() {
+        mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().is3xxRedirection())
     }
 }

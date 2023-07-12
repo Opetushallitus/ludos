@@ -47,7 +47,7 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
             cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
 
             val localeStats = Locale.values()
-                .map { locale -> "${locale.locale}: ${localizations.filter { it.locale == locale.locale }.count()}" }
+                .map { locale -> "${locale.locale}: ${localizations.count { it.locale == locale.locale }}" }
             logger.info("Updated localization cache from $sourceName: $localeStats")
         } catch (e: Exception) {
             throw LocalizationException("${e.message}", e)

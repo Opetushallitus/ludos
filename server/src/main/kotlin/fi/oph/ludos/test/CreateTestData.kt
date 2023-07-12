@@ -21,39 +21,39 @@ class CreateTestData {
     fun prepareTestData(): String {
         val assignmentList = mutableListOf<String>()
 
-        repeat(12) {
+        repeat(12) { i ->
             val laajaalainenOsaaminenVarying =
-                Array(if (it % 2 == 0) 2 else if (it % 5 == 0) 3 else 0) { index -> laajaalainenOsaaminenKoodiArvos[(index + it) % laajaalainenOsaaminenKoodiArvos.size] }
+                Array(if (i % 2 == 0) 2 else if (i % 5 == 0) 3 else 0) { index -> laajaalainenOsaaminenKoodiArvos[(index + i) % laajaalainenOsaaminenKoodiArvos.size] }
 
             val lukuvuosiVarying =
-                Array(if (it % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + it) % lukuvuosiKoodiArvos.size] }
+                Array(if (i % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + i) % lukuvuosiKoodiArvos.size] }
 
-            val aiheKoodiArvosArr = Array(if (it % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + it) % aiheKoodiArvos.size] }
+            val aiheKoodiArvosArr = Array(if (i % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + i) % aiheKoodiArvos.size] }
 
             val sukoAssignment = """{
                 "exam": "SUKO",
-                "nameFi": "Test name $it FI",
-                "nameSv": "Test name $it SV",
-                "contentFi": "Test content $it FI",
-                "contentSv": "Test content $it SV",
+                "nameFi": "Test name $i FI",
+                "nameSv": "Test name $i SV",
+                "contentFi": "Test content $i FI",
+                "contentSv": "Test content $i SV",
                 "instructionFi": "Test Instruction",
                 "instructionSv": "Test Instruction",
                 "publishState": "${PublishState.PUBLISHED}",
-                "assignmentTypeKoodiArvo": "${sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size]}",
+                "assignmentTypeKoodiArvo": "${sukoAssignmentTypeKoodiArvos[i % sukoAssignmentTypeKoodiArvos.size]}",
                 "laajaalainenOsaaminenKoodiArvos": ${laajaalainenOsaaminenVarying.map { "\"$it\"" }},
-                "tavoitetasoKoodiArvo": "${taitotasoKoodiArvos[it % taitotasoKoodiArvos.size]}",
-                "oppimaaraKoodiArvo": "${oppimaaraKoodiArvos[it % oppimaaraKoodiArvos.size]}",
+                "tavoitetasoKoodiArvo": "${taitotasoKoodiArvos[i % taitotasoKoodiArvos.size]}",
+                "oppimaaraKoodiArvo": "${oppimaaraKoodiArvos[i % oppimaaraKoodiArvos.size]}",
                 "aiheKoodiArvos": ${aiheKoodiArvosArr.map { "\"$it\"" }}
            }""".trimIndent()
             assignmentList.add(sukoAssignment)
 
-            val ldAineKoodiArvo = aineKoodiArvos[it % aineKoodiArvos.size]
+            val ldAineKoodiArvo = aineKoodiArvos[i % aineKoodiArvos.size]
             val ldAssignment = """{
                 "exam": "LD",
-                "nameFi": "Test Name $it FI",
-                "nameSv": "Test Name $it SV",
-                "contentFi": "Test Content $it FI",
-                "contentSv": "Test Content $it SV",
+                "nameFi": "Test Name $i FI",
+                "nameSv": "Test Name $i SV",
+                "contentFi": "Test Content $i FI",
+                "contentSv": "Test Content $i SV",
                 "instructionFi": "Test Instruction",
                 "instructionSv": "Test Instruction",
                 "publishState": "${PublishState.PUBLISHED}",
@@ -63,13 +63,13 @@ class CreateTestData {
             }""".trimIndent()
             assignmentList.add(ldAssignment)
 
-            val puhviAssignmentType = puhviAssignmentTypeKoodiArvos[it % puhviAssignmentTypeKoodiArvos.size]
+            val puhviAssignmentType = puhviAssignmentTypeKoodiArvos[i % puhviAssignmentTypeKoodiArvos.size]
             val puhviAssignment = """{
                 "exam": "PUHVI",
-                "nameFi": "Test Name $it FI",
-                "nameSv": "Test Name $it SV",
-                "contentFi": "Test Content $it FI",
-                "contentSv": "Test Content $it SV",
+                "nameFi": "Test Name $i FI",
+                "nameSv": "Test Name $i SV",
+                "contentFi": "Test Content $i FI",
+                "contentSv": "Test Content $i SV",
                 "instructionFi": "Test Instruction",
                 "instructionSv": "Test Instruction",
                 "publishState": "${PublishState.PUBLISHED}",

@@ -1,4 +1,4 @@
-package fi.oph.ludos.cas
+package fi.oph.ludos.auth
 
 import org.apache.http.Consts
 import org.apache.http.client.entity.UrlEncodedFormEntity

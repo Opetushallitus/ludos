@@ -96,7 +96,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
 
 
     val fileKeyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
-    private fun validateFileKey(fileKey: String) = assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: ${fileKey}")
+    private fun validateFileKey(fileKey: String) = assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
 
     private fun assertPreviewReturnsExpectedAttachment(fileKey: String, expectedFileName: String, expectedFileContent: ByteArray) {
         val attachmentPreviewResponse =
@@ -238,6 +238,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithYllapitajaRole
     fun putNonExistentCertificate() {
         val editedCertificate = TestCertificateIn(
             exam = Exam.SUKO,

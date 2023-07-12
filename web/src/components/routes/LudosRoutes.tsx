@@ -106,8 +106,8 @@ function UnauthorizedRoutes() {
         path="*"
         element={
           <div className="p-10">
-            <h2 className="text-green-primary">401</h2>
-            <p>{t('error.paasy-evatty')}</p>
+            <p>Sinulta puuttuu tarvittavat pääsyoikeudet Ludos -palveluun.</p>
+            <p>Du saknar nödvändiga åtkomsträttigheter till Ludos-tjänsten.</p>
           </div>
         }
       />

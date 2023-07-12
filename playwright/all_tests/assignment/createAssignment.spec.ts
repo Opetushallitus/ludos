@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { fillLdAssignmentForm, fillSukoAssignmentForm, fillPuhviAssignmentForm } from './assignmentHelpers'
+import { Role, loginTestGroup } from '../../helpers'
+
+loginTestGroup(test, Role.YLLAPITAJA)
 
 test.describe('Suko assignment form tests', () => {
   test.beforeEach(async ({ page }) => {

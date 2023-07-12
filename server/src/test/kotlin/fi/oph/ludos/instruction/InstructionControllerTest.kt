@@ -5,8 +5,10 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.Exam
 import fi.oph.ludos.WithYllapitajaRole
-import org.assertj.core.api.Assertions.assertThat
+import fi.oph.ludos.*
+import fi.oph.ludos.assignment.getAllInstructions
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -72,9 +74,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
 
-        val postResult =
-            mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val postResult = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val instructionIn = objectMapper.readValue(postResult, TestSukoOut::class.java)
 
@@ -87,9 +88,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(instructionIn.createdAt)
         assertNotNull(instructionIn.updatedAt)
 
-        val getResult =
-            mockMvc.perform(getInstruction(Exam.SUKO, instructionIn.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val getResult = mockMvc.perform(getInstruction(Exam.SUKO, instructionIn.id)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val instructionOut = objectMapper.readValue(getResult, TestSukoOut::class.java)
 
@@ -103,9 +103,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
             mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
-        val getUpdatedResult =
-            mockMvc.perform(getInstruction(Exam.SUKO, updateResult.toInt())).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val getUpdatedResult = mockMvc.perform(getInstruction(Exam.SUKO, updateResult.toInt())).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val updatedInstruction = objectMapper.readValue(getUpdatedResult, TestSukoOut::class.java)
 
@@ -136,6 +135,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
+
     @Test
     @WithYllapitajaRole
     fun puhviInstructionTest() {
@@ -150,9 +150,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
 
-        val postResult =
-            mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val postResult = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val instructionIn = objectMapper.readValue(postResult, TestPuhviOut::class.java)
 
@@ -165,9 +164,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(instructionIn.createdAt)
         assertNotNull(instructionIn.updatedAt)
 
-        val getResult =
-            mockMvc.perform(getInstruction(Exam.PUHVI, instructionIn.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val getResult = mockMvc.perform(getInstruction(Exam.PUHVI, instructionIn.id)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val instructionOut = objectMapper.readValue(getResult, TestPuhviOut::class.java)
 
@@ -229,9 +227,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
         val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
 
-        val postResult =
-            mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val postResult = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val instructionIn = objectMapper.readValue(postResult, TestLdOut::class.java)
 
@@ -244,9 +241,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(instructionIn.createdAt)
         assertNotNull(instructionIn.updatedAt)
 
-        val getResult =
-            mockMvc.perform(getInstruction(Exam.LD, instructionIn.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val getResult = mockMvc.perform(getInstruction(Exam.LD, instructionIn.id)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val instructionOut = objectMapper.readValue(getResult, TestLdOut::class.java)
 
@@ -260,9 +256,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
             mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
-        val getUpdatedResult =
-            mockMvc.perform(getInstruction(Exam.LD, updateResult.toInt())).andExpect(status().isOk)
-                .andReturn().response.contentAsString
+        val getUpdatedResult = mockMvc.perform(getInstruction(Exam.LD, updateResult.toInt())).andExpect(status().isOk)
+            .andReturn().response.contentAsString
 
         val updatedInstruction = objectMapper.readValue(getUpdatedResult, TestLdOut::class.java)
 
@@ -281,8 +276,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val editedInstruction =
             "{\"id\": \"$nonExistentId\",\"exam\":\"SUKO\",\"nameFi\":\"New test name\",\"contentFi\":\"content\",\"nameSv\":\"New test name\",\"contentSv\":\"content\",\"publishState\":\"PUBLISHED\"}\n"
 
-        val failUpdate = mockMvc.perform(updateInstruction(nonExistentId, editedInstruction))
-            .andReturn().response.contentAsString
+        val failUpdate =
+            mockMvc.perform(updateInstruction(nonExistentId, editedInstruction)).andReturn().response.contentAsString
 
         assertEquals("Instruction not found $nonExistentId", failUpdate)
     }
@@ -314,10 +309,27 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun assignmentNotFound() {
+    fun instructionNotFound() {
         val getResult = mockMvc.perform(getInstruction(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
         assertThat(responseContent).isEqualTo("Instruction not found 999")
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun testInsufficientRole() {
+        val testAssignmentStr =
+            "{\"id\": \"1\",\"nameFi\":\"Puhvi Test Instruction FI updated\",\"exam\":\"PUHVI\",\"contentFi\":\"Puhvi Instruction content Fi updated\",\"nameSv\":\"Puhvi Test Instruction SV updated\",\"contentSv\":\"Puhvi Instruction content Sv updated\",\"publishState\":\"PUBLISHED\"}"
+
+
+        mockMvc.perform(postInstruction(testAssignmentStr)).andExpect(status().isUnauthorized())
+        mockMvc.perform(updateInstruction(1, testAssignmentStr)).andExpect(status().isUnauthorized())
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun getAssignmentsAsOpettaja() {
+        mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
     }
 }
