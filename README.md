@@ -65,6 +65,7 @@ Vaihtoehtoja backendin ajamiseen:
 
 Vaihtoehtoja:
 1) `yarn dev:web` käynnistää viten porttiin 8000
+   * **HUOM!** CAS-autentikaatio ei toimi vite-portin 8000 kautta. Kirjaudu portissa 8080 tai mocklogin-endpointilla: http://localhost:8000/api/test/mocklogin/YLLAPITAJA
 1) `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
 
 ### Playwright e2e
