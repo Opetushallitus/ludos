@@ -49,6 +49,7 @@ data class LdInstructionDtoIn(
 
 interface InstructionOut {
     val id: Int
+    val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
 }
@@ -60,6 +61,7 @@ data class InstructionDtoOut(
     override val contentFi: String,
     override val contentSv: String,
     override val publishState: PublishState,
+    override val authorOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut

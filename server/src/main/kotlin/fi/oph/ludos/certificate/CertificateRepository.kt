@@ -2,6 +2,7 @@ package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -41,10 +42,11 @@ class CertificateRepository(
                     certificate_name,
                     certificate_description,
                     certificate_publish_state,
-                    attachment_file_key
+                    attachment_file_key,
+                    certificate_author_oid
                 )
-                VALUES (?, ?, ?::publish_state, ?)
-                RETURNING certificate_id, certificate_created_at, certificate_updated_at
+                VALUES (?, ?, ?::publish_state, ?, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
             """.trimIndent()
 
             jdbcTemplate.query(
@@ -57,6 +59,7 @@ class CertificateRepository(
                         certificateDtoIn.description,
                         certificateDtoIn.publishState,
                         certificateAttachment,
+                        rs.getString("certificate_author_oid"),
                         rs.getTimestamp("certificate_created_at"),
                         rs.getTimestamp("certificate_updated_at")
                     )
@@ -64,7 +67,8 @@ class CertificateRepository(
                 certificateDtoIn.name,
                 certificateDtoIn.description,
                 certificateDtoIn.publishState.toString(),
-                certificateAttachment.fileKey
+                certificateAttachment.fileKey,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
             )[0]
         }!!
 
@@ -135,6 +139,7 @@ class CertificateRepository(
             rs.getString("attachment_file_name"),
             getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
         ),
+        rs.getString("certificate_author_oid"),
         rs.getTimestamp("certificate_created_at"),
         rs.getTimestamp("certificate_updated_at")
     )

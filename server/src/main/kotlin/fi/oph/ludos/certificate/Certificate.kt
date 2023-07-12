@@ -29,6 +29,7 @@ data class CertificateDtoOut(
     override val description: String,
     override val publishState: PublishState,
     val attachment: CertificateAttachment,
+    val authorOid: String,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 ) : Certificate

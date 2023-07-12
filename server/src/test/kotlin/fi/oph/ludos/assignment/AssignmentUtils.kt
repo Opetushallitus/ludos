@@ -23,6 +23,7 @@ data class TestSukoOut(
     val tavoitetasoKoodiArvo: String,
     val aiheKoodiArvos: Array<String>,
     val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val authorOid: String,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 )
@@ -37,6 +38,7 @@ data class TestPuhviOut(
     val instructionSv: String,
     val publishState: PublishState,
     val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val authorOid: String,
     val assignmentTypeKoodiArvo: String,
     val lukuvuosiKoodiArvos: Array<String>,
     val createdAt: Timestamp,
@@ -55,6 +57,7 @@ data class TestLdOut(
     val createdAt: Timestamp,
     val updatedAt: Timestamp,
     val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val authorOid: String,
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String
 )

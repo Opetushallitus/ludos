@@ -2,6 +2,7 @@ package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.auth.Kayttajatiedot
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -33,6 +34,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
+            rs.getString("assignment_author_oid"),
             rs.getString("suko_assignment_type_koodi_arvo"),
             rs.getString("suko_oppimaara_koodi_arvo"),
             rs.getString("suko_tavoitetaso_koodi_arvo"),
@@ -53,6 +55,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
+            rs.getString("assignment_author_oid"),
             rs.getString("puhvi_assignment_type_koodi_arvo"),
             rs.getKotlinArray<String>("puhvi_lukuvuosi_koodi_arvos"),
         )
@@ -71,6 +74,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
+            rs.getString("assignment_author_oid"),
             rs.getKotlinArray<String>("ld_lukuvuosi_koodi_arvos"),
             rs.getString("ld_aine_koodi_arvo")
         )
@@ -198,9 +202,10 @@ class AssignmentRepository(
             |suko_assignment_type_koodi_arvo, 
             |suko_oppimaara_koodi_arvo, 
             |suko_tavoitetaso_koodi_arvo,
-            |laajaalainen_osaaminen_koodi_arvos) 
-            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?) 
-            |RETURNING assignment_id, assignment_created_at, assignment_updated_at""".trimMargin(),
+            |laajaalainen_osaaminen_koodi_arvos,
+            |assignment_author_oid) 
+            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?) 
+            |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
         { rs: ResultSet, _: Int ->
             SukoAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -214,6 +219,7 @@ class AssignmentRepository(
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
+                rs.getString("assignment_author_oid"),
                 assignment.assignmentTypeKoodiArvo,
                 assignment.oppimaaraKoodiArvo,
                 assignment.tavoitetasoKoodiArvo,
@@ -231,7 +237,8 @@ class AssignmentRepository(
         assignment.assignmentTypeKoodiArvo,
         assignment.oppimaaraKoodiArvo,
         assignment.tavoitetasoKoodiArvo,
-        assignment.laajaalainenOsaaminenKoodiArvos
+        assignment.laajaalainenOsaaminenKoodiArvos,
+        Kayttajatiedot.fromSecurityContext().oidHenkilo,
     )[0]
 
     fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut = jdbcTemplate.query(
@@ -244,11 +251,12 @@ class AssignmentRepository(
             |assignment_instruction_sv,
             |assignment_publish_state,
             |laajaalainen_osaaminen_koodi_arvos,
+            |assignment_author_oid,
             |puhvi_assignment_type_koodi_arvo,
             |puhvi_lukuvuosi_koodi_arvos
             |) 
-            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?) 
-            |RETURNING assignment_id, assignment_created_at, assignment_updated_at""".trimMargin(),
+            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
+            |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
         { rs: ResultSet, _: Int ->
             PuhviAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -262,6 +270,7 @@ class AssignmentRepository(
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
+                rs.getString("assignment_author_oid"),
                 assignment.assignmentTypeKoodiArvo,
                 assignment.lukuvuosiKoodiArvos
             )
@@ -274,6 +283,7 @@ class AssignmentRepository(
         assignment.instructionSv,
         assignment.publishState.toString(),
         assignment.laajaalainenOsaaminenKoodiArvos,
+        Kayttajatiedot.fromSecurityContext().oidHenkilo,
         assignment.assignmentTypeKoodiArvo,
         assignment.lukuvuosiKoodiArvos
     )[0]
@@ -288,11 +298,12 @@ class AssignmentRepository(
             |assignment_instruction_sv,
             |assignment_publish_state,
             |laajaalainen_osaaminen_koodi_arvos,
+            |assignment_author_oid,
             |ld_lukuvuosi_koodi_arvos,
             |ld_aine_koodi_arvo
             |) 
-            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?) 
-            |RETURNING assignment_id, assignment_created_at, assignment_updated_at""".trimMargin(),
+            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
+            |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
         { rs: ResultSet, _: Int ->
             LdAssignmentDtoOut(
                 rs.getInt("assignment_id"),
@@ -306,6 +317,7 @@ class AssignmentRepository(
                 rs.getTimestamp("assignment_created_at"),
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
+                rs.getString("assignment_author_oid"),
                 assignment.lukuvuosiKoodiArvos,
                 assignment.aineKoodiArvo
             )
@@ -318,6 +330,7 @@ class AssignmentRepository(
         assignment.instructionSv,
         assignment.publishState.toString(),
         assignment.laajaalainenOsaaminenKoodiArvos,
+        Kayttajatiedot.fromSecurityContext().oidHenkilo,
         assignment.lukuvuosiKoodiArvos,
         assignment.aineKoodiArvo
     )[0]
