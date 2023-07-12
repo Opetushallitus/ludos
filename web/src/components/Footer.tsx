@@ -10,7 +10,9 @@ export const Footer = ({ t }: { t: TFunction }) => (
     <div className="flex flex-wrap md:px-10">
       <div className="flex w-full flex-col md:w-3/12">
         <div className="flex justify-center pb-5 pt-3">
-          <img className="h-12" src={logo} alt="Opetushallitus logo" />
+          <a href="https://oph.fi/">
+            <img className="h-12" src={logo} alt="Opetushallitus logo" />
+          </a>
         </div>
       </div>
       <span className="hidden md:flex md:w-2/12 md:flex-col" />
