@@ -40,7 +40,7 @@ fun updateInstruction(id: Int, body: String) =
 class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
 
-    data class TestSukoIn(
+    data class TestIn(
         val nameFi: String,
         val nameSv: String,
         val contentFi: String,
@@ -49,224 +49,95 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val exam: Exam
     )
 
-    data class TestSukoOut(
+    data class TestOut(
         val id: Int,
         val nameFi: String,
         val nameSv: String,
         val contentFi: String,
         val contentSv: String,
         val publishState: PublishState,
+        val authorOid: String,
         val createdAt: Timestamp,
         val updatedAt: Timestamp
     )
+
+    fun testInstruction(exam: Exam) {
+        val testInstruction = TestIn(
+            nameFi = "$exam Test Instruction FI",
+            nameSv = "$exam Test Instruction SV",
+            contentFi = "$exam Instruction content FI",
+            contentSv = "$exam Instruction content SV",
+            publishState = PublishState.PUBLISHED,
+            exam = exam
+        )
+
+        val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
+
+        val createdInstructionStr = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        val createdInstruction = objectMapper.readValue(createdInstructionStr, TestOut::class.java)
+
+        assertEquals(testInstruction.nameFi, createdInstruction.nameFi)
+        assertEquals(testInstruction.nameSv, createdInstruction.nameSv)
+        assertEquals(testInstruction.contentFi, createdInstruction.contentFi)
+        assertEquals(testInstruction.contentSv, createdInstruction.contentSv)
+        assertEquals(testInstruction.publishState, createdInstruction.publishState)
+        assertEquals(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo, createdInstruction.authorOid)
+        assertNotNull(createdInstruction.id)
+        assertNotNull(createdInstruction.createdAt)
+        assertNotNull(createdInstruction.updatedAt)
+
+        val getResult = mockMvc.perform(getInstruction(exam, createdInstruction.id)).andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        val instructionOut = objectMapper.readValue(getResult, TestOut::class.java)
+
+        assertEquals(createdInstruction, instructionOut)
+
+        val updatedInstructionIn = TestIn(
+            nameFi = "$exam Test Instruction FI updated",
+            nameSv = "$exam Test Instruction SV updated",
+            contentFi = "$exam Instruction content FI updated",
+            contentSv = "$exam Instruction content SV updated",
+            publishState = PublishState.PUBLISHED,
+            exam = exam
+        )
+        val updatedInstructionInStr = objectMapper.writeValueAsString(updatedInstructionIn)
+
+        val updateResult =
+            mockMvc.perform(updateInstruction(createdInstruction.id, updatedInstructionInStr)).andExpect(status().isOk)
+                .andReturn().response.contentAsString
+
+        val updatedInstructionByIdStr = mockMvc.perform(getInstruction(exam, updateResult.toInt())).andExpect(status().isOk)
+            .andReturn().response.contentAsString
+        val updatedInstructionById = objectMapper.readValue(updatedInstructionByIdStr, TestOut::class.java)
+
+        assertEquals(updatedInstructionById.nameFi, updatedInstructionIn.nameFi)
+        assertEquals(updatedInstructionById.nameSv, updatedInstructionIn.nameSv)
+        assertEquals(updatedInstructionById.contentFi, updatedInstructionIn.contentFi)
+        assertEquals(updatedInstructionById.contentSv, updatedInstructionIn.contentSv)
+        assertEquals(updatedInstructionById.publishState, updatedInstructionIn.publishState)
+        assertEquals(updatedInstructionById.authorOid, createdInstruction.authorOid)
+        assertEquals(updatedInstructionById.id, createdInstruction.id)
+    }
 
     @Test
     @WithYllapitajaRole
     fun sukoInstructionTest() {
-        val testInstruction = TestSukoIn(
-            nameFi = "Suko Test Instruction FI",
-            nameSv = "Suko Test Instruction SV",
-            contentFi = "Suko Instruction content Fi",
-            contentSv = "Suko Instruction content Sv",
-            publishState = PublishState.PUBLISHED,
-            exam = Exam.SUKO
-        )
-
-        val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
-
-        val postResult = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val instructionIn = objectMapper.readValue(postResult, TestSukoOut::class.java)
-
-        assertEquals(testInstruction.nameFi, instructionIn.nameFi)
-        assertEquals(testInstruction.nameSv, instructionIn.nameSv)
-        assertEquals(testInstruction.contentFi, instructionIn.contentFi)
-        assertEquals(testInstruction.contentSv, instructionIn.contentSv)
-        assertEquals(testInstruction.publishState, instructionIn.publishState)
-        assertNotNull(instructionIn.id)
-        assertNotNull(instructionIn.createdAt)
-        assertNotNull(instructionIn.updatedAt)
-
-        val getResult = mockMvc.perform(getInstruction(Exam.SUKO, instructionIn.id)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val instructionOut = objectMapper.readValue(getResult, TestSukoOut::class.java)
-
-        assertEquals(instructionIn, instructionOut)
-
-        // update request
-        val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Suko Test Instruction FI updated\",\"exam\":\"SUKO\",\"contentFi\":\"Suko Instruction content Fi updated\",\"nameSv\":\"Suko Test Instruction SV updated\",\"contentSv\":\"Suko Instruction content Sv updated\",\"publishState\":\"PUBLISHED\"}"
-
-        val updateResult =
-            mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val getUpdatedResult = mockMvc.perform(getInstruction(Exam.SUKO, updateResult.toInt())).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val updatedInstruction = objectMapper.readValue(getUpdatedResult, TestSukoOut::class.java)
-
-        assertEquals(updatedInstruction.nameFi, "Suko Test Instruction FI updated")
-        assertEquals(updatedInstruction.nameSv, "Suko Test Instruction SV updated")
-        assertEquals(updatedInstruction.contentFi, "Suko Instruction content Fi updated")
-        assertEquals(updatedInstruction.contentSv, "Suko Instruction content Sv updated")
-        assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
-        assertEquals(updatedInstruction.id, instructionIn.id)
+        testInstruction(Exam.SUKO)
     }
-
-    data class TestPuhviIn(
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val publishState: PublishState,
-        val exam: Exam
-    )
-
-    data class TestPuhviOut(
-        val id: Int,
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val publishState: PublishState,
-        val createdAt: Timestamp,
-        val updatedAt: Timestamp
-    )
 
     @Test
     @WithYllapitajaRole
     fun puhviInstructionTest() {
-        val testInstruction = TestPuhviIn(
-            nameFi = "Puhvi Test Instruction FI",
-            nameSv = "Puhvi Test Instruction SV",
-            contentFi = "Puhvi Instruction content Fi",
-            contentSv = "Puhvi Instruction content Sv",
-            publishState = PublishState.PUBLISHED,
-            exam = Exam.PUHVI
-        )
-
-        val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
-
-        val postResult = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val instructionIn = objectMapper.readValue(postResult, TestPuhviOut::class.java)
-
-        assertEquals(testInstruction.nameFi, instructionIn.nameFi)
-        assertEquals(testInstruction.nameSv, instructionIn.nameSv)
-        assertEquals(testInstruction.contentFi, instructionIn.contentFi)
-        assertEquals(testInstruction.contentSv, instructionIn.contentSv)
-        assertEquals(testInstruction.publishState, instructionIn.publishState)
-        assertNotNull(instructionIn.id)
-        assertNotNull(instructionIn.createdAt)
-        assertNotNull(instructionIn.updatedAt)
-
-        val getResult = mockMvc.perform(getInstruction(Exam.PUHVI, instructionIn.id)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val instructionOut = objectMapper.readValue(getResult, TestPuhviOut::class.java)
-
-        assertEquals(instructionIn, instructionOut)
-
-        // update request
-        val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Puhvi Test Instruction FI updated\",\"exam\":\"PUHVI\",\"contentFi\":\"Puhvi Instruction content Fi updated\",\"nameSv\":\"Puhvi Test Instruction SV updated\",\"contentSv\":\"Puhvi Instruction content Sv updated\",\"publishState\":\"PUBLISHED\"}"
-
-        val updateResult =
-            mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val getUpdatedResult =
-            mockMvc.perform(getInstruction(Exam.PUHVI, updateResult.toInt())).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val updatedInstruction = objectMapper.readValue(getUpdatedResult, TestPuhviOut::class.java)
-
-        assertEquals(updatedInstruction.nameFi, "Puhvi Test Instruction FI updated")
-        assertEquals(updatedInstruction.nameSv, "Puhvi Test Instruction SV updated")
-        assertEquals(updatedInstruction.contentFi, "Puhvi Instruction content Fi updated")
-        assertEquals(updatedInstruction.contentSv, "Puhvi Instruction content Sv updated")
-        assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
-        assertEquals(updatedInstruction.id, instructionIn.id)
+        testInstruction(Exam.PUHVI)
     }
-
-    data class TestLdIn(
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val publishState: PublishState,
-        val exam: Exam
-    )
-
-    data class TestLdOut(
-        val id: Int,
-        val nameFi: String,
-        val nameSv: String,
-        val contentFi: String,
-        val contentSv: String,
-        val publishState: PublishState,
-        val createdAt: Timestamp,
-        val updatedAt: Timestamp
-    )
 
     @Test
     @WithYllapitajaRole
     fun ldInstructionTest() {
-        val testInstruction = TestLdIn(
-            nameFi = "Ld Test Instruction FI",
-            nameSv = "Ld Test Instruction SV",
-            contentFi = "Ld Instruction content Fi",
-            contentSv = "Ld Instruction content Sv",
-            publishState = PublishState.PUBLISHED,
-            exam = Exam.LD
-        )
-
-        val testInstructionStr = objectMapper.writeValueAsString(testInstruction)
-
-        val postResult = mockMvc.perform(postInstruction(testInstructionStr)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val instructionIn = objectMapper.readValue(postResult, TestLdOut::class.java)
-
-        assertEquals(testInstruction.nameFi, instructionIn.nameFi)
-        assertEquals(testInstruction.nameSv, instructionIn.nameSv)
-        assertEquals(testInstruction.contentFi, instructionIn.contentFi)
-        assertEquals(testInstruction.contentSv, instructionIn.contentSv)
-        assertEquals(testInstruction.publishState, instructionIn.publishState)
-        assertNotNull(instructionIn.id)
-        assertNotNull(instructionIn.createdAt)
-        assertNotNull(instructionIn.updatedAt)
-
-        val getResult = mockMvc.perform(getInstruction(Exam.LD, instructionIn.id)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val instructionOut = objectMapper.readValue(getResult, TestLdOut::class.java)
-
-        assertEquals(instructionIn, instructionOut)
-
-        // update request
-        val editedInstruction =
-            "{\"id\": \"${instructionIn.id}\",\"nameFi\":\"Ld Test Instruction FI updated\",\"exam\":\"LD\",\"contentFi\":\"Ld Instruction content Fi updated\",\"nameSv\":\"Ld Test Instruction SV updated\",\"contentSv\":\"Ld Instruction content Sv updated\",\"publishState\":\"PUBLISHED\"}"
-
-        val updateResult =
-            mockMvc.perform(updateInstruction(instructionIn.id, editedInstruction)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val getUpdatedResult = mockMvc.perform(getInstruction(Exam.LD, updateResult.toInt())).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val updatedInstruction = objectMapper.readValue(getUpdatedResult, TestLdOut::class.java)
-
-        assertEquals(updatedInstruction.nameFi, "Ld Test Instruction FI updated")
-        assertEquals(updatedInstruction.nameSv, "Ld Test Instruction SV updated")
-        assertEquals(updatedInstruction.contentFi, "Ld Instruction content Fi updated")
-        assertEquals(updatedInstruction.contentSv, "Ld Instruction content Sv updated")
-        assertEquals(updatedInstruction.publishState, PublishState.PUBLISHED)
-        assertEquals(updatedInstruction.id, instructionIn.id)
+        testInstruction(Exam.LD)
     }
 
     @Test

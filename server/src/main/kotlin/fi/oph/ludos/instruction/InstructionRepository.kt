@@ -2,6 +2,7 @@ package fi.oph.ludos.instruction
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.auth.Kayttajatiedot
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -17,7 +18,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         }
 
         return jdbcTemplate.query(
-            "INSERT INTO $table (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_publish_state) VALUES (?, ?, ?, ?, ?::publish_state) RETURNING instruction_id, instruction_created_at, instruction_updated_at",
+            "INSERT INTO $table (instruction_name_fi, instruction_name_sv, instruction_content_fi, instruction_content_sv, instruction_publish_state, instruction_author_oid) VALUES (?, ?, ?, ?, ?::publish_state, ?) RETURNING instruction_id, instruction_author_oid, instruction_created_at, instruction_updated_at",
             { rs: ResultSet, _: Int ->
                 InstructionDtoOut(
                     rs.getInt("instruction_id"),
@@ -26,6 +27,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
                     instruction.contentFi,
                     instruction.contentSv,
                     instruction.publishState,
+                    rs.getString("instruction_author_oid"),
                     rs.getTimestamp("instruction_created_at"),
                     rs.getTimestamp("instruction_updated_at")
                 )
@@ -35,6 +37,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             instruction.contentFi,
             instruction.contentSv,
             instruction.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
         )[0]
     }
 
@@ -46,6 +49,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
             rs.getString("instruction_content_fi"),
             rs.getString("instruction_content_sv"),
             PublishState.valueOf(rs.getString("instruction_publish_state")),
+            rs.getString("instruction_author_oid"),
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at")
         )
