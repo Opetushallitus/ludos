@@ -33,12 +33,12 @@ class AssignmentRepository(
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
-            rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
+            rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
-            rs.getString("suko_assignment_type_koodi_arvo"),
-            rs.getString("suko_oppimaara_koodi_arvo"),
-            rs.getString("suko_tavoitetaso_koodi_arvo"),
-            rs.getKotlinArray<String>("suko_aihe_koodi_arvos")
+            rs.getString("suko_assignment_assignment_type_koodi_arvo"),
+            rs.getString("suko_assignment_oppimaara_koodi_arvo"),
+            rs.getString("suko_assignment_tavoitetaso_koodi_arvo"),
+            rs.getKotlinArray<String>("suko_assignment_aihe_koodi_arvos")
         )
     }
 
@@ -54,10 +54,10 @@ class AssignmentRepository(
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
-            rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
+            rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
-            rs.getString("puhvi_assignment_type_koodi_arvo"),
-            rs.getKotlinArray<String>("puhvi_lukuvuosi_koodi_arvos"),
+            rs.getString("puhvi_assignment_assignment_type_koodi_arvo"),
+            rs.getKotlinArray<String>("puhvi_assignment_lukuvuosi_koodi_arvos"),
         )
     }
 
@@ -73,10 +73,10 @@ class AssignmentRepository(
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
-            rs.getKotlinArray<String>("laajaalainen_osaaminen_koodi_arvos"),
+            rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
-            rs.getKotlinArray<String>("ld_lukuvuosi_koodi_arvos"),
-            rs.getString("ld_aine_koodi_arvo")
+            rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos"),
+            rs.getString("ld_assignment_aine_koodi_arvo")
         )
     }
 
@@ -103,19 +103,19 @@ class AssignmentRepository(
         if (filters.tehtavatyyppisuko != null) {
             val values = filters.tehtavatyyppisuko.split(",")
 
-            query += " AND suko_assignment_type_koodi_arvo IN (:sukoAssignmentTypeKoodiArvo)"
+            query += " AND suko_assignment_assignment_type_koodi_arvo IN (:sukoAssignmentTypeKoodiArvo)"
             parameters.addValue("sukoAssignmentTypeKoodiArvo", values)
         }
 
         if (filters.oppimaara != null) {
             val values = filters.oppimaara.split(",")
 
-            query += " AND suko_oppimaara_koodi_arvo IN (:oppimaaraKoodiArvo)"
+            query += " AND suko_assignment_oppimaara_koodi_arvo IN (:oppimaaraKoodiArvo)"
             parameters.addValue("oppimaaraKoodiArvo", values)
         }
 
         if (filters.aihe != null) {
-            query += " AND ARRAY[:aiheKoodiArvo ]::text[] && suko_aihe_koodi_arvos"
+            query += " AND ARRAY[:aiheKoodiArvo ]::text[] && suko_assignment_aihe_koodi_arvos"
 
             parameters.addValue("aiheKoodiArvo", filters.aihe.split(","))
         }
@@ -123,7 +123,7 @@ class AssignmentRepository(
         if (filters.tavoitetaitotaso != null) {
             val values = filters.tavoitetaitotaso.split(",")
 
-            query += " AND suko_tavoitetaso_koodi_arvo IN (:tavoitetasoKoodiArvo)"
+            query += " AND suko_assignment_tavoitetaso_koodi_arvo IN (:tavoitetasoKoodiArvo)"
             parameters.addValue("tavoitetasoKoodiArvo", values)
         }
 
@@ -144,12 +144,12 @@ class AssignmentRepository(
         if (filters.tehtavatyyppipuhvi != null) {
             val values = filters.tehtavatyyppipuhvi.split(",")
 
-            query += " AND puhvi_assignment_type_koodi_arvo IN (:puhviAssignmentTypeKoodiArvo)"
+            query += " AND puhvi_assignment_assignment_type_koodi_arvo IN (:puhviAssignmentTypeKoodiArvo)"
             parameters.addValue("puhviAssignmentTypeKoodiArvo", values)
         }
 
         if (filters.lukuvuosi != null) {
-            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && puhvi_lukuvuosi_koodi_arvos"
+            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && puhvi_assignment_lukuvuosi_koodi_arvos"
             parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
         }
 
@@ -168,14 +168,14 @@ class AssignmentRepository(
         var query = "SELECT * FROM ld_assignment WHERE true"
 
         if (filters.lukuvuosi != null) {
-            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && ld_lukuvuosi_koodi_arvos"
+            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && ld_assignment_lukuvuosi_koodi_arvos"
             parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
         }
 
         if (filters.aine != null) {
             val values = filters.aine.split(",")
 
-            query += " AND ld_aine_koodi_arvo IN (:aineKoodiArvo)"
+            query += " AND ld_assignment_aine_koodi_arvo IN (:aineKoodiArvo)"
             parameters.addValue("aineKoodiArvo", values)
         }
 
@@ -198,11 +198,11 @@ class AssignmentRepository(
             |assignment_instruction_fi,
             |assignment_instruction_sv,
             |assignment_publish_state,
-            |suko_aihe_koodi_arvos, 
-            |suko_assignment_type_koodi_arvo, 
-            |suko_oppimaara_koodi_arvo, 
-            |suko_tavoitetaso_koodi_arvo,
-            |laajaalainen_osaaminen_koodi_arvos,
+            |suko_assignment_aihe_koodi_arvos, 
+            |suko_assignment_assignment_type_koodi_arvo, 
+            |suko_assignment_oppimaara_koodi_arvo, 
+            |suko_assignment_tavoitetaso_koodi_arvo,
+            |assignment_laajaalainen_osaaminen_koodi_arvos,
             |assignment_author_oid) 
             |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?) 
             |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
@@ -250,10 +250,10 @@ class AssignmentRepository(
             |assignment_instruction_fi,
             |assignment_instruction_sv,
             |assignment_publish_state,
-            |laajaalainen_osaaminen_koodi_arvos,
+            |assignment_laajaalainen_osaaminen_koodi_arvos,
             |assignment_author_oid,
-            |puhvi_assignment_type_koodi_arvo,
-            |puhvi_lukuvuosi_koodi_arvos
+            |puhvi_assignment_assignment_type_koodi_arvo,
+            |puhvi_assignment_lukuvuosi_koodi_arvos
             |) 
             |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
             |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
@@ -297,10 +297,10 @@ class AssignmentRepository(
             |assignment_instruction_fi,
             |assignment_instruction_sv,
             |assignment_publish_state,
-            |laajaalainen_osaaminen_koodi_arvos,
+            |assignment_laajaalainen_osaaminen_koodi_arvos,
             |assignment_author_oid,
-            |ld_lukuvuosi_koodi_arvos,
-            |ld_aine_koodi_arvo
+            |ld_assignment_lukuvuosi_koodi_arvos,
+            |ld_assignment_aine_koodi_arvo
             |) 
             |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
             |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
@@ -361,11 +361,11 @@ class AssignmentRepository(
                 |assignment_instruction_fi = ?,
                 |assignment_instruction_sv = ?,
                 |assignment_publish_state = ?::publish_state,
-                |suko_aihe_koodi_arvos = ?,
-                |laajaalainen_osaaminen_koodi_arvos = ?,
-                |suko_assignment_type_koodi_arvo = ?,
-                |suko_oppimaara_koodi_arvo = ?,
-                |suko_tavoitetaso_koodi_arvo = ?,
+                |suko_assignment_aihe_koodi_arvos = ?,
+                |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                |suko_assignment_assignment_type_koodi_arvo = ?,
+                |suko_assignment_oppimaara_koodi_arvo = ?,
+                |suko_assignment_tavoitetaso_koodi_arvo = ?,
                 |assignment_updated_at = now()
                 |WHERE assignment_id = ?
                 |RETURNING assignment_id""".trimMargin(),
@@ -402,9 +402,9 @@ class AssignmentRepository(
                 |assignment_instruction_sv = ?,
                 |assignment_publish_state = ?::publish_state, 
                 |assignment_updated_at = now(),
-                |laajaalainen_osaaminen_koodi_arvos = ?,
-                |puhvi_assignment_type_koodi_arvo = ?,
-                |puhvi_lukuvuosi_koodi_arvos = ?
+                |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                |puhvi_assignment_assignment_type_koodi_arvo = ?,
+                |puhvi_assignment_lukuvuosi_koodi_arvos = ?
                 |WHERE assignment_id = ? 
                 |RETURNING assignment_id""".trimMargin(),
             { rs: ResultSet, _: Int ->
@@ -437,9 +437,9 @@ class AssignmentRepository(
                 |assignment_instruction_sv = ?,
                 |assignment_publish_state = ?::publish_state, 
                 |assignment_updated_at = now(),
-                |laajaalainen_osaaminen_koodi_arvos = ?,
-                |ld_lukuvuosi_koodi_arvos = ?,
-                |ld_aine_koodi_arvo = ?
+                |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                |ld_assignment_lukuvuosi_koodi_arvos = ?,
+                |ld_assignment_aine_koodi_arvo = ?
                 |WHERE assignment_id = ? 
                 |RETURNING assignment_id""".trimMargin(),
             { rs: ResultSet, _: Int ->
@@ -462,19 +462,19 @@ class AssignmentRepository(
     }
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(
-        // The same as `SELECT DISTINCT suko_oppimaara_koodi_arvo FROM suko_assignment` but 10x faster
+        // The same as `SELECT DISTINCT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment` but 10x faster
         // since postgres SELECT DISINCT is slow, see https://wiki.postgresql.org/wiki/Loose_indexscan
         """
         WITH RECURSIVE t AS (
-           (SELECT suko_oppimaara_koodi_arvo FROM suko_assignment ORDER BY suko_oppimaara_koodi_arvo LIMIT 1)
+           (SELECT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment ORDER BY suko_assignment_oppimaara_koodi_arvo LIMIT 1)
            UNION ALL
-           SELECT (SELECT suko_oppimaara_koodi_arvo FROM suko_assignment WHERE suko_oppimaara_koodi_arvo > t.suko_oppimaara_koodi_arvo ORDER BY suko_oppimaara_koodi_arvo LIMIT 1)
+           SELECT (SELECT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment WHERE suko_assignment_oppimaara_koodi_arvo > t.suko_assignment_oppimaara_koodi_arvo ORDER BY suko_assignment_oppimaara_koodi_arvo LIMIT 1)
            FROM t
-           WHERE t.suko_oppimaara_koodi_arvo IS NOT NULL
+           WHERE t.suko_assignment_oppimaara_koodi_arvo IS NOT NULL
            )
-        SELECT suko_oppimaara_koodi_arvo FROM t WHERE suko_oppimaara_koodi_arvo IS NOT NULL;
+        SELECT suko_assignment_oppimaara_koodi_arvo FROM t WHERE suko_assignment_oppimaara_koodi_arvo IS NOT NULL;
         """.trimIndent()
     ) { rs: ResultSet, _: Int ->
-        rs.getString("suko_oppimaara_koodi_arvo")
+        rs.getString("suko_assignment_oppimaara_koodi_arvo")
     }
 }

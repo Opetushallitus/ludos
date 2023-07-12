@@ -1,0 +1,10 @@
+-- Prefix all column names with table name
+ALTER TABLE assignment RENAME COLUMN laajaalainen_osaaminen_koodi_arvos to assignment_laajaalainen_osaaminen_koodi_arvos;
+ALTER TABLE suko_assignment RENAME COLUMN suko_aihe_koodi_arvos to suko_assignment_aihe_koodi_arvos;
+ALTER TABLE suko_assignment RENAME COLUMN suko_assignment_type_koodi_arvo TO suko_assignment_assignment_type_koodi_arvo;
+ALTER TABLE suko_assignment RENAME COLUMN suko_oppimaara_koodi_arvo TO suko_assignment_oppimaara_koodi_arvo;
+ALTER TABLE suko_assignment RENAME COLUMN suko_tavoitetaso_koodi_arvo TO suko_assignment_tavoitetaso_koodi_arvo;
+ALTER TABLE puhvi_assignment RENAME COLUMN puhvi_assignment_type_koodi_arvo TO puhvi_assignment_assignment_type_koodi_arvo;
+ALTER TABLE puhvi_assignment RENAME COLUMN puhvi_lukuvuosi_koodi_arvos TO puhvi_assignment_lukuvuosi_koodi_arvos;
+ALTER TABLE ld_assignment RENAME COLUMN ld_lukuvuosi_koodi_arvos TO ld_assignment_lukuvuosi_koodi_arvos;
+ALTER TABLE ld_assignment RENAME COLUMN ld_aine_koodi_arvo TO ld_assignment_aine_koodi_arvo;
