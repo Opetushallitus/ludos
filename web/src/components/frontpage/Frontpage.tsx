@@ -10,7 +10,7 @@ export const Frontpage = () => {
 
   return (
     <div className="mt-10">
-      <h2 data-testid="page-heading-etusivu">Hei {name}, tervetuloa Koepankin ylläpitoon!</h2>
+      <h2 data-testid="page-heading-etusivu">Hei{name ? ` ${name}` : ''}, tervetuloa Koepankin ylläpitoon!</h2>
       <NavigationBoxes exams={exams} contentTypes={contentTypes} />
     </div>
   )

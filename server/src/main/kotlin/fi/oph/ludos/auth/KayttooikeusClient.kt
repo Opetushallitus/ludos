@@ -42,8 +42,8 @@ data class Kayttajatiedot(
     private val username: String,
     val kayttajaTyyppi: String,
     val organisaatiot: List<Organisaatio>,
-    val etunimet: String,
-    val sukunimi: String,
+    val etunimet: String?,
+    val sukunimi: String?,
     val asiointiKieli: String?,
 ) : UserDetails {
     private val role: Role = Role.fromKayttajatiedot(this)

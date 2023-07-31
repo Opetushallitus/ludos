@@ -4,9 +4,21 @@ import { defaultEmptyKoodistoMap, LudosContext, KoodistoMap } from '../LudosCont
 import { UserDetails } from '../types'
 
 export const LudosContextProvider = ({ children }: { children: ReactNode }) => {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
   const [userDetails, setUserDetails] = useState<UserDetails>()
+
+  function formatName(userDetailsJson: any): string | null {
+    if (userDetailsJson.firstNames && userDetailsJson.lastName) {
+      return `${userDetailsJson.firstNames} ${userDetailsJson.lastName}`
+    } else if (userDetailsJson.firstNames) {
+      return userDetailsJson.firstNames
+    } else if (userDetailsJson.lastName) {
+      return userDetailsJson.lastName
+    } else {
+      return null
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +39,10 @@ export const LudosContextProvider = ({ children }: { children: ReactNode }) => {
           setUserDetails({ role: 'UNAUTHORIZED', name: '' })
         } else if (userDetailsResponse.ok) {
           const userDetailsJson = await userDetailsResponse.json()
-          setUserDetails(userDetailsJson)
+          setUserDetails({
+            name: formatName(userDetailsJson),
+            role: userDetailsJson.role
+          })
         } else {
           console.error('Could not fetch userDetails')
         }

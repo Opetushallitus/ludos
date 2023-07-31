@@ -119,7 +119,7 @@ const Roles = {
 type RolesType = keyof typeof Roles
 
 export type UserDetails = {
-  name: string
+  name: string | null
   role: RolesType
 }
 

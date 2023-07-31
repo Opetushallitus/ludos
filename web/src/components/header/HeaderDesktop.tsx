@@ -36,7 +36,7 @@ export const HeaderDesktop = () => {
           <div className="flex h-6 flex-row gap-3">
             <div className="relative">
               <HeaderDropdown
-                currentOption={name || ''}
+                currentOption={name || t('mobile.valikko')}
                 options={{
                   logout: { name: t('common.kirjaudu-ulos'), testId: 'logout-button' }
                 }}

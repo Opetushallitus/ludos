@@ -17,16 +17,16 @@ class CasUserDetailsService(
         val user =
             users.find { it.username == username } ?: throw UsernameNotFoundException("User '$username' not found")
 
-        val details = oppijanumerorekisteriClient.getUserDetailsByOid(user.oidHenkilo)
+        val oppijanumerorekisteriHenkilo = oppijanumerorekisteriClient.getUserDetailsByOid(user.oidHenkilo)
 
         return Kayttajatiedot(
             oidHenkilo = user.oidHenkilo,
             username = user.username,
             kayttajaTyyppi = user.kayttajaTyyppi,
             organisaatiot = user.organisaatiot,
-            etunimet = details.etunimet,
-            sukunimi = details.sukunimi,
-            asiointiKieli = details.asiointiKieli?.kieliKoodi,
+            etunimet = oppijanumerorekisteriHenkilo?.etunimet,
+            sukunimi = oppijanumerorekisteriHenkilo?.sukunimi,
+            asiointiKieli = oppijanumerorekisteriHenkilo?.asiointiKieli?.kieliKoodi,
         )
     }
 }

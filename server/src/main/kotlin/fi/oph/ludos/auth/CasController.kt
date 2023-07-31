@@ -18,13 +18,12 @@ class CasController {
         val kayttajatiedot = Kayttajatiedot.fromSecurityContext()
 
         val role = Role.fromKayttajatiedot(kayttajatiedot)
-        val user =
-            User("${kayttajatiedot.etunimet} ${kayttajatiedot.sukunimi}", role, kayttajatiedot.asiointiKieli)
+        val user = User(kayttajatiedot.etunimet, kayttajatiedot.sukunimi, role, kayttajatiedot.asiointiKieli)
 
         return ResponseEntity.ok(user)
     }
 }
 
 data class User(
-    val name: String, val role: Role, val businessLanguage: String?
+    val firstNames: String?, val lastName: String?, val role: Role, val businessLanguage: String?
 )
