@@ -1,22 +1,5 @@
 import { KoodiDtoIn } from './LudosContext'
 
-// todo: this is not localized
-export const SUKO_ASSIGNMENT_ORDER_OPTIONS: KoodiDtoIn[] = [
-  {
-    koodiArvo: 'asc',
-    nimi: 'Vanhin ensin'
-  },
-  {
-    koodiArvo: 'desc',
-    nimi: 'Uusin ensin'
-  }
-]
-
-export const LANGUAGE_OPTIONS: KoodiDtoIn[] = [
-  { nimi: 'Suomeksi', koodiArvo: 'fi' },
-  { nimi: 'Ruotsiksi', koodiArvo: 'sv' }
-]
-
 export const getSelectedOptions = (selectedKoodisto: string[] | null, koodit?: KoodiDtoIn[]) =>
   koodit?.filter((koodi) => selectedKoodisto?.includes(koodi.koodiArvo)) || []
 
