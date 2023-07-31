@@ -12,7 +12,7 @@ export const HeaderDesktop = () => {
   const { t, i18n } = useTranslation()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
 
-  const { name, role } = useUserDetails()
+  const { firstNames, lastName, role } = useUserDetails()
 
   const currentLanguageKey = i18n.language
 
@@ -33,7 +33,7 @@ export const HeaderDesktop = () => {
           <div className="flex h-6 flex-row gap-3">
             <div className="relative">
               <HeaderDropdown
-                currentOption={name || t('mobile.valikko')}
+                currentOption={`${firstNames} ${lastName}` || t('mobile.valikko')}
                 options={{
                   logout: { name: t('common.kirjaudu-ulos'), testId: 'logout-button' }
                 }}

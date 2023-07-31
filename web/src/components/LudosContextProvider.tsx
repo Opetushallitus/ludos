@@ -2,30 +2,24 @@ import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { defaultEmptyKoodistoMap, LudosContext, KoodistoMap } from '../LudosContext'
 import { UserDetails } from '../types'
+import { Role } from 'playwright/helpers.ts'
+import { getKoodistos, getUserDetails } from '../request.ts'
 
-export const LudosContextProvider = ({ children }: { children: ReactNode }) => {
-  const { i18n, t } = useTranslation()
+type LudosContextProviderProps = {
+  children: ReactNode
+}
+
+export const LudosContextProvider = ({ children }: LudosContextProviderProps) => {
+  const { i18n } = useTranslation()
   const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
-  const [userDetails, setUserDetails] = useState<UserDetails>()
-
-  function formatName(userDetailsJson: any): string | null {
-    if (userDetailsJson.firstNames && userDetailsJson.lastName) {
-      return `${userDetailsJson.firstNames} ${userDetailsJson.lastName}`
-    } else if (userDetailsJson.firstNames) {
-      return userDetailsJson.firstNames
-    } else if (userDetailsJson.lastName) {
-      return userDetailsJson.lastName
-    } else {
-      return null
-    }
-  }
+  const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [koodistosResponse, userDetailsResponse] = await Promise.all([
-          fetch(`/api/koodisto/${i18n.language.toUpperCase()}`, { method: 'GET' }),
-          fetch(`/api/auth/user`, { method: 'GET' })
+          getKoodistos(i18n.language.toUpperCase()),
+          getUserDetails()
         ])
 
         if (koodistosResponse.ok) {
@@ -36,11 +30,12 @@ export const LudosContextProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (userDetailsResponse.status === 401) {
-          setUserDetails({ role: 'UNAUTHORIZED', name: '' })
+          setUserDetails({ role: Role.UNAUTHORIZED, name: '' })
         } else if (userDetailsResponse.ok) {
-          const userDetailsJson = await userDetailsResponse.json()
+          const userDetailsJson: UserDetails = await userDetailsResponse.json()
           setUserDetails({
-            name: formatName(userDetailsJson),
+            firstNames: userDetailsJson.firstNames,
+            lastName: userDetailsJson.lastName,
             role: userDetailsJson.role
           })
         } else {
