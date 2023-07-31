@@ -5,7 +5,7 @@ import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
 import { LdAssignmentFormType, LdAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Exam, LdAssignmentIn, PublishState } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,7 +27,6 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('fi')
 
   const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(LdAssignmentSchema) })
 
@@ -62,7 +61,7 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<LdAssignmentFormType>(exam, assignment.id, body)
+          resultId = await updateAssignment<LdAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await postAssignment<LdAssignmentFormType>(body)
           resultId = id

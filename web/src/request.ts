@@ -1,8 +1,6 @@
-import { UserDetails } from './types'
 import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
 import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { KoodistoMap } from './LudosContext.tsx'
 
 const doRequest = async (url: string, method: string, body?: string) =>
   await fetch(url, {
@@ -88,27 +86,10 @@ export async function updateCertificate(
 
   return
 }
-
-// special return type for LudosContextProvider
-type RequestResponse<T> = {
-  ok: boolean
-  json: () => Promise<T>
+export async function getKoodistos(language: string): Promise<Response> {
+  return await fetch(`${BASE_API_URL}/koodisto/${language.toUpperCase()}`, { method: 'GET' })
 }
 
-export async function getKoodistos(language: string): Promise<RequestResponse<KoodistoMap>> {
-  const result = await fetch(`${BASE_API_URL}/koodisto/${language.toUpperCase()}`, { method: 'GET' })
-
-  return {
-    ok: result.ok,
-    json: () => result.json()
-  }
-}
-
-export async function getUserDetails(): Promise<RequestResponse<UserDetails>> {
-  const result = await fetch(`${BASE_API_URL}/auth/user`, { method: 'GET' })
-
-  return {
-    ok: result.ok,
-    json: () => result.json()
-  }
+export async function getUserDetails(): Promise<Response> {
+  return await fetch(`${BASE_API_URL}/auth/user`, { method: 'GET' })
 }

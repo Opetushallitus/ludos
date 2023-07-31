@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
 import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
-import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization.tsx'
+import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 

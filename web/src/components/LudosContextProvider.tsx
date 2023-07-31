@@ -1,9 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { defaultEmptyKoodistoMap, LudosContext, KoodistoMap } from '../LudosContext'
-import { UserDetails } from '../types'
-import { Role } from 'playwright/helpers.ts'
-import { getKoodistos, getUserDetails } from '../request.ts'
+import { Roles, UserDetails } from '../types'
+import { getKoodistos, getUserDetails } from '../request'
 
 type LudosContextProviderProps = {
   children: ReactNode
@@ -30,7 +29,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         }
 
         if (userDetailsResponse.status === 401) {
-          setUserDetails({ role: Role.UNAUTHORIZED, name: '' })
+          setUserDetails({ role: Roles.UNAUTHORIZED, firstNames: '', lastName: '' })
         } else if (userDetailsResponse.ok) {
           const userDetailsJson: UserDetails = await userDetailsResponse.json()
           setUserDetails({

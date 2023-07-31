@@ -4,7 +4,7 @@ import { Icon } from '../Icon'
 import { BaseIn, ContentTypeEng } from '../../types'
 import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
-import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization.tsx'
+import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 
 type ContentHeaderProps = {
   language: string

@@ -1,8 +1,9 @@
-import { KoodiDtoIn } from '../LudosContext.tsx'
+import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
-import { Icons } from '../components/Icon.tsx'
+import { Icons } from '../components/Icon'
+import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
 
-export function useConstantsWithLocalization() {
+export const useConstantsWithLocalization = () => {
   const { t } = useTranslation()
 
   const LANGUAGE_OPTIONS: KoodiDtoIn[] = [
@@ -10,7 +11,7 @@ export function useConstantsWithLocalization() {
     { nimi: t('language.ruotsi'), koodiArvo: 'sv' }
   ]
 
-  const LANGUAGE_DROPDOWN = {
+  const LANGUAGE_DROPDOWN: LocaleDropdownOptions = {
     fi: { name: t('language.suomi') },
     sv: { name: t('language.ruotsi') },
     keys: { name: 'Näytä avaimet' }

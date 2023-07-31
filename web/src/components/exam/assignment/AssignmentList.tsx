@@ -21,7 +21,7 @@ import { Dropdown } from '../../Dropdown'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
 import { newKey } from '../../routes/routes'
-import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization.tsx'
+import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
 
 export const AssignmentList = ({
   exam,

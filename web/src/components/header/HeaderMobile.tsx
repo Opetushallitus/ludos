@@ -5,12 +5,12 @@ import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
-import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization.tsx'
+import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 
 export const HeaderMobile = () => {
   const { t, i18n } = useTranslation()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
-  const { name, role } = useUserDetails()
+  const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
@@ -31,7 +31,7 @@ export const HeaderMobile = () => {
                 <Header onClick={toggleMenu} />
               </div>
               <div className="bg-white p-3" onClick={(e) => e.stopPropagation}>
-                <p className="font-semibold">{name || ''}</p>
+                <p className="font-semibold">{`${firstNames} ${lastName}` || ''}</p>
                 <p className="text-gray-secondary">{role}</p>
               </div>
 

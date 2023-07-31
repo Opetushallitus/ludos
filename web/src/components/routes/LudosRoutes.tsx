@@ -7,7 +7,7 @@ import { Exams } from '../exam/Exams'
 import { AssignmentForm } from '../exam/assignment/form/AssignmentForm'
 import { Content } from '../contentpage/Content'
 import { useTranslation } from 'react-i18next'
-import { Exam } from '../../types'
+import { Exam, Roles } from '../../types'
 import { CertificateForm } from '../exam/certificate/form/CertificateForm'
 import { InstructionForm } from '../exam/instruction/form/InstructionForm'
 import { Header } from '../header/Header'
@@ -24,7 +24,7 @@ export const LudosRoutes = () => {
         <AuthorizedRoutes />
       ) : (
         <>
-          {role === 'UNAUTHORIZED' ? (
+          {role === Roles.UNAUTHORIZED ? (
             <UnauthorizedRoutes />
           ) : (
             <Routes>
@@ -98,8 +98,6 @@ function AuthorizedRoutes() {
 }
 
 function UnauthorizedRoutes() {
-  const { t } = useTranslation()
-
   return (
     <Routes>
       <Route

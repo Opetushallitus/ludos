@@ -55,7 +55,7 @@ export const InstructionForm = ({ action }: AssignmentFormProps) => {
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateInstruction<string>(exam, assignment.id, body)
+          resultId = await updateInstruction<string>(assignment.id, body)
         } else {
           const { id } = await postInstruction<{ id: string }>(body)
           resultId = id
