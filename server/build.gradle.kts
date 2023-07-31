@@ -34,6 +34,7 @@ dependencies {
     implementation("fi.vm.sade.java-utils:opintopolku-cas-servlet-filter:0.1.2-SNAPSHOT")
     implementation("fi.vm.sade.java-utils:opintopolku-user-details-service:0.2.0-SNAPSHOT")
     implementation("fi.vm.sade.java-utils:java-utils:0.3.0-SNAPSHOT")
+    implementation("fi.vm.sade.java-utils:java-http:0.6.1-SNAPSHOT")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
