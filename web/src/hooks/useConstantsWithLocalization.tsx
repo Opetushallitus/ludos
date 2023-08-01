@@ -28,7 +28,7 @@ export const useConstantsWithLocalization = () => {
     }
   ]
 
-  const ICONS: { name: Icons; text: string }[] = [
+  const CONTENT_ACTIONS: { name: Icons; text: string }[] = [
     {
       name: 'uusi-valilehti',
       text: t('assignment.katselunakyma')
@@ -46,7 +46,7 @@ export const useConstantsWithLocalization = () => {
   return {
     LANGUAGE_OPTIONS,
     SUKO_ASSIGNMENT_ORDER_OPTIONS,
-    ICONS,
+    CONTENT_ACTIONS,
     LANGUAGE_DROPDOWN
   }
 }

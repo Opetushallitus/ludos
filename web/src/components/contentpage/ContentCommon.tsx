@@ -46,11 +46,11 @@ export function ContentHeader({ onSelectedOptionsChange, data, language, content
 }
 
 export function ContentIconRow() {
-  const { ICONS } = useConstantsWithLocalization()
+  const { CONTENT_ACTIONS } = useConstantsWithLocalization()
 
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
-      {ICONS.map((icon) => (
+      {CONTENT_ACTIONS.map((icon) => (
         <div className="flex gap-1" key={icon.name}>
           <Icon name={icon.name} color="text-green-primary" />
           <p className="text-green-primary">{icon.text}</p>
