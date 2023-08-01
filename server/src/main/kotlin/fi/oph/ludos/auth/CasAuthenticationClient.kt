@@ -2,17 +2,12 @@ package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpRequestBase
-import org.apache.http.client.protocol.HttpClientContext
-import org.apache.http.impl.client.BasicCookieStore
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicHeader
+import fi.vm.sade.javautils.http.OphHttpClient
+import fi.vm.sade.javautils.http.auth.CasAuthenticator
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpStatus
+import javax.annotation.PostConstruct
 
 abstract class CasAuthenticationClient(val service: String) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
@@ -26,49 +21,21 @@ abstract class CasAuthenticationClient(val service: String) {
     @Value("\${ludos.service-user.password}")
     lateinit var ludosServiceUserPassword: String
 
+    lateinit var httpClient: OphHttpClient
+
     val mapper = jacksonObjectMapper().apply {
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 
-    val httpContext = HttpClientContext().apply {
-        cookieStore = BasicCookieStore()
-    }
+    @PostConstruct
+    fun setup() {
+        val authenticator = CasAuthenticator.Builder()
+            .username(ludosServiceUserUsername)
+            .password(ludosServiceUserPassword)
+            .webCasUrl("https://$opintopolkuHostname/cas")
+            .casServiceUrl("https://$opintopolkuHostname/$service")
+            .build()
 
-    private val authenticatedHttpClient: CloseableHttpClient = HttpClients.custom().build()
-
-    protected fun executeRequest(req: HttpRequestBase, context: HttpClientContext): CloseableHttpResponse {
-        req.setHeader(BasicHeader(CasClient.CAS_SECURITY_TICKET, getTicket(context)))
-
-        val response = authenticatedHttpClient.execute(req, httpContext)
-
-        return if (!isUnauthorized(response)) {
-            response
-        } else {
-            response.close()
-            logger.info("CAS redirect detected, retrying request with new ticket")
-            req.setHeader(BasicHeader(CasClient.CAS_SECURITY_TICKET, refreshCasTicket(context)))
-            authenticatedHttpClient.execute(req, httpContext)
-        }
-    }
-
-    // Unauthorized response is returned when the provided CAS ticket is invalid
-    private fun isUnauthorized(response: CloseableHttpResponse): Boolean =
-        response.statusLine.statusCode == HttpStatus.UNAUTHORIZED.value()
-
-    private fun getTicket(context: HttpClientContext): String =
-        when (val maybeTicket = context.getAttribute("cas_ticket") as String?) {
-            null -> refreshCasTicket(context)
-            else -> maybeTicket
-        }
-
-    private fun refreshCasTicket(context: HttpClientContext): String {
-        val ticket = CasClient.getTicket(
-            "https://$opintopolkuHostname/cas",
-            ludosServiceUserUsername,
-            ludosServiceUserPassword,
-            "https://$opintopolkuHostname/$service",
-        )
-        context.setAttribute("cas_ticket", ticket)
-        return ticket
+        this.httpClient = OphHttpClient.Builder("1.2.246.562.10.00000000001.ludos-service").authenticator(authenticator).build()
     }
 }
