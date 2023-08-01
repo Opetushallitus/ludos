@@ -1,6 +1,6 @@
 import { Layout } from '../layout/Layout'
 import { Footer } from '../Footer'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, Outlet } from 'react-router-dom'
 import { newKey, feedbackKey, frontpageKey, ldKey, puhviKey, sukoKey, updateKey } from './routes'
 import { Frontpage } from '../frontpage/Frontpage'
 import { Exams } from '../exam/Exams'
@@ -12,11 +12,12 @@ import { CertificateForm } from '../exam/certificate/form/CertificateForm'
 import { InstructionForm } from '../exam/instruction/form/InstructionForm'
 import { Header } from '../header/Header'
 import { useUserDetails } from '../../hooks/useUserDetails'
+import { ReactElement } from 'react'
 
 export const LudosRoutes = () => {
   const { role } = useUserDetails()
 
-  const isAuthorized = role === 'YLLAPITAJA' || role === 'LAATIJA' || role === 'OPETTAJA'
+  const isAuthorized = role === Roles.YLLAPITAJA || role === Roles.LAATIJA || role === Roles.OPETTAJA
 
   return (
     <>
@@ -37,6 +38,16 @@ export const LudosRoutes = () => {
   )
 }
 
+const ProtectedRoute = (): ReactElement => {
+  const { isYllapitaja } = useUserDetails()
+
+  if (!isYllapitaja) {
+    return <Navigate to="/unauthorized" replace />
+  }
+
+  return <Outlet />
+}
+
 function AuthorizedRoutes() {
   const { t } = useTranslation()
 
@@ -45,44 +56,53 @@ function AuthorizedRoutes() {
       <Routes>
         <Route path={`/${frontpageKey}`} element={<Frontpage />} />
         <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
-        <Route
-          path={`/${feedbackKey}`}
-          element={
-            <div>
-              <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>{t('title.palautteet')}</h2>
-            </div>
-          }
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path={`/${feedbackKey}`}
+            element={
+              <div>
+                <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>{t('title.palautteet')}</h2>
+              </div>
+            }
+          />
+        </Route>
         <Route path={`/${sukoKey}`}>
-          <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
-          <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
-          <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
-          <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
-          <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
-          <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
+            <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
+            <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
+            <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
+            <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
+            <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+          </Route>
           <Route index path={':contentType?'} element={<Exams exam={Exam.Suko} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Suko} />} />
         </Route>
         <Route path={`/${puhviKey}`}>
-          <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
-          <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
-          <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
-          <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
-          <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
-          <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
+            <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
+            <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
+            <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
+            <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
+            <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+          </Route>
           <Route index path={':contentType?'} element={<Exams exam={Exam.Puhvi} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Puhvi} />} />
         </Route>
         <Route path={`/${ldKey}`}>
-          <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
-          <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
-          <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
-          <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
-          <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
-          <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
+            <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
+            <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
+            <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
+            <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
+            <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+          </Route>
           <Route index path={':contentType?'} element={<Exams exam={Exam.Ld} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Ld} />} />
         </Route>
+        <Route path={'/unauthorized'} element={<UnauthorizedPage />} />
         <Route
           path="*"
           element={
@@ -97,18 +117,22 @@ function AuthorizedRoutes() {
   )
 }
 
+function UnauthorizedPage() {
+  return (
+    <div className="p-10">
+      <h1 className="py-3 text-green-primary" data-testid="unauthorizedPage">
+        401
+      </h1>
+      <p>Sinulta puuttuu tarvittavat pääsyoikeudet Ludos-palveluun.</p>
+      <p>Du saknar nödvändiga åtkomsträttigheter till Ludos-tjänsten.</p>
+    </div>
+  )
+}
+
 function UnauthorizedRoutes() {
   return (
     <Routes>
-      <Route
-        path="*"
-        element={
-          <div className="p-10">
-            <p>Sinulta puuttuu tarvittavat pääsyoikeudet Ludos -palveluun.</p>
-            <p>Du saknar nödvändiga åtkomsträttigheter till Ludos-tjänsten.</p>
-          </div>
-        }
-      />
+      <Route path="*" element={<UnauthorizedPage />} />
     </Routes>
   )
 }

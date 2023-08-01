@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom'
-import { navigationPages } from '../routes/routes'
 import { useState } from 'react'
 import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { Page } from '../../types'
 
-export const HeaderMobile = () => {
+export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
   const { t, i18n } = useTranslation()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
   const { firstNames, lastName, role } = useUserDetails()
@@ -36,7 +36,7 @@ export const HeaderMobile = () => {
               </div>
 
               <nav className="flex h-full flex-col bg-white">
-                {Object.values(navigationPages).map(({ path, titleKey }, i) => (
+                {pages.map(({ path, titleKey }, i) => (
                   <NavLink
                     to={path}
                     onClick={toggleMenu}

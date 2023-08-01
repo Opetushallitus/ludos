@@ -3,6 +3,7 @@ package fi.oph.ludos.instruction
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
+import fi.oph.ludos.auth.Role
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -56,29 +57,45 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
     }
 
     fun getInstructionById(exam: Exam, id: Int): InstructionDtoOut? {
+        val role = Kayttajatiedot.fromSecurityContext().role
+
         val table = when (exam) {
             Exam.SUKO -> "suko_instruction"
             Exam.PUHVI -> "puhvi_instruction"
             Exam.LD -> "ld_instruction"
         }
 
-        val results = jdbcTemplate.query(
-            "SELECT * FROM $table WHERE instruction_id = ?", mapResultSet, id
-        )
-
-        return results.firstOrNull()
+        return if (role == Role.OPETTAJA) {
+            jdbcTemplate.query(
+                "SELECT * FROM $table WHERE instruction_id = ? AND instruction_publish_state = 'PUBLISHED'",
+                mapResultSet,
+                id
+            )
+        } else {
+            jdbcTemplate.query(
+                "SELECT * FROM $table WHERE instruction_id = ?", mapResultSet, id
+            )
+        }.firstOrNull()
     }
 
     fun getInstructions(exam: Exam): List<InstructionDtoOut> {
+        val role = Kayttajatiedot.fromSecurityContext().role
+
         val table = when (exam) {
             Exam.SUKO -> "suko_instruction"
             Exam.PUHVI -> "puhvi_instruction"
             Exam.LD -> "ld_instruction"
         }
 
-        return jdbcTemplate.query(
-            "SELECT * FROM $table", mapResultSet
-        )
+        return if (role == Role.OPETTAJA) {
+            jdbcTemplate.query(
+                "SELECT * FROM $table WHERE instruction_publish_state = 'PUBLISHED'", mapResultSet
+            )
+        } else {
+            jdbcTemplate.query(
+                "SELECT * FROM $table", mapResultSet
+            )
+        }
     }
 
     fun updateInstruction(id: Int, instruction: Instruction): Int? {

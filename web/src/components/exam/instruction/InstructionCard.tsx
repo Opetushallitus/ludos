@@ -4,6 +4,7 @@ import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
 import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
+import { useUserDetails } from '../../../hooks/useUserDetails'
 
 type InstructionCardProps = {
   instruction: AssignmentIn
@@ -12,6 +13,7 @@ type InstructionCardProps = {
 
 export const InstructionCard = ({ instruction }: InstructionCardProps) => {
   const navigate = useNavigate()
+  const { isYllapitaja } = useUserDetails()
 
   return (
     <div
@@ -21,22 +23,24 @@ export const InstructionCard = ({ instruction }: InstructionCardProps) => {
         <InternalLink className="text-sm font-semibold text-green-primary" to={`${instruction.id}`}>
           {instruction.nameFi}
         </InternalLink>
-        <Icon
-          name="muokkaa"
-          color="text-green-primary"
-          dataTestId={`instruction-${instruction.id.toString()}-edit`}
-          onClick={() =>
-            navigate('update', {
-              state: {
-                data: instruction
-              }
-            })
-          }
-          customClass="ml-2"
-        />
+        {isYllapitaja && (
+          <Icon
+            name="muokkaa"
+            color="text-green-primary"
+            dataTestId={`instruction-${instruction.id.toString()}-edit`}
+            onClick={() =>
+              navigate('update', {
+                state: {
+                  data: instruction
+                }
+              })
+            }
+            customClass="ml-2"
+          />
+        )}
       </div>
       <p className="mb-2 mt-2 text-center text-xs">{toLocaleDate(instruction.createdAt)}</p>
-      <StateTag state={instruction.publishState} />
+      {isYllapitaja && <StateTag state={instruction.publishState} />}
     </div>
   )
 }

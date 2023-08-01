@@ -3,6 +3,7 @@ package fi.oph.ludos.certificate
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
+import fi.oph.ludos.auth.Role
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,12 +27,11 @@ class CertificateRepository(
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun tableNameFromExam(exam: Exam): String =
-        when (exam) {
-            Exam.SUKO -> "suko_certificate"
-            Exam.PUHVI -> "puhvi_certificate"
-            Exam.LD -> "ld_certificate"
-        }
+    fun tableNameFromExam(exam: Exam): String = when (exam) {
+        Exam.SUKO -> "suko_certificate"
+        Exam.PUHVI -> "puhvi_certificate"
+        Exam.LD -> "ld_certificate"
+    }
 
     fun createCertificate(certificateDtoIn: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut {
         val createdCertificate = transactionTemplate.execute { _ ->
@@ -96,9 +96,7 @@ class CertificateRepository(
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
                 CertificateAttachment(
-                    fileKey,
-                    fileName,
-                    getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                    fileKey, fileName, getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
                 )
             },
             fileKey,
@@ -145,16 +143,18 @@ class CertificateRepository(
     )
 
     fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? {
-        val results = jdbcTemplate.query(
+        val role = Kayttajatiedot.fromSecurityContext().role
+
+        val isPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND c.certificate_publish_state = 'PUBLISHED'" else ""
+
+        return jdbcTemplate.query(
             """
             SELECT c.*, ca.attachment_file_key, ca.attachment_file_name, ca.attachment_upload_date
             FROM ${tableNameFromExam(exam)} c
             NATURAL JOIN certificate_attachment ca
-            WHERE c.certificate_id = ?
+            WHERE c.certificate_id = ? $isPublishedIfOpettaja
             """.trimIndent(), { rs, _ -> mapResultSet(rs, exam) }, id
-        )
-
-        return results.firstOrNull()
+        ).firstOrNull()
     }
 
     fun getCertificateAttachmentByFileKey(fileKey: String): CertificateAttachment? {
@@ -176,6 +176,10 @@ class CertificateRepository(
     }
 
     fun getCertificates(exam: Exam): List<CertificateDtoOut> {
+        val role = Kayttajatiedot.fromSecurityContext().role
+
+        val isPublishedIfOpettaja = if (role == Role.OPETTAJA) "WHERE certificate_publish_state = 'PUBLISHED'" else ""
+
         return jdbcTemplate.query(
             """
             SELECT 
@@ -185,18 +189,19 @@ class CertificateRepository(
                 ca.attachment_upload_date AS attachment_upload_date 
             FROM ${tableNameFromExam(exam)} AS c 
             NATURAL JOIN certificate_attachment AS ca
+             $isPublishedIfOpettaja
             """.trimIndent()
         ) { rs, _ ->
             mapResultSet(rs, exam)
         }
+
     }
 
     fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn, attachment: MultipartFile?) {
         transactionTemplate.execute { _ ->
-            val currentCertificate =
-                getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Certificate $id not found"
-                )
+            val currentCertificate = getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Certificate $id not found"
+            )
 
             val createdAttachment: CertificateAttachment? = attachment?.let { createAttachment(it) }
 
@@ -220,7 +225,10 @@ class CertificateRepository(
             )
 
             if (updatedRowCount != 1) {
-                throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Updated row count was $updatedRowCount but 1 was expected when updating Certificate $id")
+                throw ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Updated row count was $updatedRowCount but 1 was expected when updating Certificate $id"
+                )
             }
 
             if (attachment != null) {

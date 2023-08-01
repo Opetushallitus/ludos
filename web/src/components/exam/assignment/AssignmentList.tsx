@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
 import { newKey } from '../../routes/routes'
 import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
+import { useUserDetails } from '../../../hooks/useUserDetails'
 
 export const AssignmentList = ({
   exam,
@@ -35,6 +36,7 @@ export const AssignmentList = ({
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
+  const { isYllapitaja } = useUserDetails()
   const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
   const { filters, setFilters, resetFilters } = useFilters(location.search, contentType)
   const [language, setLanguage] = useState<string>('fi')
@@ -76,12 +78,14 @@ export const AssignmentList = ({
       {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
       <div className="row my-5 flex-wrap justify-between">
         <div className="w-full md:w-[20%]">
-          <Button
-            variant="buttonPrimary"
-            onClick={() => navigate(`${location.pathname}/${newKey}`)}
-            data-testid={`create-${singularActiveTab}-button`}>
-            {t(`button.lisaa${singularActiveTab}`)}
-          </Button>
+          {isYllapitaja && (
+            <Button
+              variant="buttonPrimary"
+              onClick={() => navigate(`${location.pathname}/${newKey}`)}
+              data-testid={`create-${singularActiveTab}-button`}>
+              {t(`button.lisaa${singularActiveTab}`)}
+            </Button>
+          )}
         </div>
         {contentType !== ContentTypeEng.TODISTUKSET && (
           <div className="row gap-6">

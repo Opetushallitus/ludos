@@ -1,14 +1,14 @@
 import { NavLink } from 'react-router-dom'
-import { navigationPages } from '../routes/routes'
 import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
 import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { Page } from '../../types'
 
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
-export const HeaderDesktop = () => {
+export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
   const { t, i18n } = useTranslation()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
 
@@ -57,7 +57,7 @@ export const HeaderDesktop = () => {
         </div>
         <nav className="row pb-1 pt-3">
           <ul className="row gap-6 whitespace-nowrap">
-            {Object.values(navigationPages).map(({ path, titleKey }, i) => (
+            {pages.map(({ path, titleKey }, i) => (
               <li key={i}>
                 <NavLink
                   to={path}

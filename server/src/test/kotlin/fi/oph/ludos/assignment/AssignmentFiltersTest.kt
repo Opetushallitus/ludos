@@ -1,10 +1,8 @@
 package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fi.oph.ludos.Exam
-import fi.oph.ludos.WithYllapitajaRole
-import fi.oph.ludos.authenticateAsYllapitaja
-import fi.oph.ludos.test.CreateTestData
+import fi.oph.ludos.*
+import fi.oph.ludos.test.CreateDataForAssignmentFilterTest
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -28,8 +26,8 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     fun setup() {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
-        val testData = CreateTestData().prepareTestData()
-        mockMvc.perform(seedDb(testData))
+        val testData = CreateDataForAssignmentFilterTest().prepareTestData()
+        mockMvc.perform(seedDbWithCustomData(testData))
     }
 
     @Test
@@ -132,7 +130,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
         ).andReturn().response.contentAsString
 
 
-        val assignmentsOut = objectMapper.readValue(assignments, Array<TestSukoOut>::class.java)
+        val assignmentsOut = objectMapper.readValue(assignments, Array<TestAssignmentSukoOut>::class.java)
 
         assignmentsOut.forEach {
             if (oppimaara != null) {
@@ -178,7 +176,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
             MockMvcResultMatchers.status().isOk()
         ).andReturn().response.contentAsString
 
-        val assignmentsOut = objectMapper.readValue(assignments, Array<TestPuhviOut>::class.java)
+        val assignmentsOut = objectMapper.readValue(assignments, Array<TestAssignmentPuhviOut>::class.java)
 
         val actualNumbersInName = assignmentsOut.flatMap { assignment ->
             Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
@@ -198,7 +196,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
             MockMvcResultMatchers.status().isOk()
         ).andReturn().response.contentAsString
 
-        val assignmentsOut = objectMapper.readValue(assignments, Array<TestLdOut>::class.java)
+        val assignmentsOut = objectMapper.readValue(assignments, Array<TestAssignmentLdOut>::class.java)
 
         val actualNumbersInName = assignmentsOut.flatMap { assignment ->
             Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()

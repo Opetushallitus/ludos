@@ -35,12 +35,6 @@ export const AssignmentContent = ({ assignment, exam, language }: AssignmentCont
                 <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
                 {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}
               </li>
-              <li>
-                <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
-                {assignment.laajaalainenOsaaminenKoodiArvos.length > 0
-                  ? getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')
-                  : '-'}
-              </li>
             </>
           )}
           <>

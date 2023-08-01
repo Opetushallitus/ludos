@@ -2,7 +2,7 @@ package fi.oph.ludos.test
 
 import fi.oph.ludos.PublishState
 
-class CreateTestData {
+class CreateDataForAssignmentFilterTest {
     private val sukoAssignmentTypeKoodiArvos = arrayOf("002", "001", "003")
     private val puhviAssignmentTypeKoodiArvos = arrayOf("002", "001")
     private val laajaalainenOsaaminenKoodiArvos = arrayOf("04", "02", "01", "06", "05", "03")

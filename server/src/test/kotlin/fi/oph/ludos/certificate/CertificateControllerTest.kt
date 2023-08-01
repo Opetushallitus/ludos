@@ -1,108 +1,46 @@
 package fi.oph.ludos.certificate
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.kotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.emptyString
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
-import org.springframework.mock.web.MockMultipartFile
-import org.springframework.mock.web.MockPart
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.sql.Timestamp
 import javax.transaction.Transactional
-
-data class TestCertificateIn(
-    val exam: Exam,
-    val name: String,
-    val description: String,
-    val publishState: PublishState,
-)
-
-data class TestCertificateAttachmentOut(
-    val fileKey: String,
-    val fileName: String,
-    val fileUploadDate: String,
-)
-
-data class TestCertificateOut(
-    val id: Int,
-    val exam: Exam,
-    val name: String,
-    val description: String,
-    val publishState: PublishState,
-    val attachment: TestCertificateAttachmentOut,
-    val authorOid: String,
-    val createdAt: Timestamp,
-    val updatedAt: Timestamp
-)
-
-fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
-    val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
-    val fileContents = Files.readAllBytes(file)
-    return MockMultipartFile("attachment", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents)
-}
-
-fun postCertificate(certificate: String, attachmentPart: MockMultipartFile?): MockHttpServletRequestBuilder {
-    val certificatePart = MockPart("certificate", certificate.toByteArray())
-    certificatePart.headers.contentType = MediaType.APPLICATION_JSON
-
-    val reqBuilder = MockMvcRequestBuilders.multipart(HttpMethod.POST, "${Constants.API_PREFIX}/certificate").part(certificatePart)
-    attachmentPart?.let { reqBuilder.file(it) }
-    return reqBuilder
-}
-
-
-fun getCertificateById(exam: Exam, id: Int) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/$id")
-
-fun putCertificate(id: Int, certificate: String, attachmentPart: MockMultipartFile?): MockHttpServletRequestBuilder {
-    val certificatePart = MockPart("certificate", certificate.toByteArray())
-    certificatePart.headers.contentType = MediaType.APPLICATION_JSON
-
-    val reqBuilder = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "${Constants.API_PREFIX}/certificate/$id")
-        .part(certificatePart)
-    attachmentPart?.let { reqBuilder.file(it) }
-    return reqBuilder
-}
-
-fun getAttachmentPreview(fileKey: String) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/preview/$fileKey")
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
-    val objectMapper: ObjectMapper =
-        Jackson2ObjectMapperBuilder.json().modules(JavaTimeModule(), kotlinModule()).build()
-
+    val objectMapper = jacksonObjectMapper()
+    var idsOfCertificateDrafts = listOf<Int>()
 
     val fileKeyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
-    private fun validateFileKey(fileKey: String) = assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
+    private fun validateFileKey(fileKey: String) =
+        assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
 
-    private fun assertPreviewReturnsExpectedAttachment(fileKey: String, expectedFileName: String, expectedFileContent: ByteArray) {
+    private fun assertPreviewReturnsExpectedAttachment(
+        fileKey: String, expectedFileName: String, expectedFileContent: ByteArray
+    ) {
         val attachmentPreviewResponse =
             mockMvc.perform(getAttachmentPreview(fileKey)).andExpect(status().isOk).andReturn().response
 
         assertArrayEquals(expectedFileContent, attachmentPreviewResponse.contentAsByteArray)
         assertEquals("application/pdf", attachmentPreviewResponse.contentType)
-        assertEquals("inline; filename=\"${expectedFileName}\"", attachmentPreviewResponse.getHeader("content-disposition"))
+        assertEquals(
+            "inline; filename=\"${expectedFileName}\"", attachmentPreviewResponse.getHeader("content-disposition")
+        )
     }
 
     private fun createCertificateAndCheckIt(publishState: PublishState): TestCertificateOut {
@@ -117,8 +55,9 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val certificateToCreateStr = objectMapper.writeValueAsString(certificateToCreate)
 
         val attachmentPart = readAttachmentFixtureFile(attachmentFileName)
-        val createdCertificateStr = mockMvc.perform(postCertificate(certificateToCreateStr, attachmentPart)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
+        val createdCertificateStr =
+            mockMvc.perform(postCertificate(certificateToCreateStr, attachmentPart)).andExpect(status().isOk)
+                .andReturn().response.contentAsString
 
         val createdCertificate = objectMapper.readValue(createdCertificateStr, TestCertificateOut::class.java)
 
@@ -148,7 +87,9 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(certificateById.createdAt)
         assertNotNull(certificateById.updatedAt)
 
-        assertPreviewReturnsExpectedAttachment(certificateById.attachment.fileKey, attachmentFileName, attachmentPart.bytes)
+        assertPreviewReturnsExpectedAttachment(
+            certificateById.attachment.fileKey, attachmentFileName, attachmentPart.bytes
+        )
 
         return certificateById
     }
@@ -208,8 +149,8 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         Thread.sleep(1) // Wait a bit to ensure attachmentUploadDate is different
         val newAttachmentFixtureFileName = "fixture2.pdf"
         val newAttachment = readAttachmentFixtureFile(newAttachmentFixtureFileName)
-        mockMvc.perform(putCertificate(createdCertificate.id, editedCertificateStr, newAttachment)).andExpect(status().isOk)
-            .andReturn()
+        mockMvc.perform(putCertificate(createdCertificate.id, editedCertificateStr, newAttachment))
+            .andExpect(status().isOk).andReturn()
 
         val getUpdatedResult =
             mockMvc.perform(getCertificateById(Exam.SUKO, createdCertificate.id)).andExpect(status().isOk)
@@ -228,7 +169,9 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(createdCertificate.authorOid, updatedCertificateById.authorOid)
         assertEquals(createdCertificate.id, updatedCertificateById.id)
 
-        assertPreviewReturnsExpectedAttachment(updatedCertificateById.attachment.fileKey, newAttachmentFixtureFileName, newAttachment.bytes)
+        assertPreviewReturnsExpectedAttachment(
+            updatedCertificateById.attachment.fileKey, newAttachmentFixtureFileName, newAttachment.bytes
+        )
 
         mockMvc.perform(getAttachmentPreview(createdCertificate.attachment.fileKey)).andExpect(status().isNotFound)
     }
@@ -271,7 +214,10 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val attachmentPart = readAttachmentFixtureFile("fixture.pdf")
         val postResponseBody = mockMvc.perform(postCertificate(body, attachmentPart)).andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
-        assertThat(postResponseBody, CoreMatchers.containsString("String \"WRONG\": not one of the values accepted for Enum class: [LD, SUKO, PUHVI]"))
+        assertThat(
+            postResponseBody,
+            CoreMatchers.containsString("String \"WRONG\": not one of the values accepted for Enum class: [LD, SUKO, PUHVI]")
+        )
     }
 
     @Test
@@ -283,7 +229,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             description = "Certificate content Fi",
             publishState = PublishState.PUBLISHED,
         )
-        val certificateInStr  = objectMapper.writeValueAsString(certificateIn)
+        val certificateInStr = objectMapper.writeValueAsString(certificateIn)
 
         val postResponseBody = mockMvc.perform(postCertificate(certificateInStr, null)).andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
@@ -304,9 +250,13 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             }
         """
 
-        val putResponseBody = mockMvc.perform(putCertificate(createdCertificateOut.id, body, null)).andExpect(status().isBadRequest)
-            .andReturn().response.contentAsString
-        assertThat(putResponseBody, CoreMatchers.containsString("String \"NON_EXISTENT_PUBLISH_STATE\": not one of the values accepted for Enum class: [DRAFT, ARCHIVED, PUBLISHED]"))
+        val putResponseBody =
+            mockMvc.perform(putCertificate(createdCertificateOut.id, body, null)).andExpect(status().isBadRequest)
+                .andReturn().response.contentAsString
+        assertThat(
+            putResponseBody,
+            CoreMatchers.containsString("String \"NON_EXISTENT_PUBLISH_STATE\": not one of the values accepted for Enum class: [DRAFT, ARCHIVED, PUBLISHED]")
+        )
     }
 
     @Test
@@ -316,5 +266,41 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val responseContent = getResult.response.contentAsString
 
         assertEquals(responseContent, "Certificate not found 999")
+    }
+
+
+    @BeforeAll
+    fun setup() {
+        authenticateAsYllapitaja()
+        mockMvc.perform(emptyDb())
+        mockMvc.perform(seedDb())
+        val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        idsOfCertificateDrafts = objectMapper.readValue(res, Array<TestCertificateOut>::class.java)
+            .filter { it.publishState == PublishState.DRAFT }.map { it.id }
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun getCertificateDraftAsOpettaja() {
+        idsOfCertificateDrafts.forEach() {
+            mockMvc.perform(getCertificateById(Exam.SUKO, it)).andExpect(status().isNotFound())
+        }
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun getCertificatesAsOpettaja() {
+        val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+
+        val certificates = objectMapper.readValue(res, Array<TestCertificateOut>::class.java)
+
+        // make sure that draft certificate is not returned
+        assertTrue(
+            certificates.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft certificates"
+        )
+
+        assertEquals(8, certificates.size)
     }
 }

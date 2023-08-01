@@ -13,6 +13,7 @@ import { Icon } from '../Icon'
 import { AssignmentContent } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
 import { InstructionContent } from './InstructionsContent'
+import { useUserDetails } from '../../hooks/useUserDetails'
 
 type AssignmentProps = { exam: Exam }
 
@@ -21,6 +22,7 @@ export const Content = ({ exam }: AssignmentProps) => {
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: string; id: string }>()
   const location = useLocation()
+  const { isYllapitaja } = useUserDetails()
 
   const [language, setLanguage] = useState<string>('fi')
 
@@ -60,22 +62,24 @@ export const Content = ({ exam }: AssignmentProps) => {
                     onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
                     contentType={contentType!} // fixme: could this ever be undefined?
                   />
-                  <div className="row">
-                    <StateTag state={data.publishState} />
-                    <span
-                      className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
-                      onClick={() =>
-                        navigate(`../${contentType}/update`, {
-                          state: {
-                            data
-                          }
-                        })
-                      }
-                      data-testid="edit-content-btn">
-                      <Icon name="muokkaa" color="text-green-primary" />
-                      <p className="text-green-primary">{t('assignment.muokkaa')}</p>
-                    </span>
-                  </div>
+                  {isYllapitaja && (
+                    <div className="row">
+                      <StateTag state={data.publishState} />
+                      <span
+                        className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
+                        onClick={() =>
+                          navigate(`../${contentType}/update`, {
+                            state: {
+                              data
+                            }
+                          })
+                        }
+                        data-testid="edit-content-btn">
+                        <Icon name="muokkaa" color="text-green-primary" />
+                        <p className="text-green-primary">{t('assignment.muokkaa')}</p>
+                      </span>
+                    </div>
+                  )}
                   <div className="mt-2 border-b border-gray-separator" />
                   {contentType && isAssignment(data, contentType) && (
                     <AssignmentContent assignment={data} exam={exam} language={language} />
