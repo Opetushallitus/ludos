@@ -1,10 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
-import { LANGUAGE_OPTIONS } from '../../koodistoUtils'
-import { Icon, Icons } from '../Icon'
+import { Icon } from '../Icon'
 import { BaseIn, ContentTypeEng } from '../../types'
 import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
+import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 
 type ContentHeaderProps = {
   language: string
@@ -15,6 +15,7 @@ type ContentHeaderProps = {
 
 export function ContentHeader({ onSelectedOptionsChange, data, language, contentType }: ContentHeaderProps) {
   const { t } = useTranslation()
+  const { LANGUAGE_OPTIONS } = useConstantsWithLocalization()
 
   return (
     <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
@@ -45,26 +46,11 @@ export function ContentHeader({ onSelectedOptionsChange, data, language, content
 }
 
 export function ContentIconRow() {
-  const { t } = useTranslation()
-
-  const icons: { name: Icons; text: string }[] = [
-    {
-      name: 'uusi-valilehti',
-      text: t('assignment.katselunakyma')
-    },
-    {
-      name: 'todistukset',
-      text: t('assignment.lataapdf')
-    },
-    {
-      name: 'lisää',
-      text: t('assignment.lisaalatauskoriin')
-    }
-  ]
+  const { CONTENT_ACTIONS } = useConstantsWithLocalization()
 
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
-      {icons.map((icon) => (
+      {CONTENT_ACTIONS.map((icon) => (
         <div className="flex gap-1" key={icon.name}>
           <Icon name={icon.name} color="text-green-primary" />
           <p className="text-green-primary">{icon.text}</p>

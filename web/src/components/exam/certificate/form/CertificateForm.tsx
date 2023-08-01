@@ -59,7 +59,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         let resultId: string
         // When updating we need to have the certificate
         if (action === 'update' && certificate) {
-          await updateCertificate<void>(exam, certificate.id, certificateIn, newAttachment)
+          await updateCertificate(certificate.id, certificateIn, newAttachment)
           resultId = certificate.id.toString()
         } else {
           const { id } = await createCertificate<{ id: string }>(certificateIn, newAttachment!)

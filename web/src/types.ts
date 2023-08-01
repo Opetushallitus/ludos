@@ -109,7 +109,7 @@ export const ContentTypesSingular: SingularOptions = {
 
 export type ValueOf<T> = T[keyof T]
 
-const Roles = {
+export const Roles = {
   YLLAPITAJA: 'YLLAPITAJA',
   LAATIJA: 'LAATIJA',
   OPETTAJA: 'OPETTAJA',
@@ -119,8 +119,9 @@ const Roles = {
 type RolesType = keyof typeof Roles
 
 export type UserDetails = {
-  name: string | null
-  role: RolesType
+  firstNames: string | null
+  lastName: string | null
+  role: RolesType | null
 }
 
 export const ErrorMessages = {

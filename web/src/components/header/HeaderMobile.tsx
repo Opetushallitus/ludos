@@ -5,10 +5,12 @@ import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
+import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 
 export const HeaderMobile = () => {
   const { t, i18n } = useTranslation()
-  const { name, role } = useUserDetails()
+  const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
+  const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
@@ -29,7 +31,7 @@ export const HeaderMobile = () => {
                 <Header onClick={toggleMenu} />
               </div>
               <div className="bg-white p-3" onClick={(e) => e.stopPropagation}>
-                <p className="font-semibold">{name || ''}</p>
+                <p className="font-semibold">{`${firstNames} ${lastName}` || ''}</p>
                 <p className="text-gray-secondary">{role}</p>
               </div>
 
@@ -57,7 +59,7 @@ export const HeaderMobile = () => {
                       }`}
                       variant="buttonGhost"
                       onClick={() => changeLanguage('fi')}>
-                      Suomi
+                      {LANGUAGE_DROPDOWN.fi.name}
                     </Button>
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
@@ -65,7 +67,7 @@ export const HeaderMobile = () => {
                       }`}
                       variant="buttonGhost"
                       onClick={() => changeLanguage('sv')}>
-                      På Svenska
+                      {LANGUAGE_DROPDOWN.sv.name}
                     </Button>
                   </div>
                 </div>

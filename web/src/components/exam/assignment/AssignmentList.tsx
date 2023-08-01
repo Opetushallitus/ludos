@@ -18,10 +18,10 @@ import { CertificateCard } from '../certificate/CertificateCard'
 import { EXAM_TYPE_ENUM } from '../../../constants'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Dropdown } from '../../Dropdown'
-import { LANGUAGE_OPTIONS, SUKO_ASSIGNMENT_ORDER_OPTIONS } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
 import { newKey } from '../../routes/routes'
+import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
 
 export const AssignmentList = ({
   exam,
@@ -35,6 +35,7 @@ export const AssignmentList = ({
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
+  const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
   const { filters, setFilters, resetFilters } = useFilters(location.search, contentType)
   const [language, setLanguage] = useState<string>('fi')
 

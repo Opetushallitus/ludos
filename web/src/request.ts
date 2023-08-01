@@ -1,7 +1,6 @@
-import { Exam } from './types'
 import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
 import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
-import { ASSIGNMENT_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
+import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
 
 const doRequest = async (url: string, method: string, body?: string) =>
   await fetch(url, {
@@ -20,7 +19,7 @@ export async function postAssignment<T>(body: T): Promise<{ id: string }> {
   return await result.json()
 }
 
-export async function updateAssignment<T>(exam: Exam, id: number, body: T): Promise<string> {
+export async function updateAssignment<T>(id: number, body: T): Promise<string> {
   const result = await doRequest(`${ASSIGNMENT_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
@@ -40,7 +39,7 @@ export async function postInstruction<T>(body: InstructionFormType): Promise<T> 
   return await result.json()
 }
 
-export async function updateInstruction<T>(exam: Exam, id: number, body: InstructionFormType): Promise<T> {
+export async function updateInstruction<T>(id: number, body: InstructionFormType): Promise<T> {
   const result = await doRequest(`${INSTRUCTION_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
@@ -66,8 +65,7 @@ export async function createCertificate<T>(certificateIn: CertificateFormType, n
   return await result.json()
 }
 
-export async function updateCertificate<T>(
-  exam: Exam,
+export async function updateCertificate(
   id: number,
   certificateIn: CertificateFormType,
   newAttachment: File | null
@@ -88,19 +86,10 @@ export async function updateCertificate<T>(
 
   return
 }
+export async function getKoodistos(language: string): Promise<Response> {
+  return await fetch(`${BASE_API_URL}/koodisto/${language.toUpperCase()}`, { method: 'GET' })
+}
 
-export async function uploadFile<T>(file: File): Promise<T> {
-  const formData = new FormData()
-  formData.append('file', file)
-
-  const result = await fetch(`${CERTIFICATE_URL}/upload`, {
-    method: 'POST',
-    body: formData
-  })
-
-  if (!result.ok) {
-    throw new Error(await result.text())
-  }
-
-  return await result.json()
+export async function getUserDetails(): Promise<Response> {
+  return await fetch(`${BASE_API_URL}/auth/user`, { method: 'GET' })
 }

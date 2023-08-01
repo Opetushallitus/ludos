@@ -1,11 +1,13 @@
 import { useContext } from 'react'
 import { LudosContext } from '../LudosContext'
+import { UserDetails } from '../types'
 
-export function useUserDetails() {
+export function useUserDetails(): UserDetails {
   const { userDetails } = useContext(LudosContext)
 
   return {
-    name: userDetails?.name,
-    role: userDetails?.role
+    firstNames: userDetails?.firstNames || null,
+    lastName: userDetails?.lastName || null,
+    role: userDetails?.role || null
   }
 }

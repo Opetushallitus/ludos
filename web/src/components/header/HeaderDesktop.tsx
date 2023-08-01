@@ -4,18 +4,15 @@ import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
 import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
+import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
-const languageOptions: LocaleDropdownOptions = {
-  fi: { name: 'Suomi' },
-  sv: { name: 'Svenska' },
-  keys: { name: 'Näytä avaimet' }
-}
-
 export const HeaderDesktop = () => {
   const { t, i18n } = useTranslation()
-  const { name, role } = useUserDetails()
+  const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
+
+  const { firstNames, lastName, role } = useUserDetails()
 
   const currentLanguageKey = i18n.language
 
@@ -36,7 +33,7 @@ export const HeaderDesktop = () => {
           <div className="flex h-6 flex-row gap-3">
             <div className="relative">
               <HeaderDropdown
-                currentOption={name || t('mobile.valikko')}
+                currentOption={`${firstNames} ${lastName}` || t('mobile.valikko')}
                 options={{
                   logout: { name: t('common.kirjaudu-ulos'), testId: 'logout-button' }
                 }}
@@ -50,8 +47,8 @@ export const HeaderDesktop = () => {
             {/*<p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>*/}
             <div className="relative border-l-2 border-green-primary pl-5">
               <HeaderDropdown
-                currentOption={languageOptions[currentLanguageKey].name}
-                options={languageOptions}
+                currentOption={LANGUAGE_DROPDOWN[currentLanguageKey].name}
+                options={LANGUAGE_DROPDOWN} // todo: when going to prod, remove show keys option
                 onOptionClick={(str) => changeLanguage(str)}
                 testId="header-language-dropdown"
               />

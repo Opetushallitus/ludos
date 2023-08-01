@@ -65,7 +65,7 @@ export const SukoAssignmentForm = ({ action, assignment, pathname }: SukoAssignm
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<SukoAssignmentFormType>(exam, assignment.id, body)
+          resultId = await updateAssignment<SukoAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await postAssignment<SukoAssignmentFormType>(body)
           resultId = id

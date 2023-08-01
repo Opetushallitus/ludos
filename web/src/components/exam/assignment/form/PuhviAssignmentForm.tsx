@@ -63,7 +63,7 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
-          resultId = await updateAssignment<PuhviAssignmentFormType>(exam, assignment.id, body)
+          resultId = await updateAssignment<PuhviAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await postAssignment<PuhviAssignmentFormType>(body)
           resultId = id
