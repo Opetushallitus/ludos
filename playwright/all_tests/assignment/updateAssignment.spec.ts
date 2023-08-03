@@ -24,7 +24,7 @@ test.describe('Assignment form tests', () => {
       instructionTextSv: 'Testa instruktioner'
     })
 
-    await page.getByTestId('form-submit').click()
+    page.getByTestId('form-submit').click()
 
     const response = await page.waitForResponse((response) => {
       return response.url().includes('/api/assignment/') && response.ok()

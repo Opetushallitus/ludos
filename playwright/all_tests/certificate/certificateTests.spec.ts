@@ -64,11 +64,11 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   await page.getByTestId('description').fill(descriptionText)
 
   if (event === 'submit') {
-    await page.getByTestId('form-submit').click()
+    page.getByTestId('form-submit').click()
   } else {
     const draftButton = page.getByTestId('form-draft')
     await expect(draftButton).toHaveText('Tallenna luonnoksena')
-    await draftButton.click()
+    draftButton.click()
   }
 
   const response = await page.waitForResponse(
