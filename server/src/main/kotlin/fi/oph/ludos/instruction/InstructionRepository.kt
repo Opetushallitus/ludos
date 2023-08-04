@@ -107,7 +107,7 @@ class InstructionRepository(private val jdbcTemplate: JdbcTemplate) {
         }
 
         val results = jdbcTemplate.query(
-            "UPDATE $table SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_publish_state = ?::publish_state, instruction_updated_at = now() WHERE instruction_id = ? RETURNING instruction_id",
+            "UPDATE $table SET instruction_name_fi = ?, instruction_name_sv = ?, instruction_content_fi = ?, instruction_content_sv = ?, instruction_publish_state = ?::publish_state, instruction_updated_at = clock_timestamp() WHERE instruction_id = ? RETURNING instruction_id",
             { rs: ResultSet, _: Int ->
                 rs.getInt("instruction_id")
             },

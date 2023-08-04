@@ -127,9 +127,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(updatedAssignment, updatedAssignmentById)
         assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
-        assertEquals(createdAssignment.createdAt, updatedAssignmentById.updatedAt)
-        assertEquals(updatedAssignmentById.createdAt, updatedAssignmentById.updatedAt) // TODO: whoops, updatedAt is not updated
-        //assertTimeIsBetween(timeBeforeUpdate, ZonedDateTime.parse(updatedAssignmentById.updatedAt), timeAfterUpdate, "updatedAt")
+        assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
+        assertTimeIsBetween(timeBeforeUpdate, ZonedDateTime.parse(updatedAssignmentById.updatedAt), timeAfterUpdate, "updatedAt")
     }
 
     @Test

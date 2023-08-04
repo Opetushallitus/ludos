@@ -392,7 +392,7 @@ class AssignmentRepository(
                 |suko_assignment_assignment_type_koodi_arvo = ?,
                 |suko_assignment_oppimaara_koodi_arvo = ?,
                 |suko_assignment_tavoitetaso_koodi_arvo = ?,
-                |assignment_updated_at = now()
+                |assignment_updated_at = clock_timestamp()
                 |WHERE assignment_id = ?
                 |RETURNING assignment_id""".trimMargin(),
             { rs: ResultSet, _: Int ->
@@ -427,7 +427,7 @@ class AssignmentRepository(
                 |assignment_instruction_fi = ?,
                 |assignment_instruction_sv = ?,
                 |assignment_publish_state = ?::publish_state, 
-                |assignment_updated_at = now(),
+                |assignment_updated_at = clock_timestamp(),
                 |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
                 |puhvi_assignment_assignment_type_koodi_arvo = ?,
                 |puhvi_assignment_lukuvuosi_koodi_arvos = ?
@@ -462,7 +462,7 @@ class AssignmentRepository(
                 |assignment_instruction_fi = ?,
                 |assignment_instruction_sv = ?,
                 |assignment_publish_state = ?::publish_state, 
-                |assignment_updated_at = now(),
+                |assignment_updated_at = clock_timestamp(),
                 |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
                 |ld_assignment_lukuvuosi_koodi_arvos = ?,
                 |ld_assignment_aine_koodi_arvo = ?
