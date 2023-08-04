@@ -127,19 +127,18 @@ export const SukoAssignmentForm = ({ action, assignment, pathname }: SukoAssignm
           />
 
           <div className="mb-6">
-            <FieldLabel id="tavoitetaso" name={t('form.tavoitetaso')} required />
+            <FieldLabel id="tavoitetaso" name={t('form.tavoitetaso')} />
             <Dropdown
               id="tavoitetaso"
               selectedOption={
                 tavoitetasoKoodisto && tavoitetasoKoodisto.find((it) => it.koodiArvo === currentTavoitetaso)
               }
               options={tavoitetasoKoodisto}
-              onSelectedOptionsChange={(opt: string) => {
+              onSelectedOptionsChange={(opt: string | null) => {
                 setValue('tavoitetasoKoodiArvo', opt)
-                clearErrors('tavoitetasoKoodiArvo')
               }}
+              canReset
               testId="tavoitetaso"
-              requiredError={!!errors.tavoitetasoKoodiArvo}
             />
             <FormError error={errors.tavoitetasoKoodiArvo?.message} />
           </div>

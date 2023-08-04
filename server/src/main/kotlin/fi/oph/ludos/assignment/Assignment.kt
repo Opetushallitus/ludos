@@ -19,10 +19,8 @@ import javax.validation.constraints.Pattern
     JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
 )
 interface Assignment {
-    @get:NotBlank
     val nameFi: String
     val nameSv: String
-    @get:NotBlank
     val contentFi: String
     val contentSv: String
     val instructionFi: String
