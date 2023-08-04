@@ -14,11 +14,13 @@ import org.springframework.context.annotation.Profile
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
 import java.net.URI
+import java.sql.Timestamp
 import javax.annotation.PostConstruct
 import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
@@ -33,7 +35,8 @@ class TestController(
     val assignmentService: AssignmentService,
     @Value("\${ludos.appUrl}") private val appUrl: String,
     private val environment: Environment,
-    private val applicationContext: ApplicationContext
+    private val applicationContext: ApplicationContext,
+    private val jdbcTemplate: JdbcTemplate,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
@@ -82,6 +85,13 @@ class TestController(
         seedDataRepository.nukeInstructions()
 
         return httpServletResponse.sendRedirect(appUrl)
+    }
+
+    @GetMapping("/now")
+    @RequireAtLeastOpettajaRole
+    fun now(httpServletResponse: HttpServletResponse): Timestamp {
+        val nowFromDb: Timestamp = jdbcTemplate.query("SELECT clock_timestamp()") { rs, _ -> rs.getTimestamp("clock_timestamp") }[0]
+        return nowFromDb
     }
 
     @GetMapping("/mocklogin/{role}")
