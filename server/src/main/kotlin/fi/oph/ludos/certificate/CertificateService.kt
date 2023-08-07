@@ -1,6 +1,7 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
+import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,13 +27,13 @@ class CertificateService(val repository: CertificateRepository, val s3Helper: S3
     fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?) =
         repository.updateCertificate(id, certificate, attachment)
 
-    fun getAttachment(key: String): Pair<CertificateAttachment, ResponseInputStream<GetObjectResponse>> {
+    fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, ResponseInputStream<GetObjectResponse>> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND, "Certificate attachment '${key}' not found in db"
         )
 
         val responseInputStream = try {
-            s3Helper.getObject(key)
+            s3Helper.getObject(Bucket.CERTIFICATE, key)
         } catch (ex: SdkException) {
             val errorMsg = "Failed to get attachment '${key}' from S3"
             logger.error(errorMsg, ex)

@@ -35,7 +35,7 @@ export const AssignmentTypeField = ({ control, name, required, options, required
                   data-testid={`assignmentTypeRadio-${type.koodiArvo.toLowerCase()}`}
                   className="mr-2 border-2 border-green-primary"
                 />
-                <label htmlFor={type.koodiArvo} className={`${requiredError ? 'text-red' : ''}`}>
+                <label htmlFor={type.koodiArvo} className={`${requiredError ? 'text-red-primary' : ''}`}>
                   {type.nimi}
                 </label>
               </fieldset>

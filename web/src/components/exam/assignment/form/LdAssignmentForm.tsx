@@ -7,26 +7,30 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Exam, LdAssignmentIn, PublishState } from '../../../../types'
+import { ContentTypeEng, Exam, LdAssignmentIn, PublishState } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
-import { postAssignment, updateAssignment } from '../../../../request'
+import { createAssignment, updateAssignment } from '../../../../request'
 import { Dropdown } from '../../../Dropdown'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
+import { FormHeader } from '../../formCommon/FormHeader'
+import { useFetch } from '../../../../hooks/useFetch'
 
 type LdAssignmentFormProps = {
   action: 'new' | 'update'
-  assignment?: LdAssignmentIn
   pathname: string
-  exam: Exam
+  id?: string
 }
 
-export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssignmentFormProps) => {
+export const LdAssignmentForm = ({ action, pathname, id }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
+  const exam = Exam.Ld
+
+  const { data: assignment } = useFetch<LdAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
 
   const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(LdAssignmentSchema) })
 
@@ -63,11 +67,11 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
         if (action === 'update' && assignment) {
           resultId = await updateAssignment<LdAssignmentFormType>(assignment.id, body)
         } else {
-          const { id } = await postAssignment<LdAssignmentFormType>(body)
+          const { id } = await createAssignment<LdAssignmentFormType>(body)
           resultId = id
         }
 
-        navigate(`${pathname}/../${resultId}`)
+        navigate(`/${exam}/assignments/${resultId}`)
       } catch (e) {
         console.error(e)
       }
@@ -92,6 +96,7 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
 
   return (
     <>
+      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
@@ -137,8 +142,6 @@ export const LdAssignmentForm = ({ action, assignment, pathname, exam }: LdAssig
               canReset
             />
           </div>
-
-          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
           <FormContentInput hasInstruction />
         </form>

@@ -17,7 +17,7 @@ export const TextInput = ({ id, register, error, required, children }: TextInput
       id={id}
       data-testid={id}
       type="text"
-      className={`block w-full border ${error ? 'border-red' : 'border-gray-secondary'} p-2.5`}
+      className={`block w-full border ${error ? 'border-red-primary' : 'border-gray-secondary'} p-2.5`}
       {...register(id, { required })}
     />
   </div>

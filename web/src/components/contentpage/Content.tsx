@@ -67,20 +67,13 @@ export const Content = ({ exam }: AssignmentProps) => {
                       <StateTag state={data.publishState} />
                       <span
                         className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
-                        onClick={() =>
-                          navigate(`../${contentType}/update`, {
-                            state: {
-                              data
-                            }
-                          })
-                        }
+                        onClick={() => navigate(`../${contentType}/update/${data.id}`)}
                         data-testid="edit-content-btn">
                         <Icon name="muokkaa" color="text-green-primary" />
                         <p className="text-green-primary">{t('assignment.muokkaa')}</p>
                       </span>
                     </div>
                   )}
-                  <div className="mt-2 border-b border-gray-separator" />
                   {contentType && isAssignment(data, contentType) && (
                     <AssignmentContent assignment={data} exam={exam} language={language} />
                   )}
@@ -92,7 +85,6 @@ export const Content = ({ exam }: AssignmentProps) => {
                   )}
                 </div>
               </div>
-              <div className="mb-4 border-b border-gray-separator" />
               <div className="row mb-6">
                 <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
                   {t(`${contentTypeSingular}.palaa`)}

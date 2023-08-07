@@ -24,9 +24,6 @@ fun updateAssignment(id: Int, body: String) =
 fun getAllAssignments(exam: Exam) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam").contentType(MediaType.APPLICATION_JSON)
 
-fun getAllInstructions(exam: Exam) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam").contentType(MediaType.APPLICATION_JSON)
-
 fun getSukoAssignments(exam: Exam, filter: SukoAssignmentFilter): MockHttpServletRequestBuilder {
     val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
 

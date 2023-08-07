@@ -20,6 +20,8 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
 
   return (
     <>
+      <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+
       <div className="mb-6">
         <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>

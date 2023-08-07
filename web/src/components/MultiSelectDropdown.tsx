@@ -57,7 +57,7 @@ export const MultiSelectDropdown = ({
       tabIndex={0}>
       <div
         id={id}
-        className={`flex bg-white px-2 ${requiredError ? 'border border-red' : ''}`}
+        className={`flex bg-white px-2 ${requiredError ? 'border border-red-primary' : ''}`}
         role="button"
         data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">

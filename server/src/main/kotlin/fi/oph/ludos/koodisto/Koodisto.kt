@@ -2,7 +2,7 @@ package fi.oph.ludos.koodisto
 
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class Language(val code: String) {
+enum class KoodistoLanguage(val code: String) {
     FI("FI"),
     SV("SV")
 }

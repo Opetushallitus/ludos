@@ -47,13 +47,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
               name="muokkaa"
               color="text-green-primary"
               dataTestId={`assignment-${assignment.id.toString()}-edit`}
-              onClick={() =>
-                navigate('update', {
-                  state: {
-                    data: assignment
-                  }
-                })
-              }
+              onClick={() => navigate(`update/${assignment.id}`)}
             />
           </>
         )}

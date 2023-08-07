@@ -1,5 +1,6 @@
 ludos:
   appUrl: "http://localhost:8080"
   opintopolkuHostname: "virkailija.untuvaopintopolku.fi"
+  instruction-bucket-name: ludos-application-instruction-bucket-untuva
   certificate-bucket-name: ludos-application-certificate-bucket-untuva
   local-dev-aws-profile: oph-ludos-dev

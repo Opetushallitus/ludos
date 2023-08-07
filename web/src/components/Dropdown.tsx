@@ -53,7 +53,7 @@ export const Dropdown = ({
       tabIndex={0}>
       <div
         id={id}
-        className={`flex ${requiredError ? 'border border-red' : ''} bg-white px-2`}
+        className={`flex ${requiredError ? 'border border-red-primary' : ''} bg-white px-2`}
         role="button"
         onClick={() => setIsOpen(!isOpen)}
         data-testid={testId}>

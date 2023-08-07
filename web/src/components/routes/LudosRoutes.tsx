@@ -69,11 +69,11 @@ function AuthorizedRoutes() {
         <Route path={`/${sukoKey}`}>
           <Route element={<ProtectedRoute />}>
             <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
-            <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
+            <Route path={`assignments/${updateKey}/:id`} element={<AssignmentForm action={updateKey} />} />
             <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
-            <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
+            <Route path={`instructions/${updateKey}/:id`} element={<InstructionForm action={updateKey} />} />
             <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
-            <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+            <Route path={`certificates/${updateKey}/:id`} element={<CertificateForm action={updateKey} />} />
           </Route>
           <Route index path={':contentType?'} element={<Exams exam={Exam.Suko} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Suko} />} />
@@ -81,11 +81,11 @@ function AuthorizedRoutes() {
         <Route path={`/${puhviKey}`}>
           <Route element={<ProtectedRoute />}>
             <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
-            <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
+            <Route path={`assignments/${updateKey}/:id`} element={<AssignmentForm action={updateKey} />} />
             <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
-            <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
+            <Route path={`instructions/${updateKey}/:id`} element={<InstructionForm action={updateKey} />} />
             <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
-            <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+            <Route path={`certificates/${updateKey}/:id`} element={<CertificateForm action={updateKey} />} />
           </Route>
           <Route index path={':contentType?'} element={<Exams exam={Exam.Puhvi} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Puhvi} />} />
@@ -93,11 +93,11 @@ function AuthorizedRoutes() {
         <Route path={`/${ldKey}`}>
           <Route element={<ProtectedRoute />}>
             <Route path={`assignments/${newKey}`} element={<AssignmentForm action={newKey} />} />
-            <Route path={`assignments/${updateKey}`} element={<AssignmentForm action={updateKey} />} />
+            <Route path={`assignments/${updateKey}/:id`} element={<AssignmentForm action={updateKey} />} />
             <Route path={`instructions/${newKey}`} element={<InstructionForm action={newKey} />} />
-            <Route path={`instructions/${updateKey}`} element={<InstructionForm action={updateKey} />} />
+            <Route path={`instructions/${updateKey}/:id`} element={<InstructionForm action={updateKey} />} />
             <Route path={`certificates/${newKey}`} element={<CertificateForm action={newKey} />} />
-            <Route path={`certificates/${updateKey}`} element={<CertificateForm action={updateKey} />} />
+            <Route path={`certificates/${updateKey}/:id`} element={<CertificateForm action={updateKey} />} />
           </Route>
           <Route index path={':contentType?'} element={<Exams exam={Exam.Ld} />} />
           <Route path={':contentType/:id'} element={<Content exam={Exam.Ld} />} />

@@ -1,7 +1,7 @@
 package fi.oph.ludos.instruction
 
 import fi.oph.ludos.Exam
-import fi.oph.ludos.PublishState
+import org.springframework.mock.web.MockMultipartFile
 import java.sql.Timestamp
 
 data class TestInstructionIn(
@@ -9,8 +9,10 @@ data class TestInstructionIn(
     val nameSv: String,
     val contentFi: String,
     val contentSv: String,
-    val publishState: PublishState,
-    val exam: Exam
+    val shortDescriptionFi: String,
+    val shortDescriptionSv: String,
+    val publishState: String,
+    val exam: String
 )
 
 data class TestInstructionOut(
@@ -19,8 +21,25 @@ data class TestInstructionOut(
     val nameSv: String,
     val contentFi: String,
     val contentSv: String,
-    val publishState: PublishState,
+    val shortDescriptionFi: String,
+    val shortDescriptionSv: String,
+    val publishState: String,
     val authorOid: String,
-    val createdAt: Timestamp,
-    val updatedAt: Timestamp
+    val createdAt: String,
+    val updatedAt: String,
+    val attachments: List<TestAttachmentOut>
+)
+
+data class TestAttachmentOut(
+    val fileKey: String, val fileName: String, val fileUploadDate: String, val name: String, val language: String
+)
+
+data class TestInstructionAttachmentMetadata(
+    val fileKey: String?,
+    val name: String,
+    val language: String
+)
+
+data class TestInstructionAttachmentData(
+    val file: MockMultipartFile, val instructionAttachmentMetadata: TestInstructionAttachmentMetadata
 )

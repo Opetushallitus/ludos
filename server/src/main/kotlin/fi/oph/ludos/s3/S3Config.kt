@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.s3.S3Client
 @Configuration
 class S3Config {
     @Bean
+    //@Profile("!local")
     fun s3Client(
         environment: Environment
     ): S3Client {

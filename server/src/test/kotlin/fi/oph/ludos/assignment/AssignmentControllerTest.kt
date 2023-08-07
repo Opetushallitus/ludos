@@ -35,18 +35,11 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     fun setup() {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
-        mockMvc.perform(seedDb())
+        mockMvc.perform(seedDbWithAssignments())
         val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
         idsOfAssignmentDrafts = mapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
             .filter { it.publishState == "DRAFT" }.map { it.id }
-    }
-
-    fun assertTimeIsRoughlyBetween(before: ZonedDateTime, time: ZonedDateTime, after: ZonedDateTime, timeName: String) {
-        val tolerance = Duration.ofMillis(5)
-        val (beforeMinusTolerance, afterPlusTolerance) = Pair(before.minus(tolerance), after.plus(tolerance))
-        assertTrue(time >= beforeMinusTolerance && time <= afterPlusTolerance,
-            "Time ${timeName} ${time} is not between ${beforeMinusTolerance} and ${afterPlusTolerance}")
     }
 
     fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(sukoIn: TestAssignmentSukoIn, sukoOut: TestAssignmentSukoOut) {
@@ -92,7 +85,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val createdAssignment = mapper.readValue(createResult, TestAssignmentSukoOut::class.java)
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(testAssignment, createdAssignment)
         assertThat(createdAssignment.authorOid, equalTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo))
-        assertTimeIsRoughlyBetween(timeBeforeCreate, ZonedDateTime.parse(createdAssignment.createdAt), timeAfterCreate, "createdAt")
+        assertTimeIsRoughlyBetween(timeBeforeCreate, createdAssignment.createdAt, timeAfterCreate, "createdAt")
         assertEquals(createdAssignment.createdAt, createdAssignment.updatedAt)
 
         val getByIdStr = mockMvc.perform(getAssignment(Exam.SUKO, createdAssignment.id)).andExpect(status().isOk())
@@ -133,7 +126,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(updatedAssignment, updatedAssignmentById)
         assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
         assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
-        assertTimeIsRoughlyBetween(timeBeforeUpdate, ZonedDateTime.parse(updatedAssignmentById.updatedAt), timeAfterUpdate, "updatedAt")
+        assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
     }
 
     val minimalSukoAssignmentIn = TestAssignmentSukoIn(

@@ -41,8 +41,8 @@ fun putCertificate(id: Int, certificate: String, attachmentPart: MockMultipartFi
     return reqBuilder
 }
 
-fun getAttachmentPreview(fileKey: String) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/preview/$fileKey")
+fun getAttachment(fileKey: String) =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/attachment/$fileKey")
 
 fun getAllCertificates(exam: Exam) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam").contentType(MediaType.APPLICATION_JSON)

@@ -7,26 +7,30 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
+import { ContentTypeEng, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
-import { postAssignment, updateAssignment } from '../../../../request'
+import { createAssignment, updateAssignment } from '../../../../request'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../../formCommon/AssignmentFileTypeRadio'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
+import { FormHeader } from '../../formCommon/FormHeader'
+import { useFetch } from '../../../../hooks/useFetch'
 
 type PuhviAssignmentFormProps = {
   action: 'new' | 'update'
-  assignment?: PuhviAssignmentIn
   pathname: string
-  exam: Exam
+  id?: string
 }
 
-export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: PuhviAssignmentFormProps) => {
+export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
+  const exam = Exam.Puhvi
+
+  const { data: assignment } = useFetch<PuhviAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
 
   const methods = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(PuhviAssignmentSchema) })
 
@@ -65,11 +69,11 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
         if (action === 'update' && assignment) {
           resultId = await updateAssignment<PuhviAssignmentFormType>(assignment.id, body)
         } else {
-          const { id } = await postAssignment<PuhviAssignmentFormType>(body)
+          const { id } = await createAssignment<PuhviAssignmentFormType>(body)
           resultId = id
         }
 
-        navigate(`${pathname}/../${resultId}`)
+        navigate(`/${exam}/assignments/${resultId}`)
       } catch (e) {
         console.error(e)
       }
@@ -93,6 +97,7 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
 
   return (
     <>
+      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
@@ -130,8 +135,6 @@ export const PuhviAssignmentForm = ({ action, assignment, pathname, exam }: Puhv
               canReset
             />
           </div>
-
-          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
           <FormContentInput hasInstruction />
         </form>

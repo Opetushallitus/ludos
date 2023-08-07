@@ -1,5 +1,6 @@
 package fi.oph.ludos.certificate
 
+import fi.oph.ludos.AttachmentOut
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import java.sql.Timestamp
@@ -27,14 +28,14 @@ data class CertificateDtoOut(
     override val name: String,
     override val description: String,
     override val publishState: PublishState,
-    val attachment: CertificateAttachment,
+    val attachment: CertificateAttachmentDtoOut,
     val authorOid: String,
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 ) : Certificate
 
-data class CertificateAttachment (
-    val fileKey: String,
-    val fileName: String,
-    val fileUploadDate: ZonedDateTime
-)
+data class CertificateAttachmentDtoOut(
+    override val fileKey: String,
+    override val fileName: String,
+    override val fileUploadDate: ZonedDateTime,
+): AttachmentOut

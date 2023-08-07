@@ -55,20 +55,28 @@ export type AssignmentIn = BaseAssignmentAndInstructionIn & {
   tavoitetasoKoodiArvo: string
 }
 
+export type InstructionIn = BaseAssignmentAndInstructionIn & {
+  shortDescriptionFi: string
+  shortDescriptionSv: string
+  attachments: AttachmentIn[]
+}
+
 export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
 }
 
-export type CertificateAttachmentIn = {
+export type AttachmentIn = {
   fileName: string
   fileKey: string
   fileUploadDate: string
+  name: string
+  language: 'FI' | 'SV'
 }
 
 export type CertificateIn = BaseIn & {
   name: string
   description: string
-  attachment: CertificateAttachmentIn
+  attachment: AttachmentIn
 }
 
 export type LdAssignmentIn = AssignmentIn & {
@@ -131,3 +139,23 @@ export const ErrorMessages = {
 } as const
 
 export type ErrorMessagesType = (typeof ErrorMessages)[keyof typeof ErrorMessages]
+
+export type FileDetails = Partial<AttachmentIn> & {
+  fileName: string
+}
+
+type Metadata = {
+  name: string
+  language: AttachmentLanguage
+}
+
+export type MapWithFileKeyAndMetadata = Map<string, Metadata>
+
+export type AttachmentLanguage = 'fi' | 'sv'
+
+export type AttachmentData = {
+  attachment?: AttachmentIn
+  name: string
+  language?: AttachmentLanguage
+  file?: File
+}

@@ -1,6 +1,7 @@
 ludos:
   appUrl: "https://ludos.untuvaopintopolku.fi"
   opintopolkuHostname: "virkailija.untuvaopintopolku.fi"
+  instruction-bucket-name: ludos-application-instruction-bucket-untuva
   certificate-bucket-name: ludos-application-certificate-bucket-untuva
 
 server:

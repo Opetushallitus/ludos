@@ -1,10 +1,14 @@
 package fi.oph.ludos.instruction
 
+import Language
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
+import fi.oph.ludos.AttachmentOut
 import fi.oph.ludos.PublishState
+import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
+import java.time.ZonedDateTime
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -17,6 +21,8 @@ interface Instruction {
     val contentFi: String
     val nameSv: String
     val contentSv: String
+    val shortDescriptionFi: String
+    val shortDescriptionSv: String
     val publishState: PublishState
 }
 
@@ -26,6 +32,8 @@ data class SukoInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val shortDescriptionFi: String,
+    override val shortDescriptionSv: String,
     override val publishState: PublishState,
 ) : Instruction
 
@@ -35,6 +43,8 @@ data class PuhviInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val shortDescriptionFi: String,
+    override val shortDescriptionSv: String,
     override val publishState: PublishState,
 ) : Instruction
 
@@ -44,8 +54,26 @@ data class LdInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val shortDescriptionFi: String,
+    override val shortDescriptionSv: String,
     override val publishState: PublishState,
 ) : Instruction
+
+interface InstructionAttachmentMetadata {
+    val name: String
+    val language: Language
+}
+
+data class InstructionAttachmentMetadataDtoIn(
+    val fileKey: String?,
+    override val name: String,
+    override val language: Language
+) : InstructionAttachmentMetadata
+
+data class InstructionAttachmentIn(
+    val file: MultipartFile,
+    val metadata: InstructionAttachmentMetadataDtoIn
+)
 
 interface InstructionOut {
     val id: Int
@@ -54,13 +82,24 @@ interface InstructionOut {
     val updatedAt: Timestamp
 }
 
+data class InstructionAttachmentDtoOut(
+    override val fileKey: String,
+    override val fileName: String,
+    override val fileUploadDate: ZonedDateTime,
+    override val name: String,
+    override val language: Language
+) : AttachmentOut, InstructionAttachmentMetadata
+
 data class InstructionDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
+    override val shortDescriptionFi: String,
+    override val shortDescriptionSv: String,
     override val publishState: PublishState,
+    val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp

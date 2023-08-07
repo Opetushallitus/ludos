@@ -3,7 +3,7 @@ import { AriaAttributes, ButtonHTMLAttributes, DetailedHTMLProps } from 'react'
 export interface ButtonProps
   extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
     AriaAttributes {
-  variant: 'buttonPrimary' | 'buttonSecondary' | 'buttonGhost'
+  variant: 'buttonPrimary' | 'buttonSecondary' | 'buttonGhost' | 'buttonDanger'
   testId?: string
 }
 

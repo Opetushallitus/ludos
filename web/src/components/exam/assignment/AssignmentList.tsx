@@ -130,7 +130,7 @@ export const AssignmentList = ({
         <>
           {isAssignmentsArr(data, contentType) && (
             <ul>
-              {data?.map((assignment, i) => (
+              {data.map((assignment, i) => (
                 <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
               ))}
             </ul>

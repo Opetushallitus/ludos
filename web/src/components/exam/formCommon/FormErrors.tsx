@@ -18,5 +18,5 @@ export const FormError = ({ error }: { error?: string }) => {
     }
   }
 
-  return <>{error && <p className="text-red">{getErrorMessage(error as ErrorMessagesType)}</p>}</>
+  return <>{error && <p className="text-red-primary">{getErrorMessage(error as ErrorMessagesType)}</p>}</>
 }
