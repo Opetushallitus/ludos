@@ -25,7 +25,7 @@ data class TestAssignmentSukoIn(
     override val publishState: String,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
-    val tavoitetasoKoodiArvo: String,
+    val tavoitetasoKoodiArvo: String?,
     val aiheKoodiArvos: Array<String>,
     val laajaalainenOsaaminenKoodiArvos: Array<String>,
 ) : TestAssignmentIn
@@ -41,7 +41,7 @@ data class TestAssignmentSukoOut(
     val publishState: String,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
-    val tavoitetasoKoodiArvo: String,
+    val tavoitetasoKoodiArvo: String?,
     val aiheKoodiArvos: Array<String>,
     val laajaalainenOsaaminenKoodiArvos: Array<String>,
     val authorOid: String,

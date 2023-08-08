@@ -37,15 +37,14 @@ annotation class ValidKoodiArvo(
 )
 
 class KoodiArvoValidator(private val koodistoService: KoodistoService) :
-    javax.validation.ConstraintValidator<ValidKoodiArvo, String> {
+    javax.validation.ConstraintValidator<ValidKoodiArvo, String?> {
     private lateinit var koodistoName: KoodistoName
 
     override fun initialize(constraintAnnotation: ValidKoodiArvo) {
         koodistoName = constraintAnnotation.koodisto
     }
 
-    override fun isValid(value: String, context: javax.validation.ConstraintValidatorContext?): Boolean {
-        return koodistoService.isKoodiArvoInKoodisto(koodistoName, value)
+    override fun isValid(value: String?, context: javax.validation.ConstraintValidatorContext?): Boolean {
+        return value === null || koodistoService.isKoodiArvoInKoodisto(koodistoName, value)
     }
 }
-

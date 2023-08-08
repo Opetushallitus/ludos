@@ -3,6 +3,7 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
+import org.apache.http.HttpStatus
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hibernate.validator.internal.util.Contracts.assertTrue
@@ -143,7 +144,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         "PUBLISHED",
         "003",
         "TKRUA1",
-        "0004", // TODO: make null after making it nullable
+        null,
         emptyArray(),
         emptyArray(),
     )
@@ -163,9 +164,10 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         SukoAssignmentDtoIn::class.memberProperties.forEach { field ->
             val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
             val jsonWithFieldRemoved = mapper.writeValueAsString(dtoInMap - field.name)
-            val responseBody = mockMvc.perform(postAssignment(jsonWithFieldRemoved)).andExpect(status().isBadRequest())
-                .andReturn().response.contentAsString
-            assertThat(responseBody, containsString("property ${field.name} due to missing"))
+            val response = mockMvc.perform(postAssignment(jsonWithFieldRemoved)).andReturn().response
+            assertThat("missing ${field.name} yields bad request", response.status, equalTo(HttpStatus.SC_BAD_REQUEST))
+            assertThat("missing ${field.name} yields proper error message",
+                response.contentAsString, containsString("property ${field.name} due to missing"))
         }
     }
 

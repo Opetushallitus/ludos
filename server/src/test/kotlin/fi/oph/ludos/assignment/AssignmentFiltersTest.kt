@@ -150,7 +150,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
 
                 assertTrue(sameVals.isNotEmpty(), "aihe $aihe does not contain aiheKoodiArvos ${it.aiheKoodiArvos}")
             }
-            if (tavoitetaitotaso != null) {
+            if (tavoitetaitotaso != null && it.tavoitetasoKoodiArvo != null) {
                 assertTrue(
                     tavoitetaitotaso.split(",").contains(it.tavoitetasoKoodiArvo),
                     "tavoitetaitotaso $tavoitetaitotaso does not contain tavoitetasoKoodiArvo ${it.tavoitetasoKoodiArvo}"
