@@ -47,6 +47,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.20.56")
     implementation("software.amazon.awssdk:sso:2.20.56")
     implementation("software.amazon.awssdk:ssooidc:2.20.56")
+    implementation("org.springframework:spring-test")
     runtimeOnly("org.postgresql:postgresql:42.6.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

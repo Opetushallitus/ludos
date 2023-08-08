@@ -3,11 +3,13 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
 import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,8 +22,21 @@ import javax.transaction.Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     val objectMapper = jacksonObjectMapper()
+    var idsOfAssignmentDrafts = listOf<Int>()
+
+    @BeforeAll
+    fun setup() {
+        authenticateAsYllapitaja()
+        mockMvc.perform(emptyDb())
+        mockMvc.perform(seedDb())
+        val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        idsOfAssignmentDrafts = objectMapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
+            .filter { it.publishState == PublishState.DRAFT }.map { it.id }
+    }
 
     @Test
     @WithYllapitajaRole
@@ -45,12 +60,12 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         // post assignment DTO IN
         val createResult = mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val createdAssignment = objectMapper.readValue(createResult, TestSukoOut::class.java)
+        val createdAssignment = objectMapper.readValue(createResult, TestAssignmentSukoOut::class.java)
 
         // get assignment DTO OUT
         val getByIdResult = mockMvc.perform(getAssignment(Exam.SUKO, createdAssignment.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val assignmentById = objectMapper.readValue(getByIdResult, TestSukoOut::class.java)
+        val assignmentById = objectMapper.readValue(getByIdResult, TestAssignmentSukoOut::class.java)
 
         assertEquals(createdAssignment.id, assignmentById.id)
         assertEquals(createdAssignment.nameFi, assignmentById.nameFi)
@@ -62,7 +77,9 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(createdAssignment.oppimaaraKoodiArvo, assignmentById.oppimaaraKoodiArvo)
         assertEquals(createdAssignment.tavoitetasoKoodiArvo, assignmentById.tavoitetasoKoodiArvo)
         assertThat(createdAssignment.aiheKoodiArvos, equalTo(assignmentById.aiheKoodiArvos))
-        assertThat(createdAssignment.laajaalainenOsaaminenKoodiArvos, equalTo(assignmentById.laajaalainenOsaaminenKoodiArvos))
+        assertThat(
+            createdAssignment.laajaalainenOsaaminenKoodiArvos, equalTo(assignmentById.laajaalainenOsaaminenKoodiArvos)
+        )
         assertThat(createdAssignment.authorOid, equalTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo))
         assertEquals(createdAssignment.createdAt, assignmentById.createdAt)
         assertEquals(createdAssignment.updatedAt, assignmentById.updatedAt)
@@ -142,14 +159,16 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val errorMessage =
             mockMvc.perform(postAssignment(assignmentFail)).andReturn().response.contentAsString.trimIndent()
 
-        assertThat(errorMessage, equalTo(
-            """
+        assertThat(
+            errorMessage, equalTo(
+                """
                 aiheKoodiArvos: Invalid KoodiArvos
                 assignmentTypeKoodiArvo: Invalid KoodiArvo
                 laajaalainenOsaaminenKoodiArvos: Invalid KoodiArvos
                 oppimaaraKoodiArvo: Invalid KoodiArvo
                 tavoitetasoKoodiArvo: Invalid KoodiArvo
-            """.trimIndent())
+            """.trimIndent()
+            )
         )
     }
 
@@ -200,12 +219,12 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         // post assignment DTO IN
         val createResult = mockMvc.perform(postAssignment(testAssignment)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val createdAssignment = objectMapper.readValue(createResult, TestLdOut::class.java)
+        val createdAssignment = objectMapper.readValue(createResult, TestAssignmentLdOut::class.java)
 
         // get assignment DTO OUT
         val getByIdResult = mockMvc.perform(getAssignment(Exam.LD, createdAssignment.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val assignmentById = objectMapper.readValue(getByIdResult, TestLdOut::class.java)
+        val assignmentById = objectMapper.readValue(getByIdResult, TestAssignmentLdOut::class.java)
 
         assertEquals(assignmentById.id, assignmentById.id)
         assertEquals(assignmentById.nameFi, "Lukiodiplomi assignment FI")
@@ -238,7 +257,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val getUpdatedAssignment = mockMvc.perform(getAssignment(Exam.LD, assignmentById.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestLdOut::class.java)
+        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestAssignmentLdOut::class.java)
 
         assertEquals(updatedAssignment.nameFi, "New test name")
         assertEquals(updatedAssignment.contentFi, "content")
@@ -276,11 +295,11 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         // post assignment DTO IN
         val createResult =
             mockMvc.perform(postAssignment(body)).andExpect(status().isOk()).andReturn().response.contentAsString
-        val createdAssignment = objectMapper.readValue(createResult, TestPuhviOut::class.java)
+        val createdAssignment = objectMapper.readValue(createResult, TestAssignmentPuhviOut::class.java)
         // get assignment DTO OUT
         val getByIdResult = mockMvc.perform(getAssignment(Exam.PUHVI, createdAssignment.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val assignmentById = objectMapper.readValue(getByIdResult, TestPuhviOut::class.java)
+        val assignmentById = objectMapper.readValue(getByIdResult, TestAssignmentPuhviOut::class.java)
 
         assertEquals(assignmentById.id, assignmentById.id)
         assertEquals(assignmentById.nameFi, "Puhvi assignment")
@@ -319,7 +338,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             mockMvc.perform(getAssignment(Exam.PUHVI, assignmentById.id)).andExpect(status().isOk())
                 .andReturn().response.contentAsString
 
-        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestPuhviOut::class.java)
+        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestAssignmentPuhviOut::class.java)
 
         assertEquals(updatedAssignment.nameFi, "Puhvi assignment edited")
         assertEquals(updatedAssignment.contentFi, "Puhvi assignment content edited")
@@ -370,8 +389,36 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    fun getAssignmentsWithNoRole() {
+        mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().is3xxRedirection())
+    }
+
+    @Test
     @WithOpettajaRole
-    fun testInsufficientRole() {
+    fun getAssignmentDraftAsOpettaja() {
+        idsOfAssignmentDrafts.forEach() {
+            mockMvc.perform(getAssignment(Exam.SUKO, it)).andExpect(status().isNotFound())
+        }
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun getAssignmentsAsOpettaja() {
+        val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+
+        val assignments = objectMapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
+
+        assertTrue(
+            assignments.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft assignments"
+        )
+
+        assertEquals(8, assignments.size)
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun assignmentTestInsufficientRole() {
         val testAssignmentStr = """{
             "exam": "SUKO",
             "nameFi": "suomi",
@@ -390,16 +437,5 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
         mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isUnauthorized())
         mockMvc.perform(updateAssignment(1, testAssignmentStr)).andExpect(status().isUnauthorized())
-    }
-
-    @Test
-    @WithOpettajaRole
-    fun getAssignmentsAsOpettaja() {
-        mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
-    }
-
-    @Test
-    fun getAssignmentsWithNoRole() {
-        mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().is3xxRedirection())
     }
 }

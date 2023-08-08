@@ -1,8 +1,8 @@
 import { Page, test as importedTest } from '@playwright/test'
-import fs from 'fs'
 
 export const Role = {
   YLLAPITAJA: 'YLLAPITAJA',
+  OPETTAJA: 'OPETTAJA',
   UNAUTHORIZED: 'UNAUTHORIZED'
 }
 export type Role = (typeof Role)[keyof typeof Role]

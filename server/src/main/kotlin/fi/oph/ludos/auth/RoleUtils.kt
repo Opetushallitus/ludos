@@ -15,10 +15,11 @@ enum class Role(val oikeus: String) : GrantedAuthority {
     private fun isAtLeastAsMightyAs(minimumRequiredRole: Role): Boolean = this >= minimumRequiredRole
 
     override fun getAuthority(): String = this.name
+
     fun getAuthorities(): Collection<GrantedAuthority> = values().filter { this.isAtLeastAsMightyAs(it) }
 
     companion object {
-        private val logger: Logger = LoggerFactory.getLogger(Role.javaClass)
+        private val logger: Logger = LoggerFactory.getLogger(Role.Companion::class.java)
         private val roleByOikeus = values().associateBy { it.oikeus }
         private fun fromOikeus(oikeus: String): Role? = roleByOikeus[oikeus]
 

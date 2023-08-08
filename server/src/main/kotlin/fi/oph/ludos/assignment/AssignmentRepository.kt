@@ -3,6 +3,7 @@ package fi.oph.ludos.assignment
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
+import fi.oph.ludos.auth.Role
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -81,21 +82,24 @@ class AssignmentRepository(
     }
 
     fun getAssignments(assignmentFilter: AssignmentFilter): List<AssignmentOut> {
-        val queryAndArgs = buildQuery(assignmentFilter)
+        val role = Kayttajatiedot.fromSecurityContext().role
+        val (query, parameters, mapper) = buildQuery(assignmentFilter, role)
 
-        return namedJdbcTemplate.query(queryAndArgs.first, queryAndArgs.second, queryAndArgs.third)
+        return namedJdbcTemplate.query(query, parameters, mapper)
     }
 
     private fun buildQuery(
-        filters: AssignmentFilter
+        filters: AssignmentFilter, role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> AssignmentOut> = when (filters) {
-        is SukoAssignmentFilter -> buildSukoQuery(filters)
-        is PuhviAssignmentFilter -> buildPuhviQuery(filters)
-        is LdAssignmentFilter -> buildLdQuery(filters)
+        is SukoAssignmentFilter -> buildSukoQuery(filters, role)
+        is PuhviAssignmentFilter -> buildPuhviQuery(filters, role)
+        is LdAssignmentFilter -> buildLdQuery(filters, role)
         else -> throw UnknownError("Unknown assignment filter ${filters::class.simpleName}")
     }
 
-    private fun buildSukoQuery(filters: SukoAssignmentFilter): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentDtoOut> {
+    private fun buildSukoQuery(
+        filters: SukoAssignmentFilter, role: Role
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentDtoOut> {
         val parameters = MapSqlParameterSource()
 
         var query = "SELECT * FROM suko_assignment WHERE true"
@@ -127,6 +131,10 @@ class AssignmentRepository(
             parameters.addValue("tavoitetasoKoodiArvo", values)
         }
 
+        if (role == Role.OPETTAJA) {
+            query += " AND assignment_publish_state = 'PUBLISHED'"
+        }
+
         query += " ORDER BY assignment_created_at"
 
         if (filters.orderDirection != null) {
@@ -136,7 +144,9 @@ class AssignmentRepository(
         return Triple(query, parameters, mapSukoResultSet)
     }
 
-    private fun buildPuhviQuery(filters: PuhviAssignmentFilter): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentDtoOut> {
+    private fun buildPuhviQuery(
+        filters: PuhviAssignmentFilter, role: Role
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentDtoOut> {
         val parameters = MapSqlParameterSource()
 
         var query = "SELECT * FROM puhvi_assignment WHERE true"
@@ -153,6 +163,10 @@ class AssignmentRepository(
             parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
         }
 
+        if (role == Role.OPETTAJA) {
+            query += " AND assignment_publish_state = 'PUBLISHED'"
+        }
+
         query += " ORDER BY assignment_created_at"
 
         if (filters.orderDirection != null) {
@@ -162,7 +176,9 @@ class AssignmentRepository(
         return Triple(query, parameters, mapPuhviResultSet)
     }
 
-    private fun buildLdQuery(filters: LdAssignmentFilter): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> LdAssignmentDtoOut> {
+    private fun buildLdQuery(
+        filters: LdAssignmentFilter, role: Role
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> LdAssignmentDtoOut> {
         val parameters = MapSqlParameterSource()
 
         var query = "SELECT * FROM ld_assignment WHERE true"
@@ -177,6 +193,10 @@ class AssignmentRepository(
 
             query += " AND ld_assignment_aine_koodi_arvo IN (:aineKoodiArvo)"
             parameters.addValue("aineKoodiArvo", values)
+        }
+
+        if (role == Role.OPETTAJA) {
+            query += " AND assignment_publish_state = 'PUBLISHED'"
         }
 
         query += " ORDER BY assignment_created_at"
@@ -336,6 +356,8 @@ class AssignmentRepository(
     )[0]
 
     fun getAssignmentById(id: Int, exam: Exam): AssignmentOut? {
+        val role = Kayttajatiedot.fromSecurityContext().role
+
         val tableAndMapper = when (exam) {
             Exam.SUKO -> "suko_assignment" to mapSukoResultSet
             Exam.PUHVI -> "puhvi_assignment" to mapPuhviResultSet
@@ -345,9 +367,13 @@ class AssignmentRepository(
         val table = tableAndMapper.first
         val mapper = tableAndMapper.second
 
-        val results = jdbcTemplate.query("SELECT * FROM $table WHERE assignment_id = ?", mapper, id)
-
-        return results.firstOrNull()
+        return if (role == Role.OPETTAJA) {
+            jdbcTemplate.query(
+                "SELECT * FROM $table WHERE assignment_id = ? AND assignment_publish_state = 'PUBLISHED'", mapper, id
+            )
+        } else {
+            jdbcTemplate.query("SELECT * FROM $table WHERE assignment_id = ?", mapper, id)
+        }.firstOrNull()
     }
 
     fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? {

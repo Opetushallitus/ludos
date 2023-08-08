@@ -29,7 +29,7 @@ import kotlin.system.exitProcess
 @Profile("local", "untuva")
 @RequireAtLeastYllapitajaRole
 class TestController(
-    val seedAssignmentRepository: SeedAssignmentRepository,
+    val seedDataRepository: SeedDataRepository,
     val assignmentService: AssignmentService,
     @Value("\${ludos.appUrl}") private val appUrl: String,
     private val environment: Environment,
@@ -59,7 +59,7 @@ class TestController(
     @GetMapping("/seed")
     @RequireAtLeastYllapitajaRole
     fun seedDatabase(httpServletResponse: HttpServletResponse) {
-        seedAssignmentRepository.seedDatabase()
+        seedDataRepository.seedDatabase()
 
         return httpServletResponse.sendRedirect(appUrl)
     }
@@ -77,7 +77,9 @@ class TestController(
     @GetMapping("/empty")
     @RequireAtLeastYllapitajaRole
     fun emptyDatabase(httpServletResponse: HttpServletResponse) {
-        seedAssignmentRepository.nukeAssignments()
+        seedDataRepository.nukeAssignments()
+        seedDataRepository.nukeCertificates()
+        seedDataRepository.nukeInstructions()
 
         return httpServletResponse.sendRedirect(appUrl)
     }

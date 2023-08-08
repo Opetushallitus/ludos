@@ -54,7 +54,7 @@ data class Kayttajatiedot(
     val sukunimi: String?,
     val asiointiKieli: String?,
 ) : UserDetails {
-    private val role: Role = Role.fromKayttajatiedot(this)
+    val role: Role = Role.fromKayttajatiedot(this)
     override fun getAuthorities(): Collection<GrantedAuthority> = role.getAuthorities()
     override fun getPassword(): String? = null
     override fun getUsername(): String = username

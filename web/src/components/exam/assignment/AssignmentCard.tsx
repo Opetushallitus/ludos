@@ -8,6 +8,7 @@ import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from './assignmen
 import { toLocaleDate } from '../../../formatUtils'
 import { ContentActions } from './ContentActions'
 import { useKoodisto } from '../../../hooks/useKoodisto'
+import { useUserDetails } from '../../../hooks/useUserDetails'
 
 type AssignmentCardProps = {
   language: string
@@ -20,6 +21,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
   const navigate = useNavigate()
   const location = useLocation()
   const { getKoodisLabel, getKoodiLabel } = useKoodisto()
+  const { isYllapitaja } = useUserDetails()
 
   const isSuko = isSukoAssignment(assignment, exam)
   const isPuhvi = isPuhviAssignment(assignment, exam)
@@ -38,19 +40,23 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
           }}>
           {language === 'fi' ? assignment.nameFi : assignment.nameSv}
         </InternalLink>
-        <StateTag state={assignment.publishState} />
-        <Icon
-          name="muokkaa"
-          color="text-green-primary"
-          dataTestId={`assignment-${assignment.id.toString()}-edit`}
-          onClick={() =>
-            navigate('update', {
-              state: {
-                data: assignment
+        {isYllapitaja && (
+          <>
+            <StateTag state={assignment.publishState} />
+            <Icon
+              name="muokkaa"
+              color="text-green-primary"
+              dataTestId={`assignment-${assignment.id.toString()}-edit`}
+              onClick={() =>
+                navigate('update', {
+                  state: {
+                    data: assignment
+                  }
+                })
               }
-            })
-          }
-        />
+            />
+          </>
+        )}
       </div>
       <div className="flex flex-wrap md:flex md:flex-row md:flex-wrap">
         <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-8/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">
