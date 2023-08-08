@@ -1,6 +1,7 @@
 package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.ZonedDateTime
 import javax.transaction.Transactional
+import kotlin.reflect.full.memberProperties
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -148,6 +150,56 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
+    fun createMinimalSukoAssignment() {
+        mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn))).andExpect(status().isOk())
+    }
+
+    private fun removeField(jsonString:String, fieldToRemove: String): String =
+        jsonString.replace(Regex("\"${fieldToRemove}\":[^,}]*[,}]"), "")
+
+    @Test
+    @WithYllapitajaRole
+    fun anyMissingFieldYields400() {
+        SukoAssignmentDtoIn::class.memberProperties.forEach { field ->
+            val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+            val jsonWithFieldRemoved = mapper.writeValueAsString(dtoInMap - field.name)
+            val responseBody = mockMvc.perform(postAssignment(jsonWithFieldRemoved)).andExpect(status().isBadRequest())
+                .andReturn().response.contentAsString
+            assertThat(responseBody, containsString("property ${field.name} due to missing"))
+        }
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun missingExamFieldYields400() {
+        val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+        val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap - "exam")
+        val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
+        assertThat(responseBody, containsString("missing type id property 'exam'"))
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun invalidExamFieldYields400() {
+        val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+        val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap + ("exam" to "SCHUKO"))
+        val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
+        assertThat(responseBody, containsString("Could not resolve type id 'SCHUKO' as a subtype"))
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun invalidEnumFieldYields400() {
+        val jsonWithInvalidPublishState = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = "OLEMATON"))
+        val responseBody = mockMvc.perform(postAssignment(jsonWithInvalidPublishState)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
+        assertThat(responseBody, containsString("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"OLEMATON\": not one of the values accepted"))
+    }
+
+    @Test
+    @WithYllapitajaRole
     fun sukoAssignmentUpdateFailsWhenIdDoesNotExist() {
         val nonExistentId = -1
         val errorMessage = mockMvc.perform(updateAssignment(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
@@ -181,30 +233,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             """.trimIndent()
             )
         )
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun failForMissingField() {
-        val assignmentFail = """{
-                "exam": "SUKO",
-                "contentFi": "content",
-                "instructionFi": "instruction",
-                "nameSv": "New test name",
-                "contentSv": "content",
-                "instructionSv": "instruction",
-                "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "001",
-                "oppimaaraKoodiArvo": "ET",
-                "tavoitetasoKoodiArvo": "0004",
-                "aiheKoodiArvos": ["003", "002"],
-                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
-            }"""
-
-        val assignmentWithMissingFieldStr = mapper.writeValueAsString(minimalSukoAssignmentIn).replace(Regex("\"nameFi\":[^,]*,"), "")
-        assertThat(assignmentWithMissingFieldStr, not(containsString("nameFi")))
-        val errorMessage = mockMvc.perform(postAssignment(assignmentWithMissingFieldStr)).andReturn().response.contentAsString
-        assertThat(errorMessage, containsString("failed for JSON property nameFi due to missing (therefore NULL)"))
     }
 
     @Test
