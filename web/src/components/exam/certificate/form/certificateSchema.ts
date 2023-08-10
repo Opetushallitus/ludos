@@ -9,7 +9,7 @@ export const certificateSchema = z.object({
     .string()
     .refine((val) => val !== '', { message: ErrorMessages.REQUIRED })
     .refine((val) => val.length >= MIN_LENGTH, { message: ErrorMessages.SHORT }),
-  description: z.string().refine((val) => val !== '', { message: ErrorMessages.REQUIRED }),
+  description: z.string(),
   certificateHasAttachment: z.boolean().refine((val) => val === true, ErrorMessages.NO_FILE)
 })
 
