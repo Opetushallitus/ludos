@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.userdetails.*
 import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import javax.servlet.http.HttpServletRequest
@@ -102,13 +103,17 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
     }
 }
 
-class LudosAuthenticationFailureHandler : SimpleUrlAuthenticationFailureHandler() {
+class LudosAuthenticationFailureHandler : AuthenticationFailureHandler {
     private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(
-        request: HttpServletRequest?, response: HttpServletResponse?, exception: AuthenticationException?
+        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException
     ) {
         ludosLogger.warn("Login failed: ${exception?.message}")
-        super.onAuthenticationFailure(request, response, exception)
+        response.status = HttpServletResponse.SC_UNAUTHORIZED
+        response.contentType = "text/html"
+        response.writer.write("""<h1>Odottamaton virhe kirjautuessa sisään. Yritä uudestaan <a href="/">tästä.</a></h1>""")
+        response.writer.write("""<h1>Oväntat fel vid inloggning. Försök igen <a href="/">här.</a></h1>""")
+        response.writer.flush()
     }
 }
