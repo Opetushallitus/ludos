@@ -1,9 +1,10 @@
 package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
-import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.CoreMatchers.equalTo
+import org.apache.http.HttpStatus
+import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -16,7 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.ZonedDateTime
 import javax.transaction.Transactional
+import kotlin.reflect.full.memberProperties
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -24,7 +27,7 @@ import javax.transaction.Transactional
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
-    val objectMapper = jacksonObjectMapper()
+    val mapper = jacksonObjectMapper()
     var idsOfAssignmentDrafts = listOf<Int>()
 
     @BeforeAll
@@ -34,130 +37,192 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         mockMvc.perform(seedDb())
         val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        idsOfAssignmentDrafts = objectMapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
-            .filter { it.publishState == PublishState.DRAFT }.map { it.id }
+        idsOfAssignmentDrafts = mapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
+            .filter { it.publishState == "DRAFT" }.map { it.id }
+    }
+
+    fun assertTimeIsBetween(before: ZonedDateTime, time: ZonedDateTime, after: ZonedDateTime, timeName: String) {
+        assertTrue(time >= before && time <= after,
+            "Time ${timeName} ${time} is not between ${before} and ${after}")
+    }
+
+    fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(sukoIn: TestAssignmentSukoIn, sukoOut: TestAssignmentSukoOut) {
+        assertEquals(sukoIn.nameFi, sukoOut.nameFi)
+        assertEquals(sukoIn.nameSv, sukoOut.nameSv)
+        assertEquals(sukoIn.contentFi, sukoOut.contentFi)
+        assertEquals(sukoIn.contentSv, sukoOut.contentSv)
+        assertEquals(sukoIn.publishState, sukoOut.publishState)
+        assertEquals(sukoIn.assignmentTypeKoodiArvo, sukoOut.assignmentTypeKoodiArvo)
+        assertEquals(sukoIn.oppimaaraKoodiArvo, sukoOut.oppimaaraKoodiArvo)
+        assertEquals(sukoIn.tavoitetasoKoodiArvo, sukoOut.tavoitetasoKoodiArvo)
+        assertThat(sukoIn.aiheKoodiArvos, equalTo(sukoOut.aiheKoodiArvos))
+        assertThat(
+            sukoIn.laajaalainenOsaaminenKoodiArvos,
+            equalTo(sukoOut.laajaalainenOsaaminenKoodiArvos)
+        )
     }
 
     @Test
     @WithYllapitajaRole
-    fun sukoAssignmentTest() {
-        val testAssignmentStr = """{
-            "exam": "SUKO",
-            "nameFi": "suomi",
-            "nameSv": "ruotsi",
-            "contentFi": "suomi",
-            "contentSv": "ruotsi",
-            "instructionFi": "suomi",
-            "instructionSv": "ruotsi",
-            "publishState": "PUBLISHED",
-            "assignmentTypeKoodiArvo": "003",
-            "oppimaaraKoodiArvo": "ET",
-            "tavoitetasoKoodiArvo": "0004",
-            "aiheKoodiArvos": ["002", "003"],
-            "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
-        }""".trimIndent()
+    fun createAndGetByIdAndUpdateSukoAssignment() {
+        val testAssignment = TestAssignmentSukoIn(
+            "SUKO",
+            "name fi",
+            "name sv",
+            "content fi",
+            "content sv",
+            "instruction fi",
+            "instruction sv",
+            "PUBLISHED",
+            "003",
+            "TKRUA1",
+            "0004",
+            arrayOf("002", "003"),
+            arrayOf("06", "03")
+        )
 
-        // post assignment DTO IN
+        val testAssignmentStr = mapper.writeValueAsString(testAssignment)
+        val timeBeforeCreate = nowFromDb(mockMvc)
         val createResult = mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val createdAssignment = objectMapper.readValue(createResult, TestAssignmentSukoOut::class.java)
-
-        // get assignment DTO OUT
-        val getByIdResult = mockMvc.perform(getAssignment(Exam.SUKO, createdAssignment.id)).andExpect(status().isOk())
-            .andReturn().response.contentAsString
-        val assignmentById = objectMapper.readValue(getByIdResult, TestAssignmentSukoOut::class.java)
-
-        assertEquals(createdAssignment.id, assignmentById.id)
-        assertEquals(createdAssignment.nameFi, assignmentById.nameFi)
-        assertEquals(createdAssignment.nameSv, assignmentById.nameSv)
-        assertEquals(createdAssignment.contentFi, assignmentById.contentFi)
-        assertEquals(createdAssignment.contentSv, assignmentById.contentSv)
-        assertEquals(createdAssignment.publishState, assignmentById.publishState)
-        assertEquals(createdAssignment.assignmentTypeKoodiArvo, assignmentById.assignmentTypeKoodiArvo)
-        assertEquals(createdAssignment.oppimaaraKoodiArvo, assignmentById.oppimaaraKoodiArvo)
-        assertEquals(createdAssignment.tavoitetasoKoodiArvo, assignmentById.tavoitetasoKoodiArvo)
-        assertThat(createdAssignment.aiheKoodiArvos, equalTo(assignmentById.aiheKoodiArvos))
-        assertThat(
-            createdAssignment.laajaalainenOsaaminenKoodiArvos, equalTo(assignmentById.laajaalainenOsaaminenKoodiArvos)
-        )
+        val timeAfterCreate = nowFromDb(mockMvc)
+        val createdAssignment = mapper.readValue(createResult, TestAssignmentSukoOut::class.java)
+        assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(testAssignment, createdAssignment)
         assertThat(createdAssignment.authorOid, equalTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo))
-        assertEquals(createdAssignment.createdAt, assignmentById.createdAt)
-        assertEquals(createdAssignment.updatedAt, assignmentById.updatedAt)
+        assertTimeIsBetween(timeBeforeCreate, ZonedDateTime.parse(createdAssignment.createdAt), timeAfterCreate, "createdAt")
+        assertEquals(createdAssignment.createdAt, createdAssignment.updatedAt)
+
+        val getByIdStr = mockMvc.perform(getAssignment(Exam.SUKO, createdAssignment.id)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        val assignmentById = mapper.readValue(getByIdStr, TestAssignmentSukoOut::class.java)
+
+        assertEquals(mapper.writeValueAsString(createdAssignment), mapper.writeValueAsString(assignmentById))
 
         // update request
-        val editedAssignment = """{
-                "id": "${assignmentById.id}",
-                "exam": "SUKO",
-                "nameFi": "New test name",
-                "contentFi": "${assignmentById.contentFi}",
-                "instructionFi": "${assignmentById.instructionFi}",
-                "nameSv": "New test name",
-                "contentSv": "content",
-                "instructionSv": "${assignmentById.instructionSv}",
-                "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "001",
-                "oppimaaraKoodiArvo": "ET",
-                "tavoitetasoKoodiArvo": "0010",
-                "aiheKoodiArvos": ["002", "003"],
-                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
-            }"""
-
+        val updatedAssignment = TestAssignmentSukoIn(
+            testAssignment.exam,
+            "new name fi",
+            "new name sv",
+            "new content fi",
+            "new content sv",
+            "new instruction fi",
+            "new instruction sv",
+            "DRAFT",
+            "001",
+            "TKRUB3",
+            "0010",
+            arrayOf("002", "004"),
+            arrayOf("04", "05")
+        )
+        val updatedAssignmentStr = mapper.writeValueAsString(updatedAssignment)
+        val timeBeforeUpdate = nowFromDb(mockMvc)
         val updatedAssignmentId =
-            mockMvc.perform(updateAssignment(assignmentById.id, editedAssignment)).andExpect(status().isOk())
+            mockMvc.perform(updateAssignment(assignmentById.id, updatedAssignmentStr)).andExpect(status().isOk())
                 .andReturn().response.contentAsString
+        val timeAfterUpdate = nowFromDb(mockMvc)
 
         assertEquals(updatedAssignmentId, assignmentById.id.toString())
-        // TODO: assert that update actually happened
+
+        val getUpdatedByIdStr = mockMvc.perform(getAssignment(Exam.SUKO, assignmentById.id)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        val updatedAssignmentById = mapper.readValue(getUpdatedByIdStr, TestAssignmentSukoOut::class.java)
+
+        assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(updatedAssignment, updatedAssignmentById)
+        assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
+        assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
+        assertTimeIsBetween(timeBeforeUpdate, ZonedDateTime.parse(updatedAssignmentById.updatedAt), timeAfterUpdate, "updatedAt")
+    }
+
+    val minimalSukoAssignmentIn = TestAssignmentSukoIn(
+        "SUKO",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "PUBLISHED",
+        "003",
+        "TKRUA1",
+        null,
+        emptyArray(),
+        emptyArray(),
+    )
+
+    @Test
+    @WithYllapitajaRole
+    fun createMinimalSukoAssignment() {
+        mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn))).andExpect(status().isOk())
+    }
+
+    private fun removeField(jsonString:String, fieldToRemove: String): String =
+        jsonString.replace(Regex("\"${fieldToRemove}\":[^,}]*[,}]"), "")
+
+    @Test
+    @WithYllapitajaRole
+    fun anyMissingFieldYields400() {
+        SukoAssignmentDtoIn::class.memberProperties.forEach { field ->
+            val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+            val jsonWithFieldRemoved = mapper.writeValueAsString(dtoInMap - field.name)
+            val response = mockMvc.perform(postAssignment(jsonWithFieldRemoved)).andReturn().response
+            assertThat("missing ${field.name} yields bad request", response.status, equalTo(HttpStatus.SC_BAD_REQUEST))
+            assertThat("missing ${field.name} yields proper error message",
+                response.contentAsString, containsString("property ${field.name} due to missing"))
+        }
     }
 
     @Test
     @WithYllapitajaRole
-    fun failAssignmentUpdate() {
+    fun missingExamFieldYields400() {
+        val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+        val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap - "exam")
+        val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
+        assertThat(responseBody, containsString("missing type id property 'exam'"))
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun invalidExamFieldYields400() {
+        val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+        val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap + ("exam" to "SCHUKO"))
+        val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
+        assertThat(responseBody, containsString("Could not resolve type id 'SCHUKO' as a subtype"))
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun invalidEnumFieldYields400() {
+        val jsonWithInvalidPublishState = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = "OLEMATON"))
+        val responseBody = mockMvc.perform(postAssignment(jsonWithInvalidPublishState)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
+        assertThat(responseBody, containsString("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"OLEMATON\": not one of the values accepted"))
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun sukoAssignmentUpdateFailsWhenIdDoesNotExist() {
         val nonExistentId = -1
-        val editedAssignmentFail = """{
-                "id": "$nonExistentId",
-                "exam": "SUKO",
-                "nameFi": "New test name",
-                "contentFi": "content",
-                "instructionFi": "instruction",
-                "nameSv": "New test name",
-                "contentSv": "content",
-                "instructionSv": "instruction",
-                "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "001",
-                "oppimaaraKoodiArvo": "ET",
-                "tavoitetasoKoodiArvo": "0004",
-                "aiheKoodiArvos": ["002", "003"],
-                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
-            }"""
-
-        val failUpdate =
-            mockMvc.perform(updateAssignment(nonExistentId, editedAssignmentFail)).andReturn().response.contentAsString
-
-        assertThat(failUpdate, equalTo("Assignment not found $nonExistentId"))
+        val errorMessage = mockMvc.perform(updateAssignment(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
+            .andExpect(status().isNotFound).andReturn().response.contentAsString
+        assertThat(errorMessage, equalTo("Assignment not found $nonExistentId"))
     }
 
     @Test
     @WithYllapitajaRole
     fun failKoodistoValidation() {
-        val assignmentFail = """{
-                "exam": "SUKO",
-                "nameFi": "New test name",
-                "contentFi": "content",
-                "instructionFi": "instruction",
-                "nameSv": "New test name",
-                "contentSv": "content",
-                "instructionSv": "instruction",
-                "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "epavalidi",
-                "oppimaaraKoodiArvo": "epavalidi",
-                "tavoitetasoKoodiArvo": "epavalidi",
-                "aiheKoodiArvos": ["epavalidi1", "epavalidi2"],
-                "laajaalainenOsaaminenKoodiArvos": ["epavalidi1", "epavalidi2"]
-            }"""
+        val assignmentWithInvalidKoodiArvos = minimalSukoAssignmentIn.copy(
+            assignmentTypeKoodiArvo = "epavalidi",
+            oppimaaraKoodiArvo = "epavalidi",
+            tavoitetasoKoodiArvo = "epavalidi",
+            aiheKoodiArvos = arrayOf("epavalidi1", "epavalidi2"),
+            laajaalainenOsaaminenKoodiArvos = arrayOf("epavalidi3", "epavalidi4")
+        )
 
         val errorMessage =
-            mockMvc.perform(postAssignment(assignmentFail)).andReturn().response.contentAsString.trimIndent()
+            mockMvc.perform(postAssignment(mapper.writeValueAsString(assignmentWithInvalidKoodiArvos)))
+                .andExpect(status().isBadRequest).andReturn().response.contentAsString.trimIndent()
 
         assertThat(
             errorMessage, equalTo(
@@ -170,31 +235,6 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             """.trimIndent()
             )
         )
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun failForMissingField() {
-        val assignmentFail = """{
-                "exam": "SUKO",
-                "contentFi": "content",
-                "instructionFi": "instruction",
-                "nameSv": "New test name",
-                "contentSv": "content",
-                "instructionSv": "instruction",
-                "publishState": "PUBLISHED",
-                "assignmentTypeKoodiArvo": "001",
-                "oppimaaraKoodiArvo": "ET",
-                "tavoitetasoKoodiArvo": "0004",
-                "aiheKoodiArvos": ["003", "002"],
-                "laajaalainenOsaaminenKoodiArvos": ["06", "03"]
-            }"""
-
-        val errorMessage = mockMvc.perform(postAssignment(assignmentFail)).andReturn().response.contentAsString
-
-        val substring = "failed for JSON property nameFi due to missing (therefore NULL)"
-
-        assertTrue(errorMessage.contains(substring), "Error message should contain substring: $substring")
     }
 
     @Test
@@ -219,12 +259,12 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         // post assignment DTO IN
         val createResult = mockMvc.perform(postAssignment(testAssignment)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val createdAssignment = objectMapper.readValue(createResult, TestAssignmentLdOut::class.java)
+        val createdAssignment = mapper.readValue(createResult, TestAssignmentLdOut::class.java)
 
         // get assignment DTO OUT
         val getByIdResult = mockMvc.perform(getAssignment(Exam.LD, createdAssignment.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val assignmentById = objectMapper.readValue(getByIdResult, TestAssignmentLdOut::class.java)
+        val assignmentById = mapper.readValue(getByIdResult, TestAssignmentLdOut::class.java)
 
         assertEquals(assignmentById.id, assignmentById.id)
         assertEquals(assignmentById.nameFi, "Lukiodiplomi assignment FI")
@@ -257,7 +297,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val getUpdatedAssignment = mockMvc.perform(getAssignment(Exam.LD, assignmentById.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestAssignmentLdOut::class.java)
+        val updatedAssignment = mapper.readValue(getUpdatedAssignment, TestAssignmentLdOut::class.java)
 
         assertEquals(updatedAssignment.nameFi, "New test name")
         assertEquals(updatedAssignment.contentFi, "content")
@@ -295,11 +335,11 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         // post assignment DTO IN
         val createResult =
             mockMvc.perform(postAssignment(body)).andExpect(status().isOk()).andReturn().response.contentAsString
-        val createdAssignment = objectMapper.readValue(createResult, TestAssignmentPuhviOut::class.java)
+        val createdAssignment = mapper.readValue(createResult, TestAssignmentPuhviOut::class.java)
         // get assignment DTO OUT
         val getByIdResult = mockMvc.perform(getAssignment(Exam.PUHVI, createdAssignment.id)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val assignmentById = objectMapper.readValue(getByIdResult, TestAssignmentPuhviOut::class.java)
+        val assignmentById = mapper.readValue(getByIdResult, TestAssignmentPuhviOut::class.java)
 
         assertEquals(assignmentById.id, assignmentById.id)
         assertEquals(assignmentById.nameFi, "Puhvi assignment")
@@ -338,7 +378,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             mockMvc.perform(getAssignment(Exam.PUHVI, assignmentById.id)).andExpect(status().isOk())
                 .andReturn().response.contentAsString
 
-        val updatedAssignment = objectMapper.readValue(getUpdatedAssignment, TestAssignmentPuhviOut::class.java)
+        val updatedAssignment = mapper.readValue(getUpdatedAssignment, TestAssignmentPuhviOut::class.java)
 
         assertEquals(updatedAssignment.nameFi, "Puhvi assignment edited")
         assertEquals(updatedAssignment.contentFi, "Puhvi assignment content edited")
@@ -407,10 +447,10 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val assignments = objectMapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
+        val assignments = mapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
 
         assertTrue(
-            assignments.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft assignments"
+            assignments.none { it.publishState == "DRAFT" }, "Opettaja should not see draft assignments"
         )
 
         assertEquals(8, assignments.size)

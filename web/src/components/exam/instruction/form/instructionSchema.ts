@@ -3,10 +3,10 @@ import { z } from 'zod'
 
 export const instructionSchema = z.object({
   exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: 'Required' }),
-  nameFi: z.string().min(MIN_LENGTH, { message: 'Too short' }),
-  nameSv: z.string().nullable(),
-  contentFi: z.string().nullable(),
-  contentSv: z.string().nullable()
+  nameFi: z.string(),
+  nameSv: z.string(),
+  contentFi: z.string(),
+  contentSv: z.string()
 })
 
 export type InstructionFormType = z.infer<typeof instructionSchema>

@@ -26,7 +26,7 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
 
       <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
         <TextInput id="nameFi" register={register} required>
-          {t('form.tehtavannimi')} *
+          {t('form.tehtavannimi')}
         </TextInput>
         <FormError error={nameError} />
 
@@ -37,7 +37,7 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
         )}
 
         <TextAreaInput id="contentFi" register={register}>
-          {t('form.tehtavansisalto')} *
+          {t('form.tehtavansisalto')}
         </TextAreaInput>
         <FormError error={contentError} />
       </div>

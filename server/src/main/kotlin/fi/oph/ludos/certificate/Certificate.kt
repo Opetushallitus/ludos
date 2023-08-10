@@ -10,7 +10,6 @@ interface Certificate {
     val exam: Exam
     @get:NotBlank
     val name: String
-    @get:NotBlank
     val description: String
     val publishState: PublishState
 }

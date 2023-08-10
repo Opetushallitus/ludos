@@ -10,6 +10,9 @@ import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithSecurityContext
 import org.springframework.security.test.context.support.WithSecurityContextFactory
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import java.time.ZonedDateTime
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
@@ -112,6 +115,12 @@ class OpettajaAndLaatijaSecurityContextFactory : LudosSecurityContextFactory() {
         "Laatija",
         null
     )
+}
+
+fun nowFromDb(mockMvc: MockMvc): ZonedDateTime {
+    val req = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/now")
+    val isoString = mockMvc.perform(req).andReturn().response.contentAsString.replace("\"", "")
+    return ZonedDateTime.parse(isoString)
 }
 
 fun authenticateAsYllapitaja() {

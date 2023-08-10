@@ -1,5 +1,6 @@
 package fi.oph.ludos.assignment
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -19,10 +20,8 @@ import javax.validation.constraints.Pattern
     JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
 )
 interface Assignment {
-    @get:NotBlank
     val nameFi: String
     val nameSv: String
-    @get:NotBlank
     val contentFi: String
     val contentSv: String
     val instructionFi: String
@@ -47,7 +46,8 @@ data class SukoAssignmentDtoIn(
     @field:ValidKoodiArvo(koodisto = KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021)
     val oppimaaraKoodiArvo: String,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TAITOTASO)
-    val tavoitetasoKoodiArvo: String,
+    @JsonProperty(required = true) // always require tavoitetasoKoodiArvo field even if null
+    val tavoitetasoKoodiArvo: String?,
     @field:ValidKoodiArvos(koodisto = KoodistoName.AIHE_SUKO)
     val aiheKoodiArvos: Array<String>,
 ) : Assignment
@@ -106,7 +106,7 @@ data class SukoAssignmentDtoOut(
     override val authorOid: String,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
-    val tavoitetasoKoodiArvo: String,
+    val tavoitetasoKoodiArvo: String?,
     val aiheKoodiArvos: Array<String>
 ) : Assignment, AssignmentOut
 
