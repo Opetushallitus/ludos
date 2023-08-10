@@ -5,13 +5,16 @@ import { StateTag } from '../../StateTag'
 import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
 import { useUserDetails } from '../../../hooks/useUserDetails'
+import { useTranslation } from 'react-i18next'
 
 type InstructionCardProps = {
+  language: string
   instruction: AssignmentIn
   exam: string
 }
 
-export const InstructionCard = ({ instruction }: InstructionCardProps) => {
+export const InstructionCard = ({ language, instruction }: InstructionCardProps) => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const { isYllapitaja } = useUserDetails()
 
@@ -21,7 +24,7 @@ export const InstructionCard = ({ instruction }: InstructionCardProps) => {
       data-testid={`instruction-${instruction.id.toString()}`}>
       <div className="text-center">
         <InternalLink className="text-sm font-semibold text-green-primary" to={`${instruction.id}`}>
-          {instruction.nameFi}
+          {(language === 'fi' ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
           <Icon

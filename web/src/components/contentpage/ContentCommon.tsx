@@ -25,7 +25,7 @@ export function ContentHeader({ onSelectedOptionsChange, data, language, content
         </div>
         <div className="row">
           <h2 className="w-full md:w-1/2" data-testid="assignment-header">
-            {getContentName(data, contentType, language)}
+            {getContentName(data, contentType, language) || t('form.nimeton')}
           </h2>
         </div>
       </div>

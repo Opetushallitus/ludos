@@ -139,7 +139,7 @@ export const AssignmentList = ({
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
               {data?.map((instruction, i) => (
-                <InstructionCard instruction={instruction} exam={exam} key={i} />
+                <InstructionCard language={language} instruction={instruction} exam={exam} key={i} />
               ))}
             </div>
           )}
