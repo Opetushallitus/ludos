@@ -11,6 +11,7 @@ import org.hamcrest.TypeSafeMatcher
 import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
 import org.reflections.Reflections
 import org.reflections.scanners.Scanners
@@ -31,6 +32,7 @@ import kotlin.reflect.full.functions
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AuthorizationTest(@Autowired val mockMvc: MockMvc) {
     @Test
     fun `all controllers should have @RequireAtLeastYllapitajaRole annotation`() {
