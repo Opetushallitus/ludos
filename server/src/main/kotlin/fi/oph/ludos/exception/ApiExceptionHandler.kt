@@ -40,7 +40,6 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException::class)
     fun handleAccessdenied(ex: AccessDeniedException): ResponseEntity<String> {
-        logger.error("Access denied for user: ${ex.message}")
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.message)
     }
 }
