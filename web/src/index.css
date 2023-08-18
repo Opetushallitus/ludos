@@ -20,7 +20,7 @@
     }
 
     .buttonGhost {
-        @apply text-black bg-none
+        @apply text-black bg-none hover:bg-gray-light
     }
 
     .buttonDanger {
@@ -35,8 +35,20 @@
         @apply text-[1.5rem] leading-[2rem] font-semibold
     }
 
+    h3 {
+        @apply text-[1.3rem] leading-[1.8rem] font-semibold
+    }
+
+    h4 {
+        @apply text-[1.1rem] leading-[1.6rem] font-semibold
+    }
+
     .dropdownContent {
         @apply absolute z-50 max-h-96 w-full overflow-y-auto border border-gray-secondary bg-white px-2 py-1
+    }
+
+    .ludos-form {
+        @apply w-full pt-3 md:w-10/12
     }
 }
 

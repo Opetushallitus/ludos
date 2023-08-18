@@ -15,10 +15,10 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const match = useMatch(matchUrl)
   const exam = match!.params.exam!.toUpperCase() as Exam
 
-  const formProps = { action, pathname, id: action === 'update' ? match!.params.id : undefined }
+  const formProps = { action, id: action === 'update' ? match!.params.id : undefined }
 
   return (
-    <div className="w-10/12 pt-3">
+    <div className="ludos-form">
       {exam.toUpperCase() === Exam.Suko ? (
         <SukoAssignmentForm {...formProps} />
       ) : exam === Exam.Puhvi ? (

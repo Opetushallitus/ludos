@@ -21,13 +21,13 @@ import { useState } from 'react'
 import { Tabs } from '../../../Tabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
 import { TextInput } from '../../../TextInput'
-import { TextAreaInput } from '../../../TextAreaInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { AttachmentSelector } from '../../formCommon/attachment/AttachmentSelector'
 import { useFetch } from '../../../../hooks/useFetch'
 import { useInstructionFormInitializer } from '../../../../hooks/useInstructionFormInitializer'
 import { FormError } from '../../formCommon/FormErrors'
+import { TipTap } from '../../formCommon/editor/TipTap'
 
 type InstructionFormProps = {
   action: 'new' | 'update'
@@ -198,8 +198,16 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
   const nameFiError = errors.nameFi?.message as string
   const nameSvError = errors.nameSv?.message as string
 
+  const handleContentChange = (newContent: string) => {
+    if (activeTab === 'fi') {
+      setValue('contentFi', newContent)
+    } else if (activeTab === 'sv') {
+      setValue('contentSv', newContent)
+    }
+  }
+
   return (
-    <div className="w-10/12 pt-3">
+    <div className="ludos-form">
       <FormHeader action={action} contentType={ContentTypeEng.OHJEET} name={instruction?.nameFi} />
 
       <form
@@ -215,14 +223,19 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
         </div>
 
         <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
-          <TextInput id="nameFi" register={register} error={!!instructionNameError} required>
+          <TextInput id="nameFi" register={register} error={!!nameFiError || !!instructionNameError} required>
             {t('form.ohjeennimi')}
           </TextInput>
-          <FormError error={instructionNameError} />
+          <FormError error={nameFiError || instructionNameError} />
 
-          <TextAreaInput id="contentFi" register={register}>
-            {t('form.ohjeensisalto')}
-          </TextAreaInput>
+          <TipTap
+            onContentChange={handleContentChange}
+            content={instruction?.contentFi}
+            label={t('form.ohjeensisalto')}
+            dataTestId="editor-content-fi"
+            key={instruction ? 'content-fi' : 'content-fi-new'}
+          />
+
           <div className="mb-3 mt-6">
             <TextInput id="shortDescriptionFi" register={register}>
               {t('form.lyhyt-kuvaus')}
@@ -243,13 +256,19 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
         </div>
 
         <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
-          <TextInput id="nameSv" register={register} error={!!instructionNameError} required>
+          <TextInput id="nameSv" register={register} error={!!nameSvError || !!instructionNameError} required>
             {t('form.ohjeennimi')}
           </TextInput>
-          <FormError error={instructionNameError} />
-          <TextAreaInput id="contentSv" register={register}>
-            {t('form.ohjeensisalto')}
-          </TextAreaInput>
+          <FormError error={nameSvError || instructionNameError} />
+
+          <TipTap
+            onContentChange={handleContentChange}
+            content={instruction?.contentSv}
+            label={t('form.ohjeensisalto')}
+            dataTestId="editor-content-sv"
+            key={instruction ? 'content-sv' : 'content-sv-new'}
+          />
+
           <div className="mb-3 mt-6">
             <TextInput id="shortDescriptionSv" register={register}>
               {t('form.lyhyt-kuvaus')}

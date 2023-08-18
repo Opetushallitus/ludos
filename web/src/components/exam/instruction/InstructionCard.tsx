@@ -1,4 +1,4 @@
-import { AssignmentIn, InstructionIn } from '../../../types'
+import { InstructionIn } from '../../../types'
 import { useNavigate } from 'react-router-dom'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
@@ -6,6 +6,7 @@ import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useTranslation } from 'react-i18next'
+import { Button } from '../../Button'
 
 type InstructionCardProps = {
   language: string
@@ -27,13 +28,13 @@ export const InstructionCard = ({ language, instruction }: InstructionCardProps)
           {(language === 'fi' ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
-          <Icon
-            name="muokkaa"
-            color="text-green-primary"
-            dataTestId={`instruction-${instruction.id.toString()}-edit`}
+          <Button
+            variant="buttonGhost"
+            customClass="p-0 ml-2"
             onClick={() => navigate(`update/${instruction.id}`)}
-            customClass="ml-2"
-          />
+            data-testid={`instruction-${instruction.id.toString()}-edit`}>
+            <Icon name="muokkaa" color="text-green-primary" />
+          </Button>
         )}
       </div>
       <p className="mb-2 mt-2 text-center text-xs">

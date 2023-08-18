@@ -7,8 +7,8 @@ export const instructionSchema = z
     exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: 'Required' }),
     nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
     nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
-    contentFi: z.string(),
-    contentSv: z.string(),
+    contentFi: z.string().default(''),
+    contentSv: z.string().default(''),
     shortDescriptionFi: z.string(),
     shortDescriptionSv: z.string(),
     nameRequired: z.custom()

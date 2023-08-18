@@ -3,6 +3,7 @@ import { Icon } from './Icon'
 import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
+import { Button } from './Button'
 
 type DropdownProps<C extends boolean | undefined> = {
   id: string
@@ -30,7 +31,7 @@ export const Dropdown = ({
   const { t } = useTranslation()
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdown({
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex } = useDropdown({
     options,
     selectedOptions: selectedOption,
     onSelectedOptionsChange: (opt) => {
@@ -44,6 +45,7 @@ export const Dropdown = ({
 
   return (
     <div
+      id={id}
       className="relative mb-3 mt-1 border border-gray-secondary"
       ref={containerRef}
       onBlur={(e) => {
@@ -52,9 +54,10 @@ export const Dropdown = ({
       }}
       tabIndex={0}>
       <div
-        id={id}
         className={`flex ${requiredError ? 'border border-red-primary' : ''} bg-white px-2`}
         role="button"
+        aria-expanded={isOpen}
+        aria-activedescendant={highlightedIndex !== null ? `${id}-${options[highlightedIndex]?.nimi}` : undefined} // Indicate the active option
         onClick={() => setIsOpen(!isOpen)}
         data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
@@ -70,20 +73,21 @@ export const Dropdown = ({
         </div>
         <div className="mt-1">
           {canReset ? (
-            <Icon
-              name="sulje"
-              color="text-black"
+            <Button
+              variant="buttonGhost"
+              customClass="p-0 hover:cursor-pointer hover:bg-gray-active"
               onClick={(e) => {
                 e.stopPropagation()
                 onSelectedOptionsChange(null)
-              }}
-            />
+              }}>
+              <Icon name="sulje" color="text-black" />
+            </Button>
           ) : (
             <Icon name="laajenna" color="text-black" />
           )}
         </div>
       </div>
-      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
+      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`} role="listbox" aria-labelledby={`${id}-label`}>
         {options.map((option, i) => (
           <li
             className={`cursor-pointer px-3 ${

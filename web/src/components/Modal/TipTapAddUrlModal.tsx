@@ -1,21 +1,26 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
-import styles from './modal.module.css'
+import { useState } from 'react'
 import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useModal } from './useModal'
+import styles from './modal.module.css'
 
 interface ModalProps {
   modalTitle: string
   open: boolean
   onClose: () => void
-  onDeleteAction: () => void
-  children: ReactNode
+  onAddUrlAction: (url: string) => void
 }
 
-export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, children }: ModalProps) => {
+export const TipTapAddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction }: ModalProps) => {
   const { t } = useTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef, onClick } = useModal({ open, onClose })
+  const [url, setUrl] = useState('')
+
+  const handleSubmitUrl = () => {
+    onAddUrlAction(url)
+    setUrl('')
+  }
 
   return (
     <dialog
@@ -31,12 +36,24 @@ export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, childre
           <h2 className="text-base text-white" id="modal-title">
             {modalTitle}
           </h2>
-          <button className="text-right" onClick={onClose} aria-label="modal-close">
+          <button className="modal__close-button text-right" onClick={onClose} aria-label="modal-close">
             <Icon name="sulje" color="text-white" />
           </button>
         </div>
 
-        {children}
+        <div className="h-[15vh] p-6">
+          <label className="font-semibold" htmlFor="url-input">
+            {t('form.lisaa-url')}
+          </label>
+          <input
+            id="url-input"
+            data-testid="url-input"
+            type="text"
+            className="block w-full border border-gray-secondary p-2.5"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+        </div>
 
         <div className="flex-grow" />
 
@@ -44,8 +61,8 @@ export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, childre
           <Button variant="buttonGhost" onClick={onClose} data-testid="modal-button-cancel">
             {t('common.peruuta')}
           </Button>
-          <Button variant="buttonDanger" onClick={onDeleteAction} data-testid="modal-button-delete">
-            {t('common.poista')}
+          <Button variant="buttonPrimary" onClick={handleSubmitUrl} data-testid="modal-button-add">
+            {t('common.lisaa')}
           </Button>
         </div>
       </div>

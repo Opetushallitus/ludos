@@ -58,13 +58,13 @@ export async function fillSukoAssignmentForm({
 
   await page.getByTestId('nameFi').fill(nameTextFi)
   await page.getByTestId('instructionFi').fill(instructionTextFi)
-  await page.getByTestId('contentFi').fill(contentTextFi)
+  await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
   await page.getByTestId('nameSv').fill(nameTextSv)
   await page.getByTestId('instructionSv').fill(instructionTextSv)
-  await page.getByTestId('contentSv').fill(contentTextSv)
+  await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentTextSv)
 }
 
 export async function updateSukoAssignmentForm({
@@ -117,13 +117,13 @@ export async function updateSukoAssignmentForm({
 
   await page.getByTestId('nameFi').fill(nameTextFi)
   await page.getByTestId('instructionFi').fill(instructionTextFi)
-  await page.getByTestId('contentFi').fill(contentTextFi)
+  await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
   await page.getByTestId('nameSv').fill(nameTextSv)
   await page.getByTestId('instructionSv').fill(instructionTextSv)
-  await page.getByTestId('contentSv').fill(contentTextSv)
+  await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentTextSv)
 }
 
 async function fillLaajalainenOsaaminen(page: Page) {
@@ -159,12 +159,12 @@ export async function fillLdAssignmentForm({
   await fillLaajalainenOsaaminen(page)
 
   await page.getByTestId('nameFi').fill(nameTextFi)
-  await page.getByTestId('contentFi').fill(contentTextFi)
+  await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
   await page.getByTestId('nameSv').fill(nameTextSv)
-  await page.getByTestId('contentSv').fill(contentTextSv)
+  await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentTextSv)
 }
 
 export async function fillPuhviAssignmentForm({
@@ -192,10 +192,10 @@ export async function fillPuhviAssignmentForm({
   await fillLaajalainenOsaaminen(page)
 
   await page.getByTestId('nameFi').fill(nameTextFi)
-  await page.getByTestId('contentFi').fill(contentTextFi)
+  await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentTextFi)
 
   await page.getByTestId('tab-sv').click()
 
   await page.getByTestId('nameSv').fill(nameTextSv)
-  await page.getByTestId('contentSv').fill(contentTextSv)
+  await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentTextSv)
 }

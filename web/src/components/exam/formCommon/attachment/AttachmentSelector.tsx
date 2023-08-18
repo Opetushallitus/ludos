@@ -101,6 +101,7 @@ export const AttachmentSelector = ({
               accept="application/pdf"
               style={{ display: 'none' }}
               onChange={handleAttachmentSelected}
+              data-testid={`file-input-${language}`}
             />
             <label htmlFor={`fileInput-${language}`}>
               <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()}>

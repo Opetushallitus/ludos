@@ -107,7 +107,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
   }
 
   return (
-    <div className="w-10/12 pt-3">
+    <div className="ludos-form">
       <FormHeader action={action} contentType={ContentTypeEng.TODISTUKSET} name={certificate?.name} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
