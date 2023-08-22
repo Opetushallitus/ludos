@@ -1,5 +1,6 @@
 package fi.oph.ludos.instruction
 
+import BaseFilters
 import fi.oph.ludos.Exam
 import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
@@ -23,7 +24,7 @@ class InstructionService(val repository: InstructionRepository, val s3Helper: S3
         id: Int, instruction: Instruction, attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
     ) = repository.updateInstruction(id, instruction, attachmentsMetadata)
 
-    fun getInstructions(exam: Exam): List<InstructionOut> = repository.getInstructions(exam)
+    fun getInstructions(exam: Exam, filters: BaseFilters): List<InstructionOut> = repository.getInstructions(exam, filters)
 
     fun getInstructionById(exam: Exam, id: Int): InstructionOut? = repository.getInstructionById(exam, id)
 

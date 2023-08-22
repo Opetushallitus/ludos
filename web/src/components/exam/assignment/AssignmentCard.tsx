@@ -109,7 +109,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
             <p className="text-xs text-black">{toLocaleDate(assignment.createdAt)}</p>
           </div>
         </div>
-        <ContentActions />
+        {/*<ContentActions /> todo: commented out until the button features work*/}
       </div>
     </li>
   )

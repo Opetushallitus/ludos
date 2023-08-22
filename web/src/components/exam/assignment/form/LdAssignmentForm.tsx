@@ -2,7 +2,7 @@ import { FieldLabel } from '../../../FieldLabel'
 import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
 import { FormProvider, useForm } from 'react-hook-form'
 import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
-import { LdAssignmentFormType, LdAssignmentSchema } from './assignmentSchema'
+import { LdAssignmentFormType, ldAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect } from 'react'
@@ -32,7 +32,7 @@ export const LdAssignmentForm = ({ action, pathname, id }: LdAssignmentFormProps
 
   const { data: assignment } = useFetch<LdAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
 
-  const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(LdAssignmentSchema) })
+  const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(ldAssignmentSchema) })
 
   const {
     watch,

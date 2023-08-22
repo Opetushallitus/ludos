@@ -24,7 +24,7 @@ fun updateAssignment(id: Int, body: String) =
 fun getAllAssignments(exam: Exam) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam").contentType(MediaType.APPLICATION_JSON)
 
-fun getSukoAssignments(exam: Exam, filter: SukoAssignmentFilter): MockHttpServletRequestBuilder {
+fun getSukoAssignments(exam: Exam, filter: SukoBaseFilters): MockHttpServletRequestBuilder {
     val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
 
     filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
@@ -36,7 +36,7 @@ fun getSukoAssignments(exam: Exam, filter: SukoAssignmentFilter): MockHttpServle
     return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
 }
 
-fun getPuhviAssignments(exam: Exam, filter: PuhviAssignmentFilter): MockHttpServletRequestBuilder {
+fun getPuhviAssignments(exam: Exam, filter: PuhviBaseFilters): MockHttpServletRequestBuilder {
     val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
 
     filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
@@ -46,7 +46,7 @@ fun getPuhviAssignments(exam: Exam, filter: PuhviAssignmentFilter): MockHttpServ
     return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
 }
 
-fun getLdAssignments(exam: Exam, filter: LdAssignmentFilter): MockHttpServletRequestBuilder {
+fun getLdAssignments(exam: Exam, filter: LdBaseFilters): MockHttpServletRequestBuilder {
     val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
 
     filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }

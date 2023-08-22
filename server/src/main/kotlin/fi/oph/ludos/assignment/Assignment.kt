@@ -1,5 +1,6 @@
 package fi.oph.ludos.assignment
 
+import BaseFilters
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -9,8 +10,6 @@ import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
 import java.sql.Timestamp
-import java.util.*
-import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
@@ -144,12 +143,7 @@ data class LdAssignmentDtoOut(
     val aineKoodiArvo: String
 ) : Assignment, AssignmentOut
 
-interface AssignmentFilter {
-    @get:Pattern(regexp = "^(asc|desc)\$")
-    val orderDirection: String?
-}
-
-data class SukoAssignmentFilter(
+data class SukoBaseFilters(
     override val orderDirection: String?,
     // allow alphabetical letters, numbers and commas
     @field:Pattern(regexp = "^[a-zA-Z0-9,]+\$")
@@ -160,20 +154,20 @@ data class SukoAssignmentFilter(
     val aihe: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tavoitetaitotaso: String?,
-): AssignmentFilter
+): BaseFilters
 
-data class LdAssignmentFilter(
+data class LdBaseFilters(
     override val orderDirection: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val aine: String?,
-): AssignmentFilter
+): BaseFilters
 
-data class PuhviAssignmentFilter(
+data class PuhviBaseFilters(
     override val orderDirection: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppipuhvi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
-): AssignmentFilter
+): BaseFilters

@@ -1,11 +1,12 @@
 package fi.oph.ludos.assignment
 
+import BaseFilters
 import fi.oph.ludos.Exam
 import org.springframework.stereotype.Service
 
 @Service
 class AssignmentService(val db: AssignmentRepository) {
-    fun getAssignments(filters: AssignmentFilter): List<AssignmentOut> = db.getAssignments(filters)
+    fun getAssignments(filters: BaseFilters): List<AssignmentOut> = db.getAssignments(filters)
 
     fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {
         is SukoAssignmentDtoIn -> db.saveSukoAssignment(assignment)

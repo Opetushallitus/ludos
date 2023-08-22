@@ -1,5 +1,6 @@
 package fi.oph.ludos.instruction
 
+import BaseFilters
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
@@ -75,8 +76,9 @@ class InstructionController(val service: InstructionService, private val objectM
     @GetMapping("/{exam}")
     @RequireAtLeastOpettajaRole
     fun getInstructions(
-        @PathVariable exam: Exam
-    ): List<InstructionOut> = service.getInstructions(exam)
+        @PathVariable exam: Exam,
+        @Valid filters: BaseFilters
+    ): List<InstructionOut> = service.getInstructions(exam, filters)
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole

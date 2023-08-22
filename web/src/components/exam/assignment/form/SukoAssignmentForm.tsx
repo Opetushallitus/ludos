@@ -76,8 +76,6 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
           resultId = id
         }
 
-        console.log('navigating to: ', `${pathname}`)
-
         navigate(`/${exam}/assignments/${resultId}`)
       } catch (e) {
         console.error(e)

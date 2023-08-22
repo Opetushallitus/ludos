@@ -1,5 +1,6 @@
 package fi.oph.ludos.instruction
 
+import BaseFilters
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
@@ -203,12 +204,14 @@ class InstructionRepository(
         return results.firstOrNull()
     }
 
-    fun getInstructions(exam: Exam): List<InstructionDtoOut> {
+    fun getInstructions(exam: Exam, filters: BaseFilters): List<InstructionDtoOut> {
         val role = Kayttajatiedot.fromSecurityContext().role
         val table = getTableNameByExam(exam)
 
         val whereIsPublishedIfOpettaja =
             if (role == Role.OPETTAJA) "WHERE instruction_publish_state = 'PUBLISHED'" else ""
+
+        val orderDirection = filters.orderDirection ?: ""
 
         val sql = """SELECT
                      i.*,
@@ -230,7 +233,8 @@ class InstructionRepository(
                     i.instruction_short_description_fi, 
                     i.instruction_short_description_sv, 
                     i.instruction_publish_state, 
-                    i.instruction_author_oid;"""
+                    i.instruction_author_oid 
+                ORDER BY i.instruction_updated_at $orderDirection;"""
 
         return jdbcTemplate.query(
             sql, mapResultSetRow

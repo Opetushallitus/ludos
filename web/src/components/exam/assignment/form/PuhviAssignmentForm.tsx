@@ -2,7 +2,7 @@ import { FieldLabel } from '../../../FieldLabel'
 import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
 import { FormProvider, useForm } from 'react-hook-form'
 import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
-import { PuhviAssignmentFormType, PuhviAssignmentSchema } from './assignmentSchema'
+import { PuhviAssignmentFormType, puhviAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect } from 'react'
@@ -32,7 +32,7 @@ export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFor
 
   const { data: assignment } = useFetch<PuhviAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
 
-  const methods = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(PuhviAssignmentSchema) })
+  const methods = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(puhviAssignmentSchema) })
 
   const {
     watch,

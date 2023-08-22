@@ -83,7 +83,6 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
   const fileError = errors.certificateHasAttachment?.message
 
   function handleNewAttachmentSelected(newAttachment: AttachmentData[]) {
-    console.log('handleNewAttachmentSelected', newAttachment)
     const file = newAttachment[0].file
     if (file) {
       setNewAttachment(file)

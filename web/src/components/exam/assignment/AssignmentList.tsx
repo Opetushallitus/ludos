@@ -5,6 +5,7 @@ import { AssignmentCard } from './AssignmentCard'
 import { FiltersType, useFilters } from '../../../hooks/useFilters'
 import {
   ContentTypeTranslationEnglish,
+  ContentTypeTranslationFinnish,
   getSingularContentTypeFinnish,
   isAssignmentsArr,
   isCertificatesArr,
@@ -51,7 +52,9 @@ export const AssignmentList = ({
     }
 
     if (contentType === ContentTypeEng.OHJEET) {
-      return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}`
+      return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
+        removeNullsFromFilterObj
+      ).toString()}`
     }
 
     return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
@@ -73,6 +76,11 @@ export const AssignmentList = ({
   const handleFilterChange = <T,>(key: keyof FiltersType, value: T) => setFilters((curr) => ({ ...curr, [key]: value }))
   const singularActiveTab = getSingularContentTypeFinnish(activeTab)
 
+  const languageFilterText = () => {
+    const contentTypeFinnish = ContentTypeTranslationFinnish[contentType]
+    return t(`filter.${contentTypeFinnish}-kieli`)
+  }
+
   return (
     <div>
       {error && <div className="mt-10 text-center">Virhe ladattaessa koetehtäviä</div>}
@@ -90,7 +98,7 @@ export const AssignmentList = ({
         {contentType !== ContentTypeEng.TODISTUKSET && (
           <div className="row gap-6">
             <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{t('filter.kieli')}</p>
+              <p className="mt-2">{languageFilterText()}</p>
               <div className="w-36">
                 <Dropdown
                   id="languageDropdown"
@@ -146,9 +154,7 @@ export const AssignmentList = ({
           {isCertificatesArr(data, contentType) && (
             <div className="mt-3 flex flex-wrap gap-5">
               <>{loading && <Spinner />}</>
-              {data?.map((certificate, i) => (
-                <CertificateCard certificate={certificate} key={i} />
-              ))}
+              {data?.map((certificate, i) => <CertificateCard certificate={certificate} key={i} />)}
             </div>
           )}
         </>
