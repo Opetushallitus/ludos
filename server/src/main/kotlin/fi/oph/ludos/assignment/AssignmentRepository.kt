@@ -4,6 +4,7 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
+import fi.oph.ludos.repository.getKotlinArray
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -16,11 +17,6 @@ class AssignmentRepository(
     private val namedJdbcTemplate: NamedParameterJdbcTemplate,
     private val jdbcTemplate: JdbcTemplate,
 ) {
-    private inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
-        val array = this.getArray(columnLabel)?.array ?: return emptyArray()
-
-        @Suppress("UNCHECKED_CAST") return array as Array<T>
-    }
 
     val mapSukoResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut = { rs: ResultSet, _: Int ->
         SukoAssignmentDtoOut(

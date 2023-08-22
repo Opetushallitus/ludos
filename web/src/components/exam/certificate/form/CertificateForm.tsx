@@ -130,6 +130,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
         <AttachmentSelector
+          contentType={ContentTypeEng.TODISTUKSET}
           attachmentData={currentAttachment()}
           handleNewAttachmentSelected={handleNewAttachmentSelected}
         />

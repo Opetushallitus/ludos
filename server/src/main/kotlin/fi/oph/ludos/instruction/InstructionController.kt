@@ -6,7 +6,11 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import org.springframework.core.io.InputStreamResource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
@@ -45,6 +49,27 @@ class InstructionController(val service: InstructionService, private val objectM
 
 
         return service.createInstruction(instruction, attachmentIns)
+    }
+
+    @PutMapping("/{id}")
+    @RequireAtLeastYllapitajaRole
+    fun updateInstruction(
+        @PathVariable("id") id: Int,
+        @Valid @RequestPart("instruction") instruction: Instruction,
+        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?
+    ) {
+        val attachmentsMetadataDeserialized: List<InstructionAttachmentMetadataDtoIn> =
+            attachmentsMetadata?.map { objectMapper.readValue(it.inputStream) } ?: emptyList()
+
+        attachmentsMetadataDeserialized.forEach {
+            if (it.fileKey == null) {
+                throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "missing attachment fileKey in instruction update"
+                )
+            }
+        }
+
+        service.updateInstruction(id, instruction, attachmentsMetadataDeserialized)
     }
 
     @GetMapping("/{exam}")
@@ -87,24 +112,15 @@ class InstructionController(val service: InstructionService, private val objectM
         @PathVariable("fileKey") fileKey: String
     ) = service.deleteAttachmentFromInstruction(fileKey)
 
-    @PutMapping("/{id}")
-    @RequireAtLeastYllapitajaRole
-    fun updateInstruction(
-        @PathVariable("id") id: Int,
-        @Valid @RequestPart("instruction") instruction: Instruction,
-        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?
-    ) {
-        val attachmentsMetadataDeserialized: List<InstructionAttachmentMetadataDtoIn> =
-            attachmentsMetadata?.map { objectMapper.readValue(it.inputStream) } ?: emptyList()
+    @GetMapping("/attachment/{key}")
+    @RequireAtLeastOpettajaRole
+    fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
+        val (uploadFile, responseInputStream) = service.getAttachment(key)
 
-        attachmentsMetadataDeserialized.forEach {
-            if (it.fileKey == null) {
-                throw ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "missing attachment fileKey in instruction update"
-                )
-            }
-        }
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_PDF
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
 
-        service.updateInstruction(id, instruction, attachmentsMetadataDeserialized)
+        return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
     }
 }

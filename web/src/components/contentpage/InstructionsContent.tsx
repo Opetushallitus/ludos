@@ -1,7 +1,7 @@
 import { InstructionIn } from '../../types'
 import { ContentContent, ContentIconRow, ContentInstruction } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
-import { DOWNLOAD_CERTIFICATE_PDF_URL } from '../../constants'
+import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL, DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -39,7 +39,9 @@ export const InstructionContent = ({ instruction, language }: InstructionContent
         <p className="mb-2 font-semibold">{t('content.tiedostot')}</p>
         {attachmentsFilteredWithLanguage.map((attachment, index) => (
           <Fragment key={index}>
-            <ExternalLink className="text-green-primary" url={`${DOWNLOAD_CERTIFICATE_PDF_URL}/${attachment.fileKey}`}>
+            <ExternalLink
+              className="text-green-primary"
+              url={`${DOWNLOAD_INSTRUCTION_ATTACHMENT_URL}/${attachment.fileKey}`}>
               {attachment.name}
             </ExternalLink>
             {index !== instruction.attachments.length - 1 && (

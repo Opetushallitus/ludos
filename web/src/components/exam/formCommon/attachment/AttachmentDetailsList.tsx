@@ -1,23 +1,27 @@
 import { FileDetails } from '../../../../types'
 import { ExternalLink } from '../../../ExternalLink'
-import { DOWNLOAD_CERTIFICATE_PDF_URL } from '../../../../constants'
+import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL } from '../../../../constants'
 import { toLocaleDate } from '../../../../formatUtils'
 import { Icon } from '../../../Icon'
 import { useState } from 'react'
 import { DeleteModal } from '../../../Modal/DeleteModal'
 import { useTranslation } from 'react-i18next'
 
-export const AttachmentDetailsList = ({
-  fileDetails,
-  attachmentNames,
-  handleAttachmentNameChange,
-  deleteFileByIndex
-}: {
+type AttachmentDetailsListProps = {
+  attachmentDownloadUrlPrefix: string
   fileDetails: FileDetails[]
   attachmentNames: string[]
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
-}) => {
+}
+
+export const AttachmentDetailsList = ({
+  attachmentDownloadUrlPrefix,
+  fileDetails,
+  attachmentNames,
+  handleAttachmentNameChange,
+  deleteFileByIndex
+}: AttachmentDetailsListProps) => {
   const { t } = useTranslation()
   const [indexToDelete, setIndexToDelete] = useState<number | null>(null)
 
@@ -35,7 +39,7 @@ export const AttachmentDetailsList = ({
           {attachment.fileKey ? (
             <ExternalLink
               className="col-span-4 text-green-primary"
-              url={`${DOWNLOAD_CERTIFICATE_PDF_URL}/${attachment.fileKey}`}>
+              url={`${attachmentDownloadUrlPrefix}/${attachment.fileKey}`}>
               {attachment.fileName}
             </ExternalLink>
           ) : (

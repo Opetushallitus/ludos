@@ -4,6 +4,8 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
+import fi.oph.ludos.repository.getKotlinArray
+import fi.oph.ludos.repository.getZonedDateTime
 import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
@@ -18,7 +20,6 @@ import software.amazon.awssdk.core.exception.SdkException
 import java.sql.ResultSet
 import java.sql.Timestamp
 import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 
 @Component
@@ -106,7 +107,7 @@ class InstructionRepository(
         originalFilename: String,
         fileKey: String
     ): InstructionAttachmentDtoOut {
-        jdbcTemplate.update(
+        val uploadDates = jdbcTemplate.query(
             """INSERT INTO ${table}_attachment (
                         attachment_file_key, 
                         attachment_file_name, 
@@ -115,7 +116,9 @@ class InstructionRepository(
                         instruction_attachment_name,
                         instruction_attachment_language
                     )
-                    VALUES (?, ?, clock_timestamp(), ?, ?, ?::language)""".trimIndent(),
+               VALUES (?, ?, clock_timestamp(), ?, ?, ?::language)
+               RETURNING attachment_upload_date""".trimIndent(),
+            { rs: ResultSet, _: Int -> rs.getZonedDateTime("attachment_upload_date") },
             fileKey,
             originalFilename,
             instructionId,
@@ -124,14 +127,8 @@ class InstructionRepository(
         )
 
         return InstructionAttachmentDtoOut(
-            fileKey, originalFilename, ZonedDateTime.now(), metadata.name, metadata.language
+            fileKey, originalFilename, uploadDates[0], metadata.name, metadata.language
         )
-    }
-
-    private inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
-        val array = this.getArray(columnLabel)?.array ?: return emptyArray()
-
-        @Suppress("UNCHECKED_CAST") return array as Array<T>
     }
 
     val mapResultSetRow: (ResultSet, Int) -> InstructionDtoOut? = { rs: ResultSet, _: Int ->
@@ -316,5 +313,25 @@ class InstructionRepository(
         } catch (ex: SdkException) {
             logger.warn("Failed to delete certificate attachment '${fileKey}' from S3. Ignoring error.", ex)
         }
+    }
+
+    fun getAttachmentByFileKey(fileKey: String): InstructionAttachmentDtoOut? {
+        val results = jdbcTemplate.query(
+            """
+            SELECT attachment_file_key, attachment_file_name, attachment_upload_date, instruction_attachment_name, instruction_attachment_language
+            FROM instruction_attachment
+            WHERE attachment_file_key = ?
+            """.trimIndent(), { rs, _ ->
+                InstructionAttachmentDtoOut(
+                    rs.getString("attachment_file_key"),
+                    rs.getString("attachment_file_name"),
+                    rs.getZonedDateTime("attachment_upload_date"),
+                    rs.getString("instruction_attachment_name"),
+                    Language.valueOf(rs.getString("instruction_attachment_language"))
+                )
+            }, fileKey
+        )
+
+        return results.firstOrNull()
     }
 }

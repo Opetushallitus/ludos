@@ -4,6 +4,7 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
+import fi.oph.ludos.repository.getZonedDateTime
 import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
@@ -16,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import software.amazon.awssdk.core.exception.SdkException
 import java.sql.ResultSet
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 
 @Component
@@ -97,7 +96,7 @@ class CertificateRepository(
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
                 CertificateAttachmentDtoOut(
-                    fileKey, fileName, getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                    fileKey, fileName, rs.getZonedDateTime("attachment_upload_date")
                 )
             },
             fileKey,
@@ -122,11 +121,6 @@ class CertificateRepository(
         }
     }
 
-    fun getZonedDateTimeFromResultSet(rs: ResultSet, columnName: String): ZonedDateTime {
-        val timestamp = rs.getTimestamp(columnName)
-        return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault())
-    }
-
     fun mapResultSet(rs: ResultSet, exam: Exam): CertificateDtoOut = CertificateDtoOut(
         rs.getInt("certificate_id"),
         exam,
@@ -136,7 +130,7 @@ class CertificateRepository(
         CertificateAttachmentDtoOut(
             rs.getString("attachment_file_key"),
             rs.getString("attachment_file_name"),
-            getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+            rs.getZonedDateTime("attachment_upload_date")
         ),
         rs.getString("certificate_author_oid"),
         rs.getTimestamp("certificate_created_at"),
@@ -168,7 +162,7 @@ class CertificateRepository(
                 CertificateAttachmentDtoOut(
                     rs.getString("attachment_file_key"),
                     rs.getString("attachment_file_name"),
-                    getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                    rs.getZonedDateTime("attachment_upload_date")
                 )
             }, fileKey
         )

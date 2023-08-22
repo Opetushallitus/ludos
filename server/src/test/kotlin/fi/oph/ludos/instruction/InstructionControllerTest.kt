@@ -326,6 +326,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun getInstructionsAsOpettaja() {
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
+
         val instructions = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
         assertThat(instructions.size).isEqualTo(8)
         assertThat(instructions).allSatisfy { it.publishState == PublishState.PUBLISHED.toString() }

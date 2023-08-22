@@ -50,7 +50,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             description = "Certificate content Fi",
             publishState = publishState,
         )
-        val attachmentFileName = "fixture.pdf"
+        val attachmentFileName = "fixture1.pdf"
 
         val certificateToCreateStr = objectMapper.writeValueAsString(certificateToCreate)
 
@@ -211,7 +211,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             }
         """
 
-        val attachmentPart = readAttachmentFixtureFile("fixture.pdf")
+        val attachmentPart = readAttachmentFixtureFile("fixture1.pdf")
         val postResponseBody = mockMvc.perform(postCertificate(body, attachmentPart)).andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
         assertThat(

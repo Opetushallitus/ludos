@@ -220,6 +220,7 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
             <label className="font-semibold">{t('form.tiedostot')}</label>
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
+              contentType={ContentTypeEng.OHJEET}
               language="fi"
               attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -246,6 +247,7 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
             <label className="font-semibold">{t('form.tiedostot')}</label>
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
+              contentType={ContentTypeEng.OHJEET}
               language="sv"
               attachmentData={attachmentDataSv}
               handleNewAttachmentSelected={handleNewAttachmentSelected}

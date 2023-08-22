@@ -52,12 +52,12 @@ class CertificateController(val service: CertificateService) {
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole
     fun getAttachment(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
-        val (uploadFile, responseInputStream) = service.getAttachment(key)
+        val (uploadFile, attachmentInputStream) = service.getAttachment(key)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
 
-        return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
+        return ResponseEntity(InputStreamResource(attachmentInputStream), headers, HttpStatus.OK)
     }
 }

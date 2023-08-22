@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 import { fileUploadErrorMessage } from '../../../../errorUtils'
 import { Spinner } from '../../../Spinner'
-import { AttachmentData, AttachmentLanguage } from '../../../../types'
+import { AttachmentData, AttachmentLanguage, ContentTypeEng } from '../../../../types'
 
 interface AttachmentSelectorProps {
+  contentType: ContentTypeEng
   handleNewAttachmentSelected: (attachments: AttachmentData[], language?: AttachmentLanguage) => void
   attachmentData?: AttachmentData[] | AttachmentData
   handleNewAttachmentName?: (newName: string, index: number, language: AttachmentLanguage) => void
@@ -16,6 +17,7 @@ interface AttachmentSelectorProps {
 }
 
 export const AttachmentSelector = ({
+  contentType,
   attachmentData,
   handleNewAttachmentSelected,
   handleNewAttachmentName,
@@ -110,6 +112,7 @@ export const AttachmentSelector = ({
           </div>
           {showFileDetails() && (
             <AttachmentFileDetailView
+              contentType={contentType}
               attachments={attachmentData!}
               handleAttachmentNameChange={handleAttachmentNameChange}
               deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'fi') : null)}

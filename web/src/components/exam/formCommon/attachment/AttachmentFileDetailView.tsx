@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '../../../Spinner'
-import { AttachmentData, FileDetails } from '../../../../types'
+import { AttachmentData, ContentTypeEng, FileDetails } from '../../../../types'
 import { AttachmentDetails } from './AttachmentDetails'
 import { AttachmentDetailsList } from './AttachmentDetailsList'
 import { useEffect, useState } from 'react'
+import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL, DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../../../constants'
 
 interface AttachmentFileDetailViewProps {
+  contentType: ContentTypeEng
   attachments: AttachmentData[] | AttachmentData
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
@@ -13,6 +15,7 @@ interface AttachmentFileDetailViewProps {
 }
 
 export const AttachmentFileDetailView = ({
+  contentType,
   attachments,
   handleAttachmentNameChange,
   deleteFileByIndex,
@@ -20,6 +23,9 @@ export const AttachmentFileDetailView = ({
 }: AttachmentFileDetailViewProps) => {
   const { t } = useTranslation()
   const [attachmentNames, setAttachmentNames] = useState<string[]>([])
+  const attachmentDownloadUrlPrefix = `${
+    contentType === ContentTypeEng.OHJEET ? DOWNLOAD_INSTRUCTION_ATTACHMENT_URL : DOWNLOAD_CERTIFICATE_ATTACHMENT_URL
+  }`
 
   useEffect(() => {
     if (Array.isArray(attachments)) {
@@ -65,6 +71,7 @@ export const AttachmentFileDetailView = ({
               {Array.isArray(fileDetails) ? (
                 <AttachmentDetailsList
                   {...{
+                    attachmentDownloadUrlPrefix,
                     fileDetails,
                     attachmentNames,
                     handleAttachmentNameChange,
@@ -72,7 +79,10 @@ export const AttachmentFileDetailView = ({
                   }}
                 />
               ) : (
-                <AttachmentDetails fileDetails={fileDetails} />
+                <AttachmentDetails
+                  attachmentDownloadUrlPrefix={attachmentDownloadUrlPrefix}
+                  fileDetails={fileDetails}
+                />
               )}
             </>
           )}

@@ -129,7 +129,7 @@ test.describe('Assignment form tests', () => {
 
     await page.getByTestId('edit-content-btn').click()
 
-    const file = path.resolve(__dirname, '../../fixtures/this-will-fail.txt')
+    const file = path.resolve(__dirname, '../../../server/src/test/resources/fixtures/this-will-fail.txt')
     await page.locator('#fileInput').setInputFiles(file)
 
     const errorMessage = await page.getByTestId('file-upload-error-message').innerText()

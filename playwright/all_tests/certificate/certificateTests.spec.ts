@@ -5,7 +5,7 @@ import { Role, loginTestGroup } from '../../helpers'
 type Event = 'submit' | 'draft' | 'cancel'
 
 async function selectAttachmentFile(page: Page, file: string) {
-  const filePath = path.resolve(__dirname, `../../fixtures/${file}`)
+  const filePath = path.resolve(__dirname, `../../../server/src/test/resources/fixtures/${file}`)
 
   await page.locator('#fileInput').setInputFiles(filePath)
 
@@ -55,7 +55,7 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
     return
   }
 
-  await selectAttachmentFile(page, 'fixture.pdf')
+  await selectAttachmentFile(page, 'fixture1.pdf')
 
   const nameText = certificateNameByEvent(event)
   const descriptionText = 'Todistuksen kuvaus'
@@ -81,10 +81,10 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   await expect(header).toHaveText(nameText)
   await page.getByText(descriptionText, { exact: true })
 
-  const attachment = await page.getByTestId('fixture.pdf').allTextContents()
-  await expect(attachment[0]).toContain('fixture.pdf')
+  const attachment = await page.getByTestId('fixture1.pdf').allTextContents()
+  await expect(attachment[0]).toContain('fixture1.pdf')
 
-  await testAttachmentLink(page, context, 'fixture.pdf', 1799)
+  await testAttachmentLink(page, context, 'fixture1.pdf', 323)
 
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
 
@@ -131,7 +131,7 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
   await page.getByText(descriptionText, { exact: true })
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
 
-  await testAttachmentLink(page, context, 'fixture2.pdf', 1805)
+  await testAttachmentLink(page, context, 'fixture2.pdf', 331)
 }
 
 async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Event) {

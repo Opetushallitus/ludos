@@ -1,6 +1,7 @@
 import { CertificateIn } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { AttachmentDetails } from '../exam/formCommon/attachment/AttachmentDetails'
+import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL, DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
 
 type CertificateContentProps = {
   certificate: CertificateIn
@@ -23,6 +24,7 @@ export const CertificateContent = ({ certificate }: CertificateContentProps) => 
 
         <div className="border-y border-gray-light" />
         <AttachmentDetails
+          attachmentDownloadUrlPrefix={DOWNLOAD_CERTIFICATE_ATTACHMENT_URL}
           fileDetails={{
             fileUploadDate: certificate.attachment.fileUploadDate,
             name: certificate.attachment.name,

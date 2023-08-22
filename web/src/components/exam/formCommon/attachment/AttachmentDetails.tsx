@@ -1,14 +1,19 @@
 import { ExternalLink } from '../../../ExternalLink'
-import { DOWNLOAD_CERTIFICATE_PDF_URL } from '../../../../constants'
+import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL } from '../../../../constants'
 import { toLocaleDate } from '../../../../formatUtils'
 import { FileDetails } from '../../../../types'
 
-export const AttachmentDetails = ({ fileDetails }: { fileDetails: FileDetails }) => (
+type AttachmentDetailsProps = {
+  attachmentDownloadUrlPrefix: string
+  fileDetails: FileDetails
+}
+
+export const AttachmentDetails = ({ attachmentDownloadUrlPrefix, fileDetails }: AttachmentDetailsProps) => (
   <div className="grid grid-cols-11 gap-2 py-2" data-testid={fileDetails.fileName}>
     {fileDetails.fileKey ? (
       <ExternalLink
         className="col-span-4 text-green-primary"
-        url={`${DOWNLOAD_CERTIFICATE_PDF_URL}/${fileDetails.fileKey}`}>
+        url={`${attachmentDownloadUrlPrefix}/${fileDetails.fileKey}`}>
         {fileDetails.fileName}
       </ExternalLink>
     ) : (

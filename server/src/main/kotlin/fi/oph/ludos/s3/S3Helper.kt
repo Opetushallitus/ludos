@@ -15,6 +15,7 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import javax.annotation.PostConstruct
 import kotlin.io.path.deleteIfExists
 
@@ -100,20 +101,20 @@ class CloudS3Helper(val environment: Environment, val s3: S3Client) : S3Helper {
 @Profile("local")
 class LocalS3Helper(val environment: Environment) : S3Helper {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
-    val tmpDir: Path = Files.createTempDirectory("ludos_LocalS3Helper_")
+    val s3Dir: Path = Paths.get(System.getProperty("java.io.tmpdir"), "ludos_local_s3")
 
-    fun bucketDir(bucket: Bucket) = tmpDir.resolve(bucket.getBucketName(environment))
+    fun bucketDir(bucket: Bucket) = s3Dir.resolve(bucket.getBucketName(environment))
 
     @PostConstruct
     fun init() {
-        Bucket.values().forEach {
-            Files.createDirectory(bucketDir(it))
+        if (!Files.exists(s3Dir)) {
+            Files.createDirectories(s3Dir)
         }
-    }
-
-    @PreDestroy
-    fun cleanup() {
-        tmpDir.toFile().deleteRecursively()
+        Bucket.values().forEach {
+            if (!Files.exists(bucketDir(it))) {
+                Files.createDirectory(bucketDir(it))
+            }
+        }
     }
 
     override fun putObject(bucket: Bucket, key: String, file: MultipartFile) {

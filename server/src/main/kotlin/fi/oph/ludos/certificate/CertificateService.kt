@@ -9,9 +9,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
-import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.exception.SdkException
-import software.amazon.awssdk.services.s3.model.GetObjectResponse
+import java.io.InputStream
 
 @Service
 class CertificateService(val repository: CertificateRepository, val s3Helper: S3Helper) {
@@ -27,7 +26,7 @@ class CertificateService(val repository: CertificateRepository, val s3Helper: S3
     fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?) =
         repository.updateCertificate(id, certificate, attachment)
 
-    fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, ResponseInputStream<GetObjectResponse>> {
+    fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND, "Certificate attachment '${key}' not found in db"
         )

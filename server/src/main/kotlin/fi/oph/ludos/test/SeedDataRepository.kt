@@ -100,26 +100,30 @@ class SeedDataRepository(
         }
     }
 
+    fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
+        val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
+        val fileContents = Files.readAllBytes(file)
+
+        return MockMultipartFile(
+            "attachments", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents
+        )
+    }
 
     fun seedInstructions() {
-        fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
-            val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
-            val fileContents = Files.readAllBytes(file)
-
-            return MockMultipartFile(
-                "attachments", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents
-            )
-        }
 
         val attachments: List<InstructionAttachmentIn> = listOf(
             InstructionAttachmentIn(
-                readAttachmentFixtureFile("fixture.pdf"),
-                InstructionAttachmentMetadataDtoIn(null, "Fixture pdf", Language.FI)
+                readAttachmentFixtureFile("fixture1.pdf"),
+                InstructionAttachmentMetadataDtoIn(null, "Fixture1 pdf", Language.FI)
             ),
             InstructionAttachmentIn(
                 readAttachmentFixtureFile("fixture2.pdf"),
                 InstructionAttachmentMetadataDtoIn(null, "Fixture2 pdf", Language.SV)
-            )
+            ),
+            InstructionAttachmentIn(
+                readAttachmentFixtureFile("fixture3.pdf"),
+                InstructionAttachmentMetadataDtoIn(null, "Fixture3 pdf", Language.FI)
+            ),
         )
 
         repeat(12) {
@@ -175,9 +179,7 @@ class SeedDataRepository(
                 publishState = publishState
             )
 
-            val content = "Sample attachment content $it"
-            val multipartFile = MockMultipartFile("attachment", "attachment.txt", "text/plain", content.toByteArray())
-
+            val multipartFile = readAttachmentFixtureFile("fixture1.pdf")
             certificateRepository.createCertificate(certificateDtoIn, multipartFile)
 
             val ldCertificateDtoIn = CertificateDtoIn(
