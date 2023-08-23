@@ -68,16 +68,17 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                 canReset
               />
             </div>
-            <div className="w-full px-2 md:w-3/12">
-              <p>{t('filter.tavoitetaso')}</p>
-              <MultiSelectDropdown
-                id="tavoitetaitotaso"
-                options={sortKooditByArvo(koodistos.taitotaso || [])}
-                selectedOptions={getSelectedOptions(filters.tavoitetaitotaso, 'taitotaso')}
-                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tavoitetaitotaso', opt)}
-                canReset
-              />
-            </div>
+            {/* OPHLUDOS-125: https://jira.eduuni.fi/browse/OPHLUDOS-125 */}
+            {/*<div className="w-full px-2 md:w-3/12">*/}
+            {/*  <p>{t('filter.tavoitetaso')}</p>*/}
+            {/*  <MultiSelectDropdown*/}
+            {/*    id="tavoitetaitotaso"*/}
+            {/*    options={sortKooditByArvo(koodistos.taitotaso || [])}*/}
+            {/*    selectedOptions={getSelectedOptions(filters.tavoitetaitotaso, 'taitotaso')}*/}
+            {/*    onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tavoitetaitotaso', opt)}*/}
+            {/*    canReset*/}
+            {/*  />*/}
+            {/*</div>*/}
           </>
         )}
         {(exam === Exam.Ld || exam === Exam.Puhvi) && (

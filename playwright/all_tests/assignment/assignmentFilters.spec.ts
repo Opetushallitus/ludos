@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { Role, loginTestGroup } from '../../helpers'
+import { loginTestGroup, Role } from '../../helpers'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
@@ -28,12 +28,12 @@ test.describe('Assignment filter tests', () => {
     // ympärisöt
     await page.getByTestId('aihe-option-008').click()
 
-    await page.getByTestId('tavoitetaitotaso-input').fill('b1')
-    await page.getByTestId('tavoitetaitotaso').click()
+    // await page.getByTestId('tavoitetaitotaso-input').fill('b1')
+    // await page.getByTestId('tavoitetaitotaso').click()
     // B1.1
-    await page.getByTestId('tavoitetaitotaso-option-0007').click()
+    // await page.getByTestId('tavoitetaitotaso-option-0007').click()
     // B1.2
-    await page.getByTestId('tavoitetaitotaso-option-0008').click()
+    // await page.getByTestId('tavoitetaitotaso-option-0008').click()
 
     // Wait for the filtered assignments to be available
     await page.waitForSelector('li[data-testid^="assignment-list-item-"]')
@@ -47,7 +47,7 @@ test.describe('Assignment filter tests', () => {
     await page.getByRole('link', { name: 'Test name 11 FI' }).click()
 
     page.getByText('Tehtävätyyppi: Keskustelu')
-    page.getByText('Tavoitetaso: B1.1  Toimiva peruskielitaito')
+    // page.getByText('Tavoitetaso: B1.1  Toimiva peruskielitaito')
     page.getByText('Aihe: vaikuttaminen, opiskelutaidot')
     page.getByText('Laaja-alainen osaaminen: -')
 
