@@ -12,6 +12,7 @@ interface AttachmentFileDetailViewProps {
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
   loading?: boolean
+  language?: 'fi' | 'sv'
 }
 
 export const AttachmentFileDetailView = ({
@@ -19,7 +20,8 @@ export const AttachmentFileDetailView = ({
   attachments,
   handleAttachmentNameChange,
   deleteFileByIndex,
-  loading
+  loading,
+  language
 }: AttachmentFileDetailViewProps) => {
   const { t } = useTranslation()
   const [attachmentNames, setAttachmentNames] = useState<string[]>([])
@@ -67,16 +69,15 @@ export const AttachmentFileDetailView = ({
       ) : (
         <>
           {fileDetails && (
-            <>
+            <div datatest-id={`attachment-details-${language}`}>
               {Array.isArray(fileDetails) ? (
                 <AttachmentDetailsList
-                  {...{
-                    attachmentDownloadUrlPrefix,
-                    fileDetails,
-                    attachmentNames,
-                    handleAttachmentNameChange,
-                    deleteFileByIndex
-                  }}
+                  handleAttachmentNameChange={handleAttachmentNameChange}
+                  deleteFileByIndex={deleteFileByIndex}
+                  fileDetails={fileDetails}
+                  attachmentNames={attachmentNames}
+                  attachmentDownloadUrlPrefix={attachmentDownloadUrlPrefix}
+                  language={language}
                 />
               ) : (
                 <AttachmentDetails
@@ -84,7 +85,7 @@ export const AttachmentFileDetailView = ({
                   fileDetails={fileDetails}
                 />
               )}
-            </>
+            </div>
           )}
         </>
       )}

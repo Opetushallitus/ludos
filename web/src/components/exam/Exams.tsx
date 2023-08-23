@@ -5,7 +5,7 @@ import { Exam, ContentType } from '../../types'
 import { Tabs } from '../Tabs'
 import { ContentTypeTranslationEnglish, ContentTypeTranslationFinnish } from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
-import { AssignmentList } from './assignment/AssignmentList'
+import { ContentList } from './contentList/ContentList'
 
 type ExamProps = {
   exam: Exam
@@ -36,7 +36,7 @@ export const Exams = ({ exam }: ExamProps) => {
       />
 
       <div role="tabpanel">
-        {contentType && activeTab && <AssignmentList exam={exam} contentType={contentType} activeTab={activeTab} />}
+        {contentType && activeTab && <ContentList exam={exam} contentType={contentType} activeTab={activeTab} />}
       </div>
     </div>
   )

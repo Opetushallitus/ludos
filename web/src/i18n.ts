@@ -18,7 +18,7 @@ const loadResources = async () => {
 }
 
 const i18nOptions = {
-  debug: true,
+  debug: false,
   lng: localStorage.getItem('i18nextLng') || 'fi',
   detection: {
     order: ['localStorage']
