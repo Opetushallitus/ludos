@@ -11,6 +11,7 @@ export type LocaleDropdownOptions = Record<string, { name: string; testId?: stri
 export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
   const { t, i18n } = useTranslation()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
+  const { isYllapitaja } = useUserDetails()
 
   const { firstNames, lastName, role } = useUserDetails()
 
@@ -24,6 +25,10 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
       document.location = LOGOUT_URL
     }
   }
+
+  // filter out keys option if not YLLAPITAJA
+  const { keys, ...languageDropdownOptionsWithoutShowKeys } = LANGUAGE_DROPDOWN
+  const languageDropdownOptions = isYllapitaja ? LANGUAGE_DROPDOWN : languageDropdownOptionsWithoutShowKeys
 
   return (
     <div className="flex justify-center bg-gray-bg">
@@ -47,8 +52,8 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
             {/*<p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>*/}
             <div className="relative border-l-2 border-green-primary pl-5">
               <HeaderDropdown
-                currentOption={LANGUAGE_DROPDOWN[currentLanguageKey].name}
-                options={LANGUAGE_DROPDOWN} // todo: when going to prod, remove show keys option
+                currentOption={languageDropdownOptions[currentLanguageKey].name}
+                options={languageDropdownOptions}
                 onOptionClick={(str) => changeLanguage(str)}
                 testId="header-language-dropdown"
               />
