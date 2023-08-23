@@ -27,6 +27,7 @@ import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { AttachmentSelector } from '../../formCommon/attachment/AttachmentSelector'
 import { useFetch } from '../../../../hooks/useFetch'
 import { useInstructionFormInitializer } from '../../../../hooks/useInstructionFormInitializer'
+import { FormError } from '../../formCommon/FormErrors'
 
 type InstructionFormProps = {
   action: 'new' | 'update'
@@ -49,7 +50,13 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const { data: instruction, loading } = useFetch<InstructionIn>(`instruction/${exam}/${id}`, action === 'new')
 
-  const { register, reset, handleSubmit, setValue } = useForm<InstructionFormType>({
+  const {
+    register,
+    reset,
+    handleSubmit,
+    setValue,
+    formState: { errors }
+  } = useForm<InstructionFormType>({
     mode: 'onBlur',
     resolver: zodResolver(instructionSchema)
   })
@@ -187,6 +194,10 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
     isSv ? setAttachmentDataSv(updatedAttachmentData) : setAttachmentDataFi(updatedAttachmentData)
   }
 
+  const instructionNameError = errors.nameRequired?.message as string
+  const nameFiError = errors.nameFi?.message as string
+  const nameSvError = errors.nameSv?.message as string
+
   return (
     <div className="w-10/12 pt-3">
       <FormHeader action={action} contentType={ContentTypeEng.OHJEET} name={instruction?.nameFi} />
@@ -203,60 +214,61 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
           <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
 
-        {activeTab === 'fi' && (
-          <>
-            <TextInput id="nameFi" register={register}>
-              {t('form.ohjeennimi')}
-            </TextInput>
-            <TextAreaInput id="contentFi" register={register}>
-              {t('form.ohjeensisalto')}
-            </TextAreaInput>
-            <div className="mb-3 mt-6">
-              <TextInput id="shortDescriptionFi" register={register}>
-                {t('form.lyhyt-kuvaus')}
-              </TextInput>
-            </div>
+        <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
+          <TextInput id="nameFi" register={register} error={!!instructionNameError} required>
+            {t('form.ohjeennimi')}
+          </TextInput>
+          <FormError error={instructionNameError} />
 
-            <label className="font-semibold">{t('form.tiedostot')}</label>
-            <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
-            <AttachmentSelector
-              contentType={ContentTypeEng.OHJEET}
-              language="fi"
-              attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
-              handleNewAttachmentSelected={handleNewAttachmentSelected}
-              handleNewAttachmentName={handleAttachmentNameChange}
-              deleteFileByIndex={deleteFileByIndex}
-              loading={loading}
-            />
-          </>
-        )}
-        {activeTab === 'sv' && (
-          <>
-            <TextInput id="nameSv" register={register}>
-              {t('form.ohjeennimi')}
+          <TextAreaInput id="contentFi" register={register}>
+            {t('form.ohjeensisalto')}
+          </TextAreaInput>
+          <div className="mb-3 mt-6">
+            <TextInput id="shortDescriptionFi" register={register}>
+              {t('form.lyhyt-kuvaus')}
             </TextInput>
-            <TextAreaInput id="contentSv" register={register}>
-              {t('form.ohjeensisalto')}
-            </TextAreaInput>
-            <div className="mb-3 mt-6">
-              <TextInput id="shortDescriptionSv" register={register}>
-                {t('form.lyhyt-kuvaus')}
-              </TextInput>
-            </div>
+          </div>
 
-            <label className="font-semibold">{t('form.tiedostot')}</label>
-            <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
-            <AttachmentSelector
-              contentType={ContentTypeEng.OHJEET}
-              language="sv"
-              attachmentData={attachmentDataSv}
-              handleNewAttachmentSelected={handleNewAttachmentSelected}
-              handleNewAttachmentName={handleAttachmentNameChange}
-              deleteFileByIndex={deleteFileByIndex}
-              loading={loading}
-            />
-          </>
-        )}
+          <label className="font-semibold">{t('form.tiedostot')}</label>
+          <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
+          <AttachmentSelector
+            contentType={ContentTypeEng.OHJEET}
+            language="fi"
+            attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
+            handleNewAttachmentSelected={handleNewAttachmentSelected}
+            handleNewAttachmentName={handleAttachmentNameChange}
+            deleteFileByIndex={deleteFileByIndex}
+            loading={loading}
+          />
+        </div>
+
+        <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
+          <TextInput id="nameSv" register={register} error={!!instructionNameError} required>
+            {t('form.ohjeennimi')}
+          </TextInput>
+          <FormError error={instructionNameError} />
+          <TextAreaInput id="contentSv" register={register}>
+            {t('form.ohjeensisalto')}
+          </TextAreaInput>
+          <div className="mb-3 mt-6">
+            <TextInput id="shortDescriptionSv" register={register}>
+              {t('form.lyhyt-kuvaus')}
+            </TextInput>
+          </div>
+
+          <label className="font-semibold">{t('form.tiedostot')}</label>
+          <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
+          <AttachmentSelector
+            contentType={ContentTypeEng.OHJEET}
+            language="sv"
+            attachmentData={attachmentDataSv}
+            handleNewAttachmentSelected={handleNewAttachmentSelected}
+            handleNewAttachmentName={handleAttachmentNameChange}
+            deleteFileByIndex={deleteFileByIndex}
+            loading={loading}
+          />
+        </div>
+
         {fileUploadErrorMessage && (
           <p className="ml-2 text-red-primary" data-testid="file-upload-error-message">
             {fileUploadErrorMessage}

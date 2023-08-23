@@ -246,7 +246,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun ldInstructionTest() = testInstruction(Exam.LD)
 
     val minimalInstruction = TestInstructionIn(
-        nameFi = "",
+        nameFi = "nameFi",
         nameSv = "",
         contentFi = "",
         contentSv = "",
@@ -265,6 +265,15 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val createdInstruction = objectMapper.readValue(responseContent, TestInstructionOut::class.java)
         assertCommonFieldsBetweenInAndOutEqual(minimalInstruction, createdInstruction)
         assertEquals(0, createdInstruction.attachments.size)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun createInstructionWithBothNamesBlank() {
+        val responseContent = mockMvc.perform(
+            postInstruction(objectMapper.writeValueAsString(minimalInstruction.copy(nameFi = "")), emptyList(), objectMapper)
+        ).andExpect(status().isBadRequest).andReturn().response.contentAsString
+        assertThat(responseContent).isEqualTo("Global error: At least one of the name fields must be non-empty")
     }
 
     @Test

@@ -9,6 +9,11 @@ import fi.oph.ludos.PublishState
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
 import java.time.ZonedDateTime
+import javax.validation.Constraint
+import javax.validation.ConstraintValidator
+import javax.validation.ConstraintValidatorContext
+import javax.validation.Payload
+import kotlin.reflect.KClass
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -16,6 +21,7 @@ import java.time.ZonedDateTime
     JsonSubTypes.Type(value = PuhviInstructionDtoIn::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdInstructionDtoIn::class, name = "LD")
 )
+@AtLeastOneInstructionNameIsNotBlank
 interface Instruction {
     val nameFi: String
     val contentFi: String
@@ -105,3 +111,17 @@ data class InstructionDtoOut(
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Constraint(validatedBy = [AtLeastOneInstructionNameIsNotEmptyValidator::class])
+annotation class AtLeastOneInstructionNameIsNotBlank(
+    val message: String = "At least one of the name fields must be non-empty",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+
+class AtLeastOneInstructionNameIsNotEmptyValidator : ConstraintValidator<AtLeastOneInstructionNameIsNotBlank, Instruction> {
+    override fun isValid(value: Instruction, context: ConstraintValidatorContext?): Boolean {
+        return value.nameFi.isNotEmpty() || value.nameSv.isNotEmpty()
+    }
+}

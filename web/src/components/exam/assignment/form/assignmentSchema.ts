@@ -3,23 +3,21 @@ import { ErrorMessages } from '../../../../types'
 
 export const MIN_LENGTH = 3
 
-const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: string }, ctx: RefinementCtx) => {
+export const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: string }, ctx: RefinementCtx) => {
   // Either nameFi or nameSv has a length of at least 1, but not both
-  if ((nameFi.length < 1 && nameSv.length >= 1) || (nameFi.length >= 1 && nameSv.length < 1)) {
-    return
-  } else {
+  if (nameFi.length === 0 && nameSv.length === 0) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: ErrorMessages.ASSIGNMENT_NAME_REQUIRED,
-      path: ['assignmentNameRequired']
+      path: ['nameRequired']
     })
   }
 }
 
 const commonSchema = z.object({
   exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: ErrorMessages.REQUIRED }),
-  nameFi: z.string().default(''),
-  nameSv: z.string().default(''),
+  nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
+  nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   instructionFi: z.string(),
   instructionSv: z.string(),
   contentFi: z.string(),

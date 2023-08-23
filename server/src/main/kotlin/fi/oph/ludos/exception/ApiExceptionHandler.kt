@@ -19,12 +19,16 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(BindException::class)
     fun handleBindException(ex: BindException): ResponseEntity<String> {
-        val errors = ex.bindingResult.fieldErrors.map { fieldError: FieldError ->
+        val fieldErrors = ex.bindingResult.fieldErrors.map { fieldError: FieldError ->
             "${fieldError.field}: ${fieldError.defaultMessage}"
         }
 
-        logger.error(ex.message)
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.sorted().joinToString("\n"))
+        val globalErrors = ex.globalErrors.map {
+            "Global error: ${it.defaultMessage}"
+        }
+
+        logger.error("BindException: ${ex.message}")
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body((fieldErrors.sorted() + globalErrors.sorted()).joinToString("\n"))
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)

@@ -15,7 +15,9 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
     formState: { errors }
   } = useFormContext()
 
-  const assignmentNameError = errors.assignmentNameRequired?.message as string
+  const assignmentNameError = errors.nameRequired?.message as string
+  const nameFiError = errors.nameFi?.message as string
+  const nameSvError = errors.nameSv?.message as string
 
   return (
     <>
@@ -26,10 +28,10 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
       </div>
 
       <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
-        <TextInput id="nameFi" register={register} error={!!assignmentNameError} required>
+        <TextInput id="nameFi" register={register} error={!!nameFiError || !!assignmentNameError} required>
           {t('form.tehtavannimi')}
         </TextInput>
-        <FormError error={assignmentNameError} />
+        <FormError error={nameFiError || assignmentNameError} />
 
         {hasInstruction && (
           <TextAreaInput id="instructionFi" register={register}>
@@ -43,10 +45,10 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
       </div>
 
       <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
-        <TextInput id="nameSv" register={register} error={!!assignmentNameError} required>
+        <TextInput id="nameSv" register={register} error={!!nameSvError || !!assignmentNameError} required>
           {t('form.tehtavannimi')}
         </TextInput>
-        <FormError error={assignmentNameError} />
+        <FormError error={nameSvError || assignmentNameError} />
 
         {hasInstruction && (
           <TextAreaInput id="instructionSv" register={register}>
