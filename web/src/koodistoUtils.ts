@@ -5,10 +5,13 @@ export const getSelectedOptions = (selectedKoodisto: string[] | null, koodit?: K
 
 export const sortKooditAlphabetically = (koodit: KoodiDtoIn[]) => {
   const language = document.documentElement.lang
-  const options = { sensitivity: 'base' }
   const locale = language === 'fi' ? 'fi-FI' : 'sv-SE'
 
-  return koodit.sort((a, b) => a.nimi.localeCompare(b.nimi, locale, options))
+  return koodit.sort((a, b) =>
+    a.nimi.localeCompare(b.nimi, locale, {
+      sensitivity: 'base'
+    })
+  )
 }
 
 export const sortKooditByArvo = (koodit: KoodiDtoIn[]) => koodit.sort((a, b) => a.koodiArvo.localeCompare(b.koodiArvo))

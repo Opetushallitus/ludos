@@ -59,7 +59,7 @@ export const FormContentInput = ({
         <TipTap
           onContentChange={handleContentChange}
           content={initialContent.fi}
-          label={t('form.ohjeensisalto')}
+          labelKey="form.ohjeensisalto"
           dataTestId="editor-content-fi"
           key={initialContent.fi ? 'content-fi' : 'content-fi-new'}
         />
@@ -82,7 +82,7 @@ export const FormContentInput = ({
         <TipTap
           onContentChange={handleContentChange}
           content={initialContent.sv}
-          label={t('form.ohjeensisalto')}
+          labelKey="form.ohjeensisalto"
           dataTestId="editor-content-sv"
           key={initialContent.sv ? 'content-sv' : 'content-sv-new'}
         />
