@@ -3,15 +3,15 @@ import logo from 'web/assets/oph_fin_vaaka.png'
 import { feedbackKey } from './routes/routes'
 import { ExternalLink } from './ExternalLink'
 import { InternalLink } from './InternalLink'
-import { TIETOSUOJA_SELOSTE_URL } from '../constants'
+import { OPH_URL, TIETOSUOJA_SELOSTE_URL } from '../constants'
 
 export const Footer = ({ t }: { t: TFunction }) => (
   <div className="mt-5 border-t-2 border-gray-separator pb-4 pt-3">
     <div className="flex flex-wrap md:px-10">
       <div className="flex w-full flex-col md:w-3/12">
         <div className="flex justify-center pb-5 pt-3">
-          <a href="https://oph.fi/">
-            <img className="h-12" src={logo} alt="Opetushallitus logo" />
+          <a href={OPH_URL} target="_blank" rel="noopener noreferrer" title="Opetushallituksen nettisivut">
+            <img className="h-12" src={logo} alt="Opetushallituksen logo" />
           </a>
         </div>
       </div>
