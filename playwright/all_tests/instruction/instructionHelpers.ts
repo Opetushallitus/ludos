@@ -41,10 +41,10 @@ export async function fillInstructionForm({
 
   if (attachmentNameFi) {
     for (const filePath of filePaths) {
-      await page.locator('#fileInput').setInputFiles(filePath)
+      await page.locator('#fileInput-fi').setInputFiles(filePath)
     }
     for (const [index] of files.entries()) {
-      await page.getByTestId(`attachment-name-input-${index}`).fill(`${attachmentNameFi} ${index + 1}`)
+      await page.getByTestId(`attachment-name-input-${index}-fi`).fill(`${attachmentNameFi} ${index + 1}`)
     }
   }
 
@@ -64,10 +64,10 @@ export async function fillInstructionForm({
 
     if (attachmentNameSv) {
       for (const filePath of filePaths) {
-        await page.locator('#fileInput').setInputFiles(filePath)
+        await page.locator('#fileInput-sv').setInputFiles(filePath)
       }
       for (const [index] of files.entries()) {
-        await page.getByTestId(`attachment-name-input-${index}`).fill(`${attachmentNameSv} ${index + 1}`)
+        await page.getByTestId(`attachment-name-input-${index}-sv`).fill(`${attachmentNameSv} ${index + 1}`)
       }
     }
   }

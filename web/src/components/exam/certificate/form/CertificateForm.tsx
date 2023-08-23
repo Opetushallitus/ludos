@@ -132,6 +132,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
           contentType={ContentTypeEng.TODISTUKSET}
           attachmentData={currentAttachment()}
           handleNewAttachmentSelected={handleNewAttachmentSelected}
+          language="fi"
         />
 
         <FormError error={fileError} />

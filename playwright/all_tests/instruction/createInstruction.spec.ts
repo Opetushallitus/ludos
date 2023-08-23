@@ -86,12 +86,12 @@ test.describe('Assignment form tests', () => {
 
     await expect(updatedInstructionHeaderSv).toHaveText('Testuppgifter redigerade')
 
-    await page.getByTestId('edit-content-btn').click()
+    await page.getByTestId('edit-content-btn').first().click()
     // delete one finnish file
-    await page.getByTestId('delete-attachment-icon-0').click()
-    await page.getByTestId('modal-button-delete').click()
+    await page.getByTestId('delete-attachment-icon-0').first().click()
+    await page.getByTestId('modal-button-delete').first().click()
     // rename other finnish file
-    await page.getByTestId('attachment-name-input-0').fill('Testi liite muokattu')
+    await page.getByTestId('attachment-name-input-0-fi').first().fill('Testi liite muokattu')
 
     await page.getByTestId('form-submit').click()
 
@@ -130,7 +130,7 @@ test.describe('Assignment form tests', () => {
     await page.getByTestId('edit-content-btn').click()
 
     const file = path.resolve(__dirname, '../../../server/src/test/resources/fixtures/this-will-fail.txt')
-    await page.locator('#fileInput').setInputFiles(file)
+    await page.locator('#fileInput-fi').setInputFiles(file)
 
     const errorMessage = await page.getByTestId('file-upload-error-message').innerText()
     expect(errorMessage).toContain('this-will-fail.txt')

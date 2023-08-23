@@ -9,10 +9,10 @@ import { AttachmentData, AttachmentLanguage, ContentTypeEng } from '../../../../
 interface AttachmentSelectorProps {
   contentType: ContentTypeEng
   handleNewAttachmentSelected: (attachments: AttachmentData[], language?: AttachmentLanguage) => void
+  language: AttachmentLanguage // used mostly for data-testid tagginf
   attachmentData?: AttachmentData[] | AttachmentData
   handleNewAttachmentName?: (newName: string, index: number, language: AttachmentLanguage) => void
   deleteFileByIndex?: (index: number, lang: AttachmentLanguage) => void
-  language?: AttachmentLanguage
   loading?: boolean
 }
 
@@ -95,14 +95,14 @@ export const AttachmentSelector = ({
           <div className="my-6">
             <input
               type="file"
-              id="fileInput"
+              id={`fileInput-${language}`}
               ref={hiddenFileInputRef}
               multiple
-              // accept="application/pdf"
+              accept="application/pdf"
               style={{ display: 'none' }}
               onChange={handleAttachmentSelected}
             />
-            <label htmlFor="fileInput">
+            <label htmlFor={`fileInput-${language}`}>
               <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()}>
                 {isMultiple
                   ? t('button.lisaa-liitetiedostot')
@@ -116,6 +116,7 @@ export const AttachmentSelector = ({
               attachments={attachmentData!}
               handleAttachmentNameChange={handleAttachmentNameChange}
               deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'fi') : null)}
+              language={language}
             />
           )}
           {error && (

@@ -13,6 +13,7 @@ type AttachmentDetailsListProps = {
   attachmentNames: string[]
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
+  language?: 'fi' | 'sv'
 }
 
 export const AttachmentDetailsList = ({
@@ -20,7 +21,8 @@ export const AttachmentDetailsList = ({
   fileDetails,
   attachmentNames,
   handleAttachmentNameChange,
-  deleteFileByIndex
+  deleteFileByIndex,
+  language
 }: AttachmentDetailsListProps) => {
   const { t } = useTranslation()
   const [indexToDelete, setIndexToDelete] = useState<number | null>(null)
@@ -50,7 +52,7 @@ export const AttachmentDetailsList = ({
             value={attachmentNames![index] || ''}
             onChange={(e) => handleAttachmentNameChange(e.target.value, index)}
             placeholder={attachmentNames![index] || ''}
-            data-testid={`attachment-name-input-${index}`}
+            data-testid={`attachment-name-input-${index}-${language}`}
           />
           <p className="col-span-2">{toLocaleDate(attachment.fileUploadDate ?? new Date())}</p>
           {deleteFileByIndex && (

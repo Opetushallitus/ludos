@@ -7,7 +7,7 @@ type Event = 'submit' | 'draft' | 'cancel'
 async function selectAttachmentFile(page: Page, file: string) {
   const filePath = path.resolve(__dirname, `../../../server/src/test/resources/fixtures/${file}`)
 
-  await page.locator('#fileInput').setInputFiles(filePath)
+  await page.locator('#fileInput-fi').setInputFiles(filePath)
 
   const currentDate = new Date()
 
