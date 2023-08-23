@@ -60,7 +60,7 @@ fun getInstruction(exam: Exam, id: Int) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id").contentType(MediaType.APPLICATION_JSON)
 
 fun readAttachmentFixtureFile(attachmentFixtureFileName: String, partName: String): MockMultipartFile {
-    val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
+    val file = Paths.get("src/main/resources/fixtures/$attachmentFixtureFileName")
     val fileContents = Files.readAllBytes(file)
 
     return MockMultipartFile(

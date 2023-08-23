@@ -37,7 +37,7 @@ export async function fillInstructionForm({
 
   const files = ['fixture1.pdf', 'fixture2.pdf']
 
-  const filePaths = files.map((file) => path.resolve(__dirname, `../../../server/src/test/resources/fixtures/${file}`))
+  const filePaths = files.map((file) => path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`))
 
   if (attachmentNameFi) {
     for (const filePath of filePaths) {

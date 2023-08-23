@@ -13,7 +13,7 @@ import java.nio.file.Paths
 
 
 fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
-    val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
+    val file = Paths.get("src/main/resources/fixtures/$attachmentFixtureFileName")
     val fileContents = Files.readAllBytes(file)
     return MockMultipartFile("attachment", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents)
 }

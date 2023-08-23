@@ -1,5 +1,6 @@
 package fi.oph.ludos.test
 
+import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.assignment.AssignmentRepository
@@ -9,12 +10,11 @@ import fi.oph.ludos.assignment.SukoAssignmentDtoIn
 import fi.oph.ludos.certificate.CertificateDtoIn
 import fi.oph.ludos.certificate.CertificateRepository
 import fi.oph.ludos.instruction.*
+import org.springframework.core.io.ClassPathResource
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.stereotype.Repository
-import java.nio.file.Files
-import java.nio.file.Paths
 
 @Repository
 class SeedDataRepository(
@@ -101,8 +101,8 @@ class SeedDataRepository(
     }
 
     fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
-        val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
-        val fileContents = Files.readAllBytes(file)
+        val resource = ClassPathResource("fixtures/$attachmentFixtureFileName")
+        val fileContents = resource.inputStream.readAllBytes()
 
         return MockMultipartFile(
             "attachments", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents

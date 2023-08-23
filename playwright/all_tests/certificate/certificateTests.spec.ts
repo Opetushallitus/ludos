@@ -5,7 +5,7 @@ import { Role, loginTestGroup } from '../../helpers'
 type Event = 'submit' | 'draft' | 'cancel'
 
 async function selectAttachmentFile(page: Page, file: string) {
-  const filePath = path.resolve(__dirname, `../../../server/src/test/resources/fixtures/${file}`)
+  const filePath = path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`)
 
   await page.locator('#fileInput-fi').setInputFiles(filePath)
 
