@@ -1,12 +1,18 @@
-const MIN_LENGTH = 3
 import { z } from 'zod'
+import { commonSuperRefine, MIN_LENGTH } from '../../assignment/form/assignmentSchema'
+import { ErrorMessages } from '../../../../types'
 
-export const instructionSchema = z.object({
-  exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: 'Required' }),
-  nameFi: z.string(),
-  nameSv: z.string(),
-  contentFi: z.string(),
-  contentSv: z.string()
-})
+export const instructionSchema = z
+  .object({
+    exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: 'Required' }),
+    nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
+    nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
+    contentFi: z.string(),
+    contentSv: z.string(),
+    shortDescriptionFi: z.string(),
+    shortDescriptionSv: z.string(),
+    nameRequired: z.custom()
+  })
+  .superRefine(commonSuperRefine)
 
 export type InstructionFormType = z.infer<typeof instructionSchema>

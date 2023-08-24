@@ -1,14 +1,17 @@
 package fi.oph.ludos.test
 
+import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import fi.oph.ludos.assignment.*
+import fi.oph.ludos.assignment.AssignmentRepository
+import fi.oph.ludos.assignment.LdAssignmentDtoIn
+import fi.oph.ludos.assignment.PuhviAssignmentDtoIn
+import fi.oph.ludos.assignment.SukoAssignmentDtoIn
 import fi.oph.ludos.certificate.CertificateDtoIn
 import fi.oph.ludos.certificate.CertificateRepository
-import fi.oph.ludos.instruction.InstructionRepository
-import fi.oph.ludos.instruction.LdInstructionDtoIn
-import fi.oph.ludos.instruction.PuhviInstructionDtoIn
-import fi.oph.ludos.instruction.SukoInstructionDtoIn
+import fi.oph.ludos.instruction.*
+import org.springframework.core.io.ClassPathResource
+import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.stereotype.Repository
@@ -97,7 +100,32 @@ class SeedDataRepository(
         }
     }
 
+    fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
+        val resource = ClassPathResource("fixtures/$attachmentFixtureFileName")
+        val fileContents = resource.inputStream.readAllBytes()
+
+        return MockMultipartFile(
+            "attachments", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents
+        )
+    }
+
     fun seedInstructions() {
+
+        val attachments: List<InstructionAttachmentIn> = listOf(
+            InstructionAttachmentIn(
+                readAttachmentFixtureFile("fixture1.pdf"),
+                InstructionAttachmentMetadataDtoIn(null, "Fixture1 pdf", Language.FI)
+            ),
+            InstructionAttachmentIn(
+                readAttachmentFixtureFile("fixture2.pdf"),
+                InstructionAttachmentMetadataDtoIn(null, "Fixture2 pdf", Language.SV)
+            ),
+            InstructionAttachmentIn(
+                readAttachmentFixtureFile("fixture3.pdf"),
+                InstructionAttachmentMetadataDtoIn(null, "Fixture3 pdf", Language.FI)
+            ),
+        )
+
         repeat(12) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
 
@@ -106,10 +134,12 @@ class SeedDataRepository(
                 nameSv = "Test name $it SV",
                 contentFi = "Test content $it FI",
                 contentSv = "Test content $it SV",
+                shortDescriptionFi = "Test short description $it FI",
+                shortDescriptionSv = "Test short description $it SV",
                 publishState = publishState
             )
 
-            instructionRepository.createInstruction(sukoInstruction)
+            instructionRepository.createInstruction(sukoInstruction, if (it == 0) attachments else emptyList())
 
 
             val ldInstruction = LdInstructionDtoIn(
@@ -117,26 +147,30 @@ class SeedDataRepository(
                 nameSv = "LD Test name $it SV",
                 contentFi = "LD Test content $it FI",
                 contentSv = "LD Test content $it SV",
+                shortDescriptionFi = "LD Test short description $it FI",
+                shortDescriptionSv = "LD Test short description $it SV",
                 publishState = publishState
             )
 
-            instructionRepository.createInstruction(ldInstruction)
+            instructionRepository.createInstruction(ldInstruction, emptyList())
 
             val puhviInstruction = PuhviInstructionDtoIn(
                 nameFi = "PUHVI Test name $it FI",
                 nameSv = "PUHVI Test name $it SV",
                 contentFi = "PUHVI Test content $it FI",
                 contentSv = "PUHVI Test content $it SV",
+                shortDescriptionFi = "PUHVI Test short description $it FI",
+                shortDescriptionSv = "PUHVI Test short description $it SV",
                 publishState = publishState
             )
 
-            instructionRepository.createInstruction(puhviInstruction)
+            instructionRepository.createInstruction(puhviInstruction, emptyList())
         }
     }
 
     fun seedCertificates() {
-        repeat(12) {
-            val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
+        repeat(4) {
+            val publishState = if (it % 2 == 0) PublishState.PUBLISHED else PublishState.DRAFT
 
             val certificateDtoIn = CertificateDtoIn(
                 exam = Exam.SUKO,
@@ -145,9 +179,7 @@ class SeedDataRepository(
                 publishState = publishState
             )
 
-            val content = "Sample attachment content $it"
-            val multipartFile = MockMultipartFile("attachment", "attachment.txt", "text/plain", content.toByteArray())
-
+            val multipartFile = readAttachmentFixtureFile("fixture1.pdf")
             certificateRepository.createCertificate(certificateDtoIn, multipartFile)
 
             val ldCertificateDtoIn = CertificateDtoIn(

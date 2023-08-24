@@ -1,9 +1,11 @@
 package fi.oph.ludos.assignment
 
+import BaseFilters
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
+import fi.oph.ludos.repository.getKotlinArray
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
@@ -16,11 +18,6 @@ class AssignmentRepository(
     private val namedJdbcTemplate: NamedParameterJdbcTemplate,
     private val jdbcTemplate: JdbcTemplate,
 ) {
-    private inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
-        val array = this.getArray(columnLabel)?.array ?: return emptyArray()
-
-        @Suppress("UNCHECKED_CAST") return array as Array<T>
-    }
 
     val mapSukoResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut = { rs: ResultSet, _: Int ->
         SukoAssignmentDtoOut(
@@ -81,7 +78,7 @@ class AssignmentRepository(
         )
     }
 
-    fun getAssignments(assignmentFilter: AssignmentFilter): List<AssignmentOut> {
+    fun getAssignments(assignmentFilter: BaseFilters): List<AssignmentOut> {
         val role = Kayttajatiedot.fromSecurityContext().role
         val (query, parameters, mapper) = buildQuery(assignmentFilter, role)
 
@@ -89,16 +86,16 @@ class AssignmentRepository(
     }
 
     private fun buildQuery(
-        filters: AssignmentFilter, role: Role
+        filters: BaseFilters, role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> AssignmentOut> = when (filters) {
-        is SukoAssignmentFilter -> buildSukoQuery(filters, role)
-        is PuhviAssignmentFilter -> buildPuhviQuery(filters, role)
-        is LdAssignmentFilter -> buildLdQuery(filters, role)
+        is SukoBaseFilters -> buildSukoQuery(filters, role)
+        is PuhviBaseFilters -> buildPuhviQuery(filters, role)
+        is LdBaseFilters -> buildLdQuery(filters, role)
         else -> throw UnknownError("Unknown assignment filter ${filters::class.simpleName}")
     }
 
     private fun buildSukoQuery(
-        filters: SukoAssignmentFilter, role: Role
+        filters: SukoBaseFilters, role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentDtoOut> {
         val parameters = MapSqlParameterSource()
 
@@ -145,7 +142,7 @@ class AssignmentRepository(
     }
 
     private fun buildPuhviQuery(
-        filters: PuhviAssignmentFilter, role: Role
+        filters: PuhviBaseFilters, role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentDtoOut> {
         val parameters = MapSqlParameterSource()
 
@@ -177,7 +174,7 @@ class AssignmentRepository(
     }
 
     private fun buildLdQuery(
-        filters: LdAssignmentFilter, role: Role
+        filters: LdBaseFilters, role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> LdAssignmentDtoOut> {
         val parameters = MapSqlParameterSource()
 

@@ -8,27 +8,32 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Exam, PublishState, SukoAssignmentIn } from '../../../../types'
+import { ContentTypeEng, Exam, PublishState, SukoAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
-import { postAssignment, updateAssignment } from '../../../../request'
+import { createAssignment, updateAssignment } from '../../../../request'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../../formCommon/AssignmentFileTypeRadio'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
+import { FormHeader } from '../../formCommon/FormHeader'
+import { useFetch } from '../../../../hooks/useFetch'
 
 type SukoAssignmentFormProps = {
   action: 'new' | 'update'
-  assignment?: SukoAssignmentIn
   pathname: string
+  id?: string
 }
 
-export const SukoAssignmentForm = ({ action, assignment, pathname }: SukoAssignmentFormProps) => {
+export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
   const navigate = useNavigate()
+
   const exam = Exam.Suko
+
+  const { data: assignment } = useFetch<SukoAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
 
   const methods = useForm<SukoAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(sukoAssignmentSchema) })
 
@@ -67,11 +72,11 @@ export const SukoAssignmentForm = ({ action, assignment, pathname }: SukoAssignm
         if (action === 'update' && assignment) {
           resultId = await updateAssignment<SukoAssignmentFormType>(assignment.id, body)
         } else {
-          const { id } = await postAssignment<SukoAssignmentFormType>(body)
+          const { id } = await createAssignment<SukoAssignmentFormType>(body)
           resultId = id
         }
 
-        navigate(`${pathname}/../${resultId}`)
+        navigate(`/${exam}/assignments/${resultId}`)
       } catch (e) {
         console.error(e)
       }
@@ -98,6 +103,7 @@ export const SukoAssignmentForm = ({ action, assignment, pathname }: SukoAssignm
 
   return (
     <>
+      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
@@ -166,8 +172,6 @@ export const SukoAssignmentForm = ({ action, assignment, pathname }: SukoAssignm
               canReset
             />
           </div>
-
-          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
           <FormContentInput hasInstruction />
         </form>

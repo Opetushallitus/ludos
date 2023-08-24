@@ -47,13 +47,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
               name="muokkaa"
               color="text-green-primary"
               dataTestId={`assignment-${assignment.id.toString()}-edit`}
-              onClick={() =>
-                navigate('update', {
-                  state: {
-                    data: assignment
-                  }
-                })
-              }
+              onClick={() => navigate(`update/${assignment.id}`)}
             />
           </>
         )}
@@ -115,7 +109,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
             <p className="text-xs text-black">{toLocaleDate(assignment.createdAt)}</p>
           </div>
         </div>
-        <ContentActions />
+        {/*<ContentActions /> todo: commented out until the button features work*/}
       </div>
     </li>
   )

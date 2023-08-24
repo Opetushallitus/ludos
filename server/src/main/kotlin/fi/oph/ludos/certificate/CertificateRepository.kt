@@ -4,6 +4,8 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
+import fi.oph.ludos.repository.getZonedDateTime
+import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -15,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import software.amazon.awssdk.core.exception.SdkException
 import java.sql.ResultSet
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.util.*
 
 @Component
@@ -75,11 +75,11 @@ class CertificateRepository(
         return createdCertificate
     }
 
-    fun createAttachment(file: MultipartFile): CertificateAttachment {
+    fun createAttachment(file: MultipartFile): CertificateAttachmentDtoOut {
         val fileKey = "todistuspohja_${UUID.randomUUID()}"
 
         try {
-            s3Helper.putObject(file, fileKey)
+            s3Helper.putObject(Bucket.CERTIFICATE, fileKey, file)
         } catch (ex: SdkException) {
             val errorMsg = "Failed to upload file '${file.originalFilename}' to S3"
             logger.error(errorMsg, ex)
@@ -95,8 +95,8 @@ class CertificateRepository(
                 RETURNING attachment_upload_date
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
-                CertificateAttachment(
-                    fileKey, fileName, getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                CertificateAttachmentDtoOut(
+                    fileKey, fileName, rs.getZonedDateTime("attachment_upload_date")
                 )
             },
             fileKey,
@@ -115,15 +115,10 @@ class CertificateRepository(
         }
 
         try {
-            s3Helper.deleteObject(fileKey)
+            s3Helper.deleteObject(Bucket.CERTIFICATE, fileKey)
         } catch (ex: SdkException) {
             logger.warn("Failed to delete certificate attachment '${fileKey}' from S3. Ignoring error.", ex)
         }
-    }
-
-    fun getZonedDateTimeFromResultSet(rs: ResultSet, columnName: String): ZonedDateTime {
-        val timestamp = rs.getTimestamp(columnName)
-        return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneOffset.UTC)
     }
 
     fun mapResultSet(rs: ResultSet, exam: Exam): CertificateDtoOut = CertificateDtoOut(
@@ -132,10 +127,10 @@ class CertificateRepository(
         rs.getString("certificate_name"),
         rs.getString("certificate_description"),
         PublishState.valueOf(rs.getString("certificate_publish_state")),
-        CertificateAttachment(
+        CertificateAttachmentDtoOut(
             rs.getString("attachment_file_key"),
             rs.getString("attachment_file_name"),
-            getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+            rs.getZonedDateTime("attachment_upload_date")
         ),
         rs.getString("certificate_author_oid"),
         rs.getTimestamp("certificate_created_at"),
@@ -157,17 +152,17 @@ class CertificateRepository(
         ).firstOrNull()
     }
 
-    fun getCertificateAttachmentByFileKey(fileKey: String): CertificateAttachment? {
+    fun getCertificateAttachmentByFileKey(fileKey: String): CertificateAttachmentDtoOut? {
         val results = jdbcTemplate.query(
             """
             SELECT attachment_file_key, attachment_file_name, attachment_upload_date
             FROM certificate_attachment
             WHERE attachment_file_key = ?
             """.trimIndent(), { rs, _ ->
-                CertificateAttachment(
+                CertificateAttachmentDtoOut(
                     rs.getString("attachment_file_key"),
                     rs.getString("attachment_file_name"),
-                    getZonedDateTimeFromResultSet(rs, "attachment_upload_date")
+                    rs.getZonedDateTime("attachment_upload_date")
                 )
             }, fileKey
         )
@@ -203,7 +198,7 @@ class CertificateRepository(
                 HttpStatus.NOT_FOUND, "Certificate $id not found"
             )
 
-            val createdAttachment: CertificateAttachment? = attachment?.let { createAttachment(it) }
+            val createdAttachment: CertificateAttachmentDtoOut? = attachment?.let { createAttachment(it) }
 
             val updatedRowCount = jdbcTemplate.update(
                 """

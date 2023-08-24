@@ -28,13 +28,7 @@ export const CertificateCard = ({ certificate }: CertificateCardProps) => {
             name="muokkaa"
             color="text-green-primary"
             dataTestId={`certificate-${certificate.id.toString()}-edit`}
-            onClick={() =>
-              navigate('update', {
-                state: {
-                  data: certificate
-                }
-              })
-            }
+            onClick={() => navigate(`update/${certificate.id}`)}
             customClass="ml-2"
           />
         )}

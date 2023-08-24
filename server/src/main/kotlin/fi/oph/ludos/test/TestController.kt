@@ -63,7 +63,27 @@ class TestController(
     @RequireAtLeastYllapitajaRole
     fun seedDatabase(httpServletResponse: HttpServletResponse) {
         seedDataRepository.seedDatabase()
+        return httpServletResponse.sendRedirect(appUrl)
+    }
 
+    @GetMapping("/seedAssignments")
+    @RequireAtLeastYllapitajaRole
+    fun seedDatabaseWithAssignments(httpServletResponse: HttpServletResponse) {
+        seedDataRepository.seedAssignments()
+        return httpServletResponse.sendRedirect(appUrl)
+    }
+
+    @GetMapping("/seedInstructions")
+    @RequireAtLeastYllapitajaRole
+    fun seedDatabaseWithInstructions(httpServletResponse: HttpServletResponse) {
+        seedDataRepository.seedInstructions()
+        return httpServletResponse.sendRedirect(appUrl)
+    }
+
+    @GetMapping("/seedCertificates")
+    @RequireAtLeastYllapitajaRole
+    fun seedDatabaseWithCertificates(httpServletResponse: HttpServletResponse) {
+        seedDataRepository.seedCertificates()
         return httpServletResponse.sendRedirect(appUrl)
     }
 

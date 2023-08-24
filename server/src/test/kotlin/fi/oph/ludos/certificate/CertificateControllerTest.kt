@@ -30,16 +30,16 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     private fun validateFileKey(fileKey: String) =
         assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
 
-    private fun assertPreviewReturnsExpectedAttachment(
+    private fun assertGetReturnsExpectedAttachment(
         fileKey: String, expectedFileName: String, expectedFileContent: ByteArray
     ) {
-        val attachmentPreviewResponse =
-            mockMvc.perform(getAttachmentPreview(fileKey)).andExpect(status().isOk).andReturn().response
+        val attachmentGetResponse =
+            mockMvc.perform(getAttachment(fileKey)).andExpect(status().isOk).andReturn().response
 
-        assertArrayEquals(expectedFileContent, attachmentPreviewResponse.contentAsByteArray)
-        assertEquals("application/pdf", attachmentPreviewResponse.contentType)
+        assertArrayEquals(expectedFileContent, attachmentGetResponse.contentAsByteArray)
+        assertEquals("application/pdf", attachmentGetResponse.contentType)
         assertEquals(
-            "inline; filename=\"${expectedFileName}\"", attachmentPreviewResponse.getHeader("content-disposition")
+            "inline; filename=\"${expectedFileName}\"", attachmentGetResponse.getHeader("content-disposition")
         )
     }
 
@@ -50,7 +50,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             description = "Certificate content Fi",
             publishState = publishState,
         )
-        val attachmentFileName = "fixture.pdf"
+        val attachmentFileName = "fixture1.pdf"
 
         val certificateToCreateStr = objectMapper.writeValueAsString(certificateToCreate)
 
@@ -87,7 +87,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertNotNull(certificateById.createdAt)
         assertNotNull(certificateById.updatedAt)
 
-        assertPreviewReturnsExpectedAttachment(
+        assertGetReturnsExpectedAttachment(
             certificateById.attachment.fileKey, attachmentFileName, attachmentPart.bytes
         )
 
@@ -169,11 +169,11 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(createdCertificate.authorOid, updatedCertificateById.authorOid)
         assertEquals(createdCertificate.id, updatedCertificateById.id)
 
-        assertPreviewReturnsExpectedAttachment(
+        assertGetReturnsExpectedAttachment(
             updatedCertificateById.attachment.fileKey, newAttachmentFixtureFileName, newAttachment.bytes
         )
 
-        mockMvc.perform(getAttachmentPreview(createdCertificate.attachment.fileKey)).andExpect(status().isNotFound)
+        mockMvc.perform(getAttachment(createdCertificate.attachment.fileKey)).andExpect(status().isNotFound)
     }
 
     @Test
@@ -211,7 +211,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             }
         """
 
-        val attachmentPart = readAttachmentFixtureFile("fixture.pdf")
+        val attachmentPart = readAttachmentFixtureFile("fixture1.pdf")
         val postResponseBody = mockMvc.perform(postCertificate(body, attachmentPart)).andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
         assertThat(
@@ -273,11 +273,12 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     fun setup() {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
-        mockMvc.perform(seedDb())
+        mockMvc.perform(seedDbWithCertificates())
         val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        idsOfCertificateDrafts = objectMapper.readValue(res, Array<TestCertificateOut>::class.java)
-            .filter { it.publishState == PublishState.DRAFT }.map { it.id }
+        val allCertificates = objectMapper.readValue(res, Array<TestCertificateOut>::class.java)
+        assertEquals(4, allCertificates.size)
+        idsOfCertificateDrafts = allCertificates.filter { it.publishState == PublishState.DRAFT }.map { it.id }
     }
 
     @Test
@@ -301,6 +302,6 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
             certificates.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft certificates"
         )
 
-        assertEquals(8, certificates.size)
+        assertEquals(2, certificates.size)
     }
 }

@@ -8,7 +8,7 @@ const tailwindConfig = {
       black: '#000000',
       white: '#FFFFFF',
       yellow: '#FFD900',
-      red: '#CC3300'
+      red: { primary: '#CC3300', light: '#FF4D4D' },
     }, screens: {
       'md': MOBILE_BREAKPOINT,
     },

@@ -49,15 +49,15 @@ class CertificateController(val service: CertificateService) {
         @RequestPart("attachment") attachment: MultipartFile?
     ) = service.updateCertificate(id, certificate, attachment)
 
-    @GetMapping("/preview/{key}")
+    @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole
-    fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
-        val (uploadFile, responseInputStream) = service.getAttachment(key)
+    fun getAttachment(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
+        val (uploadFile, attachmentInputStream) = service.getAttachment(key)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
 
-        return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
+        return ResponseEntity(InputStreamResource(attachmentInputStream), headers, HttpStatus.OK)
     }
 }

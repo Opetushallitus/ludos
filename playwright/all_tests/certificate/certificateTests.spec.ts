@@ -4,10 +4,10 @@ import { Role, loginTestGroup } from '../../helpers'
 
 type Event = 'submit' | 'draft' | 'cancel'
 
-async function selectAttachmentFile(page: Page, context: BrowserContext, file: string) {
-  const filePath = path.resolve(__dirname, `../../fixtures/${file}`)
+async function selectAttachmentFile(page: Page, file: string) {
+  const filePath = path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`)
 
-  await page.locator('#fileInput').setInputFiles(filePath)
+  await page.locator('#fileInput-fi').setInputFiles(filePath)
 
   const currentDate = new Date()
 
@@ -55,7 +55,7 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
     return
   }
 
-  await selectAttachmentFile(page, context, 'fixture.pdf')
+  await selectAttachmentFile(page, 'fixture1.pdf')
 
   const nameText = certificateNameByEvent(event)
   const descriptionText = 'Todistuksen kuvaus'
@@ -64,11 +64,11 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   await page.getByTestId('description').fill(descriptionText)
 
   if (event === 'submit') {
-    page.getByTestId('form-submit').click()
+    await page.getByTestId('form-submit').click()
   } else {
     const draftButton = page.getByTestId('form-draft')
     await expect(draftButton).toHaveText('Tallenna luonnoksena')
-    draftButton.click()
+    await draftButton.click()
   }
 
   const response = await page.waitForResponse(
@@ -81,24 +81,25 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   await expect(header).toHaveText(nameText)
   await page.getByText(descriptionText, { exact: true })
 
-  const attachment = await page.getByTestId('fixture.pdf').allTextContents()
-  await expect(attachment[0]).toContain('fixture.pdf')
+  const attachment = await page.getByTestId('fixture1.pdf').allTextContents()
+  await expect(attachment[0]).toContain('fixture1.pdf')
 
-  await testAttachmentLink(page, context, 'fixture.pdf', 1799)
+  await testAttachmentLink(page, context, 'fixture1.pdf', 323)
 
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
+
   return responseData.id
 }
 
 async function updateCertificate(page: Page, context: BrowserContext, event: Event, certificateId: string) {
   await page.getByTestId(`certificate-${certificateId}`).getByRole('link', { name: 'Testi todistus' })
-  const header = page.getByTestId('assignment-header')
-  await expect(header).toHaveText(certificateNameByEvent(event))
 
   await page.getByTestId('edit-content-btn').click()
 
+  const formHeader = await page.getByTestId('heading')
+  await expect(formHeader).toHaveText(certificateNameByEvent(event))
+
   if (event === 'cancel') {
-    // TODO: We never go here, add a test that creates a draft and then cancels the update
     const btn = page.getByTestId('form-cancel')
     await expect(btn).toHaveText('Peruuta')
     await btn.click()
@@ -107,13 +108,14 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
     return
   }
 
-  await selectAttachmentFile(page, context, 'fixture2.pdf')
-
-  const nameText = certificateNameByEvent(event) + ' päivitetty'
+  const nameText = `${certificateNameByEvent(event)} päivitetty`
   const descriptionText = 'Todistuksen kuvaus päivitetty'
 
   await page.getByTestId('name').fill(nameText)
   await page.getByTestId('description').fill(descriptionText)
+
+  await selectAttachmentFile(page, 'fixture2.pdf')
+
   if (event === 'submit') {
     await page.getByTestId('form-submit').click()
   } else if (event === 'draft') {
@@ -122,12 +124,14 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
     await btn.click()
   }
 
-  await expect(header).toHaveText(nameText)
+  const contentPageHeader = await page.getByTestId('assignment-header')
+
+  await expect(contentPageHeader).toHaveText(nameText)
   await page.getByText(nameText, { exact: true })
   await page.getByText(descriptionText, { exact: true })
   await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
 
-  await testAttachmentLink(page, context, 'fixture2.pdf', 1805)
+  await testAttachmentLink(page, context, 'fixture2.pdf', 331)
 }
 
 async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Event) {

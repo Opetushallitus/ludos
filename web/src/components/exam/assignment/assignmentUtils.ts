@@ -10,7 +10,8 @@ import {
   ContentTypeEng,
   CertificateIn,
   BaseIn,
-  BaseAssignmentAndInstructionIn
+  BaseAssignmentAndInstructionIn,
+  InstructionIn
 } from '../../../types'
 
 export function getSingularContentTypeFinnish(s: ContentType) {
@@ -39,7 +40,7 @@ export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment
 // content type checkers
 export const isAssignment = (data: BaseIn, contentType: string): data is AssignmentIn =>
   contentType === ContentTypeEng.KOETEHTAVAT
-export const isInstruction = (data: BaseIn, contentType: string): data is AssignmentIn =>
+export const isInstruction = (data: BaseIn, contentType: string): data is InstructionIn =>
   contentType === ContentTypeEng.OHJEET
 export const isCertificate = (data: BaseIn, contentType: string): data is CertificateIn =>
   contentType === ContentTypeEng.TODISTUKSET
@@ -47,7 +48,7 @@ export const isCertificate = (data: BaseIn, contentType: string): data is Certif
 export const isAssignmentsArr = (data: BaseIn[], contentType: string): data is AssignmentIn[] =>
   data.every((item) => isAssignment(item, contentType))
 
-export const isInstructionsArr = (data: BaseIn[], contentType: string): data is AssignmentIn[] =>
+export const isInstructionsArr = (data: BaseIn[], contentType: string): data is InstructionIn[] =>
   data.every((item) => isInstruction(item, contentType))
 
 export const isCertificatesArr = (data: BaseIn[], contentType: string): data is CertificateIn[] =>

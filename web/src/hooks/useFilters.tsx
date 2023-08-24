@@ -53,8 +53,8 @@ export function useFilters(initialSearchFilters: string, contentType: string) {
   })
 
   useEffect(() => {
-    // only run effect on content type assignment
-    if (contentType !== ContentTypeEng.KOETEHTAVAT) {
+    // only run effect on content type assignment and instruction
+    if (contentType === ContentTypeEng.TODISTUKSET) {
       return
     }
 

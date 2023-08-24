@@ -16,11 +16,15 @@
     }
 
     .buttonSecondary {
-        @apply border-green-primary text-green-primary hover:bg-green-primary border-2 hover:text-white
+        @apply border-2 border-green-primary text-green-primary hover:bg-green-primary hover:text-white
     }
 
     .buttonGhost {
         @apply text-black bg-none
+    }
+
+    .buttonDanger {
+        @apply border-2 border-red-primary hover:bg-red-light text-red-primary
     }
 
     h1 {

@@ -35,21 +35,17 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     fun setup() {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
-        mockMvc.perform(seedDb())
+        mockMvc.perform(seedDbWithAssignments())
         val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
         idsOfAssignmentDrafts = mapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
             .filter { it.publishState == "DRAFT" }.map { it.id }
     }
 
-    fun assertTimeIsRoughlyBetween(before: ZonedDateTime, time: ZonedDateTime, after: ZonedDateTime, timeName: String) {
-        val tolerance = Duration.ofMillis(5)
-        val (beforeMinusTolerance, afterPlusTolerance) = Pair(before.minus(tolerance), after.plus(tolerance))
-        assertTrue(time >= beforeMinusTolerance && time <= afterPlusTolerance,
-            "Time ${timeName} ${time} is not between ${beforeMinusTolerance} and ${afterPlusTolerance}")
-    }
-
-    fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(sukoIn: TestAssignmentSukoIn, sukoOut: TestAssignmentSukoOut) {
+    fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(
+        sukoIn: TestAssignmentSukoIn,
+        sukoOut: TestAssignmentSukoOut
+    ) {
         assertEquals(sukoIn.nameFi, sukoOut.nameFi)
         assertEquals(sukoIn.nameSv, sukoOut.nameSv)
         assertEquals(sukoIn.contentFi, sukoOut.contentFi)
@@ -92,7 +88,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val createdAssignment = mapper.readValue(createResult, TestAssignmentSukoOut::class.java)
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(testAssignment, createdAssignment)
         assertThat(createdAssignment.authorOid, equalTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo))
-        assertTimeIsRoughlyBetween(timeBeforeCreate, ZonedDateTime.parse(createdAssignment.createdAt), timeAfterCreate, "createdAt")
+        assertTimeIsRoughlyBetween(timeBeforeCreate, createdAssignment.createdAt, timeAfterCreate, "createdAt")
         assertEquals(createdAssignment.createdAt, createdAssignment.updatedAt)
 
         val getByIdStr = mockMvc.perform(getAssignment(Exam.SUKO, createdAssignment.id)).andExpect(status().isOk())
@@ -133,12 +129,12 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(updatedAssignment, updatedAssignmentById)
         assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
         assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
-        assertTimeIsRoughlyBetween(timeBeforeUpdate, ZonedDateTime.parse(updatedAssignmentById.updatedAt), timeAfterUpdate, "updatedAt")
+        assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
     }
 
     val minimalSukoAssignmentIn = TestAssignmentSukoIn(
         "SUKO",
-        "",
+        "nameFi",
         "",
         "",
         "",
@@ -155,29 +151,37 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun createMinimalSukoAssignment() {
-        mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn))).andExpect(status().isOk())
+        val createdAssignmentStr = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn))).andExpect(status().isOk()).andReturn().response.contentAsString
+        assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(minimalSukoAssignmentIn, mapper.readValue(createdAssignmentStr, TestAssignmentSukoOut::class.java))
     }
 
-    private fun removeField(jsonString:String, fieldToRemove: String): String =
-        jsonString.replace(Regex("\"${fieldToRemove}\":[^,}]*[,}]"), "")
+    @Test
+    @WithYllapitajaRole
+    fun `create assignment with both names blank`() {
+        val responseContent = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = ""))))
+            .andExpect(status().isBadRequest()).andReturn().response.contentAsString
+        assertThat(responseContent, equalTo("Global error: At least one of the name fields must be non-empty"))
+    }
 
     @Test
     @WithYllapitajaRole
     fun anyMissingFieldYields400() {
         SukoAssignmentDtoIn::class.memberProperties.forEach { field ->
-            val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+            val dtoInMap: Map<*, *> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
             val jsonWithFieldRemoved = mapper.writeValueAsString(dtoInMap - field.name)
             val response = mockMvc.perform(postAssignment(jsonWithFieldRemoved)).andReturn().response
             assertThat("missing ${field.name} yields bad request", response.status, equalTo(HttpStatus.SC_BAD_REQUEST))
-            assertThat("missing ${field.name} yields proper error message",
-                response.contentAsString, containsString("property ${field.name} due to missing"))
+            assertThat(
+                "missing ${field.name} yields proper error message",
+                response.contentAsString, containsString("property ${field.name} due to missing")
+            )
         }
     }
 
     @Test
     @WithYllapitajaRole
     fun missingExamFieldYields400() {
-        val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+        val dtoInMap: Map<*, *> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
         val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap - "exam")
         val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
             .andReturn().response.contentAsString
@@ -187,7 +191,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun invalidExamFieldYields400() {
-        val dtoInMap: Map<*,*> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
+        val dtoInMap: Map<*, *> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
         val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap + ("exam" to "SCHUKO"))
         val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
             .andReturn().response.contentAsString
@@ -197,18 +201,24 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun invalidEnumFieldYields400() {
-        val jsonWithInvalidPublishState = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = "OLEMATON"))
-        val responseBody = mockMvc.perform(postAssignment(jsonWithInvalidPublishState)).andExpect(status().isBadRequest())
-            .andReturn().response.contentAsString
-        assertThat(responseBody, containsString("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"OLEMATON\": not one of the values accepted"))
+        val jsonWithInvalidPublishState =
+            mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = "OLEMATON"))
+        val responseBody =
+            mockMvc.perform(postAssignment(jsonWithInvalidPublishState)).andExpect(status().isBadRequest())
+                .andReturn().response.contentAsString
+        assertThat(
+            responseBody,
+            containsString("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"OLEMATON\": not one of the values accepted")
+        )
     }
 
     @Test
     @WithYllapitajaRole
     fun sukoAssignmentUpdateFailsWhenIdDoesNotExist() {
         val nonExistentId = -1
-        val errorMessage = mockMvc.perform(updateAssignment(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
-            .andExpect(status().isNotFound).andReturn().response.contentAsString
+        val errorMessage =
+            mockMvc.perform(updateAssignment(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
+                .andExpect(status().isNotFound).andReturn().response.contentAsString
         assertThat(errorMessage, equalTo("Assignment not found $nonExistentId"))
     }
 

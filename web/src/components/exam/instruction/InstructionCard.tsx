@@ -1,4 +1,4 @@
-import { AssignmentIn } from '../../../types'
+import { AssignmentIn, InstructionIn } from '../../../types'
 import { useNavigate } from 'react-router-dom'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 
 type InstructionCardProps = {
   language: string
-  instruction: AssignmentIn
+  instruction: InstructionIn
   exam: string
 }
 
@@ -31,17 +31,14 @@ export const InstructionCard = ({ language, instruction }: InstructionCardProps)
             name="muokkaa"
             color="text-green-primary"
             dataTestId={`instruction-${instruction.id.toString()}-edit`}
-            onClick={() =>
-              navigate('update', {
-                state: {
-                  data: instruction
-                }
-              })
-            }
+            onClick={() => navigate(`update/${instruction.id}`)}
             customClass="ml-2"
           />
         )}
       </div>
+      <p className="mb-2 mt-2 text-center text-xs">
+        {language === 'fi' ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}
+      </p>
       <p className="mb-2 mt-2 text-center text-xs">{toLocaleDate(instruction.createdAt)}</p>
       {isYllapitaja && <StateTag state={instruction.publishState} />}
     </div>

@@ -75,9 +75,22 @@ val buildWeb = tasks.register("buildWeb") {
     }
 }
 
+val linkJar = tasks.register("linkJar") {
+    mustRunAfter(tasks.withType<BootJar>())
+
+    doLast {
+        exec {
+            workingDir("build/libs")
+            commandLine("ln", "-vf", "ludos-${version}.jar", "ludos.jar")
+        }
+    }
+}
+
 tasks.withType<BootJar> {
     dependsOn(buildWeb)
+    finalizedBy(linkJar)
 }
+
 tasks.withType<BootRun> {
     dependsOn(buildWeb)
 }

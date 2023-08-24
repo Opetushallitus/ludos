@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequireAtLeastYllapitajaRole
 @RequestMapping("${Constants.API_PREFIX}/koodisto")
 class KoodistoController(val koodistoService: KoodistoService) {
-    @GetMapping("/{language}")
+    @GetMapping("/{koodistoLanguage}")
     @RequireAtLeastOpettajaRole
-    fun getKoodistot(@PathVariable language: Language): Map<KoodistoName, List<KoodiDtoOut>> = koodistoService.getKoodistos(language)
+    fun getKoodistot(@PathVariable koodistoLanguage: KoodistoLanguage): Map<KoodistoName, List<KoodiDtoOut>> = koodistoService.getKoodistos(koodistoLanguage)
 }

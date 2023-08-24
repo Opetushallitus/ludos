@@ -13,7 +13,7 @@ import java.nio.file.Paths
 
 
 fun readAttachmentFixtureFile(attachmentFixtureFileName: String): MockMultipartFile {
-    val file = Paths.get("src/test/resources/fixtures/$attachmentFixtureFileName")
+    val file = Paths.get("src/main/resources/fixtures/$attachmentFixtureFileName")
     val fileContents = Files.readAllBytes(file)
     return MockMultipartFile("attachment", attachmentFixtureFileName, MediaType.APPLICATION_PDF_VALUE, fileContents)
 }
@@ -41,8 +41,8 @@ fun putCertificate(id: Int, certificate: String, attachmentPart: MockMultipartFi
     return reqBuilder
 }
 
-fun getAttachmentPreview(fileKey: String) =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/preview/$fileKey")
+fun getAttachment(fileKey: String) =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/attachment/$fileKey")
 
 fun getAllCertificates(exam: Exam) =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam").contentType(MediaType.APPLICATION_JSON)

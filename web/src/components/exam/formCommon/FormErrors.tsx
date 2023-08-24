@@ -13,10 +13,12 @@ export const FormError = ({ error }: { error?: string }) => {
         return t('error.pakollinen-tieto')
       case 'no_file':
         return t('error.ei-tiedostoa')
+      case ErrorMessages.ASSIGNMENT_NAME_REQUIRED:
+        return t('error.tehtavan-nimi-pakollinen')
       default:
         return ''
     }
   }
 
-  return <>{error && <p className="text-red">{getErrorMessage(error as ErrorMessagesType)}</p>}</>
+  return <>{error && <p className="text-red-primary">{getErrorMessage(error as ErrorMessagesType)}</p>}</>
 }

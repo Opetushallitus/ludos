@@ -64,7 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: jar
-          path: server/build/libs/ludos-0.0.1-SNAPSHOT.jar
+          path: server/build/libs/ludos.jar
           retention-days: 30
           if-no-files-found: error
   playwright:

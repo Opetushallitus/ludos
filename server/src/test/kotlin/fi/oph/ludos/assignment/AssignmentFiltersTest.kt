@@ -117,7 +117,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
         tavoitetaitotaso: String?,
         expectedNumbersInName: List<Int>
     ) {
-        val sukoFilters = SukoAssignmentFilter(
+        val sukoFilters = SukoBaseFilters(
             orderDirection = "desc",
             oppimaara = oppimaara,
             tehtavatyyppisuko = tehtavatyyppisuko,
@@ -168,7 +168,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     private fun testPuhviFilterOptions(
         tehtavatyyppipuhvi: String?, lukuvuosi: String?, expectedNumbersInName: List<Int>
     ) {
-        val puhviFilters = PuhviAssignmentFilter(
+        val puhviFilters = PuhviBaseFilters(
             orderDirection = "desc", tehtavatyyppipuhvi = tehtavatyyppipuhvi, lukuvuosi = lukuvuosi
         )
 
@@ -188,7 +188,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     private fun testLdFilterOptions(
         aine: String?, lukuvuosi: String?, expectedNumbersInName: List<Int>
     ) {
-        val ldFilters = LdAssignmentFilter(
+        val ldFilters = LdBaseFilters(
             orderDirection = "desc", aine = aine, lukuvuosi = lukuvuosi
         )
 

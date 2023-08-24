@@ -37,7 +37,7 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
         }
         throw IllegalStateException("Koodistos accessed before initialization")
     }
-    fun getKoodistos(language: Language): Map<KoodistoName, List<KoodiDtoOut>> = filterKooditByLanguage(getKoodistos(), language)
+    fun getKoodistos(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, List<KoodiDtoOut>> = filterKooditByLanguage(getKoodistos(), koodistoLanguage)
 
     fun getKoodisto(koodistoName: KoodistoName) : List<KoodiDtoOut> {
         return getKoodistos()[koodistoName] ?: throw Exception("Koodisto ${koodistoName.koodistoUri} not found in cache")
@@ -52,9 +52,9 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
     }
 
     fun filterKooditByLanguage(
-        koodistos: Map<KoodistoName, List<KoodiDtoOut>>, language: Language
+        koodistos: Map<KoodistoName, List<KoodiDtoOut>>, koodistoLanguage: KoodistoLanguage
     ): Map<KoodistoName, List<KoodiDtoOut>> = koodistos.mapValues { (_, koodisto) ->
-        koodisto.filter { it.kieli == language.code }
+        koodisto.filter { it.kieli == koodistoLanguage.code }
     }
 
     private fun readKoodistos(koodistoGetter: (KoodistoName) -> Array<Koodi>, sourceName: String) {

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocation, useMatch, useNavigate } from 'react-router-dom'
-import { Exam, PublishState, ContentTypeEng, CertificateIn } from '../../../../types'
+import { useMatch, useNavigate } from 'react-router-dom'
+import { AttachmentData, CertificateIn, ContentTypeEng, Exam, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { createCertificate, updateCertificate } from '../../../../request'
 import { useEffect, useState } from 'react'
@@ -10,8 +10,9 @@ import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
-import { AttachmentSelector } from '../../formCommon/AttachmentSelector'
+import { AttachmentSelector } from '../../formCommon/attachment/AttachmentSelector'
 import { FormError } from '../../formCommon/FormErrors'
+import { useFetch } from '../../../../hooks/useFetch'
 
 type CertificateFormProps = {
   action: 'new' | 'update'
@@ -20,14 +21,16 @@ type CertificateFormProps = {
 export const CertificateForm = ({ action }: CertificateFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { pathname, state } = useLocation()
-  const match = useMatch(`/:exam/:contentType/${action}`)
+  const matchUrl = action === 'new' ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
+  const match = useMatch(matchUrl)
+
   const [loading, setLoading] = useState(false)
   const [newAttachment, setNewAttachment] = useState<File | null>(null)
 
   const exam = match!.params.exam as Exam
+  const id = match!.params.id
 
-  const certificate = state?.data as CertificateIn | undefined
+  const { data: certificate } = useFetch<CertificateIn>(`certificate/${exam.toUpperCase()}/${id}`, action === 'new')
 
   const {
     register,
@@ -66,7 +69,7 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
           resultId = id
         }
 
-        navigate(`${pathname}/../${resultId}`)
+        navigate(`/${exam}/certificates/${resultId}`)
       } catch (e) {
         console.error(e)
       } finally {
@@ -79,9 +82,28 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
   const contentError = errors.description?.message
   const fileError = errors.certificateHasAttachment?.message
 
-  function handleNewAttachmentSelected(newAttachment: File) {
-    setNewAttachment(newAttachment)
-    setValue('certificateHasAttachment', true)
+  function handleNewAttachmentSelected(newAttachment: AttachmentData[]) {
+    const file = newAttachment[0].file
+    if (file) {
+      setNewAttachment(file)
+      setValue('certificateHasAttachment', true)
+    }
+  }
+
+  const currentAttachment = (): AttachmentData[] | AttachmentData | undefined => {
+    if (newAttachment) {
+      return {
+        file: newAttachment,
+        name: newAttachment.name
+      }
+    } else if (certificate?.attachment) {
+      return {
+        attachment: certificate.attachment,
+        name: certificate.attachment.name
+      }
+    } else {
+      return undefined
+    }
   }
 
   return (
@@ -107,9 +129,10 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
         <AttachmentSelector
-          currentAttachment={certificate?.attachment ?? null}
-          newAttachment={newAttachment}
-          setNewAttachment={handleNewAttachmentSelected}
+          contentType={ContentTypeEng.TODISTUKSET}
+          attachmentData={currentAttachment()}
+          handleNewAttachmentSelected={handleNewAttachmentSelected}
+          language="fi"
         />
 
         <FormError error={fileError} />
