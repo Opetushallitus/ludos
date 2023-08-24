@@ -21,11 +21,10 @@ import { useFetch } from '../../../../hooks/useFetch'
 
 type SukoAssignmentFormProps = {
   action: 'new' | 'update'
-  pathname: string
   id?: string
 }
 
-export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormProps) => {
+export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
@@ -108,7 +107,7 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
 
-          <div className="mb-6">
+          <fieldset className="mb-6">
             <FieldLabel id="oppimaara" name={t('form.oppimaara')} required />
             <Dropdown
               id="oppimaara"
@@ -122,7 +121,7 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
               requiredError={!!errors.oppimaaraKoodiArvo}
             />
             <FormError error={errors.oppimaaraKoodiArvo?.message} />
-          </div>
+          </fieldset>
 
           <AssignmentTypeField
             control={control}
@@ -132,7 +131,7 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
             requiredError={!!errors.assignmentTypeKoodiArvo}
           />
 
-          <div className="mb-6">
+          <fieldset className="mb-6">
             <FieldLabel id="tavoitetaso" name={t('form.tavoitetaso')} />
             <Dropdown
               id="tavoitetaso"
@@ -147,9 +146,9 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
               testId="tavoitetaso"
             />
             <FormError error={errors.tavoitetasoKoodiArvo?.message} />
-          </div>
+          </fieldset>
 
-          <div className="mb-6">
+          <fieldset className="mb-6">
             <FieldLabel id="aihe" name={t('form.aihe')} />
             <MultiSelectDropdown
               id="aihe"
@@ -159,9 +158,9 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
               testId="aihe"
               canReset
             />
-          </div>
+          </fieldset>
 
-          <div className="mb-6">
+          <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} />
             <MultiSelectDropdown
               id="laajaalainenOsaamine"
@@ -171,9 +170,12 @@ export const SukoAssignmentForm = ({ action, pathname, id }: SukoAssignmentFormP
               testId="laajaalainenOsaaminen"
               canReset
             />
-          </div>
+          </fieldset>
 
-          <FormContentInput hasInstruction />
+          <FormContentInput
+            initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
+            hasInstruction
+          />
         </form>
       </FormProvider>
 

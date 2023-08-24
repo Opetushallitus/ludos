@@ -5,19 +5,36 @@ import { useTranslation } from 'react-i18next'
 import { useFormContext } from 'react-hook-form'
 import { Tabs } from '../../Tabs'
 import { useState } from 'react'
+import { TipTap } from './editor/TipTap'
 
-export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean }) => {
+export const FormContentInput = ({
+  initialContent,
+  hasInstruction
+}: {
+  initialContent: { fi: string; sv: string }
+  hasInstruction?: boolean
+}) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('fi')
 
   const {
     register,
+    setValue,
     formState: { errors }
   } = useFormContext()
 
+  const contentError = errors.contentFi?.message as string
   const assignmentNameError = errors.nameRequired?.message as string
   const nameFiError = errors.nameFi?.message as string
   const nameSvError = errors.nameSv?.message as string
+
+  const handleContentChange = (newContent: string) => {
+    if (activeTab === 'fi') {
+      setValue('contentFi', newContent)
+    } else if (activeTab === 'sv') {
+      setValue('contentSv', newContent)
+    }
+  }
 
   return (
     <>
@@ -39,9 +56,15 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
           </TextAreaInput>
         )}
 
-        <TextAreaInput id="contentFi" register={register}>
-          {t('form.tehtavansisalto')}
-        </TextAreaInput>
+        <TipTap
+          onContentChange={handleContentChange}
+          content={initialContent.fi}
+          label={t('form.ohjeensisalto')}
+          dataTestId="editor-content-fi"
+          key={initialContent.fi ? 'content-fi' : 'content-fi-new'}
+        />
+
+        <FormError error={contentError} />
       </div>
 
       <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
@@ -56,9 +79,13 @@ export const FormContentInput = ({ hasInstruction }: { hasInstruction?: boolean 
           </TextAreaInput>
         )}
 
-        <TextAreaInput id="contentSv" register={register}>
-          {t('form.tehtavansisalto')}
-        </TextAreaInput>
+        <TipTap
+          onContentChange={handleContentChange}
+          content={initialContent.sv}
+          label={t('form.ohjeensisalto')}
+          dataTestId="editor-content-sv"
+          key={initialContent.sv ? 'content-sv' : 'content-sv-new'}
+        />
       </div>
     </>
   )

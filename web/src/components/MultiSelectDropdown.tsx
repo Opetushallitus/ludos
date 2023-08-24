@@ -3,6 +3,7 @@ import { Icon } from './Icon'
 import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
+import { Button } from './Button'
 
 type MultiSelectProps = {
   id: string
@@ -79,17 +80,16 @@ export const MultiSelectDropdown = ({
                   data-testid={`selected-option-${testId}`}>
                   <div className="my-auto flex items-center">
                     <p className="px-2 py-1 text-center text-xs text-white">{opt.nimi}</p>
-                    <Icon
-                      name="sulje"
-                      color="text-white"
-                      size="sm"
+                    <Button
+                      variant="buttonGhost"
                       onClick={(e) => {
                         e.stopPropagation()
                         toggleOption(opt)
                       }}
-                      dataTestId="remove-selected-option"
-                      customClass="hover:cursor-pointer hover:bg-white hover:text-black mr-3"
-                    />
+                      customClass="p-0 mr-2 hover:cursor-pointer hover:bg-white"
+                      data-testid="remove-selected-option">
+                      <Icon name="sulje" color="text-white" customClass="hover:text-black" size="sm" />
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -98,17 +98,17 @@ export const MultiSelectDropdown = ({
         </div>
         <div className="mt-1">
           {selectedOptions.length > 0 && canReset ? (
-            <Icon
-              name="sulje"
-              color="text-black"
+            <Button
+              variant="buttonGhost"
+              customClass="p-0 border-l-2 border-gray-light hover:cursor-pointer hover:bg-gray-active"
               onClick={(e) => {
                 e.stopPropagation()
                 onSelectedOptionsChange([])
                 setSearchText('')
               }}
-              customClass="border-l-2 border-gray-light"
-              dataTestId="reset-selected-options"
-            />
+              data-testid="reset-selected-options">
+              <Icon name="sulje" color="text-black" />
+            </Button>
           ) : (
             <Icon name="laajenna" color="text-black" />
           )}

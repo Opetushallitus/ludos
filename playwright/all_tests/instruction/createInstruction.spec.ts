@@ -5,7 +5,7 @@ import path from 'path'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-test.describe('Assignment form tests', () => {
+test.describe('Instruction form tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.getByTestId('nav-link-suko').click()
@@ -104,7 +104,7 @@ test.describe('Assignment form tests', () => {
 
   test('can create draft instruction', async ({ page }) => {
     await page.getByTestId('nameFi').fill('Testi luonnos ohje')
-    await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
+    await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill('Testi luonnos sisältö')
 
     const btn = page.getByTestId('form-draft')
     await expect(btn).toHaveText('Tallenna luonnoksena')
@@ -130,7 +130,7 @@ test.describe('Assignment form tests', () => {
     await page.getByTestId('edit-content-btn').click()
 
     const file = path.resolve(__dirname, '../../../server/src/main/resources/fixtures/this-will-fail.txt')
-    await page.locator('#fileInput-fi').setInputFiles(file)
+    await page.getByTestId('file-input-fi').setInputFiles(file)
 
     const errorMessage = await page.getByTestId('file-upload-error-message').innerText()
     expect(errorMessage).toContain('this-will-fail.txt')

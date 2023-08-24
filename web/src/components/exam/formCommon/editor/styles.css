@@ -1,0 +1,24 @@
+@layer tiptap {
+    .tiptap {
+        @apply h-[60vh] w-full resize-y overflow-auto p-2
+    }
+}
+
+.image-resizer {
+    display: inline-flex;
+    position: relative;
+    flex-grow: 0;
+}
+
+.image-resizer .resize-trigger {
+    position: absolute;
+    right: -6px;
+    bottom: -9px;
+    opacity: 0;
+    transition: opacity .3s ease;
+    color: #3259a5;
+}
+
+.image-resizer:hover .resize-trigger {
+    opacity: 1;
+}

@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from './assignmentUtils'
 import { toLocaleDate } from '../../../formatUtils'
-import { ContentActions } from './ContentActions'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../hooks/useUserDetails'
+import { Button } from '../../Button'
 
 type AssignmentCardProps = {
   language: string
@@ -43,12 +43,13 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
         {isYllapitaja && (
           <>
             <StateTag state={assignment.publishState} />
-            <Icon
-              name="muokkaa"
-              color="text-green-primary"
-              dataTestId={`assignment-${assignment.id.toString()}-edit`}
+            <Button
+              variant="buttonGhost"
+              customClass="p-0"
               onClick={() => navigate(`update/${assignment.id}`)}
-            />
+              data-testid={`assignment-${assignment.id.toString()}-edit`}>
+              <Icon name="muokkaa" color="text-green-primary" />
+            </Button>
           </>
         )}
       </div>

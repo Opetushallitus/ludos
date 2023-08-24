@@ -6,6 +6,7 @@ import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
 import { PdfTag } from '../../PdfTag'
 import { useUserDetails } from '../../../hooks/useUserDetails'
+import { Button } from '../../Button'
 
 type CertificateCardProps = {
   certificate: CertificateIn
@@ -24,13 +25,13 @@ export const CertificateCard = ({ certificate }: CertificateCardProps) => {
           {certificate.name}
         </InternalLink>
         {isYllapitaja && (
-          <Icon
-            name="muokkaa"
-            color="text-green-primary"
-            dataTestId={`certificate-${certificate.id.toString()}-edit`}
+          <Button
+            variant="buttonGhost"
+            customClass="p-0 ml-2"
             onClick={() => navigate(`update/${certificate.id}`)}
-            customClass="ml-2"
-          />
+            data-testid={`certificate-${certificate.id.toString()}-edit`}>
+            <Icon name="muokkaa" color="text-green-primary" />
+          </Button>
         )}
       </div>
       <div className="row mt-3 justify-between">

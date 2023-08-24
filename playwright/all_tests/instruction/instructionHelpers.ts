@@ -29,7 +29,7 @@ export async function fillInstructionForm({
     await page.getByTestId('nameFi').fill(nameTextFi)
   }
   if (contentTextFi) {
-    await page.getByTestId('contentFi').fill(contentTextFi)
+    await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentTextFi)
   }
   if (shortDescriptionFi) {
     await page.getByTestId('shortDescriptionFi').fill(shortDescriptionFi)
@@ -56,7 +56,7 @@ export async function fillInstructionForm({
       await page.getByTestId('nameSv').fill(nameTextSv)
     }
     if (contentTextSv) {
-      await page.getByTestId('contentSv').fill(contentTextSv)
+      await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentTextSv)
     }
     if (shortDescriptionSv) {
       await page.getByTestId('shortDescriptionSv').fill(shortDescriptionSv)

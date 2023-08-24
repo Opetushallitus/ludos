@@ -30,14 +30,14 @@ test.describe('Suko assignment form tests', () => {
   })
 
   test('can create draft assignment', async ({ page }) => {
-    await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
     await page.getByTestId('oppimaara').click()
     await page.getByTestId('oppimaara-option-KT7').click()
     await page.getByTestId('assignmentTypeRadio-002').click()
-    await page.getByTestId('contentFi').fill('Testi luonnos sisältö')
+    await page.getByTestId('nameFi').fill('Testi luonnos tehtävä')
+    await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill('Testi luonnos sisältö')
     await page.getByTestId('tab-sv').click()
 
-    await page.getByTestId('nameSv').fill('Testi luonnos tehtävä')
+    await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill('Testa innehåll')
     await page.getByTestId('tavoitetaso').click()
     await page.getByTestId('tavoitetaso-option-0002').click()
 

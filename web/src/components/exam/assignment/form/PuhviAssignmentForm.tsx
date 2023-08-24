@@ -20,11 +20,10 @@ import { useFetch } from '../../../../hooks/useFetch'
 
 type PuhviAssignmentFormProps = {
   action: 'new' | 'update'
-  pathname: string
   id?: string
 }
 
-export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFormProps) => {
+export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
@@ -56,6 +55,8 @@ export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFor
     } else {
       setValue('exam', exam)
       setValue('laajaalainenOsaaminenKoodiArvos', [])
+      setValue('contentFi', '')
+      setValue('contentSv', '')
     }
   }, [assignment, exam, reset, setValue])
 
@@ -101,7 +102,6 @@ export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFor
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
-
           <AssignmentTypeField
             control={control}
             name="assignmentTypeKoodiArvo"
@@ -109,7 +109,6 @@ export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFor
             options={assignmentTypeKoodisto}
             requiredError={!!errors.assignmentTypeKoodiArvo}
           />
-
           <div className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
             <MultiSelectDropdown
@@ -123,7 +122,6 @@ export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFor
             />
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </div>
-
           <div className="mb-6">
             <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
             <MultiSelectDropdown
@@ -135,8 +133,10 @@ export const PuhviAssignmentForm = ({ action, pathname, id }: PuhviAssignmentFor
               canReset
             />
           </div>
-
-          <FormContentInput hasInstruction />
+          <FormContentInput
+            initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
+            hasInstruction
+          />
         </form>
       </FormProvider>
       <FormButtonRow

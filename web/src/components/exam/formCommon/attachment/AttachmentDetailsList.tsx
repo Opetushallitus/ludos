@@ -1,11 +1,11 @@
 import { FileDetails } from '../../../../types'
 import { ExternalLink } from '../../../ExternalLink'
-import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL } from '../../../../constants'
 import { toLocaleDate } from '../../../../formatUtils'
 import { Icon } from '../../../Icon'
 import { useState } from 'react'
 import { DeleteModal } from '../../../Modal/DeleteModal'
 import { useTranslation } from 'react-i18next'
+import { Button } from '../../../Button'
 
 type AttachmentDetailsListProps = {
   attachmentDownloadUrlPrefix: string
@@ -56,14 +56,13 @@ export const AttachmentDetailsList = ({
           />
           <p className="col-span-2">{toLocaleDate(attachment.fileUploadDate ?? new Date())}</p>
           {deleteFileByIndex && (
-            <div className="text-center">
-              <Icon
-                name="poista"
-                color="text-green-primary"
-                dataTestId={`delete-attachment-icon-${index}`}
-                onClick={() => setIndexToDelete(index)}
-              />
-            </div>
+            <Button
+              variant="buttonGhost"
+              onClick={() => setIndexToDelete(index)}
+              customClass="p-0 hover:cursor-pointer hover:bg-white"
+              data-testid={`delete-attachment-icon-${index}`}>
+              <Icon name="poista" color="text-black" customClass="hover:bg-gray-secondary" size="sm" />
+            </Button>
           )}
         </div>
       ))}

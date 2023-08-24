@@ -20,11 +20,10 @@ import { useFetch } from '../../../../hooks/useFetch'
 
 type LdAssignmentFormProps = {
   action: 'new' | 'update'
-  pathname: string
   id?: string
 }
 
-export const LdAssignmentForm = ({ action, pathname, id }: LdAssignmentFormProps) => {
+export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
@@ -143,7 +142,10 @@ export const LdAssignmentForm = ({ action, pathname, id }: LdAssignmentFormProps
             />
           </div>
 
-          <FormContentInput hasInstruction />
+          <FormContentInput
+            initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
+            hasInstruction
+          />
         </form>
       </FormProvider>
       <FormButtonRow

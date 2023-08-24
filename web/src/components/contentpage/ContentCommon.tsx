@@ -5,6 +5,7 @@ import { BaseIn, ContentTypeEng } from '../../types'
 import { ContentTypeTranslationFinnish, getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { TipTap } from '../exam/formCommon/editor/TipTap'
 
 type ContentHeaderProps = {
   language: string
@@ -72,7 +73,9 @@ export function ContentInstruction({
 }) {
   return (
     <div className="mb-4 mt-3">
-      <p className="text-sm font-semibold">{language === 'fi' ? instructionFi : instructionSv}</p>
+      <p className="text-sm font-semibold" key={language}>
+        {language === 'fi' ? instructionFi : instructionSv}
+      </p>
     </div>
   )
 }
@@ -86,5 +89,12 @@ export function ContentContent({
   contentFi: string
   contentSv: string
 }) {
-  return <p className="h-full pb-3 text-sm">{language === 'fi' ? contentFi : contentSv}</p>
+  return (
+    <TipTap
+      key={language}
+      content={language === 'fi' ? contentFi : contentSv}
+      editable={false}
+      dataTestId={`editor-content-${language}`}
+    />
+  )
 }
