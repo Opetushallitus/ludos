@@ -54,9 +54,9 @@ export const AttachmentFileDetailView = ({
   return (
     <div className="w-full md:w-3/4">
       <div className="grid grid-cols-11 gap-2">
-        <p className="col-span-3 md:col-span-4">{t('file.nimi')}</p>
+        <p className="col-span-5 break-all md:col-span-5">{t('file.nimi')}</p>
         {fileDetails && Array.isArray(fileDetails) && (
-          <p className="col-span-4 md:col-span-4">{t('file.liitteen-nimi')}</p>
+          <p className="col-span-4 break-all md:col-span-4">{t('file.liitteen-nimi')}</p>
         )}
         <p className="col-span-2 md:col-span-2 md:block">{t('file.lisatty')}</p>
       </div>
