@@ -22,6 +22,7 @@ export const Tabs = ({ options, activeTab, setActiveTab }: AssignmentTabsProps) 
             }`}
             onClick={() => setActiveTab(option)}
             key={i}
+            aria-expanded={activeTab === option}
             data-testid={`tab-${option}`}>
             {t(`tab.${option}`)}
           </Button>
