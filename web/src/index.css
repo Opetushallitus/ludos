@@ -44,7 +44,19 @@
     }
 
     .dropdownContent {
-        @apply absolute z-50 max-h-96 w-full overflow-y-auto border border-gray-secondary bg-white px-2 py-1
+        @apply absolute z-50 max-h-96 overflow-y-auto border border-gray-secondary bg-white px-2 py-1
+    }
+
+    .dropdown-full {
+        @apply w-full
+    }
+
+    .dropdown-md {
+        @apply w-[17.5rem]
+    }
+
+    .dropdown-lg {
+        @apply w-[26.875rem]
     }
 
     .ludos-form {

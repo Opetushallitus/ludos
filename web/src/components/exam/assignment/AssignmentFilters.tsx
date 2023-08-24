@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
-import { sortKooditAlphabetically, sortKooditByArvo } from '../../../koodistoUtils'
+import { sortKooditAlphabetically } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../LudosContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
@@ -41,6 +41,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                       )
                     : []
                 }
+                size="lg"
                 selectedOptions={getSelectedOptions(filters.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
                 testId="oppimaara"
@@ -52,6 +53,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
               <MultiSelectDropdown
                 id="contentTypeFilter"
                 options={sortKooditAlphabetically(koodistos.tehtavatyyppisuko || [])}
+                size="md"
                 selectedOptions={getSelectedOptions(filters.tehtavatyyppisuko, 'tehtavatyyppisuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
                 testId="contentType"
@@ -63,6 +65,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
               <MultiSelectDropdown
                 id="aihe"
                 options={sortKooditAlphabetically(koodistos.aihesuko)}
+                size="md"
                 selectedOptions={getSelectedOptions(filters.aihe, 'aihesuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
                 canReset
@@ -74,6 +77,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
             {/*  <MultiSelectDropdown*/}
             {/*    id="tavoitetaitotaso"*/}
             {/*    options={sortKooditByArvo(koodistos.taitotaso || [])}*/}
+            {/*size="md"*/}
             {/*    selectedOptions={getSelectedOptions(filters.tavoitetaitotaso, 'taitotaso')}*/}
             {/*    onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tavoitetaitotaso', opt)}*/}
             {/*    canReset*/}

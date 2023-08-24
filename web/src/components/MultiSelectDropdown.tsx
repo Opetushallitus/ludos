@@ -4,12 +4,14 @@ import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
 import { Button } from './Button'
+import { twMerge } from 'tailwind-merge'
 
 type MultiSelectProps = {
   id: string
   options: KoodiDtoIn[]
   selectedOptions: KoodiDtoIn[]
   onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
+  size?: 'full' | 'md' | 'lg'
   testId?: string
   canReset?: boolean
   requiredError?: boolean
@@ -20,6 +22,7 @@ export const MultiSelectDropdown = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,
+  size = 'full',
   testId = id,
   canReset = false,
   requiredError
@@ -114,7 +117,12 @@ export const MultiSelectDropdown = ({
           )}
         </div>
       </div>
-      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`}>
+      <ul
+        className={twMerge(
+          'dropdownContent',
+          !isOpen && 'hidden',
+          size === 'full' ? 'dropdown-full' : size === 'md' ? 'dropdown-md' : 'dropdown-lg'
+        )}>
         {filteredOptions.map((option, i) => (
           <li
             className={`cursor-pointer px-3${
