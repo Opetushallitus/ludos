@@ -1,3 +1,4 @@
+export const OPH_URL = 'https://oph.fi/'
 export const BASE_API_URL = '/api'
 export const ASSIGNMENT_URL = `${BASE_API_URL}/assignment`
 export const INSTRUCTION_URL = `${BASE_API_URL}/instruction`
