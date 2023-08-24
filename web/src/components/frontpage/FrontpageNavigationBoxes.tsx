@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
 import { ContentTypeTranslationEnglish } from '../exam/assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
+import { InternalLink } from '../InternalLink'
 
 interface NavigationBoxesProps {
   exams: Page[]
@@ -20,16 +21,16 @@ export const NavigationBoxes = ({ exams, contentTypes }: NavigationBoxesProps) =
           <h3 className="mb-3 text-base font-semibold">{t(`header.${exam.titleKey}`)}</h3>
           <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`${exam.path.replace('/content/', '')}`}>
             {contentTypes.map((contentType, i) => (
-              <button
+              <InternalLink
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
-                onClick={() => navigate(`${exam.path}/${ContentTypeTranslationEnglish[contentType]}`)}
-                data-testid={`nav-box-${ContentTypeTranslationEnglish[contentType]}`}
+                to={`${exam.path}/${ContentTypeTranslationEnglish[contentType]}`}
+                testId={`nav-box-${ContentTypeTranslationEnglish[contentType]}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={contentType} color="text-green-primary" />
                   <p className="text-green-primary">{t(`button.${contentType}`)}</p>
                 </span>
-              </button>
+              </InternalLink>
             ))}
           </div>
         </div>
