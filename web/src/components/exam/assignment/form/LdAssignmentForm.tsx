@@ -100,7 +100,21 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
 
-          <div className="mb-6">
+          <fieldset className="mb-6">
+            <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
+            <MultiSelectDropdown
+              id="lukuvuosiKoodiArvos"
+              options={lukuvuosiKoodisto}
+              selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
+              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
+              testId="lukuvuosiKoodiArvos"
+              canReset
+              requiredError={!!errors.lukuvuosiKoodiArvos}
+            />
+            <FormError error={errors.lukuvuosiKoodiArvos?.message} />
+          </fieldset>
+
+          <fieldset className="mb-6">
             <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />
             <Dropdown
               id="aineKoodiArvo"
@@ -114,23 +128,9 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
               requiredError={!!errors.aineKoodiArvo}
             />
             <FormError error={errors.aineKoodiArvo?.message} />
-          </div>
+          </fieldset>
 
-          <div className="mb-6">
-            <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
-            <MultiSelectDropdown
-              id="lukuvuosiKoodiArvos"
-              options={lukuvuosiKoodisto}
-              selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
-              testId="lukuvuosiKoodiArvos"
-              canReset
-              requiredError={!!errors.lukuvuosiKoodiArvos}
-            />
-            <FormError error={errors.lukuvuosiKoodiArvos?.message} />
-          </div>
-
-          <div className="mb-6">
+          <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
             <MultiSelectDropdown
               id="laajaalainenOsaaminenKoodiArvos"
@@ -140,7 +140,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
               testId="laajaalainenOsaaminenKoodiArvos"
               canReset
             />
-          </div>
+          </fieldset>
 
           <FormContentInput
             initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}

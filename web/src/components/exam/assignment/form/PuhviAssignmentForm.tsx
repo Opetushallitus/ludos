@@ -102,14 +102,8 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
-          <AssignmentTypeField
-            control={control}
-            name="assignmentTypeKoodiArvo"
-            required
-            options={assignmentTypeKoodisto}
-            requiredError={!!errors.assignmentTypeKoodiArvo}
-          />
-          <div className="mb-6">
+
+          <fieldset className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
             <MultiSelectDropdown
               id="lukuvuosiKoodiArvos"
@@ -121,8 +115,17 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
               requiredError={!!errors.lukuvuosiKoodiArvos}
             />
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
-          </div>
-          <div className="mb-6">
+          </fieldset>
+
+          <AssignmentTypeField
+            control={control}
+            name="assignmentTypeKoodiArvo"
+            required
+            options={assignmentTypeKoodisto}
+            requiredError={!!errors.assignmentTypeKoodiArvo}
+          />
+
+          <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
             <MultiSelectDropdown
               id="laajaalainenOsaaminenKoodiArvos"
@@ -132,7 +135,8 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
               testId="laajaalainenOsaaminenKoodiArvos"
               canReset
             />
-          </div>
+          </fieldset>
+
           <FormContentInput
             initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
             hasInstruction
