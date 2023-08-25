@@ -46,7 +46,7 @@ export const Dropdown = ({
   return (
     <div
       id={id}
-      className="relative mb-3 mt-1 border border-gray-secondary"
+      className="relative mb-3 mt-1 border border-gray-border"
       ref={containerRef}
       onBlur={(e) => {
         e.preventDefault()
@@ -87,7 +87,12 @@ export const Dropdown = ({
           )}
         </div>
       </div>
-      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`} role="listbox" aria-labelledby={`${id}-label`}>
+      <ul
+        className={`${
+          isOpen ? '' : 'hidden'
+        } absolute z-50 max-h-96 min-w-full overflow-y-auto border border-gray-border bg-white py-1`}
+        role="listbox"
+        aria-labelledby={`${id}-label`}>
         {options.map((option, i) => (
           <li
             className={`cursor-pointer px-3 ${

@@ -11,7 +11,7 @@ type MultiSelectProps = {
   options: KoodiDtoIn[]
   selectedOptions: KoodiDtoIn[]
   onSelectedOptionsChange: (options: KoodiDtoIn[]) => void
-  size?: 'full' | 'md' | 'lg'
+  size?: 'md' | 'lg'
   testId?: string
   canReset?: boolean
   requiredError?: boolean
@@ -22,7 +22,7 @@ export const MultiSelectDropdown = ({
   options,
   selectedOptions,
   onSelectedOptionsChange,
-  size = 'full',
+  size,
   testId = id,
   canReset = false,
   requiredError
@@ -34,7 +34,7 @@ export const MultiSelectDropdown = ({
 
   const filteredOptions = options.filter((option) => option.nimi.toLowerCase().includes(searchText.toLowerCase()))
 
-  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption } = useDropdown({
+  const { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption, closeModal } = useDropdown({
     options: filteredOptions,
     selectedOptions,
     onSelectedOptionsChange: (opt) => {
@@ -54,11 +54,7 @@ export const MultiSelectDropdown = ({
   }
 
   return (
-    <div
-      className="relative mb-3 mt-1 border border-gray-secondary"
-      ref={containerRef}
-      onClick={() => setIsOpen(true)}
-      tabIndex={0}>
+    <div className="relative mb-3 mt-1 border border-gray-border" ref={containerRef} tabIndex={0}>
       <div
         id={id}
         className={`flex bg-white px-2 ${requiredError ? 'border border-red-primary' : ''}`}
@@ -68,6 +64,7 @@ export const MultiSelectDropdown = ({
           <input
             type="search"
             value={searchText}
+            onClick={() => setIsOpen(true)}
             onChange={handleSearchChange}
             placeholder={t('filter.valitse') as string}
             className="w-full rounded-md"
@@ -113,39 +110,48 @@ export const MultiSelectDropdown = ({
               <Icon name="sulje" color="text-black" />
             </Button>
           ) : (
-            <Icon name="laajenna" color="text-black" />
+            <Button
+              variant="buttonGhost"
+              customClass="p-0 hover:cursor-pointer hover:bg-gray-active"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsOpen(true)
+              }}
+              data-testid={`${testId}-expand-dropdown-icon`}>
+              <Icon name="laajenna" color="text-black" />
+            </Button>
           )}
         </div>
       </div>
-      <ul
-        className={twMerge(
-          'dropdownContent',
-          !isOpen && 'hidden',
-          size === 'full' ? 'dropdown-full' : size === 'md' ? 'dropdown-md' : 'dropdown-lg'
-        )}>
-        {filteredOptions.map((option, i) => (
-          <li
-            className={`cursor-pointer px-3${
-              selectedOptions.includes(option) ? ' bg-green-primary text-white hover:text-white' : ''
-            } ${
-              i === highlightedIndex && selectedOptions.includes(option)
-                ? ' !bg-green-light'
-                : i === highlightedIndex
-                ? ' bg-gray-light'
-                : ''
-            }`}
-            role="option"
-            onClick={() => {
-              toggleOption(option)
-              setSearchText('')
-            }}
-            onMouseEnter={() => setHighlightedIndex(i)}
-            key={i}
-            data-testid={`${testId}-option-${option.koodiArvo}`}>
-            {option.nimi}
-          </li>
-        ))}
-      </ul>
+      <div className={twMerge('absolute z-50 min-w-full border border-gray-border bg-white py-1', !isOpen && 'hidden')}>
+        <ul className={twMerge('max-h-96 min-w-full overflow-y-auto', size === 'md' ? 'dropdown-md' : 'dropdown-lg')}>
+          {filteredOptions.map((option, i) => (
+            <li
+              className={twMerge(
+                'cursor-pointer px-3',
+                selectedOptions.includes(option) && ' bg-green-primary text-white hover:text-white',
+                i === highlightedIndex && selectedOptions.includes(option)
+                  ? 'bg-green-light'
+                  : i === highlightedIndex && 'bg-gray-light'
+              )}
+              role="option"
+              onClick={() => {
+                toggleOption(option)
+                setSearchText('')
+              }}
+              onMouseEnter={() => setHighlightedIndex(i)}
+              key={i}
+              data-testid={`${testId}-option-${option.koodiArvo}`}>
+              {option.nimi}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-1 flex justify-end border-t border-gray-border p-2">
+          <Button variant="buttonPrimary" onClick={closeModal} data-testid={`${testId}-multi-select-ready-button`}>
+            {t('button.valmis')}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

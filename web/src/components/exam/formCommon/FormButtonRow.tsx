@@ -16,7 +16,12 @@ export const FormButtonRow = ({
 
   return (
     <div className="row mt-4 flex-wrap justify-center gap-3 md:justify-end">
-      <Button variant="buttonGhost" type="button" onClick={onCancelClick} disabled={isLoading} testId="form-cancel">
+      <Button
+        variant="buttonGhost"
+        type="button"
+        onClick={onCancelClick}
+        disabled={isLoading}
+        data-testid="form-cancel">
         {t('button.peruuta')}
       </Button>
       <Button
@@ -24,10 +29,15 @@ export const FormButtonRow = ({
         type="button"
         onClick={onSaveDraftClick}
         disabled={isLoading}
-        testId="form-draft">
+        data-testid="form-draft">
         {t('button.tallennaluonnos')}
       </Button>
-      <Button variant="buttonPrimary" type="button" onClick={onSubmitClick} disabled={isLoading} testId="form-submit">
+      <Button
+        variant="buttonPrimary"
+        type="button"
+        onClick={onSubmitClick}
+        disabled={isLoading}
+        data-testid="form-submit">
         {t('button.tallennajulkaise')}
       </Button>
     </div>

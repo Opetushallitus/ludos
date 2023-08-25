@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 
 export async function fillSukoAssignmentForm({
   page,
@@ -32,8 +32,9 @@ export async function fillSukoAssignmentForm({
   // Close dropdown onBlur
   await page.getByTestId('aihe-label').click()
 
-  await page.getByTestId('laajaalainenOsaaminen').click()
+  await page.getByTestId('laajaalainenOsaaminen-expand-dropdown-icon').click()
   await page.getByTestId('laajaalainenOsaaminen-option-01').click()
+  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
   // Test searching for non-existing option
   await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
@@ -44,17 +45,12 @@ export async function fillSukoAssignmentForm({
 
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
   await page.getByTestId('laajaalainenOsaaminen-input').fill('globa')
-
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
+  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
-  // Close dropdown onBlur
-  await page.getByTestId('laajaalainenOsaaminen-label').click()
-
-  await page.getByTestId('laajaalainenOsaaminen').click()
+  await page.getByTestId('laajaalainenOsaaminen-input').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
-
-  // Close dropdown onBlur
-  await page.getByTestId('laajaalainenOsaaminen-label').click()
+  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
   await page.getByTestId('nameFi').fill(nameTextFi)
   await page.getByTestId('instructionFi').fill(instructionTextFi)

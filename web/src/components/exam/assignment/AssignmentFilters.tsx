@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useCallback } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
 import { sortKooditAlphabetically } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
@@ -20,9 +20,12 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
 
   const { data } = useFetch<string[]>('assignment/oppimaaras')
 
-  const handleMultiselectFilterChange = (key: keyof FiltersType, value: KoodiDtoIn[]) => {
-    setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
-  }
+  const handleMultiselectFilterChange = useCallback(
+    (key: keyof FiltersType, value: KoodiDtoIn[]) => {
+      setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
+    },
+    [setFilters]
+  )
 
   return (
     <div className="border border-gray-light bg-gray-bg">
