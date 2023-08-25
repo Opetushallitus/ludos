@@ -36,7 +36,7 @@ test.describe('Assignment filter tests', () => {
     // vaikuttaminen
     await page.getByTestId('aihe-option-007').click()
     // ympärisöt
-    await page.getByTestId('aihe-option-008').click()
+    page.getByTestId('aihe-option-008').click()
     await checkResponseAfterFiltering(page, 'SUKO')
     await page.getByTestId('aihe-multi-select-ready-button').click()
 
@@ -74,7 +74,7 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByTestId('aine').click()
     // musiikki
-    await page.getByTestId('aine-option-6').click()
+    page.getByTestId('aine-option-6').click()
     await checkResponseAfterFiltering(page, 'LD')
     await page.getByTestId('aine-multi-select-ready-button').click()
 
@@ -98,7 +98,7 @@ test.describe('Assignment filter tests', () => {
     await page.getByTestId('tehtavatyyppiPuhvi').click()
     // esiintymistaidot
     await page.getByTestId('tehtavatyyppiPuhvi-option-002').click()
-    await checkResponseAfterFiltering(page, 'PUHVI')
+    checkResponseAfterFiltering(page, 'PUHVI')
     await page.getByTestId('tehtavatyyppiPuhvi-multi-select-ready-button').click()
 
     await page.getByRole('link', { name: 'Test name 8 FI' }).click()
