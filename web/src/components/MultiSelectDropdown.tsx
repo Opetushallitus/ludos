@@ -57,14 +57,20 @@ export const MultiSelectDropdown = ({
     <div className="relative mb-3 mt-1 border border-gray-border" ref={containerRef} tabIndex={0}>
       <div
         id={id}
-        className={`flex bg-white px-2 ${requiredError ? 'border border-red-primary' : ''}`}
-        role="button"
+        className={twMerge('flex bg-white px-2', requiredError && 'border border-red-primary')}
         data-testid={testId}>
-        <div className="row w-full flex-wrap gap-2 py-1">
+        <div
+          className="row w-full flex-wrap gap-2 py-1"
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsOpen(true)
+          }}
+          tabIndex={0}
+          role="button"
+          aria-label="Open Dropdown">
           <input
             type="search"
             value={searchText}
-            onClick={() => setIsOpen(true)}
             onChange={handleSearchChange}
             placeholder={t('filter.valitse') as string}
             className="w-full rounded-md"

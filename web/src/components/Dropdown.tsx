@@ -57,7 +57,7 @@ export const Dropdown = ({
         className={`flex ${requiredError ? 'border border-red-primary' : ''} bg-white px-2`}
         role="button"
         aria-expanded={isOpen}
-        aria-activedescendant={highlightedIndex !== null ? `${id}-${options[highlightedIndex]?.nimi}` : undefined} // Indicate the active option
+        aria-activedescendant={`${id}-${selectedOption?.nimi}`}
         onClick={() => setIsOpen(!isOpen)}
         data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
@@ -110,6 +110,7 @@ export const Dropdown = ({
             }}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}
+            aria-selected={selectedOption === option}
             role="option"
             data-testid={`${testId}-option-${option.koodiArvo}`}>
             {option.nimi}
