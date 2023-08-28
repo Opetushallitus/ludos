@@ -1,9 +1,9 @@
 import { expect, Page, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../../helpers'
+import { Exam, loginTestGroup, Role } from '../../helpers'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-async function checkResponseAfterFiltering(page: Page, exam: 'SUKO' | 'LD' | 'PUHVI') {
+async function checkResponseAfterFiltering(page: Page, exam: Exam) {
   const responseLd = await page.waitForResponse((response) => {
     return response.url().includes(`/api/assignment/${exam}?`) && response.ok()
   })
