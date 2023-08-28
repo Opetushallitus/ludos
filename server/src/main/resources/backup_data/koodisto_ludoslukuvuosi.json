@@ -1,272 +1,272 @@
 [
   {
-    "koodiUri": "ludoslukuvuosi_20202021",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20202021",
-    "version": 0,
-    "versio": 1,
-    "koodisto": {
-      "koodistoUri": "ludoslukuvuosi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        1
-      ]
-    },
     "koodiArvo": "20202021",
-    "paivitysPvm": "2023-06-02",
+    "koodiUri": "ludoslukuvuosi_20202021",
+    "koodisto": {
+      "koodistoUri": "ludoslukuvuosi",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "2020-2021",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "2020-2021",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "2020-2021",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
     "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20202021",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
     "voimassaAlkuPvm": "2023-04-27",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
-    "metadata": [
-      {
-        "nimi": "2020-2021",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "EN"
-      },
-      {
-        "nimi": "2020-2021",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "SV"
-      },
-      {
-        "nimi": "2020-2021",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "FI"
-      }
-    ]
+    "voimassaLoppuPvm": null
   },
   {
-    "koodiUri": "ludoslukuvuosi_20212022",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20212022",
-    "version": 0,
-    "versio": 1,
-    "koodisto": {
-      "koodistoUri": "ludoslukuvuosi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
-      "koodistoVersios": [
-        1
-      ]
-    },
     "koodiArvo": "20212022",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "voimassaAlkuPvm": "2023-05-04",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
-    "metadata": [
-      {
-        "nimi": "2021-2022",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "SV"
-      },
-      {
-        "nimi": "2021-2022",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "FI"
-      },
-      {
-        "nimi": "2021-2022",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "EN"
-      }
-    ]
-  },
-  {
-    "koodiUri": "ludoslukuvuosi_20222023",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20222023",
-    "version": 0,
-    "versio": 1,
+    "koodiUri": "ludoslukuvuosi_20212022",
     "koodisto": {
       "koodistoUri": "ludoslukuvuosi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
       "koodistoVersios": [
         1
-      ]
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
     },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "2021-2022",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "2021-2022",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "2021-2022",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20212022",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null
+  },
+  {
     "koodiArvo": "20222023",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "voimassaAlkuPvm": "2023-05-04",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
-    "metadata": [
-      {
-        "nimi": "2022-2023",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "FI"
-      },
-      {
-        "nimi": "2022-2023",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "EN"
-      },
-      {
-        "nimi": "2022-2023",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "SV"
-      }
-    ]
-  },
-  {
-    "koodiUri": "ludoslukuvuosi_20232024",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20232024",
-    "version": 0,
-    "versio": 1,
+    "koodiUri": "ludoslukuvuosi_20222023",
     "koodisto": {
       "koodistoUri": "ludoslukuvuosi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
       "koodistoVersios": [
         1
-      ]
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
     },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "2022-2023",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "2022-2023",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "2022-2023",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20222023",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null
+  },
+  {
     "koodiArvo": "20232024",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "voimassaAlkuPvm": "2023-05-04",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
-    "metadata": [
-      {
-        "nimi": "2023-2024",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "EN"
-      },
-      {
-        "nimi": "2023-2024",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "SV"
-      },
-      {
-        "nimi": "2023-2024",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
-        "eiSisallaMerkitysta": null,
-        "huomioitavaKoodi": null,
-        "sisaltaaKoodiston": null,
-        "kieli": "FI"
-      }
-    ]
-  },
-  {
-    "koodiUri": "ludoslukuvuosi_20242025",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20242025",
-    "version": 0,
-    "versio": 1,
+    "koodiUri": "ludoslukuvuosi_20232024",
     "koodisto": {
       "koodistoUri": "ludoslukuvuosi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
       "koodistoVersios": [
         1
-      ]
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
     },
-    "koodiArvo": "20242025",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "voimassaAlkuPvm": "2023-05-04",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
     "metadata": [
       {
-        "nimi": "2024-2025",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "2023-2024",
         "sisaltaaKoodiston": null,
-        "kieli": "FI"
+        "sisaltaaMerkityksen": null
       },
       {
-        "nimi": "2024-2025",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "2023-2024",
         "sisaltaaKoodiston": null,
-        "kieli": "EN"
+        "sisaltaaMerkityksen": null
       },
       {
-        "nimi": "2024-2025",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "2023-2024",
         "sisaltaaKoodiston": null,
-        "kieli": "SV"
+        "sisaltaaMerkityksen": null
       }
-    ]
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20232024",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "20242025",
+    "koodiUri": "ludoslukuvuosi_20242025",
+    "koodisto": {
+      "koodistoUri": "ludoslukuvuosi",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "2024-2025",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "2024-2025",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "2024-2025",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20242025",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2023-05-04",
+    "voimassaLoppuPvm": null
   }
 ]

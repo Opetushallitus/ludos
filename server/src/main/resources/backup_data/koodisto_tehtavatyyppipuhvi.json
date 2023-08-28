@@ -1,110 +1,110 @@
 [
   {
+    "koodiArvo": "001",
     "koodiUri": "tehtavatyyppipuhvi_001",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_001",
-    "version": 0,
-    "versio": 1,
     "koodisto": {
       "koodistoUri": "tehtavatyyppipuhvi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
       "koodistoVersios": [
         1
-      ]
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
     },
-    "koodiArvo": "001",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "voimassaAlkuPvm": "2023-05-11",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
     "metadata": [
       {
-        "nimi": "Ryhmäviestintätaidot",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Ryhmäviestintätaidot",
         "sisaltaaKoodiston": null,
-        "kieli": "FI"
+        "sisaltaaMerkityksen": null
       },
       {
-        "nimi": "Ryhmäviestintätaidot",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "Ryhmäviestintätaidot",
         "sisaltaaKoodiston": null,
-        "kieli": "SV"
+        "sisaltaaMerkityksen": null
       },
       {
-        "nimi": "Ryhmäviestintätaidot",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "Ryhmäviestintätaidot",
         "sisaltaaKoodiston": null,
-        "kieli": "EN"
+        "sisaltaaMerkityksen": null
       }
-    ]
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_001",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaLoppuPvm": null
   },
   {
+    "koodiArvo": "002",
     "koodiUri": "tehtavatyyppipuhvi_002",
-    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_002",
-    "version": 0,
-    "versio": 1,
     "koodisto": {
       "koodistoUri": "tehtavatyyppipuhvi",
-      "organisaatioOid": "1.2.246.562.10.00000000001",
       "koodistoVersios": [
         1
-      ]
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
     },
-    "koodiArvo": "002",
-    "paivitysPvm": "2023-06-02",
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "voimassaAlkuPvm": "2023-05-11",
-    "voimassaLoppuPvm": null,
-    "tila": "LUONNOS",
     "metadata": [
       {
-        "nimi": "Esiintymistaidot",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Esiintymistaidot",
         "sisaltaaKoodiston": null,
-        "kieli": "EN"
+        "sisaltaaMerkityksen": null
       },
       {
-        "nimi": "Esiintymistaidot",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "Esiintymistaidot",
         "sisaltaaKoodiston": null,
-        "kieli": "FI"
+        "sisaltaaMerkityksen": null
       },
       {
-        "nimi": "Esiintymistaidot",
-        "kuvaus": null,
-        "kayttoohje": null,
-        "kasite": null,
-        "sisaltaaMerkityksen": null,
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "Esiintymistaidot",
         "sisaltaaKoodiston": null,
-        "kieli": "SV"
+        "sisaltaaMerkityksen": null
       }
-    ]
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_002",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaLoppuPvm": null
   }
 ]

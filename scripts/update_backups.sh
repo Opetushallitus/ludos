@@ -18,7 +18,10 @@ KOODISTOURIS=(
 
 for koodistouri in "${KOODISTOURIS[@]}"; do
     echo "Backing up koodisto $koodistouri"
-    curl "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/$koodistouri/koodi?onlyValidKoodis=true" | jq '. | sort_by(.koodiArvo)' > "$BACKUP_DIR/koodisto_$koodistouri.json"
+    curl "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/$koodistouri/koodi?onlyValidKoodis=true" \
+        | jq --sort-keys '. | sort_by(.koodiArvo)' \
+        | jq '.[].metadata |= sort_by(.kieli)' \
+        > "$BACKUP_DIR/koodisto_$koodistouri.json"
 done
 
 echo "Backing up lokalisointi..."
