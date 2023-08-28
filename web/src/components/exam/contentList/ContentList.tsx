@@ -85,11 +85,7 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
         setLanguage={setLanguage}
         singularActiveTab={getSingularContentTypeFinnish(activeTab)}
       />
-      {loading && (
-        <div className="mt-10 text-center">
-          <Spinner />
-        </div>
-      )}
+      {loading && <Spinner className="mt-10 text-center" />}
       {error && <div className="mt-10 text-center text-red-primary">Virhe ladattaessa koetehtäviä</div>}
       {data && (
         <>

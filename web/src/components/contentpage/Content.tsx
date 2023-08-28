@@ -17,7 +17,7 @@ import { useUserDetails } from '../../hooks/useUserDetails'
 
 type AssignmentProps = { exam: Exam }
 
-export const Content = ({ exam }: AssignmentProps) => {
+const Content = ({ exam }: AssignmentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: string; id: string }>()
@@ -45,11 +45,7 @@ export const Content = ({ exam }: AssignmentProps) => {
 
   return (
     <div className="min-h-[80vh]">
-      {!data && loading && (
-        <div className="mt-32 text-center">
-          <Spinner />
-        </div>
-      )}
+      {!data && loading && <Spinner className="mt-32 text-center" />}
       {data && (
         <>
           <div className="row">
@@ -98,3 +94,5 @@ export const Content = ({ exam }: AssignmentProps) => {
     </div>
   )
 }
+
+export default Content

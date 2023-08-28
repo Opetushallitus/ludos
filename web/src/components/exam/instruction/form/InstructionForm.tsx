@@ -33,7 +33,7 @@ type InstructionFormProps = {
   action: 'new' | 'update'
 }
 
-export const InstructionForm = ({ action }: InstructionFormProps) => {
+const InstructionForm = ({ action }: InstructionFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -313,3 +313,5 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
     </div>
   )
 }
+
+export default InstructionForm

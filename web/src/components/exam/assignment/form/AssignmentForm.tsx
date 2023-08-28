@@ -8,7 +8,7 @@ type AssignmentFormProps = {
   action: 'new' | 'update'
 }
 
-export const AssignmentForm = ({ action }: AssignmentFormProps) => {
+const AssignmentForm = ({ action }: AssignmentFormProps) => {
   const { pathname } = useLocation()
 
   const matchUrl = action === 'new' ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
@@ -29,3 +29,5 @@ export const AssignmentForm = ({ action }: AssignmentFormProps) => {
     </div>
   )
 }
+
+export default AssignmentForm
