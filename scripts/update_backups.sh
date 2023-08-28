@@ -25,4 +25,6 @@ for koodistouri in "${KOODISTOURIS[@]}"; do
 done
 
 echo "Backing up lokalisointi..."
-curl 'https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation?value=NOCACHE&category=ludos' > "$BACKUP_DIR/lokalisointi.json"
+curl 'https://virkailija.testiopintopolku.fi/lokalisointi/cxf/rest/v1/localisation?value=NOCACHE&category=ludos' \
+    | jq --sort-keys '. |= sort_by(.key,.locale)' \
+    > "$BACKUP_DIR/lokalisointi.json"
