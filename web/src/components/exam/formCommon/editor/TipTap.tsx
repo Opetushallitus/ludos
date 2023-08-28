@@ -115,7 +115,7 @@ export const TipTap = ({
       {editable ? (
         <fieldset className="mt-6">
           <legend className="font-semibold">{label}</legend>
-          <div className="mt-2 border border-gray-secondary" id="rich-text-editor">
+          <div className="mt-2 border border-gray-border" id="rich-text-editor">
             <TipTapToolBar editor={editor} />
             <EditorContent editor={editor} data-testid={dataTestId} />
           </div>

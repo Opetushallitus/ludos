@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useCallback } from 'react'
 import { FiltersType } from '../../../hooks/useFilters'
-import { sortKooditAlphabetically, sortKooditByArvo } from '../../../koodistoUtils'
+import { sortKooditAlphabetically } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../LudosContext'
 import { MultiSelectDropdown } from '../../MultiSelectDropdown'
@@ -20,9 +20,12 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
 
   const { data } = useFetch<string[]>('assignment/oppimaaras')
 
-  const handleMultiselectFilterChange = (key: keyof FiltersType, value: KoodiDtoIn[]) => {
-    setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
-  }
+  const handleMultiselectFilterChange = useCallback(
+    (key: keyof FiltersType, value: KoodiDtoIn[]) => {
+      setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
+    },
+    [setFilters]
+  )
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -30,7 +33,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
       <div className="row flex-wrap justify-start">
         {exam === Exam.Suko && (
           <>
-            <div className="w-full px-2 md:w-3/12">
+            <div className="w-full px-2 md:w-6/12 lg:w-3/12">
               <p>{t('filter.oppimaara')}</p>
               <MultiSelectDropdown
                 id="oppimaaraFilter"
@@ -41,39 +44,43 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                       )
                     : []
                 }
+                size="lg"
                 selectedOptions={getSelectedOptions(filters.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
                 testId="oppimaara"
                 canReset
               />
             </div>
-            <div className="w-full px-2 md:w-3/12">
+            <div className="w-full px-2 md:w-6/12 lg:w-3/12">
               <p>{t('filter.tyyppi')}</p>
               <MultiSelectDropdown
                 id="contentTypeFilter"
                 options={sortKooditAlphabetically(koodistos.tehtavatyyppisuko || [])}
+                size="md"
                 selectedOptions={getSelectedOptions(filters.tehtavatyyppisuko, 'tehtavatyyppisuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
                 testId="contentType"
                 canReset
               />
             </div>
-            <div className="w-full px-2 md:w-3/12">
+            <div className="w-full px-2 lg:w-3/12">
               <p>{t('filter.aihe')}</p>
               <MultiSelectDropdown
                 id="aihe"
                 options={sortKooditAlphabetically(koodistos.aihesuko)}
+                size="md"
                 selectedOptions={getSelectedOptions(filters.aihe, 'aihesuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
                 canReset
               />
             </div>
             {/* OPHLUDOS-125: https://jira.eduuni.fi/browse/OPHLUDOS-125 */}
-            {/*<div className="w-full px-2 md:w-3/12">*/}
+            {/*<div className="w-full px-2 md:w-6/12 lg:w-3/12">*/}
             {/*  <p>{t('filter.tavoitetaso')}</p>*/}
             {/*  <MultiSelectDropdown*/}
             {/*    id="tavoitetaitotaso"*/}
             {/*    options={sortKooditByArvo(koodistos.taitotaso || [])}*/}
+            {/*size="md"*/}
             {/*    selectedOptions={getSelectedOptions(filters.tavoitetaitotaso, 'taitotaso')}*/}
             {/*    onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tavoitetaitotaso', opt)}*/}
             {/*    canReset*/}

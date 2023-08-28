@@ -1,7 +1,15 @@
-import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../../helpers'
+import { expect, Page, test } from '@playwright/test'
+import { Exam, loginTestGroup, Role } from '../../helpers'
 
 loginTestGroup(test, Role.YLLAPITAJA)
+
+async function checkResponseAfterFiltering(page: Page, exam: Exam) {
+  const responseLd = await page.waitForResponse((response) => {
+    return response.url().includes(`/api/assignment/${exam}?`) && response.ok()
+  })
+  const responseDataLd = await responseLd.json()
+  expect(responseDataLd).toHaveLength(1)
+}
 
 test.describe('Assignment filter tests', () => {
   test('suko, ld, puhvi', async ({ page }) => {
@@ -17,16 +25,20 @@ test.describe('Assignment filter tests', () => {
     await page.getByTestId('oppimaara-option-TKFIA1').click()
     await page.getByTestId('oppimaara-option-TKFIB1').click()
     await page.getByTestId('oppimaara-option-TKFIB3').click()
+    await page.getByTestId('oppimaara-multi-select-ready-button').click()
 
     await page.getByTestId('contentType').click()
     // keskustelu
     await page.getByTestId('contentType-option-003').click()
+    await page.getByTestId('contentType-multi-select-ready-button').click()
 
     await page.getByTestId('aihe').click()
     // vaikuttaminen
     await page.getByTestId('aihe-option-007').click()
     // ympärisöt
-    await page.getByTestId('aihe-option-008').click()
+    page.getByTestId('aihe-option-008').click()
+    await checkResponseAfterFiltering(page, 'SUKO')
+    await page.getByTestId('aihe-multi-select-ready-button').click()
 
     // await page.getByTestId('tavoitetaitotaso-input').fill('b1')
     // await page.getByTestId('tavoitetaitotaso').click()
@@ -46,10 +58,10 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByRole('link', { name: 'Test name 11 FI' }).click()
 
-    page.getByText('Tehtävätyyppi: Keskustelu')
+    await page.getByText('Tehtävätyyppi: Keskustelu')
     // page.getByText('Tavoitetaso: B1.1  Toimiva peruskielitaito')
-    page.getByText('Aihe: vaikuttaminen, opiskelutaidot')
-    page.getByText('Laaja-alainen osaaminen: -')
+    await page.getByText('Aihe: vaikuttaminen, opiskelutaidot')
+    await page.getByText('Laaja-alainen osaaminen: -')
 
     await page.getByTestId('return').click()
 
@@ -58,18 +70,13 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByTestId('lukuvuosi').click()
     await page.getByTestId('lukuvuosi-option-20202021').click()
+    await page.getByTestId('lukuvuosi-multi-select-ready-button').click()
 
     await page.getByTestId('aine').click()
     // musiikki
     page.getByTestId('aine-option-6').click()
-
-    const responseLd = await page.waitForResponse((response) => {
-      return response.url().includes('/api/assignment/LD?') && response.ok()
-    })
-
-    const responseDataLd = await responseLd.json()
-
-    expect(responseDataLd).toHaveLength(1)
+    await checkResponseAfterFiltering(page, 'LD')
+    await page.getByTestId('aine-multi-select-ready-button').click()
 
     await page.getByRole('link', { name: 'Test name 5 FI' }).click()
 
@@ -86,18 +93,13 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByTestId('lukuvuosi').click()
     await page.getByTestId('lukuvuosi-option-20242025').click()
+    await page.getByTestId('lukuvuosi-multi-select-ready-button').click()
 
     await page.getByTestId('tehtavatyyppiPuhvi').click()
     // esiintymistaidot
-    page.getByTestId('tehtavatyyppiPuhvi-option-002').click()
-
-    const responsePuhvi = await page.waitForResponse((response) => {
-      return response.url().includes('/api/assignment/PUHVI?') && response.ok()
-    })
-
-    const responseDataPuhvi = await responsePuhvi.json()
-
-    expect(responseDataPuhvi).toHaveLength(1)
+    await page.getByTestId('tehtavatyyppiPuhvi-option-002').click()
+    checkResponseAfterFiltering(page, 'PUHVI')
+    await page.getByTestId('tehtavatyyppiPuhvi-multi-select-ready-button').click()
 
     await page.getByRole('link', { name: 'Test name 8 FI' }).click()
 

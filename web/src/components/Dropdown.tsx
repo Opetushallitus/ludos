@@ -46,7 +46,7 @@ export const Dropdown = ({
   return (
     <div
       id={id}
-      className="relative mb-3 mt-1 border border-gray-secondary"
+      className="relative mb-3 mt-1 border border-gray-border"
       ref={containerRef}
       onBlur={(e) => {
         e.preventDefault()
@@ -57,7 +57,7 @@ export const Dropdown = ({
         className={`flex ${requiredError ? 'border border-red-primary' : ''} bg-white px-2`}
         role="button"
         aria-expanded={isOpen}
-        aria-activedescendant={highlightedIndex !== null ? `${id}-${options[highlightedIndex]?.nimi}` : undefined} // Indicate the active option
+        aria-activedescendant={`${id}-${selectedOption?.nimi}`}
         onClick={() => setIsOpen(!isOpen)}
         data-testid={testId}>
         <div className="row w-full flex-wrap gap-2 py-1">
@@ -87,7 +87,12 @@ export const Dropdown = ({
           )}
         </div>
       </div>
-      <ul className={`${isOpen ? '' : 'hidden'} dropdownContent`} role="listbox" aria-labelledby={`${id}-label`}>
+      <ul
+        className={`${
+          isOpen ? '' : 'hidden'
+        } absolute z-50 max-h-96 min-w-full overflow-y-auto border border-gray-border bg-white py-1`}
+        role="listbox"
+        aria-labelledby={`${id}-label`}>
         {options.map((option, i) => (
           <li
             className={`cursor-pointer px-3 ${
@@ -105,6 +110,7 @@ export const Dropdown = ({
             }}
             onMouseEnter={() => setHighlightedIndex(i)}
             key={i}
+            aria-selected={selectedOption === option}
             role="option"
             data-testid={`${testId}-option-${option.koodiArvo}`}>
             {option.nimi}

@@ -36,6 +36,11 @@ export const useDropdown = ({
     [onSelectedOptionsChange, selectedOptions]
   )
 
+  const closeModal = useCallback(() => {
+    setIsOpen(false)
+    setHighlightedIndex(-1)
+  }, [])
+
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (isOpen && containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -94,5 +99,5 @@ export const useDropdown = ({
     }
   }, [isOpen, highlightedIndex, options, containerRef, toggleOption, inputRef])
 
-  return { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption }
+  return { isOpen, setIsOpen, highlightedIndex, setHighlightedIndex, toggleOption, closeModal }
 }

@@ -7,6 +7,14 @@ export const Role = {
 }
 export type Role = (typeof Role)[keyof typeof Role]
 
+export const Exam = {
+  Suko: 'SUKO',
+  Puhvi: 'PUHVI',
+  Ld: 'LD'
+} as const
+
+export type Exam = (typeof Exam)[keyof typeof Exam]
+
 export const authFileByRole: Record<Role, string> = Object.fromEntries(
   Object.values(Role).map((role) => [role, `.auth/${role}.json`])
 )

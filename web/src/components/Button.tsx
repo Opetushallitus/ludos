@@ -5,18 +5,14 @@ export interface ButtonProps
   extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
     AriaAttributes {
   variant: 'buttonPrimary' | 'buttonSecondary' | 'buttonGhost' | 'buttonDanger'
-  testId?: string
   customClass?: string
 }
 
-export const Button = ({ variant, testId, children, customClass, ...props }: ButtonProps) => {
+export const Button = ({ variant, children, customClass, ...props }: ButtonProps) => {
   const isDisabled = props.disabled
 
   return (
-    <button
-      className={twMerge(`${variant} rounded-sm px-4 py-2`, customClass, isDisabled && 'opacity-50')}
-      data-testid={testId}
-      {...props}>
+    <button className={twMerge(`${variant} rounded-sm px-4 py-2`, customClass, isDisabled && 'opacity-50')} {...props}>
       {children}
     </button>
   )
