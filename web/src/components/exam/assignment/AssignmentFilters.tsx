@@ -33,7 +33,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
       <div className="row flex-wrap justify-start">
         {exam === Exam.Suko && (
           <>
-            <div className="w-full px-2 md:w-3/12">
+            <div className="w-full px-2 md:w-6/12 lg:w-3/12">
               <p>{t('filter.oppimaara')}</p>
               <MultiSelectDropdown
                 id="oppimaaraFilter"
@@ -51,7 +51,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                 canReset
               />
             </div>
-            <div className="w-full px-2 md:w-3/12">
+            <div className="w-full px-2 md:w-6/12 lg:w-3/12">
               <p>{t('filter.tyyppi')}</p>
               <MultiSelectDropdown
                 id="contentTypeFilter"
@@ -63,7 +63,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
                 canReset
               />
             </div>
-            <div className="w-full px-2 md:w-3/12">
+            <div className="w-full px-2 lg:w-3/12">
               <p>{t('filter.aihe')}</p>
               <MultiSelectDropdown
                 id="aihe"
@@ -75,7 +75,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
               />
             </div>
             {/* OPHLUDOS-125: https://jira.eduuni.fi/browse/OPHLUDOS-125 */}
-            {/*<div className="w-full px-2 md:w-3/12">*/}
+            {/*<div className="w-full px-2 md:w-6/12 lg:w-3/12">*/}
             {/*  <p>{t('filter.tavoitetaso')}</p>*/}
             {/*  <MultiSelectDropdown*/}
             {/*    id="tavoitetaitotaso"*/}

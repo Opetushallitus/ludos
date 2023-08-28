@@ -1,4 +1,4 @@
-const { MOBILE_BREAKPOINT } = require('./src/constants.ts')
+const { MOBILE_BREAKPOINT, LARGE_SCREEN_BREAKPOINT } = require('./src/constants.ts')
 /** @type {import('tailwindcss').Config} */
 const tailwindConfig = {
   content: ['./src/**/*.{ts,tsx}'], theme: {
@@ -11,6 +11,7 @@ const tailwindConfig = {
       red: { primary: '#CC3300', light: '#FF4D4D' },
     }, screens: {
       'md': MOBILE_BREAKPOINT,
+      'lg': LARGE_SCREEN_BREAKPOINT,
     },
     fontSize: {
       xss: ['11px', '21px'],
