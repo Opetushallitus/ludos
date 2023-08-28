@@ -39,9 +39,12 @@ export async function fillSukoAssignmentForm({
   // Test searching for non-existing option
   await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
 
-  // Verify that no options are selected
-  const selectedOptions = await page.$$('li[role="option"][aria-selected="true"]')
-  expect(selectedOptions).toHaveLength(0)
+  const allAvailableLaajaalainenOptions = ['01', '02', '03', '04', '05', '06']
+
+  for (const option of allAvailableLaajaalainenOptions) {
+    const optionIsHidden = await page.getByTestId(`laajaalainenOsaaminen-option-${option}`).isHidden()
+    expect(optionIsHidden).toBeTruthy()
+  }
 
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
   await page.getByTestId('laajaalainenOsaaminen-input').fill('globa')
