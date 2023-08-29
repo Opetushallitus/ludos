@@ -4,11 +4,12 @@ import { ReactNode } from 'react'
 type TextInputProps = {
   id: string
   register: UseFormRegister<any>
+  deps?: string[]
   error?: boolean
   required?: boolean
   children: ReactNode
 }
-export const TextInput = ({ id, register, error, required, children }: TextInputProps) => (
+export const TextInput = ({ id, register, deps, error, required, children }: TextInputProps) => (
   <div className="mt-6">
     <label className="font-semibold" htmlFor={id}>
       {children}
@@ -18,7 +19,7 @@ export const TextInput = ({ id, register, error, required, children }: TextInput
       data-testid={id}
       type="text"
       className={`block w-full border ${error ? 'border-red-primary' : 'border-gray-border'} p-2.5`}
-      {...register(id, { required })}
+      {...register(id, { required, deps })}
     />
   </div>
 )

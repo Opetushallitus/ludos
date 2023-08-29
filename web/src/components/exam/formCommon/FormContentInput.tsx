@@ -45,7 +45,12 @@ export const FormContentInput = ({
       </div>
 
       <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
-        <TextInput id="nameFi" register={register} error={!!nameFiError || !!assignmentNameError} required>
+        <TextInput
+          id="nameFi"
+          register={register}
+          deps={['nameRequired']}
+          error={!!nameFiError || !!assignmentNameError}
+          required>
           {t('form.tehtavannimi')}
         </TextInput>
         <FormError error={nameFiError || assignmentNameError} />
@@ -68,7 +73,12 @@ export const FormContentInput = ({
       </div>
 
       <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
-        <TextInput id="nameSv" register={register} error={!!nameSvError || !!assignmentNameError} required>
+        <TextInput
+          id="nameSv"
+          register={register}
+          deps={['nameRequired']}
+          error={!!nameSvError || !!assignmentNameError}
+          required>
           {t('form.tehtavannimi')}
         </TextInput>
         <FormError error={nameSvError || assignmentNameError} />

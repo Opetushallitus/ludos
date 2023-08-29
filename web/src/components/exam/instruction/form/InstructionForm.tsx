@@ -223,7 +223,12 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
         </div>
 
         <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
-          <TextInput id="nameFi" register={register} error={!!nameFiError || !!instructionNameError} required>
+          <TextInput
+            id="nameFi"
+            register={register}
+            deps={['nameRequired']}
+            error={!!nameFiError || !!instructionNameError}
+            required>
             {t('form.ohjeennimi')}
           </TextInput>
           <FormError error={nameFiError || instructionNameError} />
@@ -256,7 +261,12 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
         </div>
 
         <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
-          <TextInput id="nameSv" register={register} error={!!nameSvError || !!instructionNameError} required>
+          <TextInput
+            id="nameSv"
+            register={register}
+            deps={['nameRequired']}
+            error={!!nameSvError || !!instructionNameError}
+            required>
             {t('form.ohjeennimi')}
           </TextInput>
           <FormError error={nameSvError || instructionNameError} />
