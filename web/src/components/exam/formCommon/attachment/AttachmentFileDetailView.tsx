@@ -63,9 +63,7 @@ export const AttachmentFileDetailView = ({
 
       <div className="border-y border-gray-light" />
       {loading ? (
-        <div className="py-2">
-          <Spinner />
-        </div>
+        <Spinner className="py-2" />
       ) : (
         <>
           {fileDetails && (

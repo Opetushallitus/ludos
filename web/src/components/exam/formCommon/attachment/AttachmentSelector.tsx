@@ -87,9 +87,7 @@ export const AttachmentSelector = ({
   return (
     <div>
       {loading ? (
-        <div className="mt-6">
-          <Spinner />
-        </div>
+        <Spinner className="mt-6 text-center" />
       ) : (
         <>
           <div className="my-6">

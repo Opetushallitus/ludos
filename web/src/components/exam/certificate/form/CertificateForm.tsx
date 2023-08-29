@@ -18,7 +18,7 @@ type CertificateFormProps = {
   action: 'new' | 'update'
 }
 
-export const CertificateForm = ({ action }: CertificateFormProps) => {
+const CertificateForm = ({ action }: CertificateFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const matchUrl = action === 'new' ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
@@ -147,3 +147,5 @@ export const CertificateForm = ({ action }: CertificateFormProps) => {
     </div>
   )
 }
+
+export default CertificateForm

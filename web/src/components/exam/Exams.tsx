@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
-import { Exam, ContentType } from '../../types'
+import { ContentType, Exam } from '../../types'
 import { Tabs } from '../Tabs'
 import { ContentTypeTranslationEnglish, ContentTypeTranslationFinnish } from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
@@ -11,7 +11,20 @@ type ExamProps = {
   exam: Exam
 }
 
-export const Exams = ({ exam }: ExamProps) => {
+function useActiveTabAndUrlPathUpdate({ contentType, exam }: { contentType: ContentType; exam: Exam }) {
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState<ContentType>(contentType)
+
+  useEffect(() => {
+    if (activeTab) {
+      navigate(`/${exam.toLowerCase()}/${ContentTypeTranslationEnglish[activeTab]}`, { replace: true })
+    }
+  }, [activeTab, navigate, contentType, exam])
+
+  return { activeTab, setActiveTab }
+}
+
+const Exams = ({ exam }: ExamProps) => {
   const { t } = useTranslation()
   const { contentType } = useParams<{ contentType: string }>()
 
@@ -42,15 +55,4 @@ export const Exams = ({ exam }: ExamProps) => {
   )
 }
 
-function useActiveTabAndUrlPathUpdate({ contentType, exam }: { contentType: ContentType; exam: Exam }) {
-  const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<ContentType>(contentType)
-
-  useEffect(() => {
-    if (activeTab) {
-      navigate(`/${exam.toLowerCase()}/${ContentTypeTranslationEnglish[activeTab]}`, { replace: true })
-    }
-  }, [activeTab, navigate, contentType, exam])
-
-  return { activeTab, setActiveTab }
-}
+export default Exams
