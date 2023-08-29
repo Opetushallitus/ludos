@@ -4,8 +4,7 @@ import Language
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import fi.oph.ludos.AttachmentOut
-import fi.oph.ludos.PublishState
+import fi.oph.ludos.*
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
 import java.time.ZonedDateTime
@@ -23,11 +22,17 @@ import kotlin.reflect.KClass
 )
 @AtLeastOneInstructionNameIsNotBlank
 interface Instruction {
+    @get:ValidContentName
     val nameFi: String
+    @get:ValidHtmlContent
     val contentFi: String
+    @get:ValidContentName
     val nameSv: String
+    @get:ValidHtmlContent
     val contentSv: String
+    @get:ValidContentDescription
     val shortDescriptionFi: String
+    @get:ValidContentDescription
     val shortDescriptionSv: String
     val publishState: PublishState
 }
