@@ -20,8 +20,8 @@ const commonSchema = z.object({
   nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   instructionFi: z.string(),
   instructionSv: z.string(),
-  contentFi: z.string(),
-  contentSv: z.string(),
+  contentFi: z.string().default(''),
+  contentSv: z.string().default(''),
   laajaalainenOsaaminenKoodiArvos: z.array(z.string())
 })
 
