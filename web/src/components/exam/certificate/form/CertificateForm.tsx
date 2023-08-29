@@ -25,6 +25,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const match = useMatch(matchUrl)
 
   const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string>('')
   const [newAttachment, setNewAttachment] = useState<File | null>(null)
 
   const exam = match!.params.exam as Exam
@@ -68,9 +69,13 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
           const { id } = await createCertificate<{ id: string }>(certificateIn, newAttachment!)
           resultId = id
         }
+        setSubmitError('')
 
         navigate(`/${exam}/certificates/${resultId}`)
       } catch (e) {
+        if (e instanceof Error) {
+          setSubmitError(e.message || 'Unexpected error')
+        }
         console.error(e)
       } finally {
         setLoading(false)
@@ -142,6 +147,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         onCancelClick={() => navigate(-1)}
         onSaveDraftClick={() => submitCertificate({ publishState: PublishState.Draft })}
         onSubmitClick={() => submitCertificate({ publishState: PublishState.Published })}
+        errorMessage={submitError}
         isLoading={loading}
       />
     </div>
