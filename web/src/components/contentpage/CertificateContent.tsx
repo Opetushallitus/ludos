@@ -12,20 +12,16 @@ export const CertificateContent = ({ certificate }: CertificateContentProps) => 
   return (
     <div>
       <h3 className="mt-6 font-semibold">{t('certificate.nimi')}</h3>
-      <p>{certificate.name}</p>
+      <p data-testid="certificate-name">{certificate.name}</p>
       <h3 className="mt-6 font-semibold">{t('certificate.kuvaus')}</h3>
-      <p>{certificate.description}</p>
+      <p data-testid="certificate-description">{certificate.description}</p>
       <h3 className="mb-3 mt-8 font-semibold">{t('certificate.todistus')}</h3>
       <AttachmentFileDetailView
         contentType={ContentTypeEng.TODISTUKSET}
         attachments={{
           name: certificate.attachment.name,
           attachment: {
-            name: certificate.attachment.name,
-            fileKey: certificate.attachment.fileKey,
-            fileName: certificate.attachment.fileName,
-            language: certificate.attachment.language,
-            fileUploadDate: certificate.attachment.fileUploadDate
+            ...certificate.attachment
           }
         }}
         handleAttachmentNameChange={() => {}}
