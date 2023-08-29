@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { EditorContent, mergeAttributes, useEditor } from '@tiptap/react'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -12,7 +13,6 @@ import Bold from '@tiptap/extension-bold'
 import Italic from '@tiptap/extension-italic'
 import History from '@tiptap/extension-history'
 import { TipTapToolBar } from './TipTapToolBar'
-import { DefaultTFuncReturn } from 'i18next'
 import './styles.css'
 
 type Levels = 1 | 2 | 3
@@ -88,15 +88,16 @@ export const TipTap = ({
   content,
   onContentChange,
   editable = true,
-  label,
+  labelKey = '',
   dataTestId
 }: {
   content: string | undefined
   onContentChange?: (newContent: string) => void
   editable?: boolean
-  label?: DefaultTFuncReturn
+  labelKey?: string
   dataTestId?: string
 }) => {
+  const { t } = useTranslation()
   const editor = useEditor({
     editable,
     extensions,
@@ -114,7 +115,7 @@ export const TipTap = ({
     <>
       {editable ? (
         <fieldset className="mt-6">
-          <legend className="font-semibold">{label}</legend>
+          <legend className="font-semibold">{t(labelKey)}</legend>
           <div className="mt-2 border border-gray-border" id="rich-text-editor">
             <TipTapToolBar editor={editor} />
             <EditorContent editor={editor} data-testid={dataTestId} />

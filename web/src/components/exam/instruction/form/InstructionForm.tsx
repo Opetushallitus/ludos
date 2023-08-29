@@ -231,7 +231,7 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
           <TipTap
             onContentChange={handleContentChange}
             content={instruction?.contentFi}
-            label={t('form.ohjeensisalto')}
+            labelKey="form.ohjeensisalto"
             dataTestId="editor-content-fi"
             key={instruction ? 'content-fi' : 'content-fi-new'}
           />
@@ -264,7 +264,7 @@ export const InstructionForm = ({ action }: InstructionFormProps) => {
           <TipTap
             onContentChange={handleContentChange}
             content={instruction?.contentSv}
-            label={t('form.ohjeensisalto')}
+            labelKey="form.ohjeensisalto"
             dataTestId="editor-content-sv"
             key={instruction ? 'content-sv' : 'content-sv-new'}
           />
