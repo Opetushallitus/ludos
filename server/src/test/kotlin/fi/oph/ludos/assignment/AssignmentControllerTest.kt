@@ -17,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.time.Duration
-import java.time.ZonedDateTime
 import javax.transaction.Transactional
 import kotlin.reflect.full.memberProperties
 
@@ -190,17 +188,15 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
     @Test
     @WithYllapitajaRole
-    fun invalidExamFieldYields400() {
-        val dtoInMap: Map<*, *> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
-        val jsonWithExamRemoved = mapper.writeValueAsString(dtoInMap + ("exam" to "SCHUKO"))
-        val responseBody = mockMvc.perform(postAssignment(jsonWithExamRemoved)).andExpect(status().isBadRequest())
-            .andReturn().response.contentAsString
-        assertThat(responseBody, containsString("Could not resolve type id 'SCHUKO' as a subtype"))
+    fun `create assignment invalid exam`() {
+        val responseContent = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn.copy(exam = "SCHUKO"))))
+            .andExpect(status().isBadRequest()).andReturn().response.contentAsString
+        assertThat(responseContent, containsString("Could not resolve type id 'SCHUKO' as a subtype"))
     }
 
     @Test
     @WithYllapitajaRole
-    fun invalidEnumFieldYields400() {
+    fun `create assignment with invalid publishState`() {
         val jsonWithInvalidPublishState =
             mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = "OLEMATON"))
         val responseBody =
@@ -209,6 +205,70 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertThat(
             responseBody,
             containsString("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"OLEMATON\": not one of the values accepted")
+        )
+    }
+    @Test
+    @WithYllapitajaRole
+    fun `create assignment with html in name`() {
+        val json = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>"))
+        val responseBody =
+            mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
+                .andReturn().response.contentAsString
+        assertThat(
+            responseBody, equalTo(
+                """
+                nameFi: Non-plain content found
+                nameSv: Non-plain content found
+                """.trimIndent()
+            )
+        )
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `create assignment with too long name`() {
+        val longName = "1234567890".repeat(100) + "X"
+        val json = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = longName, nameSv = longName))
+        val responseBody =
+            mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
+                .andReturn().response.contentAsString
+        assertThat(
+            responseBody, equalTo(
+                """
+                nameFi: size must be between 0 and 1000
+                nameSv: size must be between 0 and 1000
+                """.trimIndent()
+            )
+        )
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `create assignment with safe html in content`() {
+        val safeContent = """moi <ul class="list-disc"><li>moi</li></ul> moi"""
+        val assignmentIn = minimalSukoAssignmentIn.copy(contentFi = safeContent)
+        val responseBody =
+            mockMvc.perform(postAssignment(mapper.writeValueAsString(assignmentIn))).andExpect(status().isOk)
+                .andReturn().response.contentAsString
+        val createdAssignment = mapper.readValue(responseBody, TestAssignmentSukoOut::class.java)
+        assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(assignmentIn, createdAssignment)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `create assignment with script tag in content`() {
+        val attackContent = "moi <script>alert('moi')</script> moi"
+        val json = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(contentFi = attackContent, contentSv = attackContent))
+        val responseBody =
+            mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
+                .andReturn().response.contentAsString
+        assertThat(
+            responseBody, equalTo(
+                """
+                contentFi: Unsafe HTML content found
+                contentSv: Unsafe HTML content found
+                """.trimIndent()
+            )
         )
     }
 

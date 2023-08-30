@@ -1,8 +1,6 @@
 package fi.oph.ludos.certificate
 
-import fi.oph.ludos.AttachmentOut
-import fi.oph.ludos.Exam
-import fi.oph.ludos.PublishState
+import fi.oph.ludos.*
 import java.sql.Timestamp
 import java.time.ZonedDateTime
 import javax.validation.constraints.NotBlank
@@ -10,7 +8,9 @@ import javax.validation.constraints.NotBlank
 interface Certificate {
     val exam: Exam
     @get:NotBlank
+    @get:ValidContentName
     val name: String
+    @get:ValidContentDescription
     val description: String
     val publishState: PublishState
 }

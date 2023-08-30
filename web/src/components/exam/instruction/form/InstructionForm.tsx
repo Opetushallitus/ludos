@@ -45,10 +45,16 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
 
+  const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string>('')
+
   const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
 
-  const { data: instruction, loading } = useFetch<InstructionIn>(`instruction/${exam}/${id}`, action === 'new')
+  const { data: instruction, loading: instructionLoading } = useFetch<InstructionIn>(
+    `instruction/${exam}/${id}`,
+    action === 'new'
+  )
 
   const {
     register,
@@ -75,6 +81,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       const instructionIn = { ...data, publishState }
 
       try {
+        setLoading(true)
         let resultId: string
 
         if (action === 'update' && instruction) {
@@ -100,10 +107,16 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           const { id } = await createInstruction<{ id: string }>(instructionIn, findFilesFromAttachmentData)
           resultId = id
         }
+        setSubmitError('')
 
         navigate(`/${exam}/instructions/${resultId}`)
       } catch (e) {
+        if (e instanceof Error) {
+          setSubmitError(e.message || 'Unexpected error')
+        }
         console.error(e)
+      } finally {
+        setLoading(false)
       }
     })()
   }
@@ -256,7 +269,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             handleNewAttachmentSelected={handleNewAttachmentSelected}
             handleNewAttachmentName={handleAttachmentNameChange}
             deleteFileByIndex={deleteFileByIndex}
-            loading={loading}
+            loading={instructionLoading}
           />
         </div>
 
@@ -294,7 +307,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             handleNewAttachmentSelected={handleNewAttachmentSelected}
             handleNewAttachmentName={handleAttachmentNameChange}
             deleteFileByIndex={deleteFileByIndex}
-            loading={loading}
+            loading={instructionLoading}
           />
         </div>
 
@@ -309,6 +322,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         onCancelClick={() => navigate(-1)}
         onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
         onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
+        errorMessage={submitError}
+        isLoading={loading}
       />
     </div>
   )

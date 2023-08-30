@@ -5,7 +5,7 @@ import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
 import { LdAssignmentFormType, ldAssignmentSchema } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ContentTypeEng, Exam, LdAssignmentIn, PublishState } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,6 +32,9 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const { data: assignment } = useFetch<LdAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
 
   const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(ldAssignmentSchema) })
+
+  const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string>('')
 
   const {
     watch,
@@ -61,6 +64,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
       const body = { ...data, publishState }
 
       try {
+        setLoading(true)
         let resultId: string
         // When updating we need to have the assignment
         if (action === 'update' && assignment) {
@@ -69,10 +73,16 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
           const { id } = await createAssignment<LdAssignmentFormType>(body)
           resultId = id
         }
+        setSubmitError('')
 
         navigate(`/${exam}/assignments/${resultId}`)
       } catch (e) {
+        if (e instanceof Error) {
+          setSubmitError(e.message || 'Unexpected error')
+        }
         console.error(e)
+      } finally {
+        setLoading(false)
       }
     })()
   }
@@ -152,6 +162,8 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         onCancelClick={() => navigate(-1)}
         onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
         onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
+        errorMessage={submitError}
+        isLoading={loading}
       />
     </>
   )

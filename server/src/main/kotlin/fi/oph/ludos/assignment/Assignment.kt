@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.ValidContentDescription
+import fi.oph.ludos.ValidContentName
+import fi.oph.ludos.ValidHtmlContent
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
@@ -25,11 +28,17 @@ import kotlin.reflect.KClass
 )
 @AtLeastOneAssignmentNameIsNotBlank
 interface Assignment {
+    @get:ValidContentName
     val nameFi: String
+    @get:ValidContentName
     val nameSv: String
+    @get:ValidHtmlContent
     val contentFi: String
+    @get:ValidHtmlContent
     val contentSv: String
+    @get:ValidContentDescription
     val instructionFi: String
+    @get:ValidContentDescription
     val instructionSv: String
     val publishState: PublishState
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
