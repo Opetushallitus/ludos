@@ -1,13 +1,14 @@
 package fi.oph.ludos.assignment
 
-import fi.oph.ludos.*
+import fi.oph.ludos.Constants
+import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import jakarta.validation.Valid
 
 @RestController
 @Validated
@@ -41,6 +42,10 @@ class AssignmentController(val service: AssignmentService) {
         @Valid filters: LdBaseFilters
     ): List<AssignmentOut> = service.getAssignments(filters)
 
+    @GetMapping("favoriteCount")
+    @RequireAtLeastOpettajaRole
+    fun getFavoriteAssignmentsCount(): Int = service.getFavoriteAssignmentsCount()
+
     @GetMapping("{exam}/{id}")
     @RequireAtLeastOpettajaRole
     fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut {
@@ -49,6 +54,12 @@ class AssignmentController(val service: AssignmentService) {
         return assignmentDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
     }
 
+    @PutMapping("{exam}/{id}/favorite")
+    @RequireAtLeastOpettajaRole
+    fun setAssignmentFavorite(
+        @PathVariable exam: Exam, @PathVariable("id") id: Int, @Valid @RequestBody favoriteRequest: SetFavoriteRequest
+    ): Int? = service.setAssignmentFavorite(exam, id, favoriteRequest.isFavorite)
+
     @PutMapping("{id}")
     @RequireAtLeastYllapitajaRole
     fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int {
@@ -56,4 +67,5 @@ class AssignmentController(val service: AssignmentService) {
 
         return updatedAssignmentId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
     }
+
 }

@@ -37,12 +37,11 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val res = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
         idsOfAssignmentDrafts = mapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
-            .filter { it.publishState == "DRAFT" }.map { it.id }
+            .filter { it.publishState == TestPublishState.DRAFT }.map { it.id }
     }
 
     fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(
-        sukoIn: TestAssignmentSukoIn,
-        sukoOut: TestAssignmentSukoOut
+        sukoIn: TestAssignmentSukoIn, sukoOut: TestAssignmentSukoOut
     ) {
         assertEquals(sukoIn.nameFi, sukoOut.nameFi)
         assertEquals(sukoIn.nameSv, sukoOut.nameSv)
@@ -54,8 +53,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(sukoIn.tavoitetasoKoodiArvo, sukoOut.tavoitetasoKoodiArvo)
         assertThat(sukoIn.aiheKoodiArvos, equalTo(sukoOut.aiheKoodiArvos))
         assertThat(
-            sukoIn.laajaalainenOsaaminenKoodiArvos,
-            equalTo(sukoOut.laajaalainenOsaaminenKoodiArvos)
+            sukoIn.laajaalainenOsaaminenKoodiArvos, equalTo(sukoOut.laajaalainenOsaaminenKoodiArvos)
         )
     }
 
@@ -70,7 +68,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             "content sv",
             "instruction fi",
             "instruction sv",
-            "PUBLISHED",
+            TestPublishState.PUBLISHED,
             "003",
             "TKRUA1",
             "0004",
@@ -104,7 +102,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             "new content sv",
             "new instruction fi",
             "new instruction sv",
-            "DRAFT",
+            TestPublishState.DRAFT,
             "001",
             "TKRUB3",
             "0010",
@@ -138,7 +136,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         "",
         "",
         "",
-        "PUBLISHED",
+        TestPublishState.PUBLISHED,
         "003",
         "TKRUA1",
         null,
@@ -149,15 +147,19 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun createMinimalSukoAssignment() {
-        val createdAssignmentStr = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn))).andExpect(status().isOk()).andReturn().response.contentAsString
-        assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(minimalSukoAssignmentIn, mapper.readValue(createdAssignmentStr, TestAssignmentSukoOut::class.java))
+        val createdAssignmentStr = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn)))
+            .andExpect(status().isOk()).andReturn().response.contentAsString
+        assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(
+            minimalSukoAssignmentIn, mapper.readValue(createdAssignmentStr, TestAssignmentSukoOut::class.java)
+        )
     }
 
     @Test
     @WithYllapitajaRole
     fun `create assignment with both names blank`() {
-        val responseContent = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = ""))))
-            .andExpect(status().isBadRequest()).andReturn().response.contentAsString
+        val responseContent =
+            mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = ""))))
+                .andExpect(status().isBadRequest()).andReturn().response.contentAsString
         assertThat(responseContent, equalTo("Global error: At least one of the name fields must be non-empty"))
     }
 
@@ -171,7 +173,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             assertThat("missing ${field.name} yields bad request", response.status, equalTo(HttpStatus.SC_BAD_REQUEST))
             assertThat(
                 "missing ${field.name} yields proper error message",
-                response.contentAsString, containsString("property ${field.name} due to missing")
+                response.contentAsString,
+                containsString("property ${field.name} due to missing")
             )
         }
     }
@@ -189,8 +192,9 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @Test
     @WithYllapitajaRole
     fun `create assignment invalid exam`() {
-        val responseContent = mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn.copy(exam = "SCHUKO"))))
-            .andExpect(status().isBadRequest()).andReturn().response.contentAsString
+        val responseContent =
+            mockMvc.perform(postAssignment(mapper.writeValueAsString(minimalSukoAssignmentIn.copy(exam = "SCHUKO"))))
+                .andExpect(status().isBadRequest()).andReturn().response.contentAsString
         assertThat(responseContent, containsString("Could not resolve type id 'SCHUKO' as a subtype"))
     }
 
@@ -198,7 +202,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @WithYllapitajaRole
     fun `create assignment with invalid publishState`() {
         val jsonWithInvalidPublishState =
-            mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = "OLEMATON"))
+            mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = TestPublishState.OLEMATON))
         val responseBody =
             mockMvc.perform(postAssignment(jsonWithInvalidPublishState)).andExpect(status().isBadRequest())
                 .andReturn().response.contentAsString
@@ -207,13 +211,14 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             containsString("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"OLEMATON\": not one of the values accepted")
         )
     }
+
     @Test
     @WithYllapitajaRole
     fun `create assignment with html in name`() {
-        val json = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>"))
-        val responseBody =
-            mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
-                .andReturn().response.contentAsString
+        val json =
+            mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>"))
+        val responseBody = mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
         assertThat(
             responseBody, equalTo(
                 """
@@ -229,9 +234,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     fun `create assignment with too long name`() {
         val longName = "1234567890".repeat(100) + "X"
         val json = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(nameFi = longName, nameSv = longName))
-        val responseBody =
-            mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
-                .andReturn().response.contentAsString
+        val responseBody = mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
         assertThat(
             responseBody, equalTo(
                 """
@@ -258,10 +262,13 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
     @WithYllapitajaRole
     fun `create assignment with script tag in content`() {
         val attackContent = "moi <script>alert('moi')</script> moi"
-        val json = mapper.writeValueAsString(minimalSukoAssignmentIn.copy(contentFi = attackContent, contentSv = attackContent))
-        val responseBody =
-            mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
-                .andReturn().response.contentAsString
+        val json = mapper.writeValueAsString(
+            minimalSukoAssignmentIn.copy(
+                contentFi = attackContent, contentSv = attackContent
+            )
+        )
+        val responseBody = mockMvc.perform(postAssignment(json)).andExpect(status().isBadRequest())
+            .andReturn().response.contentAsString
         assertThat(
             responseBody, equalTo(
                 """
@@ -293,9 +300,8 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
             laajaalainenOsaaminenKoodiArvos = arrayOf("epavalidi3", "epavalidi4")
         )
 
-        val errorMessage =
-            mockMvc.perform(postAssignment(mapper.writeValueAsString(assignmentWithInvalidKoodiArvos)))
-                .andExpect(status().isBadRequest).andReturn().response.contentAsString.trimIndent()
+        val errorMessage = mockMvc.perform(postAssignment(mapper.writeValueAsString(assignmentWithInvalidKoodiArvos)))
+            .andExpect(status().isBadRequest).andReturn().response.contentAsString.trimIndent()
 
         assertThat(
             errorMessage, equalTo(
@@ -342,7 +348,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentById.id, assignmentById.id)
         assertEquals(assignmentById.nameFi, "Lukiodiplomi assignment FI")
         assertEquals(assignmentById.contentFi, "Lukiodiplomi assignment content FI")
-        assertEquals(assignmentById.publishState, PublishState.PUBLISHED)
+        assertEquals(assignmentById.publishState, TestPublishState.PUBLISHED)
         assertThat(assignmentById.laajaalainenOsaaminenKoodiArvos, equalTo(arrayOf("06", "03")))
         assertThat(createdAssignment.authorOid, equalTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo))
         assertEquals(assignmentById.lukuvuosiKoodiArvos[0], "20202021")
@@ -378,7 +384,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedAssignment.nameSv, "New test name")
         assertEquals(updatedAssignment.contentSv, "content")
         assertEquals(updatedAssignment.instructionSv, assignmentById.instructionSv)
-        assertEquals(updatedAssignment.publishState, PublishState.PUBLISHED)
+        assertEquals(updatedAssignment.publishState, TestPublishState.PUBLISHED)
         assertThat(updatedAssignment.laajaalainenOsaaminenKoodiArvos, equalTo(arrayOf("02")))
         assertThat(createdAssignment.authorOid, equalTo(assignmentById.authorOid))
         assertThat(updatedAssignment.lukuvuosiKoodiArvos, equalTo(arrayOf("20222023")))
@@ -421,7 +427,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(assignmentById.contentSv, "Puhvi assignment content")
         assertEquals(assignmentById.instructionFi, "Puhvi assignment instruction")
         assertEquals(assignmentById.instructionSv, "Puhvi assignment instruction")
-        assertEquals(assignmentById.publishState, PublishState.PUBLISHED)
+        assertEquals(assignmentById.publishState, TestPublishState.PUBLISHED)
         assertThat(assignmentById.lukuvuosiKoodiArvos, equalTo(arrayOf("20222023")))
         assertEquals(assignmentById.assignmentTypeKoodiArvo, "001")
         assertThat(assignmentById.laajaalainenOsaaminenKoodiArvos, equalTo(arrayOf("06", "03")))
@@ -459,7 +465,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         assertEquals(updatedAssignment.nameSv, "Puhvi assignment edited")
         assertEquals(updatedAssignment.contentSv, "Puhvi assignment content edited")
         assertEquals(updatedAssignment.instructionSv, assignmentById.instructionSv)
-        assertEquals(updatedAssignment.publishState, PublishState.PUBLISHED)
+        assertEquals(updatedAssignment.publishState, TestPublishState.PUBLISHED)
         assertEquals(updatedAssignment.assignmentTypeKoodiArvo, "002")
         assertThat(updatedAssignment.laajaalainenOsaaminenKoodiArvos, equalTo(arrayOf("06", "01")))
         assertThat(updatedAssignment.authorOid, equalTo(assignmentById.authorOid))
@@ -523,7 +529,7 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
         val assignments = mapper.readValue(res, Array<TestAssignmentSukoOut>::class.java)
 
         assertTrue(
-            assignments.none { it.publishState == "DRAFT" }, "Opettaja should not see draft assignments"
+            assignments.none { it.publishState == TestPublishState.DRAFT }, "Opettaja should not see draft assignments"
         )
 
         assertEquals(8, assignments.size)
@@ -550,5 +556,237 @@ class AssignmentControllerTest(@Autowired val mockMvc: MockMvc) {
 
         mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isUnauthorized())
         mockMvc.perform(updateAssignment(1, testAssignmentStr)).andExpect(status().isUnauthorized())
+    }
+
+    private fun markAssignment(id: Int, favorite: Boolean, exam: Exam): TestAssignmentOut {
+        mockMvc.perform(markAssignmentAsFavorite(exam, id, favorite)).andExpect(status().isOk())
+
+        val res =
+            mockMvc.perform(getAssignment(exam, id)).andExpect(status().isOk()).andReturn().response.contentAsString
+
+        return when (exam) {
+            Exam.SUKO -> mapper.readValue(res, TestAssignmentSukoOut::class.java)
+            Exam.LD -> mapper.readValue(res, TestAssignmentLdOut::class.java)
+            Exam.PUHVI -> mapper.readValue(res, TestAssignmentPuhviOut::class.java)
+        }
+    }
+
+    private fun testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja: Int) {
+        val favoritedAssignment = markAssignment(localAssignmentIdToFavoriteAsOpettaja, true, Exam.SUKO)
+        assertEquals(true, favoritedAssignment.isFavorite)
+
+        // get all assignments and check isFavorite
+        val getAllStr = mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        val assignments = mapper.readValue(getAllStr, Array<TestAssignmentSukoOut>::class.java)
+        assignments.forEach {
+            if (it.id == localAssignmentIdToFavoriteAsOpettaja) {
+                assertEquals(true, it.isFavorite, "Assignment ${it.id} should be favorite")
+            } else {
+                assertEquals(false, it.isFavorite, "Assignment ${it.id} should not be favorite")
+            }
+        }
+
+        val unfavoredAssignment = markAssignment(localAssignmentIdToFavoriteAsOpettaja, false, Exam.SUKO)
+
+        assertEquals(false, unfavoredAssignment.isFavorite)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `set assignment as favorite and query it`() {
+        val testAssignmentStr = mapper.writeValueAsString(
+            TestAssignmentSukoIn(
+                "SUKO",
+                "name fi",
+                "name sv",
+                "content fi",
+                "content sv",
+                "instruction fi",
+                "instruction sv",
+                TestPublishState.PUBLISHED,
+                "003",
+                "TKRUA1",
+                "0004",
+                arrayOf("002", "003"),
+                arrayOf("06", "03")
+            )
+        )
+
+        val createResult = mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        val createdAssignment = mapper.readValue(createResult, TestAssignmentSukoOut::class.java)
+
+        testMarkingAndQueryFavorites(createdAssignment.id)
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun `as opettaja toggle assignment to be favorite and query it`() {
+        // get all assignments and choose one of them to favorite
+        val localAssignmentIdToFavoriteAsOpettaja =
+            mockMvc.perform(getAllAssignments(Exam.SUKO)).andExpect(status().isOk())
+                .andReturn().response.contentAsString.let {
+                    mapper.readValue(
+                        it, Array<TestAssignmentSukoOut>::class.java
+                    )
+                }.first { it.publishState == TestPublishState.PUBLISHED }.id
+
+        testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `set assignment as favorite and unfavored 2 times in a row`() {
+        val testAssignmentStr = mapper.writeValueAsString(
+            TestAssignmentSukoIn(
+                "SUKO",
+                "name fi",
+                "name sv",
+                "content fi",
+                "content sv",
+                "instruction fi",
+                "instruction sv",
+                TestPublishState.PUBLISHED,
+                "003",
+                "TKRUA1",
+                "0004",
+                arrayOf("002", "003"),
+                arrayOf("06", "03")
+            )
+        )
+
+        val createResult = mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        val createdAssignment = mapper.readValue(createResult, TestAssignmentSukoOut::class.java)
+
+        assertEquals(true, markAssignment(createdAssignment.id, true, Exam.SUKO).isFavorite)
+        assertEquals(true, markAssignment(createdAssignment.id, true, Exam.SUKO).isFavorite)
+        assertEquals(false, markAssignment(createdAssignment.id, false, Exam.SUKO).isFavorite)
+        assertEquals(false, markAssignment(createdAssignment.id, false, Exam.SUKO).isFavorite)
+    }
+
+    @Test
+    fun `favorite same assignment as different users`() {
+        val testAssignmentStr = mapper.writeValueAsString(
+            TestAssignmentSukoIn(
+                "SUKO",
+                "name fi",
+                "name sv",
+                "content fi",
+                "content sv",
+                "instruction fi",
+                "instruction sv",
+                TestPublishState.PUBLISHED,
+                "003",
+                "TKRUA1",
+                "0004",
+                arrayOf("002", "003"),
+                arrayOf("06", "03")
+            )
+        )
+
+        authenticateAsYllapitaja()
+        val createResult = mockMvc.perform(postAssignment(testAssignmentStr)).andExpect(status().isOk())
+            .andReturn().response.contentAsString
+        val createdAssignment = mapper.readValue(createResult, TestAssignmentSukoOut::class.java)
+
+        assertEquals(true, markAssignment(createdAssignment.id, true, Exam.SUKO).isFavorite)
+        authenticateAsOpettaja()
+        assertEquals(true, markAssignment(createdAssignment.id, true, Exam.SUKO).isFavorite)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `try setting an assignment as favorite which doesn't exist`() {
+        val nonExistentId = -1
+        val errorMessage =
+            mockMvc.perform(markAssignmentAsFavorite(Exam.SUKO, nonExistentId, true)).andExpect(status().isNotFound)
+                .andReturn().response.contentAsString
+        assertThat(errorMessage, equalTo("Assignment not found $nonExistentId"))
+    }
+
+    @Test
+    fun `test querying for the total amount of favorites`() {
+        val testAssignmentSukoStr = mapper.writeValueAsString(
+            TestAssignmentSukoIn(
+                "SUKO",
+                "name fi",
+                "name sv",
+                "content fi",
+                "content sv",
+                "instruction fi",
+                "instruction sv",
+                TestPublishState.PUBLISHED,
+                "003",
+                "TKRUA1",
+                "0004",
+                arrayOf("002", "003"),
+                arrayOf("06", "03")
+            )
+        )
+        val testAssignmentLdStr = mapper.writeValueAsString(
+            TestAssignmentLdIn(
+                "LD",
+                "name fi",
+                "name sv",
+                "content fi",
+                "content sv",
+                "instruction fi",
+                "instruction sv",
+                TestPublishState.PUBLISHED,
+                arrayOf("06", "03"),
+                arrayOf("20202021", "20222023"),
+                "1"
+            )
+        )
+        val testAssignmentPuhviStr = mapper.writeValueAsString(
+            TestAssignmentPuhviIn(
+                "PUHVI",
+                "name fi",
+                "name sv",
+                "content fi",
+                "content sv",
+                "instruction fi",
+                "instruction sv",
+                TestPublishState.PUBLISHED,
+                "001",
+                arrayOf("06", "03"),
+                arrayOf("20202021")
+            )
+        )
+
+        authenticateAsYllapitaja()
+        // create 3 assignments of each exam and gather their ids
+        val sukoAssignmentIds = (1..3).map {
+            val createResult = mockMvc.perform(postAssignment(testAssignmentSukoStr)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+            mapper.readValue(createResult, TestAssignmentSukoOut::class.java).id
+        }
+        val ldAssignmentIds = (1..3).map {
+            val createResult = mockMvc.perform(postAssignment(testAssignmentLdStr)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+            mapper.readValue(createResult, TestAssignmentLdOut::class.java).id
+        }
+        val puhviAssignmentIds = (1..3).map {
+            val createResult = mockMvc.perform(postAssignment(testAssignmentPuhviStr)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+            mapper.readValue(createResult, TestAssignmentPuhviOut::class.java).id
+        }
+        // query for the total amount of favorites, before any assignments are marked as favorite
+        assertEquals(
+            0, mockMvc.perform(getTotalFavorites()).andExpect(status().isOk()).andReturn().response.contentAsString.toInt()
+        )
+
+        authenticateAsOpettaja()
+        // mark all assignments as favorite
+        sukoAssignmentIds.forEach { markAssignment(it, true, Exam.SUKO) }
+        ldAssignmentIds.forEach { markAssignment(it, true, Exam.LD) }
+        puhviAssignmentIds.forEach { markAssignment(it, true, Exam.PUHVI) }
+
+        // query for the total amount of favorites
+        assertEquals(9, mockMvc.perform(getTotalFavorites()).andExpect(status().isOk()).andReturn().response.contentAsString.toInt())
+        // also updating favorite status should return the total of favorites
+        assertEquals(8, mockMvc.perform(markAssignmentAsFavorite(Exam.SUKO, sukoAssignmentIds[0], false)).andExpect(status().isOk()).andReturn().response.contentAsString.toInt())
     }
 }

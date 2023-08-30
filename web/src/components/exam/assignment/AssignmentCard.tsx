@@ -9,20 +9,40 @@ import { toLocaleDate } from '../../../formatUtils'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { Button } from '../../Button'
+import { useContext, useEffect, useState } from 'react'
+import { setAssignmentFavorite } from '../../../request'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
+import { LudosContext } from '../../../LudosContext'
 
 type AssignmentCardProps = {
   language: string
   assignment: AssignmentIn
   exam: Exam
+  refreshData?: () => void
 }
 
-export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardProps) => {
+export const AssignmentCard = ({ language, assignment, exam, refreshData }: AssignmentCardProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const { getKoodisLabel, getKoodiLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
+  const { setUserFavoriteAssignmentCount } = useContext(LudosContext)
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  const toggleFavorite = async () => {
+    try {
+      const totalFavoriteCount = await setAssignmentFavorite(exam, assignment.id, !isFavorite)
+      setIsFavorite(!isFavorite)
+      setUserFavoriteAssignmentCount(totalFavoriteCount)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      refreshData?.()
+    }
+  }
+
+  useEffect(() => setIsFavorite(assignment.isFavorite), [assignment.isFavorite])
 
   const isSuko = isSukoAssignment(assignment, exam)
   const isPuhvi = isPuhviAssignment(assignment, exam)
@@ -55,7 +75,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
           </>
         )}
       </div>
-      <div className="flex flex-wrap md:flex md:flex-row md:flex-wrap">
+      <div className="flex flex-wrap">
         <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-8/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">
           {(isLd || isPuhvi) && (
             <>
@@ -112,7 +132,11 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
             <p className="text-xs text-black">{toLocaleDate(assignment.createdAt)}</p>
           </div>
         </div>
-        {<AssignmentCardContentActions contentId={assignment.id} />}
+        <AssignmentCardContentActions
+          contentId={assignment.id}
+          isFavorite={isFavorite}
+          onClickHandler={toggleFavorite}
+        />
       </div>
     </li>
   )

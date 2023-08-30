@@ -9,4 +9,5 @@ enum class Language {
 interface BaseFilters {
     @get:Pattern(regexp = "^(asc|desc)\$")
     val orderDirection: String?
+    val isFavorite: Boolean?
 }

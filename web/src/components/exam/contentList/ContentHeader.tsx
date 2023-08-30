@@ -1,6 +1,6 @@
 import { Button } from '../../Button'
 import { newKey } from '../../routes/routes'
-import { ContentType, ContentTypeEng, Exam, ValueOf } from '../../../types'
+import { ContentType, ContentTypeEng, Exam } from '../../../types'
 import { Dropdown } from '../../Dropdown'
 import { FiltersType } from '../../../hooks/useFilters'
 import { useNavigate } from 'react-router-dom'
@@ -18,9 +18,8 @@ interface ContentHeaderProps {
   filters: FiltersType
   setFilters: Dispatch<SetStateAction<FiltersType>>
   handleFilterChange: (a: keyof FiltersType, b: string) => void
-  language: string
   setLanguage: (value: string) => void
-  singularActiveTab: string
+  language: string
 }
 
 export const ContentHeader = ({

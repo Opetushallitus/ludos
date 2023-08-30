@@ -12,13 +12,32 @@ type AssignmentFiltersProps = {
   exam: Exam
   filters: FiltersType
   setFilters: Dispatch<SetStateAction<FiltersType>>
+  oppimaaraOptionsOverride?: string[]
+  tehtavaTyyppiOptionsOverride?: string[]
+  aiheOptionsOverride?: string[]
+  lukuvuosiOptionsOverride?: string[]
+  lukiodiplomiaineOptionsOverride?: string[]
+  tehavatyyppipuhviOptionsOverride?: string[]
 }
 
-export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFiltersProps) => {
+const getFilteredOptions = (allOptions: KoodiDtoIn[], overrides?: string[]) =>
+  overrides ? allOptions.filter((it) => overrides.includes(it.koodiArvo)) : allOptions
+
+export const AssignmentFilters = ({
+  exam,
+  filters,
+  setFilters,
+  oppimaaraOptionsOverride,
+  tehtavaTyyppiOptionsOverride,
+  aiheOptionsOverride,
+  lukuvuosiOptionsOverride,
+  lukiodiplomiaineOptionsOverride,
+  tehavatyyppipuhviOptionsOverride
+}: AssignmentFiltersProps) => {
   const { t } = useTranslation()
   const { koodistos, getSelectedOptions } = useKoodisto()
 
-  const { data } = useFetch<string[]>('assignment/oppimaaras')
+  const { data: oppimaaras } = useFetch<string[]>('assignment/oppimaaras')
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: KoodiDtoIn[]) => {
@@ -26,6 +45,25 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
     },
     [setFilters]
   )
+  const oppimaaraOptions = (): KoodiDtoIn[] => {
+    const { oppiaineetjaoppimaaratlops2021 } = koodistos
+
+    if (!oppimaaras) {
+      return oppiaineetjaoppimaaratlops2021
+    }
+
+    const filterCriteria = oppimaaraOptionsOverride || oppimaaras
+
+    return oppiaineetjaoppimaaratlops2021.filter((it) => filterCriteria.includes(it.koodiArvo))
+  }
+
+  const tehtavaTyyppiOptions = () => getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavaTyyppiOptionsOverride)
+  const aiheOptions = () => getFilteredOptions(koodistos.aihesuko, aiheOptionsOverride)
+  const lukuvuosiOptions = () => getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosiOptionsOverride)
+  const lukiodiplomiaineOptions = () =>
+    getFilteredOptions(koodistos.ludoslukiodiplomiaine, lukiodiplomiaineOptionsOverride)
+  const tehavatyyppipuhviOptions = () =>
+    getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehavatyyppipuhviOptionsOverride)
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -37,13 +75,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
               <label htmlFor="oppimaaraFilter">{t('filter.oppimaara')}</label>
               <MultiSelectDropdown
                 id="oppimaaraFilter"
-                options={
-                  data
-                    ? sortKooditAlphabetically(
-                        koodistos.oppiaineetjaoppimaaratlops2021.filter((it) => data.includes(it.koodiArvo))
-                      )
-                    : []
-                }
+                options={sortKooditAlphabetically(oppimaaraOptions())}
                 size="lg"
                 selectedOptions={getSelectedOptions(filters.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
@@ -55,7 +87,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
               <p>{t('filter.tyyppi')}</p>
               <MultiSelectDropdown
                 id="contentTypeFilter"
-                options={sortKooditAlphabetically(koodistos.tehtavatyyppisuko || [])}
+                options={sortKooditAlphabetically(tehtavaTyyppiOptions())}
                 size="md"
                 selectedOptions={getSelectedOptions(filters.tehtavatyyppisuko, 'tehtavatyyppisuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
@@ -67,7 +99,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
               <p>{t('filter.aihe')}</p>
               <MultiSelectDropdown
                 id="aihe"
-                options={sortKooditAlphabetically(koodistos.aihesuko)}
+                options={sortKooditAlphabetically(aiheOptions())}
                 size="md"
                 selectedOptions={getSelectedOptions(filters.aihe, 'aihesuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
@@ -93,7 +125,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
             <p>{t('filter.lukuvuosi')}</p>
             <MultiSelectDropdown
               id="lukuvuosi"
-              options={sortKooditAlphabetically(koodistos.ludoslukuvuosi || [])}
+              options={sortKooditAlphabetically(lukuvuosiOptions())}
               selectedOptions={getSelectedOptions(filters.lukuvuosi, 'ludoslukuvuosi')}
               onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
               canReset
@@ -105,7 +137,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
             <p>{t('filter.aine')}</p>
             <MultiSelectDropdown
               id="aine"
-              options={sortKooditAlphabetically(koodistos.ludoslukiodiplomiaine || [])}
+              options={sortKooditAlphabetically(lukiodiplomiaineOptions())}
               selectedOptions={getSelectedOptions(filters.aine, 'ludoslukiodiplomiaine')}
               onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aine', opt)}
               canReset
@@ -117,7 +149,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
             <p>{t('filter.tehtavatyyppi')}</p>
             <MultiSelectDropdown
               id="tehtavatyyppiPuhvi"
-              options={sortKooditAlphabetically(koodistos.tehtavatyyppipuhvi || [])}
+              options={sortKooditAlphabetically(tehavatyyppipuhviOptions())}
               selectedOptions={getSelectedOptions(filters.tehtavatyyppipuhvi, 'tehtavatyyppipuhvi')}
               onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
               canReset

@@ -9,7 +9,6 @@ import { EXAM_TYPE_ENUM } from '../../../constants'
 import { useLocation } from 'react-router-dom'
 import {
   ContentTypeTranslationEnglish,
-  getSingularContentTypeFinnish,
   isAssignmentsArr,
   isCertificatesArr,
   isInstructionsArr,
@@ -26,7 +25,7 @@ interface ContentListProps {
 
 export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) => {
   const location = useLocation()
-  const { filters, setFilters, resetFilters } = useFilters(location.search, contentType)
+  const { filters, setFilters, resetFilters } = useFilters({ initialSearchFilters: location.search, contentType })
   const [language, setLanguage] = useState<string>('fi')
 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
@@ -83,7 +82,6 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
         handleFilterChange={handleFilterChange}
         language={language}
         setLanguage={setLanguage}
-        singularActiveTab={getSingularContentTypeFinnish(activeTab)}
       />
       {loading && <Spinner className="mt-10 text-center" />}
       {error && <div className="mt-10 text-center text-red-primary">Virhe ladattaessa koetehtäviä</div>}

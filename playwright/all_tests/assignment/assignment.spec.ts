@@ -1,4 +1,5 @@
-import { expect, Page, test } from '@playwright/test'
+import { BrowserContext, expect, Page, test } from '@playwright/test'
+import { Exam, loginTestGroup, Role } from '../../helpers'
 import {
   createAssignment,
   fillLdAssignmentForm,
@@ -9,7 +10,6 @@ import {
   updatePuhviAssignment,
   updateSukoAssignmentForm
 } from './assignmentHelpers'
-import { loginTestGroup, Role } from '../../helpers'
 
 const createContent = {
   nameTextFi: 'Testi tehtävä',
@@ -232,7 +232,7 @@ test.describe('Presentation view', () => {
   }
 
   test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
-    const assignmentIn = testAssignmentIn('Esitysnäkymätesti')
+    const assignmentIn = testAssignmentIn(Exam.Suko, 'Esitysnäkymätesti')
     const assignment = await createAssignment(context, baseURL!, assignmentIn)
     await page.goto(`/suko/assignments/${assignment.id}`)
 
@@ -243,5 +243,75 @@ test.describe('Presentation view', () => {
 
     await page.goto(`/suko/assignments`)
     await testKatseluNakyma(page, `assignment-${assignment.id}-action-katselunakyma`, assignmentIn)
+  })
+})
+
+const favoritesCount = async (page: Page): Promise<string> =>
+  await page.getByTestId('header-favorites-count').innerText()
+
+test.describe('Assignment favorites', () => {
+  async function prepAssignmentGoToAssignmentList(
+    page: Page,
+    exam: 'SUKO' | 'PUHVI' | 'LD',
+    context: BrowserContext,
+    baseURL: string
+  ) {
+    await page.goto('/etusivu')
+    const assignmentIn = testAssignmentIn(exam, 'Suosikkitesti')
+    const assignment = await createAssignment(context, baseURL, assignmentIn)
+
+    await page.goto(`/${exam.toLowerCase()}/assignments`)
+    await page.getByTestId('assignment-list').locator('li').isVisible()
+    return assignment
+  }
+
+  async function assertFavoritesPage(page: Page, exam: 'SUKO' | 'PUHVI' | 'LD', assignment: any) {
+    // go to favorites page
+    await page.getByTestId('header-favorites').click()
+    // go to tab
+    await page.getByTestId(`tab-${exam.toLowerCase()}`).click()
+    await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeVisible()
+
+    await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
+    await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeHidden()
+
+    await expect
+      .poll(async () => await favoritesCount(page), {
+        message: 'make sure favorite count eventually updates'
+      })
+      .toBe('0')
+  }
+
+  Object.values(Exam).forEach(async (exam) => {
+    test(`Can favorite an ${exam} assignment from list`, async ({ page, context, baseURL }) => {
+      const assignment = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
+      // set assignment as favorite
+      void page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
+      await page.waitForResponse(
+        (response) => response.url().includes(`/api/assignment/${exam}/${assignment.id}/favorite`) && response.ok()
+      )
+
+      // check total favorites count
+      await expect
+        .poll(async () => await favoritesCount(page), {
+          message: 'make sure favorite count eventually updates'
+        })
+        .toBe('1')
+
+      await assertFavoritesPage(page, exam, assignment)
+    })
+  })
+
+  Object.values(Exam).forEach(async (exam) => {
+    test(`Can favorite an ${exam} assignment from assignment page`, async ({ page, context, baseURL }) => {
+      const assignment = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
+
+      await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
+      await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
+      // check total favorites count
+      await expect(page.getByTestId('header-favorites-count')).toHaveText('1')
+
+      await assertFavoritesPage(page, exam, assignment)
+    })
   })
 })

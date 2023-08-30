@@ -25,8 +25,8 @@ export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
 export const Exam = {
   Suko: 'SUKO',
-  Puhvi: 'PUHVI',
-  Ld: 'LD'
+  Ld: 'LD',
+  Puhvi: 'PUHVI'
 } as const
 
 export type Exam = (typeof Exam)[keyof typeof Exam]
@@ -47,22 +47,32 @@ export type BaseAssignmentAndInstructionIn = BaseIn & {
   instructionSv: string
 }
 
-export type AssignmentIn = BaseAssignmentAndInstructionIn & {
-  aiheKoodiArvos: string[]
-  assignmentTypeKoodiArvo: string
-  laajaalainenOsaaminenKoodiArvos: string[]
-  oppimaaraKoodiArvo: string
-  tavoitetasoKoodiArvo: string
-}
-
 export type InstructionIn = BaseAssignmentAndInstructionIn & {
   shortDescriptionFi: string
   shortDescriptionSv: string
   attachments: AttachmentIn[]
 }
 
+export type AssignmentIn = BaseAssignmentAndInstructionIn & {
+  isFavorite: boolean
+  laajaalainenOsaaminenKoodiArvos: string[]
+}
+
 export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
+  oppimaaraKoodiArvo: string
+  tavoitetasoKoodiArvo: string
+  aiheKoodiArvos: string[]
+}
+
+export type LdAssignmentIn = AssignmentIn & {
+  aineKoodiArvo: string
+  lukuvuosiKoodiArvos: string[]
+}
+
+export type PuhviAssignmentIn = AssignmentIn & {
+  assignmentTypeKoodiArvo: string
+  lukuvuosiKoodiArvos: string[]
 }
 
 export type AttachmentIn = {
@@ -77,16 +87,6 @@ export type CertificateIn = BaseIn & {
   name: string
   description: string
   attachment: AttachmentIn
-}
-
-export type LdAssignmentIn = AssignmentIn & {
-  aineKoodiArvo: string
-  lukuvuosiKoodiArvos: string[]
-}
-
-export type PuhviAssignmentIn = AssignmentIn & {
-  assignmentTypeKoodiArvo: string
-  lukuvuosiKoodiArvos: string[]
 }
 
 export const ContentType = {

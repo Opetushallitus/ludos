@@ -10,6 +10,7 @@ import { Frontpage } from '../frontpage/Frontpage'
 import Exams from '../exam/Exams'
 import { PresentationHeader } from '../header/PresentationHeader'
 import { Footer } from '../Footer'
+import { AssignmentFavorite } from '../exam/assignment/assignmentFavorite/AssignmentFavorite'
 
 const Content = lazy(() => import('../contentpage/Content'))
 const AssignmentForm = lazy(() => import('../exam/assignment/form/AssignmentForm'))
@@ -192,7 +193,15 @@ function AuthorizedRoutes() {
       {examRoutes(Exam.Suko)}
       {examRoutes(Exam.Ld)}
       {examRoutes(Exam.Puhvi)}
-      <Route path={'/unauthorized'} element={<UnauthorizedPage />} />
+      <Route
+        path="/favorites/:exam?"
+        element={
+          <Layout>
+            <AssignmentFavorite />
+          </Layout>
+        }
+      />
+      <Route path="/unauthorized" element={<UnauthorizedPage />} />
       <Route
         path="*"
         element={

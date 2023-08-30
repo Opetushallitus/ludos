@@ -35,28 +35,9 @@ export const useConstantsWithLocalization = () => {
     }
   ]
 
-  const CONTENT_ACTIONS: ContentAction[] = [
-    {
-      actionName: 'katselunakyma',
-      iconName: 'uusi-valilehti',
-      text: t('assignment.katselunakyma'),
-      link: 'presentation'
-    },
-    {
-      actionName: 'lataa-pdf',
-      iconName: 'todistukset',
-      text: t('assignment.lataapdf')
-    }
-    //{
-    //  name: 'lisää',
-    //  text: t('assignment.lisaalatauskoriin')
-    //}
-  ]
-
   return {
     LANGUAGE_OPTIONS,
     SUKO_ASSIGNMENT_ORDER_OPTIONS,
-    CONTENT_ACTIONS,
     LANGUAGE_DROPDOWN
   }
 }

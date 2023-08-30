@@ -32,6 +32,7 @@ fun getSukoAssignments(exam: Exam, filter: SukoBaseFilters): MockHttpServletRequ
     filter.tehtavatyyppisuko?.let { uriBuilder.queryParam("tehtavatyyppisuko", it) }
     filter.aihe?.let { uriBuilder.queryParam("aihe", it) }
     filter.tavoitetaitotaso?.let { uriBuilder.queryParam("tavoitetaitotaso", it) }
+    filter.isFavorite?.let { uriBuilder.queryParam("isFavorite", it) }
 
     return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
 }
@@ -55,3 +56,10 @@ fun getLdAssignments(exam: Exam, filter: LdBaseFilters): MockHttpServletRequestB
 
     return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
 }
+
+fun markAssignmentAsFavorite(exam: Exam, id: Int, isFavorite: Boolean) =
+    MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$exam/$id/favorite").content("{\"isFavorite\": $isFavorite}")
+        .contentType(MediaType.APPLICATION_JSON)
+
+fun getTotalFavorites() =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favoriteCount").contentType(MediaType.APPLICATION_JSON)

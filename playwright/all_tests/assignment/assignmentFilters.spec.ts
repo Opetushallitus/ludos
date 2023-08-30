@@ -1,14 +1,8 @@
-import { expect, Page, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginTestGroup, Role } from '../../helpers'
+import { checkListAfterFiltering } from './assignmentHelpers'
 
 loginTestGroup(test, Role.YLLAPITAJA)
-
-async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[]) {
-  const assignments = await page.getByTestId('assignment-list').locator('li').all()
-  const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
-  const names = await Promise.all(namePromises)
-  expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI`))
-}
 
 test.describe('Assignment filter tests', () => {
   test('suko, ld, puhvi', async ({ page }) => {

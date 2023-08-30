@@ -94,3 +94,7 @@ body {
      border-right: 2px solid theme('colors.green.primary');
      border-bottom: 2px solid theme('colors.green.primary');
  }
+
+.material-symbols-outlined-filled {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

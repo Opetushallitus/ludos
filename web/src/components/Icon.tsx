@@ -4,6 +4,7 @@ type IconProps = {
   name: Icons
   color: 'text-green-primary' | 'text-black' | 'text-white'
   disabled?: boolean
+  isActive?: boolean
   size?: 'sm' | 'base' | 'lg'
   dataTestId?: string
   customClass?: string
@@ -38,6 +39,7 @@ export type Icons =
   | 'orderedList'
   | 'blockQuote'
   | 'link'
+  | 'suosikki'
 
 const icons: Record<Icons, string> = {
   ['koetehtavat']: 'assignment',
@@ -67,15 +69,17 @@ const icons: Record<Icons, string> = {
   ['bulletList']: 'format_list_bulleted',
   ['orderedList']: 'format_list_numbered',
   ['blockQuote']: 'format_quote',
-  ['link']: 'link'
+  ['link']: 'link',
+  ['suosikki']: 'favorite'
 }
 
-export const Icon = ({ name, color, disabled = false, size, dataTestId, customClass }: IconProps) => {
+export const Icon = ({ name, color, disabled = false, isActive = false, size, dataTestId, customClass }: IconProps) => {
   const className = twMerge(
     `material-symbols-outlined ${color}`,
     size ? `text-${size}` : 'text-base',
     customClass,
-    disabled && 'opacity-50'
+    disabled && 'opacity-50',
+    isActive && 'material-symbols-outlined-filled'
   )
 
   return (

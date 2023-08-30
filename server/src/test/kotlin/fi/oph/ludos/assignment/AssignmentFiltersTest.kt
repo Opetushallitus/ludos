@@ -3,6 +3,8 @@ package fi.oph.ludos.assignment
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
 import fi.oph.ludos.test.CreateDataForAssignmentFilterTest
+import jakarta.transaction.Transactional
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -12,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import jakarta.transaction.Transactional
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -119,6 +120,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
     ) {
         val sukoFilters = SukoBaseFilters(
             orderDirection = "desc",
+            isFavorite = null,
             oppimaara = oppimaara,
             tehtavatyyppisuko = tehtavatyyppisuko,
             aihe = aihe,
@@ -169,7 +171,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
         tehtavatyyppipuhvi: String?, lukuvuosi: String?, expectedNumbersInName: List<Int>
     ) {
         val puhviFilters = PuhviBaseFilters(
-            orderDirection = "desc", tehtavatyyppipuhvi = tehtavatyyppipuhvi, lukuvuosi = lukuvuosi
+            orderDirection = "desc", isFavorite = null, tehtavatyyppipuhvi = tehtavatyyppipuhvi, lukuvuosi = lukuvuosi
         )
 
         val assignments = mockMvc.perform(getPuhviAssignments(Exam.PUHVI, puhviFilters)).andExpect(
@@ -189,7 +191,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
         aine: String?, lukuvuosi: String?, expectedNumbersInName: List<Int>
     ) {
         val ldFilters = LdBaseFilters(
-            orderDirection = "desc", aine = aine, lukuvuosi = lukuvuosi
+            orderDirection = "desc", isFavorite = null, aine = aine, lukuvuosi = lukuvuosi
         )
 
         val assignments = mockMvc.perform(getLdAssignments(Exam.LD, ldFilters)).andExpect(
@@ -243,5 +245,103 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
             .andExpect(MockMvcResultMatchers.status().isBadRequest).andReturn().response.contentAsString
 
         assertEquals(expectedErrorString, errorStr)
+    }
+
+    @Test
+    @WithOpettajaRole
+    fun `test filtering for favorite assignments`() {
+        val assignments = mockMvc.perform(
+            getSukoAssignments(
+                Exam.SUKO, SukoBaseFilters(
+                    orderDirection = "desc",
+                    isFavorite = null,
+                    oppimaara = null,
+                    tehtavatyyppisuko = null,
+                    aihe = null,
+                    tavoitetaitotaso = null
+                )
+            )
+        ).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response.contentAsString
+
+        val assignmentsOut = objectMapper.readValue(assignments, Array<TestAssignmentSukoOut>::class.java)
+        // from assignmentsOut list get assignments to favorite
+        val favoriteAssignments = assignmentsOut.slice(1..3)
+        favoriteAssignments.forEach {
+            mockMvc.perform(
+                markAssignmentAsFavorite(
+                    Exam.SUKO, it.id, true
+                )
+            ).andExpect(MockMvcResultMatchers.status().isOk)
+        }
+        // filter for favorites
+        val filteredAssignments = mockMvc.perform(
+            getSukoAssignments(
+                Exam.SUKO, SukoBaseFilters(
+                    orderDirection = "desc",
+                    isFavorite = true,
+                    oppimaara = null,
+                    tehtavatyyppisuko = null,
+                    aihe = null,
+                    tavoitetaitotaso = null
+                )
+            )
+        ).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response.contentAsString
+
+        val filteredAssignmentsOut =
+            objectMapper.readValue(filteredAssignments, Array<TestAssignmentSukoOut>::class.java)
+        // check that we get only assignments that were favored
+        assertThat(filteredAssignmentsOut.map { it.id }).containsExactlyInAnyOrder(*(favoriteAssignments.map { it.id }.toTypedArray()))
+        filteredAssignmentsOut.forEach {
+            assertTrue(it.isFavorite, "Assignment ${it.id} should be favorite")
+        }
+        // filter for non-favorites
+        val nonFilteredAssignments = mockMvc.perform(
+            getSukoAssignments(
+                Exam.SUKO, SukoBaseFilters(
+                    orderDirection = "desc",
+                    isFavorite = false,
+                    oppimaara = null,
+                    tehtavatyyppisuko = null,
+                    aihe = null,
+                    tavoitetaitotaso = null
+                )
+            )
+        ).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response.contentAsString
+
+        val nonFilteredAssignmentsOut =
+            objectMapper.readValue(nonFilteredAssignments, Array<TestAssignmentSukoOut>::class.java)
+        // check that we get only assignments that were not favored
+        val expectedNonFavoriteIds = assignmentsOut.map { it.id } - favoriteAssignments.map { it.id }.toSet()
+        assertThat(nonFilteredAssignmentsOut.map { it.id }).containsExactlyInAnyOrder(*expectedNonFavoriteIds.toTypedArray())
+
+        nonFilteredAssignmentsOut.forEach {
+            assertTrue(!it.isFavorite, "Assignment ${it.id} should not be favorite")
+        }
+
+        // filter for all assignments
+        val allAssignments = mockMvc.perform(
+            getSukoAssignments(
+                Exam.SUKO, SukoBaseFilters(
+                    orderDirection = "desc",
+                    isFavorite = null,
+                    oppimaara = null,
+                    tehtavatyyppisuko = null,
+                    aihe = null,
+                    tavoitetaitotaso = null
+                )
+            )
+        ).andExpect(
+            MockMvcResultMatchers.status().isOk()
+        ).andReturn().response.contentAsString
+
+        val allAssignmentsOut = objectMapper.readValue(allAssignments, Array<TestAssignmentSukoOut>::class.java)
+        // check that we get all assignments
+        assertThat(assignmentsOut.map { it.id }).containsExactlyInAnyOrder(*(allAssignmentsOut.map { it.id }.toTypedArray()))
     }
 }

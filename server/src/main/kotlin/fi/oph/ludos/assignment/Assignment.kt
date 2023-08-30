@@ -12,12 +12,12 @@ import fi.oph.ludos.ValidHtmlContent
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
-import java.sql.Timestamp
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.Payload
 import jakarta.validation.constraints.Pattern
+import java.sql.Timestamp
 import kotlin.reflect.KClass
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
@@ -103,6 +103,7 @@ interface AssignmentOut {
     val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
+    val isFavorite: Boolean
 }
 
 data class SukoAssignmentDtoOut(
@@ -118,6 +119,7 @@ data class SukoAssignmentDtoOut(
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
+    override val isFavorite: Boolean,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String?,
@@ -137,6 +139,7 @@ data class PuhviAssignmentDtoOut(
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
+    override val isFavorite: Boolean,
     val assignmentTypeKoodiArvo: String,
     val lukuvuosiKoodiArvos: Array<String>
 ) : Assignment, AssignmentOut
@@ -154,12 +157,14 @@ data class LdAssignmentDtoOut(
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
+    override val isFavorite: Boolean,
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String
 ) : Assignment, AssignmentOut
 
 data class SukoBaseFilters(
     override val orderDirection: String?,
+    override val isFavorite: Boolean?,
     // allow alphabetical letters, numbers and commas
     @field:Pattern(regexp = "^[a-zA-Z0-9,]+\$")
     val oppimaara: String?,
@@ -173,6 +178,7 @@ data class SukoBaseFilters(
 
 data class LdBaseFilters(
     override val orderDirection: String?,
+    override val isFavorite: Boolean?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
@@ -181,6 +187,7 @@ data class LdBaseFilters(
 
 data class PuhviBaseFilters(
     override val orderDirection: String?,
+    override val isFavorite: Boolean?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppipuhvi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
@@ -201,3 +208,5 @@ class AtLeastOneAssignmentNameIsNotEmptyValidator : ConstraintValidator<AtLeastO
         return value.nameFi.isNotEmpty() || value.nameSv.isNotEmpty()
     }
 }
+
+data class SetFavoriteRequest(val isFavorite: Boolean)

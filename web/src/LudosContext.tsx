@@ -30,6 +30,8 @@ interface LudosContextValue {
   setKoodistos: (koodistos: KoodistoMap) => void
   userDetails?: UserDetails
   setUserDetails: (userDetails: UserDetails) => void
+  userFavoriteAssignmentCount: number
+  setUserFavoriteAssignmentCount: (count: number) => void
 }
 
 export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
@@ -40,5 +42,7 @@ export const LudosContext = createContext<LudosContextValue>({
   koodistos: defaultEmptyKoodistoMap,
   setKoodistos: () => {},
   userDetails: undefined,
-  setUserDetails: () => {}
+  setUserDetails: () => {},
+  userFavoriteAssignmentCount: 0,
+  setUserFavoriteAssignmentCount: () => {}
 })

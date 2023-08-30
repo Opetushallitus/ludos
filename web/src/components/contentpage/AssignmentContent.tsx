@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
+import { setAssignmentFavorite } from '../../request'
+import { useContext, useEffect, useState } from 'react'
+import { LudosContext } from '../../LudosContext'
 
 type AssignmentContentProps = {
   assignment: AssignmentIn
@@ -13,6 +16,20 @@ type AssignmentContentProps = {
 export const AssignmentContent = ({ assignment, exam, language, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel } = useKoodisto()
+  const { setUserFavoriteAssignmentCount } = useContext(LudosContext)
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  const toggleFavorite = async () => {
+    try {
+      const totalFavoriteCount = await setAssignmentFavorite(exam, assignment.id, !isFavorite)
+      setIsFavorite(!isFavorite)
+      setUserFavoriteAssignmentCount(totalFavoriteCount)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  useEffect(() => setIsFavorite(assignment.isFavorite), [assignment.isFavorite])
 
   const suko = isSukoAssignment(assignment, exam)
   const puhvi = isPuhviAssignment(assignment, exam)
@@ -74,7 +91,7 @@ export const AssignmentContent = ({ assignment, exam, language, isPresentation }
               </li>
             </>
           </ul>
-          <ContentActionRow />
+          <ContentActionRow contentId={assignment.id} isFavorite={isFavorite} onClickHandler={toggleFavorite} />
         </div>
       )}
 
