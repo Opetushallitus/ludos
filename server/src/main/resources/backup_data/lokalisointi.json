@@ -135,9 +135,9 @@
     "id": 49829,
     "key": "assignment.laajaalainenosaaminen",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1693288251079,
+    "modifiedBy": "1.2.246.562.24.77925329174",
+    "value": "Mångsidig kompetens"
   },
   {
     "accesscount": 0,
@@ -1143,9 +1143,9 @@
     "id": 49848,
     "key": "error.liian-iso-tiedosto",
     "locale": "sv",
-    "modified": 1693210418397,
+    "modified": 1693300505094,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Filen är för stor. Maximalt tillåten storlek "
+    "value": "Filen är för stor. Maximalt tillåten storlek är {{maxSize}}"
   },
   {
     "accesscount": 0,
@@ -1171,9 +1171,9 @@
     "id": 49849,
     "key": "error.liian-lyhyt",
     "locale": "sv",
-    "modified": 1693210418397,
+    "modified": 1693300724014,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Minsta antal tecken är"
+    "value": "Minsta antal tecken är {{min}}"
   },
   {
     "accesscount": 0,
@@ -1451,9 +1451,9 @@
     "id": 49859,
     "key": "file.ohje-poista-liite-teksti",
     "locale": "sv",
-    "modified": 1693210418397,
+    "modified": 1693300724014,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Är det säkert att du vill ta bort bilagan?"
+    "value": "Är det säkert att du vill ta bort bilagan {{liite}}?"
   },
   {
     "accesscount": 0,
@@ -2053,9 +2053,9 @@
     "id": 49871,
     "key": "form.kuvauskoetehtava",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1693289464496,
+    "modifiedBy": "1.2.246.562.24.77925329174",
+    "value": "Lägg till ny uppgift på båda språken. Publicera uppgiften eller spara den som utkast."
   },
   {
     "accesscount": 0,
@@ -2081,9 +2081,9 @@
     "id": 49872,
     "key": "form.kuvausohje",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1693289464498,
+    "modifiedBy": "1.2.246.562.24.77925329174",
+    "value": "Lägg till ny anvisning på båda språken. Publicera anvisningen eller spara den som utkast."
   },
   {
     "accesscount": 0,
@@ -2109,9 +2109,9 @@
     "id": 49873,
     "key": "form.kuvaustodistus",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1693289464503,
+    "modifiedBy": "1.2.246.562.24.77925329174",
+    "value": "Lägg till nytt intyg på båda språken. Publicera intyget eller spara det som utkast."
   },
   {
     "accesscount": 0,
@@ -2753,9 +2753,9 @@
     "id": 49890,
     "key": "form.tiedoston-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1693210418398,
+    "modified": 1693300724016,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Nedladdningen av filen misslyckades, försök på nytt"
+    "value": "Nedladdningen {{nimi}} av filen misslyckades, försök på nytt"
   },
   {
     "accesscount": 0,
@@ -2921,9 +2921,9 @@
     "id": 49896,
     "key": "frontpage.tervehdys",
     "locale": "sv",
-    "modified": 1693210418398,
+    "modified": 1693300724016,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Hej, välkommen till LUDOS-tjänsten"
+    "value": "Hej, {{nimi}} välkommen till LUDOS-tjänsten"
   },
   {
     "accesscount": 0,
