@@ -4,7 +4,6 @@ import fi.oph.ludos.cache.CacheName
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
-import java.lang.IllegalStateException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -57,25 +56,31 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
         koodisto.filter { it.kieli == koodistoLanguage.code }
     }
 
-    private fun readKoodistos(koodistoGetter: (KoodistoName) -> Array<Koodi>, sourceName: String) {
-        val koodistoMap = KoodistoName.values().associateWith {
-                koodistoName -> koodistoGetter(koodistoName).flatMap {
-                koodi -> koodi.metadata.map {
-                    metadatum -> KoodiDtoOut(koodi.koodiArvo, metadatum.nimi, metadatum.kieli)
+    private fun updateKoodistoCache(koodistoGetter: (KoodistoName) -> Array<Koodi>, sourceName: String) {
+        try {
+            val koodistoMap = KoodistoName.values().associateWith { koodistoName ->
+                koodistoGetter(koodistoName).flatMap { koodi ->
+                    koodi.metadata.map { metadatum ->
+                        KoodiDtoOut(koodi.koodiArvo, metadatum.nimi, metadatum.kieli)
+                    }
                 }
             }
-        }
-        cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
+            cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
 
-        val koodistoStats = koodistoMap.keys.toList().sorted().map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
-        logger.info("Updated koodisto cache from $sourceName: $koodistoStats")
+            val koodistoStats = koodistoMap.keys.toList().sorted()
+                .map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
+            logger.info("Updated koodisto cache from $sourceName: $koodistoStats")
+        } catch (e: Exception) {
+            logger.error("Error updating koodisto cache", e)
+            throw e
+        }
     }
 
     private fun upateCacheFromResources() {
-        readKoodistos({ koodistoName -> koodistoRepository.getKoodistoFromResource(koodistoName) }, "resource files")
+        updateKoodistoCache({ koodistoName -> koodistoRepository.getKoodistoFromResource(koodistoName) }, "resource files")
     }
 
     private fun updateCacheFromKoodistopalvelu() {
-        readKoodistos({ koodistoName -> koodistoRepository.getKoodistoFromKoodistopalvelu(koodistoName) }, "koodistopalvelu")
+        updateKoodistoCache({ koodistoName -> koodistoRepository.getKoodistoFromKoodistopalvelu(koodistoName) }, "koodistopalvelu")
     }
 }
