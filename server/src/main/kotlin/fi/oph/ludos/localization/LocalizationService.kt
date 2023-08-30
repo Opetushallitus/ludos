@@ -6,7 +6,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
-import java.lang.IllegalStateException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -36,8 +35,9 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
         return cachedValue ?: throw IllegalStateException("Reading localizations before cache initialized")
     }
 
-    private fun updateCache(localizations: Array<Localization>, sourceName: String) {
+    private fun updateCache(localizationGetter: () -> Array<Localization>, sourceName: String) {
         try {
+            val localizations = localizationGetter()
             val localizedTexts = mutableMapOf<String, Map<String, Any>>()
             for (locale in Locale.values().map { it.locale }) {
                 val localeTexts = localizations.filter { it.locale == locale }
@@ -50,16 +50,17 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
                 .map { locale -> "${locale.locale}: ${localizations.count { it.locale == locale.locale }}" }
             logger.info("Updated localization cache from $sourceName: $localeStats")
         } catch (e: Exception) {
+            logger.error("Error updating localization cache", e)
             throw LocalizationException("${e.message}", e)
         }
     }
 
     private fun updateCacheFromLokalisointipalvelu() {
-        updateCache(localizationRepository.getLocalizationTextsFromLokalisointipalvelu(), "lokalisointipalvelu")
+        updateCache(localizationRepository::getLocalizationTextsFromLokalisointipalvelu, "lokalisointipalvelu")
     }
 
     private fun updateCacheFromResourceFile() {
-        updateCache(localizationRepository.getLocalizationTextsFromResourceFile(), "resource file")
+        updateCache(localizationRepository::getLocalizationTextsFromResourceFile, "resource file")
     }
 
     private fun parseLocalizationTexts(texts: List<Localization>): Map<String, Any> {

@@ -1,6 +1,7 @@
 package fi.oph.ludos.koodisto
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.http.HttpStatus
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
@@ -20,6 +21,10 @@ class KoodistoRepository(
         val url = "$baseUrl/${koodisto.koodistoUri}/koodi?onlyValidKoodis=true"
         val httpGet = HttpGet(url)
         val response = httpClient.execute(httpGet)
+
+        if (response.statusLine.statusCode != HttpStatus.SC_OK) {
+            throw RuntimeException("Unexpected status code ${response.statusLine.statusCode} when fetcing koodisto ${koodisto}")
+        }
 
         return objectMapper.readValue(response.entity.content.bufferedReader(), Array<Koodi>::class.java)
     }
