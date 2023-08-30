@@ -1,1 +1,0 @@
-Ks. https://wiki.eduuni.fi/pages/viewpage.action?pageId=380016595
