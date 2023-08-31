@@ -54,6 +54,83 @@ const ProtectedRoute = (): ReactElement => {
   return <Outlet />
 }
 
+function examPathPrefix(exam: Exam): string {
+  switch (exam) {
+    case Exam.Suko:
+      return `/${sukoKey}`
+    case Exam.Ld:
+      return `/${ldKey}`
+    case Exam.Puhvi:
+      return `/${puhviKey}`
+  }
+}
+
+function examRoutes(exam: Exam) {
+  return (
+    <Route path={examPathPrefix(exam)}>
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path={`assignments/${newKey}`}
+          element={
+            <SpinnerSuspense>
+              <AssignmentForm action={newKey} />
+            </SpinnerSuspense>
+          }
+        />
+        <Route
+          path={`assignments/${updateKey}/:id`}
+          element={
+            <SpinnerSuspense>
+              <AssignmentForm action={updateKey} />
+            </SpinnerSuspense>
+          }
+        />
+        <Route
+          path={`instructions/${newKey}`}
+          element={
+            <SpinnerSuspense>
+              <InstructionForm action={newKey} />
+            </SpinnerSuspense>
+          }
+        />
+        <Route
+          path={`instructions/${updateKey}/:id`}
+          element={
+            <SpinnerSuspense>
+              <InstructionForm action={updateKey} />
+            </SpinnerSuspense>
+          }
+        />
+        <Route
+          path={`certificates/${newKey}`}
+          element={
+            <SpinnerSuspense>
+              <CertificateForm action={newKey} />
+            </SpinnerSuspense>
+          }
+        />
+        <Route
+          path={`certificates/${updateKey}/:id`}
+          element={
+            <SpinnerSuspense>
+              <CertificateForm action={updateKey} />
+            </SpinnerSuspense>
+          }
+        />
+      </Route>
+      <Route index path={':contentType?'} element={<Exams exam={exam} />} />
+      <Route
+        path={':contentType/:id'}
+        element={
+          <SpinnerSuspense>
+            <Content exam={exam} />
+          </SpinnerSuspense>
+        }
+      />
+    </Route>
+  )
+}
+
 function AuthorizedRoutes() {
   const { t } = useTranslation()
 
@@ -72,189 +149,9 @@ function AuthorizedRoutes() {
             }
           />
         </Route>
-        <Route path={`/${sukoKey}`}>
-          <Route element={<ProtectedRoute />}>
-            <Route
-              path={`assignments/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <AssignmentForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`assignments/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <AssignmentForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`instructions/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <InstructionForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`instructions/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <InstructionForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`certificates/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <CertificateForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`certificates/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <CertificateForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-          </Route>
-          <Route index path={':contentType?'} element={<Exams exam={Exam.Suko} />} />
-          <Route
-            path={':contentType/:id'}
-            element={
-              <SpinnerSuspense>
-                <Content exam={Exam.Suko} />
-              </SpinnerSuspense>
-            }
-          />
-        </Route>
-        <Route path={`/${puhviKey}`}>
-          <Route element={<ProtectedRoute />}>
-            <Route
-              path={`assignments/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <AssignmentForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`assignments/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <AssignmentForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`instructions/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <InstructionForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`instructions/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <InstructionForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`certificates/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <CertificateForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`certificates/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <CertificateForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-          </Route>
-          <Route index path={':contentType?'} element={<Exams exam={Exam.Puhvi} />} />
-          <Route
-            path={':contentType/:id'}
-            element={
-              <SpinnerSuspense>
-                <Content exam={Exam.Puhvi} />
-              </SpinnerSuspense>
-            }
-          />
-        </Route>
-        <Route path={`/${ldKey}`}>
-          <Route element={<ProtectedRoute />}>
-            <Route
-              path={`assignments/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <AssignmentForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`assignments/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <AssignmentForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`instructions/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <InstructionForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`instructions/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <InstructionForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`certificates/${newKey}`}
-              element={
-                <SpinnerSuspense>
-                  <CertificateForm action={newKey} />
-                </SpinnerSuspense>
-              }
-            />
-            <Route
-              path={`certificates/${updateKey}/:id`}
-              element={
-                <SpinnerSuspense>
-                  <CertificateForm action={updateKey} />
-                </SpinnerSuspense>
-              }
-            />
-          </Route>
-          <Route index path={':contentType?'} element={<Exams exam={Exam.Ld} />} />
-          <Route
-            path={':contentType/:id'}
-            element={
-              <SpinnerSuspense>
-                <Content exam={Exam.Ld} />
-              </SpinnerSuspense>
-            }
-          />
-        </Route>
+        {examRoutes(Exam.Suko)}
+        {examRoutes(Exam.Ld)}
+        {examRoutes(Exam.Puhvi)}
         <Route path={'/unauthorized'} element={<UnauthorizedPage />} />
         <Route
           path="*"
