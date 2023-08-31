@@ -36,11 +36,11 @@ export const useConstantsWithLocalization = () => {
     {
       name: 'todistukset',
       text: t('assignment.lataapdf')
-    },
-    {
-      name: 'lisää',
-      text: t('assignment.lisaalatauskoriin')
     }
+    //{
+    //  name: 'lisää',
+    //  text: t('assignment.lisaalatauskoriin')
+    //}
   ]
 
   return {

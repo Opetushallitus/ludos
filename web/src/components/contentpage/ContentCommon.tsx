@@ -46,10 +46,9 @@ export function ContentHeader({ onSelectedOptionsChange, data, language, content
   )
 }
 
-export function ContentIconRow() {
+export function ContentActionRow() {
   const { CONTENT_ACTIONS } = useConstantsWithLocalization()
 
-  // todo: commented out until the button features work
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
       {CONTENT_ACTIONS.map((icon) => (

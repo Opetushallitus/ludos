@@ -1,5 +1,5 @@
 import { InstructionIn } from '../../types'
-import { ContentContent, ContentInstruction } from './ContentCommon'
+import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
 import { Fragment } from 'react'
@@ -18,9 +18,9 @@ export const InstructionContent = ({ instruction, language }: InstructionContent
 
   return (
     <>
-      {/*<div className="my-3 bg-gray-bg px-3 pb-3 pt-2">*/}
-      {/*  <ContentIconRow />*/}
-      {/*</div>*/}
+      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
+        <ContentActionRow />
+      </div>
       <ContentInstruction
         language={language}
         instructionFi={instruction.instructionFi}

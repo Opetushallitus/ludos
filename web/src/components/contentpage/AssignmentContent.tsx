@@ -1,7 +1,7 @@
 import { AssignmentIn, Exam } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
-import { ContentContent, ContentInstruction } from './ContentCommon'
+import { ContentContent, ContentActionRow, ContentInstruction } from './ContentCommon'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
 
 type AssignmentContentProps = {
@@ -62,8 +62,7 @@ export const AssignmentContent = ({ assignment, exam, language }: AssignmentCont
             </li>
           </>
         </ul>
-
-        {/*<ContentIconRow />*/}
+        {<ContentActionRow />}
       </div>
 
       <ContentInstruction

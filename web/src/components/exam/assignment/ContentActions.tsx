@@ -14,10 +14,6 @@ export const ContentActions = () => {
         <Icon name="koetehtavat" color="text-green-primary" />
         <p className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</p>
       </span>
-      <span className="flex items-center pr-3">
-        <Icon name="lisää" color="text-green-primary" />
-        <p className="ml-1 text-xs text-green-primary">{t('assignment.lisaalatauskoriin')}</p>
-      </span>
     </div>
   )
 }
