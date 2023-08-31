@@ -12,11 +12,11 @@ test('fail to create suko assignment, instruction and certificate', async ({ pag
     const navLink = page.getByTestId(`nav-link-${pageName}`)
 
     await navLink.click()
-    expect(await page.getByTestId('create-koetehtava-button').isVisible()).toBeFalsy()
+    await expect(page.getByTestId('create-koetehtava-button')).toBeHidden()
     await page.getByTestId('tab-ohjeet').click()
-    expect(await page.getByTestId('create-ohje-button').isVisible()).toBeFalsy()
+    await expect(page.getByTestId('create-ohje-button')).toBeHidden()
     await page.getByTestId('tab-todistukset').click()
-    expect(await page.getByTestId('create-todistus-button').isVisible()).toBeFalsy()
+    await expect(page.getByTestId('create-todistus-button')).toBeHidden()
   }
 })
 

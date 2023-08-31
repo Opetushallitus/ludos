@@ -63,10 +63,10 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByRole('link', { name: 'Test name 11 FI' }).click()
 
-    await page.getByText('Tehtävätyyppi: Keskustelu').isVisible()
+    await expect(page.getByText('Tehtävätyyppi: Keskustelu')).toBeVisible()
     // page.getByText('Tavoitetaso: B1.1  Toimiva peruskielitaito')
-    await page.getByText('Aihe: vaikuttaminen, opiskelutaidot').isVisible()
-    await page.getByText('Laaja-alainen osaaminen: -').isVisible()
+    await expect(page.getByText('Aihe:vaikuttaminen, opiskelutaidot')).toBeVisible()
+    await expect(page.getByText('Laaja-alainen osaaminen:')).toBeVisible()
 
     await page.getByTestId('return').click()
 

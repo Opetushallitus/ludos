@@ -93,8 +93,7 @@ export async function fillSukoAssignmentForm({
   const allAvailableLaajaalainenOptions = ['01', '02', '03', '04', '05', '06']
 
   for (const option of allAvailableLaajaalainenOptions) {
-    const optionIsHidden = await page.getByTestId(`laajaalainenOsaaminen-option-${option}`).isHidden()
-    expect(optionIsHidden).toBeTruthy()
+    await expect(page.getByTestId(`laajaalainenOsaaminen-option-${option}`)).toBeHidden()
   }
 
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
@@ -200,7 +199,7 @@ export async function fillPuhviAssignmentForm({
   )
 }
 
-export async function updateLdAndPuhviAssignment(page: Page) {
+export async function updateLdAssignment(page: Page) {
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
@@ -214,19 +213,41 @@ export async function updateLdAndPuhviAssignment(page: Page) {
 
   await page.getByTestId('form-submit').click()
 
-  await page.getByTestId('assignment-header').isVisible()
-  const updatedAssignmentHeader = page.getByTestId('assignment-header')
-  await expect(updatedAssignmentHeader).toHaveText('Testi tehtävä muokattu')
-  await page.getByText('Testi sisältö muokattu', { exact: true }).isVisible()
+  await expect(page.getByTestId('assignment-header')).toBeVisible()
+  await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
+  await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
+  await expect(page.getByText('Aine:Kotitalous')).toBeVisible()
+  await expect(page.getByText('Laaja-alainen osaaminen:Vuorovaikutusosaaminen')).toBeVisible()
 
-  await page.getByText('Tehtävätyyppi: Tekstin tiivistäminen').isVisible()
-  await page.getByText('Tavoitetaso:A1.2 Kehittyvä alkeiskielitaito').isVisible()
-  await page.getByText('Laaja-alainen osaaminen:Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, V').isVisible()
-
+  await expect(page.getByText('Testi sisältö muokattu', { exact: true })).toBeVisible()
   await page.getByTestId('language-dropdown').click()
   await page.getByTestId('language-dropdown-option-sv').click()
 
-  const updatedAssignmentHeaderSv = page.getByTestId('assignment-header')
+  await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
+}
 
-  await expect(updatedAssignmentHeaderSv).toHaveText('Testuppgifter muokattu')
+export async function updatePuhviAssignment(page: Page) {
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
+
+  await fillFinAndSvTextFields(
+    page,
+    { fi: 'Testi sisältö muokattu', sv: 'Testa innehåll muokattu' },
+    { fi: 'Testi tehtävä muokattu', sv: 'Testuppgifter muokattu' },
+    { fi: 'Testi ohjeet muokattu', sv: 'Testa instruktioner muokattu' }
+  )
+
+  await page.getByTestId('form-submit').click()
+
+  await expect(page.getByTestId('assignment-header')).toBeVisible()
+  await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
+  await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
+  await expect(page.getByText('Laaja-alainen osaaminen:Vuorovaikutusosaaminen')).toBeVisible()
+
+  await expect(page.getByText('Testi sisältö muokattu', { exact: true })).toBeVisible()
+  await page.getByTestId('language-dropdown').click()
+  await page.getByTestId('language-dropdown-option-sv').click()
+
+  await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
 }

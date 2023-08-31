@@ -3,7 +3,8 @@ import {
   fillLdAssignmentForm,
   fillPuhviAssignmentForm,
   fillSukoAssignmentForm,
-  updateLdAndPuhviAssignment,
+  updateLdAssignment,
+  updatePuhviAssignment,
   updateSukoAssignmentForm
 } from './assignmentHelpers'
 import { loginTestGroup, Role } from '../../helpers'
@@ -43,7 +44,7 @@ test.describe('Suko assignment form tests', () => {
     await page.getByTestId('create-koetehtava-button').click()
   })
 
-  test('can create a new suko assignment', async ({ page }) => {
+  test('can create and update a suko assignment', async ({ page }) => {
     let createdAssignmentId: number
 
     await fillSukoAssignmentForm({
@@ -79,9 +80,11 @@ test.describe('Suko assignment form tests', () => {
 
     await expect(updatedAssignmentHeader).toHaveText('Testi tehtävä muokattu')
 
-    await page.getByText('Tehtävätyyppi: Tekstin tiivistäminen').isVisible()
-    await page.getByText('Tavoitetaso:A1.2 Kehittyvä alkeiskielitaito').isVisible()
-    await page.getByText('Laaja-alainen osaaminen:Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, V').isVisible()
+    await expect(page.getByText('Tehtävätyyppi: Tekstin tiivistäminen')).toBeVisible()
+    await expect(page.getByText('Tavoitetaso:A1.2 Kehittyvä alkeiskielitaito')).toBeVisible()
+    await expect(
+      page.getByText('Laaja-alainen osaaminen:Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, V')
+    ).toBeVisible()
 
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
@@ -121,7 +124,7 @@ test.describe('Ld assignment form tests', () => {
     await page.getByTestId('create-koetehtava-button').click()
   })
 
-  test('can create a new LD assignment', async ({ page }) => {
+  test('can create and update a LD assignment', async ({ page }) => {
     let createdAssignmentId: number
 
     await fillLdAssignmentForm({
@@ -139,7 +142,7 @@ test.describe('Ld assignment form tests', () => {
     await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    await updateLdAndPuhviAssignment(page)
+    await updateLdAssignment(page)
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -172,7 +175,7 @@ test.describe('Puhvi assignment form tests', () => {
     await page.getByTestId('create-koetehtava-button').click()
   })
 
-  test('can create a new Puhvi assignment', async ({ page }) => {
+  test('can create and update a Puhvi assignment', async ({ page }) => {
     let createdAssignmentId: number
 
     await fillPuhviAssignmentForm({
@@ -190,7 +193,7 @@ test.describe('Puhvi assignment form tests', () => {
     await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    await updateLdAndPuhviAssignment(page)
+    await updatePuhviAssignment(page)
   })
 
   test('can create draft assignment', async ({ page }) => {
