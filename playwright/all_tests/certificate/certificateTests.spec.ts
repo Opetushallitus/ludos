@@ -20,7 +20,7 @@ async function selectAttachmentFile(page: Page, file: string) {
 }
 
 async function testAttachmentLink(page: Page, context: BrowserContext, filename: string, expectedSize: number) {
-  const attachmentLink = await page.getByRole('link', { name: `${filename} open_in_new` })
+  const attachmentLink = page.getByRole('link', { name: `${filename} open_in_new` })
   const attachmentLinkTarget = await attachmentLink.evaluate((l) => l.getAttribute('target'))
   const attachmentLinkHref = await attachmentLink.evaluate((l) => l.getAttribute('href'))
 
@@ -50,7 +50,7 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
     const btn = page.getByTestId('form-cancel')
     await expect(btn).toHaveText('Peruuta')
     await btn.click()
-    await page.getByTestId('create-todistus-button')
+    await expect(page.getByTestId('create-todistus-button')).toBeVisible()
 
     return
   }
@@ -64,46 +64,46 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   await page.getByTestId('description').fill(descriptionText)
 
   if (event === 'submit') {
-    page.getByTestId('form-submit').click()
+    void page.getByTestId('form-submit').click()
   } else {
     const draftButton = page.getByTestId('form-draft')
     await expect(draftButton).toHaveText('Tallenna luonnoksena')
-    draftButton.click()
+    void draftButton.click()
   }
 
-  const response = await page.waitForResponse(
+  const responseFromClick = await page.waitForResponse(
     (response) => response.url().includes('/api/certificate') && response.ok()
   )
 
-  const responseData = await response.json()
+  const responseData = await responseFromClick.json()
 
   const header = page.getByTestId('assignment-header')
   await expect(header).toHaveText(nameText)
-  await page.getByText(descriptionText, { exact: true })
+  await expect(page.getByText(descriptionText, { exact: true })).toBeVisible()
 
   const attachment = await page.getByTestId('fixture1.pdf').allTextContents()
-  await expect(attachment[0]).toContain('fixture1.pdf')
+  expect(attachment[0]).toContain('fixture1.pdf')
 
   await testAttachmentLink(page, context, 'fixture1.pdf', 323)
 
-  await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
+  await expect(page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })).toBeVisible()
 
   return responseData.id
 }
 
-async function updateCertificate(page: Page, context: BrowserContext, event: Event, certificateId: string) {
-  await page.getByTestId(`certificate-${certificateId}`).getByRole('link', { name: 'Testi todistus' })
+async function updateCertificate(page: Page, context: BrowserContext, event: Event) {
+  await expect(page.getByTestId('assignment-header')).toBeVisible()
 
   await page.getByTestId('edit-content-btn').click()
 
-  const formHeader = await page.getByTestId('heading')
+  const formHeader = page.getByTestId('heading')
   await expect(formHeader).toHaveText(certificateNameByEvent(event))
 
   if (event === 'cancel') {
     const btn = page.getByTestId('form-cancel')
     await expect(btn).toHaveText('Peruuta')
     await btn.click()
-    await page.getByTestId('create-todistus-button')
+    await expect(page.getByTestId('create-todistus-button')).toBeVisible()
 
     return
   }
@@ -124,12 +124,14 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
     await btn.click()
   }
 
-  const contentPageHeader = await page.getByTestId('assignment-header')
+  const contentPageHeader = page.getByTestId('assignment-header')
+  const name = page.getByTestId('certificate-name')
+  const description = page.getByTestId('certificate-description')
 
   await expect(contentPageHeader).toHaveText(nameText)
-  await page.getByText(nameText, { exact: true })
-  await page.getByText(descriptionText, { exact: true })
-  await page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })
+  await expect(name).toHaveText(nameText)
+  await expect(description).toHaveText(descriptionText)
+  await expect(page.getByText(event === 'submit' ? 'Julkaistu' : 'Luonnos', { exact: true })).toBeVisible()
 
   await testAttachmentLink(page, context, 'fixture2.pdf', 331)
 }
@@ -138,7 +140,7 @@ async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Eve
   const certificateId = await createCertificate(page, context, event)
 
   if (certificateId) {
-    await updateCertificate(page, context, event, certificateId)
+    await updateCertificate(page, context, event)
   }
 }
 

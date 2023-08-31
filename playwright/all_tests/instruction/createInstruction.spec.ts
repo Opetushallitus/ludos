@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { fillInstructionForm } from './instructionHelpers'
-import { Role, loginTestGroup } from '../../helpers'
+import { loginTestGroup, Role } from '../../helpers'
 import path from 'path'
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -42,27 +42,27 @@ test.describe('Instruction form tests', () => {
 
     await expect(header).toHaveText('Testi ohje')
     // check short description
-    await page.getByText('Testi lyhyt kuvaus', { exact: true })
+    await expect(page.getByText('Testi lyhyt kuvaus', { exact: true })).toBeVisible()
     // check content
-    await page.getByText('Testi sisältö', { exact: true })
+    await expect(page.getByText('Testi sisältö', { exact: true })).toBeVisible()
     // check files
-    await page.getByText('Testi liite 1', { exact: true })
-    await page.getByText('Testi liite 2', { exact: true })
+    await expect(page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Testi liite 2 open_in_new' })).toBeVisible()
 
     // change language and check that everything is correct
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
     await expect(header).toHaveText('Testuppgifter')
-    await page.getByText('Testa kort beskrivning', { exact: true })
-    await page.getByText('Testa innehåll', { exact: true })
-    await page.getByText('Testa bilaga 1', { exact: true })
-    await page.getByText('Testa bilaga 2', { exact: true })
+    await expect(page.getByText('Testa kort beskrivning', { exact: true })).toBeVisible()
+    await expect(page.getByText('Testa innehåll', { exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Testa bilaga 1 open_in_new' })).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Testa bilaga 2 open_in_new' })).toBeVisible()
 
     // update instruction
     await page.getByTestId('nav-link-suko').click()
     await page.getByTestId('tab-ohjeet').click()
-    await page.getByTestId(`instruction-${instructionToUpdate}`)
+    await expect(page.getByTestId(`instruction-${instructionToUpdate}`)).toBeVisible()
     await page.getByTestId(`instruction-${instructionToUpdate}-edit`).click()
 
     await fillInstructionForm({
@@ -95,11 +95,8 @@ test.describe('Instruction form tests', () => {
 
     await page.getByTestId('form-submit').click()
 
-    const attachmentNotFound = await page.getByText('Testi liite 1', { exact: true })
-
-    expect(await attachmentNotFound.isVisible()).toBeFalsy()
-
-    await page.getByText('Testi liite muokattu', { exact: true })
+    await expect(page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
+    await expect(page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
   })
 
   test('can create draft instruction', async ({ page }) => {
@@ -116,7 +113,7 @@ test.describe('Instruction form tests', () => {
     await expect(btn).toHaveText('Peruuta')
     await btn.click()
     // expect to be back in instruction list
-    await page.getByTestId('create-ohje-button')
+    await expect(page.getByTestId('create-ohje-button')).toBeVisible()
   })
 
   test('failing of attachment upload is handled correctly', async ({ page }) => {
