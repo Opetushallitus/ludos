@@ -7,7 +7,7 @@ interface TLayout {
 }
 
 export const Layout = ({ header, footer, children }: TLayout) => (
-  <main className="grid min-h-screen max-w-full grid-rows-[6rem,1fr,7rem] gap-0">
+  <main className="grid min-h-[98vh] max-w-full grid-rows-[6rem,1fr,7rem] gap-0">
     <header className="border-t-5 border-green-primary">{header}</header>
     <div className="flex justify-center">
       <div className="w-[80vw]">
