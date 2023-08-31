@@ -4,6 +4,7 @@ import { AssignmentIn } from '../types'
 
 interface InternalLinkProps {
   to: string
+  target?: string
   state?: {
     [key: string]: string | AssignmentIn
   }
@@ -12,12 +13,13 @@ interface InternalLinkProps {
   children: ReactNode
 }
 
-export const InternalLink = ({ to, state, className, children, testId }: InternalLinkProps) => (
+export const InternalLink = ({ to, target, state, className, children, testId }: InternalLinkProps) => (
   <Link
     data-testid={testId}
     className={`${className ? className : 'text-green-primary hover:underline'}`}
     to={to}
-    state={state}>
+    state={state}
+    target={target}>
     {children}
   </Link>
 )

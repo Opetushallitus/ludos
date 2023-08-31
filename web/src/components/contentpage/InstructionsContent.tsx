@@ -8,9 +8,10 @@ import { useTranslation } from 'react-i18next'
 type InstructionContentProps = {
   instruction: InstructionIn
   language: string
+  isPresentation: boolean
 }
 
-export const InstructionContent = ({ instruction, language }: InstructionContentProps) => {
+export const InstructionContent = ({ instruction, language, isPresentation }: InstructionContentProps) => {
   const { t } = useTranslation()
   const attachmentsFilteredWithLanguage = instruction.attachments
     .filter((it) => it.language.toLowerCase() === language)
@@ -18,9 +19,11 @@ export const InstructionContent = ({ instruction, language }: InstructionContent
 
   return (
     <>
-      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
-        <ContentActionRow />
-      </div>
+      {!isPresentation && (
+        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
+          <ContentActionRow />
+        </div>
+      )}
       <ContentInstruction
         language={language}
         instructionFi={instruction.instructionFi}

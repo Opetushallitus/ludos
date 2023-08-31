@@ -15,9 +15,12 @@ import { CertificateContent } from './CertificateContent'
 import { InstructionContent } from './InstructionsContent'
 import { useUserDetails } from '../../hooks/useUserDetails'
 
-type AssignmentProps = { exam: Exam }
+type ContentProps = {
+  exam: Exam
+  isPresentation: boolean
+}
 
-const Content = ({ exam }: AssignmentProps) => {
+const Content = ({ exam, isPresentation }: ContentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: string; id: string }>()
@@ -51,14 +54,15 @@ const Content = ({ exam }: AssignmentProps) => {
           <div className="row">
             <div className="col w-full pr-5 md:w-9/12">
               <div className="row pb-3">
-                <div className="col min-h-[60vh] w-full">
+                <div className="col min-h-[40vh] w-full">
                   <ContentHeader
                     language={language}
                     data={data}
                     onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
                     contentType={contentType!} // fixme: could this ever be undefined?
+                    isPresentation={isPresentation}
                   />
-                  {isYllapitaja && (
+                  {!isPresentation && isYllapitaja && (
                     <div className="row">
                       <StateTag state={data.publishState} />
                       <span
@@ -71,23 +75,30 @@ const Content = ({ exam }: AssignmentProps) => {
                     </div>
                   )}
                   {contentType && isAssignment(data, contentType) && (
-                    <AssignmentContent assignment={data} exam={exam} language={language} />
+                    <AssignmentContent
+                      assignment={data}
+                      exam={exam}
+                      language={language}
+                      isPresentation={isPresentation}
+                    />
                   )}
 
                   {contentType && isCertificate(data, contentType) && <CertificateContent certificate={data} />}
 
                   {contentType && isInstruction(data, contentType) && (
-                    <InstructionContent instruction={data} language={language} />
+                    <InstructionContent instruction={data} language={language} isPresentation={isPresentation} />
                   )}
                 </div>
               </div>
-              <div className="row mb-6">
-                <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
-                  {t(`${contentTypeSingular}.palaa`)}
-                </Button>
-              </div>
+              {!isPresentation && (
+                <div className="row mb-6">
+                  <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
+                    {t(`${contentTypeSingular}.palaa`)}
+                  </Button>
+                </div>
+              )}
             </div>
-            <div className="hidden w-3/12 flex-col border-l border-gray-separator md:flex" />
+            {!isPresentation && <div className="hidden w-3/12 flex-col border-l border-gray-separator md:flex" />}
           </div>
         </>
       )}

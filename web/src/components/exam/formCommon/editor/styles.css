@@ -1,6 +1,6 @@
 @layer tiptap {
     .tiptap {
-        @apply h-[60vh] w-full resize-y overflow-auto p-2
+        @apply h-[40vh] w-full resize-y overflow-auto p-2
     }
 }
 

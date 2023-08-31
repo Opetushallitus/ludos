@@ -3,13 +3,13 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { feedbackKey, frontpageKey, ldKey, newKey, puhviKey, sukoKey, updateKey } from './routes'
 import { useTranslation } from 'react-i18next'
 import { Exam, Roles } from '../../types'
-import { Header } from '../header/Header'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from '../Spinner'
-import { Footer } from '../Footer'
 import { Frontpage } from '../frontpage/Frontpage'
 import Exams from '../exam/Exams'
+import { PresentationHeader } from '../header/PresentationHeader'
+import { Footer } from '../Footer'
 
 const Content = lazy(() => import('../contentpage/Content'))
 const AssignmentForm = lazy(() => import('../exam/assignment/form/AssignmentForm'))
@@ -72,59 +72,91 @@ function examRoutes(exam: Exam) {
         <Route
           path={`assignments/${newKey}`}
           element={
-            <SpinnerSuspense>
-              <AssignmentForm action={newKey} />
-            </SpinnerSuspense>
+            <Layout>
+              <SpinnerSuspense>
+                <AssignmentForm action={newKey} />
+              </SpinnerSuspense>
+            </Layout>
           }
         />
         <Route
           path={`assignments/${updateKey}/:id`}
           element={
-            <SpinnerSuspense>
-              <AssignmentForm action={updateKey} />
-            </SpinnerSuspense>
+            <Layout>
+              <SpinnerSuspense>
+                <AssignmentForm action={updateKey} />
+              </SpinnerSuspense>
+            </Layout>
           }
         />
         <Route
           path={`instructions/${newKey}`}
           element={
-            <SpinnerSuspense>
-              <InstructionForm action={newKey} />
-            </SpinnerSuspense>
+            <Layout>
+              <SpinnerSuspense>
+                <InstructionForm action={newKey} />
+              </SpinnerSuspense>
+            </Layout>
           }
         />
         <Route
           path={`instructions/${updateKey}/:id`}
           element={
-            <SpinnerSuspense>
-              <InstructionForm action={updateKey} />
-            </SpinnerSuspense>
+            <Layout>
+              <SpinnerSuspense>
+                <InstructionForm action={updateKey} />
+              </SpinnerSuspense>
+            </Layout>
           }
         />
         <Route
           path={`certificates/${newKey}`}
           element={
-            <SpinnerSuspense>
-              <CertificateForm action={newKey} />
-            </SpinnerSuspense>
+            <Layout>
+              <SpinnerSuspense>
+                <CertificateForm action={newKey} />
+              </SpinnerSuspense>
+            </Layout>
           }
         />
         <Route
           path={`certificates/${updateKey}/:id`}
           element={
-            <SpinnerSuspense>
-              <CertificateForm action={updateKey} />
-            </SpinnerSuspense>
+            <Layout>
+              <SpinnerSuspense>
+                <CertificateForm action={updateKey} />
+              </SpinnerSuspense>
+            </Layout>
           }
         />
       </Route>
-      <Route index path={':contentType?'} element={<Exams exam={exam} />} />
+      <Route
+        index
+        path={':contentType?'}
+        element={
+          <Layout>
+            <Exams exam={exam} />
+          </Layout>
+        }
+      />
       <Route
         path={':contentType/:id'}
         element={
-          <SpinnerSuspense>
-            <Content exam={exam} />
-          </SpinnerSuspense>
+          <Layout>
+            <SpinnerSuspense>
+              <Content exam={exam} isPresentation={false} />
+            </SpinnerSuspense>
+          </Layout>
+        }
+      />
+      <Route
+        path=":contentType/:id/presentation"
+        element={
+          <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
+            <SpinnerSuspense>
+              <Content exam={exam} isPresentation={true} />
+            </SpinnerSuspense>
+          </Layout>
         }
       />
     </Route>
@@ -135,35 +167,44 @@ function AuthorizedRoutes() {
   const { t } = useTranslation()
 
   return (
-    <Layout header={<Header />} footer={<Footer t={t} />}>
-      <Routes>
-        <Route path={`/${frontpageKey}`} element={<Frontpage />} />
-        <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
-        <Route element={<ProtectedRoute />}>
-          <Route
-            path={`/${feedbackKey}`}
-            element={
+    <Routes>
+      <Route
+        path={`/${frontpageKey}`}
+        element={
+          <Layout>
+            <Frontpage />
+          </Layout>
+        }
+      />
+      <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path={`/${feedbackKey}`}
+          element={
+            <Layout>
               <div>
                 <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>{t('title.palautteet')}</h2>
               </div>
-            }
-          />
-        </Route>
-        {examRoutes(Exam.Suko)}
-        {examRoutes(Exam.Ld)}
-        {examRoutes(Exam.Puhvi)}
-        <Route path={'/unauthorized'} element={<UnauthorizedPage />} />
-        <Route
-          path="*"
-          element={
+            </Layout>
+          }
+        />
+      </Route>
+      {examRoutes(Exam.Suko)}
+      {examRoutes(Exam.Ld)}
+      {examRoutes(Exam.Puhvi)}
+      <Route path={'/unauthorized'} element={<UnauthorizedPage />} />
+      <Route
+        path="*"
+        element={
+          <Layout>
             <div className="p-10">
               <h2 className="text-green-primary">404</h2>
               <p>{t('error.sivua-ei-loydy')}</p>
             </div>
-          }
-        />
-      </Routes>
-    </Layout>
+          </Layout>
+        }
+      />
+    </Routes>
   )
 }
 
