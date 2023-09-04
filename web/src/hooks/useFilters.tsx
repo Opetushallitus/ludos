@@ -32,7 +32,7 @@ export function useFilters(initialSearchFilters: string, contentType: string) {
     const urlParams = new URLSearchParams(initialSearchFilters)
 
     const oppimaara = urlParams.get('oppimaara')
-    const tehtavatyyppisuko = urlParams.get('tehtavatyyooisuko')
+    const tehtavatyyppisuko = urlParams.get('tehtavatyyppisuko')
     const aihe = urlParams.get('aihe')
     const tavoitetaitotaso = urlParams.get('tavoitetaitotaso')
     const orderDirection = urlParams.get('orderDirection')
