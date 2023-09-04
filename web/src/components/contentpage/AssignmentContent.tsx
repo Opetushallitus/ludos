@@ -1,7 +1,7 @@
 import { AssignmentIn, Exam } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
-import { ContentContent, ContentActionRow, ContentInstruction } from './ContentCommon'
+import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
 
 type AssignmentContentProps = {
@@ -27,10 +27,10 @@ export const AssignmentContent = ({ assignment, exam, language }: AssignmentCont
                 <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
                 {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
               </li>
-              <li>
-                <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>
-                {getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}
-              </li>
+              {/*<li>*/}
+              {/*  <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>*/}
+              {/*  {getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}*/}
+              {/*</li>*/}
               <li>
                 <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
                 {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}

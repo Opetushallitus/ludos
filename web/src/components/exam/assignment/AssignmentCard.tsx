@@ -100,10 +100,10 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
                 <p className="text-xs text-gray-secondary">{t('assignment.aihe')}</p>
                 <p className="text-xs text-black">{getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko')}</p>
               </div>
-              <div>
-                <p className="text-xs text-gray-secondary">{t('assignment.tavoitetaso')}</p>
-                <p className="text-xs text-black">{getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}</p>
-              </div>
+              {/*<div>*/}
+              {/*  <p className="text-xs text-gray-secondary">{t('assignment.tavoitetaso')}</p>*/}
+              {/*  <p className="text-xs text-black">{getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}</p>*/}
+              {/*</div>*/}
             </>
           )}
           <div>
