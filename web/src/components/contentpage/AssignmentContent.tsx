@@ -21,7 +21,7 @@ export const AssignmentContent = ({ assignment, exam, language, isPresentation }
   return (
     <>
       {!isPresentation && (
-        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
+        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2" data-testid="assignment-metadata">
           <ul>
             {suko && (
               <>

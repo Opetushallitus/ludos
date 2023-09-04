@@ -9,13 +9,14 @@ type ContentActionsProps = {
 }
 
 function AssignmentCardContentActionButton({
-  contentAction: { iconName, text, link },
+  contentAction: { actionName, iconName, text, link },
   contentId
 }: {
   contentId: number
   contentAction: ContentAction
 }) {
   const className = 'flex items-center pr-3'
+  const testId = `assignment-${contentId}-action-${actionName}`
   const children = (
     <>
       <Icon name={iconName} color="text-green-primary" />
@@ -23,9 +24,17 @@ function AssignmentCardContentActionButton({
     </>
   )
   if (link) {
-    return <InternalLink to={`${contentId}/${link}`} target="_blank" className={className} children={children} />
+    return (
+      <InternalLink
+        to={`${contentId}/${link}`}
+        target="_blank"
+        className={className}
+        children={children}
+        testId={testId}
+      />
+    )
   } else {
-    return <span className={className} children={children} />
+    return <span className={className} children={children} data-testid={testId} />
   }
 }
 

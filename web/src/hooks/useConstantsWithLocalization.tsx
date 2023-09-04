@@ -4,6 +4,7 @@ import { Icons } from '../components/Icon'
 import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
 
 export type ContentAction = {
+  actionName: string
   iconName: Icons
   text: string
   link?: string
@@ -36,11 +37,13 @@ export const useConstantsWithLocalization = () => {
 
   const CONTENT_ACTIONS: ContentAction[] = [
     {
+      actionName: 'katselunakyma',
       iconName: 'uusi-valilehti',
       text: t('assignment.katselunakyma'),
       link: 'presentation'
     },
     {
+      actionName: 'lataa-pdf',
       iconName: 'todistukset',
       text: t('assignment.lataapdf')
     }

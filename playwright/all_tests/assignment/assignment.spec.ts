@@ -1,8 +1,10 @@
 import { expect, Page, test } from '@playwright/test'
 import {
+  createAssignment,
   fillLdAssignmentForm,
   fillPuhviAssignmentForm,
   fillSukoAssignmentForm,
+  testAssignmentIn,
   updateLdAssignment,
   updatePuhviAssignment,
   updateSukoAssignmentForm
@@ -89,9 +91,7 @@ test.describe('Suko assignment form tests', () => {
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
-    const updatedAssignmentHeaderSv = page.getByTestId('assignment-header')
-
-    await expect(updatedAssignmentHeaderSv).toHaveText('Testuppgifter muokattu')
+    await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -216,5 +216,32 @@ test.describe('Puhvi assignment form tests', () => {
 
     await btn.click()
     page.getByTestId('create-koetehtava-button')
+  })
+})
+
+test.describe('Presentation view', () => {
+  const testKatseluNakyma = async (page: Page, linkTestId: string, assignmentIn: any) => {
+    const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
+    await page.getByTestId(linkTestId).click()
+    const newTabPage = await newTabPagePromise
+
+    await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
+    expect(await newTabPage.$('[data-testid="assignment-metadata"]')).toBeNull()
+    await newTabPage.close()
+  }
+
+  test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
+    const assignmentIn = testAssignmentIn('Esitysnäkymätesti')
+    const assignment = await createAssignment(context, baseURL!, assignmentIn)
+    await page.goto(`/suko/assignments/${assignment.id}`)
+
+    await expect(page.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
+    // Use non-waiting assert to ensure later similar assert on new tab works as expected
+    expect(await page.$('[data-testid="assignment-metadata"]')).not.toBeNull()
+
+    await testKatseluNakyma(page, 'assignment-action-katselunakyma', assignmentIn)
+
+    await page.goto(`/suko/assignments`)
+    await testKatseluNakyma(page, `assignment-${assignment.id}-action-katselunakyma`, assignmentIn)
   })
 })

@@ -56,8 +56,13 @@ export function ContentHeader({
   )
 }
 
-function ContentActionButton({ contentAction: { iconName, text, link } }: { contentAction: ContentAction }) {
+function ContentActionButton({
+  contentAction: { actionName, iconName, text, link }
+}: {
+  contentAction: ContentAction
+}) {
   const className = 'flex gap-1'
+  const testId = `assignment-action-${actionName}`
   const children = (
     <>
       <Icon name={iconName} color="text-green-primary" />
@@ -65,9 +70,9 @@ function ContentActionButton({ contentAction: { iconName, text, link } }: { cont
     </>
   )
   if (link) {
-    return <InternalLink to={link} target="_blank" className={className} children={children} />
+    return <InternalLink to={link} target="_blank" className={className} children={children} testId={testId} />
   } else {
-    return <span className={className} children={children} />
+    return <span className={className} children={children} data-testid={testId} />
   }
 }
 
