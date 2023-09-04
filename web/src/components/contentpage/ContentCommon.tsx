@@ -4,26 +4,36 @@ import { Icon } from '../Icon'
 import { BaseIn, ContentTypeEng } from '../../types'
 import { ContentTypeTranslationFinnish, getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
-import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { ContentAction, useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 import { TipTap } from '../exam/formCommon/editor/TipTap'
+import { InternalLink } from '../InternalLink'
 
 type ContentHeaderProps = {
   language: string
   data: BaseIn
   onSelectedOptionsChange: (opt: string) => void
   contentType: string
+  isPresentation: boolean
 }
 
-export function ContentHeader({ onSelectedOptionsChange, data, language, contentType }: ContentHeaderProps) {
+export function ContentHeader({
+  onSelectedOptionsChange,
+  data,
+  language,
+  contentType,
+  isPresentation
+}: ContentHeaderProps) {
   const { t } = useTranslation()
   const { LANGUAGE_OPTIONS } = useConstantsWithLocalization()
 
   return (
     <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
       <div className="flex w-2/3 flex-col">
-        <div className="row my-1">
-          <p>{toLocaleDate(data.createdAt)}</p>
-        </div>
+        {!isPresentation && (
+          <div className="row my-1">
+            <p>{toLocaleDate(data.createdAt)}</p>
+          </div>
+        )}
         <div className="row">
           <h2 className="w-full md:w-1/2" data-testid="assignment-header">
             {getContentName(data, contentType, language) || t('form.nimeton')}
@@ -46,16 +56,33 @@ export function ContentHeader({ onSelectedOptionsChange, data, language, content
   )
 }
 
+function ContentActionButton({
+  contentAction: { actionName, iconName, text, link }
+}: {
+  contentAction: ContentAction
+}) {
+  const className = 'flex gap-1'
+  const testId = `assignment-action-${actionName}`
+  const children = (
+    <>
+      <Icon name={iconName} color="text-green-primary" />
+      <span className="text-green-primary">{text}</span>
+    </>
+  )
+  if (link) {
+    return <InternalLink to={link} target="_blank" className={className} children={children} testId={testId} />
+  } else {
+    return <span className={className} children={children} data-testid={testId} />
+  }
+}
+
 export function ContentActionRow() {
   const { CONTENT_ACTIONS } = useConstantsWithLocalization()
 
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
-      {CONTENT_ACTIONS.map((icon) => (
-        <div className="flex gap-1" key={icon.name}>
-          <Icon name={icon.name} color="text-green-primary" />
-          <p className="text-green-primary">{icon.text}</p>
-        </div>
+      {CONTENT_ACTIONS.map((contentAction) => (
+        <ContentActionButton contentAction={contentAction} key={contentAction.iconName} />
       ))}
     </div>
   )

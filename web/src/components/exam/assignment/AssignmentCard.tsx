@@ -9,7 +9,7 @@ import { toLocaleDate } from '../../../formatUtils'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { Button } from '../../Button'
-import { ContentActions } from './ContentActions'
+import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 
 type AssignmentCardProps = {
   language: string
@@ -111,7 +111,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
             <p className="text-xs text-black">{toLocaleDate(assignment.createdAt)}</p>
           </div>
         </div>
-        {<ContentActions />}
+        {<AssignmentCardContentActions contentId={assignment.id} />}
       </div>
     </li>
   )

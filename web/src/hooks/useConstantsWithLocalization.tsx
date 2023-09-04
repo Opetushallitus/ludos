@@ -3,6 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
 import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
 
+export type ContentAction = {
+  actionName: string
+  iconName: Icons
+  text: string
+  link?: string
+}
+
 export const useConstantsWithLocalization = () => {
   const { t } = useTranslation()
 
@@ -28,13 +35,16 @@ export const useConstantsWithLocalization = () => {
     }
   ]
 
-  const CONTENT_ACTIONS: { name: Icons; text: string }[] = [
+  const CONTENT_ACTIONS: ContentAction[] = [
     {
-      name: 'uusi-valilehti',
-      text: t('assignment.katselunakyma')
+      actionName: 'katselunakyma',
+      iconName: 'uusi-valilehti',
+      text: t('assignment.katselunakyma'),
+      link: 'presentation'
     },
     {
-      name: 'todistukset',
+      actionName: 'lataa-pdf',
+      iconName: 'todistukset',
       text: t('assignment.lataapdf')
     }
     //{

@@ -27,7 +27,7 @@ class AssignmentFiltersTest(@Autowired val mockMvc: MockMvc) {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
         val testData = CreateDataForAssignmentFilterTest().prepareTestData()
-        mockMvc.perform(seedDbWithCustomData(testData))
+        mockMvc.perform(seedDbWithCustomAssignments(testData))
     }
 
     @Test

@@ -73,6 +73,16 @@ class TestController(
         return httpServletResponse.sendRedirect(appUrl)
     }
 
+    // this endpoint is used by api tests
+    @PostMapping("/seedAssignments")
+    @RequireAtLeastYllapitajaRole
+    fun seedDatabaseWithCustomAssignments(@RequestBody assignments: Array<Assignment>) = try {
+        assignments.forEach { assignmentService.createAssignment(it) }
+        ResponseEntity.status(HttpStatus.OK).body("OK")
+    } catch (e: Exception) {
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong ${e.message}")
+    }
+
     @GetMapping("/seedInstructions")
     @RequireAtLeastYllapitajaRole
     fun seedDatabaseWithInstructions(httpServletResponse: HttpServletResponse) {
@@ -85,16 +95,6 @@ class TestController(
     fun seedDatabaseWithCertificates(httpServletResponse: HttpServletResponse) {
         seedDataRepository.seedCertificates()
         return httpServletResponse.sendRedirect(appUrl)
-    }
-
-    // this endpoint is used by api tests
-    @PostMapping("/seed")
-    @RequireAtLeastYllapitajaRole
-    fun seedDatabasePost(@RequestBody assignments: Array<Assignment>) = try {
-        assignments.forEach { assignmentService.createAssignment(it) }
-        ResponseEntity.status(HttpStatus.OK).body("OK")
-    } catch (e: Exception) {
-        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong ${e.message}")
     }
 
     @GetMapping("/empty")

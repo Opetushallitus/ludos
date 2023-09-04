@@ -1,4 +1,5 @@
-import { expect, Page } from '@playwright/test'
+import { BrowserContext, expect, Page } from '@playwright/test'
+import { postWithSession } from '../../helpers'
 
 type FillAssignmentForm = {
   page: Page
@@ -250,4 +251,25 @@ export async function updatePuhviAssignment(page: Page) {
   await page.getByTestId('language-dropdown-option-sv').click()
 
   await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
+}
+
+export function testAssignmentIn(assignmnentNameBase: string) {
+  return {
+    exam: 'SUKO',
+    nameFi: `${assignmnentNameBase} nimi fi`,
+    nameSv: `${assignmnentNameBase} nimi sv`,
+    contentFi: `${assignmnentNameBase} sisältö fi`,
+    contentSv: `${assignmnentNameBase} sisältö sv`,
+    instructionFi: `${assignmnentNameBase} ohje fi`,
+    instructionSv: `${assignmnentNameBase} ohje sv`,
+    publishState: 'PUBLISHED',
+    assignmentTypeKoodiArvo: '003',
+    oppimaaraKoodiArvo: 'TKRUA1',
+    tavoitetasoKoodiArvo: null,
+    aiheKoodiArvos: [],
+    laajaalainenOsaaminenKoodiArvos: []
+  }
+}
+export async function createAssignment(context: BrowserContext, baseURL: string, assignment: any) {
+  return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
 }
