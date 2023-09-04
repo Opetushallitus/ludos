@@ -5,7 +5,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 fun seedDbWithCustomAssignments(data: String): MockHttpServletRequestBuilder =
-    MockMvcRequestBuilders.post("${Constants.API_PREFIX}/test/seed").contentType(MediaType.APPLICATION_JSON)
+    MockMvcRequestBuilders.post("${Constants.API_PREFIX}/test/seedAssignments").contentType(MediaType.APPLICATION_JSON)
         .content(data)
 
 fun seedDb(): MockHttpServletRequestBuilder =

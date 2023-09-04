@@ -226,7 +226,7 @@ test.describe('Presentation view', () => {
     const newTabPage = await newTabPagePromise
 
     await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
-    expect(await newTabPage.$('[data-testid="assignment-metadata"]')).toBeNull()
+    await expect(await newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
     await newTabPage.close()
   }
 
@@ -236,8 +236,7 @@ test.describe('Presentation view', () => {
     await page.goto(`/suko/assignments/${assignment.id}`)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
-    // Use non-waiting assert to ensure later similar assert on new tab works as expected
-    expect(await page.$('[data-testid="assignment-metadata"]')).not.toBeNull()
+    await expect(await page.getByTestId('assignment-metadata')).toBeVisible()
 
     await testKatseluNakyma(page, 'assignment-action-katselunakyma', assignmentIn)
 
