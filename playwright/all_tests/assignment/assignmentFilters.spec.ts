@@ -1,19 +1,13 @@
 import { expect, Page, test } from '@playwright/test'
-import { Exam, loginTestGroup, Role } from '../../helpers'
+import { loginTestGroup, Role } from '../../helpers'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-async function checkResponseAfterFiltering(page: Page, exam: Exam) {
-  const response = await page.waitForResponse((res) => {
-    try {
-      return res.url().includes(`/api/assignment/${exam}?`) && res.ok()
-    } catch (e) {
-      console.log(e)
-      return false
-    }
-  })
-
-  expect(await response.json()).toHaveLength(1)
+async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[]) {
+  const assignments = await page.getByTestId('assignment-list').locator('li').all()
+  const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
+  const names = await Promise.all(namePromises)
+  expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI`))
 }
 
 test.describe('Assignment filter tests', () => {
@@ -38,12 +32,12 @@ test.describe('Assignment filter tests', () => {
     await page.getByTestId('contentType-multi-select-ready-button').click()
 
     await page.getByTestId('aihe').click()
-    // vaikuttaminen
-    await page.getByTestId('aihe-option-007').click()
-    // ympärisöt
-    void page.getByTestId('aihe-option-008').click()
-    await checkResponseAfterFiltering(page, 'SUKO')
+
+    // Pohjoismaat
+    await page.getByTestId('aihe-option-013').click()
     await page.getByTestId('aihe-multi-select-ready-button').click()
+
+    await checkListAfterFiltering(page, [2])
 
     // await page.getByTestId('tavoitetaitotaso-input').fill('b1')
     // await page.getByTestId('tavoitetaitotaso').click()
@@ -52,23 +46,24 @@ test.describe('Assignment filter tests', () => {
     // B1.2
     // await page.getByTestId('tavoitetaitotaso-option-0008').click()
 
-    // Wait for the filtered assignments to be available
-    await page.waitForSelector('li[data-testid^="assignment-list-item-"]')
+    // refresh page to make sure filters stay
+    await page.reload()
 
-    const assignmentSelector = 'li[data-testid^="assignment-list-item-"]'
-    const assignments = await page.$$(assignmentSelector)
+    await expect(page.getByRole('link', { name: 'Test name 2 FI' })).toBeVisible()
+    await checkListAfterFiltering(page, [2])
 
-    // Check if there is only one assignment in the list
-    expect(assignments).toHaveLength(1)
-
-    await page.getByRole('link', { name: 'Test name 11 FI' }).click()
-
-    await expect(page.getByText('Tehtävätyyppi: Keskustelu')).toBeVisible()
-    // page.getByText('Tavoitetaso: B1.1  Toimiva peruskielitaito')
-    await expect(page.getByText('Aihe:vaikuttaminen, opiskelutaidot')).toBeVisible()
-    await expect(page.getByText('Laaja-alainen osaaminen:')).toBeVisible()
-
+    await page.getByRole('link', { name: 'Test name 2 FI' }).click()
+    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 2 FI')
     await page.getByTestId('return').click()
+
+    // make sure filters stay when returning from an assignment
+    await expect(page.getByRole('link', { name: 'Test name 2 FI' })).toBeVisible()
+    await checkListAfterFiltering(page, [2])
+
+    // remove selections from assignmentType filter
+    await page.getByTestId('contentType-reset-selected-options').click()
+    await expect(page.getByRole('link', { name: 'Test name 7 FI' })).toBeVisible()
+    await checkListAfterFiltering(page, [7, 2, 1])
 
     // LD
     await page.goto('/ld')
@@ -79,18 +74,13 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByTestId('aine').click()
     // musiikki
-    void page.getByTestId('aine-option-6').click()
-    await checkResponseAfterFiltering(page, 'LD')
+    await page.getByTestId('aine-option-6').click()
     await page.getByTestId('aine-multi-select-ready-button').click()
-
+    await expect(page.getByRole('link', { name: 'Test name 5 FI' })).toBeVisible()
+    await checkListAfterFiltering(page, [5])
     await page.getByRole('link', { name: 'Test name 5 FI' }).click()
 
-    page.getByText('Lukuvuosi: 2020-2021, 2022-2023')
-    page.getByText('Aine: Musiikki')
-    page.getByText(
-      'Laaja-alainen osaaminen: Monitieteinen ja luova osaaminen, Yhteiskunnallinen osaaminen, Vuorovaikutusosaaminen'
-    )
-
+    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 5 FI')
     await page.getByTestId('return').click()
 
     // Puhvi
@@ -102,16 +92,12 @@ test.describe('Assignment filter tests', () => {
 
     await page.getByTestId('tehtavatyyppiPuhvi').click()
     // esiintymistaidot
-    void page.getByTestId('tehtavatyyppiPuhvi-option-002').click()
-    await checkResponseAfterFiltering(page, 'PUHVI')
+    await page.getByTestId('tehtavatyyppiPuhvi-option-002').click()
     await page.getByTestId('tehtavatyyppiPuhvi-multi-select-ready-button').click()
 
+    await expect(page.getByRole('link', { name: 'Test name 8 FI' })).toBeVisible()
+    await checkListAfterFiltering(page, [8])
     await page.getByRole('link', { name: 'Test name 8 FI' }).click()
-
-    page.getByText('Tehtävätyyppi:Esiintymistaidot')
-    page.getByText('Lukuvuosi: 2022-2023')
-    page.getByText('Laaja-alainen osaaminen:Yhteiskunnallinen osaaminen, Vuorovaikutusosaaminen')
-
-    await page.getByTestId('return').click()
+    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 8 FI')
   })
 })
