@@ -74,7 +74,7 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
               )}
               {isPuhvi && (
                 <div>
-                  <p className="text-xs text-gray-secondary">{t('assignment.aine')}</p>
+                  <p className="text-xs text-gray-secondary">{t('assignment.tehtavatyyppi')}</p>
                   <p className="text-xs text-black">
                     {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi') || '*'}
                   </p>
