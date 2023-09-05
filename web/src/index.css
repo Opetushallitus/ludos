@@ -28,7 +28,7 @@
     }
 
     h1 {
-        @apply text-[1.8rem] leading-[2.4rem] tracking-[-0.015em] uppercase font-bold
+        @apply text-[1.8rem] leading-[2.4rem] tracking-[-0.015em] font-bold
     }
 
     h2 {
