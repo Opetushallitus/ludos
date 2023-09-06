@@ -72,7 +72,6 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
             logger.info("Updated koodisto cache from $sourceName: $koodistoStats")
         } catch (e: Exception) {
             logger.error("Error updating koodisto cache", e)
-            throw e
         }
     }
 

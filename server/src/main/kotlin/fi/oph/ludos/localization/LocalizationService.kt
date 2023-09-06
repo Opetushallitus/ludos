@@ -1,7 +1,6 @@
 package fi.oph.ludos.localization
 
 import fi.oph.ludos.cache.CacheName
-import fi.oph.ludos.exception.LocalizationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
@@ -51,9 +50,9 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
             logger.info("Updated localization cache from $sourceName: $localeStats")
         } catch (e: Exception) {
             logger.error("Error updating localization cache", e)
-            throw LocalizationException("${e.message}", e)
         }
     }
+
 
     private fun updateCacheFromLokalisointipalvelu() {
         updateCache(localizationRepository::getLocalizationTextsFromLokalisointipalvelu, "lokalisointipalvelu")
