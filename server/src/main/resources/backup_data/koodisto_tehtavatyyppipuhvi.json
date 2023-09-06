@@ -39,17 +39,17 @@
         "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": null,
-        "nimi": "Ryhmäviestintätaidot",
+        "nimi": "Gruppdiskussion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2023-08-28",
+    "paivittajaOid": "1.2.246.562.24.20745323310",
+    "paivitysPvm": "2023-09-06",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_001",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2023-05-11",
     "voimassaLoppuPvm": null
   },
@@ -93,17 +93,17 @@
         "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": null,
-        "nimi": "Esiintymistaidot",
+        "nimi": "Individuellt anförande",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2023-08-28",
+    "paivittajaOid": "1.2.246.562.24.20745323310",
+    "paivitysPvm": "2023-09-06",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_002",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2023-05-11",
     "voimassaLoppuPvm": null
   }

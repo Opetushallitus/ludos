@@ -2921,9 +2921,9 @@
     "id": 49896,
     "key": "frontpage.tervehdys",
     "locale": "sv",
-    "modified": 1693300724016,
+    "modified": 1693809551802,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Hej, {{nimi}} välkommen till LUDOS-tjänsten"
+    "value": "Hej {{nimi}}, välkommen till LUDOS-tjänsten!"
   },
   {
     "accesscount": 0,
@@ -3439,9 +3439,9 @@
     "id": 47454,
     "key": "title.ludos",
     "locale": "fi",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Koepankki"
+    "modified": 1693813498248,
+    "modifiedBy": "1.2.246.562.24.77925329174",
+    "value": "LUDOS"
   },
   {
     "accesscount": 0,
@@ -3453,9 +3453,9 @@
     "id": 47506,
     "key": "title.ludos",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Provbank"
+    "modified": 1693978237829,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "LUDOS"
   },
   {
     "accesscount": 0,
