@@ -97,6 +97,7 @@ tasks.withType<BootRun> {
 }
 
 tasks.withType<Test> {
+    dependsOn(buildWeb)
     useJUnitPlatform()
     systemProperty("spring.profiles.active", "local")
     testLogging {
