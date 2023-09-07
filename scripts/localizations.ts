@@ -482,7 +482,9 @@ const diffCommand = command({
 
 const copyCommand = command({
   name: 'copy',
-  description: 'Copy new and changed localizations from one env to another',
+  description: `Copy new and changed localizations from one env/file to another.
+  
+                See main --help for help setting up env credentials.`.replace(/  +/g, ''),
   args: {
     from: positional({ type: envOrXlsxInputType, displayName: 'from' }),
     to: positional({ type: envOrXlsxOutputType, displayName: 'to' })
@@ -494,7 +496,11 @@ const copyCommand = command({
 
 const app = subcommands({
   name: 'localizations',
-  description: 'Manages ludos localizations',
+  description: `Manage LUDOS localizations.
+  
+     Write operations to an environment require your virkailija credentials
+     in ~/.oph-credentials.json format:
+     {"qa": {"username": "foo", "password: "bar"}}`.replace(/  +/g, ''),
   version: '1.0.0',
   cmds: {
     list: listCommand,
