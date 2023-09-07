@@ -40,7 +40,7 @@ class ApiExceptionHandler {
         }
 
     @ExceptionHandler(ResponseStatusException::class)
-    fun handleApiResponseStatusException(ex: ResponseStatusException) = ResponseEntity.status(ex.status).body(ex.reason)
+    fun handleApiResponseStatusException(ex: ResponseStatusException) = ResponseEntity.status(ex.statusCode).body(ex.reason)
 
     @ExceptionHandler(AccessDeniedException::class)
     fun handleAccessdenied(ex: AccessDeniedException): ResponseEntity<String> {

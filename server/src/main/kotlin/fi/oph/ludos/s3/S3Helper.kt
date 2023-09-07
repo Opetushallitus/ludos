@@ -16,7 +16,7 @@ import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 import kotlin.io.path.deleteIfExists
 
 enum class Bucket(val bucketNameProperty: String) {

@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.bind.annotation.RestController
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import kotlin.reflect.full.functions
 
 @TestPropertySource(locations = ["classpath:application.properties"])

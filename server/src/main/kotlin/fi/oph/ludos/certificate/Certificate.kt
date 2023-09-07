@@ -3,7 +3,7 @@ package fi.oph.ludos.certificate
 import fi.oph.ludos.*
 import java.sql.Timestamp
 import java.time.ZonedDateTime
-import javax.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotBlank
 
 interface Certificate {
     val exam: Exam

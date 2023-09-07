@@ -1,6 +1,6 @@
 package fi.oph.ludos.koodisto
 
-import javax.validation.Constraint
+import jakarta.validation.Constraint
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER)
@@ -14,14 +14,14 @@ annotation class ValidKoodiArvos(
 )
 
 class KoodiArvosValidator(private val koodistoService: KoodistoService) :
-    javax.validation.ConstraintValidator<ValidKoodiArvos, Array<String>> {
+    jakarta.validation.ConstraintValidator<ValidKoodiArvos, Array<String>> {
     private lateinit var koodistoName: KoodistoName
 
     override fun initialize(constraintAnnotation: ValidKoodiArvos) {
         koodistoName = constraintAnnotation.koodisto
     }
 
-    override fun isValid(value: Array<String>, context: javax.validation.ConstraintValidatorContext?): Boolean {
+    override fun isValid(value: Array<String>, context: jakarta.validation.ConstraintValidatorContext?): Boolean {
         return koodistoService.isKoodiArvosInKoodisto(koodistoName, value)
     }
 }
@@ -37,14 +37,14 @@ annotation class ValidKoodiArvo(
 )
 
 class KoodiArvoValidator(private val koodistoService: KoodistoService) :
-    javax.validation.ConstraintValidator<ValidKoodiArvo, String?> {
+    jakarta.validation.ConstraintValidator<ValidKoodiArvo, String?> {
     private lateinit var koodistoName: KoodistoName
 
     override fun initialize(constraintAnnotation: ValidKoodiArvo) {
         koodistoName = constraintAnnotation.koodisto
     }
 
-    override fun isValid(value: String?, context: javax.validation.ConstraintValidatorContext?): Boolean {
+    override fun isValid(value: String?, context: jakarta.validation.ConstraintValidatorContext?): Boolean {
         return value === null || koodistoService.isKoodiArvoInKoodisto(koodistoName, value)
     }
 }

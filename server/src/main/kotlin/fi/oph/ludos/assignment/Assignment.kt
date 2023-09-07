@@ -13,11 +13,11 @@ import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
 import java.sql.Timestamp
-import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
-import javax.validation.Payload
-import javax.validation.constraints.Pattern
+import jakarta.validation.Constraint
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
+import jakarta.validation.Payload
+import jakarta.validation.constraints.Pattern
 import kotlin.reflect.KClass
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")

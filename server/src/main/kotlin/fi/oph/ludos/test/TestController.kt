@@ -5,6 +5,10 @@ import fi.oph.ludos.LudosApplication
 import fi.oph.ludos.assignment.Assignment
 import fi.oph.ludos.assignment.AssignmentService
 import fi.oph.ludos.auth.*
+import jakarta.annotation.PostConstruct
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -18,12 +22,10 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
 import org.springframework.web.bind.annotation.*
 import java.net.URI
 import java.sql.Timestamp
-import javax.annotation.PostConstruct
-import javax.servlet.http.HttpServletResponse
-import javax.validation.Valid
 import kotlin.system.exitProcess
 
 @RestController
@@ -39,6 +41,7 @@ class TestController(
     private val jdbcTemplate: JdbcTemplate,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
+    private val securityContextRepository = HttpSessionSecurityContextRepository();
 
     companion object {
         fun isEnabled(): Boolean {
@@ -116,7 +119,11 @@ class TestController(
 
     @GetMapping("/mocklogin/{role}")
     @PreAuthorize("permitAll()")
-    fun mockLogin(@Valid @PathVariable("role") role: Role): ResponseEntity<Unit> {
+    fun mockLogin(
+        @Valid @PathVariable("role") role: Role,
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<Unit> {
         val userDetails = Kayttajatiedot(
             "1.2.246.562.24.10000000001",
             "ValeKayttaja",
@@ -127,7 +134,9 @@ class TestController(
             null
         )
         val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+
         SecurityContextHolder.getContext().authentication = authentication
+        securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response)
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/")).build()
     }
 

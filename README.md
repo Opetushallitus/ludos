@@ -21,6 +21,7 @@ tarpeen mukaan.
     - Kotlin (Java 17)
     - Spring boot
     - Flyway-migraatiotyökalu kannan skeeman rakentamiseen ja päivittämiseen kehityksessä ja tuotannossa
+    - Gradle buildaa
 - Web-sovelluksen frontend-teknologiat
     - yarn-työkalu riippuvuuksien hakuun
     - Vite
@@ -76,3 +77,23 @@ Vaihtoehtoja:
   - vs coden testing näkymästä
   - Komentoriviltä `yarn playwright`
   - Huom: CI:llä playwright ajetaan buildattua fronttia ja porttia 8080 vasten
+
+
+## Riippuvuuksien päivitykset
+
+Vielä manuaalisesti, mutta tarkoitus automatisoida vähintään fronttidepsupäivitykset Dependabot-tyyliin, kunhan
+ehditään. Tehdään uusi pull request jokaista depsupäivityskierrosta varten.
+
+### Backend
+
+1) `cd server`
+2) `./gradlew refreshVersions` lisää saatavilla olevat uudemmat versiot versions.propertiesiin kommentteina
+3) Päivitä versiot muokkaamalla versions.properties-tiedostoa
+4) `./gradlew clean test --rerun-tasks`
+
+### Frontend
+
+1) `cd web`
+2) `yarn upgrade --latest`
+   * Jos major-päivitys rikkoi softan etkä ehdi/jaksa korjata, niin reverttaa ja aja ilman `--latest`
+3) `cd .. && yarn build:web && yarn playwright`

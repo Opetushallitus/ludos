@@ -8,10 +8,10 @@ import fi.oph.ludos.*
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
 import java.time.ZonedDateTime
-import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
-import javax.validation.Payload
+import jakarta.validation.Constraint
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
+import jakarta.validation.Payload
 import kotlin.reflect.KClass
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
