@@ -1,7 +1,7 @@
 import { AssignmentIn, Exam } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
-import { ContentContent, ContentActionRow, ContentInstruction } from './ContentCommon'
+import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../exam/assignment/assignmentUtils'
 
 type AssignmentContentProps = {
@@ -26,16 +26,20 @@ export const AssignmentContent = ({ assignment, exam, language, isPresentation }
             {suko && (
               <>
                 <li>
-                  <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>{' '}
-                  {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
+                  <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>
+                  <span data-testid="suko-tehtavatyyppi">
+                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
+                  </span>
                 </li>
-                {/*<li>*/}
+                {/*<li}
                 {/*  <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>*/}
-                {/*  {getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}*/}
+                {/*  <span data-testid="suko-tavoitetaso">{getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}</span>*/}
                 {/*</li>*/}
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
-                  {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}
+                  <span data-testid="suko-aihe">
+                    {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}
+                  </span>
                 </li>
               </>
             )}
@@ -43,24 +47,30 @@ export const AssignmentContent = ({ assignment, exam, language, isPresentation }
               {puhvi && (
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>
-                  {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi')}
+                  <span data-testid="puhvi-tehtavatyyppi">
+                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi')}
+                  </span>
                 </li>
               )}
               {(ld || puhvi) && (
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.lukuvuosi')}:</span>
-                  {getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi')}
+                  <span data-testid="ld-puhvi-lukuvuosi">
+                    {getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi')}
+                  </span>
                 </li>
               )}
               {ld && (
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.aine')}:</span>
-                  {getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine')}
+                  <span data-testid="ld-aine">{getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine')}</span>
                 </li>
               )}
               <li>
                 <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
-                {getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')}
+                <span data-testid="laajaalainenosaaminen">
+                  {getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')}
+                </span>
               </li>
             </>
           </ul>

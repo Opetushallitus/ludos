@@ -90,7 +90,7 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
       {data && (
         <>
           {isAssignmentsArr(data, contentType) && (
-            <ul>
+            <ul data-testid="assignment-list">
               {data.filter(filterByLanguage).map((assignment, i) => (
                 <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} />
               ))}

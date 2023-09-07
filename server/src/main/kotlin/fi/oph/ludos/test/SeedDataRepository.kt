@@ -71,10 +71,10 @@ class SeedDataRepository(
             assignmentRepository.saveSukoAssignment(sukoAssignment)
 
             val ldAssignment = LdAssignmentDtoIn(
-                nameFi = "Test Name $it FI",
-                nameSv = "Test Name $it SV",
-                contentFi = "Test Content $it FI",
-                contentSv = "Test Content $it SV",
+                nameFi = "Test name $it FI",
+                nameSv = "Test name $it SV",
+                contentFi = "Test content $it FI",
+                contentSv = "Test content $it SV",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = publishState,
@@ -85,10 +85,10 @@ class SeedDataRepository(
             assignmentRepository.saveLdAssignment(ldAssignment)
 
             val puhviAssignment = PuhviAssignmentDtoIn(
-                nameFi = "Test Name $it FI",
-                nameSv = "Test Name $it SV",
-                contentFi = "Test Content $it FI",
-                contentSv = "Test Content $it SV",
+                nameFi = "Test name $it FI",
+                nameSv = "Test name $it SV",
+                contentFi = "Test content $it FI",
+                contentSv = "Test content $it SV",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = publishState,

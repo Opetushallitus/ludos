@@ -1,5 +1,4 @@
 import { BrowserContext, Page, test as importedTest } from '@playwright/test'
-import { promises as fs } from 'fs'
 
 export const Role = {
   YLLAPITAJA: 'YLLAPITAJA',

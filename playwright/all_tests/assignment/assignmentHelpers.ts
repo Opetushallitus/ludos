@@ -127,13 +127,13 @@ export async function updateSukoAssignmentForm({
   await page.getByTestId('assignmentTypeRadio-002').click()
   await selectDropdownOption(page, 'tavoitetaso', '0003')
   // remove first selected option
-  await page.getByTestId('remove-selected-option').first().click()
+  await page.getByTestId('aihe-remove-selected-option').first().click()
   await page.getByTestId('aihe').click()
   // Verify that option has been removed
   const selectedOptionsAihe = await page.getByTestId('selected-option-aihe').count()
   expect(selectedOptionsAihe).toBe(1)
   // remove all selected options
-  await page.getByTestId('reset-selected-options').first().click()
+  await page.getByTestId('aihe-reset-selected-options').first().click()
 
   await page.getByTestId('aihe-label').click()
   // Verify that all options have been removed

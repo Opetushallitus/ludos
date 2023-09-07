@@ -93,7 +93,7 @@ export const MultiSelectDropdown = ({
                         toggleOption(opt)
                       }}
                       customClass="p-0 mr-2 hover:cursor-pointer hover:bg-white"
-                      data-testid="remove-selected-option">
+                      data-testid={`${testId}-remove-selected-option`}>
                       <Icon name="sulje" color="text-white" customClass="hover:text-black" size="sm" />
                     </Button>
                   </div>
@@ -112,7 +112,7 @@ export const MultiSelectDropdown = ({
                 onSelectedOptionsChange([])
                 setSearchText('')
               }}
-              data-testid="reset-selected-options">
+              data-testid={`${testId}-reset-selected-options`}>
               <Icon name="sulje" color="text-black" />
             </Button>
           ) : (

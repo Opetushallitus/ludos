@@ -82,11 +82,12 @@ test.describe('Suko assignment form tests', () => {
 
     await expect(updatedAssignmentHeader).toHaveText('Testi tehtävä muokattu')
 
-    await expect(page.getByText('Tehtävätyyppi: Tekstin tiivistäminen')).toBeVisible()
-    // await expect(page.getByText('Tavoitetaso:A1.2 Kehittyvä alkeiskielitaito')).toBeVisible()
-    await expect(
-      page.getByText('Laaja-alainen osaaminen:Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, V')
-    ).toBeVisible()
+    await expect(page.getByTestId('suko-tehtavatyyppi')).toHaveText('Tekstin tiivistäminen')
+    // await expect(page.getByTestId('suko-tavoitetaso')).toBeVisible()
+    await expect(page.getByTestId('suko-aihe')).toHaveText('kulttuuri ja luova ilmaisu')
+    await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
+      'Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, Vuorovaikutusosaaminen'
+    )
 
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()

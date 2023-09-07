@@ -38,7 +38,8 @@ export const AssignmentCard = ({ language, assignment, exam }: AssignmentCardPro
           to={`${assignment.id}`}
           state={{
             searchValuesString: location.search
-          }}>
+          }}
+          testId="assignment-name-link">
           {(language === 'fi' ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
