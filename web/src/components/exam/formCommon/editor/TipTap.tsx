@@ -15,12 +15,13 @@ import History from '@tiptap/extension-history'
 import { TipTapToolBar } from './TipTapToolBar'
 import './styles.css'
 
-type Levels = 1 | 2 | 3
+type Levels = 1 | 2 | 3 | 4
 
 const classes: Record<Levels, string> = {
-  1: 'text-xl',
-  2: 'text-sm',
-  3: 'text-xs'
+  1: 'tiptap-text-h1',
+  2: 'tiptap-text-h2',
+  3: 'tiptap-text-h3',
+  4: 'tiptap-text-h4'
 }
 
 const extensions = [
@@ -30,7 +31,7 @@ const extensions = [
   Bold,
   Italic,
   History,
-  Heading.configure({ levels: [1, 2, 3] }).extend({
+  Heading.configure({ levels: [1, 2, 3, 4] }).extend({
     renderHTML({ node, HTMLAttributes }) {
       const hasLevel = this.options.levels.includes(node.attrs.level)
       const level: Levels = hasLevel ? node.attrs.level : this.options.levels[0]
@@ -47,14 +48,14 @@ const extensions = [
   BulletList.configure({
     itemTypeName: 'listItem',
     HTMLAttributes: {
-      class: 'list-disc ml-6 pl-6'
+      class: 'tiptap-bullet-list'
     },
     keepAttributes: false, // keep the attributes from a previous line after toggling the list either using inputRule or using the button
     keepMarks: true // keep the marks from a previous line after toggling the list either using inputRule or using the button
   }),
   Blockquote.configure({
     HTMLAttributes: {
-      class: 'border-l-2 border-gray-300 pl-4'
+      class: 'tiptap-blockquote'
     }
   }),
   OrderedList.configure({
@@ -62,7 +63,7 @@ const extensions = [
     keepMarks: true,
     keepAttributes: false,
     HTMLAttributes: {
-      class: 'list-decimal ml-6 pl-6'
+      class: 'tiptap-numbered-list'
     }
   }),
   ListItem,
@@ -79,7 +80,7 @@ const extensions = [
   Link.configure({
     openOnClick: false,
     HTMLAttributes: {
-      class: 'text-green-primary underline'
+      class: 'tiptap-link'
     }
   })
 ]
