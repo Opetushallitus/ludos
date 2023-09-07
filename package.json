@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": [
     "web",
-    "playwright"
+    "playwright",
+    "scripts"
   ],
   "scripts": {
     "dev:server": "server/up.sh",
