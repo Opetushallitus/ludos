@@ -167,15 +167,8 @@ class Localizations {
     return [...this.localizationsByKeyAndLocale.keys()].sort()
   }
 
-  get(key: string): Map<string, LocalizationIn> | undefined
-  get(key: string, locale: Locale): LocalizationIn | undefined
-
-  get(key: string, locale?: Locale): LocalizationIn | Map<string, LocalizationIn> | undefined {
-    if (locale) {
-      return this.localizationsByKeyAndLocale.get(key)?.get(locale)
-    } else {
-      return this.localizationsByKeyAndLocale.get(key)
-    }
+  get(key: string, locale: Locale): LocalizationIn | undefined {
+    return this.localizationsByKeyAndLocale.get(key)?.get(locale)
   }
 
   private countLocale(locale: Locale): number {
@@ -238,9 +231,6 @@ function formatDate(timestamp: number | undefined): string {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
       timeZone: 'Europe/Helsinki'
     })})`
   }
@@ -422,11 +412,11 @@ async function copy(from: Environment | XlsxInput, to: Environment | XlsxOutput)
 }
 
 const EnvironmentParameter: Type<string, Environment> = {
-  async from(str) {
-    if (isEnvironment(str)) {
-      return Environment[str as Environment]
+  async from(envString: string) {
+    if (isEnvironment(envString)) {
+      return envString as Environment
     } else {
-      throw new Error(`Unknown environment ${str}`)
+      throw new Error(`Unknown environment ${envString}`)
     }
   },
   description: `${Object.values(Environment).join('|')}`
@@ -463,7 +453,7 @@ const listCommand = command({
   args: {
     env: positional({ type: envOrXlsxInputType, displayName: 'environment' })
   },
-  handler: async (args) => {
+  handler: async (args: { env: Environment | XlsxInput }) => {
     await list(args.env)
   }
 })
@@ -475,7 +465,7 @@ const diffCommand = command({
     from: positional({ type: envOrXlsxInputType, displayName: 'from' }),
     to: positional({ type: envOrXlsxInputType, displayName: 'to' })
   },
-  handler: async (args) => {
+  handler: async (args: { from: Environment | XlsxInput; to: Environment | XlsxInput }) => {
     await diff(args.from, args.to, true)
   }
 })
@@ -489,7 +479,7 @@ const copyCommand = command({
     from: positional({ type: envOrXlsxInputType, displayName: 'from' }),
     to: positional({ type: envOrXlsxOutputType, displayName: 'to' })
   },
-  handler: async (args) => {
+  handler: async (args: { from: Environment | XlsxInput; to: Environment | XlsxOutput }) => {
     await copy(args.from, args.to)
   }
 })
