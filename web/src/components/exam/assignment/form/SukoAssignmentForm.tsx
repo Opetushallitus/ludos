@@ -173,7 +173,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
           <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} />
             <MultiSelectDropdown
-              id="laajaalainenOsaamine"
+              id="laajaalainenOsaaminen"
               options={laajaalainenOsaaminenKoodisto}
               selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
               onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}

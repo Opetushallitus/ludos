@@ -10,9 +10,10 @@ interface ModalProps {
   open: boolean
   onClose: () => void
   onAddUrlAction: (url: string) => void
+  dataTestId: string
 }
 
-export const TipTapAddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction }: ModalProps) => {
+export const TipTapAddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTestId }: ModalProps) => {
   const { t } = useTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef, onClick } = useModal({ open, onClose })
   const [url, setUrl] = useState('')
@@ -42,12 +43,12 @@ export const TipTapAddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction }:
         </div>
 
         <div className="h-[15vh] p-6">
-          <label className="font-semibold" htmlFor="url-input">
+          <label className="font-semibold" htmlFor={`${dataTestId}-url-input`}>
             {t('form.lisaa-url')}
           </label>
           <input
-            id="url-input"
-            data-testid="url-input"
+            id={`${dataTestId}-url-input`}
+            data-testid={`${dataTestId}-url-input`}
             type="text"
             className="block w-full border border-gray-secondary p-2.5"
             value={url}
