@@ -34,7 +34,7 @@ export const AssignmentFilters = ({ exam, filters, setFilters }: AssignmentFilte
         {exam === Exam.Suko && (
           <>
             <div className="w-full px-2 md:w-6/12 lg:w-3/12">
-              <p>{t('filter.oppimaara')}</p>
+              <label htmlFor="oppimaaraFilter">{t('filter.oppimaara')}</label>
               <MultiSelectDropdown
                 id="oppimaaraFilter"
                 options={

@@ -4,6 +4,7 @@ import { useDropdown } from '../hooks/useDropdown'
 import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
 import { Button } from './Button'
+import { twMerge } from 'tailwind-merge'
 
 type DropdownProps<C extends boolean | undefined> = {
   id: string
@@ -44,35 +45,29 @@ export const Dropdown = ({
   })
 
   return (
-    <div
-      id={id}
-      className="relative mb-3 mt-1 border border-gray-border"
-      ref={containerRef}
-      onBlur={(e) => {
-        e.preventDefault()
-        setIsOpen(false)
-      }}
-      tabIndex={0}>
-      <div
-        className={`flex ${requiredError ? 'border border-red-primary' : ''} bg-white px-2`}
-        role="button"
-        aria-expanded={isOpen}
-        aria-activedescendant={`${id}-${selectedOption?.nimi}`}
-        onClick={() => setIsOpen(!isOpen)}
-        data-testid={testId}>
-        <div className="row w-full flex-wrap gap-2 py-1">
-          {selectedOption ? (
-            <div className="flex w-auto flex-col">
-              <div className="my-auto flex items-center">{selectedOption.nimi}</div>
-            </div>
-          ) : (
-            <>
+    <div className="relative mb-3 mt-1 border border-gray-border" ref={containerRef} tabIndex={0}>
+      <div className="row justify-between bg-white w-full">
+        <Button
+          variant="buttonGhost"
+          customClass={twMerge(`px-2 py-0 w-full`, requiredError && 'border border-red-primary')}
+          id={id}
+          aria-label={`Open ${id} Dropdown`}
+          aria-expanded={isOpen}
+          aria-activedescendant={selectedOption?.nimi && `${id}-${selectedOption?.nimi}`}
+          onClick={() => setIsOpen(!isOpen)}
+          data-testid={testId}>
+          <div className="row w-full flex-wrap gap-2 py-1">
+            {selectedOption ? (
+              <div className="flex w-auto flex-col">
+                <div className="my-auto flex items-center">{selectedOption.nimi}</div>
+              </div>
+            ) : (
               <span className="text-gray-secondary">{t('filter.valitse')}</span>
-            </>
-          )}
-        </div>
-        <div className="mt-1">
-          {canReset ? (
+            )}
+          </div>
+        </Button>
+        <div className="mt-1 pr-2">
+          {selectedOption && canReset ? (
             <Button
               variant="buttonGhost"
               customClass="p-0 hover:cursor-pointer hover:bg-gray-active"
@@ -83,7 +78,12 @@ export const Dropdown = ({
               <Icon name="sulje" color="text-black" />
             </Button>
           ) : (
-            <Icon name="laajenna" color="text-black" />
+            <Button
+              variant="buttonGhost"
+              customClass="p-0 hover:cursor-pointer hover:bg-gray-active"
+              onClick={() => setIsOpen(true)}>
+              <Icon name="laajenna" color="text-black" />
+            </Button>
           )}
         </div>
       </div>
@@ -92,7 +92,7 @@ export const Dropdown = ({
           isOpen ? '' : 'hidden'
         } absolute z-50 max-h-96 min-w-full overflow-y-auto border border-gray-border bg-white py-1`}
         role="listbox"
-        aria-labelledby={`${id}-label`}>
+        aria-labelledby={id}>
         {options.map((option, i) => (
           <li
             className={`cursor-pointer px-3 ${
@@ -105,6 +105,7 @@ export const Dropdown = ({
                 : ''
             }`}
             onClick={() => {
+              console.log('ads')
               onSelectedOptionsChange(option.koodiArvo)
               setIsOpen(false)
             }}

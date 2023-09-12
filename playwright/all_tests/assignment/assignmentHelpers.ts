@@ -29,7 +29,7 @@ async function fillMultiselectDropdownOption(page: Page, testId: string, options
   }
 
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-05').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-label').click()
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
 }
 
 async function fillLukuvuosi(page: Page) {
@@ -37,7 +37,7 @@ async function fillLukuvuosi(page: Page) {
   // 2020-2021
   await page.getByTestId('lukuvuosiKoodiArvos-option-20202021').click()
   // Close dropdown onBlur
-  await page.getByTestId('lukuvuosiKoodiArvos-label').click()
+  await page.getByTestId('lukuvuosiKoodiArvos-multi-select-ready-button').click()
 }
 
 async function fillTextFields(
@@ -134,16 +134,14 @@ export async function updateSukoAssignmentForm({
   expect(selectedOptionsAihe).toBe(1)
   // remove all selected options
   await page.getByTestId('aihe-reset-selected-options').first().click()
-
-  await page.getByTestId('aihe-label').click()
+  await page.getByTestId('aihe-multi-select-ready-button').click()
   // Verify that all options have been removed
   const selectedOptionsAiheResetted = await page.getByTestId('selected-option-aihe').count()
 
   expect(selectedOptionsAiheResetted).toBe(0)
 
   await selectDropdownOption(page, 'aihe', '003')
-  // Close dropdown onBlur
-  await page.getByTestId('aihe-label').click()
+  await page.getByTestId('aihe-multi-select-ready-button').click()
 
   await fillFinAndSvTextFields(
     page,
