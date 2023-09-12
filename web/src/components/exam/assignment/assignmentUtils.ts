@@ -1,6 +1,5 @@
 import {
   AssignmentIn,
-  BaseAssignmentAndInstructionIn,
   BaseIn,
   CertificateIn,
   ContentType,
@@ -47,12 +46,6 @@ export const isInstructionsArr = (data: BaseIn[], contentType: ContentType): dat
 export const isCertificatesArr = (data: BaseIn[], contentType: ContentType): data is CertificateIn[] =>
   data.every((item) => isCertificate(item, contentType))
 
-export const isAssignmentOrInstruction = (
-  data: BaseIn,
-  contentType: ContentType
-): data is BaseAssignmentAndInstructionIn =>
-  contentType === ContentType.koetehtavat || contentType === ContentType.ohjeet
-
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
 export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
@@ -69,9 +62,9 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
 }
 
 export const getContentName = (data: BaseIn, contentType: ContentType, language: string) => {
-  if (isCertificate(data, contentType)) {
-    return data.name
-  } else if (isAssignmentOrInstruction(data, contentType)) {
+  if (isAssignment(data, contentType) || isInstruction(data, contentType)) {
     return language === 'fi' ? data.nameFi : data.nameSv
+  } else if (isCertificate(data, contentType)) {
+    return data.name
   }
 }

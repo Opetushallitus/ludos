@@ -1,8 +1,3 @@
-export type Page = {
-  key: string
-  path: string
-}
-
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'
@@ -31,31 +26,26 @@ export type BaseIn = {
   updatedAt: string
 }
 
-export type BaseAssignmentAndInstructionIn = BaseIn & {
+export type BaseAssignmentIn = BaseIn & {
   nameFi: string
   nameSv: string
-  contentFi: string
-  contentSv: string
+  contentFi: string[]
+  contentSv: string[]
   instructionFi: string
   instructionSv: string
-}
-
-export type InstructionIn = BaseAssignmentAndInstructionIn & {
-  shortDescriptionFi: string
-  shortDescriptionSv: string
-  attachments: AttachmentIn[]
-}
-
-export type AssignmentIn = BaseAssignmentAndInstructionIn & {
   isFavorite: boolean
+}
+
+export type AssignmentIn = BaseAssignmentIn & {
+  aiheKoodiArvos: string[]
+  assignmentTypeKoodiArvo: string
   laajaalainenOsaaminenKoodiArvos: string[]
+  oppimaaraKoodiArvo: string
+  tavoitetasoKoodiArvo: string
 }
 
 export type SukoAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
-  oppimaaraKoodiArvo: string
-  tavoitetasoKoodiArvo: string
-  aiheKoodiArvos: string[]
 }
 
 export type LdAssignmentIn = AssignmentIn & {
@@ -66,6 +56,21 @@ export type LdAssignmentIn = AssignmentIn & {
 export type PuhviAssignmentIn = AssignmentIn & {
   assignmentTypeKoodiArvo: string
   lukuvuosiKoodiArvos: string[]
+}
+
+export type BaseInstructionIn = BaseIn & {
+  nameFi: string
+  nameSv: string
+  contentFi: string
+  contentSv: string
+  instructionFi: string
+  instructionSv: string
+}
+
+export type InstructionIn = BaseInstructionIn & {
+  shortDescriptionFi: string
+  shortDescriptionSv: string
+  attachments: AttachmentIn[]
 }
 
 export type AttachmentIn = {
@@ -103,8 +108,6 @@ export const ContentTypeSingularEng: ContentTypeMapping = {
   ohjeet: 'instruction',
   todistukset: 'certificate'
 }
-
-export type ValueOf<T> = T[keyof T]
 
 export const Roles = {
   YLLAPITAJA: 'YLLAPITAJA',

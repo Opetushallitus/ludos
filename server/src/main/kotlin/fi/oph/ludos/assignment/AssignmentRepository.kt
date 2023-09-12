@@ -1,6 +1,7 @@
 package fi.oph.ludos.assignment
 
 import BaseFilters
+import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.server.ResponseStatusException
@@ -28,10 +30,10 @@ class AssignmentRepository(
             rs.getInt("assignment_id"),
             rs.getString("assignment_name_fi"),
             rs.getString("assignment_name_sv"),
-            rs.getString("assignment_content_fi"),
-            rs.getString("assignment_content_sv"),
             rs.getString("assignment_instruction_fi"),
             rs.getString("assignment_instruction_sv"),
+            rs.getKotlinArray("assignment_content_fi"),
+            rs.getKotlinArray("assignment_content_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
@@ -50,10 +52,10 @@ class AssignmentRepository(
             rs.getInt("assignment_id"),
             rs.getString("assignment_name_fi"),
             rs.getString("assignment_name_sv"),
-            rs.getString("assignment_content_fi"),
-            rs.getString("assignment_content_sv"),
             rs.getString("assignment_instruction_fi"),
             rs.getString("assignment_instruction_sv"),
+            rs.getKotlinArray("assignment_content_fi"),
+            rs.getKotlinArray("assignment_content_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
@@ -70,10 +72,10 @@ class AssignmentRepository(
             rs.getInt("assignment_id"),
             rs.getString("assignment_name_fi"),
             rs.getString("assignment_name_sv"),
-            rs.getString("assignment_content_fi"),
-            rs.getString("assignment_content_sv"),
             rs.getString("assignment_instruction_fi"),
             rs.getString("assignment_instruction_sv"),
+            rs.getKotlinArray("assignment_content_fi"),
+            rs.getKotlinArray("assignment_content_sv"),
             PublishState.valueOf(rs.getString("assignment_publish_state")),
             rs.getTimestamp("assignment_created_at"),
             rs.getTimestamp("assignment_updated_at"),
@@ -83,6 +85,12 @@ class AssignmentRepository(
             rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos"),
             rs.getString("ld_assignment_aine_koodi_arvo")
         )
+    }
+
+    private fun getTableNameFromExam(exam: Exam) = when (exam) {
+        Exam.SUKO -> "suko_assignment"
+        Exam.PUHVI -> "puhvi_assignment"
+        Exam.LD -> "ld_assignment"
     }
 
     fun getAssignments(assignmentFilter: BaseFilters): List<AssignmentOut> {
@@ -103,13 +111,16 @@ class AssignmentRepository(
     }
 
     private fun initializeQuery(exam: Exam, userOid: String): Pair<String, MapSqlParameterSource> {
-        val lowercaseExam = exam.toString().lowercase()
+        val table = getTableNameFromExam(exam)
 
         val query = """
-        SELECT ${lowercaseExam}_assignment.*, 
-               CASE WHEN fav.assignment_id IS NOT NULL THEN true ELSE false END AS is_favorite
-        FROM ${lowercaseExam}_assignment
-        LEFT JOIN ${lowercaseExam}_assignment_favorite fav ON ${lowercaseExam}_assignment.assignment_id = fav.assignment_id AND fav.user_oid = :userOid
+        SELECT a.*, 
+                ARRAY_AGG(CASE WHEN content.assignment_content_language = '${Language.FI}' THEN content.assignment_content_assignment_content END) AS assignment_content_fi,
+                ARRAY_AGG(CASE WHEN content.assignment_content_language = '${Language.SV}' THEN content.assignment_content_assignment_content END) AS assignment_content_sv,
+                MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
+        FROM $table a
+        LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_content_assignment_id
+        LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = :userOid
         WHERE true
     """.trimIndent()
         val parameters = MapSqlParameterSource()
@@ -182,6 +193,7 @@ class AssignmentRepository(
 
         addFavoriteQuery(queryBuilder, filters.suosikki)
         addRoleBasedQuery(queryBuilder, role)
+        queryBuilder.append(" GROUP BY a.assignment_id")
         addOrderClause(queryBuilder, filters.jarjesta)
 
         return Triple(queryBuilder.toString(), parameters, mapSukoResultSet)
@@ -203,6 +215,7 @@ class AssignmentRepository(
         addLukuvuosiQuery(queryBuilder, parameters, Exam.PUHVI, filters.lukuvuosi)
         addFavoriteQuery(queryBuilder, filters.suosikki)
         addRoleBasedQuery(queryBuilder, role)
+        queryBuilder.append(" GROUP BY a.assignment_id")
         addOrderClause(queryBuilder, filters.jarjesta)
 
         return Triple(queryBuilder.toString(), parameters, mapPuhviResultSet)
@@ -224,160 +237,228 @@ class AssignmentRepository(
         addLukuvuosiQuery(queryBuilder, parameters, Exam.LD, filters.lukuvuosi)
         addFavoriteQuery(queryBuilder, filters.suosikki)
         addRoleBasedQuery(queryBuilder, role)
+        queryBuilder.append(" GROUP BY a.assignment_id")
         addOrderClause(queryBuilder, filters.jarjesta)
 
         return Triple(queryBuilder.toString(), parameters, mapLdResultSet)
     }
 
+    private fun insertAssignmentContent(
+        exam: Exam,
+        assignmentId: Int,
+        contentFi: Array<String>,
+        contentSv: Array<String>,
+        deleteOld: Boolean? = false
+    ) {
+        val table = getTableNameFromExam(exam)
 
-    fun saveSukoAssignment(assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut = jdbcTemplate.query(
-        """INSERT INTO suko_assignment (
-            |assignment_name_fi,
-            |assignment_name_sv,
-            |assignment_content_fi,
-            |assignment_content_sv,
-            |assignment_instruction_fi,
-            |assignment_instruction_sv,
-            |assignment_publish_state,
-            |suko_assignment_aihe_koodi_arvos, 
-            |suko_assignment_assignment_type_koodi_arvo, 
-            |suko_assignment_oppimaara_koodi_arvo, 
-            |suko_assignment_tavoitetaso_koodi_arvo,
-            |assignment_laajaalainen_osaaminen_koodi_arvos,
-            |assignment_author_oid) 
-            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?) 
-            |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
-        { rs: ResultSet, _: Int ->
-            SukoAssignmentDtoOut(
-                rs.getInt("assignment_id"),
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.contentFi,
-                assignment.contentSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState,
-                rs.getTimestamp("assignment_created_at"),
-                rs.getTimestamp("assignment_updated_at"),
-                assignment.laajaalainenOsaaminenKoodiArvos,
-                rs.getString("assignment_author_oid"),
-                false,
-                assignment.assignmentTypeKoodiArvo,
-                assignment.oppimaaraKoodiArvo,
-                assignment.tavoitetasoKoodiArvo,
-                assignment.aiheKoodiArvos,
+        if (deleteOld == true) jdbcTemplate.update(
+            "DELETE FROM ${table}_content WHERE assignment_content_assignment_id = ?", assignmentId
+        )
+
+        val insertContentSql = """
+                    INSERT INTO ${table}_content (
+                        assignment_content_assignment_id,
+                        assignment_content_language, 
+                        assignment_content_assignment_content, 
+                        assignment_order_index) 
+                    VALUES (?, ?::language, ?, ?)
+                """.trimIndent()
+
+        contentFi.forEachIndexed { index, content ->
+            jdbcTemplate.update(
+                insertContentSql, assignmentId, Language.FI.toString(), content, index
             )
-        },
-        assignment.nameFi,
-        assignment.nameSv,
-        assignment.contentFi,
-        assignment.contentSv,
-        assignment.instructionFi,
-        assignment.instructionSv,
-        assignment.publishState.toString(),
-        assignment.aiheKoodiArvos,
-        assignment.assignmentTypeKoodiArvo,
-        assignment.oppimaaraKoodiArvo,
-        assignment.tavoitetasoKoodiArvo,
-        assignment.laajaalainenOsaaminenKoodiArvos,
-        Kayttajatiedot.fromSecurityContext().oidHenkilo,
-    )[0]
-
-    fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut = jdbcTemplate.query(
-        """INSERT INTO puhvi_assignment (
-            |assignment_name_fi, 
-            |assignment_name_sv, 
-            |assignment_content_fi, 
-            |assignment_content_sv, 
-            |assignment_instruction_fi,
-            |assignment_instruction_sv,
-            |assignment_publish_state,
-            |assignment_laajaalainen_osaaminen_koodi_arvos,
-            |assignment_author_oid,
-            |puhvi_assignment_assignment_type_koodi_arvo,
-            |puhvi_assignment_lukuvuosi_koodi_arvos
-            |) 
-            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
-            |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
-        { rs: ResultSet, _: Int ->
-            PuhviAssignmentDtoOut(
-                rs.getInt("assignment_id"),
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.contentFi,
-                assignment.contentSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState,
-                rs.getTimestamp("assignment_created_at"),
-                rs.getTimestamp("assignment_updated_at"),
-                assignment.laajaalainenOsaaminenKoodiArvos,
-                rs.getString("assignment_author_oid"),
-                false,
-                assignment.assignmentTypeKoodiArvo,
-                assignment.lukuvuosiKoodiArvos
+        }
+        contentSv.forEachIndexed { index, content ->
+            jdbcTemplate.update(
+                insertContentSql, assignmentId, Language.SV.toString(), content, index
             )
-        },
-        assignment.nameFi,
-        assignment.nameSv,
-        assignment.contentFi,
-        assignment.contentSv,
-        assignment.instructionFi,
-        assignment.instructionSv,
-        assignment.publishState.toString(),
-        assignment.laajaalainenOsaaminenKoodiArvos,
-        Kayttajatiedot.fromSecurityContext().oidHenkilo,
-        assignment.assignmentTypeKoodiArvo,
-        assignment.lukuvuosiKoodiArvos
-    )[0]
+        }
+    }
 
-    fun saveLdAssignment(assignment: LdAssignmentDtoIn): LdAssignmentDtoOut = jdbcTemplate.query(
-        """INSERT INTO ld_assignment (
-            |assignment_name_fi, 
-            |assignment_name_sv, 
-            |assignment_content_fi, 
-            |assignment_content_sv, 
-            |assignment_instruction_fi,
-            |assignment_instruction_sv,
-            |assignment_publish_state,
-            |assignment_laajaalainen_osaaminen_koodi_arvos,
-            |assignment_author_oid,
-            |ld_assignment_lukuvuosi_koodi_arvos,
-            |ld_assignment_aine_koodi_arvo
-            |) 
-            |VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
-            |RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimMargin(),
-        { rs: ResultSet, _: Int ->
+
+    fun saveSukoAssignment(assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut =
+        transactionTemplate.execute { status ->
+            try {
+                val keyHolder = GeneratedKeyHolder()
+                jdbcTemplate.update({ con ->
+                    val ps = con.prepareStatement(
+                        """INSERT INTO suko_assignment (
+                            assignment_name_fi,
+                            assignment_name_sv,
+                            assignment_instruction_fi,
+                            assignment_instruction_sv,
+                            assignment_publish_state,
+                            suko_assignment_aihe_koodi_arvos, 
+                            suko_assignment_assignment_type_koodi_arvo, 
+                            suko_assignment_oppimaara_koodi_arvo, 
+                            suko_assignment_tavoitetaso_koodi_arvo,
+                            assignment_laajaalainen_osaaminen_koodi_arvos,
+                            assignment_author_oid) 
+                            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?) 
+                            RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimIndent(),
+                        arrayOf("assignment_id")
+                    )
+                    ps.setString(1, assignment.nameFi)
+                    ps.setString(2, assignment.nameSv)
+                    ps.setString(3, assignment.instructionFi)
+                    ps.setString(4, assignment.instructionSv)
+                    ps.setString(5, assignment.publishState.toString())
+                    ps.setArray(6, con.createArrayOf("text", assignment.aiheKoodiArvos))
+                    ps.setString(7, assignment.assignmentTypeKoodiArvo)
+                    ps.setString(8, assignment.oppimaaraKoodiArvo)
+                    ps.setString(9, assignment.tavoitetasoKoodiArvo)
+                    ps.setArray(10, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
+                    ps.setString(11, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                    ps
+                }, keyHolder)
+
+                val assignmentId = keyHolder.keys?.get("assignment_id") as Int
+
+                insertAssignmentContent(Exam.SUKO, assignmentId, assignment.contentFi, assignment.contentSv)
+
+                SukoAssignmentDtoOut(
+                    assignmentId,
+                    assignment.nameFi,
+                    assignment.nameSv,
+                    assignment.instructionFi,
+                    assignment.instructionSv,
+                    assignment.contentFi,
+                    assignment.contentSv,
+                    assignment.publishState,
+                    keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
+                    keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
+                    assignment.laajaalainenOsaaminenKoodiArvos,
+                    Kayttajatiedot.fromSecurityContext().oidHenkilo,
+                    false,
+                    assignment.assignmentTypeKoodiArvo,
+                    assignment.oppimaaraKoodiArvo,
+                    assignment.tavoitetasoKoodiArvo,
+                    assignment.aiheKoodiArvos,
+                )
+            } catch (e: Exception) {
+                status.setRollbackOnly()
+                throw e
+            }
+        } ?: throw RuntimeException("saveSukoAssignment(): Transaction  failed.") // todo: parempi logitus?
+
+    fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut =
+        transactionTemplate.execute { status ->
+            try {
+                val keyHolder = GeneratedKeyHolder()
+                jdbcTemplate.update({ con ->
+                    val ps = con.prepareStatement(
+                        """INSERT INTO puhvi_assignment (
+                            assignment_name_fi, 
+                            assignment_name_sv, 
+                            assignment_instruction_fi,
+                            assignment_instruction_sv,
+                            assignment_publish_state,
+                            assignment_laajaalainen_osaaminen_koodi_arvos,
+                            assignment_author_oid,
+                            puhvi_assignment_assignment_type_koodi_arvo,
+                            puhvi_assignment_lukuvuosi_koodi_arvos
+                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
+                        RETURNING assignment_id, assignment_created_at, assignment_updated_at""",
+                        arrayOf("assignment_id")
+                    )
+                    ps.setString(1, assignment.nameFi)
+                    ps.setString(2, assignment.nameSv)
+                    ps.setString(3, assignment.instructionFi)
+                    ps.setString(4, assignment.instructionSv)
+                    ps.setString(5, assignment.publishState.toString())
+                    ps.setArray(6, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
+                    ps.setString(7, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                    ps.setString(8, assignment.assignmentTypeKoodiArvo)
+                    ps.setArray(9, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos))
+                    ps
+                }, keyHolder)
+
+                val assignmentId = keyHolder.keys?.get("assignment_id") as Int
+
+                insertAssignmentContent(Exam.PUHVI, assignmentId, assignment.contentFi, assignment.contentSv)
+
+                PuhviAssignmentDtoOut(
+                    assignmentId,
+                    assignment.nameFi,
+                    assignment.nameSv,
+                    assignment.instructionFi,
+                    assignment.instructionSv,
+                    assignment.contentFi,
+                    assignment.contentSv,
+                    assignment.publishState,
+                    keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
+                    keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
+                    assignment.laajaalainenOsaaminenKoodiArvos,
+                    Kayttajatiedot.fromSecurityContext().oidHenkilo,
+                    false,
+                    assignment.assignmentTypeKoodiArvo,
+                    assignment.lukuvuosiKoodiArvos
+                )
+            } catch (e: Exception) {
+                status.setRollbackOnly()
+                throw e
+            }
+        } ?: throw RuntimeException("savePuhviAssignment(): Transaction  failed.") // todo: parempi logitus?
+
+    fun saveLdAssignment(assignment: LdAssignmentDtoIn): LdAssignmentDtoOut = transactionTemplate.execute { status ->
+        try {
+            val keyHolder = GeneratedKeyHolder()
+            jdbcTemplate.update({ con ->
+                val ps = con.prepareStatement(
+                    """INSERT INTO ld_assignment (
+                            assignment_name_fi, 
+                            assignment_name_sv, 
+                            assignment_instruction_fi,
+                            assignment_instruction_sv,
+                            assignment_publish_state,
+                            assignment_laajaalainen_osaaminen_koodi_arvos,
+                            assignment_author_oid,
+                            ld_assignment_lukuvuosi_koodi_arvos,
+                            ld_assignment_aine_koodi_arvo
+                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
+                        RETURNING assignment_id, assignment_created_at, assignment_updated_at""",
+                    arrayOf("assignment_id")
+                )
+                ps.setString(1, assignment.nameFi)
+                ps.setString(2, assignment.nameSv)
+                ps.setString(3, assignment.instructionFi)
+                ps.setString(4, assignment.instructionSv)
+                ps.setString(5, assignment.publishState.toString())
+                ps.setArray(6, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
+                ps.setString(7, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setArray(8, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos))
+                ps.setString(9, assignment.aineKoodiArvo)
+                ps
+            }, keyHolder)
+
+            val assignmentId = keyHolder.keys?.get("assignment_id") as Int
+
+            insertAssignmentContent(Exam.LD, assignmentId, assignment.contentFi, assignment.contentSv)
+
             LdAssignmentDtoOut(
-                rs.getInt("assignment_id"),
+                assignmentId,
                 assignment.nameFi,
                 assignment.nameSv,
-                assignment.contentFi,
-                assignment.contentSv,
                 assignment.instructionFi,
                 assignment.instructionSv,
+                assignment.contentFi,
+                assignment.contentSv,
                 assignment.publishState,
-                rs.getTimestamp("assignment_created_at"),
-                rs.getTimestamp("assignment_updated_at"),
+                keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
+                keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
                 assignment.laajaalainenOsaaminenKoodiArvos,
-                rs.getString("assignment_author_oid"),
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 false,
                 assignment.lukuvuosiKoodiArvos,
                 assignment.aineKoodiArvo
             )
-        },
-        assignment.nameFi,
-        assignment.nameSv,
-        assignment.contentFi,
-        assignment.contentSv,
-        assignment.instructionFi,
-        assignment.instructionSv,
-        assignment.publishState.toString(),
-        assignment.laajaalainenOsaaminenKoodiArvos,
-        Kayttajatiedot.fromSecurityContext().oidHenkilo,
-        assignment.lukuvuosiKoodiArvos,
-        assignment.aineKoodiArvo
-    )[0]
+        } catch (e: Exception) {
+            status.setRollbackOnly()
+            throw e
+        }
+    } ?: throw RuntimeException("saveLdAssignment(): Transaction  failed.") // todo: parempi logitus?
 
     fun getAssignmentById(id: Int, exam: Exam): AssignmentOut? {
         val role = Kayttajatiedot.fromSecurityContext().role
@@ -391,128 +472,142 @@ class AssignmentRepository(
 
         val andIsPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND assignment_publish_state = 'PUBLISHED'" else ""
 
-        val sql = """
+        val query = """
             SELECT 
                 a.*,
-                CASE WHEN fav.assignment_id IS NOT NULL THEN true ELSE false END AS is_favorite
+                ARRAY_AGG(content.assignment_content_assignment_content) FILTER (WHERE content.assignment_content_language = '${Language.FI}') AS assignment_content_fi,
+                ARRAY_AGG(content.assignment_content_assignment_content) FILTER (WHERE content.assignment_content_language = '${Language.SV}') AS assignment_content_sv,
+                MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
             FROM $table a
+            LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_content_assignment_id
             LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = ?
-            WHERE a.assignment_id = ? $andIsPublishedIfOpettaja 
-        """.trimIndent()
+            WHERE a.assignment_id = ? $andIsPublishedIfOpettaja
+            GROUP BY a.assignment_id;
+            """
 
-        return jdbcTemplate.query(sql, mapper, userOid, id).firstOrNull()
+        return jdbcTemplate.query(query, mapper, userOid, id).firstOrNull()
     }
 
-    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? {
-        val results = jdbcTemplate.query(
-            """UPDATE suko_assignment 
-                |SET 
-                |assignment_name_fi = ?, 
-                |assignment_name_sv = ?, 
-                |assignment_content_fi = ?, 
-                |assignment_content_sv = ?, 
-                |assignment_instruction_fi = ?,
-                |assignment_instruction_sv = ?,
-                |assignment_publish_state = ?::publish_state,
-                |suko_assignment_aihe_koodi_arvos = ?,
-                |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
-                |suko_assignment_assignment_type_koodi_arvo = ?,
-                |suko_assignment_oppimaara_koodi_arvo = ?,
-                |suko_assignment_tavoitetaso_koodi_arvo = ?,
-                |assignment_updated_at = clock_timestamp()
-                |WHERE assignment_id = ?
-                |RETURNING assignment_id""".trimMargin(),
-            { rs: ResultSet, _: Int ->
-                rs.getInt("assignment_id")
-            },
-            assignment.nameFi,
-            assignment.nameSv,
-            assignment.contentFi,
-            assignment.contentSv,
-            assignment.instructionFi,
-            assignment.instructionSv,
-            assignment.publishState.toString(),
-            assignment.aiheKoodiArvos,
-            assignment.laajaalainenOsaaminenKoodiArvos,
-            assignment.assignmentTypeKoodiArvo,
-            assignment.oppimaaraKoodiArvo,
-            assignment.tavoitetasoKoodiArvo,
-            id
-        )
+    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { status ->
+        try {
+            val updatedRows = jdbcTemplate.update(
+                """UPDATE suko_assignment 
+                SET 
+                assignment_name_fi = ?, 
+                assignment_name_sv = ?, 
+                assignment_instruction_fi = ?,
+                assignment_instruction_sv = ?,
+                assignment_publish_state = ?::publish_state,
+                suko_assignment_aihe_koodi_arvos = ?,
+                assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                suko_assignment_assignment_type_koodi_arvo = ?,
+                suko_assignment_oppimaara_koodi_arvo = ?,
+                suko_assignment_tavoitetaso_koodi_arvo = ?,
+                assignment_updated_at = clock_timestamp()
+                WHERE assignment_id = ?""".trimIndent(),
+                assignment.nameFi,
+                assignment.nameSv,
+                assignment.instructionFi,
+                assignment.instructionSv,
+                assignment.publishState.toString(),
+                assignment.aiheKoodiArvos,
+                assignment.laajaalainenOsaaminenKoodiArvos,
+                assignment.assignmentTypeKoodiArvo,
+                assignment.oppimaaraKoodiArvo,
+                assignment.tavoitetasoKoodiArvo,
+                id
+            )
 
-        return results.firstOrNull()
+            if (updatedRows == 0) {
+                return@execute null
+            }
+
+            insertAssignmentContent(Exam.SUKO, id, assignment.contentFi, assignment.contentSv, true)
+
+            return@execute id
+        } catch (e: Exception) {
+            status.setRollbackOnly()
+            throw e
+        }
     }
 
 
-    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? {
-        val results = jdbcTemplate.query(
-            """UPDATE puhvi_assignment 
-                |SET assignment_name_fi = ?, 
-                |assignment_name_sv = ?, 
-                |assignment_content_fi = ?, 
-                |assignment_content_sv = ?,
-                |assignment_instruction_fi = ?,
-                |assignment_instruction_sv = ?,
-                |assignment_publish_state = ?::publish_state, 
-                |assignment_updated_at = clock_timestamp(),
-                |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
-                |puhvi_assignment_assignment_type_koodi_arvo = ?,
-                |puhvi_assignment_lukuvuosi_koodi_arvos = ?
-                |WHERE assignment_id = ? 
-                |RETURNING assignment_id""".trimMargin(),
-            { rs: ResultSet, _: Int ->
-                rs.getInt("assignment_id")
-            },
-            assignment.nameFi,
-            assignment.nameSv,
-            assignment.contentFi,
-            assignment.contentSv,
-            assignment.instructionFi,
-            assignment.instructionSv,
-            assignment.publishState.toString(),
-            assignment.laajaalainenOsaaminenKoodiArvos,
-            assignment.assignmentTypeKoodiArvo,
-            assignment.lukuvuosiKoodiArvos,
-            id
-        )
+    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { status ->
+        try {
+            val updatedRows = jdbcTemplate.update(
+                """UPDATE puhvi_assignment 
+                SET assignment_name_fi = ?, 
+                assignment_name_sv = ?, 
+                assignment_instruction_fi = ?,
+                assignment_instruction_sv = ?,
+                assignment_publish_state = ?::publish_state, 
+                assignment_updated_at = clock_timestamp(),
+                assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                puhvi_assignment_assignment_type_koodi_arvo = ?,
+                puhvi_assignment_lukuvuosi_koodi_arvos = ?
+                WHERE assignment_id = ? """.trimIndent(),
+                assignment.nameFi,
+                assignment.nameSv,
+                assignment.instructionFi,
+                assignment.instructionSv,
+                assignment.publishState.toString(),
+                assignment.laajaalainenOsaaminenKoodiArvos,
+                assignment.assignmentTypeKoodiArvo,
+                assignment.lukuvuosiKoodiArvos,
+                id
+            )
 
-        return results.firstOrNull()
+            if (updatedRows == 0) {
+                return@execute null
+            }
+
+            insertAssignmentContent(Exam.PUHVI, id, assignment.contentFi, assignment.contentSv, true)
+
+            return@execute id
+        } catch (e: Exception) {
+            status.setRollbackOnly()
+            throw e
+        }
     }
 
-    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? {
-        val results = jdbcTemplate.query(
-            """UPDATE ld_assignment 
-                |SET assignment_name_fi = ?, 
-                |assignment_name_sv = ?, 
-                |assignment_content_fi = ?, 
-                |assignment_content_sv = ?,
-                |assignment_instruction_fi = ?,
-                |assignment_instruction_sv = ?,
-                |assignment_publish_state = ?::publish_state, 
-                |assignment_updated_at = clock_timestamp(),
-                |assignment_laajaalainen_osaaminen_koodi_arvos = ?,
-                |ld_assignment_lukuvuosi_koodi_arvos = ?,
-                |ld_assignment_aine_koodi_arvo = ?
-                |WHERE assignment_id = ? 
-                |RETURNING assignment_id""".trimMargin(),
-            { rs: ResultSet, _: Int ->
-                rs.getInt("assignment_id")
-            },
-            assignment.nameFi,
-            assignment.nameSv,
-            assignment.contentFi,
-            assignment.contentSv,
-            assignment.instructionFi,
-            assignment.instructionSv,
-            assignment.publishState.toString(),
-            assignment.laajaalainenOsaaminenKoodiArvos,
-            assignment.lukuvuosiKoodiArvos,
-            assignment.aineKoodiArvo,
-            id
-        )
+    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { status ->
+        try {
+            val updatedRows = jdbcTemplate.update(
+                """UPDATE ld_assignment 
+                SET assignment_name_fi = ?, 
+                assignment_name_sv = ?, 
+                assignment_instruction_fi = ?,
+                assignment_instruction_sv = ?,
+                assignment_publish_state = ?::publish_state, 
+                assignment_updated_at = clock_timestamp(),
+                assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                ld_assignment_lukuvuosi_koodi_arvos = ?,
+                ld_assignment_aine_koodi_arvo = ?
+                WHERE assignment_id = ?""",
+                assignment.nameFi,
+                assignment.nameSv,
+                assignment.instructionFi,
+                assignment.instructionSv,
+                assignment.publishState.toString(),
+                assignment.laajaalainenOsaaminenKoodiArvos,
+                assignment.lukuvuosiKoodiArvos,
+                assignment.aineKoodiArvo,
+                id
+            )
 
-        return results.firstOrNull()
+            if (updatedRows == 0) {
+                return@execute null
+            }
+
+            insertAssignmentContent(Exam.LD, id, assignment.contentFi, assignment.contentSv, true)
+
+            return@execute id
+        } catch (e: Exception) {
+            status.setRollbackOnly()
+            throw e
+        }
     }
+
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(
         // The same as `SELECT DISTINCT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment` but 10x faster

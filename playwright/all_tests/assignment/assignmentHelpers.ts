@@ -1,19 +1,14 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import { Exam, postWithSession } from '../../helpers'
 
-type FillAssignmentForm = {
+type AssignmentBase = {
   page: Page
   nameTextFi: string
   nameTextSv: string
-  contentTextFi: string
-  contentTextSv: string
   instructionTextFi: string
   instructionTextSv: string
-}
-
-type FiAndSvTextFields = {
-  fi: string
-  sv: string
+  contentTextFi: string[]
+  contentTextSv: string[]
 }
 
 async function selectDropdownOption(page: Page, testId: string, optionId: string) {
@@ -28,7 +23,6 @@ async function fillMultiselectDropdownOption(page: Page, testId: string, options
     await page.getByTestId(`${testId}-option-${optionId}`).click()
   }
 
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-05').click()
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
 }
 
@@ -40,32 +34,6 @@ async function fillLukuvuosi(page: Page) {
   await page.getByTestId('lukuvuosiKoodiArvos-multi-select-ready-button').click()
 }
 
-async function fillTextFields(
-  page: Page,
-  contentText: string,
-  nameText: string,
-  instructionText: string,
-  lang: 'Fi' | 'Sv'
-) {
-  await page.getByTestId(`name${lang}`).fill(nameText)
-  await page.getByTestId(`instruction${lang}`).fill(instructionText)
-  await page
-    .getByTestId(`editor-content-${lang.toLowerCase()}`)
-    .locator('div[contenteditable="true"]')
-    .fill(contentText)
-}
-
-export async function fillFinAndSvTextFields(
-  page: Page,
-  contentText: FiAndSvTextFields,
-  nameText: FiAndSvTextFields,
-  instructionText: FiAndSvTextFields
-) {
-  await fillTextFields(page, contentText.fi, nameText.fi, instructionText.fi, 'Fi')
-  await page.getByTestId('tab-sv').click()
-  await fillTextFields(page, contentText.sv, nameText.sv, instructionText.sv, 'Sv')
-}
-
 export async function fillSukoAssignmentForm({
   page,
   contentTextFi,
@@ -74,7 +42,7 @@ export async function fillSukoAssignmentForm({
   nameTextSv,
   instructionTextFi,
   instructionTextSv
-}: FillAssignmentForm) {
+}: AssignmentBase) {
   await selectDropdownOption(page, 'oppimaara', 'KT7')
   await page.getByTestId('assignmentTypeRadio-001').click()
   await selectDropdownOption(page, 'tavoitetaso', '0002')
@@ -106,11 +74,14 @@ export async function fillSukoAssignmentForm({
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
-  await fillFinAndSvTextFields(
+  await fillLdAssignmentTextFields(
     page,
-    { fi: contentTextFi, sv: contentTextSv },
-    { fi: nameTextFi, sv: nameTextSv },
-    { fi: instructionTextFi, sv: instructionTextSv }
+    nameTextFi,
+    instructionTextFi,
+    contentTextFi,
+    nameTextSv,
+    instructionTextSv,
+    contentTextSv
   )
 }
 
@@ -122,7 +93,7 @@ export async function updateSukoAssignmentForm({
   nameTextSv,
   instructionTextFi,
   instructionTextSv
-}: FillAssignmentForm) {
+}: AssignmentBase) {
   await selectDropdownOption(page, 'oppimaara', 'KT8')
   await page.getByTestId('assignmentTypeRadio-002').click()
   await selectDropdownOption(page, 'tavoitetaso', '0003')
@@ -143,12 +114,49 @@ export async function updateSukoAssignmentForm({
   await selectDropdownOption(page, 'aihe', '003')
   await page.getByTestId('aihe-multi-select-ready-button').click()
 
-  await fillFinAndSvTextFields(
+  await fillLdAssignmentTextFields(
     page,
-    { fi: contentTextFi, sv: contentTextSv },
-    { fi: nameTextFi, sv: nameTextSv },
-    { fi: instructionTextFi, sv: instructionTextSv }
+    nameTextFi,
+    instructionTextFi,
+    contentTextFi,
+    nameTextSv,
+    instructionTextSv,
+    contentTextSv
   )
+}
+
+async function fillLdAssignmentTextFields(
+  page: Page,
+  nameTextFi: string,
+  instructionTextFi: string,
+  contentTextFi: string[],
+  nameTextSv: string,
+  instructionTextSv: string,
+  contentTextSv: string[]
+) {
+  await page.getByTestId('nameFi').fill(nameTextFi)
+  await page.getByTestId('instructionFi').fill(instructionTextFi)
+
+  for (const [index, content] of contentTextFi.entries()) {
+    await page.getByTestId(`contentFi-${index}`).locator('div[contenteditable="true"]').fill(content)
+    // if not last content press add content field button
+    if (index !== contentTextFi.length - 1) {
+      await page.getByTestId('contentFi-add-content-field').click()
+    }
+  }
+
+  await page.getByTestId('tab-sv').click()
+
+  await page.getByTestId('nameSv').fill(nameTextSv)
+  await page.getByTestId('instructionSv').fill(instructionTextSv)
+
+  for (const [index, content] of contentTextSv.entries()) {
+    await page.getByTestId(`contentSv-${index}`).locator('div[contenteditable="true"]').fill(content)
+    // if not last content press add content field button
+    if (index !== contentTextSv.length - 1) {
+      await page.getByTestId('contentSv-add-content-field').click()
+    }
+  }
 }
 
 export async function fillLdAssignmentForm({
@@ -159,7 +167,7 @@ export async function fillLdAssignmentForm({
   nameTextSv,
   instructionTextFi,
   instructionTextSv
-}: FillAssignmentForm) {
+}: AssignmentBase) {
   // Kotitalous
   await selectDropdownOption(page, 'aineKoodiArvo', '1')
 
@@ -168,12 +176,41 @@ export async function fillLdAssignmentForm({
   // Eettisyys ja ympäristöosaaminen
   await fillMultiselectDropdownOption(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
 
-  await fillFinAndSvTextFields(
+  await fillLdAssignmentTextFields(
     page,
-    { fi: contentTextFi, sv: contentTextSv },
-    { fi: nameTextFi, sv: nameTextSv },
-    { fi: instructionTextFi, sv: instructionTextSv }
+    nameTextFi,
+    instructionTextFi,
+    contentTextFi,
+    nameTextSv,
+    instructionTextSv,
+    contentTextSv
   )
+}
+
+export async function updateLdAssignment({
+  page,
+  nameTextFi,
+  nameTextSv,
+  instructionTextFi,
+  instructionTextSv,
+  contentTextFi,
+  contentTextSv
+}: AssignmentBase) {
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
+  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
+
+  await fillLdAssignmentTextFields(
+    page,
+    nameTextFi,
+    instructionTextFi,
+    contentTextFi,
+    nameTextSv,
+    instructionTextSv,
+    contentTextSv
+  )
+
+  await page.getByTestId('form-submit').click()
 }
 
 export async function fillPuhviAssignmentForm({
@@ -184,71 +221,47 @@ export async function fillPuhviAssignmentForm({
   nameTextSv,
   instructionTextFi,
   instructionTextSv
-}: FillAssignmentForm) {
+}: AssignmentBase) {
   // Esiintymistaidot
   await page.getByTestId('assignmentTypeRadio-002').click()
   await fillLukuvuosi(page)
   await fillMultiselectDropdownOption(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
 
-  await fillFinAndSvTextFields(
+  await fillLdAssignmentTextFields(
     page,
-    { fi: contentTextFi, sv: contentTextSv },
-    { fi: nameTextFi, sv: nameTextSv },
-    { fi: instructionTextFi, sv: instructionTextSv }
+    nameTextFi,
+    instructionTextFi,
+    contentTextFi,
+    nameTextSv,
+    instructionTextSv,
+    contentTextSv
   )
 }
 
-export async function updateLdAssignment(page: Page) {
+export async function updatePuhviAssignment({
+  page,
+  nameTextFi,
+  nameTextSv,
+  contentTextFi,
+  contentTextSv,
+  instructionTextFi,
+  instructionTextSv
+}: AssignmentBase) {
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
   await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
 
-  await fillFinAndSvTextFields(
+  await fillLdAssignmentTextFields(
     page,
-    { fi: 'Testi sisältö muokattu', sv: 'Testa innehåll muokattu' },
-    { fi: 'Testi tehtävä muokattu', sv: 'Testuppgifter muokattu' },
-    { fi: 'Testi ohjeet muokattu', sv: 'Testa instruktioner muokattu' }
+    nameTextFi,
+    instructionTextFi,
+    contentTextFi,
+    nameTextSv,
+    instructionTextSv,
+    contentTextSv
   )
 
   await page.getByTestId('form-submit').click()
-
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
-  await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
-  await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
-  await expect(page.getByText('Aine:Kotitalous')).toBeVisible()
-  await expect(page.getByText('Laaja-alainen osaaminen:Vuorovaikutusosaaminen')).toBeVisible()
-
-  await expect(page.getByText('Testi sisältö muokattu', { exact: true })).toBeVisible()
-  await page.getByTestId('language-dropdown').click()
-  await page.getByTestId('language-dropdown-option-sv').click()
-
-  await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
-}
-
-export async function updatePuhviAssignment(page: Page) {
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
-
-  await fillFinAndSvTextFields(
-    page,
-    { fi: 'Testi sisältö muokattu', sv: 'Testa innehåll muokattu' },
-    { fi: 'Testi tehtävä muokattu', sv: 'Testuppgifter muokattu' },
-    { fi: 'Testi ohjeet muokattu', sv: 'Testa instruktioner muokattu' }
-  )
-
-  await page.getByTestId('form-submit').click()
-
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
-  await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
-  await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
-  await expect(page.getByText('Laaja-alainen osaaminen:Vuorovaikutusosaaminen')).toBeVisible()
-
-  await expect(page.getByText('Testi sisältö muokattu', { exact: true })).toBeVisible()
-  await page.getByTestId('language-dropdown').click()
-  await page.getByTestId('language-dropdown-option-sv').click()
-
-  await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
 }
 
 export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
@@ -256,8 +269,8 @@ export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
     exam: exam,
     nameFi: `${assignmnentNameBase} nimi fi`,
     nameSv: `${assignmnentNameBase} nimi sv`,
-    contentFi: `${assignmnentNameBase} sisältö fi`,
-    contentSv: `${assignmnentNameBase} sisältö sv`,
+    contentFi: [`${assignmnentNameBase} sisältö fi`],
+    contentSv: [`${assignmnentNameBase} sisältö sv`],
     instructionFi: `${assignmnentNameBase} ohje fi`,
     instructionSv: `${assignmnentNameBase} ohje sv`,
     publishState: 'PUBLISHED',

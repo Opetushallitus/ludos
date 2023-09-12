@@ -20,8 +20,8 @@ const commonSchema = z.object({
   nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   instructionFi: z.string(),
   instructionSv: z.string(),
-  contentFi: z.string().default(''),
-  contentSv: z.string().default(''),
+  contentFi: z.array(z.string()).optional().default(['']),
+  contentSv: z.array(z.string()).optional().default(['']),
   laajaalainenOsaaminenKoodiArvos: z.array(z.string())
 })
 
@@ -38,16 +38,12 @@ export const sukoAssignmentSchema = commonSchema
 
 export type SukoAssignmentFormType = z.infer<typeof sukoAssignmentSchema>
 
-export const ldAssignmentSchema = commonSchema
-  .merge(
-    z.object({
-      aineKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
-      lukuvuosiKoodiArvos: z
-        .array(z.string(), { required_error: ErrorMessages.REQUIRED })
-        .min(1, ErrorMessages.REQUIRED)
-    })
-  )
-  .superRefine(commonSuperRefine)
+export const ldAssignmentSchema = commonSchema.merge(
+  z.object({
+    aineKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
+    lukuvuosiKoodiArvos: z.array(z.string(), { required_error: ErrorMessages.REQUIRED }).min(1, ErrorMessages.REQUIRED)
+  })
+)
 
 export type LdAssignmentFormType = z.infer<typeof ldAssignmentSchema>
 

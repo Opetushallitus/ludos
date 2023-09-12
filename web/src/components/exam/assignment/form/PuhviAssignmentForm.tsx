@@ -62,8 +62,6 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
     } else {
       setValue('exam', exam)
       setValue('laajaalainenOsaaminenKoodiArvos', [])
-      setValue('contentFi', '')
-      setValue('contentSv', '')
     }
   }, [assignment, exam, reset, setValue])
 
@@ -153,10 +151,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
             />
           </fieldset>
 
-          <FormContentInput
-            initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
-            hasInstruction
-          />
+          <FormContentInput hasInstruction />
         </form>
       </FormProvider>
       <FormButtonRow

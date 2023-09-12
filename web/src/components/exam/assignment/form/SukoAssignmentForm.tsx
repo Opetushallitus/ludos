@@ -186,10 +186,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput
-            initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
-            hasInstruction
-          />
+          <FormContentInput hasInstruction />
         </form>
       </FormProvider>
 
