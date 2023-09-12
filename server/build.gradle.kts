@@ -65,15 +65,27 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+val pathToStatic = "server/build/resources/main/static"
+
 val buildWeb = tasks.register("buildWeb") {
     dependsOn(tasks.withType<KotlinCompile>())
 
     doLast {
-        val pathToStatic = "../server/build/resources/main/static"
         File(pathToStatic).deleteRecursively()
         exec {
-            workingDir("../web")
-            commandLine("sh", "-c", "yarn && yarn build")
+            workingDir("..")
+            commandLine("sh", "-c", "yarn && yarn build:web")
+        }
+    }
+}
+
+val buildWebIfMissing = tasks.register("buildWebIfMissing") {
+    dependsOn(tasks.withType<KotlinCompile>())
+
+    doLast {
+        exec {
+            workingDir("..")
+            commandLine("sh", "-c", "! [ -f '${pathToStatic}/index.html' ] && yarn && yarn build:web || true")
         }
     }
 }
