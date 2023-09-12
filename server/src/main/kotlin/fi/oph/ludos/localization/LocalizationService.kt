@@ -13,6 +13,7 @@ enum class Locale(val locale: String) {
 }
 
 @Service
+@Suppress("UNCHECKED_CAST") // We want to retain flexibility with the exact type returned
 class LocalizationService(val localizationRepository: LocalizationRepository, val cacheManager: CacheManager) {
     private final val logger: Logger = LoggerFactory.getLogger(javaClass)
 

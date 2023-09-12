@@ -105,7 +105,7 @@ class LudosAuthenticationFailureHandler : AuthenticationFailureHandler {
     private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(
-        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException
+        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException?
     ) {
         ludosLogger.warn("Login failed: ${exception?.message}")
         response.status = HttpServletResponse.SC_UNAUTHORIZED
