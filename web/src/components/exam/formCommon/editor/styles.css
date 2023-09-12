@@ -1,7 +1,5 @@
-@layer tiptap {
-    .tiptap {
-        @apply h-[40vh] w-full resize-y overflow-auto p-2
-    }
+.tiptap {
+    @apply h-auto min-h-[30vh] w-full resize-y overflow-auto p-2
 }
 
 .image-resizer {
@@ -21,4 +19,20 @@
 
 .image-resizer:hover .resize-trigger {
     opacity: 1;
+}
+
+.tiptap-bullet-list {
+    @apply list-disc ml-6 pl-6
+}
+
+.tiptap-numbered-list {
+    @apply list-decimal ml-6 pl-6
+}
+
+.tiptap-blockquote {
+    @apply border-l-2 border-gray-secondary pl-4
+}
+
+.tiptap-link {
+    @apply text-green-primary underline
 }
