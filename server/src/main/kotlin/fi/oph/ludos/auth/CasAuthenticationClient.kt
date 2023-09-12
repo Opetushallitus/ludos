@@ -7,7 +7,7 @@ import fi.vm.sade.javautils.http.auth.CasAuthenticator
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.springframework.beans.factory.annotation.Value
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 abstract class CasAuthenticationClient(val service: String) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)

@@ -23,18 +23,20 @@ class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManag
         scheduler.scheduleAtFixedRate({ updateCacheFromKoodistopalvelu() }, 0, 600, TimeUnit.SECONDS)
     }
 
+    private inline fun <reified T> tryCastCachedMap(instance: Any?): T {
+        if (instance is T) {
+            return instance
+        } else {
+            throw IllegalStateException("Type of cached koodistos is invalid")
+        }
+    }
+
     fun getKoodistos(): Map<KoodistoName, List<KoodiDtoOut>> {
         val cachedKoodistosAny =
             cacheManager.getCache(CacheName.KOODISTO.key)?.get("all")?.get()
+                ?: throw IllegalStateException("Koodistos accessed before initialization")
 
-        if (cachedKoodistosAny != null) {
-            if (cachedKoodistosAny is Map<*, *>) {
-                return cachedKoodistosAny as Map<KoodistoName, List<KoodiDtoOut>>
-            } else {
-                throw IllegalStateException("Cached koodistos is not a map")
-            }
-        }
-        throw IllegalStateException("Koodistos accessed before initialization")
+        return tryCastCachedMap<Map<KoodistoName, List<KoodiDtoOut>>>(cachedKoodistosAny)
     }
     fun getKoodistos(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, List<KoodiDtoOut>> = filterKooditByLanguage(getKoodistos(), koodistoLanguage)
 

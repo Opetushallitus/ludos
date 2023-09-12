@@ -2,8 +2,8 @@ package fi.oph.ludos.auth
 
 import fi.oph.ludos.Constants.Companion.API_PREFIX
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter
-import org.jasig.cas.client.validation.Cas30ServiceTicketValidator
-import org.jasig.cas.client.validation.TicketValidator
+import org.apereo.cas.client.validation.Cas30ServiceTicketValidator
+import org.apereo.cas.client.validation.TicketValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -17,13 +17,12 @@ import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.userdetails.*
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 
 
 @Configuration
@@ -49,10 +48,9 @@ class CasConfig {
 
     @Bean
     fun casAuthenticationFilter(
-        authenticationConfiguration: AuthenticationConfiguration,
-        serviceProperties: ServiceProperties,
+        authenticationConfiguration: AuthenticationConfiguration
     ): CasAuthenticationFilter {
-        val casAuthenticationFilter = OpintopolkuCasAuthenticationFilter(serviceProperties)
+        val casAuthenticationFilter = CasAuthenticationFilter()
         casAuthenticationFilter.setAuthenticationManager(authenticationConfiguration.authenticationManager)
         casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check")
         casAuthenticationFilter.setAuthenticationSuccessHandler(LudosAuthenticationSuccessHandler())
@@ -107,7 +105,7 @@ class LudosAuthenticationFailureHandler : AuthenticationFailureHandler {
     private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(
-        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException
+        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException?
     ) {
         ludosLogger.warn("Login failed: ${exception?.message}")
         response.status = HttpServletResponse.SC_UNAUTHORIZED

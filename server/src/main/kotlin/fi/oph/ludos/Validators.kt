@@ -2,11 +2,11 @@ package fi.oph.ludos
 
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
-import javax.validation.Constraint
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
-import javax.validation.Payload
-import javax.validation.constraints.Size
+import jakarta.validation.Constraint
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
+import jakarta.validation.Payload
+import jakarta.validation.constraints.Size
 import kotlin.reflect.KClass
 
 @MustBeDocumented

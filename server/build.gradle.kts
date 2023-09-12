@@ -3,10 +3,10 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot") version "2.7.11"
-    id("io.spring.dependency-management") version "1.1.0"
-    kotlin("jvm") version "1.7.22"
-    kotlin("plugin.spring") version "1.7.22"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
+    kotlin("jvm")
+    kotlin("plugin.spring")
 }
 
 group = "fi.oph"
@@ -28,32 +28,34 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.security:spring-security-cas")
-    implementation("org.springframework.session:spring-session-jdbc")
-    implementation("fi.vm.sade.java-utils:opintopolku-cas-servlet-filter:0.1.2-SNAPSHOT")
-    implementation("fi.vm.sade.java-utils:opintopolku-user-details-service:0.2.0-SNAPSHOT")
-    implementation("fi.vm.sade.java-utils:java-utils:0.3.0-SNAPSHOT")
-    implementation("fi.vm.sade.java-utils:java-http:0.6.1-SNAPSHOT")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.flywaydb:flyway-core:9.16.1")
-    implementation("org.springframework.boot:spring-boot-starter-cache")
-    implementation("software.amazon.awssdk:s3:2.20.56")
-    implementation("software.amazon.awssdk:sso:2.20.56")
-    implementation("software.amazon.awssdk:ssooidc:2.20.56")
-    implementation("org.springframework:spring-test")
-    implementation("org.jsoup:jsoup:1.16.1")
-    runtimeOnly("org.postgresql:postgresql:42.6.0")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.reflections:reflections:0.10.2")
+    developmentOnly(Spring.boot.devTools)
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:_")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:_")
+    implementation("fi.vm.sade.java-utils:java-http:_")
+    implementation("fi.vm.sade.java-utils:java-utils:_")
+    implementation("fi.vm.sade.java-utils:opintopolku-cas-servlet-filter:_")
+    implementation("fi.vm.sade.java-utils:opintopolku-user-details-service:_")
+    implementation("io.github.cdimascio:dotenv-kotlin:_")
+    implementation("jakarta.servlet:jakarta.servlet-api:_")
+    implementation("javax.servlet:javax.servlet-api:_")
+    implementation("org.flywaydb:flyway-core:_")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:_")
+    implementation("org.jsoup:jsoup:_")
+    implementation("org.springframework.security:spring-security-cas:_")
+    implementation("org.springframework:spring-test:_")
+    implementation("software.amazon.awssdk:s3:_")
+    implementation("software.amazon.awssdk:sso:_")
+    implementation("software.amazon.awssdk:ssooidc:_")
+    implementation(Spring.boot.cache)
+    implementation(Spring.boot.data.jpa)
+    implementation(Spring.boot.security)
+    implementation(Spring.boot.validation)
+    implementation(Spring.boot.web)
+    implementation(Spring.session.jdbc)
+    runtimeOnly("org.postgresql:postgresql:_")
+    testImplementation("org.reflections:reflections:_")
+    testImplementation(Spring.boot.test)
+    testImplementation(Spring.security.spring_security_test)
 }
 
 tasks.withType<KotlinCompile> {

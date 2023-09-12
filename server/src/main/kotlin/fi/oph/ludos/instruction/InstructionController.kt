@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
-import javax.servlet.http.Part
-import javax.validation.Valid
+import jakarta.servlet.http.Part
+import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/instruction")

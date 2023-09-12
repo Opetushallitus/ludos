@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest

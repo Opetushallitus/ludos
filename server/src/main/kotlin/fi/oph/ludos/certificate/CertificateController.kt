@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
-import javax.validation.Valid
+import jakarta.validation.Valid
 
 @RestController
 @Validated
