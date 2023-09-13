@@ -66,22 +66,6 @@ data class SukoAssignmentDtoIn(
     val aiheKoodiArvos: Array<String>,
 ) : Assignment
 
-@JsonTypeName("PUHVI")
-data class PuhviAssignmentDtoIn(
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val instructionFi: String,
-    override val instructionSv: String,
-    override val publishState: PublishState,
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_PUHVI)
-    val assignmentTypeKoodiArvo: String,
-    @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
-    val lukuvuosiKoodiArvos: Array<String>,
-) : Assignment
-
 @JsonTypeName("LD")
 data class LdAssignmentDtoIn(
     override val nameFi: String,
@@ -96,6 +80,22 @@ data class LdAssignmentDtoIn(
     val lukuvuosiKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     val aineKoodiArvo: String
+) : Assignment
+
+@JsonTypeName("PUHVI")
+data class PuhviAssignmentDtoIn(
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
+    override val publishState: PublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_PUHVI)
+    val assignmentTypeKoodiArvo: String,
+    @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
+    val lukuvuosiKoodiArvos: Array<String>,
 ) : Assignment
 
 interface AssignmentOut {
