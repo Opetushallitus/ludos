@@ -111,7 +111,7 @@ tasks.withType<BootRun> {
 }
 
 tasks.withType<Test> {
-    dependsOn(buildWeb)
+    dependsOn(buildWebIfMissing)
     useJUnitPlatform()
     systemProperty("spring.profiles.active", "local")
     testLogging {
