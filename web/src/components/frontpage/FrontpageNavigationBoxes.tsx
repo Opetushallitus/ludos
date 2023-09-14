@@ -6,24 +6,24 @@ import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
 
 interface NavigationBoxesProps {
-  exams: Page[]
+  examPages: Page[]
   contentTypes: ContentType[]
 }
 
-export const NavigationBoxes = ({ exams, contentTypes }: NavigationBoxesProps) => {
+export const NavigationBoxes = ({ examPages, contentTypes }: NavigationBoxesProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
   return (
     <>
-      {exams.map((exam, i) => (
+      {examPages.map((examPage, i) => (
         <div className="mt-6" key={i}>
-          <h3 className="mb-3 text-base font-semibold">{t(`header.${exam.titleKey}`)}</h3>
-          <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`${exam.path.replace('/content/', '')}`}>
+          <h3 className="mb-3 text-base font-semibold">{t(`header.${examPage.key}`)}</h3>
+          <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`${examPage.path.replace('/content/', '')}`}>
             {contentTypes.map((contentType, i) => (
               <InternalLink
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
-                to={`${exam.path}/${ContentTypeTranslationEnglish[contentType]}`}
+                to={`${examPage.path}/${ContentTypeTranslationEnglish[contentType]}`}
                 testId={`nav-box-${ContentTypeTranslationEnglish[contentType]}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">

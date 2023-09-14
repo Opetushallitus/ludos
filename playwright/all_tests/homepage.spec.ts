@@ -8,25 +8,19 @@ const contentTypes = [
   ['certificates', 'todistukset']
 ]
 
-const pages = [
-  ['etusivu', 'etusivu'],
-  ['suko', 'SUKO'],
-  ['ld', 'LD'],
-  ['puhvi', 'PUHVI'],
-  ['feedback', 'feedback']
-]
+const pageIds = ['etusivu', 'suko', 'ld', 'puhvi', 'palautteet']
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
 test('navigation links work', async ({ page }) => {
   await page.goto('/')
 
-  for (const [pageNavId, pageHeadingId] of pages) {
-    const navLink = page.getByTestId(`nav-link-${pageNavId}`)
+  for (const pageId of pageIds) {
+    const navLink = page.getByTestId(`nav-link-${pageId}`)
 
     await navLink.click()
 
-    expect(page.getByTestId(`page-heading-${pageHeadingId}`)).toBeVisible()
+    expect(page.getByTestId(`page-heading-${pageId}`)).toBeVisible()
   }
 
   await page.goto('/')
@@ -36,7 +30,7 @@ test('navigation links work', async ({ page }) => {
 
     for (const [contentTypeEng, contentTypeFi] of contentTypes) {
       await boxRow.getByTestId(`nav-box-${contentTypeEng}`).click()
-      expect(await page.locator('h2').getAttribute('data-testid')).toBe(`page-heading-${exam.toLocaleUpperCase()}`)
+      expect(await page.locator('h2').getAttribute('data-testid')).toBe(`page-heading-${exam}`)
       for (const [_, contentTypeFi2] of contentTypes) {
         expect(
           await page.getByTestId(`tab-${contentTypeFi2}`).getAttribute('aria-expanded'),

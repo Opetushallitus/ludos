@@ -1,6 +1,6 @@
 import { Layout } from '../layout/Layout'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { feedbackKey, frontpageKey, ldKey, newKey, puhviKey, sukoKey, updateKey } from './routes'
+import { feedbackKey, ldKey, newKey, puhviKey, sukoKey, updateKey } from './routes'
 import { useTranslation } from 'react-i18next'
 import { Exam, Roles } from '../../types'
 import { useUserDetails } from '../../hooks/useUserDetails'
@@ -170,14 +170,13 @@ function AuthorizedRoutes() {
   return (
     <Routes>
       <Route
-        path={`/${frontpageKey}`}
+        path={`/`}
         element={
           <Layout>
             <Frontpage />
           </Layout>
         }
       />
-      <Route path="/" element={<Navigate to={`/${frontpageKey}`} />} />
       <Route element={<ProtectedRoute />}>
         <Route
           path={`/${feedbackKey}`}
