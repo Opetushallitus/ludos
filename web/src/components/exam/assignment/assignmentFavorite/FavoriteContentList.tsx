@@ -33,7 +33,7 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
 
   const { filters, setFilters, resetFiltersAndParams } = useFilters({
     initialSearchFilters: location.search,
-    contentType: ContentTypeEng.KOETEHTAVAT,
+    contentType: ContentTypeEng.koetehtavat,
     basePath: `/favorites/${activeTab}`,
     showOnlyFavorites: true
   })
@@ -63,7 +63,7 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
     <div>
       <div className="row gap-6 my-3 flex-wrap justify-end">
         <div className="flex flex-col gap-2 md:flex-row">
-          <p className="mt-2">{t(`filter.${ContentTypeTranslationFinnish[ContentTypeEng.KOETEHTAVAT]}-kieli`)}</p>
+          <p className="mt-2">{t(`filter.${ContentTypeTranslationFinnish[ContentTypeEng.koetehtavat]}-kieli`)}</p>
           <div className="w-36">
             <Dropdown
               id="languageDropdown"

@@ -57,7 +57,7 @@ export const ContentHeader = ({
             </Button>
           )}
         </div>
-        {contentType !== ContentTypeEng.TODISTUKSET && (
+        {contentType !== ContentTypeEng.todistukset && (
           <div className="row gap-6">
             <div className="flex flex-col gap-2 md:flex-row">
               <p className="mt-2">{languageFilterText()}</p>
@@ -86,7 +86,7 @@ export const ContentHeader = ({
           </div>
         )}
       </div>
-      {contentType === ContentTypeEng.KOETEHTAVAT && (
+      {contentType === ContentTypeEng.koetehtavat && (
         <AssignmentFilters exam={exam} filters={filters} setFilters={setFilters} />
       )}
     </>

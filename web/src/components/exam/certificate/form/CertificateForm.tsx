@@ -117,7 +117,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentTypeEng.TODISTUKSET} name={certificate?.name} />
+      <FormHeader action={action} contentType={ContentTypeEng.todistukset} name={certificate?.name} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
@@ -138,7 +138,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
         <AttachmentSelector
-          contentType={ContentTypeEng.TODISTUKSET}
+          contentType={ContentTypeEng.todistukset}
           attachmentData={currentAttachment()}
           handleNewAttachmentSelected={handleNewAttachmentSelected}
           language="fi"

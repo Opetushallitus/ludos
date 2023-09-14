@@ -8,12 +8,11 @@ export const Frontpage = () => {
   const { t } = useTranslation()
   const { firstNames } = useUserDetails()
   const examPages = EXAM_TYPES.map((ex) => navigationPages[ex])
-  const contentTypes = Object.values(ContentType)
 
   return (
     <div className="mt-10">
       <h2 data-testid={`page-heading-${etusivuKey}`}>{t('frontpage.tervehdys', { nimi: firstNames })}</h2>
-      <NavigationBoxes examPages={examPages} contentTypes={contentTypes} />
+      <NavigationBoxes examPages={examPages} />
     </div>
   )
 }

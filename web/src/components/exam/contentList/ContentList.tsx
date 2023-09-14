@@ -7,13 +7,7 @@ import { Spinner } from '../../Spinner'
 import { CertificateCard } from '../certificate/CertificateCard'
 import { EXAM_TYPE_ENUM } from '../../../constants'
 import { useLocation } from 'react-router-dom'
-import {
-  ContentTypeTranslationEnglish,
-  isAssignmentsArr,
-  isCertificatesArr,
-  isInstructionsArr,
-  removeEmpty
-} from '../assignment/assignmentUtils'
+import { isAssignmentsArr, isCertificatesArr, isInstructionsArr, removeEmpty } from '../assignment/assignmentUtils'
 import { AssignmentCard } from '../assignment/AssignmentCard'
 import { ContentHeader } from './ContentHeader'
 
@@ -31,13 +25,13 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
 
   const urlByContentType = () => {
-    if (contentType === ContentTypeEng.KOETEHTAVAT) {
+    if (contentType === ContentTypeEng.koetehtavat) {
       return `${EXAM_TYPE_ENUM.ASSIGNMENT}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
         removeNullsFromFilterObj
       ).toString()}`
     }
 
-    if (contentType === ContentTypeEng.OHJEET) {
+    if (contentType === ContentTypeEng.ohjeet) {
       return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
         removeNullsFromFilterObj
       ).toString()}`
@@ -50,7 +44,7 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
 
   // refresh data on tab change
   useEffect(() => {
-    const singularContentType = ContentTypeTranslationEnglish[activeTab]
+    const singularContentType = ContentTypeEng[activeTab]
 
     // if activeTab and content type are not the same, refresh data and reset filters
     if (contentType !== singularContentType) {

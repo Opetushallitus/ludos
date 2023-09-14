@@ -17,7 +17,7 @@ export const CertificateContent = ({ certificate }: CertificateContentProps) => 
       <p data-testid="certificate-description">{certificate.description}</p>
       <h3 className="mb-3 mt-8 font-semibold">{t('certificate.todistus')}</h3>
       <AttachmentFileDetailView
-        contentType={ContentTypeEng.TODISTUKSET}
+        contentType={ContentTypeEng.todistukset}
         attachments={{
           name: certificate.attachment.name,
           attachment: {

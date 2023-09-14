@@ -31,9 +31,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const [language, setLanguage] = useState<string>('fi')
 
   const contentTypeSingular =
-    contentType === ContentTypeEng.KOETEHTAVAT
+    contentType === ContentTypeEng.koetehtavat
       ? EXAM_TYPE_ENUM.ASSIGNMENT
-      : contentType === ContentTypeEng.OHJEET
+      : contentType === ContentTypeEng.ohjeet
       ? EXAM_TYPE_ENUM.INSTRUCTION
       : EXAM_TYPE_ENUM.CERTIFICATE
 

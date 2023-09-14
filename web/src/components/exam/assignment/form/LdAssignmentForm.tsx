@@ -105,7 +105,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
 
   return (
     <>
-      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} name={assignment?.nameFi} />
+      <FormHeader action={action} contentType={ContentTypeEng.koetehtavat} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />

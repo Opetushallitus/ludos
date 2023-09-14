@@ -41,7 +41,7 @@ export function ContentHeader({
           </h2>
         </div>
       </div>
-      {contentType !== ContentTypeEng.TODISTUKSET && (
+      {contentType !== ContentTypeEng.todistukset && (
         <div>
           <p>{t(`filter.${ContentTypeTranslationFinnish[contentType]}-kieli`)}</p>
           <Dropdown

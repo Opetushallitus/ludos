@@ -96,16 +96,16 @@ export type CertificateIn = BaseIn & {
 }
 
 export const ContentType = {
-  KOETEHTAVAT: 'koetehtavat',
-  OHJEET: 'ohjeet',
-  TODISTUKSET: 'todistukset'
+  koetehtavat: 'koetehtavat',
+  ohjeet: 'ohjeet',
+  todistukset: 'todistukset'
 } as const
 export type ContentType = (typeof ContentType)[keyof typeof ContentType]
 
 export const ContentTypeEng = {
-  KOETEHTAVAT: 'assignments',
-  OHJEET: 'instructions',
-  TODISTUKSET: 'certificates'
+  koetehtavat: 'assignments',
+  ohjeet: 'instructions',
+  todistukset: 'certificates'
 }
 export type ContentTypeEng = (typeof ContentTypeEng)[keyof typeof ContentTypeEng]
 
@@ -116,9 +116,9 @@ type SingularOptions = {
 }
 
 export const ContentTypesSingular: SingularOptions = {
-  KOETEHTAVAT: 'koetehtava',
-  OHJEET: 'ohje',
-  TODISTUKSET: 'todistus'
+  koetehtavat: 'koetehtava',
+  ohjeet: 'ohje',
+  todistukset: 'todistus'
 }
 
 export type ValueOf<T> = T[keyof T]

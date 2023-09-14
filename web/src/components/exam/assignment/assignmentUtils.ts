@@ -19,12 +19,6 @@ export function getSingularContentTypeFinnish(s: ContentType) {
   return ContentTypesSingular[key]
 }
 
-export const ContentTypeTranslationEnglish = {
-  koetehtavat: 'assignments',
-  ohjeet: 'instructions',
-  todistukset: 'certificates'
-} as { [key: string]: string }
-
 export const ContentTypeTranslationFinnish = {
   assignments: 'koetehtavat',
   instructions: 'ohjeet',
@@ -52,11 +46,11 @@ export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment
   exam === Exam.Ld && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
 // content type checkers
 export const isAssignment = (data: BaseIn, contentType: string): data is AssignmentIn =>
-  contentType === ContentTypeEng.KOETEHTAVAT
+  contentType === ContentTypeEng.koetehtavat
 export const isInstruction = (data: BaseIn, contentType: string): data is InstructionIn =>
-  contentType === ContentTypeEng.OHJEET
+  contentType === ContentTypeEng.ohjeet
 export const isCertificate = (data: BaseIn, contentType: string): data is CertificateIn =>
-  contentType === ContentTypeEng.TODISTUKSET
+  contentType === ContentTypeEng.todistukset
 
 export const isAssignmentsArr = (data: BaseIn[], contentType: string): data is AssignmentIn[] =>
   data.every((item) => isAssignment(item, contentType))
@@ -68,7 +62,7 @@ export const isCertificatesArr = (data: BaseIn[], contentType: string): data is 
   data.every((item) => isCertificate(item, contentType))
 
 export const isAssignmentOrInstruction = (data: BaseIn, contentType: string): data is BaseAssignmentAndInstructionIn =>
-  contentType === ContentTypeEng.KOETEHTAVAT || contentType === ContentTypeEng.OHJEET
+  contentType === ContentTypeEng.koetehtavat || contentType === ContentTypeEng.ohjeet
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript

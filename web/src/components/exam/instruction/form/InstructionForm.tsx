@@ -223,7 +223,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentTypeEng.OHJEET} name={instruction?.nameFi} />
+      <FormHeader action={action} contentType={ContentTypeEng.ohjeet} name={instruction?.nameFi} />
 
       <form
         className="min-h-[50vh] border-y-2 border-gray-light py-5"
@@ -265,7 +265,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <label className="font-semibold">{t('form.tiedostot')}</label>
           <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
           <AttachmentSelector
-            contentType={ContentTypeEng.OHJEET}
+            contentType={ContentTypeEng.ohjeet}
             language="fi"
             attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
             handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -303,7 +303,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <label className="font-semibold">{t('form.tiedostot')}</label>
           <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
           <AttachmentSelector
-            contentType={ContentTypeEng.OHJEET}
+            contentType={ContentTypeEng.ohjeet}
             language="sv"
             attachmentData={attachmentDataSv}
             handleNewAttachmentSelected={handleNewAttachmentSelected}

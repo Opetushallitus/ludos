@@ -99,7 +99,7 @@ export function useFilters({
 
   useEffect(() => {
     // only run effect on content type assignment and instruction
-    if (contentType === ContentTypeEng.TODISTUKSET) {
+    if (contentType === ContentTypeEng.todistukset) {
       return
     }
 

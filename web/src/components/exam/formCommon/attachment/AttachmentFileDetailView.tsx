@@ -26,7 +26,7 @@ export const AttachmentFileDetailView = ({
   const { t } = useTranslation()
   const [attachmentNames, setAttachmentNames] = useState<string[]>([])
   const attachmentDownloadUrlPrefix = `${
-    contentType === ContentTypeEng.OHJEET ? DOWNLOAD_INSTRUCTION_ATTACHMENT_URL : DOWNLOAD_CERTIFICATE_ATTACHMENT_URL
+    contentType === ContentTypeEng.ohjeet ? DOWNLOAD_INSTRUCTION_ATTACHMENT_URL : DOWNLOAD_CERTIFICATE_ATTACHMENT_URL
   }`
 
   useEffect(() => {
