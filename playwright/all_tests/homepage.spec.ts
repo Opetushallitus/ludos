@@ -1,12 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../helpers'
+import { ContentType, examsLowerCase, loginTestGroup, Role } from '../helpers'
 
-const exams = ['suko', 'puhvi', 'ld']
-const contentTypes = [
-  ['assignments', 'koetehtavat'],
-  ['instructions', 'ohjeet'],
-  ['certificates', 'todistukset']
-]
+const contentTypes = Object.values(ContentType)
 
 const pageIds = ['etusivu', 'suko', 'ld', 'puhvi', 'palautteet']
 
@@ -25,17 +20,17 @@ test('navigation links work', async ({ page }) => {
 
   await page.goto('/')
 
-  for (const exam of exams) {
+  for (const exam of examsLowerCase) {
     const boxRow = page.getByTestId(`/${exam}`)
 
-    for (const [contentTypeEng, contentTypeFi] of contentTypes) {
-      await boxRow.getByTestId(`nav-box-${contentTypeEng}`).click()
+    for (const contentType of contentTypes) {
+      await boxRow.getByTestId(`nav-box-${contentType}`).click()
       expect(await page.locator('h2').getAttribute('data-testid')).toBe(`page-heading-${exam}`)
-      for (const [_, contentTypeFi2] of contentTypes) {
+      for (const contentType2 of contentTypes) {
         expect(
-          await page.getByTestId(`tab-${contentTypeFi2}`).getAttribute('aria-expanded'),
-          `Expected ${contentTypeFi} to be expanded and other tabs not`
-        ).toBe(contentTypeFi === contentTypeFi2 ? 'true' : 'false')
+          await page.getByTestId(`tab-${contentType2}`).getAttribute('aria-expanded'),
+          `Expected ${contentType} to be expanded and other tabs not`
+        ).toBe(contentType === contentType2 ? 'true' : 'false')
       }
       await page.goBack()
     }

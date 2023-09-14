@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { Icon } from '../Icon'
-import { BaseIn, ContentTypeEng } from '../../types'
-import { ContentTypeTranslationFinnish, getContentName } from '../exam/assignment/assignmentUtils'
+import { BaseIn, ContentType } from '../../types'
+import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
 import { ContentAction, useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 import { TipTap } from '../exam/formCommon/editor/TipTap'
@@ -13,7 +13,7 @@ type ContentHeaderProps = {
   language: string
   data: BaseIn
   onSelectedOptionsChange: (opt: string) => void
-  contentType: string
+  contentType: ContentType
   isPresentation: boolean
 }
 
@@ -41,9 +41,9 @@ export function ContentHeader({
           </h2>
         </div>
       </div>
-      {contentType !== ContentTypeEng.todistukset && (
+      {contentType !== ContentType.todistukset && (
         <div>
-          <p>{t(`filter.${ContentTypeTranslationFinnish[contentType]}-kieli`)}</p>
+          <p>{t(`filter.${contentType}-kieli`)}</p>
           <Dropdown
             id="languageDropdown"
             options={LANGUAGE_OPTIONS}

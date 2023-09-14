@@ -34,7 +34,6 @@ export const Exam = {
   Ld: 'LD',
   Puhvi: 'PUHVI'
 } as const
-
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
 export type BaseIn = {
@@ -101,24 +100,20 @@ export const ContentType = {
   todistukset: 'todistukset'
 } as const
 export type ContentType = (typeof ContentType)[keyof typeof ContentType]
-
-export const ContentTypeEng = {
-  koetehtavat: 'assignments',
-  ohjeet: 'instructions',
-  todistukset: 'certificates'
-}
-export type ContentTypeEng = (typeof ContentTypeEng)[keyof typeof ContentTypeEng]
-
-export type ContentTypeKeys = keyof typeof ContentType
-
-type SingularOptions = {
-  [key in ContentTypeKeys]: string
+type ContentTypeMapping = {
+  [key in keyof typeof ContentType]: string
 }
 
-export const ContentTypesSingular: SingularOptions = {
+export const ContentTypeSingular: ContentTypeMapping = {
   koetehtavat: 'koetehtava',
   ohjeet: 'ohje',
   todistukset: 'todistus'
+}
+
+export const ContentTypeSingularEng: ContentTypeMapping = {
+  koetehtavat: 'assignment',
+  ohjeet: 'instruction',
+  todistukset: 'certificate'
 }
 
 export type ValueOf<T> = T[keyof T]

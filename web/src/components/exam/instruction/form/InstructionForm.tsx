@@ -5,7 +5,8 @@ import {
   AttachmentData,
   AttachmentLanguage,
   ContentFormAction,
-  ContentTypeEng,
+  ContentType,
+  ContentTypeSingularEng,
   Exam,
   InstructionIn,
   MapWithFileKeyAndMetadata,
@@ -54,7 +55,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const id = match!.params.id
 
   const { data: instruction, loading: instructionLoading } = useFetch<InstructionIn>(
-    `instruction/${exam}/${id}`,
+    `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`,
     action === ContentFormAction.uusi
   )
 
@@ -111,7 +112,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         }
         setSubmitError('')
 
-        navigate(`/${exam}/instructions/${resultId}`)
+        navigate(`/${exam}/${ContentType.ohjeet}/${resultId}`)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -223,7 +224,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentTypeEng.ohjeet} name={instruction?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.ohjeet} name={instruction?.nameFi} />
 
       <form
         className="min-h-[50vh] border-y-2 border-gray-light py-5"
@@ -265,7 +266,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <label className="font-semibold">{t('form.tiedostot')}</label>
           <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
           <AttachmentSelector
-            contentType={ContentTypeEng.ohjeet}
+            contentType={ContentType.ohjeet}
             language="fi"
             attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
             handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -303,7 +304,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <label className="font-semibold">{t('form.tiedostot')}</label>
           <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
           <AttachmentSelector
-            contentType={ContentTypeEng.ohjeet}
+            contentType={ContentType.ohjeet}
             language="sv"
             attachmentData={attachmentDataSv}
             handleNewAttachmentSelected={handleNewAttachmentSelected}

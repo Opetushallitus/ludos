@@ -1,13 +1,12 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { navigationPages } from '../routes/routes'
 import { useEffect, useState } from 'react'
-import { ContentType, ContentTypeEng, Exam } from '../../types'
+import { ContentType, Exam } from '../../types'
 import { Tabs } from '../Tabs'
-import { ContentTypeTranslationFinnish } from './assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 import { ContentList } from './contentList/ContentList'
 
-type ExamProps = {
+type ContentListPageProps = {
   exam: Exam
 }
 
@@ -17,20 +16,19 @@ function useActiveTabAndUrlPathUpdate({ contentType, exam }: { contentType: Cont
 
   useEffect(() => {
     if (activeTab) {
-      navigate(`/${exam.toLowerCase()}/${ContentTypeEng[activeTab]}`, { replace: true })
+      navigate(`/${exam.toLowerCase()}/${ContentType[activeTab]}`, { replace: true })
     }
   }, [activeTab, navigate, contentType, exam])
 
   return { activeTab, setActiveTab }
 }
 
-const Exams = ({ exam }: ExamProps) => {
+const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { t } = useTranslation()
-  const { contentType } = useParams<{ contentType: string }>()
+  const { contentType } = useParams<{ contentType: ContentType }>()
 
-  const defaultContentType = (ContentTypeTranslationFinnish[contentType!] as ContentType) || ContentType.koetehtavat
   const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
-    contentType: defaultContentType,
+    contentType: contentType || ContentType.koetehtavat,
     exam
   })
 
@@ -55,4 +53,4 @@ const Exams = ({ exam }: ExamProps) => {
   )
 }
 
-export default Exams
+export default ContentListPage

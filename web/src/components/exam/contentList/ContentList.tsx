@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentIn, BaseIn, ContentType, ContentTypeEng, Exam, InstructionIn } from '../../../types'
+import { AssignmentIn, BaseIn, ContentType, ContentTypeSingularEng, Exam, InstructionIn } from '../../../types'
 import { FiltersType, useFilters } from '../../../hooks/useFilters'
 import { InstructionCard } from '../instruction/InstructionCard'
 import { Spinner } from '../../Spinner'
 import { CertificateCard } from '../certificate/CertificateCard'
-import { EXAM_TYPE_ENUM } from '../../../constants'
 import { useLocation } from 'react-router-dom'
 import { isAssignmentsArr, isCertificatesArr, isInstructionsArr, removeEmpty } from '../assignment/assignmentUtils'
 import { AssignmentCard } from '../assignment/AssignmentCard'
-import { ContentHeader } from './ContentHeader'
+import { ContentListHeader } from './ContentListHeader'
 
 interface ContentListProps {
   exam: Exam
-  contentType: string
+  contentType: ContentType
   activeTab: ContentType
 }
 
@@ -25,29 +24,27 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
   let removeNullsFromFilterObj = removeEmpty<FiltersType>(filters)
 
   const urlByContentType = () => {
-    if (contentType === ContentTypeEng.koetehtavat) {
-      return `${EXAM_TYPE_ENUM.ASSIGNMENT}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
+    if (contentType === ContentType.koetehtavat) {
+      return `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
         removeNullsFromFilterObj
       ).toString()}`
     }
 
-    if (contentType === ContentTypeEng.ohjeet) {
-      return `${EXAM_TYPE_ENUM.INSTRUCTION}/${exam!.toLocaleUpperCase()}?${new URLSearchParams(
+    if (contentType === ContentType.ohjeet) {
+      return `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
         removeNullsFromFilterObj
       ).toString()}`
     }
 
-    return `${EXAM_TYPE_ENUM.CERTIFICATE}/${exam!.toLocaleUpperCase()}`
+    return `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}`
   }
 
   const { data, loading, error, refresh } = useFetch<BaseIn[]>(urlByContentType())
 
   // refresh data on tab change
   useEffect(() => {
-    const singularContentType = ContentTypeEng[activeTab]
-
     // if activeTab and content type are not the same, refresh data and reset filters
-    if (contentType !== singularContentType) {
+    if (contentType !== activeTab) {
       refresh()
       resetFilters()
     }
@@ -67,7 +64,7 @@ export const ContentList = ({ exam, contentType, activeTab }: ContentListProps) 
 
   return (
     <div>
-      <ContentHeader
+      <ContentListHeader
         exam={exam}
         activeTab={activeTab}
         contentType={contentType}

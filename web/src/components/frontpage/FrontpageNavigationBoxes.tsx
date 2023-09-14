@@ -1,4 +1,4 @@
-import { ContentType, ContentTypeEng, Page } from '../../types'
+import { ContentType, Page } from '../../types'
 import { Icon } from '../Icon'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
@@ -21,8 +21,8 @@ export const NavigationBoxes = ({ examPages }: NavigationBoxesProps) => {
             {contentTypes.map((contentType, i) => (
               <InternalLink
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
-                to={`${examPage.path}/${ContentTypeEng[contentType]}`}
-                testId={`nav-box-${ContentTypeEng[contentType]}`}
+                to={`${examPage.path}/${contentType}`}
+                testId={`nav-box-${contentType}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={contentType} color="text-green-primary" />

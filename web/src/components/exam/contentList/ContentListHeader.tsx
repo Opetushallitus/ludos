@@ -1,20 +1,19 @@
 import { Button } from '../../Button'
 import { uusiKey } from '../../routes/routes'
-import { ContentType, ContentTypeEng, Exam } from '../../../types'
+import { ContentType, ContentTypeSingular, Exam } from '../../../types'
 import { Dropdown } from '../../Dropdown'
 import { FiltersType } from '../../../hooks/useFilters'
 import { useNavigate } from 'react-router-dom'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
 import { useTranslation } from 'react-i18next'
-import { ContentTypeTranslationFinnish, getSingularContentTypeFinnish } from '../assignment/assignmentUtils'
 import { AssignmentFilters } from '../assignment/AssignmentFilters'
 import { Dispatch, SetStateAction } from 'react'
 
-interface ContentHeaderProps {
+interface ContentListHeaderProps {
   exam: Exam
   activeTab: ContentType
-  contentType: ContentTypeEng
+  contentType: ContentType
   filters: FiltersType
   setFilters: Dispatch<SetStateAction<FiltersType>>
   handleFilterChange: (a: keyof FiltersType, b: string) => void
@@ -22,7 +21,7 @@ interface ContentHeaderProps {
   language: string
 }
 
-export const ContentHeader = ({
+export const ContentListHeader = ({
   exam,
   activeTab,
   contentType,
@@ -31,18 +30,13 @@ export const ContentHeader = ({
   handleFilterChange,
   setLanguage,
   language
-}: ContentHeaderProps) => {
+}: ContentListHeaderProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { isYllapitaja } = useUserDetails()
   const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
 
-  const singularActiveTab = getSingularContentTypeFinnish(activeTab)
-
-  const languageFilterText = () => {
-    const contentTypeFinnish = ContentTypeTranslationFinnish[contentType]
-    return t(`filter.${contentTypeFinnish}-kieli`)
-  }
+  const singularActiveTab = ContentTypeSingular[activeTab]
 
   return (
     <>
@@ -57,10 +51,10 @@ export const ContentHeader = ({
             </Button>
           )}
         </div>
-        {contentType !== ContentTypeEng.todistukset && (
+        {contentType !== ContentType.todistukset && (
           <div className="row gap-6">
             <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{languageFilterText()}</p>
+              <p className="mt-2">{t(`filter.${contentType}-kieli`)}</p>
               <div className="w-36">
                 <Dropdown
                   id="languageDropdown"
@@ -86,7 +80,7 @@ export const ContentHeader = ({
           </div>
         )}
       </div>
-      {contentType === ContentTypeEng.koetehtavat && (
+      {contentType === ContentType.koetehtavat && (
         <AssignmentFilters exam={exam} filters={filters} setFilters={setFilters} />
       )}
     </>

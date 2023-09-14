@@ -1,4 +1,4 @@
-import { CertificateIn, ContentTypeEng } from '../../types'
+import { CertificateIn, ContentType } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../exam/formCommon/attachment/AttachmentFileDetailView'
 
@@ -17,7 +17,7 @@ export const CertificateContent = ({ certificate }: CertificateContentProps) => 
       <p data-testid="certificate-description">{certificate.description}</p>
       <h3 className="mb-3 mt-8 font-semibold">{t('certificate.todistus')}</h3>
       <AttachmentFileDetailView
-        contentType={ContentTypeEng.todistukset}
+        contentType={ContentType.todistukset}
         attachments={{
           name: certificate.attachment.name,
           attachment: {

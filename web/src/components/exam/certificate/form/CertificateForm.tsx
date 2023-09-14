@@ -1,7 +1,15 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
-import { AttachmentData, CertificateIn, ContentFormAction, ContentTypeEng, Exam, PublishState } from '../../../../types'
+import {
+  AttachmentData,
+  CertificateIn,
+  ContentFormAction,
+  ContentType,
+  ContentTypeSingularEng,
+  Exam,
+  PublishState
+} from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { createCertificate, updateCertificate } from '../../../../request'
 import { useEffect, useState } from 'react'
@@ -33,7 +41,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const id = match!.params.id
 
   const { data: certificate } = useFetch<CertificateIn>(
-    `certificate/${exam.toUpperCase()}/${id}`,
+    `${ContentTypeSingularEng.todistukset}/${exam.toUpperCase()}/${id}`,
     action === ContentFormAction.uusi
   )
 
@@ -75,7 +83,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         }
         setSubmitError('')
 
-        navigate(`/${exam}/certificates/${resultId}`)
+        navigate(`/${exam}/${ContentType.todistukset}/${resultId}`)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -117,7 +125,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentTypeEng.todistukset} name={certificate?.name} />
+      <FormHeader action={action} contentType={ContentType.todistukset} name={certificate?.name} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <input type="hidden" {...register('exam')} />
@@ -138,7 +146,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
         <AttachmentSelector
-          contentType={ContentTypeEng.todistukset}
+          contentType={ContentType.todistukset}
           attachmentData={currentAttachment()}
           handleNewAttachmentSelected={handleNewAttachmentSelected}
           language="fi"

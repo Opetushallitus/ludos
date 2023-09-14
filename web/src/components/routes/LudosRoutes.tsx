@@ -2,12 +2,12 @@ import { Layout } from '../layout/Layout'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { palautteetKey, ldKey, uusiKey, puhviKey, sukoKey, muokkausKey, luvatonKey } from './routes'
 import { useTranslation } from 'react-i18next'
-import { Exam, Roles } from '../../types'
+import { ContentType, Exam, Roles } from '../../types'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from '../Spinner'
 import { Frontpage } from '../frontpage/Frontpage'
-import Exams from '../exam/Exams'
+import ContentListPage from '../exam/ContentListPage'
 import { PresentationHeader } from '../header/PresentationHeader'
 import { Footer } from '../Footer'
 import { AssignmentFavorite } from '../exam/assignment/assignmentFavorite/AssignmentFavorite'
@@ -71,7 +71,7 @@ function examRoutes(exam: Exam) {
     <Route path={examPathPrefix(exam)}>
       <Route element={<ProtectedRoute />}>
         <Route
-          path={`assignments/${uusiKey}`}
+          path={`${ContentType.koetehtavat}/${uusiKey}`}
           element={
             <Layout>
               <SpinnerSuspense>
@@ -81,7 +81,7 @@ function examRoutes(exam: Exam) {
           }
         />
         <Route
-          path={`assignments/${muokkausKey}/:id`}
+          path={`${ContentType.koetehtavat}/${muokkausKey}/:id`}
           element={
             <Layout>
               <SpinnerSuspense>
@@ -91,7 +91,7 @@ function examRoutes(exam: Exam) {
           }
         />
         <Route
-          path={`instructions/${uusiKey}`}
+          path={`${ContentType.ohjeet}/${uusiKey}`}
           element={
             <Layout>
               <SpinnerSuspense>
@@ -101,7 +101,7 @@ function examRoutes(exam: Exam) {
           }
         />
         <Route
-          path={`instructions/${muokkausKey}/:id`}
+          path={`${ContentType.ohjeet}/${muokkausKey}/:id`}
           element={
             <Layout>
               <SpinnerSuspense>
@@ -111,7 +111,7 @@ function examRoutes(exam: Exam) {
           }
         />
         <Route
-          path={`certificates/${uusiKey}`}
+          path={`${ContentType.todistukset}/${uusiKey}`}
           element={
             <Layout>
               <SpinnerSuspense>
@@ -121,7 +121,7 @@ function examRoutes(exam: Exam) {
           }
         />
         <Route
-          path={`certificates/${muokkausKey}/:id`}
+          path={`${ContentType.todistukset}/${muokkausKey}/:id`}
           element={
             <Layout>
               <SpinnerSuspense>
@@ -136,7 +136,7 @@ function examRoutes(exam: Exam) {
         path={':contentType?'}
         element={
           <Layout>
-            <Exams exam={exam} />
+            <ContentListPage exam={exam} />
           </Layout>
         }
       />

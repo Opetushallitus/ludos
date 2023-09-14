@@ -1,5 +1,4 @@
-import { ContentTypeTranslationFinnish } from '../assignment/assignmentUtils'
-import { ContentFormAction, ContentTypeEng, ContentTypeKeys, ContentTypesSingular } from '../../../types'
+import { ContentFormAction, ContentType, ContentTypeSingular } from '../../../types'
 import { useTranslation } from 'react-i18next'
 
 export const FormHeader = ({
@@ -8,22 +7,18 @@ export const FormHeader = ({
   name
 }: {
   action: ContentFormAction
-  contentType: ContentTypeEng
+  contentType: ContentType
   name?: string
 }) => {
   const { t } = useTranslation()
 
-  const contentTypeFin = ContentTypeTranslationFinnish[contentType].toUpperCase() as ContentTypeKeys
-
-  const contentTypeTextVariable = ContentTypesSingular[contentTypeFin]
-
   return (
     <div className="mb-6">
       <h2 className="mb-3" data-testid="heading">
-        {action === ContentFormAction.uusi ? t(`form.otsikko${contentTypeTextVariable}`) : name}
+        {action === ContentFormAction.uusi ? t(`form.otsikko${ContentTypeSingular[contentType]}`) : name}
       </h2>
       {action === ContentFormAction.uusi ? (
-        <p>{t(`form.kuvaus${contentTypeTextVariable}`)}</p>
+        <p>{t(`form.kuvaus${ContentTypeSingular[contentType]}`)}</p>
       ) : (
         <p>{t('form.muokkauskuvaus')}</p>
       )}

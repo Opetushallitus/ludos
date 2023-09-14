@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentFormAction, ContentTypeEng, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
+import { ContentFormAction, ContentType, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { createAssignment, updateAssignment } from '../../../../request'
@@ -82,7 +82,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         }
         setSubmitError('')
 
-        navigate(`/${exam}/assignments/${resultId}`)
+        navigate(`/${exam}/${ContentType.koetehtavat}/${resultId}`)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -111,7 +111,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
 
   return (
     <>
-      <FormHeader action={action} contentType={ContentTypeEng.koetehtavat} name={assignment?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.koetehtavat} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ContentTypeEng } from '../types'
+import { ContentType } from '../types'
 
 function isOrderDirection(value: any): value is 'asc' | 'desc' {
   return value === 'asc' || value === 'desc'
@@ -25,7 +25,7 @@ export function useFilters({
   showOnlyFavorites
 }: {
   initialSearchFilters: string
-  contentType: string
+  contentType: ContentType
   basePath?: string
   showOnlyFavorites?: boolean
 }) {
@@ -99,7 +99,7 @@ export function useFilters({
 
   useEffect(() => {
     // only run effect on content type assignment and instruction
-    if (contentType === ContentTypeEng.todistukset) {
+    if (contentType === ContentType.todistukset) {
       return
     }
 
