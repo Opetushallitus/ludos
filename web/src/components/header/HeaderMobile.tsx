@@ -38,7 +38,7 @@ export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
               </div>
 
               <nav className="flex h-full flex-col bg-white">
-                {pages.map(({ path, titleKey }, i) => (
+                {pages.map(({ path, key }, i) => (
                   <NavLink
                     to={path}
                     onClick={toggleMenu}
@@ -48,8 +48,8 @@ export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
                         isActive ? ' border-green-primary text-black' : ' border-white text-green-primary'
                       }`
                     }
-                    data-testid={`nav-link-${path.substring(1)}`}>
-                    {t(`header.${titleKey}`)}
+                    data-testid={`nav-link-${key}`}>
+                    {t(`header.${key}`)}
                   </NavLink>
                 ))}
                 <div className="mt-2 border-t-2 border-gray-separator bg-white py-2">

@@ -72,7 +72,7 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
         </div>
         <nav className="row pb-1 pt-3">
           <ul className="row gap-6 whitespace-nowrap">
-            {pages.map(({ path, titleKey }, i) => (
+            {pages.map(({ path, key }, i) => (
               <li key={i}>
                 <NavLink
                   to={path}
@@ -81,8 +81,8 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
                       isActive ? ' border-b-5 border-b-green-primary text-green-primary' : ''
                     }`
                   }
-                  data-testid={`nav-link-${path.substring(1).replaceAll('/', '-')}`}>
-                  {t(`header.${titleKey}`)}
+                  data-testid={`nav-link-${key}`}>
+                  {t(`header.${key}`)}
                 </NavLink>
               </li>
             ))}

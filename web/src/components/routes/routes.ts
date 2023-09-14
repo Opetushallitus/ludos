@@ -3,30 +3,30 @@ import { AllPages, NavigationPages, Page, PageHeaders } from '../../types'
 export const frontpageKey = 'etusivu'
 export const newKey = 'new'
 export const updateKey = 'update'
-export const feedbackKey = 'feedback'
+export const feedbackKey = 'palautteet'
 export const sukoKey = 'suko'
 export const puhviKey = 'puhvi'
 export const ldKey = 'ld'
 
 export const navigationPages: NavigationPages = {
   frontpage: {
-    titleKey: 'etusivu',
-    path: `/${frontpageKey}`
+    key: `${frontpageKey}`,
+    path: `/`
   },
   suko: {
-    titleKey: 'suko',
+    key: `${sukoKey}`,
     path: `/${sukoKey}`
   },
   ld: {
-    titleKey: 'ld',
+    key: `${ldKey}`,
     path: `/${ldKey}`
   },
   puhvi: {
-    titleKey: 'puhvi',
+    key: `${puhviKey}`,
     path: `/${puhviKey}`
   },
   palautteet: {
-    titleKey: 'palautteet',
+    key: `${feedbackKey}`,
     path: `/${feedbackKey}`
   }
 }
@@ -34,11 +34,7 @@ export const navigationPages: NavigationPages = {
 const allPages: AllPages = {
   ...navigationPages,
   create: {
-    titleKey: 'lisää uusi koetehtävä',
+    key: 'lisää uusi koetehtävä',
     path: `/${newKey}`
   }
-}
-
-export function getPage(key: string): Page | undefined {
-  return allPages[key as PageHeaders]
 }

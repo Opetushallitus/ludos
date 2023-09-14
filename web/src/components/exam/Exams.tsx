@@ -34,11 +34,11 @@ const Exams = ({ exam }: ExamProps) => {
     exam
   })
 
-  const headingTextKey = navigationPages[exam.toLowerCase()].titleKey
+  const headingTextKey = navigationPages[exam.toLowerCase()].key
 
   return (
     <div className="pt-3">
-      <h2 className="mb-3" data-testid={`page-heading-${exam}`}>
+      <h2 className="mb-3" data-testid={`page-heading-${exam.toLowerCase()}`}>
         {t(`header.${headingTextKey}`)}
       </h2>
 

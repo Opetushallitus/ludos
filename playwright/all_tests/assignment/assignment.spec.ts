@@ -256,7 +256,7 @@ test.describe('Assignment favorites', () => {
     context: BrowserContext,
     baseURL: string
   ) {
-    await page.goto('/etusivu')
+    await page.goto('/')
     const assignmentIn = testAssignmentIn(exam, 'Suosikkitesti')
     const assignment = await createAssignment(context, baseURL, assignmentIn)
 

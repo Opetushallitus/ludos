@@ -1,5 +1,5 @@
 export type Page = {
-  titleKey: string
+  key: string
   path: string
 }
 
