@@ -1,16 +1,18 @@
-import { AllPages, NavigationPages, Page, PageHeaders } from '../../types'
+import { AllPages, ContentFormAction, NavigationPages, Page, PageHeaders } from '../../types'
 
-export const frontpageKey = 'etusivu'
-export const newKey = 'new'
-export const updateKey = 'update'
-export const feedbackKey = 'palautteet'
+export const etusivuKey = 'etusivu'
+export const uusiKey = ContentFormAction.uusi
+export const muokkausKey = ContentFormAction.muokkaus
+export const palautteetKey = 'palautteet'
 export const sukoKey = 'suko'
 export const puhviKey = 'puhvi'
 export const ldKey = 'ld'
 
+export const luvatonKey = 'luvaton'
+
 export const navigationPages: NavigationPages = {
-  frontpage: {
-    key: `${frontpageKey}`,
+  etusivu: {
+    key: `${etusivuKey}`,
     path: `/`
   },
   suko: {
@@ -26,15 +28,7 @@ export const navigationPages: NavigationPages = {
     path: `/${puhviKey}`
   },
   palautteet: {
-    key: `${feedbackKey}`,
-    path: `/${feedbackKey}`
-  }
-}
-
-const allPages: AllPages = {
-  ...navigationPages,
-  create: {
-    key: 'lisää uusi koetehtävä',
-    path: `/${newKey}`
+    key: `${palautteetKey}`,
+    path: `/${palautteetKey}`
   }
 }

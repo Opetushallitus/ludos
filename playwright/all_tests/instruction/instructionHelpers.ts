@@ -22,9 +22,6 @@ export async function fillInstructionForm({
   attachmentNameFi?: string
   attachmentNameSv?: string
 }) {
-  // check that form is loaded
-  await page.getByTestId('heading').click()
-
   if (nameTextFi) {
     await page.getByTestId('nameFi').fill(nameTextFi)
   }

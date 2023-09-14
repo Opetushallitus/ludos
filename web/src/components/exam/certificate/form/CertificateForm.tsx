@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
-import { AttachmentData, CertificateIn, ContentTypeEng, Exam, PublishState } from '../../../../types'
+import { AttachmentData, CertificateIn, ContentFormAction, ContentTypeEng, Exam, PublishState } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { createCertificate, updateCertificate } from '../../../../request'
 import { useEffect, useState } from 'react'
@@ -15,13 +15,14 @@ import { FormError } from '../../formCommon/FormErrors'
 import { useFetch } from '../../../../hooks/useFetch'
 
 type CertificateFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
 }
 
 const CertificateForm = ({ action }: CertificateFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const matchUrl = action === 'new' ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
+  const matchUrl =
+    action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
 
   const [loading, setLoading] = useState(false)
@@ -31,7 +32,10 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const exam = match!.params.exam as Exam
   const id = match!.params.id
 
-  const { data: certificate } = useFetch<CertificateIn>(`certificate/${exam.toUpperCase()}/${id}`, action === 'new')
+  const { data: certificate } = useFetch<CertificateIn>(
+    `certificate/${exam.toUpperCase()}/${id}`,
+    action === ContentFormAction.uusi
+  )
 
   const {
     register,
@@ -62,7 +66,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         setLoading(true)
         let resultId: string
         // When updating we need to have the certificate
-        if (action === 'update' && certificate) {
+        if (action === ContentFormAction.muokkaus && certificate) {
           await updateCertificate(certificate.id, certificateIn, newAttachment)
           resultId = certificate.id.toString()
         } else {

@@ -14,6 +14,7 @@ import { AssignmentContent } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
 import { InstructionContent } from './InstructionsContent'
 import { useUserDetails } from '../../hooks/useUserDetails'
+import { muokkausKey } from '../routes/routes'
 
 type ContentProps = {
   exam: Exam
@@ -67,7 +68,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                       <StateTag state={data.publishState} />
                       <span
                         className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
-                        onClick={() => navigate(`../${contentType}/update/${data.id}`)}
+                        onClick={() => navigate(`../${contentType}/${muokkausKey}/${data.id}`)}
                         data-testid="edit-content-btn">
                         <Icon name="muokkaa" color="text-green-primary" />
                         <p className="text-green-primary">{t('assignment.muokkaa')}</p>

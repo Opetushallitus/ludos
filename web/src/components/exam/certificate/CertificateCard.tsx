@@ -28,7 +28,7 @@ export const CertificateCard = ({ certificate }: CertificateCardProps) => {
           <Button
             variant="buttonGhost"
             customClass="p-0 ml-2"
-            onClick={() => navigate(`update/${certificate.id}`)}
+            onClick={() => navigate(`muokkaus/${certificate.id}`)}
             data-testid={`certificate-${certificate.id.toString()}-edit`}>
             <Icon name="muokkaa" color="text-green-primary" />
           </Button>

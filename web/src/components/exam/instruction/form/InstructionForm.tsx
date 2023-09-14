@@ -4,6 +4,7 @@ import { useMatch, useNavigate } from 'react-router-dom'
 import {
   AttachmentData,
   AttachmentLanguage,
+  ContentFormAction,
   ContentTypeEng,
   Exam,
   InstructionIn,
@@ -30,14 +31,15 @@ import { FormError } from '../../formCommon/FormErrors'
 import { TipTap } from '../../formCommon/editor/TipTap'
 
 type InstructionFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
 }
 
 const InstructionForm = ({ action }: InstructionFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const matchUrl = action === 'new' ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
+  const matchUrl =
+    action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
 
   const [activeTab, setActiveTab] = useState('fi')
@@ -53,7 +55,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const { data: instruction, loading: instructionLoading } = useFetch<InstructionIn>(
     `instruction/${exam}/${id}`,
-    action === 'new'
+    action === ContentFormAction.uusi
   )
 
   const {
@@ -84,7 +86,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         setLoading(true)
         let resultId: string
 
-        if (action === 'update' && instruction) {
+        if (action === ContentFormAction.muokkaus && instruction) {
           const mapWithFileKeyAndName: MapWithFileKeyAndMetadata = new Map()
 
           const combinedAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
@@ -170,7 +172,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     setFileUploadErrorMessage(null)
     let dataToSet: AttachmentData[]
 
-    if (action === 'update') {
+    if (action === ContentFormAction.muokkaus) {
       dataToSet = await uploadNewAttachments(attachmentFiles, language)
     } else {
       dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'fi')
@@ -184,7 +186,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   }
 
   const deleteFileByIndex = (index: number, language: AttachmentLanguage) => {
-    if (action === 'update') {
+    if (action === ContentFormAction.muokkaus) {
       const fileToDelete = language === 'sv' ? attachmentDataSv[index].attachment : attachmentDataFi[index].attachment
 
       if (fileToDelete) {

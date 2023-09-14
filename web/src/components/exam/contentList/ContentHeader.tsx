@@ -1,5 +1,5 @@
 import { Button } from '../../Button'
-import { newKey } from '../../routes/routes'
+import { uusiKey } from '../../routes/routes'
 import { ContentType, ContentTypeEng, Exam } from '../../../types'
 import { Dropdown } from '../../Dropdown'
 import { FiltersType } from '../../../hooks/useFilters'
@@ -51,7 +51,7 @@ export const ContentHeader = ({
           {isYllapitaja && (
             <Button
               variant="buttonPrimary"
-              onClick={() => navigate(`${location.pathname}/${newKey}`)}
+              onClick={() => navigate(`${location.pathname}/${uusiKey}`)}
               data-testid={`create-${singularActiveTab}-button`}>
               {t(`button.lisaa${singularActiveTab}`)}
             </Button>

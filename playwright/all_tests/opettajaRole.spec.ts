@@ -23,7 +23,7 @@ test('fail to create suko assignment, instruction and certificate', async ({ pag
 test('fail to navigate to new and update form pages', async ({ page }) => {
   await page.goto('/')
 
-  for (const action of ['new', 'update/1']) {
+  for (const action of ['uusi', 'muokkaus/1']) {
     for (const pageName of pages) {
       for (const contentType of ['assignments', 'instructions', 'certificates']) {
         await page.goto(`/${pageName}/${contentType}/${action}`)

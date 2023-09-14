@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentTypeEng, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
+import { ContentFormAction, ContentTypeEng, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { createAssignment, updateAssignment } from '../../../../request'
@@ -19,7 +19,7 @@ import { FormHeader } from '../../formCommon/FormHeader'
 import { useFetch } from '../../../../hooks/useFetch'
 
 type PuhviAssignmentFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
   id?: string
 }
 
@@ -29,7 +29,10 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const navigate = useNavigate()
   const exam = Exam.Puhvi
 
-  const { data: assignment } = useFetch<PuhviAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
+  const { data: assignment } = useFetch<PuhviAssignmentIn>(
+    `assignment/${exam}/${id}`,
+    action === ContentFormAction.uusi
+  )
 
   const methods = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(puhviAssignmentSchema) })
 
@@ -71,7 +74,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         setLoading(true)
         let resultId: string
         // When updating we need to have the assignment
-        if (action === 'update' && assignment) {
+        if (action === ContentFormAction.muokkaus && assignment) {
           resultId = await updateAssignment<PuhviAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await createAssignment<PuhviAssignmentFormType>(body)

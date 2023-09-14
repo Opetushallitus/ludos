@@ -1,5 +1,5 @@
 import { ContentType, EXAM_TYPES } from '../../types'
-import { frontpageKey, navigationPages } from '../routes/routes'
+import { etusivuKey, navigationPages } from '../routes/routes'
 import { NavigationBoxes } from './FrontpageNavigationBoxes'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useTranslation } from 'react-i18next'
@@ -12,7 +12,7 @@ export const Frontpage = () => {
 
   return (
     <div className="mt-10">
-      <h2 data-testid={`page-heading-${frontpageKey}`}>{t('frontpage.tervehdys', { nimi: firstNames })}</h2>
+      <h2 data-testid={`page-heading-${etusivuKey}`}>{t('frontpage.tervehdys', { nimi: firstNames })}</h2>
       <NavigationBoxes examPages={examPages} contentTypes={contentTypes} />
     </div>
   )

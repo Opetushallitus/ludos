@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentTypeEng, Exam, PublishState, SukoAssignmentIn } from '../../../../types'
+import { ContentFormAction, ContentTypeEng, Exam, PublishState, SukoAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { createAssignment, updateAssignment } from '../../../../request'
@@ -20,7 +20,7 @@ import { FormHeader } from '../../formCommon/FormHeader'
 import { useFetch } from '../../../../hooks/useFetch'
 
 type SukoAssignmentFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
   id?: string
 }
 
@@ -32,7 +32,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
 
   const exam = Exam.Suko
 
-  const { data: assignment } = useFetch<SukoAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
+  const { data: assignment } = useFetch<SukoAssignmentIn>(`assignment/${exam}/${id}`, action === ContentFormAction.uusi)
 
   const methods = useForm<SukoAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(sukoAssignmentSchema) })
 
@@ -72,7 +72,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
         setLoading(true)
         let resultId: string
         // When updating we need to have the assignment
-        if (action === 'update' && assignment) {
+        if (action === ContentFormAction.muokkaus && assignment) {
           resultId = await updateAssignment<SukoAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await createAssignment<SukoAssignmentFormType>(body)
