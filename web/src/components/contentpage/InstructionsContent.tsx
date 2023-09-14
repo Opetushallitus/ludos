@@ -21,7 +21,7 @@ export const InstructionContent = ({ instruction, language, isPresentation }: In
     <>
       {!isPresentation && (
         <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
-          <ContentActionRow />
+          <ContentActionRow contentId={instruction.id} />
         </div>
       )}
       <ContentInstruction

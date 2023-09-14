@@ -124,6 +124,10 @@ fun nowFromDb(mockMvc: MockMvc): ZonedDateTime {
 }
 
 fun authenticateAsYllapitaja() {
-    // Useful when @WithYllapitajaRole cannot be used, eg. in @BeforeAll
+    // Useful when @WithYllapitajaRole cannot be used, e.g. in @BeforeAll
     SecurityContextHolder.getContext().authentication = YllapitajaSecurityContextFactory().createAuthentication()
+}
+
+fun authenticateAsOpettaja() {
+    SecurityContextHolder.getContext().authentication = OpettajaSecurityContextFactory().createAuthentication()
 }

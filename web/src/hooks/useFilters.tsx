@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ContentTypeEng } from '../types'
+
+function isOrderDirection(value: any): value is 'asc' | 'desc' {
+  return value === 'asc' || value === 'desc'
+}
 
 export type FiltersType = {
   oppimaara: string[] | null
@@ -11,9 +15,20 @@ export type FiltersType = {
   lukuvuosi: string[] | null
   aine: string[] | null
   tehtavatyyppipuhvi: string[] | null
+  isFavorite: boolean | null
 }
 
-export function useFilters(initialSearchFilters: string, contentType: string) {
+export function useFilters({
+  initialSearchFilters,
+  contentType,
+  basePath,
+  showOnlyFavorites
+}: {
+  initialSearchFilters: string
+  contentType: string
+  basePath?: string
+  showOnlyFavorites?: boolean
+}) {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -25,7 +40,8 @@ export function useFilters(initialSearchFilters: string, contentType: string) {
     orderDirection: 'desc' as const,
     lukuvuosi: null,
     aine: null,
-    tehtavatyyppipuhvi: null
+    tehtavatyyppipuhvi: null,
+    isFavorite: showOnlyFavorites ? true : null
   }
 
   const [filters, setFilters] = useState<FiltersType>(() => {
@@ -39,18 +55,47 @@ export function useFilters(initialSearchFilters: string, contentType: string) {
     const lukuvuosi = urlParams.get('lukuvuosi')
     const aine = urlParams.get('aine')
     const tehtavatyyppipuhvi = urlParams.get('tehtavatyyppipuhvi')
+    const isFavorite = urlParams.get('isFavorite')
 
     return {
       oppimaara: oppimaara ? oppimaara.split(',') : initialFilters.oppimaara,
       tehtavatyyppisuko: tehtavatyyppisuko ? tehtavatyyppisuko.split(',') : initialFilters.tehtavatyyppisuko,
       aihe: aihe ? aihe.split(',') : initialFilters.aihe,
       tavoitetaitotaso: tavoitetaitotaso ? tavoitetaitotaso.split(',') : initialFilters.tavoitetaitotaso,
-      orderDirection: orderDirection || initialFilters.orderDirection,
+      orderDirection: isOrderDirection(orderDirection) ? orderDirection : initialFilters.orderDirection,
       lukuvuosi: lukuvuosi ? lukuvuosi.split(',') : initialFilters.lukuvuosi,
       aine: aine ? aine.split(',') : initialFilters.aine,
-      tehtavatyyppipuhvi: tehtavatyyppipuhvi ? tehtavatyyppipuhvi.split(',') : initialFilters.tehtavatyyppipuhvi
-    } as FiltersType
+      tehtavatyyppipuhvi: tehtavatyyppipuhvi ? tehtavatyyppipuhvi.split(',') : initialFilters.tehtavatyyppipuhvi,
+      isFavorite: isFavorite ? isFavorite === 'true' : initialFilters.isFavorite
+    }
   })
+
+  // reset filters and URL search params
+  const resetFiltersAndParams = useCallback(() => {
+    // Resetting filters to initial state
+    setFilters(initialFilters)
+
+    // Resetting URL search params
+    const newURLParams = new URLSearchParams()
+    newURLParams.set('orderDirection', initialFilters.orderDirection)
+
+    if (showOnlyFavorites) {
+      newURLParams.set('isFavorite', true.toString())
+    }
+
+    const newSearchString = newURLParams.toString()
+    navigate(
+      {
+        pathname: basePath || '',
+        search: newSearchString
+      },
+      {
+        replace: true
+      }
+    )
+    // This effect should only run once, when the function call is made
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     // only run effect on content type assignment and instruction
@@ -88,23 +133,29 @@ export function useFilters(initialSearchFilters: string, contentType: string) {
       urlParams.set('tehtavatyyppipuhvi', filters.tehtavatyyppipuhvi.join(','))
     }
 
+    if (showOnlyFavorites) {
+      urlParams.set('isFavorite', true.toString())
+    }
+
     urlParams.set('orderDirection', filters.orderDirection)
 
     const searchString = urlParams.toString()
 
     navigate(
       {
+        pathname: basePath,
         search: searchString
       },
       {
         replace: true
       }
     )
-  }, [contentType, filters, location.search, navigate])
+  }, [contentType, filters, location.search, navigate, showOnlyFavorites, basePath])
 
   return {
     filters,
     setFilters,
-    resetFilters: () => setFilters(initialFilters)
+    resetFilters: () => setFilters(initialFilters),
+    resetFiltersAndParams
   }
 }

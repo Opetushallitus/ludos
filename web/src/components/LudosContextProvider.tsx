@@ -1,8 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { defaultEmptyKoodistoMap, LudosContext, KoodistoMap } from '../LudosContext'
+import { defaultEmptyKoodistoMap, KoodistoMap, LudosContext } from '../LudosContext'
 import { Roles, UserDetails } from '../types'
-import { getKoodistos, getUserDetails } from '../request'
+import { getKoodistos, getUserDetails, getUserFavoriteCount } from '../request'
 
 type LudosContextProviderProps = {
   children: ReactNode
@@ -12,21 +12,16 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   const { i18n } = useTranslation()
   const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
+  const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(0)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [koodistosResponse, userDetailsResponse] = await Promise.all([
+        const [koodistosResponse, userDetailsResponse, userFavoriteAssignmentCountResponse] = await Promise.all([
           getKoodistos(i18n.language.toUpperCase()),
-          getUserDetails()
+          getUserDetails(),
+          getUserFavoriteCount()
         ])
-
-        if (koodistosResponse.ok) {
-          const koodistosJson = await koodistosResponse.json()
-          setKoodistos(koodistosJson)
-        } else {
-          console.error('Could not fetch koodistos')
-        }
 
         if (userDetailsResponse.status === 401) {
           setUserDetails({ role: Roles.UNAUTHORIZED, firstNames: '', lastName: '' })
@@ -40,6 +35,18 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         } else {
           console.error('Could not fetch userDetails')
         }
+
+        if (koodistosResponse.ok) {
+          setKoodistos(await koodistosResponse.json())
+        } else {
+          console.error('Could not fetch koodistos')
+        }
+
+        if (userFavoriteAssignmentCountResponse.ok) {
+          setUserFavoriteAssignmentCount(await userFavoriteAssignmentCountResponse.json())
+        } else {
+          console.error('Could not fetch userFavoriteAssignmentCount')
+        }
       } catch (e) {
         console.error('Error occurred while fetching data:', e)
       }
@@ -49,7 +56,15 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   }, [i18n.language])
 
   return (
-    <LudosContext.Provider value={{ koodistos: koodistos, setKoodistos, userDetails, setUserDetails }}>
+    <LudosContext.Provider
+      value={{
+        koodistos: koodistos,
+        setKoodistos,
+        userDetails,
+        setUserDetails,
+        userFavoriteAssignmentCount: userFavoriteAssignmentCount,
+        setUserFavoriteAssignmentCount: setUserFavoriteAssignmentCount
+      }}>
       {children}
     </LudosContext.Provider>
   )

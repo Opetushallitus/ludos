@@ -1,28 +1,31 @@
 import { Icon } from '../../Icon'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
-import content from '../../contentpage/Content'
-import { ContentAction, useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
+import { ContentAction } from '../../../hooks/useConstantsWithLocalization'
+import { Button } from '../../Button'
 
-type ContentActionsProps = {
+type AssignmentCardContentActionButtonProps = {
   contentId: number
+  contentAction: ContentAction
+  isActive?: boolean
+  onClickHandler?: () => void
 }
 
 function AssignmentCardContentActionButton({
+  contentId,
   contentAction: { actionName, iconName, text, link },
-  contentId
-}: {
-  contentId: number
-  contentAction: ContentAction
-}) {
+  isActive,
+  onClickHandler
+}: AssignmentCardContentActionButtonProps) {
   const className = 'flex items-center pr-3'
   const testId = `assignment-${contentId}-action-${actionName}`
   const children = (
     <>
-      <Icon name={iconName} color="text-green-primary" />
+      <Icon name={iconName} color="text-green-primary" isActive={isActive} />
       <span className="ml-1 text-xs text-green-primary">{text}</span>
     </>
   )
+
   if (link) {
     return (
       <InternalLink
@@ -34,22 +37,63 @@ function AssignmentCardContentActionButton({
       />
     )
   } else {
-    return <span className={className} children={children} data-testid={testId} />
+    return (
+      <Button
+        variant="buttonGhost"
+        customClass="p-0 flex items-center pr-3"
+        onClick={onClickHandler}
+        data-testid={`assignment-${contentId.toString()}-${iconName}`}>
+        {children}
+      </Button>
+    )
   }
 }
 
-export const AssignmentCardContentActions = ({ contentId }: ContentActionsProps) => {
-  const { CONTENT_ACTIONS } = useConstantsWithLocalization()
+type AssignmentCardContentActionsProps = {
+  contentId: number
+  isFavorite?: boolean
+  onClickHandler?: () => void
+}
+
+export const AssignmentCardContentActions = ({
+  contentId,
+  isFavorite,
+  onClickHandler
+}: AssignmentCardContentActionsProps) => {
+  const { t } = useTranslation()
 
   return (
     <div className="flex w-full flex-wrap items-center justify-evenly md:w-4/12 md:justify-end">
-      {CONTENT_ACTIONS.map((contentAction) => (
-        <AssignmentCardContentActionButton
-          contentId={contentId}
-          contentAction={contentAction}
-          key={contentAction.iconName}
-        />
-      ))}
+      <AssignmentCardContentActionButton
+        contentId={contentId}
+        contentAction={{
+          actionName: 'katselunakyma',
+          iconName: 'uusi-valilehti',
+          text: t('assignment.katselunakyma'),
+          link: 'presentation'
+        }}
+        key="uusi-valilehti"
+      />
+      <AssignmentCardContentActionButton
+        contentId={contentId}
+        contentAction={{
+          actionName: 'lataa-pdf',
+          iconName: 'pdf',
+          text: t('assignment.lataapdf')
+        }}
+        key="pdf"
+      />
+      <AssignmentCardContentActionButton
+        contentId={contentId}
+        contentAction={{
+          actionName: 'suosikki',
+          iconName: 'suosikki',
+          text: isFavorite ? 'Poista suosikeista' : 'Lisää suosikiksi'
+        }}
+        onClickHandler={onClickHandler}
+        isActive={isFavorite}
+        key="suosikki"
+      />
     </div>
   )
 }

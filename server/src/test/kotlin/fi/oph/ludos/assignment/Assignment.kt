@@ -1,20 +1,33 @@
 package fi.oph.ludos.assignment
 
-import fi.oph.ludos.PublishState
-import java.sql.Timestamp
+enum class TestPublishState {
+    DRAFT, PUBLISHED, ARCHIVED, OLEMATON
+}
 
-interface TestAssignmentIn {
-    val exam: String
+interface TestAssignment {
     val nameFi: String
     val nameSv: String
     val contentFi: String
     val contentSv: String
     val instructionFi: String
     val instructionSv: String
-    val publishState: String
+    val publishState: TestPublishState
+    val laajaalainenOsaaminenKoodiArvos: Array<String>
 }
 
-data class TestAssignmentSukoIn(
+interface TestAssignmentIn : TestAssignment {
+    val exam: String
+    override val nameFi: String
+    override val nameSv: String
+    override val contentFi: String
+    override val contentSv: String
+    override val instructionFi: String
+    override val instructionSv: String
+    override val publishState: TestPublishState
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>
+}
+
+data class TestSukoAssignmentDtoIn(
     override val exam: String,
     override val nameFi: String,
     override val nameSv: String,
@@ -22,63 +35,110 @@ data class TestAssignmentSukoIn(
     override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
-    override val publishState: String,
+    override val publishState: TestPublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String?,
     val aiheKoodiArvos: Array<String>,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
 ) : TestAssignmentIn
 
-data class TestAssignmentSukoOut(
-    val id: Int,
-    val nameFi: String,
-    val nameSv: String,
-    val contentFi: String,
-    val contentSv: String,
-    val instructionFi: String,
-    val instructionSv: String,
-    val publishState: String,
+data class TestLdAssignmentDtoIn(
+    override val exam: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
+    override val publishState: TestPublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val lukuvuosiKoodiArvos: Array<String>,
+    val aineKoodiArvo: String
+) : TestAssignmentIn
+
+data class TestPuhviAssignmentDtoIn(
+    override val exam: String,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
+    override val publishState: TestPublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    val assignmentTypeKoodiArvo: String,
+    val lukuvuosiKoodiArvos: Array<String>
+) : TestAssignmentIn
+
+interface TestAssignmentOut : TestAssignment {
+    val id: Int
+    override val nameFi: String
+    override val nameSv: String
+    override val contentFi: String
+    override val contentSv: String
+    override val instructionFi: String
+    override val instructionSv: String
+    override val publishState: TestPublishState
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>
+    val authorOid: String
+    val isFavorite: Boolean
+    val createdAt: String
+    val updatedAt: String
+}
+
+data class TestSukoAssignmentDtoOut(
+    override val id: Int,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
+    override val publishState: TestPublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    override val authorOid: String,
+    override val isFavorite: Boolean,
+    override val createdAt: String,
+    override val updatedAt: String,
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String?,
     val aiheKoodiArvos: Array<String>,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    val authorOid: String,
-    val createdAt: String,
-    val updatedAt: String
-)
+) : TestAssignmentOut
 
-data class TestAssignmentPuhviOut(
-    val id: Int,
-    val nameFi: String,
-    val nameSv: String,
-    val contentFi: String,
-    val contentSv: String,
-    val instructionFi: String,
-    val instructionSv: String,
-    val publishState: PublishState,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    val authorOid: String,
+data class TestPuhviAssignmentDtoOut(
+    override val id: Int,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
+    override val publishState: TestPublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    override val authorOid: String,
+    override val isFavorite: Boolean,
+    override val createdAt: String,
+    override val updatedAt: String,
     val assignmentTypeKoodiArvo: String,
     val lukuvuosiKoodiArvos: Array<String>,
-    val createdAt: Timestamp,
-    val updatedAt: Timestamp
-)
+) : TestAssignmentOut
 
-data class TestAssignmentLdOut(
-    val id: Int,
-    val nameFi: String,
-    val nameSv: String,
-    val contentFi: String,
-    val contentSv: String,
-    val instructionFi: String,
-    val instructionSv: String,
-    val publishState: PublishState,
-    val createdAt: Timestamp,
-    val updatedAt: Timestamp,
-    val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    val authorOid: String,
+data class TestLdAssignmentDtoOut(
+    override val id: Int,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val instructionFi: String,
+    override val instructionSv: String,
+    override val publishState: TestPublishState,
+    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    override val authorOid: String,
+    override val isFavorite: Boolean,
+    override val createdAt: String,
+    override val updatedAt: String,
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String
-)
+): TestAssignmentOut

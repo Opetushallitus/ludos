@@ -1,14 +1,16 @@
-import { NavLink } from 'react-router-dom'
-import { useState } from 'react'
-import { Icon } from '../Icon'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useContext, useState } from 'react'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 import { Page } from '../../types'
+import { HeaderFavorites } from './HeaderFavorites'
+import { LudosContext } from '../../LudosContext'
 
 export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
   const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -82,12 +84,13 @@ export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
 
 function Header(props: { onClick: () => void }) {
   const { t } = useTranslation()
+  const { userFavoriteAssignmentCount } = useContext(LudosContext)
 
   return (
-    <div className="row w-full px-2 py-1">
+    <div className="row w-full px-2">
       <div className="col w-1/12">
         <button
-          className="hover:bg-gray-200 focus:bg-gray-200 flex flex-col items-center justify-center rounded-md p-2"
+          className="flex flex-col items-center justify-center rounded-md p-2"
           onClick={props.onClick}
           aria-label="Toggle menu">
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
@@ -99,8 +102,8 @@ function Header(props: { onClick: () => void }) {
       <div className="col mb-auto ml-4 w-9/12">
         <h1 className="text-white">{t('title.ludos')}</h1>
       </div>
-      <div className="col mb-auto mt-2 w-2/12 text-center">
-        <Icon name="ostoskori" color="text-white" />
+      <div className="flex items-center">
+        <HeaderFavorites onClick={() => {}} userFavoriteAssignmentCount={userFavoriteAssignmentCount} isMobile />
       </div>
     </div>
   )

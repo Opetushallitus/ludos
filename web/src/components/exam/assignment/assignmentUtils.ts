@@ -1,17 +1,17 @@
 import {
-  ContentTypesSingular,
-  ContentTypeKeys,
-  ContentType,
   AssignmentIn,
-  SukoAssignmentIn,
-  Exam,
-  PuhviAssignmentIn,
-  LdAssignmentIn,
-  ContentTypeEng,
-  CertificateIn,
-  BaseIn,
   BaseAssignmentAndInstructionIn,
-  InstructionIn
+  BaseIn,
+  CertificateIn,
+  ContentType,
+  ContentTypeEng,
+  ContentTypeKeys,
+  ContentTypesSingular,
+  Exam,
+  InstructionIn,
+  LdAssignmentIn,
+  PuhviAssignmentIn,
+  SukoAssignmentIn
 } from '../../../types'
 
 export function getSingularContentTypeFinnish(s: ContentType) {
@@ -32,11 +32,24 @@ export const ContentTypeTranslationFinnish = {
 } as { [key: string]: string }
 
 // exam type checkers
+export const assertPuhviOrLdAssignment = (
+  assignment: AssignmentIn,
+  activeTab: any
+): assignment is PuhviAssignmentIn | LdAssignmentIn => {
+  return isLdAssignment(assignment, activeTab) || isPuhviAssignment(assignment, activeTab)
+}
 export const isSukoAssignment = (assignment: AssignmentIn, exam: Exam): assignment is SukoAssignmentIn =>
-  exam === Exam.Suko
+  exam === Exam.Suko &&
+  'aiheKoodiArvos' in assignment &&
+  'assignmentTypeKoodiArvo' in assignment &&
+  'laajaalainenOsaaminenKoodiArvos' in assignment &&
+  'oppimaaraKoodiArvo' in assignment &&
+  'tavoitetasoKoodiArvo' in assignment
 export const isPuhviAssignment = (assignment: AssignmentIn, exam: Exam): assignment is PuhviAssignmentIn =>
-  exam === Exam.Puhvi
-export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment is LdAssignmentIn => exam === Exam.Ld
+  exam === Exam.Puhvi && 'lukuvuosiKoodiArvos' in assignment
+
+export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment is LdAssignmentIn =>
+  exam === Exam.Ld && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
 // content type checkers
 export const isAssignment = (data: BaseIn, contentType: string): data is AssignmentIn =>
   contentType === ContentTypeEng.KOETEHTAVAT

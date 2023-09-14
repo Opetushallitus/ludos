@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
-import { postWithSession } from '../../helpers'
+import { Exam, postWithSession } from '../../helpers'
 
 type FillAssignmentForm = {
   page: Page
@@ -251,9 +251,9 @@ export async function updatePuhviAssignment(page: Page) {
   await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
 }
 
-export function testAssignmentIn(assignmnentNameBase: string) {
-  return {
-    exam: 'SUKO',
+export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
+  const base = {
+    exam: exam,
     nameFi: `${assignmnentNameBase} nimi fi`,
     nameSv: `${assignmnentNameBase} nimi sv`,
     contentFi: `${assignmnentNameBase} sisältö fi`,
@@ -261,13 +261,41 @@ export function testAssignmentIn(assignmnentNameBase: string) {
     instructionFi: `${assignmnentNameBase} ohje fi`,
     instructionSv: `${assignmnentNameBase} ohje sv`,
     publishState: 'PUBLISHED',
-    assignmentTypeKoodiArvo: '003',
-    oppimaaraKoodiArvo: 'TKRUA1',
-    tavoitetasoKoodiArvo: null,
-    aiheKoodiArvos: [],
     laajaalainenOsaaminenKoodiArvos: []
   }
+
+  if (exam === Exam.Suko) {
+    return {
+      ...base,
+      assignmentTypeKoodiArvo: '003',
+      oppimaaraKoodiArvo: 'TKRUA1',
+      tavoitetasoKoodiArvo: null,
+      aiheKoodiArvos: []
+    }
+  } else if (exam === Exam.Ld) {
+    return {
+      ...base,
+      lukuvuosiKoodiArvos: ['20202021'],
+      aineKoodiArvo: '1'
+    }
+  } else if (exam === Exam.Puhvi) {
+    return {
+      ...base,
+      assignmentTypeKoodiArvo: '002',
+      lukuvuosiKoodiArvos: ['20202021']
+    }
+  } else {
+    throw new Error('Unknown exam')
+  }
 }
+
 export async function createAssignment(context: BrowserContext, baseURL: string, assignment: any) {
   return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
+}
+
+export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[]) {
+  const assignments = await page.getByTestId('assignment-list').locator('li').all()
+  const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
+  const names = await Promise.all(namePromises)
+  expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI`))
 }

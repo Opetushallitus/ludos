@@ -7,6 +7,7 @@ import { toLocaleDate } from '../../formatUtils'
 import { ContentAction, useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 import { TipTap } from '../exam/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
+import { Button } from '../Button'
 
 type ContentHeaderProps = {
   language: string
@@ -57,33 +58,91 @@ export function ContentHeader({
 }
 
 function ContentActionButton({
-  contentAction: { actionName, iconName, text, link }
+  contentId,
+  contentAction: { actionName, iconName, text, link },
+  isActive,
+  onClickHandler
 }: {
+  contentId: number
   contentAction: ContentAction
+  isActive?: boolean
+  onClickHandler?: () => void
 }) {
-  const className = 'flex gap-1'
+  const className = 'flex gap-1 items-center'
   const testId = `assignment-action-${actionName}`
   const children = (
     <>
-      <Icon name={iconName} color="text-green-primary" />
-      <span className="text-green-primary">{text}</span>
+      <Icon name={iconName} color="text-green-primary" isActive={isActive} />
+      <span className="ml-1 text-xs text-green-primary">{text}</span>
     </>
   )
   if (link) {
-    return <InternalLink to={link} target="_blank" className={className} children={children} testId={testId} />
+    return (
+      <InternalLink
+        to={`${link}`}
+        target="_blank"
+        className={`${className} hover:bg-gray-active`}
+        children={children}
+        testId={testId}
+      />
+    )
   } else {
-    return <span className={className} children={children} data-testid={testId} />
+    return (
+      <Button
+        variant="buttonGhost"
+        customClass="p-0 flex items-center pr-3"
+        onClick={onClickHandler}
+        data-testid={`assignment-${contentId.toString()}-${iconName}`}>
+        {children}
+      </Button>
+    )
   }
 }
 
-export function ContentActionRow() {
-  const { CONTENT_ACTIONS } = useConstantsWithLocalization()
-
+export function ContentActionRow({
+  contentId,
+  isFavorite,
+  onClickHandler
+}: {
+  contentId: number
+  isFavorite?: boolean
+  onClickHandler?: () => void
+}) {
+  const { t } = useTranslation()
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
-      {CONTENT_ACTIONS.map((contentAction) => (
-        <ContentActionButton contentAction={contentAction} key={contentAction.iconName} />
-      ))}
+      <ContentActionButton
+        contentId={contentId}
+        contentAction={{
+          actionName: 'katselunakyma',
+          iconName: 'uusi-valilehti',
+          text: t('assignment.katselunakyma'),
+          link: 'presentation'
+        }}
+        key="uusi-valilehti"
+      />
+      <ContentActionButton
+        contentId={contentId}
+        contentAction={{
+          actionName: 'lataa-pdf',
+          iconName: 'pdf',
+          text: t('assignment.lataapdf')
+        }}
+        key="pdf"
+      />
+      {isFavorite !== undefined && (
+        <ContentActionButton
+          contentId={contentId}
+          contentAction={{
+            actionName: 'suosikki',
+            iconName: 'suosikki',
+            text: isFavorite ? 'Poista suosikeista' : 'Lisää suosikiksi'
+          }}
+          onClickHandler={onClickHandler}
+          isActive={isFavorite}
+          key="suosikki"
+        />
+      )}
     </div>
   )
 }

@@ -6,10 +6,13 @@ import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
 import fi.oph.ludos.repository.getKotlinArray
+import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Component
+import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.web.server.ResponseStatusException
 import java.sql.ResultSet
 
 
@@ -17,6 +20,7 @@ import java.sql.ResultSet
 class AssignmentRepository(
     private val namedJdbcTemplate: NamedParameterJdbcTemplate,
     private val jdbcTemplate: JdbcTemplate,
+    private val transactionTemplate: TransactionTemplate,
 ) {
 
     val mapSukoResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut = { rs: ResultSet, _: Int ->
@@ -33,6 +37,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
+            rs.getBoolean("is_favorite"),
             rs.getString("suko_assignment_assignment_type_koodi_arvo"),
             rs.getString("suko_assignment_oppimaara_koodi_arvo"),
             rs.getString("suko_assignment_tavoitetaso_koodi_arvo"),
@@ -54,6 +59,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
+            rs.getBoolean("is_favorite"),
             rs.getString("puhvi_assignment_assignment_type_koodi_arvo"),
             rs.getKotlinArray<String>("puhvi_assignment_lukuvuosi_koodi_arvos"),
         )
@@ -73,6 +79,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
+            rs.getBoolean("is_favorite"),
             rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos"),
             rs.getString("ld_assignment_aine_koodi_arvo")
         )
@@ -80,129 +87,146 @@ class AssignmentRepository(
 
     fun getAssignments(assignmentFilter: BaseFilters): List<AssignmentOut> {
         val role = Kayttajatiedot.fromSecurityContext().role
-        val (query, parameters, mapper) = buildQuery(assignmentFilter, role)
+        val userOid = Kayttajatiedot.fromSecurityContext().oidHenkilo
+        val (query, parameters, mapper) = buildQuery(assignmentFilter, role, userOid)
 
         return namedJdbcTemplate.query(query, parameters, mapper)
     }
 
     private fun buildQuery(
-        filters: BaseFilters, role: Role
+        filters: BaseFilters, role: Role, userOid: String
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> AssignmentOut> = when (filters) {
-        is SukoBaseFilters -> buildSukoQuery(filters, role)
-        is PuhviBaseFilters -> buildPuhviQuery(filters, role)
-        is LdBaseFilters -> buildLdQuery(filters, role)
+        is SukoBaseFilters -> buildSukoQuery(filters, role, userOid)
+        is PuhviBaseFilters -> buildPuhviQuery(filters, role, userOid)
+        is LdBaseFilters -> buildLdQuery(filters, role, userOid)
         else -> throw UnknownError("Unknown assignment filter ${filters::class.simpleName}")
     }
 
-    private fun buildSukoQuery(
-        filters: SukoBaseFilters, role: Role
-    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentDtoOut> {
-        val parameters = MapSqlParameterSource()
+    private fun initializeQuery(exam: Exam, userOid: String): Pair<String, MapSqlParameterSource> {
+        val lowercaseExam = exam.toString().lowercase()
 
-        var query = "SELECT * FROM suko_assignment WHERE true"
+        val query = """
+        SELECT ${lowercaseExam}_assignment.*, 
+               CASE WHEN fav.assignment_id IS NOT NULL THEN true ELSE false END AS is_favorite
+        FROM ${lowercaseExam}_assignment
+        LEFT JOIN ${lowercaseExam}_assignment_favorite fav ON ${lowercaseExam}_assignment.assignment_id = fav.assignment_id AND fav.user_oid = :userOid
+        WHERE true
+    """.trimIndent()
+        val parameters = MapSqlParameterSource()
+        parameters.addValue("userOid", userOid)
+        return Pair(query, parameters)
+    }
+
+    private fun addRoleBasedQuery(query: StringBuilder, role: Role) {
+        if (role == Role.OPETTAJA) {
+            query.append(" AND assignment_publish_state = 'PUBLISHED'")
+        }
+    }
+
+    private fun addLukuvuosiQuery(
+        query: StringBuilder, parameters: MapSqlParameterSource, exam: Exam, lukuvuosi: String?
+    ) {
+        val lowercaseExam = exam.toString().lowercase()
+        if (lukuvuosi != null) {
+            query.append(" AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && ${lowercaseExam}_assignment_lukuvuosi_koodi_arvos")
+            parameters.addValue("lukuvuosiKoodiArvo", lukuvuosi.split(","))
+        }
+    }
+
+    private fun addFavoriteQuery(query: StringBuilder, favorite: Boolean?) {
+        when (favorite) {
+            true -> query.append(" AND fav.assignment_id IS NOT NULL")
+            false -> query.append(" AND fav.assignment_id IS NULL")
+            null -> {}
+        }
+    }
+
+    private fun addOrderClause(query: StringBuilder, orderDirection: String?) {
+        query.append(" ORDER BY assignment_created_at")
+        if (orderDirection != null) {
+            query.append(" $orderDirection")
+        }
+    }
+
+    private fun buildSukoQuery(
+        filters: SukoBaseFilters, role: Role, userOid: String
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentDtoOut> {
+        val (query, parameters) = initializeQuery(Exam.SUKO, userOid)
+        val queryBuilder = StringBuilder(query)
 
         if (filters.tehtavatyyppisuko != null) {
             val values = filters.tehtavatyyppisuko.split(",")
 
-            query += " AND suko_assignment_assignment_type_koodi_arvo IN (:sukoAssignmentTypeKoodiArvo)"
+            queryBuilder.append(" AND suko_assignment_assignment_type_koodi_arvo IN (:sukoAssignmentTypeKoodiArvo)")
             parameters.addValue("sukoAssignmentTypeKoodiArvo", values)
         }
 
         if (filters.oppimaara != null) {
             val values = filters.oppimaara.split(",")
 
-            query += " AND suko_assignment_oppimaara_koodi_arvo IN (:oppimaaraKoodiArvo)"
+            queryBuilder.append(" AND suko_assignment_oppimaara_koodi_arvo IN (:oppimaaraKoodiArvo)")
             parameters.addValue("oppimaaraKoodiArvo", values)
         }
 
         if (filters.aihe != null) {
-            query += " AND ARRAY[:aiheKoodiArvo ]::text[] && suko_assignment_aihe_koodi_arvos"
-
+            queryBuilder.append(" AND ARRAY[:aiheKoodiArvo ]::text[] && suko_assignment_aihe_koodi_arvos")
             parameters.addValue("aiheKoodiArvo", filters.aihe.split(","))
         }
 
         if (filters.tavoitetaitotaso != null) {
             val values = filters.tavoitetaitotaso.split(",")
 
-            query += " AND suko_assignment_tavoitetaso_koodi_arvo IN (:tavoitetasoKoodiArvo)"
+            queryBuilder.append(" AND suko_assignment_tavoitetaso_koodi_arvo IN (:tavoitetasoKoodiArvo)")
             parameters.addValue("tavoitetasoKoodiArvo", values)
         }
 
-        if (role == Role.OPETTAJA) {
-            query += " AND assignment_publish_state = 'PUBLISHED'"
-        }
+        addFavoriteQuery(queryBuilder, filters.isFavorite)
+        addRoleBasedQuery(queryBuilder, role)
+        addOrderClause(queryBuilder, filters.orderDirection)
 
-        query += " ORDER BY assignment_created_at"
-
-        if (filters.orderDirection != null) {
-            query += " ${filters.orderDirection}"
-        }
-
-        return Triple(query, parameters, mapSukoResultSet)
+        return Triple(queryBuilder.toString(), parameters, mapSukoResultSet)
     }
 
     private fun buildPuhviQuery(
-        filters: PuhviBaseFilters, role: Role
+        filters: PuhviBaseFilters, role: Role, userOid: String
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentDtoOut> {
-        val parameters = MapSqlParameterSource()
-
-        var query = "SELECT * FROM puhvi_assignment WHERE true"
+        val (query, parameters) = initializeQuery(Exam.PUHVI, userOid)
+        val queryBuilder = StringBuilder(query)
 
         if (filters.tehtavatyyppipuhvi != null) {
             val values = filters.tehtavatyyppipuhvi.split(",")
 
-            query += " AND puhvi_assignment_assignment_type_koodi_arvo IN (:puhviAssignmentTypeKoodiArvo)"
+            queryBuilder.append(" AND puhvi_assignment_assignment_type_koodi_arvo IN (:puhviAssignmentTypeKoodiArvo)")
             parameters.addValue("puhviAssignmentTypeKoodiArvo", values)
         }
 
-        if (filters.lukuvuosi != null) {
-            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && puhvi_assignment_lukuvuosi_koodi_arvos"
-            parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
-        }
+        addLukuvuosiQuery(queryBuilder, parameters, Exam.PUHVI, filters.lukuvuosi)
+        addFavoriteQuery(queryBuilder, filters.isFavorite)
+        addRoleBasedQuery(queryBuilder, role)
+        addOrderClause(queryBuilder, filters.orderDirection)
 
-        if (role == Role.OPETTAJA) {
-            query += " AND assignment_publish_state = 'PUBLISHED'"
-        }
-
-        query += " ORDER BY assignment_created_at"
-
-        if (filters.orderDirection != null) {
-            query += " ${filters.orderDirection}"
-        }
-
-        return Triple(query, parameters, mapPuhviResultSet)
+        return Triple(queryBuilder.toString(), parameters, mapPuhviResultSet)
     }
 
     private fun buildLdQuery(
-        filters: LdBaseFilters, role: Role
+        filters: LdBaseFilters, role: Role, userOid: String
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> LdAssignmentDtoOut> {
-        val parameters = MapSqlParameterSource()
-
-        var query = "SELECT * FROM ld_assignment WHERE true"
-
-        if (filters.lukuvuosi != null) {
-            query += " AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && ld_assignment_lukuvuosi_koodi_arvos"
-            parameters.addValue("lukuvuosiKoodiArvo", filters.lukuvuosi.split(","))
-        }
+        val (query, parameters) = initializeQuery(Exam.LD, userOid)
+        val queryBuilder = StringBuilder(query)
 
         if (filters.aine != null) {
             val values = filters.aine.split(",")
 
-            query += " AND ld_assignment_aine_koodi_arvo IN (:aineKoodiArvo)"
+            queryBuilder.append(" AND ld_assignment_aine_koodi_arvo IN (:aineKoodiArvo)")
             parameters.addValue("aineKoodiArvo", values)
         }
 
-        if (role == Role.OPETTAJA) {
-            query += " AND assignment_publish_state = 'PUBLISHED'"
-        }
+        addLukuvuosiQuery(queryBuilder, parameters, Exam.LD, filters.lukuvuosi)
+        addFavoriteQuery(queryBuilder, filters.isFavorite)
+        addRoleBasedQuery(queryBuilder, role)
+        addOrderClause(queryBuilder, filters.orderDirection)
 
-        query += " ORDER BY assignment_created_at"
-
-        if (filters.orderDirection != null) {
-            query += " ${filters.orderDirection}"
-        }
-
-        return Triple(query, parameters, mapLdResultSet)
+        return Triple(queryBuilder.toString(), parameters, mapLdResultSet)
     }
 
 
@@ -237,6 +261,7 @@ class AssignmentRepository(
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
                 rs.getString("assignment_author_oid"),
+                false,
                 assignment.assignmentTypeKoodiArvo,
                 assignment.oppimaaraKoodiArvo,
                 assignment.tavoitetasoKoodiArvo,
@@ -288,6 +313,7 @@ class AssignmentRepository(
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
                 rs.getString("assignment_author_oid"),
+                false,
                 assignment.assignmentTypeKoodiArvo,
                 assignment.lukuvuosiKoodiArvos
             )
@@ -335,6 +361,7 @@ class AssignmentRepository(
                 rs.getTimestamp("assignment_updated_at"),
                 assignment.laajaalainenOsaaminenKoodiArvos,
                 rs.getString("assignment_author_oid"),
+                false,
                 assignment.lukuvuosiKoodiArvos,
                 assignment.aineKoodiArvo
             )
@@ -354,23 +381,26 @@ class AssignmentRepository(
 
     fun getAssignmentById(id: Int, exam: Exam): AssignmentOut? {
         val role = Kayttajatiedot.fromSecurityContext().role
+        val userOid = Kayttajatiedot.fromSecurityContext().oidHenkilo
 
-        val tableAndMapper = when (exam) {
+        val (table, mapper) = when (exam) {
             Exam.SUKO -> "suko_assignment" to mapSukoResultSet
             Exam.PUHVI -> "puhvi_assignment" to mapPuhviResultSet
             Exam.LD -> "ld_assignment" to mapLdResultSet
         }
 
-        val table = tableAndMapper.first
-        val mapper = tableAndMapper.second
+        val andIsPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND assignment_publish_state = 'PUBLISHED'" else ""
 
-        return if (role == Role.OPETTAJA) {
-            jdbcTemplate.query(
-                "SELECT * FROM $table WHERE assignment_id = ? AND assignment_publish_state = 'PUBLISHED'", mapper, id
-            )
-        } else {
-            jdbcTemplate.query("SELECT * FROM $table WHERE assignment_id = ?", mapper, id)
-        }.firstOrNull()
+        val sql = """
+            SELECT 
+                a.*,
+                CASE WHEN fav.assignment_id IS NOT NULL THEN true ELSE false END AS is_favorite
+            FROM $table a
+            LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = ?
+            WHERE a.assignment_id = ? $andIsPublishedIfOpettaja 
+        """.trimIndent()
+
+        return jdbcTemplate.query(sql, mapper, userOid, id).firstOrNull()
     }
 
     fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? {
@@ -486,7 +516,7 @@ class AssignmentRepository(
 
     fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(
         // The same as `SELECT DISTINCT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment` but 10x faster
-        // since postgres SELECT DISINCT is slow, see https://wiki.postgresql.org/wiki/Loose_indexscan
+        // since postgres SELECT DISTINCT is slow, see https://wiki.postgresql.org/wiki/Loose_indexscan
         """
         WITH RECURSIVE t AS (
            (SELECT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment ORDER BY suko_assignment_oppimaara_koodi_arvo LIMIT 1)
@@ -499,5 +529,45 @@ class AssignmentRepository(
         """.trimIndent()
     ) { rs: ResultSet, _: Int ->
         rs.getString("suko_assignment_oppimaara_koodi_arvo")
+    }
+
+    fun getFavoriteAssignmentsCount(): Int {
+        val role = Kayttajatiedot.fromSecurityContext().role
+        val userOid = Kayttajatiedot.fromSecurityContext().oidHenkilo
+
+        val andIsPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND assignment_publish_state = 'PUBLISHED'" else ""
+
+        val sql = """
+            SELECT count(1)
+            FROM assignment
+            LEFT JOIN assignment_favorite fav
+                   ON assignment.assignment_id = fav.assignment_id AND fav.user_oid = ?
+            WHERE fav.assignment_id IS NOT NULL $andIsPublishedIfOpettaja;
+        """.trimIndent()
+
+        return jdbcTemplate.queryForObject(sql, Int::class.java, userOid)
+    }
+
+    fun setAssignmentFavorite(exam: Exam, id: Int, isFavorite: Boolean): Int? {
+        val table = when (exam) {
+            Exam.SUKO -> "suko_assignment_favorite"
+            Exam.PUHVI -> "puhvi_assignment_favorite"
+            Exam.LD -> "ld_assignment_favorite"
+        }
+
+        return transactionTemplate.execute { _ ->
+            val sql = if (isFavorite) {
+                "INSERT INTO $table (assignment_id, user_oid) VALUES (?, ?) ON CONFLICT DO NOTHING"
+            } else {
+                "DELETE FROM $table WHERE assignment_id = ? AND user_oid = ?"
+            }
+
+            try {
+                jdbcTemplate.update(sql, id, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                getFavoriteAssignmentsCount()
+            } catch (e: Exception) {
+                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
+            }
+        }
     }
 }

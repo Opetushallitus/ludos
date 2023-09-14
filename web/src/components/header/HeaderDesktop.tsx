@@ -1,17 +1,22 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
 import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
 import { Page } from '../../types'
+import { useContext } from 'react'
+import { LudosContext } from '../../LudosContext'
+import { HeaderFavorites } from './HeaderFavorites'
 
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
 export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
   const { isYllapitaja } = useUserDetails()
+  const { userFavoriteAssignmentCount } = useContext(LudosContext)
 
   const { firstNames, lastName, role } = useUserDetails()
 
@@ -35,7 +40,7 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
       <div className="w-[80vw]">
         <div className="row justify-between pt-3">
           <h1>{t('title.ludos')}</h1>
-          <div className="flex h-6 flex-row gap-3">
+          <div className="flex h-6 flex-row gap-4">
             <div className="relative">
               <HeaderDropdown
                 currentOption={`${firstNames} ${lastName}` || t('mobile.valikko')}
@@ -49,7 +54,12 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
                 {role}
               </p>
             </div>
-            {/*<p className="m-0 border-l-2 border-green-primary pl-5 text-green-primary">Latauskori</p>*/}
+
+            <HeaderFavorites
+              onClick={() => navigate('/favorites')}
+              userFavoriteAssignmentCount={userFavoriteAssignmentCount}
+            />
+
             <div className="relative border-l-2 border-green-primary pl-5">
               <HeaderDropdown
                 currentOption={languageDropdownOptions[currentLanguageKey].name}

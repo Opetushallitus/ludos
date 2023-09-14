@@ -171,3 +171,20 @@ export async function getKoodistos(language: string): Promise<Response> {
 export async function getUserDetails(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
+
+export async function getUserFavoriteCount(): Promise<Response> {
+  return await doRequest(`${BASE_API_URL}/assignment/favoriteCount`, 'GET')
+}
+
+export async function setAssignmentFavorite(exam: Exam, assignmentId: number, isFavorite: boolean): Promise<number> {
+  const result = await doRequest(
+    `${BASE_API_URL}/assignment/${exam}/${assignmentId}/favorite`,
+    'PUT',
+    JSON.stringify({ isFavorite })
+  )
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return result.json()
+}
