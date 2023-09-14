@@ -293,7 +293,7 @@ async function diff(
   const newAndChangedLocalizations: LocalizationIn[] = []
   function addNewOrChangedLocalizationAndEnsureBothLocales(l: LocalizationIn): LocalizationIn[] {
     newAndChangedLocalizations.push(l)
-    if (!toLocs.contains(l.key, theOtherLocale(l.locale))) {
+    if (!toLocs.contains(l.key, theOtherLocale(l.locale)) && !fromLocs.contains(l.key, theOtherLocale(l.locale))) {
       const emptyLocalization = {
         key: l.key,
         locale: theOtherLocale(l.locale),
