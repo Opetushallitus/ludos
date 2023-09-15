@@ -35,7 +35,6 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
     const pathName = `/${exam.toLowerCase()}/${contentType}`
     const backNavigationSearchString = new URLSearchParams(location.state?.searchValuesString).toString()
     const navigateToString = `${pathName}${backNavigationSearchString ? `?${backNavigationSearchString}` : ''}`
-    console.log(`Navigating to ${navigateToString}`)
     navigate(navigateToString, { replace: true })
   }
 
