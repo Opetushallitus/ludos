@@ -1,9 +1,9 @@
 import logo from 'web/assets/oph_fin_vaaka.png'
-import { navigationPages } from './routes/routes'
 import { ExternalLink } from './ExternalLink'
 import { InternalLink } from './InternalLink'
 import { OPH_URL, TIETOSUOJA_SELOSTE_URL } from '../constants'
 import { useTranslation } from 'react-i18next'
+import { feedbackPath } from './routes/LudosRoutes'
 
 type FooterProps = {
   isPresentation?: boolean
@@ -25,7 +25,7 @@ export const Footer = ({ isPresentation }: FooterProps) => {
           <>
             <span className="hidden md:flex md:w-2/12 md:flex-col" />
             <div className="mt-3 flex w-1/2 flex-col text-center md:w-2/12 md:text-left">
-              <InternalLink to={navigationPages.palautteet.path}>{t('footer.palaute')}</InternalLink>
+              <InternalLink to={feedbackPath()}>{t('footer.palaute')}</InternalLink>
             </div>
             <div className="mt-3 flex w-1/2 flex-col text-center md:w-3/12 md:text-left">
               <ExternalLink url={TIETOSUOJA_SELOSTE_URL}>{t('footer.tietosuoja')}</ExternalLink>

@@ -1,4 +1,4 @@
-import { useLocation, useMatch } from 'react-router-dom'
+import { useMatch } from 'react-router-dom'
 import { ContentFormAction, Exam } from '../../../../types'
 import { SukoAssignmentForm } from './SukoAssignmentForm'
 import { PuhviAssignmentForm } from './PuhviAssignmentForm'
@@ -9,8 +9,6 @@ type AssignmentFormProps = {
 }
 
 const AssignmentForm = ({ action }: AssignmentFormProps) => {
-  const { pathname } = useLocation()
-
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
@@ -20,9 +18,9 @@ const AssignmentForm = ({ action }: AssignmentFormProps) => {
 
   return (
     <div className="ludos-form">
-      {exam.toUpperCase() === Exam.Suko ? (
+      {exam.toUpperCase() === Exam.SUKO ? (
         <SukoAssignmentForm {...formProps} />
-      ) : exam === Exam.Puhvi ? (
+      ) : exam === Exam.PUHVI ? (
         <PuhviAssignmentForm {...formProps} />
       ) : (
         <LdAssignmentForm {...formProps} />

@@ -18,7 +18,7 @@ const doRequest = async (
     redirect: 'error'
   })
 
-export async function createAssignment<T>(body: T): Promise<{ id: string }> {
+export async function createAssignment<T>(body: T): Promise<{ id: number }> {
   const result = await doRequest(ASSIGNMENT_URL, 'POST', JSON.stringify(body))
 
   if (!result.ok) {
@@ -28,7 +28,7 @@ export async function createAssignment<T>(body: T): Promise<{ id: string }> {
   return await result.json()
 }
 
-export async function updateAssignment<T>(id: number, body: T): Promise<string> {
+export async function updateAssignment<T>(id: number, body: T): Promise<number> {
   const result = await doRequest(`${ASSIGNMENT_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
@@ -38,10 +38,10 @@ export async function updateAssignment<T>(id: number, body: T): Promise<string> 
   return await result.json()
 }
 
-export async function createInstruction<T>(
+export async function createInstruction(
   instructionIn: InstructionFormType,
   attachmentWithMetadata: { file: File; name: string; language: AttachmentLanguage }[]
-): Promise<T> {
+): Promise<{ id: number }> {
   const formData = new FormData()
 
   const instructionPart = new Blob([JSON.stringify(instructionIn)], { type: 'application/json' })
@@ -128,7 +128,10 @@ export function deleteInstructionAttachment(attachmentFileKey: string) {
   void doRequest(`${INSTRUCTION_URL}/attachment/${attachmentFileKey}`, 'DELETE')
 }
 
-export async function createCertificate<T>(certificateIn: CertificateFormType, newAttachment: File): Promise<T> {
+export async function createCertificate(
+  certificateIn: CertificateFormType,
+  newAttachment: File
+): Promise<{ id: number }> {
   const formData = new FormData()
 
   const certificatePart = new Blob([JSON.stringify(certificateIn)], { type: 'application/json' })
@@ -181,7 +184,7 @@ export async function setAssignmentFavorite(exam: Exam, assignmentId: number, is
   const result = await doRequest(
     `${BASE_API_URL}/assignment/${exam}/${assignmentId}/favorite`,
     'PUT',
-    JSON.stringify({ isFavorite })
+    JSON.stringify({ suosikki: isFavorite })
   )
   if (!result.ok) {
     throw new Error(await result.text())

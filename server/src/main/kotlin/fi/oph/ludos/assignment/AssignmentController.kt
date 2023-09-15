@@ -58,7 +58,7 @@ class AssignmentController(val service: AssignmentService) {
     @RequireAtLeastOpettajaRole
     fun setAssignmentFavorite(
         @PathVariable exam: Exam, @PathVariable("id") id: Int, @Valid @RequestBody favoriteRequest: SetFavoriteRequest
-    ): Int? = service.setAssignmentFavorite(exam, id, favoriteRequest.isFavorite)
+    ): Int? = service.setAssignmentFavorite(exam, id, favoriteRequest.suosikki)
 
     @PutMapping("{id}")
     @RequireAtLeastYllapitajaRole

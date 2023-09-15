@@ -19,17 +19,17 @@ export const assertPuhviOrLdAssignment = (
   return isLdAssignment(assignment, activeTab) || isPuhviAssignment(assignment, activeTab)
 }
 export const isSukoAssignment = (assignment: AssignmentIn, exam: Exam): assignment is SukoAssignmentIn =>
-  exam === Exam.Suko &&
+  exam === Exam.SUKO &&
   'aiheKoodiArvos' in assignment &&
   'assignmentTypeKoodiArvo' in assignment &&
   'laajaalainenOsaaminenKoodiArvos' in assignment &&
   'oppimaaraKoodiArvo' in assignment &&
   'tavoitetasoKoodiArvo' in assignment
 export const isPuhviAssignment = (assignment: AssignmentIn, exam: Exam): assignment is PuhviAssignmentIn =>
-  exam === Exam.Puhvi && 'lukuvuosiKoodiArvos' in assignment
+  exam === Exam.PUHVI && 'lukuvuosiKoodiArvos' in assignment
 
 export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment is LdAssignmentIn =>
-  exam === Exam.Ld && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
+  exam === Exam.LD && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
 // content type checkers
 export const isAssignment = (data: BaseIn, contentType: ContentType): data is AssignmentIn =>
   contentType === ContentType.koetehtavat

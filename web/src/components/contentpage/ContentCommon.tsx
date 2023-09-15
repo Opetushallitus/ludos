@@ -8,6 +8,7 @@ import { ContentAction, useConstantsWithLocalization } from '../../hooks/useCons
 import { TipTap } from '../exam/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
+import { esitysnakymaKey } from '../routes/LudosRoutes'
 
 type ContentHeaderProps = {
   language: string
@@ -83,7 +84,7 @@ function ContentActionButton({
         target="_blank"
         className={`${className} hover:bg-gray-active`}
         children={children}
-        testId={testId}
+        data-testid={testId}
       />
     )
   } else {
@@ -114,10 +115,10 @@ export function ContentActionRow({
       <ContentActionButton
         contentId={contentId}
         contentAction={{
-          actionName: 'katselunakyma',
+          actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
           text: t('assignment.katselunakyma'),
-          link: 'presentation'
+          link: esitysnakymaKey
         }}
         key="uusi-valilehti"
       />

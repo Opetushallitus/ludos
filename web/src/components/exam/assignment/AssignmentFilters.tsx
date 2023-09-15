@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useCallback } from 'react'
-import { FiltersType } from '../../../hooks/useFilters'
+import { useCallback } from 'react'
+import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { sortKooditAlphabetically } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../LudosContext'
@@ -10,8 +10,8 @@ import { useKoodisto } from '../../../hooks/useKoodisto'
 
 type AssignmentFiltersProps = {
   exam: Exam
-  filters: FiltersType
-  setFilters: Dispatch<SetStateAction<FiltersType>>
+  filterValues: FiltersType
+  setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
   oppimaaraOptionsOverride?: string[]
   tehtavaTyyppiOptionsOverride?: string[]
   aiheOptionsOverride?: string[]
@@ -25,8 +25,8 @@ const getFilteredOptions = (allOptions: KoodiDtoIn[], overrides?: string[]) =>
 
 export const AssignmentFilters = ({
   exam,
-  filters,
-  setFilters,
+  filterValues,
+  setFilterValue,
   oppimaaraOptionsOverride,
   tehtavaTyyppiOptionsOverride,
   aiheOptionsOverride,
@@ -41,10 +41,14 @@ export const AssignmentFilters = ({
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: KoodiDtoIn[]) => {
-      setFilters((curr) => ({ ...curr, [key]: value.map((it) => it.koodiArvo) }))
+      setFilterValue(
+        key,
+        value.map((it) => it.koodiArvo)
+      )
     },
-    [setFilters]
+    [setFilterValue]
   )
+
   const oppimaaraOptions = (): KoodiDtoIn[] => {
     const { oppiaineetjaoppimaaratlops2021 } = koodistos
 
@@ -69,7 +73,7 @@ export const AssignmentFilters = ({
     <div className="border border-gray-light bg-gray-bg">
       <p className="px-2 py-1">{t('filter.otsikko')}</p>
       <div className="row flex-wrap justify-start">
-        {exam === Exam.Suko && (
+        {exam === Exam.SUKO && (
           <>
             <div className="w-full px-2 md:w-6/12 lg:w-3/12">
               <label htmlFor="oppimaaraFilter">{t('filter.oppimaara')}</label>
@@ -77,7 +81,7 @@ export const AssignmentFilters = ({
                 id="oppimaaraFilter"
                 options={sortKooditAlphabetically(oppimaaraOptions())}
                 size="lg"
-                selectedOptions={getSelectedOptions(filters.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
+                selectedOptions={getSelectedOptions(filterValues.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
                 testId="oppimaara"
                 canReset
@@ -89,7 +93,7 @@ export const AssignmentFilters = ({
                 id="contentTypeFilter"
                 options={sortKooditAlphabetically(tehtavaTyyppiOptions())}
                 size="md"
-                selectedOptions={getSelectedOptions(filters.tehtavatyyppisuko, 'tehtavatyyppisuko')}
+                selectedOptions={getSelectedOptions(filterValues.tehtavatyyppisuko, 'tehtavatyyppisuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
                 testId="contentType"
                 canReset
@@ -101,7 +105,7 @@ export const AssignmentFilters = ({
                 id="aihe"
                 options={sortKooditAlphabetically(aiheOptions())}
                 size="md"
-                selectedOptions={getSelectedOptions(filters.aihe, 'aihesuko')}
+                selectedOptions={getSelectedOptions(filterValues.aihe, 'aihesuko')}
                 onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
                 canReset
               />
@@ -120,37 +124,37 @@ export const AssignmentFilters = ({
             {/*</div>*/}
           </>
         )}
-        {(exam === Exam.Ld || exam === Exam.Puhvi) && (
+        {(exam === Exam.LD || exam === Exam.PUHVI) && (
           <div className="w-full px-2 md:w-3/12">
             <p>{t('filter.lukuvuosi')}</p>
             <MultiSelectDropdown
               id="lukuvuosi"
               options={sortKooditAlphabetically(lukuvuosiOptions())}
-              selectedOptions={getSelectedOptions(filters.lukuvuosi, 'ludoslukuvuosi')}
+              selectedOptions={getSelectedOptions(filterValues.lukuvuosi, 'ludoslukuvuosi')}
               onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
               canReset
             />
           </div>
         )}
-        {exam === Exam.Ld && (
+        {exam === Exam.LD && (
           <div className="w-full px-2 md:w-3/12">
             <p>{t('filter.aine')}</p>
             <MultiSelectDropdown
               id="aine"
               options={sortKooditAlphabetically(lukiodiplomiaineOptions())}
-              selectedOptions={getSelectedOptions(filters.aine, 'ludoslukiodiplomiaine')}
+              selectedOptions={getSelectedOptions(filterValues.aine, 'ludoslukiodiplomiaine')}
               onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aine', opt)}
               canReset
             />
           </div>
         )}
-        {exam === Exam.Puhvi && (
+        {exam === Exam.PUHVI && (
           <div className="w-full px-2 md:w-3/12">
             <p>{t('filter.tehtavatyyppi')}</p>
             <MultiSelectDropdown
               id="tehtavatyyppiPuhvi"
               options={sortKooditAlphabetically(tehavatyyppipuhviOptions())}
-              selectedOptions={getSelectedOptions(filters.tehtavatyyppipuhvi, 'tehtavatyyppipuhvi')}
+              selectedOptions={getSelectedOptions(filterValues.tehtavatyyppipuhvi, 'tehtavatyyppipuhvi')}
               onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
               canReset
             />

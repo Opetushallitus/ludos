@@ -180,9 +180,9 @@ class AssignmentRepository(
             parameters.addValue("tavoitetasoKoodiArvo", values)
         }
 
-        addFavoriteQuery(queryBuilder, filters.isFavorite)
+        addFavoriteQuery(queryBuilder, filters.suosikki)
         addRoleBasedQuery(queryBuilder, role)
-        addOrderClause(queryBuilder, filters.orderDirection)
+        addOrderClause(queryBuilder, filters.jarjesta)
 
         return Triple(queryBuilder.toString(), parameters, mapSukoResultSet)
     }
@@ -201,9 +201,9 @@ class AssignmentRepository(
         }
 
         addLukuvuosiQuery(queryBuilder, parameters, Exam.PUHVI, filters.lukuvuosi)
-        addFavoriteQuery(queryBuilder, filters.isFavorite)
+        addFavoriteQuery(queryBuilder, filters.suosikki)
         addRoleBasedQuery(queryBuilder, role)
-        addOrderClause(queryBuilder, filters.orderDirection)
+        addOrderClause(queryBuilder, filters.jarjesta)
 
         return Triple(queryBuilder.toString(), parameters, mapPuhviResultSet)
     }
@@ -222,9 +222,9 @@ class AssignmentRepository(
         }
 
         addLukuvuosiQuery(queryBuilder, parameters, Exam.LD, filters.lukuvuosi)
-        addFavoriteQuery(queryBuilder, filters.isFavorite)
+        addFavoriteQuery(queryBuilder, filters.suosikki)
         addRoleBasedQuery(queryBuilder, role)
-        addOrderClause(queryBuilder, filters.orderDirection)
+        addOrderClause(queryBuilder, filters.jarjesta)
 
         return Triple(queryBuilder.toString(), parameters, mapLdResultSet)
     }

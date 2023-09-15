@@ -163,8 +163,8 @@ data class LdAssignmentDtoOut(
 ) : Assignment, AssignmentOut
 
 data class SukoBaseFilters(
-    override val orderDirection: String?,
-    override val isFavorite: Boolean?,
+    override val jarjesta: String?,
+    override val suosikki: Boolean?,
     // allow alphabetical letters, numbers and commas
     @field:Pattern(regexp = "^[a-zA-Z0-9,]+\$")
     val oppimaara: String?,
@@ -177,8 +177,8 @@ data class SukoBaseFilters(
 ): BaseFilters
 
 data class LdBaseFilters(
-    override val orderDirection: String?,
-    override val isFavorite: Boolean?,
+    override val jarjesta: String?,
+    override val suosikki: Boolean?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
@@ -186,8 +186,8 @@ data class LdBaseFilters(
 ): BaseFilters
 
 data class PuhviBaseFilters(
-    override val orderDirection: String?,
-    override val isFavorite: Boolean?,
+    override val jarjesta: String?,
+    override val suosikki: Boolean?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppipuhvi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
@@ -209,4 +209,4 @@ class AtLeastOneAssignmentNameIsNotEmptyValidator : ConstraintValidator<AtLeastO
     }
 }
 
-data class SetFavoriteRequest(val isFavorite: Boolean)
+data class SetFavoriteRequest(val suosikki: Boolean)

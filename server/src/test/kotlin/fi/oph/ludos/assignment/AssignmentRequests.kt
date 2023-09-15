@@ -69,15 +69,15 @@ abstract class AssignmentRequests {
         return mapper.readValue<Array<T>>(responseContent)
     }
 
-    fun getSukoAssignmentsReq(filter: SukoBaseFilters): MockHttpServletRequestBuilder {
+    private fun getSukoAssignmentsReq(filter: SukoBaseFilters): MockHttpServletRequestBuilder {
         val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/SUKO")
 
-        filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
+        filter.jarjesta?.let { uriBuilder.queryParam("jarjesta", it) }
         filter.oppimaara?.let { uriBuilder.queryParam("oppimaara", it) }
         filter.tehtavatyyppisuko?.let { uriBuilder.queryParam("tehtavatyyppisuko", it) }
         filter.aihe?.let { uriBuilder.queryParam("aihe", it) }
         filter.tavoitetaitotaso?.let { uriBuilder.queryParam("tavoitetaitotaso", it) }
-        filter.isFavorite?.let { uriBuilder.queryParam("isFavorite", it) }
+        filter.suosikki?.let { uriBuilder.queryParam("suosikki", it) }
 
         return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
     }
@@ -93,7 +93,7 @@ abstract class AssignmentRequests {
     fun getPuhviAssignmentsReq(exam: Exam, filter: PuhviBaseFilters): MockHttpServletRequestBuilder {
         val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
 
-        filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
+        filter.jarjesta?.let { uriBuilder.queryParam("jarjesta", it) }
         filter.tehtavatyyppipuhvi?.let { uriBuilder.queryParam("tehtavatyyppipuhvi", it) }
         filter.lukuvuosi?.let { uriBuilder.queryParam("lukuvuosi", it) }
 
@@ -103,7 +103,7 @@ abstract class AssignmentRequests {
     fun getLdAssignmentsReq(exam: Exam, filter: LdBaseFilters): MockHttpServletRequestBuilder {
         val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
 
-        filter.orderDirection?.let { uriBuilder.queryParam("orderDirection", it) }
+        filter.jarjesta?.let { uriBuilder.queryParam("jarjesta", it) }
         filter.aine?.let { uriBuilder.queryParam("aine", it) }
         filter.lukuvuosi?.let { uriBuilder.queryParam("lukuvuosi", it) }
 
@@ -112,7 +112,7 @@ abstract class AssignmentRequests {
 
     fun setAssignmentIsFavoriteReq(exam: Exam, id: Int, isFavorite: Boolean) =
         MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$exam/$id/favorite")
-            .content("{\"isFavorite\": $isFavorite}")
+            .content("{\"suosikki\": $isFavorite}")
             .contentType(MediaType.APPLICATION_JSON)
 
     fun setAssignmentIsFavorite(exam: Exam, id: Int, isFavorite: Boolean): Int =

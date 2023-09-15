@@ -105,7 +105,6 @@ export const Dropdown = ({
                 : ''
             }`}
             onClick={() => {
-              console.log('ads')
               onSelectedOptionsChange(option.koodiArvo)
               setIsOpen(false)
             }}

@@ -43,6 +43,6 @@ export const LudosContext = createContext<LudosContextValue>({
   setKoodistos: () => {},
   userDetails: undefined,
   setUserDetails: () => {},
-  userFavoriteAssignmentCount: 0,
+  userFavoriteAssignmentCount: -1,
   setUserFavoriteAssignmentCount: () => {}
 })

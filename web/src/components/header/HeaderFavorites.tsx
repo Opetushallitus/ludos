@@ -1,22 +1,26 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '../Button'
+import { buttonClasses } from '../Button'
 import { Icon } from '../Icon'
+import { favoritesPagePath } from '../routes/LudosRoutes'
+import { InternalLink } from '../InternalLink'
+import { twMerge } from 'tailwind-merge'
 
 type HeaderFavoritesProps = {
-  onClick: () => void
   userFavoriteAssignmentCount: number
   isMobile?: boolean
 }
 
-export const HeaderFavorites = ({ onClick, userFavoriteAssignmentCount, isMobile }: HeaderFavoritesProps) => {
+export const HeaderFavorites = ({ userFavoriteAssignmentCount, isMobile }: HeaderFavoritesProps) => {
   const { t } = useTranslation()
 
   return (
-    <Button
-      variant="buttonGhost"
-      customClass="flex justify-center gap-1 border-l-2 border-green-primary py-0 pr-2"
-      onClick={onClick}
+    <InternalLink
+      className={twMerge(
+        buttonClasses('buttonGhost'),
+        'flex justify-center gap-1 border-l-2 border-green-primary py-0 pr-2'
+      )}
+      to={favoritesPagePath()}
       data-testid="header-favorites">
       {isMobile ? null : <span className="text-green-primary">{t('favorite.suosikit')}</span>}
       <div className="relative">
@@ -27,6 +31,6 @@ export const HeaderFavorites = ({ onClick, userFavoriteAssignmentCount, isMobile
           </span>
         </div>
       </div>
-    </Button>
+    </InternalLink>
   )
 }

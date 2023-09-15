@@ -1,6 +1,7 @@
 package fi.oph.ludos.instruction
 
 import BaseFilters
+import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
@@ -211,7 +212,7 @@ class InstructionRepository(
         val whereIsPublishedIfOpettaja =
             if (role == Role.OPETTAJA) "WHERE instruction_publish_state = 'PUBLISHED'" else ""
 
-        val orderDirection = filters.orderDirection ?: ""
+        val orderDirection = filters.jarjesta ?: ""
 
         val sql = """SELECT
                      i.*,

@@ -1,54 +1,49 @@
-import { Button } from '../../Button'
-import { uusiKey } from '../../routes/routes'
+import { buttonClasses } from '../../Button'
 import { ContentType, ContentTypeSingular, Exam } from '../../../types'
 import { Dropdown } from '../../Dropdown'
-import { FiltersType } from '../../../hooks/useFilters'
-import { useNavigate } from 'react-router-dom'
+import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
 import { useTranslation } from 'react-i18next'
 import { AssignmentFilters } from '../assignment/AssignmentFilters'
-import { Dispatch, SetStateAction } from 'react'
+import { uusiKey } from '../../routes/LudosRoutes'
+import { InternalLink } from '../../InternalLink'
+import { preventLineBreaks } from '../../../formatUtils'
 
 interface ContentListHeaderProps {
   exam: Exam
-  activeTab: ContentType
   contentType: ContentType
-  filters: FiltersType
-  setFilters: Dispatch<SetStateAction<FiltersType>>
-  handleFilterChange: (a: keyof FiltersType, b: string) => void
+  filterValues: FiltersType
+  setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
   setLanguage: (value: string) => void
   language: string
 }
 
 export const ContentListHeader = ({
   exam,
-  activeTab,
   contentType,
-  filters,
-  setFilters,
-  handleFilterChange,
+  filterValues,
+  setFilterValue,
   setLanguage,
   language
 }: ContentListHeaderProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { isYllapitaja } = useUserDetails()
   const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
 
-  const singularActiveTab = ContentTypeSingular[activeTab]
+  const singularActiveTab = ContentTypeSingular[contentType]
 
   return (
     <>
       <div className="row my-5 flex-wrap justify-between">
         <div className="w-full md:w-[20%]">
           {isYllapitaja && (
-            <Button
-              variant="buttonPrimary"
-              onClick={() => navigate(`${location.pathname}/${uusiKey}`)}
+            <InternalLink
+              className={buttonClasses('buttonPrimary')}
+              to={`${location.pathname}/${uusiKey}`}
               data-testid={`create-${singularActiveTab}-button`}>
-              {t(`button.lisaa${singularActiveTab}`)}
-            </Button>
+              {preventLineBreaks(t(`button.lisaa${singularActiveTab}`))}
+            </InternalLink>
           )}
         </div>
         {contentType !== ContentType.todistukset && (
@@ -72,8 +67,8 @@ export const ContentListHeader = ({
                 <Dropdown
                   id="orderFilter"
                   options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
-                  selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
-                  onSelectedOptionsChange={(opt: string) => handleFilterChange('orderDirection', opt)}
+                  selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filterValues.jarjesta)}
+                  onSelectedOptionsChange={(opt: string) => setFilterValue('jarjesta', opt)}
                 />
               </div>
             </div>
@@ -81,7 +76,7 @@ export const ContentListHeader = ({
         )}
       </div>
       {contentType === ContentType.koetehtavat && (
-        <AssignmentFilters exam={exam} filters={filters} setFilters={setFilters} />
+        <AssignmentFilters exam={exam} filterValues={filterValues} setFilterValue={setFilterValue} />
       )}
     </>
   )

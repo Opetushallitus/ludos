@@ -1,15 +1,43 @@
 import { Exam } from '../../../../types'
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Tabs } from '../../../Tabs'
 import { FavoriteContentList } from './FavoriteContentList'
-import { useParams } from 'react-router-dom'
+import { NavLink, useLocation, useParams } from 'react-router-dom'
+import { favoritesPagePath } from '../../../routes/LudosRoutes'
+
+const ExamMenu = () => {
+  const location = useLocation()
+  const { t } = useTranslation()
+
+  return (
+    <div className="text-gray-500 text-center text-base">
+      <div className="flex flex-wrap border-b-4 border-gray-separator font-semibold">
+        {Object.values(Exam).map((exam, i) => (
+          <NavLink
+            to={favoritesPagePath(exam)}
+            className={({ isActive }) =>
+              `inline-block cursor-pointer rounded-t-lg px-3 py-1 hover:bg-gray-light${
+                isActive ? ' -mb-1 border-b-4 border-b-green-primary text-green-primary' : ''
+              }`
+            }
+            key={i}
+            data-testid={`tab-${exam.toLowerCase()}`}>
+            {t(`tab.${exam.toLowerCase()}`)}
+          </NavLink>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export const AssignmentFavorite = () => {
   const { t } = useTranslation()
-  const { exam } = useParams<{ exam: Exam }>()
+  const { exam: examParamLowerCase } = useParams<{ exam: string }>()
 
-  const [activeTab, setActiveTab] = useState<Exam>(exam || Exam.Suko)
+  if (!((examParamLowerCase?.toUpperCase() as Exam) in Exam)) {
+    return null
+  }
+
+  const exam = Exam[examParamLowerCase?.toUpperCase() as Exam]
 
   return (
     <div className="pt-3">
@@ -17,13 +45,11 @@ export const AssignmentFavorite = () => {
         {t('favorite.suosikkitehtavat')}
       </h2>
 
-      <Tabs
-        options={Object.values(Exam).map((it) => it.toLowerCase())}
-        activeTab={activeTab.toLowerCase()}
-        setActiveTab={(opt) => setActiveTab(opt.toUpperCase() as Exam)}
-      />
+      <ExamMenu />
 
-      <div role="tabpanel">{activeTab && <FavoriteContentList activeTab={activeTab} />}</div>
+      <div role="tabpanel">
+        <FavoriteContentList exam={exam} />
+      </div>
     </div>
   )
 }

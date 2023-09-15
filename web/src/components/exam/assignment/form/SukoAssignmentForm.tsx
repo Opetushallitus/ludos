@@ -7,7 +7,7 @@ import { SukoAssignmentFormType, sukoAssignmentSchema } from './assignmentSchema
 import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ContentFormAction, ContentType, Exam, PublishState, SukoAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
@@ -18,6 +18,7 @@ import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { useFetch } from '../../../../hooks/useFetch'
+import { contentPagePath } from '../../../routes/LudosRoutes'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -28,9 +29,10 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
+  const { state } = useLocation()
   const navigate = useNavigate()
 
-  const exam = Exam.Suko
+  const exam = Exam.SUKO
 
   const { data: assignment } = useFetch<SukoAssignmentIn>(`assignment/${exam}/${id}`, action === ContentFormAction.uusi)
 
@@ -70,7 +72,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
 
       try {
         setLoading(true)
-        let resultId: string
+        let resultId: number
         // When updating we need to have the assignment
         if (action === ContentFormAction.muokkaus && assignment) {
           resultId = await updateAssignment<SukoAssignmentFormType>(assignment.id, body)
@@ -80,7 +82,9 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
         }
         setSubmitError('')
 
-        navigate(`/${exam}/${ContentType.koetehtavat}/${resultId}`)
+        navigate(contentPagePath(exam, ContentType.koetehtavat, resultId), {
+          state: { returnLocation: state?.returnLocation }
+        })
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')

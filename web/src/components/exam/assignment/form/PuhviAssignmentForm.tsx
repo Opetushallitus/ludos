@@ -17,6 +17,7 @@ import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { useFetch } from '../../../../hooks/useFetch'
+import { contentListPath, contentPagePath } from '../../../routes/LudosRoutes'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -27,7 +28,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
   const navigate = useNavigate()
-  const exam = Exam.Puhvi
+  const exam = Exam.PUHVI
 
   const { data: assignment } = useFetch<PuhviAssignmentIn>(
     `assignment/${exam}/${id}`,
@@ -72,7 +73,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
 
       try {
         setLoading(true)
-        let resultId: string
+        let resultId: number
         // When updating we need to have the assignment
         if (action === ContentFormAction.muokkaus && assignment) {
           resultId = await updateAssignment<PuhviAssignmentFormType>(assignment.id, body)
@@ -82,7 +83,9 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         }
         setSubmitError('')
 
-        navigate(`/${exam}/${ContentType.koetehtavat}/${resultId}`)
+        navigate(contentPagePath(exam, ContentType.koetehtavat, resultId), {
+          state: { returnLocation: contentListPath(exam, ContentType.koetehtavat) }
+        })
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')

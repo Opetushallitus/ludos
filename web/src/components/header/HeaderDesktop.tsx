@@ -1,19 +1,18 @@
-import { NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
 import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
-import { Page } from '../../types'
 import { useContext } from 'react'
 import { LudosContext } from '../../LudosContext'
 import { HeaderFavorites } from './HeaderFavorites'
+import { InternalNavLink } from '../InternalNavLink'
+import { HeaderPage } from './Header'
 
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
-export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
+export const HeaderDesktop = ({ pages }: { pages: HeaderPage[] }) => {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
   const { isYllapitaja } = useUserDetails()
   const { userFavoriteAssignmentCount } = useContext(LudosContext)
@@ -55,10 +54,7 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
               </p>
             </div>
 
-            <HeaderFavorites
-              onClick={() => navigate('/favorites')}
-              userFavoriteAssignmentCount={userFavoriteAssignmentCount}
-            />
+            <HeaderFavorites userFavoriteAssignmentCount={userFavoriteAssignmentCount} />
 
             <div className="relative border-l-2 border-green-primary pl-5">
               <HeaderDropdown
@@ -72,10 +68,11 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
         </div>
         <nav className="row pb-1 pt-3">
           <ul className="row gap-6 whitespace-nowrap">
-            {pages.map(({ path, key }, i) => (
+            {pages.map(({ path, key, navigateTo }, i) => (
               <li key={i}>
-                <NavLink
+                <InternalNavLink
                   to={path}
+                  navigateTo={navigateTo}
                   className={({ isActive }) =>
                     `p-1 text-lg text-gray-primary hover:bg-gray-light${
                       isActive ? ' border-b-5 border-b-green-primary text-green-primary' : ''
@@ -83,7 +80,7 @@ export const HeaderDesktop = ({ pages }: { pages: Page[] }) => {
                   }
                   data-testid={`nav-link-${key}`}>
                   {t(`header.${key}`)}
-                </NavLink>
+                </InternalNavLink>
               </li>
             ))}
           </ul>

@@ -113,8 +113,8 @@ class AssignmentFiltersTest : AssignmentRequests() {
         expectedNumbersInName: List<Int>
     ) {
         val sukoFilters = SukoBaseFilters(
-            orderDirection = "desc",
-            isFavorite = null,
+            jarjesta = "desc",
+            suosikki = null,
             oppimaara = oppimaara,
             tehtavatyyppisuko = tehtavatyyppisuko,
             aihe = aihe,
@@ -160,7 +160,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
         tehtavatyyppipuhvi: String?, lukuvuosi: String?, expectedNumbersInName: List<Int>
     ) {
         val puhviFilters = PuhviBaseFilters(
-            orderDirection = "desc", isFavorite = null, tehtavatyyppipuhvi = tehtavatyyppipuhvi, lukuvuosi = lukuvuosi
+            jarjesta = "desc", suosikki = null, tehtavatyyppipuhvi = tehtavatyyppipuhvi, lukuvuosi = lukuvuosi
         )
 
         val assignments = mockMvc.perform(getPuhviAssignmentsReq(Exam.PUHVI, puhviFilters)).andExpect(
@@ -180,7 +180,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
         aine: String?, lukuvuosi: String?, expectedNumbersInName: List<Int>
     ) {
         val ldFilters = LdBaseFilters(
-            orderDirection = "desc", isFavorite = null, aine = aine, lukuvuosi = lukuvuosi
+            jarjesta = "desc", suosikki = null, aine = aine, lukuvuosi = lukuvuosi
         )
 
         val assignments = mockMvc.perform(getLdAssignmentsReq(Exam.LD, ldFilters)).andExpect(
@@ -237,8 +237,8 @@ class AssignmentFiltersTest : AssignmentRequests() {
     }
 
     val emptySukoFilters = SukoBaseFilters(
-        orderDirection = "desc",
-        isFavorite = null,
+        jarjesta = "desc",
+        suosikki = null,
         oppimaara = null,
         tehtavatyyppisuko = null,
         aihe = null,
@@ -254,7 +254,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
             setAssignmentIsFavorite(Exam.SUKO, it.id, true)
         }
 
-        val filteredFavoriteAssignments = getSukoAssignments(emptySukoFilters.copy(isFavorite = true))
+        val filteredFavoriteAssignments = getSukoAssignments(emptySukoFilters.copy(suosikki = true))
         // check that we get only assignments that were favored
         assertThat(filteredFavoriteAssignments.map { it.id })
             .containsExactlyInAnyOrder(*(favoriteAssignments.map { it.id }.toTypedArray()))
@@ -263,7 +263,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
         }
 
         val filteredNonFavoriteAssignments =
-            getSukoAssignments(emptySukoFilters.copy(isFavorite = false))
+            getSukoAssignments(emptySukoFilters.copy(suosikki = false))
         // check that we get only assignments that were not favored
         val expectedNonFavoriteIds = allAssignments.map { it.id } - favoriteAssignments.map { it.id }.toSet()
         assertThat(filteredNonFavoriteAssignments.map { it.id }).containsExactlyInAnyOrder(*expectedNonFavoriteIds.toTypedArray())

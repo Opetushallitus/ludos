@@ -12,7 +12,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   const { i18n } = useTranslation()
   const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
-  const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(0)
+  const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(-1)
 
   useEffect(() => {
     const fetchData = async () => {

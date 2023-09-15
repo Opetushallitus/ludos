@@ -293,9 +293,9 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
   return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
 }
 
-export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[]) {
+export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[], exam: Exam) {
   const assignments = await page.getByTestId('assignment-list').locator('li').all()
   const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
   const names = await Promise.all(namePromises)
-  expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI`))
+  expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI ${exam}`))
 }

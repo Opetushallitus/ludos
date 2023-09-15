@@ -28,9 +28,9 @@ test('navigation links work', async ({ page }) => {
       expect(await page.locator('h2').getAttribute('data-testid')).toBe(`page-heading-${exam}`)
       for (const contentType2 of contentTypes) {
         expect(
-          await page.getByTestId(`tab-${contentType2}`).getAttribute('aria-expanded'),
+          await page.getByTestId(`tab-${contentType2}`).getAttribute('aria-current'),
           `Expected ${contentType} to be expanded and other tabs not`
-        ).toBe(contentType === contentType2 ? 'true' : 'false')
+        ).toBe(contentType === contentType2 ? 'page' : null)
       }
       await page.goBack()
     }
