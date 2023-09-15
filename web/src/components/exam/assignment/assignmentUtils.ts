@@ -11,12 +11,6 @@ import {
   SukoAssignmentIn
 } from '../../../types'
 
-export const ContentTypeTranslationFinnish = {
-  assignments: 'koetehtavat',
-  instructions: 'ohjeet',
-  certificates: 'todistukset'
-} as { [key: string]: string }
-
 // exam type checkers
 export const assertPuhviOrLdAssignment = (
   assignment: AssignmentIn,
