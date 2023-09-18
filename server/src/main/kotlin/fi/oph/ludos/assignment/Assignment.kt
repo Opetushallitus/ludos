@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import fi.oph.ludos.PublishState
-import fi.oph.ludos.ValidContentDescription
-import fi.oph.ludos.ValidContentName
-import fi.oph.ludos.ValidHtmlContentArray
+import fi.oph.ludos.*
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
@@ -100,6 +97,7 @@ data class PuhviAssignmentDtoIn(
 
 interface AssignmentOut {
     val id: Int
+    val exam: Exam
     val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
@@ -123,7 +121,8 @@ data class SukoAssignmentDtoOut(
     val assignmentTypeKoodiArvo: String,
     val oppimaaraKoodiArvo: String,
     val tavoitetasoKoodiArvo: String?,
-    val aiheKoodiArvos: Array<String>
+    val aiheKoodiArvos: Array<String>,
+    override val exam: Exam = Exam.SUKO
 ) : Assignment, AssignmentOut
 
 data class PuhviAssignmentDtoOut(
@@ -141,7 +140,8 @@ data class PuhviAssignmentDtoOut(
     override val authorOid: String,
     override val isFavorite: Boolean,
     val assignmentTypeKoodiArvo: String,
-    val lukuvuosiKoodiArvos: Array<String>
+    val lukuvuosiKoodiArvos: Array<String>,
+    override val exam: Exam = Exam.PUHVI
 ) : Assignment, AssignmentOut
 
 data class LdAssignmentDtoOut(
@@ -159,7 +159,8 @@ data class LdAssignmentDtoOut(
     override val authorOid: String,
     override val isFavorite: Boolean,
     val lukuvuosiKoodiArvos: Array<String>,
-    val aineKoodiArvo: String
+    val aineKoodiArvo: String,
+    override val exam: Exam = Exam.LD
 ) : Assignment, AssignmentOut
 
 data class SukoBaseFilters(

@@ -2,7 +2,7 @@ import { twMerge } from 'tailwind-merge'
 
 type IconProps = {
   name: Icons
-  color: 'text-green-primary' | 'text-black' | 'text-white'
+  color: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary'
   disabled?: boolean
   isActive?: boolean
   size?: 'sm' | 'base' | 'lg'

@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
 import {
   AttachmentData,
-  CertificateIn,
   ContentFormAction,
   ContentType,
   ContentTypeSingularEng,
@@ -11,8 +10,8 @@ import {
   PublishState
 } from '../../../../types'
 import { useTranslation } from 'react-i18next'
-import { createCertificate, updateCertificate } from '../../../../request'
-import { useEffect, useState } from 'react'
+import { createCertificate, fetchData, updateCertificate } from '../../../../request'
+import { useState } from 'react'
 import { CertificateFormType, certificateSchema } from './certificateSchema'
 import { TextInput } from '../../../TextInput'
 import { TextAreaInput } from '../../../TextAreaInput'
@@ -20,7 +19,7 @@ import { FormHeader } from '../../formCommon/FormHeader'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { AttachmentSelector } from '../../formCommon/attachment/AttachmentSelector'
 import { FormError } from '../../formCommon/FormErrors'
-import { useFetch } from '../../../../hooks/useFetch'
+import { NotificationEnum, useNotification } from '../../../../NotificationContext'
 import { contentListPath, contentPagePath } from '../../../routes/LudosRoutes'
 
 type CertificateFormProps = {
@@ -33,56 +32,68 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
+  const { setNotification } = useNotification()
 
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
   const [newAttachment, setNewAttachment] = useState<File | null>(null)
 
-  const exam = match!.params.exam as Exam
+  const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
-
-  const { data: certificate } = useFetch<CertificateIn>(
-    `${ContentTypeSingularEng.todistukset}/${exam.toUpperCase()}/${id}`,
-    action === ContentFormAction.uusi
-  )
+  const isUpdate = action === ContentFormAction.muokkaus
 
   const {
+    watch,
     register,
-    reset,
     handleSubmit,
     setValue,
     formState: { errors }
-  } = useForm<CertificateFormType>({ mode: 'onBlur', resolver: zodResolver(certificateSchema) })
+  } = useForm<CertificateFormType>({
+    defaultValues: isUpdate
+      ? async () => fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
+      : {
+          exam
+        },
+    mode: 'onBlur',
+    resolver: zodResolver(certificateSchema)
+  })
 
-  // set initial values
-  useEffect(() => {
-    if (certificate) {
-      reset({
-        ...certificate,
-        exam: exam.toUpperCase() as Exam
-      })
-    } else {
-      setValue('exam', exam.toUpperCase() as Exam)
-    }
-    setValue('certificateHasAttachment', !!certificate)
-  }, [certificate, exam, reset, setValue])
+  const watchName = watch('name')
+  const watchAttachment = watch('attachment')
+  const watchPublishState = watch('publishState')
 
   async function submitCertificate({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: CertificateFormType) => {
       const certificateIn = { ...data, publishState }
 
       try {
-        setLoading(true)
+        setIsLoading(true)
         let resultId: number
-        // When updating we need to have the certificate
-        if (action === ContentFormAction.muokkaus && certificate) {
-          await updateCertificate(certificate.id, certificateIn, newAttachment)
-          resultId = certificate.id
+        if (isUpdate && id) {
+          resultId = await updateCertificate(Number(id), certificateIn, newAttachment)
         } else {
-          const { id } = await createCertificate(certificateIn, newAttachment!)
-          resultId = id
+          resultId = await createCertificate(certificateIn, newAttachment!).then((res) => res.id)
         }
+
         setSubmitError('')
+
+        if (publishState === PublishState.Draft) {
+          setNotification({
+            message: isUpdate
+              ? t('form.notification.todistuksen-tallennus.palautettu-luonnostilaan')
+              : t('form.notification.todistuksen-tallennus.luonnos-onnistui'),
+            type: NotificationEnum.success
+          })
+        }
+
+        if (publishState === PublishState.Published) {
+          setNotification({
+            message: isUpdate
+              ? t('form.notification.todistuksen-tallennus.onnistui')
+              : t('form.notification.todistuksen-tallennus.julkaisu-onnistui'),
+            type: NotificationEnum.success
+          })
+        }
 
         navigate(contentPagePath(exam, ContentType.todistukset, resultId), {
           state: { returnLocation: contentListPath(exam, ContentType.todistukset) }
@@ -91,48 +102,60 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
         }
+        setNotification({
+          message: t('form.notification.todistuksen-tallennus.epaonnistui'),
+          type: NotificationEnum.error
+        })
         console.error(e)
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     })()
   }
-
-  const nameError = errors.name?.message
-  const contentError = errors.description?.message
-  const fileError = errors.certificateHasAttachment?.message
 
   function handleNewAttachmentSelected(newAttachment: AttachmentData[]) {
     const file = newAttachment[0].file
     if (file) {
       setNewAttachment(file)
-      setValue('certificateHasAttachment', true)
+      setValue('attachment', {
+        fileName: file.name,
+        name: file.name,
+        fileKey: ''
+      })
     }
   }
 
-  const currentAttachment = (): AttachmentData[] | AttachmentData | undefined => {
+  function currentAttachment(): AttachmentData | undefined {
     if (newAttachment) {
       return {
         file: newAttachment,
         name: newAttachment.name
       }
-    } else if (certificate?.attachment) {
+    }
+
+    if (watchAttachment) {
       return {
-        attachment: certificate.attachment,
-        name: certificate.attachment.name
+        attachment: {
+          name: watchAttachment.fileName,
+          fileName: watchAttachment.fileName,
+          fileKey: watchAttachment.fileKey,
+          fileUploadDate: watchAttachment.fileUploadDate,
+          language: watchAttachment.language || 'FI'
+        },
+        name: watchAttachment.name || ''
       }
-    } else {
-      return undefined
     }
   }
 
+  const nameError = errors.name?.message
+  const contentError = errors.description?.message
+  const fileError = errors.attachment?.message
+
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentType.todistukset} name={certificate?.name} />
+      <FormHeader action={action} contentType={ContentType.todistukset} name={watchName} />
 
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
-        <input type="hidden" {...register('exam')} />
-
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
         <TextInput id="name" register={register} required error={!!nameError}>
@@ -159,11 +182,17 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
       </form>
 
       <FormButtonRow
-        onCancelClick={() => navigate(-1)}
-        onSaveDraftClick={() => submitCertificate({ publishState: PublishState.Draft })}
-        onSubmitClick={() => submitCertificate({ publishState: PublishState.Published })}
+        actions={{
+          onSubmitClick: () => submitCertificate({ publishState: PublishState.Published }),
+          onSaveDraftClick: () => submitCertificate({ publishState: PublishState.Draft })
+        }}
+        state={{
+          isUpdate,
+          isLoading,
+          publishState: watchPublishState
+        }}
+        notValidFormMessageKey={Object.keys(errors).length > 0 ? 'form.todistuksen-lisays-epaonnistui' : ''}
         errorMessage={submitError}
-        isLoading={loading}
       />
     </div>
   )

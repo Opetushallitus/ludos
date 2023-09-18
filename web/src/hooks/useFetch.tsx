@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { fetchData } from '../request'
 
 export function useFetch<T>(url: string, isNew: boolean = false) {
   const [data, setData] = useState<T>()
@@ -15,16 +16,8 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
       try {
         setLoading(true)
 
-        const response = await fetch(`/api/${url}`, { method: 'GET', redirect: 'error' })
-
-        if (!response.ok) {
-          setError(true)
-          return
-        }
-
-        const json = await response.json()
-
-        setData(json)
+        const data = await fetchData<T>(url)
+        setData(data)
       } catch (e) {
         console.error('Error fetching data', e)
         setError(true)

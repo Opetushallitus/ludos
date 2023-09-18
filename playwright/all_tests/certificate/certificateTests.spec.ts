@@ -66,9 +66,7 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
   if (event === 'submit') {
     void page.getByTestId('form-submit').click()
   } else {
-    const draftButton = page.getByTestId('form-draft')
-    await expect(draftButton).toHaveText('Tallenna luonnoksena')
-    void draftButton.click()
+    void page.getByTestId('form-draft').click()
   }
 
   const responseFromClick = await page.waitForResponse(
@@ -77,6 +75,7 @@ async function createCertificate(page: Page, context: BrowserContext, event: Eve
 
   const responseData = await responseFromClick.json()
 
+  await expect(page.getByTestId('notification-success')).toBeVisible()
   const header = page.getByTestId('assignment-header')
   await expect(header).toHaveText(nameText)
   await expect(page.getByText(descriptionText, { exact: true })).toBeVisible()
@@ -100,9 +99,7 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
   await expect(formHeader).toHaveText(certificateNameByEvent(event))
 
   if (event === 'cancel') {
-    const btn = page.getByTestId('form-cancel')
-    await expect(btn).toHaveText('Peruuta')
-    await btn.click()
+    await page.getByTestId('form-cancel').click()
     await expect(page.getByTestId('create-todistus-button')).toBeVisible()
 
     return
@@ -117,11 +114,11 @@ async function updateCertificate(page: Page, context: BrowserContext, event: Eve
   await selectAttachmentFile(page, 'fixture2.pdf')
 
   if (event === 'submit') {
-    await page.getByTestId('form-submit').click()
+    await page.getByTestId('form-update-submit').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
   } else if (event === 'draft') {
-    const btn = page.getByTestId('form-draft')
-    await expect(btn).toHaveText('Tallenna luonnoksena')
-    await btn.click()
+    await page.getByTestId('form-update-draft').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
   }
 
   const contentPageHeader = page.getByTestId('assignment-header')

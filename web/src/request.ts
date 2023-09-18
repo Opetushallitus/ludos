@@ -18,6 +18,18 @@ const doRequest = async (
     redirect: 'error'
   })
 
+export async function fetchData<T>(url: string): Promise<T> {
+  const fullUrl = `/api/${url}`
+  const response = await fetch(fullUrl, {
+    method: 'GET',
+    redirect: 'error'
+  })
+  if (!response.ok) {
+    throw new Error(`Error fetching data from ${fullUrl}}, status=${response.status}`)
+  }
+  return (await response.json()) as T
+}
+
 export async function createAssignment<T>(body: T): Promise<{ id: number }> {
   const result = await doRequest(ASSIGNMENT_URL, 'POST', JSON.stringify(body))
 
@@ -72,7 +84,7 @@ export async function updateInstruction(
   id: number,
   body: InstructionFormType,
   mapWithFileAndMetadata: MapWithFileKeyAndMetadata
-): Promise<void> {
+): Promise<number> {
   const formData = new FormData()
 
   const instructionPart = new Blob([JSON.stringify(body)], { type: 'application/json' })
@@ -95,6 +107,8 @@ export async function updateInstruction(
   if (!result.ok) {
     throw new Error(await result.text())
   }
+
+  return await result.json()
 }
 
 export async function uploadInstructionAttachment(
@@ -151,7 +165,7 @@ export async function updateCertificate(
   id: number,
   certificateIn: CertificateFormType,
   newAttachment: File | null
-): Promise<void> {
+): Promise<number> {
   const formData = new FormData()
 
   const certificatePart = new Blob([JSON.stringify(certificateIn)], { type: 'application/json' })
@@ -166,7 +180,7 @@ export async function updateCertificate(
     throw new Error(await result.text())
   }
 
-  return
+  return result.json()
 }
 export async function getKoodistos(language: string): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/koodisto/${language.toUpperCase()}`, 'GET')

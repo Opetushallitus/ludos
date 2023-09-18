@@ -57,7 +57,6 @@ export const MultiSelectDropdown = ({
     <div className="relative mb-3 mt-1 border border-gray-border" ref={containerRef} tabIndex={0}>
       <div className={twMerge('flex bg-white px-2', requiredError && 'border border-red-primary')} data-testid={testId}>
         <div
-          id={id}
           className="row w-full flex-wrap gap-2 py-1"
           role="button"
           onClick={(e) => {
@@ -67,7 +66,7 @@ export const MultiSelectDropdown = ({
           tabIndex={0}
           aria-label={`Open ${id} Dropdown`}>
           <input
-            id={`${id}-search-input`}
+            id={id}
             type="search"
             value={searchText}
             onChange={handleSearchChange}

@@ -1,20 +1,53 @@
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
+import { Icon } from '../../Icon'
+import { useNavigate } from 'react-router-dom'
+import { PublishState } from '../../../types'
 
-export const FormButtonRow = ({
-  onCancelClick,
-  onSubmitClick,
-  onSaveDraftClick,
-  errorMessage,
-  isLoading
-}: {
-  onCancelClick: () => void
-  onSaveDraftClick: () => Promise<void>
-  onSubmitClick: () => Promise<void>
+type FormButtonRowProps = {
+  actions: {
+    onSubmitClick: () => Promise<void>
+    onSaveDraftClick: () => Promise<void>
+  }
+  state: {
+    isUpdate: boolean
+    isLoading: boolean
+    publishState?: PublishState
+  }
+  notValidFormMessageKey: string
   errorMessage?: string
-  isLoading?: boolean
-}) => {
+}
+
+export const FormButtonRow = ({ actions, state, notValidFormMessageKey, errorMessage }: FormButtonRowProps) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { isUpdate, isLoading } = state
+  const isDraft = state.publishState === PublishState.Draft
+
+  // todo: siirrä useLudosTranslation hookkiin
+  const draftButtonText = () => {
+    if (!isUpdate) {
+      return t('button.tallennaluonnos')
+    }
+
+    if (isDraft) {
+      return t('button.tallenna')
+    } else {
+      return t('button.palauta-luonnostilaan')
+    }
+  }
+
+  const submitButtonText = () => {
+    if (!isUpdate) {
+      return t('button.tallennajulkaise')
+    }
+
+    if (isDraft) {
+      return t('button.tallennajulkaise')
+    } else {
+      return t('button.tallenna')
+    }
+  }
 
   return (
     <>
@@ -22,7 +55,7 @@ export const FormButtonRow = ({
         <Button
           variant="buttonGhost"
           type="button"
-          onClick={onCancelClick}
+          onClick={() => navigate(-1)}
           disabled={isLoading}
           data-testid="form-cancel">
           {t('button.peruuta')}
@@ -30,25 +63,34 @@ export const FormButtonRow = ({
         <Button
           variant="buttonSecondary"
           type="button"
-          onClick={onSaveDraftClick}
+          onClick={actions.onSaveDraftClick}
           disabled={isLoading}
-          data-testid="form-draft">
-          {t('button.tallennaluonnos')}
+          data-testid={isUpdate ? 'form-update-draft' : 'form-draft'}>
+          {draftButtonText()}
         </Button>
         <Button
           variant="buttonPrimary"
           type="button"
-          onClick={onSubmitClick}
+          onClick={actions.onSubmitClick}
           disabled={isLoading}
-          data-testid="form-submit">
-          {t('button.tallennajulkaise')}
+          data-testid={isUpdate ? 'form-update-submit' : 'form-submit'}>
+          {submitButtonText()}
         </Button>
       </div>
+      {notValidFormMessageKey && (
+        <div className="flex justify-end text-red-primary gap-1">
+          <Icon name="virheellinen" color="text-red-primary" />
+          {t(notValidFormMessageKey)}
+          {t('form.tayta-pakolliset-kentat')}
+        </div>
+      )}
       {errorMessage && (
         <div className="flex justify-end">
           <ul className="min-w-36 mt-4 max-w-2xl text-red-primary">
-            {errorMessage.split('\n').map((e) => (
-              <li className="list-disc">{e}</li>
+            {errorMessage.split('\n').map((e, i) => (
+              <li className="list-disc" key={i}>
+                {e}
+              </li>
             ))}
           </ul>
         </div>

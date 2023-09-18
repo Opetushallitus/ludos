@@ -28,7 +28,7 @@ test.describe('Instruction form tests', () => {
       attachmentNameSv: 'Testa bilaga'
     })
 
-    await page.getByTestId('form-submit').click()
+    void page.getByTestId('form-submit').click()
 
     const response = await page.waitForResponse(
       (response) => response.url().includes('/api/instruction') && response.ok()
@@ -38,6 +38,7 @@ test.describe('Instruction form tests', () => {
 
     instructionToUpdate = responseData.id
 
+    await expect(page.getByTestId('notification-success')).toBeVisible()
     const header = page.getByTestId('assignment-header')
 
     await expect(header).toHaveText('Testi ohje')
@@ -73,7 +74,8 @@ test.describe('Instruction form tests', () => {
       contentTextSv: 'Testinstruktioner redigerade'
     })
 
-    await page.getByTestId('form-submit').click()
+    await page.getByTestId('form-update-submit').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
 
     const updatedInstructionHeader = page.getByTestId('assignment-header')
 
@@ -93,7 +95,8 @@ test.describe('Instruction form tests', () => {
     // rename other finnish file
     await page.getByTestId('attachment-name-input-0-fi').first().fill('Testi liite muokattu')
 
-    await page.getByTestId('form-submit').click()
+    await page.getByTestId('form-update-submit').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
 
     await expect(page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
     await expect(page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
@@ -106,6 +109,7 @@ test.describe('Instruction form tests', () => {
     const btn = page.getByTestId('form-draft')
     await expect(btn).toHaveText('Tallenna luonnoksena')
     await btn.click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
   })
 
   test('can cancel assignment creation', async ({ page }) => {
@@ -123,6 +127,7 @@ test.describe('Instruction form tests', () => {
     })
 
     await page.getByTestId('form-submit').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
 
     await page.getByTestId('edit-content-btn').click()
 

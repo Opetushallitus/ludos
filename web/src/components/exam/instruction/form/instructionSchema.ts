@@ -1,10 +1,11 @@
 import { z } from 'zod'
 import { commonSuperRefine, MIN_LENGTH } from '../../assignment/form/assignmentSchema'
-import { ErrorMessages } from '../../../../types'
+import { ErrorMessages, Exam, PublishState } from '../../../../types'
 
 export const instructionSchema = z
   .object({
-    exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: 'Required' }),
+    exam: z.enum([Exam.SUKO, Exam.LD, Exam.PUHVI], { required_error: ErrorMessages.REQUIRED }),
+    publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Archived]).optional(),
     nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
     nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
     contentFi: z.string().default(''),

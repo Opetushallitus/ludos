@@ -1,5 +1,5 @@
 import { RefinementCtx, z } from 'zod'
-import { ErrorMessages } from '../../../../types'
+import { ErrorMessages, Exam, PublishState } from '../../../../types'
 
 export const MIN_LENGTH = 3
 
@@ -14,15 +14,18 @@ export const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: 
   }
 }
 
+const examEnumZodType = z.enum([Exam.SUKO, Exam.LD, Exam.PUHVI], { required_error: ErrorMessages.REQUIRED })
+
 const commonSchema = z.object({
-  exam: z.enum(['SUKO', 'PUHVI', 'LD'], { required_error: ErrorMessages.REQUIRED }),
+  exam: examEnumZodType,
+  publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Archived]).optional(),
   nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
-  instructionFi: z.string(),
-  instructionSv: z.string(),
+  instructionFi: z.string().default(''),
+  instructionSv: z.string().default(''),
   contentFi: z.array(z.string()).optional().default(['']),
   contentSv: z.array(z.string()).optional().default(['']),
-  laajaalainenOsaaminenKoodiArvos: z.array(z.string())
+  laajaalainenOsaaminenKoodiArvos: z.array(z.string()).default([])
 })
 
 export const sukoAssignmentSchema = commonSchema
@@ -31,19 +34,23 @@ export const sukoAssignmentSchema = commonSchema
       assignmentTypeKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
       oppimaaraKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
       tavoitetasoKoodiArvo: z.string().nullable().default(null),
-      aiheKoodiArvos: z.array(z.string())
+      aiheKoodiArvos: z.array(z.string()).default([])
     })
   )
   .superRefine(commonSuperRefine)
 
 export type SukoAssignmentFormType = z.infer<typeof sukoAssignmentSchema>
 
-export const ldAssignmentSchema = commonSchema.merge(
-  z.object({
-    aineKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
-    lukuvuosiKoodiArvos: z.array(z.string(), { required_error: ErrorMessages.REQUIRED }).min(1, ErrorMessages.REQUIRED)
-  })
-)
+export const ldAssignmentSchema = commonSchema
+  .merge(
+    z.object({
+      aineKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
+      lukuvuosiKoodiArvos: z
+        .array(z.string(), { required_error: ErrorMessages.REQUIRED })
+        .min(1, ErrorMessages.REQUIRED)
+    })
+  )
+  .superRefine(commonSuperRefine)
 
 export type LdAssignmentFormType = z.infer<typeof ldAssignmentSchema>
 
@@ -59,3 +66,9 @@ export const puhviAssignmentSchema = commonSchema
   .superRefine(commonSuperRefine)
 
 export type PuhviAssignmentFormType = z.infer<typeof puhviAssignmentSchema>
+
+export const assignmentSchemaByExam = {
+  [Exam.SUKO]: sukoAssignmentSchema,
+  [Exam.LD]: ldAssignmentSchema,
+  [Exam.PUHVI]: puhviAssignmentSchema
+}
