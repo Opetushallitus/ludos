@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
-import { Exam, loginTestGroup, Role } from '../../helpers'
+import { ContentType, Exam, loginTestGroup, Role } from '../../helpers'
 import {
   createAssignment,
   fillLdAssignmentForm,
@@ -234,14 +234,14 @@ test.describe('Presentation view', () => {
   test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
     const assignmentIn = testAssignmentIn(Exam.Suko, 'Esitysnäkymätesti')
     const assignment = await createAssignment(context, baseURL!, assignmentIn)
-    await page.goto(`/suko/assignments/${assignment.id}`)
+    await page.goto(`/suko/${ContentType.koetehtavat}/${assignment.id}`)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
     await expect(await page.getByTestId('assignment-metadata')).toBeVisible()
 
     await testKatseluNakyma(page, 'assignment-action-katselunakyma', assignmentIn)
 
-    await page.goto(`/suko/assignments`)
+    await page.goto(`/suko/${ContentType.koetehtavat}`)
     await testKatseluNakyma(page, `assignment-${assignment.id}-action-katselunakyma`, assignmentIn)
   })
 })
@@ -260,7 +260,7 @@ test.describe('Assignment favorites', () => {
     const assignmentIn = testAssignmentIn(exam, 'Suosikkitesti')
     const assignment = await createAssignment(context, baseURL, assignmentIn)
 
-    await page.goto(`/${exam.toLowerCase()}/assignments`)
+    await page.goto(`/${exam.toLowerCase()}/${ContentType.koetehtavat}`)
     await page.getByTestId('assignment-list').locator('li').isVisible()
     return assignment
   }

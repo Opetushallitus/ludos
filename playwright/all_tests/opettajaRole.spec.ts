@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../helpers'
+import { ContentType, loginTestGroup, Role } from '../helpers'
 
 const pages = ['suko', 'puhvi', 'ld']
 
@@ -23,9 +23,9 @@ test('fail to create suko assignment, instruction and certificate', async ({ pag
 test('fail to navigate to new and update form pages', async ({ page }) => {
   await page.goto('/')
 
-  for (const action of ['new', 'update/1']) {
+  for (const action of ['uusi', 'muokkaus/1']) {
     for (const pageName of pages) {
-      for (const contentType of ['assignments', 'instructions', 'certificates']) {
+      for (const contentType of Object.values(ContentType)) {
         await page.goto(`/${pageName}/${contentType}/${action}`)
         await expect(page.getByTestId('unauthorizedPage')).toBeVisible()
       }

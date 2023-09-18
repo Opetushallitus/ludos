@@ -5,7 +5,7 @@ export type Page = {
 
 export const EXAM_TYPES = ['suko', 'ld', 'puhvi']
 
-export const PAGE_HEADERS = ['frontpage', ...EXAM_TYPES, 'palautteet'] as const
+export const PAGE_HEADERS = ['etusivu', ...EXAM_TYPES, 'palautteet'] as const
 
 export type PageHeaders = (typeof PAGE_HEADERS)[number]
 
@@ -14,6 +14,12 @@ export type NavigationPages = Record<PageHeaders, Page>
 export type AllPages = NavigationPages & {
   create: Page
 }
+
+export const ContentFormAction = {
+  uusi: 'uusi',
+  muokkaus: 'muokkaus'
+}
+export type ContentFormAction = (typeof ContentFormAction)[keyof typeof ContentFormAction]
 
 export const PublishState = {
   Draft: 'DRAFT',
@@ -28,7 +34,6 @@ export const Exam = {
   Ld: 'LD',
   Puhvi: 'PUHVI'
 } as const
-
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
 export type BaseIn = {
@@ -90,29 +95,25 @@ export type CertificateIn = BaseIn & {
 }
 
 export const ContentType = {
-  KOETEHTAVAT: 'koetehtavat',
-  OHJEET: 'ohjeet',
-  TODISTUKSET: 'todistukset'
+  koetehtavat: 'koetehtavat',
+  ohjeet: 'ohjeet',
+  todistukset: 'todistukset'
 } as const
 export type ContentType = (typeof ContentType)[keyof typeof ContentType]
-
-export const ContentTypeEng = {
-  KOETEHTAVAT: 'assignments',
-  OHJEET: 'instructions',
-  TODISTUKSET: 'certificates'
-}
-export type ContentTypeEng = (typeof ContentTypeEng)[keyof typeof ContentTypeEng]
-
-export type ContentTypeKeys = keyof typeof ContentType
-
-type SingularOptions = {
-  [key in ContentTypeKeys]: string
+type ContentTypeMapping = {
+  [key in keyof typeof ContentType]: string
 }
 
-export const ContentTypesSingular: SingularOptions = {
-  KOETEHTAVAT: 'koetehtava',
-  OHJEET: 'ohje',
-  TODISTUKSET: 'todistus'
+export const ContentTypeSingular: ContentTypeMapping = {
+  koetehtavat: 'koetehtava',
+  ohjeet: 'ohje',
+  todistukset: 'todistus'
+}
+
+export const ContentTypeSingularEng: ContentTypeMapping = {
+  koetehtavat: 'assignment',
+  ohjeet: 'instruction',
+  todistukset: 'certificate'
 }
 
 export type ValueOf<T> = T[keyof T]

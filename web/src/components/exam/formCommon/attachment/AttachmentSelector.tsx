@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 import { fileUploadErrorMessage } from '../../../../errorUtils'
 import { Spinner } from '../../../Spinner'
-import { AttachmentData, AttachmentLanguage, ContentTypeEng } from '../../../../types'
+import { AttachmentData, AttachmentLanguage, ContentType } from '../../../../types'
 
 interface AttachmentSelectorProps {
-  contentType: ContentTypeEng
+  contentType: ContentType
   handleNewAttachmentSelected: (attachments: AttachmentData[], language?: AttachmentLanguage) => void
   language: AttachmentLanguage // used mostly for data-testid tagginf
   attachmentData?: AttachmentData[] | AttachmentData

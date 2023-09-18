@@ -1,13 +1,13 @@
 import { Layout } from '../layout/Layout'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { feedbackKey, ldKey, newKey, puhviKey, sukoKey, updateKey } from './routes'
+import { palautteetKey, ldKey, uusiKey, puhviKey, sukoKey, muokkausKey, luvatonKey } from './routes'
 import { useTranslation } from 'react-i18next'
-import { Exam, Roles } from '../../types'
+import { ContentType, Exam, Roles } from '../../types'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from '../Spinner'
 import { Frontpage } from '../frontpage/Frontpage'
-import Exams from '../exam/Exams'
+import ContentListPage from '../exam/ContentListPage'
 import { PresentationHeader } from '../header/PresentationHeader'
 import { Footer } from '../Footer'
 import { AssignmentFavorite } from '../exam/assignment/assignmentFavorite/AssignmentFavorite'
@@ -49,7 +49,7 @@ const ProtectedRoute = (): ReactElement => {
   const { isYllapitaja } = useUserDetails()
 
   if (!isYllapitaja) {
-    return <Navigate to="/unauthorized" replace />
+    return <Navigate to={`/${luvatonKey}`} replace />
   }
 
   return <Outlet />
@@ -71,61 +71,61 @@ function examRoutes(exam: Exam) {
     <Route path={examPathPrefix(exam)}>
       <Route element={<ProtectedRoute />}>
         <Route
-          path={`assignments/${newKey}`}
+          path={`${ContentType.koetehtavat}/${uusiKey}`}
           element={
             <Layout>
               <SpinnerSuspense>
-                <AssignmentForm action={newKey} />
+                <AssignmentForm action={uusiKey} />
               </SpinnerSuspense>
             </Layout>
           }
         />
         <Route
-          path={`assignments/${updateKey}/:id`}
+          path={`${ContentType.koetehtavat}/${muokkausKey}/:id`}
           element={
             <Layout>
               <SpinnerSuspense>
-                <AssignmentForm action={updateKey} />
+                <AssignmentForm action={muokkausKey} />
               </SpinnerSuspense>
             </Layout>
           }
         />
         <Route
-          path={`instructions/${newKey}`}
+          path={`${ContentType.ohjeet}/${uusiKey}`}
           element={
             <Layout>
               <SpinnerSuspense>
-                <InstructionForm action={newKey} />
+                <InstructionForm action={uusiKey} />
               </SpinnerSuspense>
             </Layout>
           }
         />
         <Route
-          path={`instructions/${updateKey}/:id`}
+          path={`${ContentType.ohjeet}/${muokkausKey}/:id`}
           element={
             <Layout>
               <SpinnerSuspense>
-                <InstructionForm action={updateKey} />
+                <InstructionForm action={muokkausKey} />
               </SpinnerSuspense>
             </Layout>
           }
         />
         <Route
-          path={`certificates/${newKey}`}
+          path={`${ContentType.todistukset}/${uusiKey}`}
           element={
             <Layout>
               <SpinnerSuspense>
-                <CertificateForm action={newKey} />
+                <CertificateForm action={uusiKey} />
               </SpinnerSuspense>
             </Layout>
           }
         />
         <Route
-          path={`certificates/${updateKey}/:id`}
+          path={`${ContentType.todistukset}/${muokkausKey}/:id`}
           element={
             <Layout>
               <SpinnerSuspense>
-                <CertificateForm action={updateKey} />
+                <CertificateForm action={muokkausKey} />
               </SpinnerSuspense>
             </Layout>
           }
@@ -136,7 +136,7 @@ function examRoutes(exam: Exam) {
         path={':contentType?'}
         element={
           <Layout>
-            <Exams exam={exam} />
+            <ContentListPage exam={exam} />
           </Layout>
         }
       />
@@ -179,11 +179,11 @@ function AuthorizedRoutes() {
       />
       <Route element={<ProtectedRoute />}>
         <Route
-          path={`/${feedbackKey}`}
+          path={`/${palautteetKey}`}
           element={
             <Layout>
               <div>
-                <h2 data-testid={`page-heading-${feedbackKey.replace('/', '')}`}>{t('title.palautteet')}</h2>
+                <h2 data-testid={`page-heading-${palautteetKey}`}>{t('title.palautteet')}</h2>
               </div>
             </Layout>
           }
@@ -200,7 +200,7 @@ function AuthorizedRoutes() {
           </Layout>
         }
       />
-      <Route path="/unauthorized" element={<UnauthorizedPage />} />
+      <Route path={`/${luvatonKey}`} element={<UnauthorizedPage />} />
       <Route
         path="*"
         element={

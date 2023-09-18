@@ -1,18 +1,16 @@
 import { ContentType, Page } from '../../types'
-import { useNavigate } from 'react-router-dom'
 import { Icon } from '../Icon'
-import { ContentTypeTranslationEnglish } from '../exam/assignment/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
 
 interface NavigationBoxesProps {
   examPages: Page[]
-  contentTypes: ContentType[]
 }
 
-export const NavigationBoxes = ({ examPages, contentTypes }: NavigationBoxesProps) => {
+export const NavigationBoxes = ({ examPages }: NavigationBoxesProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+
+  const contentTypes: ContentType[] = Object.values(ContentType)
 
   return (
     <>
@@ -23,8 +21,8 @@ export const NavigationBoxes = ({ examPages, contentTypes }: NavigationBoxesProp
             {contentTypes.map((contentType, i) => (
               <InternalLink
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
-                to={`${examPage.path}/${ContentTypeTranslationEnglish[contentType]}`}
-                testId={`nav-box-${ContentTypeTranslationEnglish[contentType]}`}
+                to={`${examPage.path}/${contentType}`}
+                testId={`nav-box-${contentType}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={contentType} color="text-green-primary" />

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ContentTypeEng } from '../types'
+import { ContentType } from '../types'
 
 function isOrderDirection(value: any): value is 'asc' | 'desc' {
   return value === 'asc' || value === 'desc'
@@ -25,7 +25,7 @@ export function useFilters({
   showOnlyFavorites
 }: {
   initialSearchFilters: string
-  contentType: string
+  contentType: ContentType
   basePath?: string
   showOnlyFavorites?: boolean
 }) {
@@ -51,11 +51,11 @@ export function useFilters({
     const tehtavatyyppisuko = urlParams.get('tehtavatyyppisuko')
     const aihe = urlParams.get('aihe')
     const tavoitetaitotaso = urlParams.get('tavoitetaitotaso')
-    const orderDirection = urlParams.get('orderDirection')
+    const orderDirection = urlParams.get('jarjesta')
     const lukuvuosi = urlParams.get('lukuvuosi')
     const aine = urlParams.get('aine')
     const tehtavatyyppipuhvi = urlParams.get('tehtavatyyppipuhvi')
-    const isFavorite = urlParams.get('isFavorite')
+    const isFavorite = urlParams.get('suosikki')
 
     return {
       oppimaara: oppimaara ? oppimaara.split(',') : initialFilters.oppimaara,
@@ -77,10 +77,10 @@ export function useFilters({
 
     // Resetting URL search params
     const newURLParams = new URLSearchParams()
-    newURLParams.set('orderDirection', initialFilters.orderDirection)
+    newURLParams.set('jarjesta', initialFilters.orderDirection)
 
     if (showOnlyFavorites) {
-      newURLParams.set('isFavorite', true.toString())
+      newURLParams.set('suosikki', true.toString())
     }
 
     const newSearchString = newURLParams.toString()
@@ -99,7 +99,7 @@ export function useFilters({
 
   useEffect(() => {
     // only run effect on content type assignment and instruction
-    if (contentType === ContentTypeEng.TODISTUKSET) {
+    if (contentType === ContentType.todistukset) {
       return
     }
 
@@ -134,10 +134,10 @@ export function useFilters({
     }
 
     if (showOnlyFavorites) {
-      urlParams.set('isFavorite', true.toString())
+      urlParams.set('suosikki', true.toString())
     }
 
-    urlParams.set('orderDirection', filters.orderDirection)
+    urlParams.set('jarjesta', filters.orderDirection)
 
     const searchString = urlParams.toString()
 

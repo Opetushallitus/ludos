@@ -4,7 +4,9 @@ import { useMatch, useNavigate } from 'react-router-dom'
 import {
   AttachmentData,
   AttachmentLanguage,
-  ContentTypeEng,
+  ContentFormAction,
+  ContentType,
+  ContentTypeSingularEng,
   Exam,
   InstructionIn,
   MapWithFileKeyAndMetadata,
@@ -30,14 +32,15 @@ import { FormError } from '../../formCommon/FormErrors'
 import { TipTap } from '../../formCommon/editor/TipTap'
 
 type InstructionFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
 }
 
 const InstructionForm = ({ action }: InstructionFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const matchUrl = action === 'new' ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
+  const matchUrl =
+    action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
 
   const [activeTab, setActiveTab] = useState('fi')
@@ -52,8 +55,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const id = match!.params.id
 
   const { data: instruction, loading: instructionLoading } = useFetch<InstructionIn>(
-    `instruction/${exam}/${id}`,
-    action === 'new'
+    `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`,
+    action === ContentFormAction.uusi
   )
 
   const {
@@ -84,7 +87,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         setLoading(true)
         let resultId: string
 
-        if (action === 'update' && instruction) {
+        if (action === ContentFormAction.muokkaus && instruction) {
           const mapWithFileKeyAndName: MapWithFileKeyAndMetadata = new Map()
 
           const combinedAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
@@ -109,7 +112,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         }
         setSubmitError('')
 
-        navigate(`/${exam}/instructions/${resultId}`)
+        navigate(`/${exam}/${ContentType.ohjeet}/${resultId}`)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -170,7 +173,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     setFileUploadErrorMessage(null)
     let dataToSet: AttachmentData[]
 
-    if (action === 'update') {
+    if (action === ContentFormAction.muokkaus) {
       dataToSet = await uploadNewAttachments(attachmentFiles, language)
     } else {
       dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'fi')
@@ -184,7 +187,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   }
 
   const deleteFileByIndex = (index: number, language: AttachmentLanguage) => {
-    if (action === 'update') {
+    if (action === ContentFormAction.muokkaus) {
       const fileToDelete = language === 'sv' ? attachmentDataSv[index].attachment : attachmentDataFi[index].attachment
 
       if (fileToDelete) {
@@ -221,7 +224,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentTypeEng.OHJEET} name={instruction?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.ohjeet} name={instruction?.nameFi} />
 
       <form
         className="min-h-[50vh] border-y-2 border-gray-light py-5"
@@ -263,7 +266,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <label className="font-semibold">{t('form.tiedostot')}</label>
           <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
           <AttachmentSelector
-            contentType={ContentTypeEng.OHJEET}
+            contentType={ContentType.ohjeet}
             language="fi"
             attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
             handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -301,7 +304,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <label className="font-semibold">{t('form.tiedostot')}</label>
           <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
           <AttachmentSelector
-            contentType={ContentTypeEng.OHJEET}
+            contentType={ContentType.ohjeet}
             language="sv"
             attachmentData={attachmentDataSv}
             handleNewAttachmentSelected={handleNewAttachmentSelected}

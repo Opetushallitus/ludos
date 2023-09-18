@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '../../../Spinner'
-import { AttachmentData, ContentTypeEng, FileDetails } from '../../../../types'
+import { AttachmentData, ContentType, FileDetails } from '../../../../types'
 import { AttachmentDetails } from './AttachmentDetails'
 import { AttachmentDetailsList } from './AttachmentDetailsList'
 import { useEffect, useState } from 'react'
 import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL, DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../../../constants'
 
 interface AttachmentFileDetailViewProps {
-  contentType: ContentTypeEng
+  contentType: ContentType
   attachments: AttachmentData[] | AttachmentData
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
@@ -26,7 +26,7 @@ export const AttachmentFileDetailView = ({
   const { t } = useTranslation()
   const [attachmentNames, setAttachmentNames] = useState<string[]>([])
   const attachmentDownloadUrlPrefix = `${
-    contentType === ContentTypeEng.OHJEET ? DOWNLOAD_INSTRUCTION_ATTACHMENT_URL : DOWNLOAD_CERTIFICATE_ATTACHMENT_URL
+    contentType === ContentType.ohjeet ? DOWNLOAD_INSTRUCTION_ATTACHMENT_URL : DOWNLOAD_CERTIFICATE_ATTACHMENT_URL
   }`
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
 import path from 'path'
-import { loginTestGroup, Role } from '../../helpers'
+import { loginTestGroup, Exam, Role, examsLowerCase } from '../../helpers'
 
 type Event = 'submit' | 'draft' | 'cancel'
 
@@ -146,9 +146,7 @@ async function doCreateAndUpdate(page: Page, context: BrowserContext, event: Eve
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-const exams = ['suko', 'ld', 'puhvi']
-
-exams.forEach((exam) => {
+examsLowerCase.forEach((exam) => {
   test.describe(`${exam} certificate form tests`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/')

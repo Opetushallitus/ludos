@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentTypeEng, Exam, LdAssignmentIn, PublishState } from '../../../../types'
+import { ContentFormAction, ContentType, Exam, LdAssignmentIn, PublishState } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { createAssignment, updateAssignment } from '../../../../request'
@@ -19,7 +19,7 @@ import { FormHeader } from '../../formCommon/FormHeader'
 import { useFetch } from '../../../../hooks/useFetch'
 
 type LdAssignmentFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
   id?: string
 }
 
@@ -29,7 +29,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const navigate = useNavigate()
   const exam = Exam.Ld
 
-  const { data: assignment } = useFetch<LdAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
+  const { data: assignment } = useFetch<LdAssignmentIn>(`assignment/${exam}/${id}`, action === ContentFormAction.uusi)
 
   const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(ldAssignmentSchema) })
 
@@ -67,7 +67,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         setLoading(true)
         let resultId: string
         // When updating we need to have the assignment
-        if (action === 'update' && assignment) {
+        if (action === ContentFormAction.muokkaus && assignment) {
           resultId = await updateAssignment<LdAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await createAssignment<LdAssignmentFormType>(body)
@@ -75,7 +75,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         }
         setSubmitError('')
 
-        navigate(`/${exam}/assignments/${resultId}`)
+        navigate(`/${exam}/${ContentType.koetehtavat}/${resultId}`)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -105,7 +105,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
 
   return (
     <>
-      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} name={assignment?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.koetehtavat} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />

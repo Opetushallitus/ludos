@@ -13,6 +13,7 @@ import { useContext, useEffect, useState } from 'react'
 import { setAssignmentFavorite } from '../../../request'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { LudosContext } from '../../../LudosContext'
+import { muokkausKey } from '../../routes/routes'
 
 type AssignmentCardProps = {
   language: string
@@ -68,7 +69,7 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
             <Button
               variant="buttonGhost"
               customClass="p-0"
-              onClick={() => navigate(`update/${assignment.id}`)}
+              onClick={() => navigate(`${muokkausKey}/${assignment.id}`)}
               data-testid={`assignment-${assignment.id.toString()}-edit`}>
               <Icon name="muokkaa" color="text-green-primary" />
             </Button>

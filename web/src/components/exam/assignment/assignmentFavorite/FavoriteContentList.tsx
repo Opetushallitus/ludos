@@ -1,9 +1,8 @@
-import { AssignmentIn, ContentTypeEng, Exam } from '../../../../types'
+import { AssignmentIn, ContentType, ContentTypeSingularEng, Exam } from '../../../../types'
 import { useLocation } from 'react-router-dom'
 import { FiltersType, useFilters } from '../../../../hooks/useFilters'
 import { useEffect, useState } from 'react'
-import { ContentTypeTranslationFinnish, removeEmpty } from '../assignmentUtils'
-import { EXAM_TYPE_ENUM } from '../../../../constants'
+import { removeEmpty } from '../assignmentUtils'
 import { AssignmentCard } from '../AssignmentCard'
 import { Spinner } from '../../../Spinner'
 import { AssignmentFilters } from '../AssignmentFilters'
@@ -33,7 +32,7 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
 
   const { filters, setFilters, resetFiltersAndParams } = useFilters({
     initialSearchFilters: location.search,
-    contentType: ContentTypeEng.KOETEHTAVAT,
+    contentType: ContentType.koetehtavat,
     basePath: `/favorites/${activeTab}`,
     showOnlyFavorites: true
   })
@@ -45,7 +44,9 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
   const [language, setLanguage] = useState<string>('fi')
 
   const { data, loading, refresh } = useFetch<AssignmentIn[]>(
-    `${EXAM_TYPE_ENUM.ASSIGNMENT}/${activeTab}?${new URLSearchParams(removeEmpty<FiltersType>(filters)).toString()}`
+    `${ContentTypeSingularEng.koetehtavat}/${activeTab}?${new URLSearchParams(
+      removeEmpty<FiltersType>(filters)
+    ).toString()}`
   )
 
   const {
@@ -63,7 +64,7 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
     <div>
       <div className="row gap-6 my-3 flex-wrap justify-end">
         <div className="flex flex-col gap-2 md:flex-row">
-          <p className="mt-2">{t(`filter.${ContentTypeTranslationFinnish[ContentTypeEng.KOETEHTAVAT]}-kieli`)}</p>
+          <p className="mt-2">{t(`filter.${ContentType.koetehtavat}-kieli`)}</p>
           <div className="w-36">
             <Dropdown
               id="languageDropdown"

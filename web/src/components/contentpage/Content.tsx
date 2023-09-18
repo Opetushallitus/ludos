@@ -1,10 +1,9 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { BaseIn, ContentTypeEng, Exam } from '../../types'
+import { BaseIn, ContentType, ContentTypeSingularEng, Exam } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { useTranslation } from 'react-i18next'
 import { isAssignment, isCertificate, isInstruction } from '../exam/assignment/assignmentUtils'
-import { EXAM_TYPE_ENUM } from '../../constants'
 import { Spinner } from '../Spinner'
 import { ContentHeader } from './ContentCommon'
 import { useState } from 'react'
@@ -14,6 +13,7 @@ import { AssignmentContent } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
 import { InstructionContent } from './InstructionsContent'
 import { useUserDetails } from '../../hooks/useUserDetails'
+import { muokkausKey } from '../routes/routes'
 
 type ContentProps = {
   exam: Exam
@@ -23,26 +23,18 @@ type ContentProps = {
 const Content = ({ exam, isPresentation }: ContentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { contentType, id } = useParams<{ contentType: string; id: string }>()
+  const { contentType, id } = useParams<{ contentType: ContentType; id: string }>()
   const location = useLocation()
   const { isYllapitaja } = useUserDetails()
 
   const [language, setLanguage] = useState<string>('fi')
 
-  const contentTypeSingular =
-    contentType === ContentTypeEng.KOETEHTAVAT
-      ? EXAM_TYPE_ENUM.ASSIGNMENT
-      : contentType === ContentTypeEng.OHJEET
-      ? EXAM_TYPE_ENUM.INSTRUCTION
-      : EXAM_TYPE_ENUM.CERTIFICATE
-
-  const { data, loading } = useFetch<BaseIn>(`${contentTypeSingular}/${exam}/${id}`)
+  const { data, loading } = useFetch<BaseIn>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
   const handleNavigation = () => {
     const pathName = `/${exam.toLowerCase()}/${contentType}`
-    const backNavigationSearchString = new URLSearchParams(location.state?.searchValuesString)
-    const navigateToString = `${pathName}?${backNavigationSearchString.toString()}`
-
+    const backNavigationSearchString = new URLSearchParams(location.state?.searchValuesString).toString()
+    const navigateToString = `${pathName}${backNavigationSearchString ? `?${backNavigationSearchString}` : ''}`
     navigate(navigateToString, { replace: true })
   }
 
@@ -67,7 +59,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                       <StateTag state={data.publishState} />
                       <span
                         className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
-                        onClick={() => navigate(`../${contentType}/update/${data.id}`)}
+                        onClick={() => navigate(`../${contentType}/${muokkausKey}/${data.id}`)}
                         data-testid="edit-content-btn">
                         <Icon name="muokkaa" color="text-green-primary" />
                         <p className="text-green-primary">{t('assignment.muokkaa')}</p>
@@ -93,7 +85,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               {!isPresentation && (
                 <div className="row mb-6">
                   <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
-                    {t(`${contentTypeSingular}.palaa`)}
+                    {t(`${ContentTypeSingularEng[contentType!]}.palaa`)}
                   </Button>
                 </div>
               )}

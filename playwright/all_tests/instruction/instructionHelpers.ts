@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 import path from 'path'
 
 export async function fillInstructionForm({
@@ -22,8 +22,7 @@ export async function fillInstructionForm({
   attachmentNameFi?: string
   attachmentNameSv?: string
 }) {
-  // check that form is loaded
-  await page.getByTestId('heading').click()
+  await expect(page.getByTestId('heading')).toBeVisible()
 
   if (nameTextFi) {
     await page.getByTestId('nameFi').fill(nameTextFi)

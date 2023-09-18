@@ -7,6 +7,7 @@ import { toLocaleDate } from '../../../formatUtils'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
+import { muokkausKey } from '../../routes/routes'
 
 type InstructionCardProps = {
   language: string
@@ -31,7 +32,7 @@ export const InstructionCard = ({ language, instruction }: InstructionCardProps)
           <Button
             variant="buttonGhost"
             customClass="p-0 ml-2"
-            onClick={() => navigate(`update/${instruction.id}`)}
+            onClick={() => navigate(`${muokkausKey}/${instruction.id}`)}
             data-testid={`instruction-${instruction.id.toString()}-edit`}>
             <Icon name="muokkaa" color="text-green-primary" />
           </Button>

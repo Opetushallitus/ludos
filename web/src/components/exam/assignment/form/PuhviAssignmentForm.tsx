@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { KoodiDtoIn } from '../../../../LudosContext'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ContentTypeEng, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
+import { ContentFormAction, ContentType, Exam, PublishState, PuhviAssignmentIn } from '../../../../types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { createAssignment, updateAssignment } from '../../../../request'
@@ -19,7 +19,7 @@ import { FormHeader } from '../../formCommon/FormHeader'
 import { useFetch } from '../../../../hooks/useFetch'
 
 type PuhviAssignmentFormProps = {
-  action: 'new' | 'update'
+  action: ContentFormAction
   id?: string
 }
 
@@ -29,7 +29,10 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const navigate = useNavigate()
   const exam = Exam.Puhvi
 
-  const { data: assignment } = useFetch<PuhviAssignmentIn>(`assignment/${exam}/${id}`, action === 'new')
+  const { data: assignment } = useFetch<PuhviAssignmentIn>(
+    `assignment/${exam}/${id}`,
+    action === ContentFormAction.uusi
+  )
 
   const methods = useForm<PuhviAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(puhviAssignmentSchema) })
 
@@ -71,7 +74,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         setLoading(true)
         let resultId: string
         // When updating we need to have the assignment
-        if (action === 'update' && assignment) {
+        if (action === ContentFormAction.muokkaus && assignment) {
           resultId = await updateAssignment<PuhviAssignmentFormType>(assignment.id, body)
         } else {
           const { id } = await createAssignment<PuhviAssignmentFormType>(body)
@@ -79,7 +82,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         }
         setSubmitError('')
 
-        navigate(`/${exam}/assignments/${resultId}`)
+        navigate(`/${exam}/${ContentType.koetehtavat}/${resultId}`)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -108,7 +111,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
 
   return (
     <>
-      <FormHeader action={action} contentType={ContentTypeEng.KOETEHTAVAT} name={assignment?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.koetehtavat} name={assignment?.nameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
