@@ -1,7 +1,8 @@
 package fi.oph.ludos.auth
 
 import fi.oph.ludos.Constants.Companion.API_PREFIX
-import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.apereo.cas.client.validation.Cas30ServiceTicketValidator
 import org.apereo.cas.client.validation.TicketValidator
 import org.slf4j.Logger
@@ -21,8 +22,6 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
-import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 
 
 @Configuration

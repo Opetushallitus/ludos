@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 
 @Configuration
 @EnableWebSecurity
@@ -28,44 +29,48 @@ class WebSecurityConfiguration {
 
     @Bean
     fun securityFilterChain(
-        httpSecurity: HttpSecurity,
+        http: HttpSecurity,
         authenticationEntryPoint: AuthenticationEntryPoint,
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
         casConfig: CasConfig,
     ): SecurityFilterChain {
         // todo: enable csrf for non local environments
-        httpSecurity.csrf { csrf -> csrf.disable() }
+        http.csrf { it.disable() }
 
-        httpSecurity.logout { l ->
-            l.logoutSuccessUrl(casConfig.getCasLogoutUrl())
-            l.logoutUrl(casConfig.logoutUrl)
+        val requestCache = HttpSessionRequestCache()
+        requestCache.setMatchingRequestParameterName("j");
+        http.requestCache { it.requestCache(requestCache) }
+
+        http.logout {
+            it.logoutSuccessUrl(casConfig.getCasLogoutUrl())
+            it.logoutUrl(casConfig.logoutUrl)
         }
 
-        httpSecurity.authorizeHttpRequests { a ->
-            a.requestMatchers("/assets/**").permitAll()
-            a.requestMatchers("/api/health-check").permitAll()
+        http.authorizeHttpRequests {
+            it.requestMatchers("/assets/**").permitAll()
+            it.requestMatchers("/api/health-check").permitAll()
         }
 
         if (TestController.isEnabled()) {
             logger.warn("TestController is enabled")
-            httpSecurity.authorizeHttpRequests { a ->
-                a.requestMatchers("/api/test/mocklogin/**").permitAll()
+            http.authorizeHttpRequests {
+                it.requestMatchers("/api/test/mocklogin/**").permitAll()
             }
-            httpSecurity.sessionManagement { s ->
-                s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            http.sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             }
         }
 
-        httpSecurity.authorizeHttpRequests { a ->
-            a.requestMatchers("/**").authenticated()
+        http.authorizeHttpRequests {
+            it.requestMatchers("/**").authenticated()
         }
-        httpSecurity.addFilter(casAuthenticationFilter)
-        httpSecurity.exceptionHandling { e ->
-            e.authenticationEntryPoint(authenticationEntryPoint)
+        http.addFilter(casAuthenticationFilter)
+        http.exceptionHandling {
+            it.authenticationEntryPoint(authenticationEntryPoint)
         }
-        httpSecurity.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
+        http.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
 
-        return httpSecurity.build()
+        return http.build()
     }
 }
