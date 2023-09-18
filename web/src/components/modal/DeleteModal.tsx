@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { ReactNode } from 'react'
 import styles from './modal.module.css'
 import { Icon } from '../Icon'
 import { Button } from '../Button'

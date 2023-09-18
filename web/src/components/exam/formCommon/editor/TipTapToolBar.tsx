@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import { Icon } from '../../../Icon'
 import { Button } from '../../../Button'
 import { useTranslation } from 'react-i18next'
-import { TipTapAddUrlModal } from '../../../Modal/TipTapAddUrlModal'
+import { TipTapAddUrlModal } from '../../../modal/TipTapAddUrlModal'
 
 export const TipTapToolBar = ({ editor, dataTestId }: { editor: Editor; dataTestId?: string }) => {
   const { t } = useTranslation()

@@ -3,7 +3,7 @@ import { ExternalLink } from '../../../ExternalLink'
 import { toLocaleDate } from '../../../../formatUtils'
 import { Icon } from '../../../Icon'
 import { useState } from 'react'
-import { DeleteModal } from '../../../Modal/DeleteModal'
+import { DeleteModal } from '../../../modal/DeleteModal'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../../Button'
 
