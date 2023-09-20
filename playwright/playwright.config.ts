@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import * as process from 'process'
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -28,7 +29,7 @@ export default defineConfig({
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: process.env.CI ? 'http://localhost:8080' : 'http://localhost:8000',
-    baseURL: 'http://localhost:8080',
+    baseURL: process.env.CI ? 'http://localhost:8080' : 'http://localhost:8000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',

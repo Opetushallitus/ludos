@@ -8,6 +8,7 @@ export default defineConfig({
   server: {
     port: 8000,
     proxy: {
+      '/vitelogin': 'http://localhost:8080/',
       '/api': 'http://localhost:8080/'
     }
   },
