@@ -201,6 +201,7 @@ function AuthorizedRoutes() {
         }
       />
       <Route path={`/${luvatonKey}`} element={<UnauthorizedPage />} />
+      <Route path={`/vitelogin`} element={<Navigate replace to="/" />} />
       <Route
         path="*"
         element={

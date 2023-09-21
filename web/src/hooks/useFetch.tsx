@@ -14,7 +14,7 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
       try {
         setLoading(true)
 
-        const response = await fetch(`/api/${url}`, { method: 'GET' })
+        const response = await fetch(`/api/${url}`, { method: 'GET', redirect: 'error' })
 
         if (!response.ok) {
           setError(true)

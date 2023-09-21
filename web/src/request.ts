@@ -14,7 +14,8 @@ const doRequest = async (
   await fetch(url, {
     method,
     body,
-    headers
+    headers,
+    redirect: 'error'
   })
 
 export async function createAssignment<T>(body: T): Promise<{ id: string }> {

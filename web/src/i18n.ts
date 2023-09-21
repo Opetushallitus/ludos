@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 
 const loadResources = async () => {
   try {
-    const result = await fetch('/api/localization')
+    const result = await fetch('/api/localization', { redirect: 'error' })
 
     if (!result.ok) {
       return []
