@@ -3,10 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
 import { ContentAction } from '../../../hooks/useConstantsWithLocalization'
 import { Button } from '../../Button'
+import { esitysnakymaKey } from '../../routes/LudosRoutes'
+import { ContentType, Exam } from '../../../types'
 
 type AssignmentCardContentActionButtonProps = {
   contentId: number
   contentAction: ContentAction
+  exam: Exam
   isActive?: boolean
   onClickHandler?: () => void
 }
@@ -14,6 +17,7 @@ type AssignmentCardContentActionButtonProps = {
 function AssignmentCardContentActionButton({
   contentId,
   contentAction: { actionName, iconName, text, link },
+  exam,
   isActive,
   onClickHandler
 }: AssignmentCardContentActionButtonProps) {
@@ -29,11 +33,11 @@ function AssignmentCardContentActionButton({
   if (link) {
     return (
       <InternalLink
-        to={`${contentId}/${link}`}
+        to={`/${exam}/${ContentType.koetehtavat}/${contentId}/${link}`}
         target="_blank"
         className={className}
         children={children}
-        testId={testId}
+        data-testid={testId}
       />
     )
   } else {
@@ -51,12 +55,14 @@ function AssignmentCardContentActionButton({
 
 type AssignmentCardContentActionsProps = {
   contentId: number
+  exam: Exam
   isFavorite?: boolean
   onClickHandler?: () => void
 }
 
 export const AssignmentCardContentActions = ({
   contentId,
+  exam,
   isFavorite,
   onClickHandler
 }: AssignmentCardContentActionsProps) => {
@@ -67,11 +73,12 @@ export const AssignmentCardContentActions = ({
       <AssignmentCardContentActionButton
         contentId={contentId}
         contentAction={{
-          actionName: 'katselunakyma',
+          actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
           text: t('assignment.katselunakyma'),
-          link: 'presentation'
+          link: esitysnakymaKey
         }}
+        exam={exam}
         key="uusi-valilehti"
       />
       <AssignmentCardContentActionButton
@@ -81,6 +88,7 @@ export const AssignmentCardContentActions = ({
           iconName: 'pdf',
           text: t('assignment.lataapdf')
         }}
+        exam={exam}
         key="pdf"
       />
       <AssignmentCardContentActionButton
@@ -88,8 +96,9 @@ export const AssignmentCardContentActions = ({
         contentAction={{
           actionName: 'suosikki',
           iconName: 'suosikki',
-          text: isFavorite ? 'Poista suosikeista' : 'Lisää suosikiksi'
+          text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
         }}
+        exam={exam}
         onClickHandler={onClickHandler}
         isActive={isFavorite}
         key="suosikki"

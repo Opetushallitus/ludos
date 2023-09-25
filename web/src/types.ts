@@ -3,18 +3,6 @@ export type Page = {
   path: string
 }
 
-export const EXAM_TYPES = ['suko', 'ld', 'puhvi']
-
-export const PAGE_HEADERS = ['etusivu', ...EXAM_TYPES, 'palautteet'] as const
-
-export type PageHeaders = (typeof PAGE_HEADERS)[number]
-
-export type NavigationPages = Record<PageHeaders, Page>
-
-export type AllPages = NavigationPages & {
-  create: Page
-}
-
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'
@@ -30,9 +18,9 @@ export const PublishState = {
 export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
 export const Exam = {
-  Suko: 'SUKO',
-  Ld: 'LD',
-  Puhvi: 'PUHVI'
+  SUKO: 'SUKO',
+  LD: 'LD',
+  PUHVI: 'PUHVI'
 } as const
 export type Exam = (typeof Exam)[keyof typeof Exam]
 

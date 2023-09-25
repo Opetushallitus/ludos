@@ -1,16 +1,15 @@
-import { NavLink, useNavigate } from 'react-router-dom'
 import { useContext, useState } from 'react'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
-import { Page } from '../../types'
 import { HeaderFavorites } from './HeaderFavorites'
 import { LudosContext } from '../../LudosContext'
+import { InternalNavLink } from '../InternalNavLink'
+import { HeaderPage } from './Header'
 
-export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
+export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
   const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
   const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
   const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -38,9 +37,10 @@ export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
               </div>
 
               <nav className="flex h-full flex-col bg-white">
-                {pages.map(({ path, key }, i) => (
-                  <NavLink
+                {pages.map(({ path, key, navigateTo }, i) => (
+                  <InternalNavLink
                     to={path}
+                    navigateTo={navigateTo}
                     onClick={toggleMenu}
                     key={i}
                     className={({ isActive }) =>
@@ -50,7 +50,7 @@ export const HeaderMobile = ({ pages }: { pages: Page[] }) => {
                     }
                     data-testid={`nav-link-${key}`}>
                     {t(`header.${key}`)}
-                  </NavLink>
+                  </InternalNavLink>
                 ))}
                 <div className="mt-2 border-t-2 border-gray-separator bg-white py-2">
                   <p className="pl-5 text-gray-secondary">{t('header.kieli')}</p>
@@ -103,7 +103,7 @@ function Header(props: { onClick: () => void }) {
         <h1 className="text-white">{t('title.ludos')}</h1>
       </div>
       <div className="flex items-center">
-        <HeaderFavorites onClick={() => {}} userFavoriteAssignmentCount={userFavoriteAssignmentCount} isMobile />
+        <HeaderFavorites userFavoriteAssignmentCount={userFavoriteAssignmentCount} isMobile />
       </div>
     </div>
   )

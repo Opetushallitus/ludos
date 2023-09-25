@@ -1,8 +1,7 @@
 import { Layout } from '../layout/Layout'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
-import { palautteetKey, ldKey, uusiKey, puhviKey, sukoKey, muokkausKey, luvatonKey } from './routes'
 import { useTranslation } from 'react-i18next'
-import { ContentType, Exam, Roles } from '../../types'
+import { ContentFormAction, ContentType, Exam, Roles } from '../../types'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from '../Spinner'
@@ -11,6 +10,17 @@ import ContentListPage from '../exam/ContentListPage'
 import { PresentationHeader } from '../header/PresentationHeader'
 import { Footer } from '../Footer'
 import { AssignmentFavorite } from '../exam/assignment/assignmentFavorite/AssignmentFavorite'
+
+export const etusivuKey = 'etusivu'
+export const uusiKey: ContentFormAction = ContentFormAction.uusi
+export const muokkausKey: ContentFormAction = ContentFormAction.muokkaus
+export const palautteetKey = 'palautteet'
+export const sukoKey = Exam.SUKO.toLowerCase()
+export const puhviKey = Exam.PUHVI.toLowerCase()
+export const ldKey = Exam.LD.toLowerCase()
+export const suosikitKey = 'suosikit'
+export const luvatonKey = 'luvaton'
+export const esitysnakymaKey = 'esitysnakyma'
 
 const Content = lazy(() => import('../contentpage/Content'))
 const AssignmentForm = lazy(() => import('../exam/assignment/form/AssignmentForm'))
@@ -49,26 +59,15 @@ const ProtectedRoute = (): ReactElement => {
   const { isYllapitaja } = useUserDetails()
 
   if (!isYllapitaja) {
-    return <Navigate to={`/${luvatonKey}`} replace />
+    return <Navigate to={unauthorizedPath()} replace />
   }
 
   return <Outlet />
 }
 
-function examPathPrefix(exam: Exam): string {
-  switch (exam) {
-    case Exam.Suko:
-      return `/${sukoKey}`
-    case Exam.Ld:
-      return `/${ldKey}`
-    case Exam.Puhvi:
-      return `/${puhviKey}`
-  }
-}
-
 function examRoutes(exam: Exam) {
   return (
-    <Route path={examPathPrefix(exam)}>
+    <Route path={examPath(exam)}>
       <Route element={<ProtectedRoute />}>
         <Route
           path={`${ContentType.koetehtavat}/${uusiKey}`}
@@ -131,9 +130,9 @@ function examRoutes(exam: Exam) {
           }
         />
       </Route>
+      <Route index element={<Navigate replace to={contentListPath(exam, ContentType.koetehtavat)} />} />
       <Route
-        index
-        path={':contentType?'}
+        path={':contentType'}
         element={
           <Layout>
             <ContentListPage exam={exam} />
@@ -151,7 +150,7 @@ function examRoutes(exam: Exam) {
         }
       />
       <Route
-        path=":contentType/:id/presentation"
+        path={`:contentType/:id/${esitysnakymaKey}`}
         element={
           <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
             <SpinnerSuspense>
@@ -189,11 +188,12 @@ function AuthorizedRoutes() {
           }
         />
       </Route>
-      {examRoutes(Exam.Suko)}
-      {examRoutes(Exam.Ld)}
-      {examRoutes(Exam.Puhvi)}
+      {examRoutes(Exam.SUKO)}
+      {examRoutes(Exam.LD)}
+      {examRoutes(Exam.PUHVI)}
+      <Route path={`/${suosikitKey}`} element={<Navigate replace to={favoritesPagePath(Exam.SUKO)} />} />
       <Route
-        path="/favorites/:exam?"
+        path={`/${suosikitKey}/:exam`}
         element={
           <Layout>
             <AssignmentFavorite />
@@ -236,3 +236,22 @@ function UnauthorizedRoutes() {
     </Routes>
   )
 }
+
+export const frontpagePath = () => '/'
+
+export const examPath = (exam: Exam) => `/${exam.toLowerCase()}`
+
+export const feedbackPath = () => `/${palautteetKey}`
+
+export const unauthorizedPath = () => `/${luvatonKey}`
+
+export const contentPagePath = (exam: Exam, contentType: ContentType, id: number) =>
+  `${examPath(exam)}/${contentType}/${id}`
+
+export const contentListPath = (exam: Exam, contentType: ContentType, search?: string) =>
+  `${examPath(exam)}/${contentType}${search ?? ''}`
+
+export const editingFormPath = (exam: Exam, contentType: ContentType, id: number) =>
+  `${examPath(exam)}/${contentType}/${muokkausKey}/${id}`
+
+export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`

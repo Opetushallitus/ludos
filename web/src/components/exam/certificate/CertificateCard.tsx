@@ -1,19 +1,17 @@
 import { CertificateIn } from '../../../types'
-import { useNavigate } from 'react-router-dom'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
 import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
 import { PdfTag } from '../../PdfTag'
 import { useUserDetails } from '../../../hooks/useUserDetails'
-import { Button } from '../../Button'
+import { muokkausKey } from '../../routes/LudosRoutes'
 
 type CertificateCardProps = {
   certificate: CertificateIn
 }
 
 export const CertificateCard = ({ certificate }: CertificateCardProps) => {
-  const navigate = useNavigate()
   const { isYllapitaja } = useUserDetails()
 
   return (
@@ -25,13 +23,12 @@ export const CertificateCard = ({ certificate }: CertificateCardProps) => {
           {certificate.name}
         </InternalLink>
         {isYllapitaja && (
-          <Button
-            variant="buttonGhost"
-            customClass="p-0 ml-2"
-            onClick={() => navigate(`muokkaus/${certificate.id}`)}
+          <InternalLink
+            className="p-0 ml-2"
+            to={`${muokkausKey}/${certificate.id}`}
             data-testid={`certificate-${certificate.id.toString()}-edit`}>
             <Icon name="muokkaa" color="text-green-primary" />
-          </Button>
+          </InternalLink>
         )}
       </div>
       <div className="row mt-3 justify-between">

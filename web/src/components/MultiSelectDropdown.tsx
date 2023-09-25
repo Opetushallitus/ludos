@@ -56,11 +56,10 @@ export const MultiSelectDropdown = ({
   return (
     <div className="relative mb-3 mt-1 border border-gray-border" ref={containerRef} tabIndex={0}>
       <div className={twMerge('flex bg-white px-2', requiredError && 'border border-red-primary')} data-testid={testId}>
-        <Button
-          variant="buttonGhost"
-          customClass="p-0 m-0"
+        <div
           id={id}
           className="row w-full flex-wrap gap-2 py-1"
+          role="button"
           onClick={(e) => {
             e.stopPropagation()
             setIsOpen(true)
@@ -101,7 +100,7 @@ export const MultiSelectDropdown = ({
               ))}
             </>
           )}
-        </Button>
+        </div>
         <div className="mt-1">
           {selectedOptions.length > 0 && canReset ? (
             <Button

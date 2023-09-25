@@ -1,7 +1,6 @@
 import { AssignmentIn, ContentType, ContentTypeSingularEng, Exam } from '../../../../types'
-import { useLocation } from 'react-router-dom'
-import { FiltersType, useFilters } from '../../../../hooks/useFilters'
-import { useEffect, useState } from 'react'
+import { FiltersType, useFilterValues } from '../../../../hooks/useFilterValues'
+import { useState } from 'react'
 import { removeEmpty } from '../assignmentUtils'
 import { AssignmentCard } from '../AssignmentCard'
 import { Spinner } from '../../../Spinner'
@@ -22,30 +21,20 @@ const filterByLanguage = (data: AssignmentIn, language: string) => {
 }
 
 interface FavoriteContentListProps {
-  activeTab: Exam
+  exam: Exam
 }
 
-export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => {
+export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
   const { t } = useTranslation()
-  const location = useLocation()
   const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
 
-  const { filters, setFilters, resetFiltersAndParams } = useFilters({
-    initialSearchFilters: location.search,
-    contentType: ContentType.koetehtavat,
-    basePath: `/favorites/${activeTab}`,
-    showOnlyFavorites: true
-  })
-
-  useEffect(() => {
-    resetFiltersAndParams()
-  }, [activeTab, resetFiltersAndParams])
+  const { filterValues, setFilterValue } = useFilterValues(exam, true)
 
   const [language, setLanguage] = useState<string>('fi')
 
   const { data, loading, refresh } = useFetch<AssignmentIn[]>(
-    `${ContentTypeSingularEng.koetehtavat}/${activeTab}?${new URLSearchParams(
-      removeEmpty<FiltersType>(filters)
+    `${ContentTypeSingularEng.koetehtavat}/${exam}?${new URLSearchParams(
+      removeEmpty<FiltersType>(filterValues)
     ).toString()}`
   )
 
@@ -55,10 +44,7 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
     tehtavaTyyppiOptionsOverride,
     aiheOptionsOverride,
     lukuvuosiOverride
-  } = useAssignmentFilterOverrides(activeTab, data)
-
-  const handleFilterChange = (key: keyof FiltersType, value: string) =>
-    setFilters((curr) => ({ ...curr, [key]: value }))
+  } = useAssignmentFilterOverrides(exam, data)
 
   return (
     <div>
@@ -82,16 +68,16 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
             <Dropdown
               id="orderFilter"
               options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
-              selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filters.orderDirection)}
-              onSelectedOptionsChange={(opt: string) => handleFilterChange('orderDirection', opt)}
+              selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filterValues.jarjesta)}
+              onSelectedOptionsChange={(opt: string) => setFilterValue('jarjesta', opt)}
             />
           </div>
         </div>
       </div>
       <AssignmentFilters
-        exam={activeTab}
-        filters={filters}
-        setFilters={setFilters}
+        exam={exam}
+        filterValues={filterValues}
+        setFilterValue={setFilterValue}
         oppimaaraOptionsOverride={oppimaaraOptionsOverride()}
         tehtavaTyyppiOptionsOverride={tehtavaTyyppiOptionsOverride()}
         aiheOptionsOverride={aiheOptionsOverride()}
@@ -104,13 +90,7 @@ export const FavoriteContentList = ({ activeTab }: FavoriteContentListProps) => 
           data
             .filter((data) => filterByLanguage(data, language))
             .map((assignment, i) => (
-              <AssignmentCard
-                language={language}
-                assignment={assignment}
-                exam={activeTab}
-                key={i}
-                refreshData={refresh}
-              />
+              <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} refreshData={refresh} />
             ))}
       </ul>
     </div>

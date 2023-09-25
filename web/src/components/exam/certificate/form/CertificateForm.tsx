@@ -21,6 +21,7 @@ import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { AttachmentSelector } from '../../formCommon/attachment/AttachmentSelector'
 import { FormError } from '../../formCommon/FormErrors'
 import { useFetch } from '../../../../hooks/useFetch'
+import { contentListPath, contentPagePath } from '../../../routes/LudosRoutes'
 
 type CertificateFormProps = {
   action: ContentFormAction
@@ -72,18 +73,20 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
       try {
         setLoading(true)
-        let resultId: string
+        let resultId: number
         // When updating we need to have the certificate
         if (action === ContentFormAction.muokkaus && certificate) {
           await updateCertificate(certificate.id, certificateIn, newAttachment)
-          resultId = certificate.id.toString()
+          resultId = certificate.id
         } else {
-          const { id } = await createCertificate<{ id: string }>(certificateIn, newAttachment!)
+          const { id } = await createCertificate(certificateIn, newAttachment!)
           resultId = id
         }
         setSubmitError('')
 
-        navigate(`/${exam}/${ContentType.todistukset}/${resultId}`)
+        navigate(contentPagePath(exam, ContentType.todistukset, resultId), {
+          state: { returnLocation: contentListPath(exam, ContentType.todistukset) }
+        })
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')

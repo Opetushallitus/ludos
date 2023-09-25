@@ -1,53 +1,46 @@
-import { useNavigate, useParams } from 'react-router-dom'
-import { navigationPages } from '../routes/routes'
-import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { ContentType, Exam } from '../../types'
-import { Tabs } from '../Tabs'
 import { useTranslation } from 'react-i18next'
 import { ContentList } from './contentList/ContentList'
+import { ContentTypeMenu } from '../ContentTypeMenu'
+import { ContentListHeader } from './contentList/ContentListHeader'
+import { useFilterValues } from '../../hooks/useFilterValues'
+import { useState } from 'react'
 
 type ContentListPageProps = {
   exam: Exam
 }
 
-function useActiveTabAndUrlPathUpdate({ contentType, exam }: { contentType: ContentType; exam: Exam }) {
-  const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState<ContentType>(contentType)
-
-  useEffect(() => {
-    if (activeTab) {
-      navigate(`/${exam.toLowerCase()}/${ContentType[activeTab]}`, { replace: true })
-    }
-  }, [activeTab, navigate, contentType, exam])
-
-  return { activeTab, setActiveTab }
-}
-
 const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { t } = useTranslation()
-  const { contentType } = useParams<{ contentType: ContentType }>()
+  const { contentType: contentTypeParam } = useParams<{ contentType: ContentType }>()
+  const contentType = contentTypeParam || ContentType.koetehtavat
+  const { filterValues, setFilterValue } = useFilterValues(exam)
 
-  const { activeTab, setActiveTab } = useActiveTabAndUrlPathUpdate({
-    contentType: contentType || ContentType.koetehtavat,
-    exam
-  })
-
-  const headingTextKey = navigationPages[exam.toLowerCase()].key
+  const [language, setLanguage] = useState<string>('fi')
 
   return (
     <div className="pt-3">
       <h2 className="mb-3" data-testid={`page-heading-${exam.toLowerCase()}`}>
-        {t(`header.${headingTextKey}`)}
+        {t(`header.${exam.toLowerCase()}`)}
       </h2>
 
-      <Tabs
-        options={Object.values(ContentType)}
-        activeTab={activeTab}
-        setActiveTab={(opt) => setActiveTab(opt as ContentType)}
-      />
+      <ContentTypeMenu exam={exam} />
 
       <div role="tabpanel">
-        {contentType && activeTab && <ContentList exam={exam} contentType={contentType} activeTab={activeTab} />}
+        {contentType && (
+          <>
+            <ContentListHeader
+              exam={exam}
+              contentType={contentType}
+              filterValues={filterValues}
+              setFilterValue={setFilterValue}
+              language={language}
+              setLanguage={setLanguage}
+            />
+            <ContentList exam={exam} contentType={contentType} language={language} filterValues={filterValues} />
+          </>
+        )}
       </div>
     </div>
   )

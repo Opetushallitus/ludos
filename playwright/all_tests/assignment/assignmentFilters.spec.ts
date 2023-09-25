@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../../helpers'
+import { Exam, loginTestGroup, Role } from '../../helpers'
 import { checkListAfterFiltering } from './assignmentHelpers'
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -10,7 +10,7 @@ test.describe('Assignment filter tests', () => {
     await page.goto('/api/test/seed')
 
     // SUKO
-    await page.goto('/suko')
+    await page.goto('/suko/koetehtavat')
 
     await page.getByTestId('oppimaara').click()
     // Suomi-oppimäärä options
@@ -31,7 +31,7 @@ test.describe('Assignment filter tests', () => {
     await page.getByTestId('aihe-option-013').click()
     await page.getByTestId('aihe-multi-select-ready-button').click()
 
-    await checkListAfterFiltering(page, [2])
+    await checkListAfterFiltering(page, [2], Exam.Suko)
 
     // await page.getByTestId('tavoitetaitotaso-input').fill('b1')
     // await page.getByTestId('tavoitetaitotaso').click()
@@ -43,24 +43,24 @@ test.describe('Assignment filter tests', () => {
     // refresh page to make sure filters stay
     await page.reload()
 
-    await expect(page.getByRole('link', { name: 'Test name 2 FI' })).toBeVisible()
-    await checkListAfterFiltering(page, [2])
+    await expect(page.getByRole('link', { name: 'Test name 2 FI SUKO' })).toBeVisible()
+    await checkListAfterFiltering(page, [2], Exam.Suko)
 
-    await page.getByRole('link', { name: 'Test name 2 FI' }).click()
-    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 2 FI')
+    await page.getByRole('link', { name: 'Test name 2 FI SUKO' }).click()
+    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 2 FI SUKO')
     await page.getByTestId('return').click()
 
     // make sure filters stay when returning from an assignment
-    await expect(page.getByRole('link', { name: 'Test name 2 FI' })).toBeVisible()
-    await checkListAfterFiltering(page, [2])
+    await expect(page.getByRole('link', { name: 'Test name 2 FI SUKO' })).toBeVisible()
+    await checkListAfterFiltering(page, [2], Exam.Suko)
 
     // remove selections from assignmentType filter
     await page.getByTestId('contentType-reset-selected-options').click()
-    await expect(page.getByRole('link', { name: 'Test name 7 FI' })).toBeVisible()
-    await checkListAfterFiltering(page, [7, 2, 1])
+    await expect(page.getByRole('link', { name: 'Test name 7 FI SUKO' })).toBeVisible()
+    await checkListAfterFiltering(page, [7, 2, 1], Exam.Suko)
 
     // LD
-    await page.goto('/ld')
+    await page.goto('/ld/koetehtavat')
 
     await page.getByTestId('lukuvuosi').click()
     await page.getByTestId('lukuvuosi-option-20202021').click()
@@ -70,15 +70,15 @@ test.describe('Assignment filter tests', () => {
     // musiikki
     await page.getByTestId('aine-option-6').click()
     await page.getByTestId('aine-multi-select-ready-button').click()
-    await expect(page.getByRole('link', { name: 'Test name 5 FI' })).toBeVisible()
-    await checkListAfterFiltering(page, [5])
-    await page.getByRole('link', { name: 'Test name 5 FI' }).click()
+    await expect(page.getByRole('link', { name: 'Test name 5 FI LD' })).toBeVisible()
+    await checkListAfterFiltering(page, [5], Exam.Ld)
+    await page.getByRole('link', { name: 'Test name 5 FI LD' }).click()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 5 FI')
+    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 5 FI LD')
     await page.getByTestId('return').click()
 
     // Puhvi
-    await page.goto('/puhvi')
+    await page.goto('/puhvi/koetehtavat')
 
     await page.getByTestId('lukuvuosi').click()
     await page.getByTestId('lukuvuosi-option-20242025').click()
@@ -89,9 +89,9 @@ test.describe('Assignment filter tests', () => {
     await page.getByTestId('tehtavatyyppiPuhvi-option-002').click()
     await page.getByTestId('tehtavatyyppiPuhvi-multi-select-ready-button').click()
 
-    await expect(page.getByRole('link', { name: 'Test name 8 FI' })).toBeVisible()
-    await checkListAfterFiltering(page, [8])
-    await page.getByRole('link', { name: 'Test name 8 FI' }).click()
-    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 8 FI')
+    await expect(page.getByRole('link', { name: 'Test name 8 FI PUHVI' })).toBeVisible()
+    await checkListAfterFiltering(page, [8], Exam.Puhvi)
+    await page.getByRole('link', { name: 'Test name 8 FI PUHVI' }).click()
+    await expect(page.getByTestId('assignment-header')).toHaveText('Test name 8 FI PUHVI')
   })
 })

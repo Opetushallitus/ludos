@@ -1,6 +1,5 @@
-import { useLocation, useNavigate } from 'react-router-dom'
 import { Icon } from '../../Icon'
-import { AssignmentIn, Exam } from '../../../types'
+import { AssignmentIn, ContentType, Exam } from '../../../types'
 import { StateTag } from '../../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
@@ -8,12 +7,11 @@ import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from './assignmen
 import { toLocaleDate } from '../../../formatUtils'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../hooks/useUserDetails'
-import { Button } from '../../Button'
 import { useContext, useEffect, useState } from 'react'
 import { setAssignmentFavorite } from '../../../request'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { LudosContext } from '../../../LudosContext'
-import { muokkausKey } from '../../routes/routes'
+import { contentPagePath, editingFormPath } from '../../routes/LudosRoutes'
 
 type AssignmentCardProps = {
   language: string
@@ -24,8 +22,6 @@ type AssignmentCardProps = {
 
 export const AssignmentCard = ({ language, assignment, exam, refreshData }: AssignmentCardProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const location = useLocation()
   const { getKoodisLabel, getKoodiLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
   const { setUserFavoriteAssignmentCount } = useContext(LudosContext)
@@ -49,6 +45,8 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
   const isPuhvi = isPuhviAssignment(assignment, exam)
   const isLd = isLdAssignment(assignment, exam)
 
+  const returnLocation = `${location.pathname}${location.search}${location.hash}`
+
   return (
     <li
       className="my-2 rounded-lg border-2 border-gray-light"
@@ -56,23 +54,20 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
       <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
         <InternalLink
           className="text-lg font-semibold text-green-primary"
-          to={`${assignment.id}`}
-          state={{
-            searchValuesString: location.search
-          }}
-          testId="assignment-name-link">
+          to={contentPagePath(exam, ContentType.koetehtavat, assignment.id)}
+          state={{ returnLocation }}
+          data-testid="assignment-name-link">
           {(language === 'fi' ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
           <>
             <StateTag state={assignment.publishState} />
-            <Button
-              variant="buttonGhost"
-              customClass="p-0"
-              onClick={() => navigate(`${muokkausKey}/${assignment.id}`)}
+            <InternalLink
+              to={editingFormPath(exam, ContentType.koetehtavat, assignment.id)}
+              state={{ returnLocation }}
               data-testid={`assignment-${assignment.id.toString()}-edit`}>
               <Icon name="muokkaa" color="text-green-primary" />
-            </Button>
+            </InternalLink>
           </>
         )}
       </div>
@@ -135,6 +130,7 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
         </div>
         <AssignmentCardContentActions
           contentId={assignment.id}
+          exam={exam}
           isFavorite={isFavorite}
           onClickHandler={toggleFavorite}
         />

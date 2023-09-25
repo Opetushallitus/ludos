@@ -1,6 +1,6 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
 import path from 'path'
-import { loginTestGroup, Exam, Role, examsLowerCase } from '../../helpers'
+import { examsLowerCase, loginTestGroup, Role } from '../../helpers'
 
 type Event = 'submit' | 'draft' | 'cancel'
 

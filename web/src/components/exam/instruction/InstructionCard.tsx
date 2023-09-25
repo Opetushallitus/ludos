@@ -1,13 +1,12 @@
 import { InstructionIn } from '../../../types'
-import { useNavigate } from 'react-router-dom'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
 import { Icon } from '../../Icon'
 import { toLocaleDate } from '../../../formatUtils'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useTranslation } from 'react-i18next'
-import { Button } from '../../Button'
-import { muokkausKey } from '../../routes/routes'
+
+import { muokkausKey } from '../../routes/LudosRoutes'
 
 type InstructionCardProps = {
   language: string
@@ -17,7 +16,6 @@ type InstructionCardProps = {
 
 export const InstructionCard = ({ language, instruction }: InstructionCardProps) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { isYllapitaja } = useUserDetails()
 
   return (
@@ -29,13 +27,12 @@ export const InstructionCard = ({ language, instruction }: InstructionCardProps)
           {(language === 'fi' ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
-          <Button
-            variant="buttonGhost"
-            customClass="p-0 ml-2"
-            onClick={() => navigate(`${muokkausKey}/${instruction.id}`)}
+          <InternalLink
+            className="p-0 ml-2"
+            to={`${muokkausKey}/${instruction.id}`}
             data-testid={`instruction-${instruction.id.toString()}-edit`}>
             <Icon name="muokkaa" color="text-green-primary" />
-          </Button>
+          </InternalLink>
         )}
       </div>
       <p className="mb-2 mt-2 text-center text-xs">

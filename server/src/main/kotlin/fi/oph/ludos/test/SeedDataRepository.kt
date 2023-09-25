@@ -55,10 +55,10 @@ class SeedDataRepository(
                 Array(if (it % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + it) % lukuvuosiKoodiArvos.size] }
 
             val sukoAssignment = SukoAssignmentDtoIn(
-                nameFi = "Test name $it FI",
-                nameSv = "Test name $it SV",
-                contentFi = "Test content $it FI",
-                contentSv = "Test content $it SV",
+                nameFi = "Test name $it FI SUKO",
+                nameSv = "Test name $it SV SUKO",
+                contentFi = "Test content $it FI SUKO",
+                contentSv = "Test content $it SV SUKO",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = publishState,
@@ -71,10 +71,10 @@ class SeedDataRepository(
             assignmentRepository.saveSukoAssignment(sukoAssignment)
 
             val ldAssignment = LdAssignmentDtoIn(
-                nameFi = "Test name $it FI",
-                nameSv = "Test name $it SV",
-                contentFi = "Test content $it FI",
-                contentSv = "Test content $it SV",
+                nameFi = "Test name $it FI LD",
+                nameSv = "Test name $it SV LD",
+                contentFi = "Test content $it FI LD",
+                contentSv = "Test content $it SV LD",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = publishState,
@@ -85,10 +85,10 @@ class SeedDataRepository(
             assignmentRepository.saveLdAssignment(ldAssignment)
 
             val puhviAssignment = PuhviAssignmentDtoIn(
-                nameFi = "Test name $it FI",
-                nameSv = "Test name $it SV",
-                contentFi = "Test content $it FI",
-                contentSv = "Test content $it SV",
+                nameFi = "Test name $it FI PUHVI",
+                nameSv = "Test name $it SV PUHVI",
+                contentFi = "Test content $it FI PUHVI",
+                contentSv = "Test content $it SV PUHVI",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = publishState,

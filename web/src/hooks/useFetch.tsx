@@ -11,6 +11,7 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
       if (isNew) {
         return
       }
+      setData(undefined)
       try {
         setLoading(true)
 
@@ -25,7 +26,7 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
 
         setData(json)
       } catch (e) {
-        console.log('Error fetching data', e)
+        console.error('Error fetching data', e)
         setError(true)
       } finally {
         setLoading(false)

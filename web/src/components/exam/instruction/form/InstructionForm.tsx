@@ -30,6 +30,7 @@ import { useFetch } from '../../../../hooks/useFetch'
 import { useInstructionFormInitializer } from '../../../../hooks/useInstructionFormInitializer'
 import { FormError } from '../../formCommon/FormErrors'
 import { TipTap } from '../../formCommon/editor/TipTap'
+import { contentListPath, contentPagePath } from '../../../routes/LudosRoutes'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -85,7 +86,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
       try {
         setLoading(true)
-        let resultId: string
+        let resultId: number
 
         if (action === ContentFormAction.muokkaus && instruction) {
           const mapWithFileKeyAndName: MapWithFileKeyAndMetadata = new Map()
@@ -97,7 +98,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           })
 
           await updateInstruction(instruction.id, instructionIn, mapWithFileKeyAndName)
-          resultId = instruction.id.toString()
+          resultId = instruction.id
         } else {
           const findFilesFromAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
             .filter(({ file }) => file !== undefined)
@@ -107,12 +108,14 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               language: language ?? 'fi'
             }))
 
-          const { id } = await createInstruction<{ id: string }>(instructionIn, findFilesFromAttachmentData)
+          const { id } = await createInstruction(instructionIn, findFilesFromAttachmentData)
           resultId = id
         }
         setSubmitError('')
 
-        navigate(`/${exam}/${ContentType.ohjeet}/${resultId}`)
+        navigate(contentPagePath(exam, ContentType.ohjeet, resultId), {
+          state: { returnLocation: contentListPath(exam, ContentType.ohjeet) }
+        })
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
@@ -322,7 +325,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       </form>
 
       <FormButtonRow
-        onCancelClick={() => navigate(-1)}
+        onCancelClick={() => navigate(contentListPath(exam, ContentType.ohjeet))}
         onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
         onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
         errorMessage={submitError}

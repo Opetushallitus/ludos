@@ -220,17 +220,17 @@ test.describe('Puhvi assignment form tests', () => {
   })
 })
 
+const testEsitysNakyma = async (page: Page, linkTestId: string, assignmentIn: any) => {
+  const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
+  await page.getByTestId(linkTestId).click()
+  const newTabPage = await newTabPagePromise
+
+  await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
+  await expect(await newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
+  await newTabPage.close()
+}
+
 test.describe('Presentation view', () => {
-  const testKatseluNakyma = async (page: Page, linkTestId: string, assignmentIn: any) => {
-    const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
-    await page.getByTestId(linkTestId).click()
-    const newTabPage = await newTabPagePromise
-
-    await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
-    await expect(await newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
-    await newTabPage.close()
-  }
-
   test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
     const assignmentIn = testAssignmentIn(Exam.Suko, 'Esitysnäkymätesti')
     const assignment = await createAssignment(context, baseURL!, assignmentIn)
@@ -239,15 +239,21 @@ test.describe('Presentation view', () => {
     await expect(page.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
     await expect(await page.getByTestId('assignment-metadata')).toBeVisible()
 
-    await testKatseluNakyma(page, 'assignment-action-katselunakyma', assignmentIn)
+    await testEsitysNakyma(page, 'assignment-action-esitysnakyma', assignmentIn)
 
     await page.goto(`/suko/${ContentType.koetehtavat}`)
-    await testKatseluNakyma(page, `assignment-${assignment.id}-action-katselunakyma`, assignmentIn)
+    await testEsitysNakyma(page, `assignment-${assignment.id}-action-esitysnakyma`, assignmentIn)
   })
 })
 
-const favoritesCount = async (page: Page): Promise<string> =>
-  await page.getByTestId('header-favorites-count').innerText()
+const favoritesCount = async (page: Page): Promise<number> => {
+  await expect
+    .poll(async () => await page.getByTestId('header-favorites-count').innerText(), {
+      message: `wait for current favorite count`
+    })
+    .toMatch(/^\d+$/)
+  return Number(await page.getByTestId('header-favorites-count').innerText())
+}
 
 test.describe('Assignment favorites', () => {
   async function prepAssignmentGoToAssignmentList(
@@ -255,63 +261,75 @@ test.describe('Assignment favorites', () => {
     exam: 'SUKO' | 'PUHVI' | 'LD',
     context: BrowserContext,
     baseURL: string
-  ) {
-    await page.goto('/')
+  ): Promise<[any, number]> {
+    await page.goto(`/`)
     const assignmentIn = testAssignmentIn(exam, 'Suosikkitesti')
     const assignment = await createAssignment(context, baseURL, assignmentIn)
 
     await page.goto(`/${exam.toLowerCase()}/${ContentType.koetehtavat}`)
     await page.getByTestId('assignment-list').locator('li').isVisible()
-    return assignment
+
+    const favoriteCountBefore = await favoritesCount(page)
+
+    return [assignment, favoriteCountBefore]
   }
 
-  async function assertFavoritesPage(page: Page, exam: 'SUKO' | 'PUHVI' | 'LD', assignment: any) {
+  async function assertFavoritesPage(
+    page: Page,
+    exam: 'SUKO' | 'PUHVI' | 'LD',
+    assignment: any,
+    favoriteCountBefore: number
+  ) {
     // go to favorites page
     await page.getByTestId('header-favorites').click()
     // go to tab
     await page.getByTestId(`tab-${exam.toLowerCase()}`).click()
     await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeVisible()
-
+    // go to assignment
+    await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
+    await expect(page.getByTestId('assignment-header')).toHaveText(assignment.nameFi)
+    // go back to favorites page
+    await page.goBack()
+    // test esitysnäkymä
+    await testEsitysNakyma(page, `assignment-${assignment.id}-action-esitysnakyma`, assignment)
+    // remove favorite
     await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
     await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeHidden()
 
+    await assertFavoriteCountIsEventually(page, favoriteCountBefore)
+  }
+
+  async function assertFavoriteCountIsEventually(page: Page, expectedCount: number) {
     await expect
       .poll(async () => await favoritesCount(page), {
-        message: 'make sure favorite count eventually updates'
+        message: `make sure favorite count eventually updates to ${expectedCount}`
       })
-      .toBe('0')
+      .toBe(expectedCount)
   }
 
   Object.values(Exam).forEach(async (exam) => {
     test(`Can favorite an ${exam} assignment from list`, async ({ page, context, baseURL }) => {
-      const assignment = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
+      const [assignment, favoriteCountBefore] = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
       // set assignment as favorite
       void page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
       await page.waitForResponse(
         (response) => response.url().includes(`/api/assignment/${exam}/${assignment.id}/favorite`) && response.ok()
       )
+      await assertFavoriteCountIsEventually(page, favoriteCountBefore + 1)
 
-      // check total favorites count
-      await expect
-        .poll(async () => await favoritesCount(page), {
-          message: 'make sure favorite count eventually updates'
-        })
-        .toBe('1')
-
-      await assertFavoritesPage(page, exam, assignment)
+      await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
     })
   })
 
   Object.values(Exam).forEach(async (exam) => {
     test(`Can favorite an ${exam} assignment from assignment page`, async ({ page, context, baseURL }) => {
-      const assignment = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
+      const [assignment, favoriteCountBefore] = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
 
       await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
       await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
-      // check total favorites count
-      await expect(page.getByTestId('header-favorites-count')).toHaveText('1')
+      await assertFavoriteCountIsEventually(page, favoriteCountBefore + 1)
 
-      await assertFavoritesPage(page, exam, assignment)
+      await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
     })
   })
 })

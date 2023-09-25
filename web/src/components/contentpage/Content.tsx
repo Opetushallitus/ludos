@@ -13,7 +13,8 @@ import { AssignmentContent } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
 import { InstructionContent } from './InstructionsContent'
 import { useUserDetails } from '../../hooks/useUserDetails'
-import { muokkausKey } from '../routes/routes'
+import { contentListPath, editingFormPath } from '../routes/LudosRoutes'
+import { InternalLink } from '../InternalLink'
 
 type ContentProps = {
   exam: Exam
@@ -24,7 +25,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: ContentType; id: string }>()
-  const location = useLocation()
+  const { state } = useLocation()
   const { isYllapitaja } = useUserDetails()
 
   const [language, setLanguage] = useState<string>('fi')
@@ -32,10 +33,11 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { data, loading } = useFetch<BaseIn>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
   const handleNavigation = () => {
-    const pathName = `/${exam.toLowerCase()}/${contentType}`
-    const backNavigationSearchString = new URLSearchParams(location.state?.searchValuesString).toString()
-    const navigateToString = `${pathName}${backNavigationSearchString ? `?${backNavigationSearchString}` : ''}`
-    navigate(navigateToString, { replace: true })
+    if (state?.returnLocation) {
+      navigate(state.returnLocation)
+    } else {
+      navigate(contentListPath(exam, contentType!))
+    }
   }
 
   return (
@@ -51,19 +53,19 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                     language={language}
                     data={data}
                     onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-                    contentType={contentType!} // fixme: could this ever be undefined?
+                    contentType={contentType!}
                     isPresentation={isPresentation}
                   />
                   {!isPresentation && isYllapitaja && (
                     <div className="row">
                       <StateTag state={data.publishState} />
-                      <span
+                      <InternalLink
                         className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
-                        onClick={() => navigate(`../${contentType}/${muokkausKey}/${data.id}`)}
+                        to={editingFormPath(exam, contentType!, data.id)}
                         data-testid="edit-content-btn">
                         <Icon name="muokkaa" color="text-green-primary" />
                         <p className="text-green-primary">{t('assignment.muokkaa')}</p>
-                      </span>
+                      </InternalLink>
                     </div>
                   )}
                   {contentType && isAssignment(data, contentType) && (
