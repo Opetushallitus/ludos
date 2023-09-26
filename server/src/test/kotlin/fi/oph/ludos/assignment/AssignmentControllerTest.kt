@@ -365,7 +365,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         assertEquals(assignmentById.aineKoodiArvo, "1")
 
         // update assignment
-        val editedTestLdAssignment = mapper.writeValueAsString(TestAssignmentLdIn(
+        val editedTestLdAssignment = mapper.writeValueAsString(TestLdAssignmentDtoIn(
             nameFi = "Updated Lukiodiplomi assignment FI",
             contentFi = arrayOf("Updated Lukiodiplomi assignment content FI 0", "Updated Lukiodiplomi assignment content FI 1", "Updated Lukiodiplomi assignment content FI 2"),
             instructionFi = "Updated Lukiodiplomi assignment instruction FI",

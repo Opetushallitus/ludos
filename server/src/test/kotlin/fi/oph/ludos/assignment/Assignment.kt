@@ -142,36 +142,3 @@ data class TestLdAssignmentDtoOut(
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String
 ) : TestAssignmentOut
-
-
-data class TestAssignmentLdIn(
-    override val exam: String,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val instructionFi: String,
-    override val instructionSv: String,
-    override val contentFi: Array<String>,
-    override val contentSv: Array<String>,
-    override val publishState: TestPublishState,
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    val lukuvuosiKoodiArvos: Array<String>,
-    val aineKoodiArvo: String
-) : TestAssignmentIn
-
-data class TestAssignmentLdOut(
-    override val id: Int,
-    override val nameFi: String,
-    override val nameSv: String,
-    override val instructionFi: String,
-    override val instructionSv: String,
-    override val contentFi: Array<String>,
-    override val contentSv: Array<String>,
-    override val publishState: TestPublishState,
-    override val createdAt: String,
-    override val updatedAt: String,
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    override val authorOid: String,
-    val lukuvuosiKoodiArvos: Array<String>,
-    val aineKoodiArvo: String,
-    override val isFavorite: Boolean
-) : TestAssignmentOut
