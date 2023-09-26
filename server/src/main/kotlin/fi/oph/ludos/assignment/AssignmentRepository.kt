@@ -471,124 +471,114 @@ class AssignmentRepository(
         return jdbcTemplate.query(query, mapper, userOid, id).firstOrNull()
     }
 
-    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { status ->
-        try {
-            val updatedRows = jdbcTemplate.update(
-                """UPDATE suko_assignment 
-                SET 
-                assignment_name_fi = ?, 
-                assignment_name_sv = ?, 
-                assignment_instruction_fi = ?,
-                assignment_instruction_sv = ?,
-                assignment_publish_state = ?::publish_state,
-                suko_assignment_aihe_koodi_arvos = ?,
-                assignment_laajaalainen_osaaminen_koodi_arvos = ?,
-                suko_assignment_assignment_type_koodi_arvo = ?,
-                suko_assignment_oppimaara_koodi_arvo = ?,
-                suko_assignment_tavoitetaso_koodi_arvo = ?,
-                assignment_updated_at = clock_timestamp()
-                WHERE assignment_id = ?""".trimIndent(),
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState.toString(),
-                assignment.aiheKoodiArvos,
-                assignment.laajaalainenOsaaminenKoodiArvos,
-                assignment.assignmentTypeKoodiArvo,
-                assignment.oppimaaraKoodiArvo,
-                assignment.tavoitetasoKoodiArvo,
-                id
-            )
+    fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { _ ->
+        val updatedRows = jdbcTemplate.update(
+            """UPDATE suko_assignment 
+               SET 
+                   assignment_name_fi = ?, 
+                   assignment_name_sv = ?, 
+                   assignment_instruction_fi = ?,
+                   assignment_instruction_sv = ?,
+                   assignment_publish_state = ?::publish_state,
+                   suko_assignment_aihe_koodi_arvos = ?,
+                   assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                   suko_assignment_assignment_type_koodi_arvo = ?,
+                   suko_assignment_oppimaara_koodi_arvo = ?,
+                   suko_assignment_tavoitetaso_koodi_arvo = ?,
+                   assignment_updated_at = clock_timestamp()
+               WHERE assignment_id = ?""".trimIndent(),
+            assignment.nameFi,
+            assignment.nameSv,
+            assignment.instructionFi,
+            assignment.instructionSv,
+            assignment.publishState.toString(),
+            assignment.aiheKoodiArvos,
+            assignment.laajaalainenOsaaminenKoodiArvos,
+            assignment.assignmentTypeKoodiArvo,
+            assignment.oppimaaraKoodiArvo,
+            assignment.tavoitetasoKoodiArvo,
+            id
+        )
 
-            if (updatedRows == 0) {
-                return@execute null
-            }
-
-            insertAssignmentContent(Exam.SUKO, id, assignment.contentFi, assignment.contentSv, true)
-
-            return@execute id
-        } catch (e: Exception) {
-            status.setRollbackOnly()
-            throw e
+        val assignmentFound = updatedRows != 0
+        if (!assignmentFound) {
+            return@execute null
         }
+
+        insertAssignmentContent(Exam.SUKO, id, assignment.contentFi, assignment.contentSv, true)
+
+        return@execute id
     }
 
 
-    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { status ->
-        try {
-            val updatedRows = jdbcTemplate.update(
-                """UPDATE puhvi_assignment 
-                SET assignment_name_fi = ?, 
-                assignment_name_sv = ?, 
-                assignment_instruction_fi = ?,
-                assignment_instruction_sv = ?,
-                assignment_publish_state = ?::publish_state, 
-                assignment_updated_at = clock_timestamp(),
-                assignment_laajaalainen_osaaminen_koodi_arvos = ?,
-                puhvi_assignment_assignment_type_koodi_arvo = ?,
-                puhvi_assignment_lukuvuosi_koodi_arvos = ?
-                WHERE assignment_id = ? """.trimIndent(),
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState.toString(),
-                assignment.laajaalainenOsaaminenKoodiArvos,
-                assignment.assignmentTypeKoodiArvo,
-                assignment.lukuvuosiKoodiArvos,
-                id
-            )
+    fun updatePuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { _ ->
+        val updatedRows = jdbcTemplate.update(
+            """UPDATE puhvi_assignment 
+               SET
+                   assignment_name_fi = ?, 
+                   assignment_name_sv = ?, 
+                   assignment_instruction_fi = ?,
+                   assignment_instruction_sv = ?,
+                   assignment_publish_state = ?::publish_state, 
+                   assignment_updated_at = clock_timestamp(),
+                   assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                   puhvi_assignment_assignment_type_koodi_arvo = ?,
+                   puhvi_assignment_lukuvuosi_koodi_arvos = ?
+               WHERE assignment_id = ? """.trimIndent(),
+            assignment.nameFi,
+            assignment.nameSv,
+            assignment.instructionFi,
+            assignment.instructionSv,
+            assignment.publishState.toString(),
+            assignment.laajaalainenOsaaminenKoodiArvos,
+            assignment.assignmentTypeKoodiArvo,
+            assignment.lukuvuosiKoodiArvos,
+            id
+        )
 
-            if (updatedRows == 0) {
-                return@execute null
-            }
-
-            insertAssignmentContent(Exam.PUHVI, id, assignment.contentFi, assignment.contentSv, true)
-
-            return@execute id
-        } catch (e: Exception) {
-            status.setRollbackOnly()
-            throw e
+        val assignmentFound = updatedRows != 0
+        if (!assignmentFound) {
+            return@execute null
         }
+
+        insertAssignmentContent(Exam.PUHVI, id, assignment.contentFi, assignment.contentSv, true)
+
+        return@execute id
     }
 
-    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { status ->
-        try {
-            val updatedRows = jdbcTemplate.update(
-                """UPDATE ld_assignment 
-                SET assignment_name_fi = ?, 
-                assignment_name_sv = ?, 
-                assignment_instruction_fi = ?,
-                assignment_instruction_sv = ?,
-                assignment_publish_state = ?::publish_state, 
-                assignment_updated_at = clock_timestamp(),
-                assignment_laajaalainen_osaaminen_koodi_arvos = ?,
-                ld_assignment_lukuvuosi_koodi_arvos = ?,
-                ld_assignment_aine_koodi_arvo = ?
-                WHERE assignment_id = ?""",
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState.toString(),
-                assignment.laajaalainenOsaaminenKoodiArvos,
-                assignment.lukuvuosiKoodiArvos,
-                assignment.aineKoodiArvo,
-                id
-            )
+    fun updateLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { _ ->
+        val updatedRows = jdbcTemplate.update(
+            """UPDATE ld_assignment 
+               SET
+                   assignment_name_fi = ?, 
+                   assignment_name_sv = ?, 
+                   assignment_instruction_fi = ?,
+                   assignment_instruction_sv = ?,
+                   assignment_publish_state = ?::publish_state, 
+                   assignment_updated_at = clock_timestamp(),
+                   assignment_laajaalainen_osaaminen_koodi_arvos = ?,
+                   ld_assignment_lukuvuosi_koodi_arvos = ?,
+                   ld_assignment_aine_koodi_arvo = ?
+               WHERE assignment_id = ?""",
+            assignment.nameFi,
+            assignment.nameSv,
+            assignment.instructionFi,
+            assignment.instructionSv,
+            assignment.publishState.toString(),
+            assignment.laajaalainenOsaaminenKoodiArvos,
+            assignment.lukuvuosiKoodiArvos,
+            assignment.aineKoodiArvo,
+            id
+        )
 
-            if (updatedRows == 0) {
-                return@execute null
-            }
-
-            insertAssignmentContent(Exam.LD, id, assignment.contentFi, assignment.contentSv, true)
-
-            return@execute id
-        } catch (e: Exception) {
-            status.setRollbackOnly()
-            throw e
+        val assignmentFound = updatedRows != 0
+        if (!assignmentFound) {
+            return@execute null
         }
+
+        insertAssignmentContent(Exam.LD, id, assignment.contentFi, assignment.contentSv, true)
+
+        return@execute id
     }
 
 
