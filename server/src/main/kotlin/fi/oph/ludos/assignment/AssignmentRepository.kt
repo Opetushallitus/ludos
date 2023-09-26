@@ -352,7 +352,7 @@ class AssignmentRepository(
                             puhvi_assignment_assignment_type_koodi_arvo,
                             puhvi_assignment_lukuvuosi_koodi_arvos
                         ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
-                        RETURNING assignment_id, assignment_created_at, assignment_updated_at""",
+                        RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""",
                     arrayOf("assignment_id")
                 )
                 ps.setString(1, assignment.nameFi)
@@ -383,7 +383,7 @@ class AssignmentRepository(
                 keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
                 keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
                 assignment.laajaalainenOsaaminenKoodiArvos,
-                Kayttajatiedot.fromSecurityContext().oidHenkilo,
+                keyHolder.keys?.get("assignment_author_oid") as String,
                 false,
                 assignment.assignmentTypeKoodiArvo,
                 assignment.lukuvuosiKoodiArvos
@@ -405,7 +405,7 @@ class AssignmentRepository(
                             ld_assignment_lukuvuosi_koodi_arvos,
                             ld_assignment_aine_koodi_arvo
                         ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
-                        RETURNING assignment_id, assignment_created_at, assignment_updated_at""",
+                        RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""",
                 arrayOf("assignment_id")
             )
             ps.setString(1, assignment.nameFi)
@@ -436,7 +436,7 @@ class AssignmentRepository(
             keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
             keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
             assignment.laajaalainenOsaaminenKoodiArvos,
-            Kayttajatiedot.fromSecurityContext().oidHenkilo,
+            keyHolder.keys?.get("assignment_author_oid") as String,
             false,
             assignment.lukuvuosiKoodiArvos,
             assignment.aineKoodiArvo
