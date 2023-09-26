@@ -159,7 +159,7 @@ export function ContentInstruction({
 }) {
   return (
     <div className="mb-4 mt-3">
-      <p className="text-sm font-semibold" key={language}>
+      <p className="text-sm font-semibold" key={language} data-testid={`instruction-${language}`}>
         {language === 'fi' ? instructionFi : instructionSv}
       </p>
     </div>

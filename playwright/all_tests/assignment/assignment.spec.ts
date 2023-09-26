@@ -57,7 +57,7 @@ test.describe('Suko assignment form tests', () => {
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä')
+    await expect(page.getByTestId('assignment-header')).toHaveText(createContent.nameTextFi)
     await expect(page.getByTestId('publish-state')).toHaveText('Julkaistu')
 
     await page.getByTestId('return').click()
@@ -65,21 +65,25 @@ test.describe('Suko assignment form tests', () => {
     await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    await updateSukoAssignmentForm({
-      page,
+    const updatedFormData = {
       nameTextFi: 'Testi tehtävä muokattu',
       nameTextSv: 'Testuppgifter muokattu',
       contentTextFi: ['Testi sisältö muokattu'],
       contentTextSv: ['Testa innehåll muokattu'],
       instructionTextFi: 'Testi ohjeet muokattu',
       instructionTextSv: 'Testa instruktioner muokattu'
+    }
+
+    await updateSukoAssignmentForm({
+      page,
+      ...updatedFormData
     })
 
     await page.getByTestId('form-submit').click()
 
     const updatedAssignmentHeader = page.getByTestId('assignment-header')
 
-    await expect(updatedAssignmentHeader).toHaveText('Testi tehtävä muokattu')
+    await expect(updatedAssignmentHeader).toHaveText(updatedFormData.nameTextFi)
 
     await expect(page.getByTestId('suko-tehtavatyyppi')).toHaveText('Tekstin tiivistäminen')
     // await expect(page.getByTestId('suko-tavoitetaso')).toBeVisible()
@@ -91,7 +95,7 @@ test.describe('Suko assignment form tests', () => {
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -127,64 +131,77 @@ test.describe('Ld assignment form tests', () => {
   test('can create and update a LD assignment', async ({ page }) => {
     let createdAssignmentId: number
 
-    await fillLdAssignmentForm({
-      page,
+    const formData = {
       nameTextFi: 'Testi tehtävä',
       nameTextSv: 'Testuppgifter',
       contentTextFi: ['Testi sisältö 1', 'Testi sisältö 2'],
       contentTextSv: ['Testa innehåll 1', 'Testa innehåll 2'],
       instructionTextFi: 'Testi ohje',
       instructionTextSv: 'Testa instruktion'
+    }
+    await fillLdAssignmentForm({
+      page,
+      ...formData
     })
 
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä')
+    await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextFi)
     await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
     await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
     await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText('Eettisyys ja ympäristöosaaminen')
+    await expect(page.getByTestId('instruction-fi')).toHaveText(formData.instructionTextFi)
+    for (const [i, content] of formData.contentTextFi.entries()) {
+      await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+    }
 
-    await expect(page.getByTestId('editor-content-fi-0')).toHaveText('Testi sisältö 1')
-    await expect(page.getByTestId('editor-content-fi-1')).toHaveText('Testi sisältö 2')
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter')
-    await expect(page.getByTestId('editor-content-sv-0')).toHaveText('Testa innehåll 1')
-    await expect(page.getByTestId('editor-content-sv-1')).toHaveText('Testa innehåll 2')
+    await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextSv)
+    await expect(page.getByTestId('instruction-sv')).toHaveText(formData.instructionTextSv)
+    for (const [i, content] of formData.contentTextSv.entries()) {
+      await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+    }
 
     await page.getByTestId('return').click()
 
     await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    await updateLdAssignment({
-      page,
+    const updatedFormData = {
       nameTextFi: 'Testi tehtävä muokattu',
       nameTextSv: 'Testuppgifter muokattu',
       instructionTextFi: 'Testi ohjeet muokattu',
       instructionTextSv: 'Testa instruktioner muokattu',
       contentTextFi: ['Testi sisältö muokattu 1', 'Testi sisältö muokattu 2'],
       contentTextSv: ['Testa innehåll muokattu 1', 'Testa innehåll muokattu 2']
+    }
+
+    await updateLdAssignment({
+      page,
+      ...updatedFormData
     })
 
     await expect(page.getByTestId('assignment-header')).toBeVisible()
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextFi)
     await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
     await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
     await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
       'Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await expect(page.getByTestId('editor-content-fi-0')).toHaveText('Testi sisältö muokattu 1')
-    await expect(page.getByTestId('editor-content-fi-1')).toHaveText('Testi sisältö muokattu 2')
+    for (const [i, content] of updatedFormData.contentTextFi.entries()) {
+      await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+    }
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
-    await expect(page.getByTestId('editor-content-sv-0')).toHaveText('Testa innehåll muokattu 1')
-    await expect(page.getByTestId('editor-content-sv-1')).toHaveText('Testa innehåll muokattu 2')
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
+    for (const [i, content] of updatedFormData.contentTextSv.entries()) {
+      await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+    }
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -233,35 +250,39 @@ test.describe('Puhvi assignment form tests', () => {
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä')
+    await expect(page.getByTestId('assignment-header')).toHaveText(createContent.nameTextFi)
 
     await page.getByTestId('return').click()
 
     await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    await updatePuhviAssignment({
-      page,
+    const updatedFormdata = {
       nameTextFi: 'Testi tehtävä muokattu',
       nameTextSv: 'Testuppgifter muokattu',
       instructionTextFi: 'Testi ohjeet muokattu',
       instructionTextSv: 'Testa instruktioner muokattu',
       contentTextFi: ['Testi sisältö muokattu'],
       contentTextSv: ['Testa innehåll muokattu']
+    }
+
+    await updatePuhviAssignment({
+      page,
+      ...updatedFormdata
     })
 
     await expect(page.getByTestId('assignment-header')).toBeVisible()
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormdata.nameTextFi)
     await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
     await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
       'Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await expect(page.getByTestId('editor-content-fi-0')).toHaveText('Testi sisältö muokattu')
+    await expect(page.getByTestId('editor-content-fi-0')).toHaveText(updatedFormdata.contentTextFi[0])
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormdata.nameTextSv)
   })
 
   test('can create draft assignment', async ({ page }) => {
