@@ -69,6 +69,8 @@ class PlainTextValidator : ConstraintValidator<PlainText, String> {
     }
 }
 
+val htmlSafelist = Safelist.relaxed().addAttributes(":all", "class")
+
 @MustBeDocumented
 @Constraint(validatedBy = [SafeHtmlValidator::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
@@ -78,11 +80,9 @@ annotation class SafeHtml(
     val payload: Array<KClass<out Payload>> = []
 )
 class SafeHtmlValidator : ConstraintValidator<SafeHtml, String> {
-    private val safeList = Safelist.relaxed().addAttributes(":all", "class")
-
     override fun isValid(input: String?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
-        return Jsoup.isValid(input, safeList)
+        return Jsoup.isValid(input, htmlSafelist)
     }
 }
 
@@ -95,11 +95,9 @@ annotation class SafeHtmlArray(
     val payload: Array<KClass<out Payload>> = []
 )
 class SafeHtmlArrayValidator : ConstraintValidator<SafeHtmlArray, Array<String>> {
-    private val safeList = Safelist.relaxed().addAttributes(":all", "class")
-
     override fun isValid(input: Array<String>?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
-        return input.all { Jsoup.isValid(it, safeList) }
+        return input.all { Jsoup.isValid(it, htmlSafelist) }
     }
 }
 
