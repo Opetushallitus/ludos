@@ -169,10 +169,10 @@ export function ContentInstruction({
 const RenderContent = ({ content, language }: { content: string | string[]; language: string }) =>
   Array.isArray(content) ? (
     content.map((it, i) => (
-      <TipTap key={`${language}-${i}`} content={it} editable={false} dataTestId={`editor-content-${language}`} />
+      <TipTap key={`${language}-${i}`} content={it} editable={false} dataTestId={`editor-content-${language}-${i}`} />
     ))
   ) : (
-    <TipTap key={language} content={content} editable={false} dataTestId={`editor-content-${language}`} />
+    <TipTap key={language} content={content} editable={false} dataTestId={`editor-content-${language}-0`} />
   )
 
 // instructions content is not in array while assignments are always

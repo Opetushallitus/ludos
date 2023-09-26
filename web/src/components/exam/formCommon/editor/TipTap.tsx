@@ -117,13 +117,13 @@ export const TipTap = ({
       {editable ? (
         <fieldset className="mt-6">
           <legend className="font-semibold">{t(labelKey)}</legend>
-          <div className="mt-2 border border-gray-border" id="rich-text-editor">
+          <div className="mt-2 border border-gray-border">
             <TipTapToolBar editor={editor} dataTestId={dataTestId} />
             <EditorContent editor={editor} data-testid={dataTestId} />
           </div>
         </fieldset>
       ) : (
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} data-testid={dataTestId} />
       )}
     </>
   )

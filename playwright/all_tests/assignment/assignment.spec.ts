@@ -57,9 +57,8 @@ test.describe('Suko assignment form tests', () => {
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
-    const header = page.getByTestId('assignment-header')
-
-    await expect(header).toHaveText('Testi tehtävä')
+    await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä')
+    await expect(page.getByTestId('publish-state')).toHaveText('Julkaistu')
 
     await page.getByTestId('return').click()
 
@@ -106,7 +105,7 @@ test.describe('Suko assignment form tests', () => {
 
     await btn.click()
 
-    page.getByText('Luonnos', { exact: true })
+    await expect(page.getByTestId('publish-state')).toHaveText('Luonnos')
   })
 
   test('can cancel assignment creation', async ({ page }) => {
@@ -142,18 +141,18 @@ test.describe('Ld assignment form tests', () => {
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
     await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä')
-    await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
-    await expect(page.getByText('Aine:Kotitalous')).toBeVisible()
-    await expect(page.getByText('Laaja-alainen osaaminen:Eettisyys ja ympäristöosaaminen')).toBeVisible()
+    await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
+    await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
+    await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText('Eettisyys ja ympäristöosaaminen')
 
-    await expect(page.getByText('Testi sisältö 1', { exact: true })).toBeVisible()
-    await expect(page.getByText('Testi sisältö 2', { exact: true })).toBeVisible()
+    await expect(page.getByTestId('editor-content-fi-0')).toHaveText('Testi sisältö 1')
+    await expect(page.getByTestId('editor-content-fi-1')).toHaveText('Testi sisältö 2')
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter')
-    await expect(page.getByText('Testa innehåll 1', { exact: true })).toBeVisible()
-    await expect(page.getByText('Testa innehåll 2', { exact: true })).toBeVisible()
+    await expect(page.getByTestId('editor-content-sv-0')).toHaveText('Testa innehåll 1')
+    await expect(page.getByTestId('editor-content-sv-1')).toHaveText('Testa innehåll 2')
 
     await page.getByTestId('return').click()
 
@@ -172,20 +171,20 @@ test.describe('Ld assignment form tests', () => {
 
     await expect(page.getByTestId('assignment-header')).toBeVisible()
     await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
-    await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
-    await expect(page.getByText('Aine:Kotitalous')).toBeVisible()
-    await expect(
-      page.getByText('Laaja-alainen osaaminen:Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen')
-    ).toBeVisible()
+    await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
+    await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
+    await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
+      'Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen'
+    )
 
-    await expect(page.getByText('Testi sisältö muokattu 1', { exact: true })).toBeVisible()
-    await expect(page.getByText('Testi sisältö muokattu 2', { exact: true })).toBeVisible()
+    await expect(page.getByTestId('editor-content-fi-0')).toHaveText('Testi sisältö muokattu 1')
+    await expect(page.getByTestId('editor-content-fi-1')).toHaveText('Testi sisältö muokattu 2')
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText('Testuppgifter muokattu')
-    await expect(page.getByText('Testa innehåll muokattu 1', { exact: true })).toBeVisible()
-    await expect(page.getByText('Testa innehåll muokattu 2', { exact: true })).toBeVisible()
+    await expect(page.getByTestId('editor-content-sv-0')).toHaveText('Testa innehåll muokattu 1')
+    await expect(page.getByTestId('editor-content-sv-1')).toHaveText('Testa innehåll muokattu 2')
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -204,7 +203,7 @@ test.describe('Ld assignment form tests', () => {
 
     await btn.click()
 
-    page.getByText('Luonnos', { exact: true })
+    await expect(page.getByTestId('publish-state')).toHaveText('Luonnos')
   })
 
   test('can cancel assignment creation', async ({ page }) => {
@@ -253,12 +252,12 @@ test.describe('Puhvi assignment form tests', () => {
 
     await expect(page.getByTestId('assignment-header')).toBeVisible()
     await expect(page.getByTestId('assignment-header')).toHaveText('Testi tehtävä muokattu')
-    await expect(page.getByText('Lukuvuosi:2020-2021')).toBeVisible()
-    await expect(
-      page.getByText('Laaja-alainen osaaminen:Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen')
-    ).toBeVisible()
+    await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
+    await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
+      'Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen'
+    )
 
-    await expect(page.getByText('Testi sisältö muokattu', { exact: true })).toBeVisible()
+    await expect(page.getByTestId('editor-content-fi-0')).toHaveText('Testi sisältö muokattu')
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
@@ -276,7 +275,7 @@ test.describe('Puhvi assignment form tests', () => {
 
     await btn.click()
 
-    page.getByText('Luonnos', { exact: true })
+    await expect(page.getByTestId('publish-state')).toHaveText('Luonnos')
   })
 
   test('can cancel assignment creation', async ({ page }) => {
