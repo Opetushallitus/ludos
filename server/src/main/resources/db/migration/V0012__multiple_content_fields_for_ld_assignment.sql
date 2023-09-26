@@ -3,7 +3,7 @@ CREATE TABLE assignment_content
     assignment_id                         integer REFERENCES assignment (assignment_id),
     assignment_content_language           language,
     assignment_content_order_index        integer NOT NULL,
-    assignment_content_assignment_content text    NOT NULL,
+    assignment_content_content text    NOT NULL,
     PRIMARY KEY (assignment_id, assignment_content_language, assignment_content_order_index)
 );
 
@@ -18,12 +18,12 @@ CREATE TABLE suko_assignment_content
 ) INHERITS (assignment_content);
 -- Migrate contentFi
 INSERT INTO suko_assignment_content (assignment_id, assignment_content_language,
-                                     assignment_content_assignment_content, assignment_content_order_index)
+                                     assignment_content_content, assignment_content_order_index)
 SELECT a.assignment_id, 'FI', a.assignment_content_fi, 0
 FROM suko_assignment a;
 -- Migrate contentSv
 INSERT INTO suko_assignment_content (assignment_id, assignment_content_language,
-                                     assignment_content_assignment_content, assignment_content_order_index)
+                                     assignment_content_content, assignment_content_order_index)
 SELECT a.assignment_id, 'SV', a.assignment_content_sv, 0
 FROM suko_assignment a;
 
@@ -38,12 +38,12 @@ CREATE TABLE ld_assignment_content
 ) INHERITS (assignment_content);
 -- Migrate contentFi
 INSERT INTO ld_assignment_content (assignment_id, assignment_content_language,
-                                   assignment_content_assignment_content, assignment_content_order_index)
+                                   assignment_content_content, assignment_content_order_index)
 SELECT a.assignment_id, 'FI', a.assignment_content_fi, 0
 FROM ld_assignment a;
 -- Migrate contentSv
 INSERT INTO ld_assignment_content (assignment_id, assignment_content_language,
-                                   assignment_content_assignment_content, assignment_content_order_index)
+                                   assignment_content_content, assignment_content_order_index)
 SELECT a.assignment_id, 'SV', a.assignment_content_sv, 0
 FROM ld_assignment a;
 
@@ -58,12 +58,12 @@ CREATE TABLE puhvi_assignment_content
 ) INHERITS (assignment_content);
 -- Migrate contentFi
 INSERT INTO puhvi_assignment_content (assignment_id, assignment_content_language,
-                                      assignment_content_assignment_content, assignment_content_order_index)
+                                      assignment_content_content, assignment_content_order_index)
 SELECT a.assignment_id, 'FI', a.assignment_content_fi, 0
 FROM puhvi_assignment a;
 -- Migrate contentSv
 INSERT INTO puhvi_assignment_content (assignment_id, assignment_content_language,
-                                      assignment_content_assignment_content, assignment_content_order_index)
+                                      assignment_content_content, assignment_content_order_index)
 SELECT a.assignment_id, 'SV', a.assignment_content_sv, 0
 FROM puhvi_assignment a;
 
