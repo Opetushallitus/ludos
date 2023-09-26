@@ -153,10 +153,7 @@ class AssignmentRepository(
     }
 
     private fun addOrderClause(query: StringBuilder, orderDirection: String?) {
-        query.append(" ORDER BY assignment_created_at")
-        if (orderDirection != null) {
-            query.append(" $orderDirection")
-        }
+        query.append(" ORDER BY assignment_created_at ${orderDirection ?: "DESC"}")
     }
 
     private fun buildSukoQuery(
