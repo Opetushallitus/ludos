@@ -119,7 +119,7 @@ class AssignmentRepository(
                 ARRAY_AGG(CASE WHEN content.assignment_content_language = '${Language.SV}' THEN content.assignment_content_assignment_content END) AS assignment_content_sv,
                 MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
         FROM $table a
-        LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_content_assignment_id
+        LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_id
         LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = :userOid
         WHERE true
     """.trimIndent()
@@ -250,15 +250,15 @@ class AssignmentRepository(
         val table = getTableNameFromExam(exam)
 
         if (deleteOld == true) jdbcTemplate.update(
-            "DELETE FROM ${table}_content WHERE assignment_content_assignment_id = ?", assignmentId
+            "DELETE FROM ${table}_content WHERE assignment_id = ?", assignmentId
         )
 
         val insertContentSql = """
                     INSERT INTO ${table}_content (
-                        assignment_content_assignment_id,
+                        assignment_id,
                         assignment_content_language, 
                         assignment_content_assignment_content, 
-                        assignment_order_index) 
+                        assignment_content_order_index) 
                     VALUES (?, ?::language, ?, ?)
                 """.trimIndent()
 
@@ -472,11 +472,11 @@ class AssignmentRepository(
         val query = """
             SELECT 
                 a.*,
-                ARRAY_AGG(content.assignment_content_assignment_content ORDER BY content.assignment_order_index) FILTER (WHERE content.assignment_content_language = '${Language.FI}') AS assignment_content_fi,
-                ARRAY_AGG(content.assignment_content_assignment_content ORDER BY content.assignment_order_index) FILTER (WHERE content.assignment_content_language = '${Language.SV}') AS assignment_content_sv,
+                ARRAY_AGG(content.assignment_content_assignment_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.FI}') AS assignment_content_fi,
+                ARRAY_AGG(content.assignment_content_assignment_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.SV}') AS assignment_content_sv,
                 MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
             FROM $table a
-            LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_content_assignment_id
+            LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_id
             LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = ?
             WHERE a.assignment_id = ? $andIsPublishedIfOpettaja
             GROUP BY a.assignment_id;
