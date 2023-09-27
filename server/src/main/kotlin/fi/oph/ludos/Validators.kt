@@ -1,12 +1,12 @@
 package fi.oph.ludos
 
-import org.jsoup.Jsoup
-import org.jsoup.safety.Safelist
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.Payload
 import jakarta.validation.constraints.Size
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
 import kotlin.reflect.KClass
 
 @MustBeDocumented
@@ -43,6 +43,18 @@ annotation class ValidHtmlContent(
 )
 
 @MustBeDocumented
+@Constraint(validatedBy = [])
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER)
+@SafeHtmlArray
+@ValidStringLengths(min = 0, max = 1000000)
+@Size(min = 0, max = 100)
+annotation class ValidHtmlContentArray(
+    val message: String = "",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+
+@MustBeDocumented
 @Constraint(validatedBy = [PlainTextValidator::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 annotation class PlainText(
@@ -57,6 +69,8 @@ class PlainTextValidator : ConstraintValidator<PlainText, String> {
     }
 }
 
+val htmlSafelist = Safelist.relaxed().addAttributes(":all", "class")
+
 @MustBeDocumented
 @Constraint(validatedBy = [SafeHtmlValidator::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
@@ -66,10 +80,57 @@ annotation class SafeHtml(
     val payload: Array<KClass<out Payload>> = []
 )
 class SafeHtmlValidator : ConstraintValidator<SafeHtml, String> {
-    private val safeList = Safelist.relaxed().addAttributes(":all", "class")
-
     override fun isValid(input: String?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
-        return Jsoup.isValid(input, safeList)
+        return Jsoup.isValid(input, htmlSafelist)
+    }
+}
+
+@MustBeDocumented
+@Constraint(validatedBy = [SafeHtmlArrayValidator::class])
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
+annotation class SafeHtmlArray(
+    val message: String = "Unsafe HTML content found",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+class SafeHtmlArrayValidator : ConstraintValidator<SafeHtmlArray, Array<String>> {
+    override fun isValid(input: Array<String>?, context: ConstraintValidatorContext?): Boolean {
+        if (input == null) return true
+        return input.all { Jsoup.isValid(it, htmlSafelist) }
+    }
+}
+
+@MustBeDocumented
+@Constraint(validatedBy = [ArrayStringLengthValidator::class])
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ValidStringLengths(
+    val min: Int = 0,
+    val max: Int = Int.MAX_VALUE,
+    val message: String = "Invalid string length",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+class ArrayStringLengthValidator : ConstraintValidator<ValidStringLengths, Array<String>> {
+
+    private var min: Int = 0
+    private var max: Int = Int.MAX_VALUE
+
+    override fun initialize(constraintAnnotation: ValidStringLengths) {
+        min = constraintAnnotation.min
+        max = constraintAnnotation.max
+    }
+
+    override fun isValid(values: Array<String>?, context: ConstraintValidatorContext?): Boolean {
+        if (values == null) return true
+
+        for (value in values) {
+            if (value.length < min || value.length > max) {
+                return false
+            }
+        }
+
+        return true
     }
 }

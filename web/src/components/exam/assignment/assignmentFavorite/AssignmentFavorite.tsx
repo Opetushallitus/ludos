@@ -1,11 +1,10 @@
 import { Exam } from '../../../../types'
 import { useTranslation } from 'react-i18next'
 import { FavoriteContentList } from './FavoriteContentList'
-import { NavLink, useLocation, useParams } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import { favoritesPagePath } from '../../../routes/LudosRoutes'
 
 const ExamMenu = () => {
-  const location = useLocation()
   const { t } = useTranslation()
 
   return (

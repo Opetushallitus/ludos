@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.ValidContentDescription
 import fi.oph.ludos.ValidContentName
-import fi.oph.ludos.ValidHtmlContent
+import fi.oph.ludos.ValidHtmlContentArray
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
@@ -32,14 +32,14 @@ interface Assignment {
     val nameFi: String
     @get:ValidContentName
     val nameSv: String
-    @get:ValidHtmlContent
-    val contentFi: String
-    @get:ValidHtmlContent
-    val contentSv: String
     @get:ValidContentDescription
     val instructionFi: String
     @get:ValidContentDescription
     val instructionSv: String
+    @get:ValidHtmlContentArray
+    val contentFi: Array<String>
+    @get:ValidHtmlContentArray
+    val contentSv: Array<String>
     val publishState: PublishState
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
     val laajaalainenOsaaminenKoodiArvos: Array<String>
@@ -49,10 +49,10 @@ interface Assignment {
 data class SukoAssignmentDtoIn(
     override val nameFi: String,
     override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
+    override val contentFi: Array<String>,
+    override val contentSv: Array<String>,
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_SUKO)
@@ -70,10 +70,10 @@ data class SukoAssignmentDtoIn(
 data class LdAssignmentDtoIn(
     override val nameFi: String,
     override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
+    override val contentFi: Array<String>,
+    override val contentSv: Array<String>,
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
@@ -86,10 +86,10 @@ data class LdAssignmentDtoIn(
 data class PuhviAssignmentDtoIn(
     override val nameFi: String,
     override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
+    override val contentFi: Array<String>,
+    override val contentSv: Array<String>,
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_PUHVI)
@@ -110,10 +110,10 @@ data class SukoAssignmentDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
+    override val contentFi: Array<String>,
+    override val contentSv: Array<String>,
     override val publishState: PublishState,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
@@ -130,10 +130,10 @@ data class PuhviAssignmentDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
+    override val contentFi: Array<String>,
+    override val contentSv: Array<String>,
     override val publishState: PublishState,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
@@ -148,10 +148,10 @@ data class LdAssignmentDtoOut(
     override val id: Int,
     override val nameFi: String,
     override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
+    override val contentFi: Array<String>,
+    override val contentSv: Array<String>,
     override val publishState: PublishState,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
@@ -174,7 +174,7 @@ data class SukoBaseFilters(
     val aihe: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tavoitetaitotaso: String?,
-): BaseFilters
+) : BaseFilters
 
 data class LdBaseFilters(
     override val jarjesta: String?,
@@ -183,7 +183,7 @@ data class LdBaseFilters(
     val lukuvuosi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val aine: String?,
-): BaseFilters
+) : BaseFilters
 
 data class PuhviBaseFilters(
     override val jarjesta: String?,
@@ -192,7 +192,7 @@ data class PuhviBaseFilters(
     val tehtavatyyppipuhvi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
-): BaseFilters
+) : BaseFilters
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -203,7 +203,8 @@ annotation class AtLeastOneAssignmentNameIsNotBlank(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class AtLeastOneAssignmentNameIsNotEmptyValidator : ConstraintValidator<AtLeastOneAssignmentNameIsNotBlank, Assignment> {
+class AtLeastOneAssignmentNameIsNotEmptyValidator :
+    ConstraintValidator<AtLeastOneAssignmentNameIsNotBlank, Assignment> {
     override fun isValid(value: Assignment, context: ConstraintValidatorContext?): Boolean {
         return value.nameFi.isNotEmpty() || value.nameSv.isNotEmpty()
     }

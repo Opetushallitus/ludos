@@ -2,18 +2,18 @@ import { useTranslation } from 'react-i18next'
 import { PublishState } from '../types'
 
 type TagAttributes = {
-  text: string
+  localizationKey: string
   variant: string
 }
 
 function getTagAttributes(state: PublishState): TagAttributes {
   switch (state) {
     case PublishState.Draft:
-      return { text: 'luonnos', variant: 'bg-yellow' }
+      return { localizationKey: 'state.luonnos', variant: 'bg-yellow' }
     case PublishState.Published:
-      return { text: 'julkaistu', variant: 'bg-green-light' }
+      return { localizationKey: 'state.julkaistu', variant: 'bg-green-light' }
     case PublishState.Archived:
-      return { text: 'arkistoitu', variant: 'bg-gray-secondary' }
+      return { localizationKey: 'state.arkistoitu', variant: 'bg-gray-secondary' }
   }
 }
 
@@ -22,8 +22,8 @@ export const StateTag = ({ state }: { state: PublishState }) => {
   const tagAttributes = getTagAttributes(state)
 
   return (
-    <div className={`w-20 rounded-sm ${tagAttributes.variant} text-center text-xs`}>
-      {t(`state.${tagAttributes.text}`)}
+    <div className={`w-20 rounded-sm ${tagAttributes.variant} text-center text-xs`} data-testid="publish-state">
+      {t(`${tagAttributes.localizationKey}`)}
     </div>
   )
 }

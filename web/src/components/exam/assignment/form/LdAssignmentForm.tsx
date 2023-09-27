@@ -155,10 +155,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput
-            initialContent={{ fi: assignment?.contentFi ?? '', sv: assignment?.contentSv ?? '' }}
-            hasInstruction
-          />
+          <FormContentInput />
         </form>
       </FormProvider>
       <FormButtonRow

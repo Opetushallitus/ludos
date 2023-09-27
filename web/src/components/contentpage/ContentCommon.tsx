@@ -159,28 +159,33 @@ export function ContentInstruction({
 }) {
   return (
     <div className="mb-4 mt-3">
-      <p className="text-sm font-semibold" key={language}>
+      <p className="text-sm font-semibold" key={language} data-testid={`instruction-${language}`}>
         {language === 'fi' ? instructionFi : instructionSv}
       </p>
     </div>
   )
 }
 
+const RenderContent = ({ content, language }: { content: string | string[]; language: string }) =>
+  Array.isArray(content) ? (
+    content.map((it, i) => (
+      <TipTap key={`${language}-${i}`} content={it} editable={false} dataTestId={`editor-content-${language}-${i}`} />
+    ))
+  ) : (
+    <TipTap key={language} content={content} editable={false} dataTestId={`editor-content-${language}-0`} />
+  )
+
+// instructions content is not in array while assignments are always
 export function ContentContent({
   language,
   contentFi,
   contentSv
 }: {
   language: string
-  contentFi: string
-  contentSv: string
+  contentFi: string | string[]
+  contentSv: string | string[]
 }) {
-  return (
-    <TipTap
-      key={language}
-      content={language === 'fi' ? contentFi : contentSv}
-      editable={false}
-      dataTestId={`editor-content-${language}`}
-    />
-  )
+  const content = language === 'fi' ? contentFi : contentSv
+
+  return <RenderContent content={content} language={language} />
 }
