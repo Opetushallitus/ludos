@@ -94,11 +94,9 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
   )
 }
 
-type FormContentInputProps = {
-  hasInstruction?: boolean
-}
+type FormContentInputProps = {}
 
-export const FormContentInput = ({ hasInstruction }: FormContentInputProps) => {
+export const FormContentInput = ({}: FormContentInputProps) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('fi')
 
@@ -131,11 +129,9 @@ export const FormContentInput = ({ hasInstruction }: FormContentInputProps) => {
         </TextInput>
         <FormError error={nameFiError || assignmentNameError} />
 
-        {hasInstruction && (
-          <TextAreaInput id="instructionFi" register={register}>
-            {t('form.tehtavan_ohje')}
-          </TextAreaInput>
-        )}
+        <TextAreaInput id="instructionFi" register={register}>
+          {t('form.tehtavan_ohje')}
+        </TextAreaInput>
 
         <ArrayContentField fieldName="contentFi" />
 
@@ -153,11 +149,9 @@ export const FormContentInput = ({ hasInstruction }: FormContentInputProps) => {
         </TextInput>
         <FormError error={nameSvError || assignmentNameError} />
 
-        {hasInstruction && (
-          <TextAreaInput id="instructionSv" register={register}>
-            {t('form.tehtavan_ohje')}
-          </TextAreaInput>
-        )}
+        <TextAreaInput id="instructionSv" register={register}>
+          {t('form.tehtavan_ohje')}
+        </TextAreaInput>
 
         <ArrayContentField fieldName="contentSv" />
       </div>

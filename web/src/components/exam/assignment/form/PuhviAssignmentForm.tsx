@@ -151,7 +151,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
             />
           </fieldset>
 
-          <FormContentInput hasInstruction />
+          <FormContentInput />
         </form>
       </FormProvider>
       <FormButtonRow

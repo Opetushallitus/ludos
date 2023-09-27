@@ -155,7 +155,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput hasInstruction />
+          <FormContentInput />
         </form>
       </FormProvider>
       <FormButtonRow

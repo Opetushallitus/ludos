@@ -186,7 +186,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput hasInstruction />
+          <FormContentInput />
         </form>
       </FormProvider>
 
