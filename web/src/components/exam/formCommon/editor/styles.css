@@ -1,5 +1,9 @@
 .tiptap {
-    @apply h-auto min-h-[30vh] w-full resize-y overflow-auto p-2
+    @apply h-auto w-full p-2 overflow-auto
+}
+
+.tiptap[contenteditable=true] {
+    @apply min-h-[30vh] resize-y
 }
 
 .image-resizer {
