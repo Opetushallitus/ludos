@@ -34,19 +34,42 @@ class AssignmentControllerTest : AssignmentRequests() {
             .map { it.id }
     }
 
+    fun assertCommonFieldsBetweenInAndOutEqual(assignmentIn: TestAssignmentIn, assignmentOut: TestAssignmentOut) {
+        assertEquals(assignmentIn.nameFi, assignmentOut.nameFi)
+        assertEquals(assignmentIn.nameSv, assignmentOut.nameSv)
+        assertEquals(assignmentIn.instructionFi, assignmentOut.instructionFi)
+        assertEquals(assignmentIn.instructionSv, assignmentOut.instructionSv)
+        assertThat(assignmentIn.contentFi).isEqualTo(assignmentOut.contentFi).withFailMessage("contentFi")
+        assertThat(assignmentIn.contentSv).isEqualTo(assignmentOut.contentSv).withFailMessage("contentSv")
+        assertEquals(assignmentIn.publishState, assignmentOut.publishState)
+        assertThat(assignmentIn.laajaalainenOsaaminenKoodiArvos).isEqualTo(assignmentOut.laajaalainenOsaaminenKoodiArvos)
+            .withFailMessage("laajaalainenOsaaminenKoodiArvos")
+    }
+
     fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(
         sukoIn: TestSukoAssignmentDtoIn, sukoOut: TestSukoAssignmentDtoOut
     ) {
-        assertEquals(sukoIn.nameFi, sukoOut.nameFi)
-        assertEquals(sukoIn.nameSv, sukoOut.nameSv)
-        assertEquals(sukoIn.contentFi[0], sukoOut.contentFi[0])
-        assertEquals(sukoIn.contentSv[0], sukoOut.contentSv[0])
-        assertEquals(sukoIn.publishState, sukoOut.publishState)
+        assertCommonFieldsBetweenInAndOutEqual(sukoIn, sukoOut)
         assertEquals(sukoIn.assignmentTypeKoodiArvo, sukoOut.assignmentTypeKoodiArvo)
         assertEquals(sukoIn.oppimaaraKoodiArvo, sukoOut.oppimaaraKoodiArvo)
         assertEquals(sukoIn.tavoitetasoKoodiArvo, sukoOut.tavoitetasoKoodiArvo)
         assertThat(sukoIn.aiheKoodiArvos).isEqualTo(sukoOut.aiheKoodiArvos).withFailMessage("aiheKoodiArvos")
-        assertThat(sukoIn.laajaalainenOsaaminenKoodiArvos).isEqualTo(sukoOut.laajaalainenOsaaminenKoodiArvos).withFailMessage("laajaalainenOsaaminenKoodiArvos")
+    }
+
+    fun assertCommonFieldsBetweenLdAssignmentInAndOutEqual(ldIn: TestLdAssignmentDtoIn, ldOut: TestLdAssignmentDtoOut) {
+        assertCommonFieldsBetweenInAndOutEqual(ldIn, ldOut)
+        assertThat(ldIn.lukuvuosiKoodiArvos).isEqualTo(ldOut.lukuvuosiKoodiArvos).withFailMessage("lukuvuosiKoodiArvos")
+        assertEquals(ldIn.aineKoodiArvo, ldOut.aineKoodiArvo)
+    }
+
+    fun assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(
+        puhviIn: TestPuhviAssignmentDtoIn,
+        puhviOut: TestPuhviAssignmentDtoOut
+    ) {
+        assertCommonFieldsBetweenInAndOutEqual(puhviIn, puhviOut)
+        assertEquals(puhviIn.assignmentTypeKoodiArvo, puhviOut.assignmentTypeKoodiArvo)
+        assertThat(puhviIn.lukuvuosiKoodiArvos).isEqualTo(puhviOut.lukuvuosiKoodiArvos)
+            .withFailMessage("lukuvuosiKoodiArvos")
     }
 
     @Test
@@ -332,7 +355,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @Test
     @WithYllapitajaRole
     fun ldAssignmentTest() {
-        val testAssignment = TestLdAssignmentDtoIn(
+        val ldAssignmentIn = TestLdAssignmentDtoIn(
             nameFi = "Lukiodiplomi assignment FI",
             contentFi = arrayOf("Lukiodiplomi assignment content FI 0", "Lukiodiplomi assignment content FI 1"),
             instructionFi = "Lukiodiplomi assignment instruction FI",
@@ -347,66 +370,52 @@ class AssignmentControllerTest : AssignmentRequests() {
         )
 
         val createdAssignment: TestLdAssignmentDtoOut =
-            createAssignment(testAssignment)
+            createAssignment(ldAssignmentIn)
 
         // get assignment DTO OUT
-        val assignmentById: TestLdAssignmentDtoOut = getAssignmentById(createdAssignment.id)
+        val ldAssignmentOut: TestLdAssignmentDtoOut = getAssignmentById(createdAssignment.id)
 
-        assertEquals(assignmentById.id, assignmentById.id)
-        assertEquals(assignmentById.nameFi, "Lukiodiplomi assignment FI")
-        assertEquals(assignmentById.contentFi.size, 2)
-        assertEquals(assignmentById.contentSv.size, 2)
-        assignmentById.contentFi.forEachIndexed { index, it -> assertEquals(it, "Lukiodiplomi assignment content FI $index") }
-        assignmentById.contentSv.forEachIndexed { index, it -> assertEquals(it, "Lukiodiplomi assignment content SV $index") }
-        assertEquals(assignmentById.publishState, TestPublishState.PUBLISHED)
-        assertThat(assignmentById.laajaalainenOsaaminenKoodiArvos).isEqualTo(arrayOf("06", "03"))
-        assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
-        assertEquals(assignmentById.lukuvuosiKoodiArvos[0], "20202021")
-        assertEquals(assignmentById.aineKoodiArvo, "1")
+        assertCommonFieldsBetweenLdAssignmentInAndOutEqual(ldAssignmentIn, ldAssignmentOut)
 
         // update assignment
-        val editedTestLdAssignment = mapper.writeValueAsString(TestLdAssignmentDtoIn(
-            nameFi = "Updated Lukiodiplomi assignment FI",
-            contentFi = arrayOf("Updated Lukiodiplomi assignment content FI 0", "Updated Lukiodiplomi assignment content FI 1", "Updated Lukiodiplomi assignment content FI 2"),
-            instructionFi = "Updated Lukiodiplomi assignment instruction FI",
-            nameSv = "Updated Lukiodiplomi assignment SV",
-            contentSv = arrayOf("Updated Lukiodiplomi assignment content SV 0", "Updated Lukiodiplomi assignment content SV 1"),
-            instructionSv = "Updated Lukiodiplomi assignment instruction SV",
-            publishState = TestPublishState.PUBLISHED,
-            exam = "LD",
-            laajaalainenOsaaminenKoodiArvos = arrayOf("06", "02"),
-            lukuvuosiKoodiArvos = arrayOf("20212022", "20232024"),
-            aineKoodiArvo = "2"
-        ))
+        val editedLdAssignmentIn = mapper.writeValueAsString(
+            TestLdAssignmentDtoIn(
+                nameFi = "Updated Lukiodiplomi assignment FI",
+                contentFi = arrayOf(
+                    "Updated Lukiodiplomi assignment content FI 0",
+                    "Updated Lukiodiplomi assignment content FI 1",
+                    "Updated Lukiodiplomi assignment content FI 2"
+                ),
+                instructionFi = "Updated Lukiodiplomi assignment instruction FI",
+                nameSv = "Updated Lukiodiplomi assignment SV",
+                contentSv = arrayOf(
+                    "Updated Lukiodiplomi assignment content SV 0",
+                    "Updated Lukiodiplomi assignment content SV 1"
+                ),
+                instructionSv = "Updated Lukiodiplomi assignment instruction SV",
+                publishState = TestPublishState.PUBLISHED,
+                exam = "LD",
+                laajaalainenOsaaminenKoodiArvos = arrayOf("06", "02"),
+                lukuvuosiKoodiArvos = arrayOf("20212022", "20232024"),
+                aineKoodiArvo = "2"
+            )
+        )
 
-        mockMvc.perform(updateAssignmentReq(assignmentById.id, editedTestLdAssignment)).andExpect(status().isOk())
+        mockMvc.perform(updateAssignmentReq(ldAssignmentOut.id, editedLdAssignmentIn)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val updatedAssignment: TestLdAssignmentDtoOut = getAssignmentById(assignmentById.id)
+        val editedLdAssignmentOut: TestLdAssignmentDtoOut = getAssignmentById(ldAssignmentOut.id)
 
-        assertEquals(updatedAssignment.id, assignmentById.id)
-        assertEquals(updatedAssignment.nameFi, "Updated Lukiodiplomi assignment FI")
-        assertEquals(updatedAssignment.nameSv, "Updated Lukiodiplomi assignment SV")
-        assertEquals(updatedAssignment.contentFi.size, 3)
-        assertEquals(updatedAssignment.contentSv.size, 2)
-        // assert content is updated and in order
-        assertEquals(updatedAssignment.contentFi[0], "Updated Lukiodiplomi assignment content FI 0")
-        assertEquals(updatedAssignment.contentFi[1], "Updated Lukiodiplomi assignment content FI 1")
-        assertEquals(updatedAssignment.contentFi[2], "Updated Lukiodiplomi assignment content FI 2")
-        assertEquals(updatedAssignment.contentSv[0], "Updated Lukiodiplomi assignment content SV 0")
-        assertEquals(updatedAssignment.contentSv[1], "Updated Lukiodiplomi assignment content SV 1")
-
-        assertEquals(updatedAssignment.publishState, TestPublishState.PUBLISHED)
-        assertThat(updatedAssignment.laajaalainenOsaaminenKoodiArvos).isEqualTo(arrayOf("06", "02"))
-        assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
-        assertThat(updatedAssignment.lukuvuosiKoodiArvos).isEqualTo(arrayOf("20212022", "20232024"))
-        assertEquals("2", updatedAssignment.aineKoodiArvo)
+        assertCommonFieldsBetweenLdAssignmentInAndOutEqual(
+            mapper.readValue(editedLdAssignmentIn),
+            editedLdAssignmentOut
+        )
     }
 
     @Test
     @WithYllapitajaRole
     fun puhviAssignmentTest() {
-        val testPuhviAssignment = TestPuhviAssignmentDtoIn(
+        val puhviAssignmentIn = TestPuhviAssignmentDtoIn(
             nameFi = "Puhvi assignment",
             nameSv = "Puhvi assignment",
             contentFi = arrayOf("Puhvi assignment content"),
@@ -420,25 +429,13 @@ class AssignmentControllerTest : AssignmentRequests() {
             lukuvuosiKoodiArvos = arrayOf("20222023")
         )
 
-        val createdAssignment: TestPuhviAssignmentDtoOut = createAssignment(testPuhviAssignment)
-        val assignmentById: TestPuhviAssignmentDtoOut = getAssignmentById(createdAssignment.id)
+        val createdAssignment: TestPuhviAssignmentDtoOut = createAssignment(puhviAssignmentIn)
+        val puhviAssignmentOut: TestPuhviAssignmentDtoOut = getAssignmentById(createdAssignment.id)
 
-        assertEquals(assignmentById.id, assignmentById.id)
-        assertEquals(assignmentById.nameFi, "Puhvi assignment")
-        assertEquals(assignmentById.nameSv, "Puhvi assignment")
-        assertEquals(assignmentById.contentFi[0], "Puhvi assignment content")
-        assertEquals(assignmentById.contentSv[0], "Puhvi assignment content")
-        assertEquals(assignmentById.instructionFi, "Puhvi assignment instruction")
-        assertEquals(assignmentById.instructionSv, "Puhvi assignment instruction")
-        assertEquals(assignmentById.publishState, TestPublishState.PUBLISHED)
-        assertThat(assignmentById.lukuvuosiKoodiArvos).isEqualTo(arrayOf("20222023"))
-        assertEquals(assignmentById.assignmentTypeKoodiArvo, "001")
-        assertThat(assignmentById.laajaalainenOsaaminenKoodiArvos).isEqualTo(arrayOf("06", "03"))
-        assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+        assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(puhviAssignmentIn, puhviAssignmentOut)
 
         // update assignment
-        val editedAssignment = """{
-                "id": "${assignmentById.id}",
+        val editedPuhviAssignmentIn = """{
                 "exam": "${Exam.PUHVI}",
                 "nameFi": "Puhvi assignment edited",
                 "nameSv": "Puhvi assignment edited",
@@ -453,22 +450,15 @@ class AssignmentControllerTest : AssignmentRequests() {
                 "lukuvuosiKoodiArvos": ["20202021"]
             }""".trimIndent()
 
-        mockMvc.perform(updateAssignmentReq(assignmentById.id, editedAssignment)).andExpect(status().isOk())
+        mockMvc.perform(updateAssignmentReq(puhviAssignmentOut.id, editedPuhviAssignmentIn)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val updatedAssignment: TestPuhviAssignmentDtoOut = getAssignmentById(assignmentById.id)
+        val editedPuhviAssignmentOut: TestPuhviAssignmentDtoOut = getAssignmentById(puhviAssignmentOut.id)
 
-        assertEquals(updatedAssignment.nameFi, "Puhvi assignment edited")
-        assertEquals(updatedAssignment.nameSv, "Puhvi assignment edited")
-        assertEquals(updatedAssignment.contentFi[0], "Puhvi assignment content edited")
-        assertEquals(updatedAssignment.contentSv[0], "Puhvi assignment content edited")
-        assertEquals(updatedAssignment.instructionFi, assignmentById.instructionFi)
-        assertEquals(updatedAssignment.instructionSv, assignmentById.instructionSv)
-        assertEquals(updatedAssignment.publishState, TestPublishState.PUBLISHED)
-        assertEquals(updatedAssignment.assignmentTypeKoodiArvo, "002")
-        assertThat(updatedAssignment.laajaalainenOsaaminenKoodiArvos).isEqualTo(arrayOf("06", "01"))
-        assertThat(updatedAssignment.authorOid).isEqualTo(assignmentById.authorOid)
-        assertThat(updatedAssignment.lukuvuosiKoodiArvos).isEqualTo(arrayOf("20202021"))
+        assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(
+            mapper.readValue(editedPuhviAssignmentIn),
+            editedPuhviAssignmentOut
+        )
     }
 
     @Test
