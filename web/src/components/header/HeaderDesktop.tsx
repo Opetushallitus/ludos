@@ -1,8 +1,7 @@
-import { useTranslation } from 'react-i18next'
 import { HeaderDropdown } from './HeaderDropdown'
 import { LOGOUT_URL } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
-import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../LudosContext'
 import { HeaderFavorites } from './HeaderFavorites'
@@ -12,8 +11,7 @@ import { HeaderPage } from './Header'
 export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
 export const HeaderDesktop = ({ pages }: { pages: HeaderPage[] }) => {
-  const { t, i18n } = useTranslation()
-  const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
+  const { LANGUAGE_DROPDOWN, t, i18n } = useLudosTranslation()
   const { isYllapitaja } = useUserDetails()
   const { userFavoriteAssignmentCount } = useContext(LudosContext)
 
@@ -68,7 +66,7 @@ export const HeaderDesktop = ({ pages }: { pages: HeaderPage[] }) => {
         </div>
         <nav className="row pb-1 pt-3">
           <ul className="row gap-6 whitespace-nowrap">
-            {pages.map(({ path, key, navigateTo }, i) => (
+            {pages.map(({ path, key, localizationText, navigateTo }, i) => (
               <li key={i}>
                 <InternalNavLink
                   to={path}
@@ -79,7 +77,7 @@ export const HeaderDesktop = ({ pages }: { pages: HeaderPage[] }) => {
                     }`
                   }
                   data-testid={`nav-link-${key}`}>
-                  {t(`header.${key}`)}
+                  {localizationText}
                 </InternalNavLink>
               </li>
             ))}

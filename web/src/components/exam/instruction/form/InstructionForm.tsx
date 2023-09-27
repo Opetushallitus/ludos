@@ -22,7 +22,7 @@ import {
   uploadInstructionAttachment
 } from '../../../../request'
 import { useState } from 'react'
-import { Tabs } from '../../../Tabs'
+import { LanguageTabs } from '../../../LanguageTabs'
 import { InstructionFormType, instructionSchema } from './instructionSchema'
 import { TextInput } from '../../../TextInput'
 import { FormHeader } from '../../formCommon/FormHeader'
@@ -268,7 +268,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentType.ohjeet} name={watchNameFi} />
+      <FormHeader
+        heading={action === ContentFormAction.uusi ? t('form.otsikkoohje') : watchNameFi}
+        description={action === ContentFormAction.uusi ? t('form.kuvausohje') : t('form.muokkauskuvaus')}
+      />
 
       <form
         className="min-h-[50vh] border-y-2 border-gray-light py-5"
@@ -279,7 +282,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
         <div className="mb-6">
-          <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
 
         <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>

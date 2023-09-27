@@ -1,14 +1,14 @@
-import { useTranslation } from 'react-i18next'
 import { ContentType, Exam } from '../types'
 import { NavLink } from 'react-router-dom'
 import { contentListPath } from './routes/LudosRoutes'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 type ContentTypeMenuProps = {
   exam: Exam
 }
 
 export const ContentTypeMenu = ({ exam }: ContentTypeMenuProps) => {
-  const { t } = useTranslation()
+  const { lt } = useLudosTranslation()
 
   return (
     <div className="text-gray-500 text-center text-base">
@@ -23,7 +23,7 @@ export const ContentTypeMenu = ({ exam }: ContentTypeMenuProps) => {
             }
             key={i}
             data-testid={`tab-${contentType}`}>
-            {t(`tab.${contentType}`)}
+            {lt.tabTextByContentType[contentType]}
           </NavLink>
         ))}
       </div>

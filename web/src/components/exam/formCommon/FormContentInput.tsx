@@ -3,7 +3,7 @@ import { FormError } from './FormErrors'
 import { TextAreaInput } from '../../TextAreaInput'
 import { useTranslation } from 'react-i18next'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
-import { Tabs } from '../../Tabs'
+import { LanguageTabs } from '../../LanguageTabs'
 import { useEffect, useState } from 'react'
 import { TipTap } from './editor/TipTap'
 import { Button } from '../../Button'
@@ -115,7 +115,7 @@ export const FormContentInput = ({}: FormContentInputProps) => {
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
       <div className="mb-6">
-        <Tabs options={['fi', 'sv']} activeTab={activeTab} setActiveTab={setActiveTab} />
+        <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
       <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>

@@ -1,13 +1,14 @@
 import { Button } from './Button'
 import { useTranslation } from 'react-i18next'
 
-type AssignmentTabsProps = {
-  options: string[]
+const options = ['fi', 'sv']
+
+type LanguageTabsProps = {
   activeTab: string
   setActiveTab: (opt: string) => void
 }
 
-export const Tabs = ({ options, activeTab, setActiveTab }: AssignmentTabsProps) => {
+export const LanguageTabs = ({ activeTab, setActiveTab }: LanguageTabsProps) => {
   const { t } = useTranslation()
 
   return (
@@ -24,7 +25,7 @@ export const Tabs = ({ options, activeTab, setActiveTab }: AssignmentTabsProps) 
             key={i}
             aria-expanded={activeTab === option}
             data-testid={`tab-${option}`}>
-            {t(`tab.${option}`)}
+            {option === 'fi' ? t('tab.fi') : t('tab.sv')}
           </Button>
         ))}
       </div>

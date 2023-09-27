@@ -1,11 +1,11 @@
 import { ContentType, Exam } from '../../types'
 import { Icon } from '../Icon'
-import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
 import { contentListPath } from '../routes/LudosRoutes'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const NavigationBoxes = () => {
-  const { t } = useTranslation()
+  const { lt } = useLudosTranslation()
 
   const exams: Exam[] = Object.values(Exam)
   const contentTypes: ContentType[] = Object.values(ContentType)
@@ -14,7 +14,7 @@ export const NavigationBoxes = () => {
     <>
       {exams.map((exam, i) => (
         <div className="mt-6" key={i}>
-          <h3 className="mb-3 text-base font-semibold">{t(`header.${exam.toLowerCase()}`)}</h3>
+          <h3 className="mb-3 text-base font-semibold">{lt.headingTextByExam[exam]}</h3>
           <div className="row flex-wrap gap-3 md:flex-nowrap" data-testid={`/${exam.toLowerCase()}`}>
             {contentTypes.map((contentType, i) => (
               <InternalLink
@@ -24,7 +24,7 @@ export const NavigationBoxes = () => {
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={contentType} color="text-green-primary" />
-                  <p className="text-green-primary">{t(`button.${contentType}`)}</p>
+                  <p className="text-green-primary">{lt.buttonTextByContentType[contentType]}</p>
                 </span>
               </InternalLink>
             ))}

@@ -1,7 +1,7 @@
 import { Icon } from '../../Icon'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
-import { ContentAction } from '../../../hooks/useConstantsWithLocalization'
+import { ContentAction } from '../../../hooks/useLudosTranslation'
 import { Button } from '../../Button'
 import { esitysnakymaKey } from '../../routes/LudosRoutes'
 import { ContentType, Exam } from '../../../types'

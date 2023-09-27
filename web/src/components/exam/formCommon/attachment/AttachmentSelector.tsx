@@ -98,7 +98,9 @@ export const AttachmentSelector = ({
           <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()}>
             {isMultiple
               ? t('button.lisaa-liitetiedostot')
-              : t(`button.${!attachmentData ? 'lisaa-liitetiedosto' : 'vaihda-liitetiedosto'}`)}
+              : !attachmentData
+              ? t('button.lisaa-liitetiedosto')
+              : t('vaihda-liitetiedosto')}
           </Button>
         </label>
       </div>

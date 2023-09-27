@@ -4,7 +4,7 @@ import { Icon } from '../Icon'
 import { BaseIn, ContentType } from '../../types'
 import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
-import { ContentAction, useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { TipTap } from '../exam/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
@@ -25,8 +25,7 @@ export function ContentHeader({
   contentType,
   isPresentation
 }: ContentHeaderProps) {
-  const { t } = useTranslation()
-  const { LANGUAGE_OPTIONS } = useConstantsWithLocalization()
+  const { LANGUAGE_OPTIONS, t } = useLudosTranslation()
 
   return (
     <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
@@ -44,7 +43,7 @@ export function ContentHeader({
       </div>
       {contentType !== ContentType.todistukset && (
         <div>
-          <p>{t(`filter.${contentType}-kieli`)}</p>
+          <p>{contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}</p>
           <Dropdown
             id="languageDropdown"
             options={LANGUAGE_OPTIONS}

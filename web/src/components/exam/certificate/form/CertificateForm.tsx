@@ -153,8 +153,10 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentType.todistukset} name={watchName} />
-
+      <FormHeader
+        heading={action === ContentFormAction.uusi ? t('form.otsikkotodistus') : watchName}
+        description={action === ContentFormAction.uusi ? t('form.kuvaustodistus') : t('form.muokkauskuvaus')}
+      />
       <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
         <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 

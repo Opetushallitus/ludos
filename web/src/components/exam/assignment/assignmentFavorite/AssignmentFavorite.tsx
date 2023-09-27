@@ -1,11 +1,11 @@
 import { Exam } from '../../../../types'
-import { useTranslation } from 'react-i18next'
 import { FavoriteContentList } from './FavoriteContentList'
 import { NavLink, useParams } from 'react-router-dom'
 import { favoritesPagePath } from '../../../routes/LudosRoutes'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 const ExamMenu = () => {
-  const { t } = useTranslation()
+  const { lt } = useLudosTranslation()
 
   return (
     <div className="text-gray-500 text-center text-base">
@@ -20,7 +20,7 @@ const ExamMenu = () => {
             }
             key={i}
             data-testid={`tab-${exam.toLowerCase()}`}>
-            {t(`tab.${exam.toLowerCase()}`)}
+            {lt.tabTextByExam[exam]}
           </NavLink>
         ))}
       </div>
@@ -29,7 +29,7 @@ const ExamMenu = () => {
 }
 
 export const AssignmentFavorite = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { exam: examParamLowerCase } = useParams<{ exam: string }>()
 
   if (!((examParamLowerCase?.toUpperCase() as Exam) in Exam)) {

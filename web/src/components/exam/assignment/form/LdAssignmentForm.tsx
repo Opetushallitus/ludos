@@ -44,7 +44,10 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
 
   return (
     <>
-      <FormHeader action={action} contentType={ContentType.koetehtavat} name={currentNameFi} />
+      <FormHeader
+        heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
+        description={action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')}
+      />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">

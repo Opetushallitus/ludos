@@ -3,8 +3,7 @@ import { ContentType, ContentTypeSingular, Exam } from '../../../types'
 import { Dropdown } from '../../Dropdown'
 import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { useUserDetails } from '../../../hooks/useUserDetails'
-import { useConstantsWithLocalization } from '../../../hooks/useConstantsWithLocalization'
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { AssignmentFilters } from '../assignment/AssignmentFilters'
 import { uusiKey } from '../../routes/LudosRoutes'
 import { InternalLink } from '../../InternalLink'
@@ -27,9 +26,8 @@ export const ContentListHeader = ({
   setLanguage,
   language
 }: ContentListHeaderProps) => {
-  const { t } = useTranslation()
   const { isYllapitaja } = useUserDetails()
-  const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
+  const { lt, t, SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useLudosTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
@@ -42,14 +40,16 @@ export const ContentListHeader = ({
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
               data-testid={`create-${singularActiveTab}-button`}>
-              {preventLineBreaks(t(`button.lisaa${singularActiveTab}`))}
+              {preventLineBreaks(lt.addAssignmentTextByContentType[contentType])}
             </InternalLink>
           )}
         </div>
         {contentType !== ContentType.todistukset && (
           <div className="row gap-6">
             <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{t(`filter.${contentType}-kieli`)}</p>
+              <p className="mt-2">
+                {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}
+              </p>
               <div className="w-36">
                 <Dropdown
                   id="languageDropdown"
