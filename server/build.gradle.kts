@@ -15,14 +15,10 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
-    maven(url = "https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local") {
-        mavenContent {
-            snapshotsOnly()
-        }
-    }
-    maven(url = "https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local") {
-        mavenContent {
-            releasesOnly()
+    maven(url = "https://maven.pkg.github.com/Opetushallitus/java-utils") {
+        credentials {
+            username = "does-not-matter"
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
         }
     }
 }
