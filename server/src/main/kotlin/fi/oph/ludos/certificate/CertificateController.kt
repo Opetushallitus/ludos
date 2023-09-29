@@ -1,8 +1,10 @@
 package fi.oph.ludos.certificate
 
-import fi.oph.ludos.*
+import fi.oph.ludos.Constants
+import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -12,8 +14,6 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
-import java.util.*
-import jakarta.validation.Valid
 
 @RestController
 @Validated
@@ -47,7 +47,7 @@ class CertificateController(val service: CertificateService) {
         @PathVariable("id") id: Int,
         @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
         @RequestPart("attachment") attachment: MultipartFile?
-    ) = service.updateCertificate(id, certificate, attachment)
+    ): Int? = service.updateCertificate(id, certificate, attachment)
 
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole

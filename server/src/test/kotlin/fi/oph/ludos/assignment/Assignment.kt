@@ -1,5 +1,7 @@
 package fi.oph.ludos.assignment
 
+import fi.oph.ludos.Exam
+
 enum class TestPublishState {
     DRAFT, PUBLISHED, ARCHIVED, OLEMATON
 }
@@ -73,6 +75,7 @@ data class TestPuhviAssignmentDtoIn(
 
 interface TestAssignmentOut : TestAssignment {
     val id: Int
+    val exam: Exam
     override val nameFi: String
     override val nameSv: String
     override val instructionFi: String
@@ -89,6 +92,7 @@ interface TestAssignmentOut : TestAssignment {
 
 data class TestSukoAssignmentDtoOut(
     override val id: Int,
+    override val exam: Exam,
     override val nameFi: String,
     override val nameSv: String,
     override val instructionFi: String,
@@ -109,6 +113,7 @@ data class TestSukoAssignmentDtoOut(
 
 data class TestPuhviAssignmentDtoOut(
     override val id: Int,
+    override val exam: Exam,
     override val nameFi: String,
     override val nameSv: String,
     override val instructionFi: String,
@@ -127,6 +132,7 @@ data class TestPuhviAssignmentDtoOut(
 
 data class TestLdAssignmentDtoOut(
     override val id: Int,
+    override val exam: Exam,
     override val nameFi: String,
     override val nameSv: String,
     override val instructionFi: String,

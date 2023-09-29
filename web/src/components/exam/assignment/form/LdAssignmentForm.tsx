@@ -1,23 +1,16 @@
 import { FieldLabel } from '../../../FieldLabel'
 import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider } from 'react-hook-form'
 import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
-import { LdAssignmentFormType, ldAssignmentSchema } from './assignmentSchema'
+import { LdAssignmentFormType } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { KoodiDtoIn } from '../../../../LudosContext'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ContentFormAction, ContentType, Exam, LdAssignmentIn, PublishState } from '../../../../types'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FormButtonRow } from '../../formCommon/FormButtonRow'
-import { createAssignment, updateAssignment } from '../../../../request'
+import { ContentFormAction, ContentType, Exam } from '../../../../types'
 import { Dropdown } from '../../../Dropdown'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
 import { FormHeader } from '../../formCommon/FormHeader'
-import { useFetch } from '../../../../hooks/useFetch'
-import { contentListPath, contentPagePath } from '../../../routes/LudosRoutes'
+import { useAssignmentForm } from '../useAssignmentForm'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -27,80 +20,23 @@ type LdAssignmentFormProps = {
 export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
-  const navigate = useNavigate()
-  const exam = Exam.LD
 
-  const { data: assignment } = useFetch<LdAssignmentIn>(`assignment/${exam}/${id}`, action === ContentFormAction.uusi)
-
-  const methods = useForm<LdAssignmentFormType>({ mode: 'onBlur', resolver: zodResolver(ldAssignmentSchema) })
-
-  const [loading, setLoading] = useState(false)
-  const [submitError, setSubmitError] = useState<string>('')
-
+  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow } = useAssignmentForm<LdAssignmentFormType>(
+    Exam.LD,
+    id
+  )
   const {
     watch,
-    register,
-    reset,
-    handleSubmit,
     setValue,
     clearErrors,
     formState: { errors }
   } = methods
 
-  // set initial values
-  useEffect(() => {
-    if (assignment) {
-      reset({
-        ...assignment,
-        exam
-      })
-    } else {
-      setValue('exam', exam)
-      setValue('laajaalainenOsaaminenKoodiArvos', [])
-    }
-  }, [assignment, exam, reset, setValue])
-
-  async function submitAssignment({ publishState }: { publishState: PublishState }) {
-    await handleSubmit(async (data: LdAssignmentFormType) => {
-      const body = { ...data, publishState }
-
-      try {
-        setLoading(true)
-        let resultId: number
-        // When updating we need to have the assignment
-        if (action === ContentFormAction.muokkaus && assignment) {
-          resultId = await updateAssignment<LdAssignmentFormType>(assignment.id, body)
-        } else {
-          const { id } = await createAssignment<LdAssignmentFormType>(body)
-          resultId = id
-        }
-        setSubmitError('')
-
-        navigate(contentPagePath(exam, ContentType.koetehtavat, resultId), {
-          state: { returnLocation: contentListPath(exam, ContentType.koetehtavat) }
-        })
-      } catch (e) {
-        if (e instanceof Error) {
-          setSubmitError(e.message || 'Unexpected error')
-        }
-        console.error(e)
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }
-
-  const handleMultiselectOptionChange = (fieldName: keyof LdAssignmentFormType, selectedOptions: KoodiDtoIn[]) => {
-    setValue(
-      fieldName,
-      selectedOptions.map((it) => it.koodiArvo)
-    )
-    clearErrors(fieldName)
-  }
-
+  const currentNameFi = watch('nameFi')
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
   const currentAine = watch('aineKoodiArvo')
+  const watchPublishState = watch('publishState')
 
   const lukuvuosiKoodisto = sortKooditAlphabetically(koodistos.ludoslukuvuosi || [])
   const laajaalainenOsaaminenKoodisto = sortKooditAlphabetically(koodistos.laajaalainenosaaminenlops2021 || [])
@@ -108,11 +44,9 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
 
   return (
     <>
-      <FormHeader action={action} contentType={ContentType.koetehtavat} name={assignment?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.koetehtavat} name={currentNameFi} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
-          <input type="hidden" {...register('exam')} />
-
           <fieldset className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
             <MultiSelectDropdown
@@ -158,13 +92,8 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
           <FormContentInput />
         </form>
       </FormProvider>
-      <FormButtonRow
-        onCancelClick={() => navigate(-1)}
-        onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
-        onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
-        errorMessage={submitError}
-        isLoading={loading}
-      />
+
+      <AssignmentFormButtonRow publishState={watchPublishState} />
     </>
   )
 }

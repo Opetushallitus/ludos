@@ -192,7 +192,7 @@ class CertificateRepository(
 
     }
 
-    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn, attachment: MultipartFile?) {
+    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn, attachment: MultipartFile?): Int? =
         transactionTemplate.execute { _ ->
             val currentCertificate = getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Certificate $id not found"
@@ -229,7 +229,8 @@ class CertificateRepository(
             if (attachment != null) {
                 deleteAttachment(currentCertificate.attachment.fileKey)
             }
+
+            return@execute id
         }
-    }
 
 }

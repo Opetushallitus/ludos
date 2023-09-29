@@ -10,6 +10,7 @@ import ContentListPage from '../exam/ContentListPage'
 import { PresentationHeader } from '../header/PresentationHeader'
 import { Footer } from '../Footer'
 import { AssignmentFavorite } from '../exam/assignment/assignmentFavorite/AssignmentFavorite'
+import { Notification } from '../notification/Notification'
 
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi
@@ -167,53 +168,56 @@ function AuthorizedRoutes() {
   const { t } = useTranslation()
 
   return (
-    <Routes>
-      <Route
-        path={`/`}
-        element={
-          <Layout>
-            <Frontpage />
-          </Layout>
-        }
-      />
-      <Route element={<ProtectedRoute />}>
+    <>
+      <Notification />
+      <Routes>
         <Route
-          path={`/${palautteetKey}`}
+          path={`/`}
           element={
             <Layout>
-              <div>
-                <h2 data-testid={`page-heading-${palautteetKey}`}>{t('title.palautteet')}</h2>
+              <Frontpage />
+            </Layout>
+          }
+        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path={`/${palautteetKey}`}
+            element={
+              <Layout>
+                <div>
+                  <h2 data-testid={`page-heading-${palautteetKey}`}>{t('title.palautteet')}</h2>
+                </div>
+              </Layout>
+            }
+          />
+        </Route>
+        {examRoutes(Exam.SUKO)}
+        {examRoutes(Exam.LD)}
+        {examRoutes(Exam.PUHVI)}
+        <Route path={`/${suosikitKey}`} element={<Navigate replace to={favoritesPagePath(Exam.SUKO)} />} />
+        <Route
+          path={`/${suosikitKey}/:exam`}
+          element={
+            <Layout>
+              <AssignmentFavorite />
+            </Layout>
+          }
+        />
+        <Route path={`/${luvatonKey}`} element={<UnauthorizedPage />} />
+        <Route path={`/vitelogin`} element={<Navigate replace to="/" />} />
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <div className="p-10">
+                <h2 className="text-green-primary">404</h2>
+                <p>{t('error.sivua-ei-loydy')}</p>
               </div>
             </Layout>
           }
         />
-      </Route>
-      {examRoutes(Exam.SUKO)}
-      {examRoutes(Exam.LD)}
-      {examRoutes(Exam.PUHVI)}
-      <Route path={`/${suosikitKey}`} element={<Navigate replace to={favoritesPagePath(Exam.SUKO)} />} />
-      <Route
-        path={`/${suosikitKey}/:exam`}
-        element={
-          <Layout>
-            <AssignmentFavorite />
-          </Layout>
-        }
-      />
-      <Route path={`/${luvatonKey}`} element={<UnauthorizedPage />} />
-      <Route path={`/vitelogin`} element={<Navigate replace to="/" />} />
-      <Route
-        path="*"
-        element={
-          <Layout>
-            <div className="p-10">
-              <h2 className="text-green-primary">404</h2>
-              <p>{t('error.sivua-ei-loydy')}</p>
-            </div>
-          </Layout>
-        }
-      />
-    </Routes>
+      </Routes>
+    </>
   )
 }
 

@@ -22,7 +22,7 @@ class InstructionService(val repository: InstructionRepository, val s3Helper: S3
 
     fun updateInstruction(
         id: Int, instruction: Instruction, attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
-    ) = repository.updateInstruction(id, instruction, attachmentsMetadata)
+    ): Int? = repository.updateInstruction(id, instruction, attachmentsMetadata)
 
     fun getInstructions(exam: Exam, filters: BaseFilters): List<InstructionOut> = repository.getInstructions(exam, filters)
 

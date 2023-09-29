@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
 import {
   AttachmentData,
+  AttachmentIn,
   AttachmentLanguage,
   ContentFormAction,
   ContentType,
@@ -16,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import {
   createInstruction,
   deleteInstructionAttachment,
+  fetchData,
   updateInstruction,
   uploadInstructionAttachment
 } from '../../../../request'
@@ -26,69 +28,86 @@ import { TextInput } from '../../../TextInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { FormButtonRow } from '../../formCommon/FormButtonRow'
 import { AttachmentSelector } from '../../formCommon/attachment/AttachmentSelector'
-import { useFetch } from '../../../../hooks/useFetch'
-import { useInstructionFormInitializer } from '../../../../hooks/useInstructionFormInitializer'
 import { FormError } from '../../formCommon/FormErrors'
 import { TipTap } from '../../formCommon/editor/TipTap'
+import { NotificationEnum, useNotification } from '../../../../NotificationContext'
 import { contentListPath, contentPagePath } from '../../../routes/LudosRoutes'
 
 type InstructionFormProps = {
   action: ContentFormAction
 }
 
+const convertToLowerCase = (language: 'FI' | 'SV') => language.toLowerCase() as AttachmentLanguage
+
+function mapInstructionInAttachmentDataWithLanguage(
+  attachmentIn: AttachmentIn[],
+  lang: AttachmentLanguage
+): AttachmentData[] {
+  const attachmentData = attachmentIn.map((attachment) => ({
+    attachment,
+    name: attachment?.name ?? '',
+    language: convertToLowerCase(attachment.language)
+  }))
+
+  return attachmentData.filter((it) => it.language === lang)
+}
+
 const InstructionForm = ({ action }: InstructionFormProps) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
+  const { setNotification } = useNotification()
 
   const [activeTab, setActiveTab] = useState('fi')
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
 
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
 
   const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
-
-  const { data: instruction, loading: instructionLoading } = useFetch<InstructionIn>(
-    `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`,
-    action === ContentFormAction.uusi
-  )
+  const isUpdate = action === ContentFormAction.muokkaus
 
   const {
+    watch,
     register,
-    reset,
     handleSubmit,
     setValue,
     formState: { errors }
   } = useForm<InstructionFormType>({
+    defaultValues: isUpdate
+      ? async (): Promise<InstructionFormType> => {
+          const instruction = await fetchData<InstructionIn>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
+          const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
+          const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
+
+          setAttachmentDataFi(attachmentDataFi)
+          setAttachmentDataSv(attachmentDataSv)
+          return instruction
+        }
+      : { exam },
     mode: 'onBlur',
     resolver: zodResolver(instructionSchema)
   })
 
-  useInstructionFormInitializer({
-    instruction,
-    exam,
-    reset,
-    setValue,
-    setAttachmentDataFi,
-    setAttachmentDataSv
-  })
+  const watchNameFi = watch('nameFi')
+  const watchContentFi = watch('contentFi')
+  const watchContentSv = watch('contentSv')
+  const watchPublishState = watch('publishState')
 
   async function submitAssignment({ publishState }: { publishState: PublishState }) {
     await handleSubmit(async (data: InstructionFormType) => {
       const instructionIn = { ...data, publishState }
 
       try {
-        setLoading(true)
+        setIsLoading(true)
         let resultId: number
 
-        if (action === ContentFormAction.muokkaus && instruction) {
+        if (isUpdate && id) {
           const mapWithFileKeyAndName: MapWithFileKeyAndMetadata = new Map()
 
           const combinedAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
@@ -97,8 +116,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             mapWithFileKeyAndName.set(attachment!.fileKey, { name: name, language: language ?? 'fi' })
           })
 
-          await updateInstruction(instruction.id, instructionIn, mapWithFileKeyAndName)
-          resultId = instruction.id
+          resultId = await updateInstruction(Number(id), instructionIn, mapWithFileKeyAndName)
         } else {
           const findFilesFromAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
             .filter(({ file }) => file !== undefined)
@@ -111,7 +129,26 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           const { id } = await createInstruction(instructionIn, findFilesFromAttachmentData)
           resultId = id
         }
+
         setSubmitError('')
+
+        if (publishState === PublishState.Draft) {
+          setNotification({
+            message: isUpdate
+              ? t('form.notification.ohjeen-tallennus.palautettu-luonnostilaan')
+              : t('form.notification.ohjeen-tallennus.luonnos-onnistui'),
+            type: NotificationEnum.success
+          })
+        }
+
+        if (publishState === PublishState.Published) {
+          setNotification({
+            message: isUpdate
+              ? t('form.notification.ohjeen-tallennus.onnistui')
+              : t('form.notification.ohjeen-tallennus.julkaisu-onnistui'),
+            type: NotificationEnum.success
+          })
+        }
 
         navigate(contentPagePath(exam, ContentType.ohjeet, resultId), {
           state: { returnLocation: contentListPath(exam, ContentType.ohjeet) }
@@ -120,9 +157,13 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
         }
+        setNotification({
+          message: t('form.notification.ohjeen-tallennus.epaonnistui'),
+          type: NotificationEnum.error
+        })
         console.error(e)
       } finally {
-        setLoading(false)
+        setIsLoading(false)
       }
     })()
   }
@@ -132,7 +173,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       if (file) {
         try {
           return {
-            attachment: await uploadInstructionAttachment(instruction!.id, exam, {
+            attachment: await uploadInstructionAttachment(Number(id), exam, {
               file,
               name,
               lang
@@ -176,7 +217,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     setFileUploadErrorMessage(null)
     let dataToSet: AttachmentData[]
 
-    if (action === ContentFormAction.muokkaus) {
+    if (isUpdate) {
       dataToSet = await uploadNewAttachments(attachmentFiles, language)
     } else {
       dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'fi')
@@ -190,7 +231,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   }
 
   const deleteFileByIndex = (index: number, language: AttachmentLanguage) => {
-    if (action === ContentFormAction.muokkaus) {
+    if (isUpdate) {
       const fileToDelete = language === 'sv' ? attachmentDataSv[index].attachment : attachmentDataFi[index].attachment
 
       if (fileToDelete) {
@@ -227,7 +268,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   return (
     <div className="ludos-form">
-      <FormHeader action={action} contentType={ContentType.ohjeet} name={instruction?.nameFi} />
+      <FormHeader action={action} contentType={ContentType.ohjeet} name={watchNameFi} />
 
       <form
         className="min-h-[50vh] border-y-2 border-gray-light py-5"
@@ -254,10 +295,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
           <TipTap
             onContentChange={handleContentChange}
-            content={instruction?.contentFi}
+            content={watchContentFi}
             labelKey="form.ohjeensisalto"
             dataTestId="editor-content-fi"
-            key={instruction ? 'content-fi' : 'content-fi-new'}
+            key={id ? 'content-fi' : 'content-fi-new'}
           />
 
           <div className="mb-3 mt-6">
@@ -275,7 +316,6 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             handleNewAttachmentSelected={handleNewAttachmentSelected}
             handleNewAttachmentName={handleAttachmentNameChange}
             deleteFileByIndex={deleteFileByIndex}
-            loading={instructionLoading}
           />
         </div>
 
@@ -292,10 +332,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
           <TipTap
             onContentChange={handleContentChange}
-            content={instruction?.contentSv}
+            content={watchContentSv}
             labelKey="form.ohjeensisalto"
             dataTestId="editor-content-sv"
-            key={instruction ? 'content-sv' : 'content-sv-new'}
+            key={id ? 'content-sv' : 'content-sv-new'}
           />
 
           <div className="mb-3 mt-6">
@@ -313,7 +353,6 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             handleNewAttachmentSelected={handleNewAttachmentSelected}
             handleNewAttachmentName={handleAttachmentNameChange}
             deleteFileByIndex={deleteFileByIndex}
-            loading={instructionLoading}
           />
         </div>
 
@@ -325,11 +364,17 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       </form>
 
       <FormButtonRow
-        onCancelClick={() => navigate(contentListPath(exam, ContentType.ohjeet))}
-        onSaveDraftClick={() => submitAssignment({ publishState: PublishState.Draft })}
-        onSubmitClick={() => submitAssignment({ publishState: PublishState.Published })}
+        actions={{
+          onSubmitClick: () => submitAssignment({ publishState: PublishState.Published }),
+          onSaveDraftClick: () => submitAssignment({ publishState: PublishState.Draft })
+        }}
+        state={{
+          isUpdate,
+          isLoading,
+          publishState: watchPublishState
+        }}
+        notValidFormMessageKey={Object.keys(errors).length > 0 ? 'form.ohjeen-lisays-epaonnistui' : ''}
         errorMessage={submitError}
-        isLoading={loading}
       />
     </div>
   )

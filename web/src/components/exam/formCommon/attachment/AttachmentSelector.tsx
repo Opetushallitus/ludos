@@ -3,7 +3,6 @@ import { Button } from '../../../Button'
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 import { fileUploadErrorMessage } from '../../../../errorUtils'
-import { Spinner } from '../../../Spinner'
 import { AttachmentData, AttachmentLanguage, ContentType } from '../../../../types'
 
 interface AttachmentSelectorProps {
@@ -13,7 +12,6 @@ interface AttachmentSelectorProps {
   attachmentData?: AttachmentData[] | AttachmentData
   handleNewAttachmentName?: (newName: string, index: number, language: AttachmentLanguage) => void
   deleteFileByIndex?: (index: number, lang: AttachmentLanguage) => void
-  loading?: boolean
 }
 
 export const AttachmentSelector = ({
@@ -22,8 +20,7 @@ export const AttachmentSelector = ({
   handleNewAttachmentSelected,
   handleNewAttachmentName,
   deleteFileByIndex,
-  language,
-  loading
+  language
 }: AttachmentSelectorProps) => {
   const { t } = useTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
@@ -86,44 +83,38 @@ export const AttachmentSelector = ({
 
   return (
     <div>
-      {loading ? (
-        <Spinner className="mt-6 text-center" />
-      ) : (
-        <>
-          <div className="my-6">
-            <input
-              type="file"
-              id={`fileInput-${language}`}
-              ref={hiddenFileInputRef}
-              multiple
-              accept="application/pdf"
-              style={{ display: 'none' }}
-              onChange={handleAttachmentSelected}
-              data-testid={`file-input-${language}`}
-            />
-            <label htmlFor={`fileInput-${language}`}>
-              <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()}>
-                {isMultiple
-                  ? t('button.lisaa-liitetiedostot')
-                  : t(`button.${!attachmentData ? 'lisaa-liitetiedosto' : 'vaihda-liitetiedosto'}`)}
-              </Button>
-            </label>
-          </div>
-          {showFileDetails() && (
-            <AttachmentFileDetailView
-              contentType={contentType}
-              attachments={attachmentData!}
-              handleAttachmentNameChange={handleAttachmentNameChange}
-              deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'fi') : null)}
-              language={language}
-            />
-          )}
-          {error && (
-            <p className="text-red-primary" data-testid="file-upload-error-message">
-              {fileUploadErrorMessage(error, t)}
-            </p>
-          )}
-        </>
+      <div className="my-6">
+        <input
+          type="file"
+          id={`fileInput-${language}`}
+          ref={hiddenFileInputRef}
+          multiple
+          accept="application/pdf"
+          style={{ display: 'none' }}
+          onChange={handleAttachmentSelected}
+          data-testid={`file-input-${language}`}
+        />
+        <label htmlFor={`fileInput-${language}`}>
+          <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()}>
+            {isMultiple
+              ? t('button.lisaa-liitetiedostot')
+              : t(`button.${!attachmentData ? 'lisaa-liitetiedosto' : 'vaihda-liitetiedosto'}`)}
+          </Button>
+        </label>
+      </div>
+      {showFileDetails() && (
+        <AttachmentFileDetailView
+          contentType={contentType}
+          attachments={attachmentData!}
+          handleAttachmentNameChange={handleAttachmentNameChange}
+          deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'fi') : null)}
+          language={language}
+        />
+      )}
+      {error && (
+        <p className="text-red-primary" data-testid="file-upload-error-message">
+          {fileUploadErrorMessage(error, t)}
+        </p>
       )}
     </div>
   )

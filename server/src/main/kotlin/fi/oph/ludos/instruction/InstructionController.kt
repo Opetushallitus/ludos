@@ -7,6 +7,8 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.servlet.http.Part
+import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -15,8 +17,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
-import jakarta.servlet.http.Part
-import jakarta.validation.Valid
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/instruction")
@@ -58,7 +58,7 @@ class InstructionController(val service: InstructionService, private val objectM
         @PathVariable("id") id: Int,
         @Valid @RequestPart("instruction") instruction: Instruction,
         @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?
-    ) {
+    ): Int? {
         val attachmentsMetadataDeserialized: List<InstructionAttachmentMetadataDtoIn> =
             attachmentsMetadata?.map { objectMapper.readValue(it.inputStream) } ?: emptyList()
 
@@ -70,7 +70,7 @@ class InstructionController(val service: InstructionService, private val objectM
             }
         }
 
-        service.updateInstruction(id, instruction, attachmentsMetadataDeserialized)
+        return service.updateInstruction(id, instruction, attachmentsMetadataDeserialized)
     }
 
     @GetMapping("/{exam}")

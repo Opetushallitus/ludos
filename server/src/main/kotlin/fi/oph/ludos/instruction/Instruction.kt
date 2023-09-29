@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.*
-import org.springframework.web.multipart.MultipartFile
-import java.sql.Timestamp
-import java.time.ZonedDateTime
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.Payload
+import org.springframework.web.multipart.MultipartFile
+import java.sql.Timestamp
+import java.time.ZonedDateTime
 import kotlin.reflect.KClass
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
@@ -88,6 +88,7 @@ data class InstructionAttachmentIn(
 
 interface InstructionOut {
     val id: Int
+    val exam: Exam
     val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
@@ -103,6 +104,7 @@ data class InstructionAttachmentDtoOut(
 
 data class InstructionDtoOut(
     override val id: Int,
+    override val exam: Exam,
     override val nameFi: String,
     override val nameSv: String,
     override val contentFi: String,

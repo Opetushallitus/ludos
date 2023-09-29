@@ -7,10 +7,9 @@ import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from './assignmen
 import { toLocaleDate } from '../../../formatUtils'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../hooks/useUserDetails'
-import { useContext, useEffect, useState } from 'react'
-import { setAssignmentFavorite } from '../../../request'
+import { useEffect, useState } from 'react'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
-import { LudosContext } from '../../../LudosContext'
+import { useToggleFavorite } from '../../../hooks/useToggleFavorite'
 import { contentPagePath, editingFormPath } from '../../routes/LudosRoutes'
 
 type AssignmentCardProps = {
@@ -24,20 +23,15 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
-  const { setUserFavoriteAssignmentCount } = useContext(LudosContext)
   const [isFavorite, setIsFavorite] = useState(false)
 
-  const toggleFavorite = async () => {
-    try {
-      const totalFavoriteCount = await setAssignmentFavorite(exam, assignment.id, !isFavorite)
-      setIsFavorite(!isFavorite)
-      setUserFavoriteAssignmentCount(totalFavoriteCount)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      refreshData?.()
-    }
-  }
+  const { toggleFavorite } = useToggleFavorite({
+    exam,
+    assignmentId: assignment.id,
+    isFavorite,
+    setIsFavorite,
+    refreshData
+  })
 
   useEffect(() => setIsFavorite(assignment.isFavorite), [assignment.isFavorite])
 

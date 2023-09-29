@@ -49,6 +49,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(
         sukoIn: TestSukoAssignmentDtoIn, sukoOut: TestSukoAssignmentDtoOut
     ) {
+        assertEquals(Exam.SUKO, sukoOut.exam)
         assertCommonFieldsBetweenInAndOutEqual(sukoIn, sukoOut)
         assertEquals(sukoIn.assignmentTypeKoodiArvo, sukoOut.assignmentTypeKoodiArvo)
         assertEquals(sukoIn.oppimaaraKoodiArvo, sukoOut.oppimaaraKoodiArvo)
@@ -57,6 +58,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     }
 
     fun assertCommonFieldsBetweenLdAssignmentInAndOutEqual(ldIn: TestLdAssignmentDtoIn, ldOut: TestLdAssignmentDtoOut) {
+        assertEquals(Exam.LD, ldOut.exam)
         assertCommonFieldsBetweenInAndOutEqual(ldIn, ldOut)
         assertThat(ldIn.lukuvuosiKoodiArvos).isEqualTo(ldOut.lukuvuosiKoodiArvos).withFailMessage("lukuvuosiKoodiArvos")
         assertEquals(ldIn.aineKoodiArvo, ldOut.aineKoodiArvo)
@@ -66,6 +68,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         puhviIn: TestPuhviAssignmentDtoIn,
         puhviOut: TestPuhviAssignmentDtoOut
     ) {
+        assertEquals(Exam.PUHVI, puhviOut.exam)
         assertCommonFieldsBetweenInAndOutEqual(puhviIn, puhviOut)
         assertEquals(puhviIn.assignmentTypeKoodiArvo, puhviOut.assignmentTypeKoodiArvo)
         assertThat(puhviIn.lukuvuosiKoodiArvos).isEqualTo(puhviOut.lukuvuosiKoodiArvos)

@@ -21,6 +21,7 @@ export type Exam = (typeof Exam)[keyof typeof Exam]
 
 export type BaseIn = {
   id: number
+  exam: Exam
   publishState: PublishState
   createdAt: string
   updatedAt: string
@@ -76,7 +77,7 @@ export type InstructionIn = BaseInstructionIn & {
 export type AttachmentIn = {
   fileName: string
   fileKey: string
-  fileUploadDate: string
+  fileUploadDate?: string
   name: string
   language: 'FI' | 'SV'
 }

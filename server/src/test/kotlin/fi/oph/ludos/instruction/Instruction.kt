@@ -2,7 +2,6 @@ package fi.oph.ludos.instruction
 
 import fi.oph.ludos.Exam
 import org.springframework.mock.web.MockMultipartFile
-import java.sql.Timestamp
 
 data class TestInstructionIn(
     val nameFi: String,
@@ -17,6 +16,7 @@ data class TestInstructionIn(
 
 data class TestInstructionOut(
     val id: Int,
+    val exam: Exam,
     val nameFi: String,
     val nameSv: String,
     val contentFi: String,

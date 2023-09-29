@@ -133,7 +133,7 @@ class InstructionRepository(
         )
     }
 
-    val mapResultSetRow: (ResultSet, Int) -> InstructionDtoOut? = { rs: ResultSet, _: Int ->
+    fun mapResultSetRow(exam: Exam): (ResultSet, Int) -> InstructionDtoOut? = { rs: ResultSet, _: Int ->
         val attachmentFileKeys = rs.getKotlinArray<String?>("attachment_file_keys")
         val attachmentFileNames = rs.getKotlinArray<String>("attachment_file_names")
         val attachmentUploadDates = rs.getKotlinArray<Timestamp>("attachment_upload_dates")
@@ -156,6 +156,7 @@ class InstructionRepository(
 
         InstructionDtoOut(
             rs.getInt("instruction_id"),
+            exam,
             rs.getString("instruction_name_fi"),
             rs.getString("instruction_name_sv"),
             rs.getString("instruction_content_fi"),
@@ -199,7 +200,7 @@ class InstructionRepository(
 
 
         val results = jdbcTemplate.query(
-            sql, mapResultSetRow, id
+            sql, mapResultSetRow(exam), id
         )
 
         return results.firstOrNull()
@@ -238,7 +239,7 @@ class InstructionRepository(
                 ORDER BY i.instruction_updated_at $orderDirection;"""
 
         return jdbcTemplate.query(
-            sql, mapResultSetRow
+            sql, mapResultSetRow(exam)
         )
     }
 
@@ -255,10 +256,10 @@ class InstructionRepository(
 
     fun updateInstruction(
         id: Int, instruction: Instruction, attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
-    ) {
+    ): Int? {
         val (table, exam) = getTableNameAndExamTypeByInference(instruction)
 
-        transactionTemplate.execute { _ ->
+        return transactionTemplate.execute { _ ->
             getInstructionById(exam, id) ?: throw ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Instruction $id not found"
             )
@@ -301,6 +302,8 @@ class InstructionRepository(
                     it.fileKey
                 )
             }
+
+            return@execute id
         }
     }
 

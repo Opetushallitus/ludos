@@ -23,7 +23,7 @@ class CertificateService(val repository: CertificateRepository, val s3Helper: S3
 
     fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? = repository.getCertificateById(id, exam)
 
-    fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?) =
+    fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?): Int? =
         repository.updateCertificate(id, certificate, attachment)
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {

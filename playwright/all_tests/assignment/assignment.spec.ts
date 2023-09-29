@@ -57,6 +57,7 @@ test.describe('Suko assignment form tests', () => {
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
+    await expect(page.getByTestId('notification-success')).toBeVisible()
     await expect(page.getByTestId('assignment-header')).toHaveText(createContent.nameTextFi)
     await expect(page.getByTestId('publish-state')).toHaveText('Julkaistu')
 
@@ -79,7 +80,8 @@ test.describe('Suko assignment form tests', () => {
       ...updatedFormData
     })
 
-    await page.getByTestId('form-submit').click()
+    await page.getByTestId('form-update-submit').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
 
     const updatedAssignmentHeader = page.getByTestId('assignment-header')
 
@@ -104,10 +106,8 @@ test.describe('Suko assignment form tests', () => {
       ...createDraftContent
     })
 
-    const btn = page.getByTestId('form-draft')
-    await expect(btn).toHaveText('Tallenna luonnoksena')
-
-    await btn.click()
+    await page.getByTestId('form-draft').click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
 
     await expect(page.getByTestId('publish-state')).toHaveText('Luonnos')
   })
@@ -147,6 +147,7 @@ test.describe('Ld assignment form tests', () => {
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
+    await expect(page.getByTestId('notification-success')).toBeVisible()
     await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextFi)
     await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
     await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
@@ -219,7 +220,7 @@ test.describe('Ld assignment form tests', () => {
     await expect(btn).toHaveText('Tallenna luonnoksena')
 
     await btn.click()
-
+    await expect(page.getByTestId('notification-success')).toBeVisible()
     await expect(page.getByTestId('publish-state')).toHaveText('Luonnos')
   })
 
@@ -250,6 +251,7 @@ test.describe('Puhvi assignment form tests', () => {
     void page.getByTestId('form-submit').click()
     createdAssignmentId = await getAssignmentIdFromResponse(page)
 
+    await expect(page.getByTestId('notification-success')).toBeVisible()
     await expect(page.getByTestId('assignment-header')).toHaveText(createContent.nameTextFi)
 
     await page.getByTestId('return').click()
@@ -295,6 +297,7 @@ test.describe('Puhvi assignment form tests', () => {
     await expect(btn).toHaveText('Tallenna luonnoksena')
 
     await btn.click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
 
     await expect(page.getByTestId('publish-state')).toHaveText('Luonnos')
   })
@@ -381,6 +384,7 @@ test.describe('Assignment favorites', () => {
     await testEsitysNakyma(page, `assignment-${assignment.id}-action-esitysnakyma`, assignment)
     // remove favorite
     await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
+    await expect(page.getByTestId('notification-success')).toBeVisible()
     await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeHidden()
 
     await assertFavoriteCountIsEventually(page, favoriteCountBefore)
@@ -414,6 +418,7 @@ test.describe('Assignment favorites', () => {
 
       await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
       await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
+      await expect(page.getByTestId('notification-success')).toBeVisible()
       await assertFavoriteCountIsEventually(page, favoriteCountBefore + 1)
 
       await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
