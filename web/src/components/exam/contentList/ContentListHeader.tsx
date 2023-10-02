@@ -46,20 +46,20 @@ export const ContentListHeader = ({
         </div>
         {contentType !== ContentType.todistukset && (
           <div className="row gap-6">
-            <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">
-                {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}
-              </p>
-              <div className="w-36">
-                <Dropdown
-                  id="languageDropdown"
-                  options={LANGUAGE_OPTIONS}
-                  selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-                  onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-                  testId="language-dropdown"
-                />
-              </div>
-            </div>
+            {/*<div className="flex flex-col gap-2 md:flex-row">*/}
+            {/*  <p className="mt-2">*/}
+            {/*    {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}*/}
+            {/*  </p>*/}
+            {/*  <div className="w-36">*/}
+            {/*    <Dropdown*/}
+            {/*      id="languageDropdown"*/}
+            {/*      options={LANGUAGE_OPTIONS}*/}
+            {/*      selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}*/}
+            {/*      onSelectedOptionsChange={(opt: string) => setLanguage(opt)}*/}
+            {/*      testId="language-dropdown"*/}
+            {/*    />*/}
+            {/*  </div>*/}
+            {/*</div>*/}
 
             <div className="flex flex-col gap-2 md:flex-row">
               <p className="mt-2">{t('filter.jarjesta')}</p>
