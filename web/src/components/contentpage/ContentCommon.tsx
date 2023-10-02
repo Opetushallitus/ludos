@@ -136,7 +136,7 @@ export function ContentActionRow({
           contentAction={{
             actionName: 'suosikki',
             iconName: 'suosikki',
-            text: isFavorite ? 'Poista suosikeista' : 'Lisää suosikiksi'
+            text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
           }}
           onClickHandler={onClickHandler}
           isActive={isFavorite}
