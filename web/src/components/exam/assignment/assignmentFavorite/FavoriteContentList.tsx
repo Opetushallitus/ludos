@@ -47,18 +47,20 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
   return (
     <div>
       <div className="row gap-6 my-3 flex-wrap justify-end">
-        <div className="flex flex-col gap-2 md:flex-row">
-          <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
-          <div className="w-36">
-            <Dropdown
-              id="languageDropdown"
-              options={LANGUAGE_OPTIONS}
-              selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-              onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-              testId="language-dropdown"
-            />
+        {exam !== Exam.SUKO && (
+          <div className="flex flex-col gap-2 md:flex-row">
+            <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
+            <div className="w-36">
+              <Dropdown
+                id="languageDropdown"
+                options={LANGUAGE_OPTIONS}
+                selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
+                onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+                testId="language-dropdown"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-col gap-2 md:flex-row">
           <p className="mt-2">{t('filter.jarjesta')}</p>

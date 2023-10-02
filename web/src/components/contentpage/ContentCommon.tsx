@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from '../Dropdown'
 import { Icon } from '../Icon'
-import { BaseIn, ContentType } from '../../types'
+import { BaseIn, ContentType, Exam } from '../../types'
 import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -27,6 +27,9 @@ export function ContentHeader({
 }: ContentHeaderProps) {
   const { LANGUAGE_OPTIONS, t } = useLudosTranslation()
 
+  const shouldShowTeachingLanguageDropdown =
+    contentType === ContentType.ohjeet || (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
+
   return (
     <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
       <div className="flex w-2/3 flex-col">
@@ -41,7 +44,7 @@ export function ContentHeader({
           </h2>
         </div>
       </div>
-      {contentType !== ContentType.todistukset && (
+      {shouldShowTeachingLanguageDropdown && (
         <div>
           <p>{contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}</p>
           <Dropdown

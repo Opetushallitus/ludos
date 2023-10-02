@@ -23,7 +23,10 @@ export const InstructionCard = ({ language, instruction }: InstructionCardProps)
       className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary"
       data-testid={`instruction-${instruction.id.toString()}`}>
       <div className="text-center">
-        <InternalLink className="text-sm font-semibold text-green-primary" to={`${instruction.id}`}>
+        <InternalLink
+          className="text-sm font-semibold text-green-primary"
+          to={`${instruction.id}`}
+          data-testid="instruction-name">
           {(language === 'fi' ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (

@@ -63,7 +63,14 @@ test.describe('Instruction form tests', () => {
     // update instruction
     await page.getByTestId('nav-link-suko').click()
     await page.getByTestId('tab-ohjeet').click()
-    await expect(page.getByTestId(`instruction-${instructionToUpdate}`)).toBeVisible()
+
+    await page.getByTestId('language-dropdown').click()
+    await page.getByTestId('language-dropdown-option-sv').click()
+
+    const instructionCard = page.getByTestId(`instruction-${instructionToUpdate}`)
+
+    await expect(instructionCard).toBeVisible()
+    await expect(instructionCard.getByTestId('instruction-name')).toHaveText('Testuppgifter')
     await page.getByTestId(`instruction-${instructionToUpdate}-edit`).click()
 
     await fillInstructionForm({

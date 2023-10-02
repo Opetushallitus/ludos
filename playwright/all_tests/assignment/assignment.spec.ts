@@ -1,6 +1,7 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
 import { ContentType, Exam, loginTestGroup, Role } from '../../helpers'
 import {
+  assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage,
   createAssignment,
   fillLdAssignmentForm,
   fillPuhviAssignmentForm,
@@ -94,10 +95,12 @@ test.describe('Suko assignment form tests', () => {
       'Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await page.getByTestId('language-dropdown').click()
-    await page.getByTestId('language-dropdown-option-sv').click()
+    await expect(page.getByTestId('language-dropdown')).toBeHidden()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
+    await page.getByTestId('return').click()
+    await expect(page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`)).toBeVisible()
+
+    await expect(page.getByTestId('language-dropdown')).toBeHidden()
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -203,6 +206,12 @@ test.describe('Ld assignment form tests', () => {
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {
       await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
     }
+
+    await assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
+      page,
+      createdAssignmentId,
+      updatedFormData.nameTextSv
+    )
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -259,7 +268,7 @@ test.describe('Puhvi assignment form tests', () => {
     await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
     await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
 
-    const updatedFormdata = {
+    const updatedFormData = {
       nameTextFi: 'Testi tehtävä muokattu',
       nameTextSv: 'Testuppgifter muokattu',
       instructionTextFi: 'Testi ohjeet muokattu',
@@ -270,21 +279,33 @@ test.describe('Puhvi assignment form tests', () => {
 
     await updatePuhviAssignment({
       page,
-      ...updatedFormdata
+      ...updatedFormData
     })
 
     await expect(page.getByTestId('assignment-header')).toBeVisible()
-    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormdata.nameTextFi)
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextFi)
     await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
     await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
       'Eettisyys ja ympäristöosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await expect(page.getByTestId('editor-content-fi-0')).toHaveText(updatedFormdata.contentTextFi[0])
+    for (const [i, content] of updatedFormData.contentTextFi.entries()) {
+      await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+    }
+
     await page.getByTestId('language-dropdown').click()
     await page.getByTestId('language-dropdown-option-sv').click()
 
-    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormdata.nameTextSv)
+    await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
+    for (const [i, content] of updatedFormData.contentTextSv.entries()) {
+      await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+    }
+
+    await assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
+      page,
+      createdAssignmentId,
+      updatedFormData.nameTextSv
+    )
   })
 
   test('can create draft assignment', async ({ page }) => {

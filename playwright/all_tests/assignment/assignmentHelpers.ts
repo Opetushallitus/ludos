@@ -314,3 +314,19 @@ export async function checkListAfterFiltering(page: Page, expectedAssignmentTitl
   const names = await Promise.all(namePromises)
   expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI ${exam}`))
 }
+
+export async function assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
+  page: Page,
+  assignmentId: number,
+  expectedNameSv: string
+) {
+  await page.getByTestId('return').click()
+  const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
+  await expect(assignmentCard).toBeVisible()
+
+  await expect(page.getByTestId('language-dropdown')).toBeVisible()
+  await page.getByTestId('language-dropdown').click()
+  await page.getByTestId('language-dropdown-option-sv').click()
+
+  await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
+}
