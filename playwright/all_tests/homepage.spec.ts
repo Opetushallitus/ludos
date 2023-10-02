@@ -15,7 +15,7 @@ test('navigation links work', async ({ page }) => {
 
     await navLink.click()
 
-    expect(page.getByTestId(`page-heading-${pageId}`)).toBeVisible()
+    await expect(page.getByTestId(`page-heading-${pageId}`)).toBeVisible()
   }
 
   await page.goto('/')

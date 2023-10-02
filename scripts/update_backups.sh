@@ -7,6 +7,7 @@ BACKUP_DIR="$SCRIPTDIR/../server/src/main/resources/backup_data"
 
 KOODISTOURIS=(
     oppiaineetjaoppimaaratlops2021
+    lukiokielitarjonta
     laajaalainenosaaminenlops2021
     tehtavatyyppisuko
     taitotaso
@@ -14,6 +15,11 @@ KOODISTOURIS=(
     ludoslukiodiplomiaine
     tehtavatyyppipuhvi
     aihesuko
+)
+
+ALAKOODI_KOODIURIS=(
+  oppiaineetjaoppimaaratlops2021_vka1
+  oppiaineetjaoppimaaratlops2021_vkb1
 )
 
 if [[ "$#" -gt 0 && "$1" == "--if-stale" ]]; then
@@ -26,12 +32,22 @@ if [[ "$#" -gt 0 && "$1" == "--if-stale" ]]; then
     fi
 fi
 
+normalize_koodiarray() {
+    jq --sort-keys '. | sort_by(.koodiArvo)' | jq '.[].metadata |= sort_by(.kieli)'
+}
+
 for koodistouri in "${KOODISTOURIS[@]}"; do
     echo "Backing up koodisto $koodistouri"
     curl "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/$koodistouri/koodi?onlyValidKoodis=true" \
-        | jq --sort-keys '. | sort_by(.koodiArvo)' \
-        | jq '.[].metadata |= sort_by(.kieli)' \
+        | normalize_koodiarray \
         > "$BACKUP_DIR/koodisto_$koodistouri.json"
+done
+
+for koodiuri in "${ALAKOODI_KOODIURIS[@]}"; do
+    echo "Backing up alakoodit for $koodiuri"
+    curl "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/relaatio/sisaltyy-alakoodit/$koodiuri" \
+        | normalize_koodiarray \
+        > "$BACKUP_DIR/koodisto_alakoodit_$koodiuri.json"
 done
 
 echo "Backing up lokalisointi..."

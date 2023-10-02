@@ -1,49 +1,49 @@
 import {
-  AssignmentIn,
-  BaseIn,
-  CertificateIn,
+  AssignmentOut,
+  BaseOut,
+  CertificateDtoOut,
   ContentType,
   Exam,
-  InstructionIn,
-  LdAssignmentIn,
-  PuhviAssignmentIn,
-  SukoAssignmentIn
+  InstructionDtoOut,
+  LdAssignmentDtoOut,
+  PuhviAssignmentDtoOut,
+  SukoAssignmentDtoOut
 } from '../../../types'
 
 // exam type checkers
 export const assertPuhviOrLdAssignment = (
-  assignment: AssignmentIn,
+  assignment: AssignmentOut,
   activeTab: any
-): assignment is PuhviAssignmentIn | LdAssignmentIn => {
+): assignment is PuhviAssignmentDtoOut | LdAssignmentDtoOut => {
   return isLdAssignment(assignment, activeTab) || isPuhviAssignment(assignment, activeTab)
 }
-export const isSukoAssignment = (assignment: AssignmentIn, exam: Exam): assignment is SukoAssignmentIn =>
+export const isSukoAssignment = (assignment: AssignmentOut, exam: Exam): assignment is SukoAssignmentDtoOut =>
   exam === Exam.SUKO &&
   'aiheKoodiArvos' in assignment &&
   'assignmentTypeKoodiArvo' in assignment &&
   'laajaalainenOsaaminenKoodiArvos' in assignment &&
-  'oppimaaraKoodiArvo' in assignment &&
+  'oppimaara' in assignment &&
   'tavoitetasoKoodiArvo' in assignment
-export const isPuhviAssignment = (assignment: AssignmentIn, exam: Exam): assignment is PuhviAssignmentIn =>
+export const isPuhviAssignment = (assignment: AssignmentOut, exam: Exam): assignment is PuhviAssignmentDtoOut =>
   exam === Exam.PUHVI && 'lukuvuosiKoodiArvos' in assignment
 
-export const isLdAssignment = (assignment: AssignmentIn, exam: Exam): assignment is LdAssignmentIn =>
+export const isLdAssignment = (assignment: AssignmentOut, exam: Exam): assignment is LdAssignmentDtoOut =>
   exam === Exam.LD && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
 // content type checkers
-export const isAssignment = (data: BaseIn, contentType: ContentType): data is AssignmentIn =>
+export const isAssignment = (data: BaseOut, contentType: ContentType): data is AssignmentOut =>
   contentType === ContentType.koetehtavat
-export const isInstruction = (data: BaseIn, contentType: ContentType): data is InstructionIn =>
+export const isInstruction = (data: BaseOut, contentType: ContentType): data is InstructionDtoOut =>
   contentType === ContentType.ohjeet
-export const isCertificate = (data: BaseIn, contentType: ContentType): data is CertificateIn =>
+export const isCertificate = (data: BaseOut, contentType: ContentType): data is CertificateDtoOut =>
   contentType === ContentType.todistukset
 
-export const isAssignmentsArr = (data: BaseIn[], contentType: ContentType): data is AssignmentIn[] =>
+export const isAssignmentsArr = (data: BaseOut[], contentType: ContentType): data is AssignmentOut[] =>
   data.every((item) => isAssignment(item, contentType))
 
-export const isInstructionsArr = (data: BaseIn[], contentType: ContentType): data is InstructionIn[] =>
+export const isInstructionsArr = (data: BaseOut[], contentType: ContentType): data is InstructionDtoOut[] =>
   data.every((item) => isInstruction(item, contentType))
 
-export const isCertificatesArr = (data: BaseIn[], contentType: ContentType): data is CertificateIn[] =>
+export const isCertificatesArr = (data: BaseOut[], contentType: ContentType): data is CertificateDtoOut[] =>
   data.every((item) => isCertificate(item, contentType))
 
 // Removes key-value pairs with null or undefined values from an object
@@ -61,7 +61,7 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
   )
 }
 
-export const getContentName = (data: BaseIn, contentType: ContentType, language: string) => {
+export const getContentName = (data: BaseOut, contentType: ContentType, language: string) => {
   if (isAssignment(data, contentType) || isInstruction(data, contentType)) {
     return language === 'fi' ? data.nameFi : data.nameSv
   } else if (isCertificate(data, contentType)) {

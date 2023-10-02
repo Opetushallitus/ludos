@@ -1,87 +1,108 @@
 package fi.oph.ludos.koodisto
 
-import fi.oph.ludos.cache.CacheName
 import org.slf4j.LoggerFactory
-import org.springframework.cache.CacheManager
+import org.springframework.aop.framework.AopProxyUtils
 import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 @Service
-class KoodistoService(val koodistoRepository: KoodistoRepository, val cacheManager: CacheManager) {
+class KoodistoService(
+    httpKoodistoRepository: HttpKoodistoRepository,
+    resourceKoodistoRepository: ResourceKoodistoRepository,
+) {
     private final val logger: org.slf4j.Logger = LoggerFactory.getLogger(javaClass)
+    private var koodistoCache: Map<KoodistoLanguage, Map<KoodistoName, Map<String, KoodiDtoOut>>> = emptyMap()
 
     init {
         try {
-            upateCacheFromResources()
+            updateKoodistoCache(resourceKoodistoRepository)
         } catch (e: Exception) {
             logger.error("Failed to initialize koodisto cache", e)
             throw e
         }
 
         val scheduler = Executors.newScheduledThreadPool(1)
-        scheduler.scheduleAtFixedRate({ updateCacheFromKoodistopalvelu() }, 0, 600, TimeUnit.SECONDS)
+        scheduler.scheduleAtFixedRate({ updateKoodistoCache(httpKoodistoRepository) }, 0, 600, TimeUnit.SECONDS)
     }
 
-    private inline fun <reified T> tryCastCachedMap(instance: Any?): T {
-        if (instance is T) {
-            return instance
-        } else {
-            throw IllegalStateException("Type of cached koodistos is invalid")
+    fun getKoodistos(): Map<KoodistoLanguage, Map<KoodistoName, Map<String, KoodiDtoOut>>> {
+        if (koodistoCache.isEmpty()) {
+            throw IllegalStateException("Koodistos accessed before initialization")
         }
+
+        return koodistoCache
     }
 
-    fun getKoodistos(): Map<KoodistoName, List<KoodiDtoOut>> {
-        val cachedKoodistosAny =
-            cacheManager.getCache(CacheName.KOODISTO.key)?.get("all")?.get()
-                ?: throw IllegalStateException("Koodistos accessed before initialization")
+    fun getKoodistosForlanguage(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, Map<String, KoodiDtoOut>> =
+        getKoodistos()[koodistoLanguage]
+            ?: throw IllegalStateException("Language ${koodistoLanguage} not found in koodistoCache")
 
-        return tryCastCachedMap<Map<KoodistoName, List<KoodiDtoOut>>>(cachedKoodistosAny)
-    }
-    fun getKoodistos(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, List<KoodiDtoOut>> = filterKooditByLanguage(getKoodistos(), koodistoLanguage)
-
-    fun getKoodisto(koodistoName: KoodistoName) : List<KoodiDtoOut> {
-        return getKoodistos()[koodistoName] ?: throw Exception("Koodisto ${koodistoName.koodistoUri} not found in cache")
+    fun getKoodisto(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage): Map<String, KoodiDtoOut> {
+        return getKoodistosForlanguage(koodistoLanguage)[koodistoName]
+            ?: throw Exception("Koodisto ${koodistoName.koodistoUri} not found in $koodistoLanguage cache")
     }
 
-    fun isKoodiArvoInKoodisto(koodistoName: KoodistoName, koodiArvo: String) : Boolean {
-        return getKoodisto(koodistoName).any { it.koodiArvo == koodiArvo }
+    fun getKoodi(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage, koodiArvo: String): KoodiDtoOut? {
+        return getKoodisto(koodistoName, koodistoLanguage)[koodiArvo]
     }
 
-    fun isKoodiArvosInKoodisto(koodistoName: KoodistoName, koodiArvos: Array<String>) : Boolean {
+    fun isKoodiArvoInKoodisto(koodistoName: KoodistoName, koodiArvo: String): Boolean {
+        return getKoodi(koodistoName, KoodistoLanguage.FI, koodiArvo) != null
+    }
+
+    fun isKoodiArvosInKoodisto(koodistoName: KoodistoName, koodiArvos: Array<String>): Boolean {
         return koodiArvos.all { isKoodiArvoInKoodisto(koodistoName, it) }
     }
 
-    fun filterKooditByLanguage(
-        koodistos: Map<KoodistoName, List<KoodiDtoOut>>, koodistoLanguage: KoodistoLanguage
-    ): Map<KoodistoName, List<KoodiDtoOut>> = koodistos.mapValues { (_, koodisto) ->
-        koodisto.filter { it.kieli == koodistoLanguage.code }
-    }
+    private fun shouldGetTarkenteet(koodistoPalveluKoodi: KoodistoPalveluKoodi) =
+        koodistoPalveluKoodi.koodiUri in listOf(
+            "oppiaineetjaoppimaaratlops2021_vka1",
+            "oppiaineetjaoppimaaratlops2021_vkb1"
+        )
 
-    private fun updateKoodistoCache(koodistoGetter: (KoodistoName) -> Array<Koodi>, sourceName: String) {
+    private fun koodiToKoodiDtoOut(
+        koodistoPalveluKoodi: KoodistoPalveluKoodi,
+        language: KoodistoLanguage,
+        koodistoRepository: KoodistoRepository
+    ): KoodiDtoOut? =
+        koodistoPalveluKoodi.metadata.find { it.kieli == language.toString() }?.let { metadatum ->
+            KoodiDtoOut(
+                koodistoPalveluKoodi.koodiArvo,
+                metadatum.nimi,
+                if (shouldGetTarkenteet(koodistoPalveluKoodi))
+                    koodistoRepository.getAlakoodit(koodistoPalveluKoodi).map { it.koodiArvo }
+                else
+                    null
+            )
+        }
+
+    private fun actualClassName(proxy: Any) = AopProxyUtils.ultimateTargetClass(proxy).simpleName
+
+    private fun updateKoodistoCache(koodistoRepository: KoodistoRepository) {
         try {
-            val koodistoMap = KoodistoName.values().associateWith { koodistoName ->
-                koodistoGetter(koodistoName).flatMap { koodi ->
-                    koodi.metadata.map { metadatum ->
-                        KoodiDtoOut(koodi.koodiArvo, metadatum.nimi, metadatum.kieli)
-                    }
+            val koodistos = KoodistoName.entries.associateWith { koodistoRepository.getKoodisto(it) }
+            koodistoCache = KoodistoLanguage.entries.associateWith { language ->
+                KoodistoName.entries.associateWith { koodistoName ->
+                    koodistos[koodistoName]!!.mapNotNull { koodi ->
+                        koodiToKoodiDtoOut(koodi, language, koodistoRepository)
+                    }.associateBy { koodiDtoOut -> koodiDtoOut.koodiArvo }
                 }
             }
-            cacheManager.getCache(CacheName.KOODISTO.key)?.put("all", koodistoMap)
 
-            val koodistoStats = koodistoMap.keys.toList().sorted()
-                .map { koodistoName -> "$koodistoName: ${koodistoMap[koodistoName]?.count()}" }
-            logger.info("Updated koodisto cache from $sourceName: $koodistoStats")
+            val koodistoStats = KoodistoName.entries.associateWith { koodistoName ->
+                KoodistoLanguage.entries.map { koodistoLanguage ->
+                    val koodisto = getKoodisto(koodistoName, koodistoLanguage)
+                    val koodiCount = koodisto.count()
+                    val tarkenneCount = koodisto.values.map { it.tarkenteet?.size ?: 0 }.sum()
+                    val tarkenneString = if (tarkenneCount > 0) "($tarkenneCount tarkennetta)" else ""
+                    "$koodistoLanguage:$koodiCount$tarkenneString"
+                }
+            }
+            logger.info("Updated koodisto cache from ${actualClassName(koodistoRepository)}: $koodistoStats")
         } catch (e: Exception) {
-            logger.error("Error updating koodisto cache", e)
+            logger.error("Error updating koodisto cache from ${actualClassName(koodistoRepository)}", e)
         }
     }
 
-    private fun upateCacheFromResources() {
-        updateKoodistoCache({ koodistoName -> koodistoRepository.getKoodistoFromResource(koodistoName) }, "resource files")
-    }
-
-    private fun updateCacheFromKoodistopalvelu() {
-        updateKoodistoCache({ koodistoName -> koodistoRepository.getKoodistoFromKoodistopalvelu(koodistoName) }, "koodistopalvelu")
-    }
 }

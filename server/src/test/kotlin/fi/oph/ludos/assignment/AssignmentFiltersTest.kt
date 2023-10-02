@@ -1,7 +1,7 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.*
-import fi.oph.ludos.test.CreateDataForAssignmentFilterTest
+import fi.oph.ludos.test.AssignmentFiltersTestData
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
@@ -21,8 +21,8 @@ class AssignmentFiltersTest : AssignmentRequests() {
     fun setup() {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
-        val testData = CreateDataForAssignmentFilterTest().prepareTestData()
-        mockMvc.perform(seedDbWithCustomAssignments(testData))
+        val testData = AssignmentFiltersTestData.assignmentsForFilterTest()
+        seedDbWithCustomAssignments(mockMvc,  testData)
     }
 
     @Test
@@ -32,6 +32,11 @@ class AssignmentFiltersTest : AssignmentRequests() {
         testSukoFilterOptions(null, null, null, null, listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
         // Filter by Suomi, A-oppimäärä
         testSukoFilterOptions("TKFIA1", null, null, null, listOf(0, 11))
+        testSukoFilterOptions("TKRUAI", null, null, null, listOf(6))
+        testSukoFilterOptions("VKA1", null, null, null, listOf(8,9,10))
+        testSukoFilterOptions("VKA1,TKRUAI", null, null, null, listOf(6,8,9,10))
+        testSukoFilterOptions("VKA1.RA", null, null, null, listOf(8))
+        testSukoFilterOptions("VKA1.RA,TKRUAI", null, null, null, listOf(6,8))
         // Filter by tehtavatyyppisuko "002"
         testSukoFilterOptions(null, "002", null, null, listOf(0, 3, 6, 9))
         // Filter by aihe "001"
@@ -42,14 +47,14 @@ class AssignmentFiltersTest : AssignmentRequests() {
 
         testSukoFilterOptions("TKFIA1", "002", "001", null, listOf(0))
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,TKFI,VKB2,VKAAA1,VKB3",
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
             null,
             null,
             null,
             listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         )
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,TKFI,VKB2,VKAAA1,VKB3",
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
             "001",
             null,
             null,
@@ -57,7 +62,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
         )
         testSukoFilterOptions(null, "001", null, null, listOf(1, 4, 7, 10))
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,TKFI,VKB2,VKAAA1,VKB3",
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
             null,
             null,
             "0003,0005,0006",
@@ -123,32 +128,6 @@ class AssignmentFiltersTest : AssignmentRequests() {
 
         val assignments = getSukoAssignments(sukoFilters)
 
-        assignments.forEach {
-            if (oppimaara != null) {
-                assertTrue(
-                    oppimaara.split(",").contains(it.oppimaaraKoodiArvo),
-                    "oppimaara $oppimaara does not contain oppimaaraKoodiArvo ${it.oppimaaraKoodiArvo}"
-                )
-            }
-            if (tehtavatyyppisuko != null) {
-                assertTrue(
-                    tehtavatyyppisuko.split(",").contains(it.assignmentTypeKoodiArvo),
-                    "tehtavatyyppisuko $tehtavatyyppisuko does not contain assignmentTypeKoodiArvo ${it.assignmentTypeKoodiArvo}"
-                )
-            }
-            if (aihe != null) {
-                val sameVals = aihe.split(",").intersect(it.aiheKoodiArvos.toSet())
-
-                assertTrue(sameVals.isNotEmpty(), "aihe $aihe does not contain aiheKoodiArvos ${it.aiheKoodiArvos}")
-            }
-            if (tavoitetaitotaso != null && it.tavoitetasoKoodiArvo != null) {
-                assertTrue(
-                    tavoitetaitotaso.split(",").contains(it.tavoitetasoKoodiArvo),
-                    "tavoitetaitotaso $tavoitetaitotaso does not contain tavoitetasoKoodiArvo ${it.tavoitetasoKoodiArvo}"
-                )
-            }
-        }
-
         val actualNumbersInName = assignments.flatMap { assignment ->
             Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
         }
@@ -167,7 +146,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
             MockMvcResultMatchers.status().isOk()
         ).andReturn().response.contentAsString
 
-        val assignmentsOut = mapper.readValue(assignments, Array<TestPuhviAssignmentDtoOut>::class.java)
+        val assignmentsOut = mapper.readValue(assignments, Array<PuhviAssignmentDtoOut>::class.java)
 
         val actualNumbersInName = assignmentsOut.flatMap { assignment ->
             Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
@@ -187,7 +166,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
             MockMvcResultMatchers.status().isOk()
         ).andReturn().response.contentAsString
 
-        val assignmentsOut = mapper.readValue(assignments, Array<TestLdAssignmentDtoOut>::class.java)
+        val assignmentsOut = mapper.readValue(assignments, Array<LdAssignmentDtoOut>::class.java)
 
         val actualNumbersInName = assignmentsOut.flatMap { assignment ->
             Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
@@ -203,7 +182,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
         testNonAllowedFilterOptions(
             Exam.SUKO,
             "?orderDirection=desc&oppimaara=!&tehtavatyyppisuko=001",
-            "oppimaara: must match \"^[a-zA-Z0-9,]+\$\""
+            "oppimaara: must match \"^([A-Z0-9]+(\\.[A-Z0-9]+)?)(,[A-Z0-9]+(\\.[A-Z0-9]+)?)*\$\""
         )
         testNonAllowedFilterOptions(
             Exam.SUKO, "?orderDirection=desc&tehtavatyyppisuko=a", "tehtavatyyppisuko: must match \"^[0-9,]+\$\""
@@ -248,7 +227,7 @@ class AssignmentFiltersTest : AssignmentRequests() {
     @Test
     @WithOpettajaRole
     fun `test filtering for favorite assignments`() {
-        val allAssignments: Array<TestSukoAssignmentDtoOut> = getAllAssignmentsForExam()
+        val allAssignments: Array<SukoAssignmentDtoOut> = getAllAssignmentsForExam()
         val favoriteAssignments = allAssignments.slice(1..3)
         favoriteAssignments.forEach {
             setAssignmentIsFavorite(Exam.SUKO, it.id, true)

@@ -1,9 +1,9 @@
-import { CertificateIn, ContentType } from '../../types'
+import { CertificateDtoOut, ContentType } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../exam/formCommon/attachment/AttachmentFileDetailView'
 
 type CertificateContentProps = {
-  certificate: CertificateIn
+  certificate: CertificateDtoOut
 }
 
 export const CertificateContent = ({ certificate }: CertificateContentProps) => {

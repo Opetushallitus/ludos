@@ -32,7 +32,12 @@ export const sukoAssignmentSchema = commonSchema
   .merge(
     z.object({
       assignmentTypeKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
-      oppimaaraKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
+      oppimaara: z
+        .object({
+          oppimaaraKoodiArvo: z.string({ required_error: ErrorMessages.REQUIRED }),
+          kielitarjontaKoodiArvo: z.string().nullable().default(null)
+        })
+        .required(),
       tavoitetasoKoodiArvo: z.string().nullable().default(null),
       aiheKoodiArvos: z.array(z.string()).default([])
     })

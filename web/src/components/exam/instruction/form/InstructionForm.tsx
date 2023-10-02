@@ -3,13 +3,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
 import {
   AttachmentData,
-  AttachmentIn,
+  AttachmentDtoOut,
   AttachmentLanguage,
   ContentFormAction,
   ContentType,
   ContentTypeSingularEng,
   Exam,
-  InstructionIn,
+  InstructionDtoOut,
   MapWithFileKeyAndMetadata,
   PublishState
 } from '../../../../types'
@@ -40,7 +40,7 @@ type InstructionFormProps = {
 const convertToLowerCase = (language: 'FI' | 'SV') => language.toLowerCase() as AttachmentLanguage
 
 function mapInstructionInAttachmentDataWithLanguage(
-  attachmentIn: AttachmentIn[],
+  attachmentIn: AttachmentDtoOut[],
   lang: AttachmentLanguage
 ): AttachmentData[] {
   const attachmentData = attachmentIn.map((attachment) => ({
@@ -81,7 +81,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   } = useForm<InstructionFormType>({
     defaultValues: isUpdate
       ? async (): Promise<InstructionFormType> => {
-          const instruction = await fetchData<InstructionIn>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
+          const instruction = await fetchData<InstructionDtoOut>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
           const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
           const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
 

@@ -1,5 +1,6 @@
 package fi.oph.ludos.koodisto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonValue
 
 enum class KoodistoLanguage(val code: String) {
@@ -9,6 +10,7 @@ enum class KoodistoLanguage(val code: String) {
 
 enum class KoodistoName(@JsonValue val koodistoUri: String) {
     OPPIAINEET_JA_OPPIMAARAT_LOPS2021("oppiaineetjaoppimaaratlops2021"),
+    KIELITARJONTA("lukiokielitarjonta"),
     LAAJA_ALAINEN_OSAAMINEN_LOPS2021("laajaalainenosaaminenlops2021"),
     TEHTAVATYYPPI_SUKO("tehtavatyyppisuko"),
     TAITOTASO("taitotaso"),
@@ -19,21 +21,23 @@ enum class KoodistoName(@JsonValue val koodistoUri: String) {
 
     override fun toString(): String {
         return koodistoUri
-    }}
+    }
+}
 
 data class KoodiDtoOut(
     val koodiArvo: String,
     val nimi: String,
-    val kieli: String
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    val tarkenteet: List<String>? = null
 )
 
-data class Koodi(
+data class KoodistoPalveluKoodi(
     val koodiUri: String,
     val koodiArvo: String,
-    val metadata: List<Metadata>
+    val metadata: List<KoodistoPalveluKoodiMetadata>
 )
 
-data class Metadata(
+data class KoodistoPalveluKoodiMetadata(
     val nimi: String,
     val kieli: String
 )

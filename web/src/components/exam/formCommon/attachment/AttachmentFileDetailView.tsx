@@ -67,7 +67,7 @@ export const AttachmentFileDetailView = ({
       ) : (
         <>
           {fileDetails && (
-            <div datatest-id={`attachment-details-${language}`}>
+            <div data-testid={`attachment-details-${language}`}>
               {Array.isArray(fileDetails) ? (
                 <AttachmentDetailsList
                   handleAttachmentNameChange={handleAttachmentNameChange}

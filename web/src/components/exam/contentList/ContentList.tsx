@@ -1,5 +1,5 @@
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentIn, BaseIn, ContentType, ContentTypeSingularEng, Exam, InstructionIn } from '../../../types'
+import { AssignmentOut, BaseOut, ContentType, ContentTypeSingularEng, Exam, InstructionDtoOut } from '../../../types'
 import { FiltersType } from '../../../hooks/useFilterValues'
 import { InstructionCard } from '../instruction/InstructionCard'
 import { Spinner } from '../../Spinner'
@@ -33,8 +33,8 @@ interface ContentListProps {
 }
 
 export const ContentList = ({ exam, contentType, language, filterValues }: ContentListProps) => {
-  const { data, loading, error } = useFetch<BaseIn[]>(urlByContentType(exam, contentType, filterValues))
-  const filterByLanguage = (data: AssignmentIn | InstructionIn) => {
+  const { data, loading, error } = useFetch<BaseOut[]>(urlByContentType(exam, contentType, filterValues))
+  const filterByLanguage = (data: AssignmentOut | InstructionDtoOut) => {
     if (language === 'fi') {
       return data.nameFi !== ''
     } else if (language === 'sv') {

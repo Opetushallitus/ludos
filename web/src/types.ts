@@ -1,3 +1,5 @@
+import { Oppimaara } from './hooks/useKoodisto'
+
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'
@@ -19,7 +21,7 @@ export const Exam = {
 } as const
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
-export type BaseIn = {
+export type BaseOut = {
   id: number
   exam: Exam
   publishState: PublishState
@@ -27,7 +29,7 @@ export type BaseIn = {
   updatedAt: string
 }
 
-export type BaseAssignmentIn = BaseIn & {
+export type AssignmentOut = BaseOut & {
   nameFi: string
   nameSv: string
   contentFi: string[]
@@ -35,46 +37,39 @@ export type BaseAssignmentIn = BaseIn & {
   instructionFi: string
   instructionSv: string
   isFavorite: boolean
-}
-
-export type AssignmentIn = BaseAssignmentIn & {
-  aiheKoodiArvos: string[]
-  assignmentTypeKoodiArvo: string
   laajaalainenOsaaminenKoodiArvos: string[]
-  oppimaaraKoodiArvo: string
-  tavoitetasoKoodiArvo: string
 }
 
-export type SukoAssignmentIn = AssignmentIn & {
+export type SukoAssignmentDtoOut = AssignmentOut & {
   assignmentTypeKoodiArvo: string
+  oppimaara: Oppimaara
+  tavoitetasoKoodiArvo: string
+  aiheKoodiArvos: string[]
 }
 
-export type LdAssignmentIn = AssignmentIn & {
+export type LdAssignmentDtoOut = AssignmentOut & {
   aineKoodiArvo: string
   lukuvuosiKoodiArvos: string[]
 }
 
-export type PuhviAssignmentIn = AssignmentIn & {
+export type PuhviAssignmentDtoOut = AssignmentOut & {
   assignmentTypeKoodiArvo: string
   lukuvuosiKoodiArvos: string[]
 }
 
-export type BaseInstructionIn = BaseIn & {
+export type InstructionDtoOut = BaseOut & {
   nameFi: string
   nameSv: string
   contentFi: string
   contentSv: string
   instructionFi: string
   instructionSv: string
-}
-
-export type InstructionIn = BaseInstructionIn & {
   shortDescriptionFi: string
   shortDescriptionSv: string
-  attachments: AttachmentIn[]
+  attachments: AttachmentDtoOut[]
 }
 
-export type AttachmentIn = {
+export type AttachmentDtoOut = {
   fileName: string
   fileKey: string
   fileUploadDate?: string
@@ -82,10 +77,10 @@ export type AttachmentIn = {
   language: 'FI' | 'SV'
 }
 
-export type CertificateIn = BaseIn & {
+export type CertificateDtoOut = BaseOut & {
   name: string
   description: string
-  attachment: AttachmentIn
+  attachment: AttachmentDtoOut
 }
 
 export const ContentType = {
@@ -134,7 +129,7 @@ export const ErrorMessages = {
 
 export type ErrorMessagesType = (typeof ErrorMessages)[keyof typeof ErrorMessages]
 
-export type FileDetails = Partial<AttachmentIn> & {
+export type FileDetails = Partial<AttachmentDtoOut> & {
   fileName: string
 }
 
@@ -148,7 +143,7 @@ export type MapWithFileKeyAndMetadata = Map<string, Metadata>
 export type AttachmentLanguage = 'fi' | 'sv'
 
 export type AttachmentData = {
-  attachment?: AttachmentIn
+  attachment?: AttachmentDtoOut
   name: string
   language?: AttachmentLanguage
   file?: File

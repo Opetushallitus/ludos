@@ -1,8 +1,8 @@
-import { KoodiDtoIn } from '../LudosContext'
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
 import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
 import { ContentType, Exam } from '../types'
+import { KoodiDtoOut } from './useKoodisto'
 
 export type ContentAction = {
   actionName: string
@@ -13,13 +13,12 @@ export type ContentAction = {
 
 export const useLudosTranslation = () => {
   const translation = useTranslation()
-
   const { t } = translation
 
-  const LANGUAGE_OPTIONS: KoodiDtoIn[] = [
-    { nimi: t('language.suomi'), koodiArvo: 'fi' },
-    { nimi: t('language.ruotsi'), koodiArvo: 'sv' }
-  ]
+  const LANGUAGE_OPTIONS: Record<string, KoodiDtoOut> = {
+    fi: { nimi: t('language.suomi'), koodiArvo: 'fi' },
+    sv: { nimi: t('language.ruotsi'), koodiArvo: 'sv' }
+  }
 
   const LANGUAGE_DROPDOWN: LocaleDropdownOptions = {
     fi: { name: t('language.suomi') },
@@ -27,16 +26,16 @@ export const useLudosTranslation = () => {
     keys: { name: 'Näytä avaimet' }
   }
 
-  const SUKO_ASSIGNMENT_ORDER_OPTIONS: KoodiDtoIn[] = [
-    {
+  const ORDER_OPTIONS: Record<string, KoodiDtoOut> = {
+    asc: {
       koodiArvo: 'asc',
       nimi: t('filter.nouseva')
     },
-    {
+    desc: {
       koodiArvo: 'desc',
       nimi: t('filter.laskeva')
     }
-  ]
+  }
   // grouped translations for different content and exam types
   const lt = {
     headingTextByExam: {
@@ -73,7 +72,7 @@ export const useLudosTranslation = () => {
 
   return {
     LANGUAGE_OPTIONS,
-    SUKO_ASSIGNMENT_ORDER_OPTIONS,
+    ORDER_OPTIONS,
     LANGUAGE_DROPDOWN,
     lt,
     ...translation

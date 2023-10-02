@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { Dropdown } from '../Dropdown'
 import { Icon } from '../Icon'
-import { BaseIn, ContentType, Exam } from '../../types'
+import { BaseOut, ContentType, Exam } from '../../types'
 import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -9,11 +8,15 @@ import { TipTap } from '../exam/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
 import { esitysnakymaKey } from '../routes/LudosRoutes'
+import { SingleValue } from 'react-select'
+import { LudosSelect, LudosSelectOption } from '../ludosSelect/LudosSelect'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from '../ludosSelect/helpers'
+import { sortKooditByArvo } from '../../hooks/useKoodisto'
 
 type ContentHeaderProps = {
   language: string
-  data: BaseIn
-  onSelectedOptionsChange: (opt: string) => void
+  data: BaseOut
+  onSelectedOptionsChange: (opt: SingleValue<LudosSelectOption>) => void
   contentType: ContentType
   isPresentation: boolean
 }
@@ -47,12 +50,11 @@ export function ContentHeader({
       {shouldShowTeachingLanguageDropdown && (
         <div>
           <p>{contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}</p>
-          <Dropdown
-            id="languageDropdown"
-            options={LANGUAGE_OPTIONS}
-            selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-            onSelectedOptionsChange={onSelectedOptionsChange}
-            testId={'language-dropdown'}
+          <LudosSelect
+            name="languageDropdown"
+            options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
+            value={currentKoodistoSelectOption(language, LANGUAGE_OPTIONS)}
+            onChange={(opt) => onSelectedOptionsChange(opt)}
           />
         </div>
       )}

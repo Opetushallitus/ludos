@@ -1,16 +1,19 @@
 import { FieldLabel } from '../../../FieldLabel'
-import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
 import { FormProvider } from 'react-hook-form'
-import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
 import { LdAssignmentFormType } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, ContentType, Exam } from '../../../../types'
-import { Dropdown } from '../../../Dropdown'
-import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { ContentFormAction, Exam } from '../../../../types'
+import { sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { useAssignmentForm } from '../useAssignmentForm'
+import {
+  currentKoodistoSelectOption,
+  currentKoodistoSelectOptions,
+  koodistoSelectOptions
+} from '../../../ludosSelect/helpers'
+import { LudosSelect } from '../../../ludosSelect/LudosSelect'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -38,10 +41,6 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const currentAine = watch('aineKoodiArvo')
   const watchPublishState = watch('publishState')
 
-  const lukuvuosiKoodisto = sortKooditAlphabetically(koodistos.ludoslukuvuosi || [])
-  const laajaalainenOsaaminenKoodisto = sortKooditAlphabetically(koodistos.laajaalainenosaaminenlops2021 || [])
-  const aineKoodisto = sortKooditAlphabetically(koodistos.ludoslukiodiplomiaine || [])
-
   return (
     <>
       <FormHeader
@@ -52,43 +51,49 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
-            <MultiSelectDropdown
-              id="lukuvuosiKoodiArvos"
-              options={lukuvuosiKoodisto}
-              selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
-              testId="lukuvuosiKoodiArvos"
-              canReset
-              requiredError={!!errors.lukuvuosiKoodiArvos}
+            <LudosSelect
+              name="lukuvuosiKoodiArvos"
+              options={koodistoSelectOptions(sortKooditAlphabetically(Object.values(koodistos.ludoslukuvuosi)))}
+              value={currentKoodistoSelectOptions(currentLukuvuosi, koodistos.ludoslukuvuosi)}
+              onChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
+              isMulti
+              isSearchable
             />
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>
 
           <fieldset className="mb-6">
             <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />
-            <Dropdown
-              id="aineKoodiArvo"
-              selectedOption={aineKoodisto.find((it) => it.koodiArvo === currentAine)}
-              options={aineKoodisto}
-              onSelectedOptionsChange={(opt: string) => {
-                setValue('aineKoodiArvo', opt)
+            <LudosSelect
+              name="aineKoodiArvo"
+              options={koodistoSelectOptions(sortKooditAlphabetically(Object.values(koodistos.ludoslukiodiplomiaine)))}
+              value={currentKoodistoSelectOption(currentAine, koodistos.ludoslukiodiplomiaine)}
+              onChange={(opt) => {
+                if (!opt) {
+                  return
+                }
+                setValue('aineKoodiArvo', opt.value)
                 clearErrors('aineKoodiArvo')
               }}
-              testId="aineKoodiArvo"
-              requiredError={!!errors.aineKoodiArvo}
+              isSearchable
             />
             <FormError error={errors.aineKoodiArvo?.message} />
           </fieldset>
 
           <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
-            <MultiSelectDropdown
-              id="laajaalainenOsaaminenKoodiArvos"
-              options={laajaalainenOsaaminenKoodisto}
-              selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
-              testId="laajaalainenOsaaminenKoodiArvos"
-              canReset
+            <LudosSelect
+              name="laajaalainenOsaaminenKoodiArvos"
+              options={koodistoSelectOptions(
+                sortKooditAlphabetically(Object.values(koodistos.laajaalainenosaaminenlops2021))
+              )}
+              value={currentKoodistoSelectOptions(
+                currentLaajaalainenOsaaminen,
+                koodistos.laajaalainenosaaminenlops2021
+              )}
+              onChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
+              isMulti
+              isSearchable
             />
           </fieldset>
 

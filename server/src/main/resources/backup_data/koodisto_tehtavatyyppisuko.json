@@ -44,13 +44,13 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.20745323310",
-    "paivitysPvm": "2023-09-06",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-09-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_001",
     "tila": "LUONNOS",
     "versio": 1,
     "version": 1,
-    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaAlkuPvm": "2023-05-10",
     "voimassaLoppuPvm": null
   },
   {
@@ -98,13 +98,13 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.20745323310",
-    "paivitysPvm": "2023-09-06",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-09-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_002",
     "tila": "LUONNOS",
     "versio": 1,
     "version": 1,
-    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaAlkuPvm": "2023-05-10",
     "voimassaLoppuPvm": null
   },
   {
@@ -152,13 +152,13 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.20745323310",
-    "paivitysPvm": "2023-09-06",
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2023-09-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_003",
     "tila": "LUONNOS",
     "versio": 1,
     "version": 1,
-    "voimassaAlkuPvm": "2023-05-11",
+    "voimassaAlkuPvm": "2023-05-10",
     "voimassaLoppuPvm": null
   }
 ]

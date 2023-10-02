@@ -1,4 +1,4 @@
-import { InstructionIn } from '../../../types'
+import { InstructionDtoOut } from '../../../types'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
 import { Icon } from '../../Icon'
@@ -10,7 +10,7 @@ import { muokkausKey } from '../../routes/LudosRoutes'
 
 type InstructionCardProps = {
   language: string
-  instruction: InstructionIn
+  instruction: InstructionDtoOut
   exam: string
 }
 

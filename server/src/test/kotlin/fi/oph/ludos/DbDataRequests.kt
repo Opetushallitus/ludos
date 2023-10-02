@@ -1,12 +1,26 @@
 package fi.oph.ludos
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import fi.oph.ludos.assignment.Assignment
+import fi.oph.ludos.assignment.TestAssignmentIn
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
-fun seedDbWithCustomAssignments(data: String): MockHttpServletRequestBuilder =
+val mapper = jacksonObjectMapper()
+
+fun seedDbWithCustomAssignmentsRequest(data: String): MockHttpServletRequestBuilder =
     MockMvcRequestBuilders.post("${Constants.API_PREFIX}/test/seedAssignments").contentType(MediaType.APPLICATION_JSON)
         .content(data)
+
+fun seedDbWithCustomAssignments(mockMvc: MockMvc, assignments: List<Assignment>) {
+    val result = mockMvc.perform(seedDbWithCustomAssignmentsRequest(mapper.writeValueAsString(assignments))).andReturn()
+
+    if (result.response.status != 200) {
+        throw RuntimeException("Error seeding data, response status ${result.response.status}: ${result.response.contentAsString}")
+    }
+}
 
 fun seedDb(): MockHttpServletRequestBuilder =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seed").contentType(MediaType.APPLICATION_JSON)

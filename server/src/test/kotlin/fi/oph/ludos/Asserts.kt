@@ -1,7 +1,9 @@
 package fi.oph.ludos
 
 import org.junit.jupiter.api.Assertions.assertTrue
+import java.sql.Timestamp
 import java.time.Duration
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 fun assertTimeIsRoughlyBetween(
@@ -23,3 +25,6 @@ fun assertTimeIsRoughlyBetween(
 
 fun assertTimeIsRoughlyBetween(before: ZonedDateTime, isotime: String, after: ZonedDateTime, timeName: String) =
     assertTimeIsRoughlyBetween(before, ZonedDateTime.parse(isotime), after, timeName)
+
+fun assertTimeIsRoughlyBetween(before: ZonedDateTime, timestamp: Timestamp, after: ZonedDateTime, timeName: String) =
+    assertTimeIsRoughlyBetween(before, ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault()), after, timeName)

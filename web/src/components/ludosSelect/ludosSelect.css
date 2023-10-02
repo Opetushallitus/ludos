@@ -1,0 +1,40 @@
+div.ludos-select__control {
+    @apply border border-gray-border;
+    border-radius: 0;
+}
+
+div.ludos-select__option--is-focused {
+    @apply bg-gray-light;
+}
+
+div.ludos-select__option--is-selected {
+    @apply bg-green-primary;
+}
+
+div.ludos-select__option--is-selected:hover {
+    @apply bg-green-light;
+}
+
+div.ludos-select__multi-value {
+    @apply rounded-xl bg-green-primary text-white px-0.5
+}
+
+div.ludos-select__multi-value__label {
+    @apply text-white
+}
+
+div.ludos-select__multi-value__remove {
+    @apply rounded-2xl
+}
+
+div.ludos-select__multi-value__remove:hover {
+    @apply bg-red-primary text-white
+}
+
+span.ludos-select__indicator-separator {
+    @apply m-0
+}
+
+.ludos-select__clear-indicator:hover > i {
+    @apply bg-red-primary text-white
+}

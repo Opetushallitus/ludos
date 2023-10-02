@@ -43,16 +43,16 @@
         @apply text-[1.1rem] leading-[1.6rem] font-semibold
     }
 
-    .dropdown-full {
+    div.dropdown-full {
         @apply w-full
     }
 
-    .dropdown-md {
-        @apply w-[17.5rem]
+    div.dropdown-md {
+        @apply w-full md:w-[17.5rem]
     }
 
-    .dropdown-lg {
-        @apply w-[26.875rem]
+    div.dropdown-lg {
+        @apply w-full md:w-[26.875rem]
     }
 
     .ludos-form {
