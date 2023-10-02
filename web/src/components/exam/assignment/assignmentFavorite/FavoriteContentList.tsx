@@ -1,4 +1,4 @@
-import { AssignmentIn, ContentType, ContentTypeSingularEng, Exam } from '../../../../types'
+import { AssignmentIn, ContentTypeSingularEng, Exam } from '../../../../types'
 import { FiltersType, useFilterValues } from '../../../../hooks/useFilterValues'
 import { useState } from 'react'
 import { removeEmpty } from '../assignmentUtils'
@@ -6,8 +6,7 @@ import { AssignmentCard } from '../AssignmentCard'
 import { Spinner } from '../../../Spinner'
 import { AssignmentFilters } from '../AssignmentFilters'
 import { Dropdown } from '../../../Dropdown'
-import { useConstantsWithLocalization } from '../../../../hooks/useConstantsWithLocalization'
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useFetch } from '../../../../hooks/useFetch'
 import { useAssignmentFilterOverrides } from '../../../../hooks/useAssignmentFilterOverrides'
 
@@ -25,8 +24,7 @@ interface FavoriteContentListProps {
 }
 
 export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
-  const { t } = useTranslation()
-  const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS } = useConstantsWithLocalization()
+  const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS, t } = useLudosTranslation()
 
   const { filterValues, setFilterValue } = useFilterValues(exam, true)
 
@@ -50,7 +48,7 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
     <div>
       <div className="row gap-6 my-3 flex-wrap justify-end">
         <div className="flex flex-col gap-2 md:flex-row">
-          <p className="mt-2">{t(`filter.${ContentType.koetehtavat}-kieli`)}</p>
+          <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
           <div className="w-36">
             <Dropdown
               id="languageDropdown"

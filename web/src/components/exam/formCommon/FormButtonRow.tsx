@@ -24,7 +24,6 @@ export const FormButtonRow = ({ actions, state, notValidFormMessageKey, errorMes
   const { isUpdate, isLoading } = state
   const isDraft = state.publishState === PublishState.Draft
 
-  // todo: siirrä useLudosTranslation hookkiin
   const draftButtonText = () => {
     if (!isUpdate) {
       return t('button.tallennaluonnos')

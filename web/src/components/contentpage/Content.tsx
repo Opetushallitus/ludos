@@ -2,7 +2,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import { BaseIn, ContentType, ContentTypeSingularEng, Exam } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
-import { useTranslation } from 'react-i18next'
 import { isAssignment, isCertificate, isInstruction } from '../exam/assignment/assignmentUtils'
 import { Spinner } from '../Spinner'
 import { ContentHeader } from './ContentCommon'
@@ -15,6 +14,7 @@ import { InstructionContent } from './InstructionsContent'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { contentListPath, editingFormPath } from '../routes/LudosRoutes'
 import { InternalLink } from '../InternalLink'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type ContentProps = {
   exam: Exam
@@ -22,7 +22,7 @@ type ContentProps = {
 }
 
 const Content = ({ exam, isPresentation }: ContentProps) => {
-  const { t } = useTranslation()
+  const { lt, t } = useLudosTranslation()
   const navigate = useNavigate()
   const { contentType, id } = useParams<{ contentType: ContentType; id: string }>()
   const { state } = useLocation()
@@ -87,7 +87,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               {!isPresentation && (
                 <div className="row mb-6">
                   <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
-                    {t(`${ContentTypeSingularEng[contentType!]}.palaa`)}
+                    {lt.returnTextByContentType[contentType!]}
                   </Button>
                 </div>
               )}

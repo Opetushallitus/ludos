@@ -2,15 +2,14 @@ import { useContext, useState } from 'react'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
-import { useConstantsWithLocalization } from '../../hooks/useConstantsWithLocalization'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { HeaderFavorites } from './HeaderFavorites'
 import { LudosContext } from '../../LudosContext'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
 
 export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
-  const { t, i18n } = useTranslation()
-  const { LANGUAGE_DROPDOWN } = useConstantsWithLocalization()
+  const { LANGUAGE_DROPDOWN, t, i18n } = useLudosTranslation()
   const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -37,7 +36,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
               </div>
 
               <nav className="flex h-full flex-col bg-white">
-                {pages.map(({ path, key, navigateTo }, i) => (
+                {pages.map(({ path, key, localizationText, navigateTo }, i) => (
                   <InternalNavLink
                     to={path}
                     navigateTo={navigateTo}
@@ -49,7 +48,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                       }`
                     }
                     data-testid={`nav-link-${key}`}>
-                    {t(`header.${key}`)}
+                    {localizationText}
                   </InternalNavLink>
                 ))}
                 <div className="mt-2 border-t-2 border-gray-separator bg-white py-2">
