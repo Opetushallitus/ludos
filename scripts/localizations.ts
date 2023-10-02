@@ -118,7 +118,6 @@ async function loginToLokalisointi(env: Environment) {
   }
 
   return {
-    CSRF: extractCookieValue('CSRF', cookiesString),
     JSESSIONID: extractCookieValue('JSESSIONID', cookiesString)
   }
 }
@@ -389,8 +388,7 @@ async function writeLocalizationsToEnv(localizations: Localizations, to: Environ
     headers: {
       'Content-Type': 'application/json',
       'caller-id': CALLER_ID,
-      Cookie: cookieString,
-      CSRF: sessionCookies.CSRF
+      Cookie: cookieString
     },
     body: JSON.stringify(localizations.localizationServicePayload())
   })
