@@ -16,6 +16,16 @@ KOODISTOURIS=(
     aihesuko
 )
 
+if [[ "$#" -gt 0 && "$1" == "--if-stale" ]]; then
+    new_backup_files=$(find "$BACKUP_DIR" -name '*.json' -type f -mtime 0 2>/dev/null)
+    if [[ -n "$new_backup_files" ]]; then
+        echo "Backups updated recently, skipping backup"
+        exit 0
+    else
+        echo "All backup files are stale, updating..."
+    fi
+fi
+
 for koodistouri in "${KOODISTOURIS[@]}"; do
     echo "Backing up koodisto $koodistouri"
     curl "https://virkailija.testiopintopolku.fi/koodisto-service/rest/json/$koodistouri/koodi?onlyValidKoodis=true" \
