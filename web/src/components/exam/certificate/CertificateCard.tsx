@@ -16,9 +16,9 @@ export const CertificateCard = ({ certificate }: CertificateCardProps) => {
 
   return (
     <div
-      className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary"
+      className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary flex flex-col"
       data-testid={`certificate-${certificate.id.toString()}`}>
-      <div className="text-center">
+      <div className="text-center flex-1 px-2 break-words">
         <InternalLink className="text-sm font-semibold text-green-primary" to={`${certificate.id}`}>
           {certificate.name}
         </InternalLink>
@@ -31,6 +31,7 @@ export const CertificateCard = ({ certificate }: CertificateCardProps) => {
           </InternalLink>
         )}
       </div>
+      <p className="mb-2 mt-2 text-center text-xs">{certificate.description}</p>
       <div className="row mt-3 justify-between">
         <div className="w-20">{isYllapitaja && <StateTag state={certificate.publishState} />}</div>
         <p className="text-center text-xs">{toLocaleDate(certificate.createdAt)}</p>
