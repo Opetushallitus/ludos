@@ -91,7 +91,7 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
         val principal = authentication?.principal as? Kayttajatiedot
 
         if (principal != null) {
-            ludosLogger.info("Successful login: username='${principal.username}' oid='${principal.oidHenkilo}'")
+            ludosLogger.info("Successful login: username='${principal.username}' oid='${principal.oidHenkilo}' ip='${request?.remoteAddr}'")
         } else {
             ludosLogger.warn("Successful login but principal was null")
         }
