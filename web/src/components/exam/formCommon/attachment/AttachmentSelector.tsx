@@ -100,7 +100,7 @@ export const AttachmentSelector = ({
               ? t('button.lisaa-liitetiedostot')
               : !attachmentData
               ? t('button.lisaa-liitetiedosto')
-              : t('vaihda-liitetiedosto')}
+              : t('button.vaihda-liitetiedosto')}
           </Button>
         </label>
       </div>

@@ -61,7 +61,7 @@ export const useLudosTranslation = () => {
     },
     returnTextByContentType: {
       [ContentType.koetehtavat]: t('assignment.palaa'),
-      [ContentType.ohjeet]: t('instructions.palaa'),
+      [ContentType.ohjeet]: t('instruction.palaa'),
       [ContentType.todistukset]: t('certificate.palaa')
     },
     addAssignmentTextByContentType: {

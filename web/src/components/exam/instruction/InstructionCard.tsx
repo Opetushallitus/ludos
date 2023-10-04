@@ -20,9 +20,9 @@ export const InstructionCard = ({ language, instruction }: InstructionCardProps)
 
   return (
     <div
-      className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary"
+      className="w-[17.5rem] min-h-[8rem] rounded-md border border-t-4 border-gray-light border-t-green-primary flex flex-col"
       data-testid={`instruction-${instruction.id.toString()}`}>
-      <div className="text-center">
+      <div className="text-center px-2 break-words flex-1">
         <InternalLink
           className="text-sm font-semibold text-green-primary"
           to={`${instruction.id}`}
