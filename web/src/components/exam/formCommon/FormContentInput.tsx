@@ -94,16 +94,17 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
   )
 }
 
-type FormContentInputProps = {}
-
-export const FormContentInput = ({}: FormContentInputProps) => {
+export const FormContentInput = () => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('fi')
 
   const {
+    watch,
     register,
     formState: { errors }
   } = useFormContext()
+
+  const currentExam = watch('exam')
 
   const contentError = errors.contentFi?.message as string
   const assignmentNameError = errors.nameRequired?.message as string
@@ -114,11 +115,13 @@ export const FormContentInput = ({}: FormContentInputProps) => {
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-      <div className="mb-6">
-        <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
+      {currentExam !== Exam.SUKO && (
+        <div className="mb-6">
+          <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
+      )}
 
-      <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
+      <div className={`${activeTab === 'fi' || currentExam === Exam.SUKO ? '' : 'hidden'}`}>
         <TextInput
           id="nameFi"
           register={register}
@@ -138,23 +141,25 @@ export const FormContentInput = ({}: FormContentInputProps) => {
         <FormError error={contentError} />
       </div>
 
-      <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
-        <TextInput
-          id="nameSv"
-          register={register}
-          deps={['nameRequired']}
-          error={!!nameSvError || !!assignmentNameError}
-          required>
-          {t('form.tehtavannimi')}
-        </TextInput>
-        <FormError error={nameSvError || assignmentNameError} />
+      {currentExam !== Exam.SUKO && (
+        <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
+          <TextInput
+            id="nameSv"
+            register={register}
+            deps={['nameRequired']}
+            error={!!nameSvError || !!assignmentNameError}
+            required>
+            {t('form.tehtavannimi')}
+          </TextInput>
+          <FormError error={nameSvError || assignmentNameError} />
 
-        <TextAreaInput id="instructionSv" register={register}>
-          {t('form.tehtavan_ohje')}
-        </TextAreaInput>
+          <TextAreaInput id="instructionSv" register={register}>
+            {t('form.tehtavan_ohje')}
+          </TextAreaInput>
 
-        <ArrayContentField fieldName="contentSv" />
-      </div>
+          <ArrayContentField fieldName="contentSv" />
+        </div>
+      )}
     </>
   )
 }

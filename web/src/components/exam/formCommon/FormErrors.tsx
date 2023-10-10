@@ -11,7 +11,7 @@ export const FormError = ({ error }: { error?: string }) => {
         return t('error.liian-lyhyt', { min: MIN_LENGTH })
       case ErrorMessages.REQUIRED:
         return t('error.pakollinen-tieto')
-      case 'no_file':
+      case ErrorMessages.NO_FILE:
         return t('error.ei-tiedostoa')
       case ErrorMessages.ASSIGNMENT_NAME_REQUIRED:
         return t('error.tehtavan-nimi-pakollinen')
