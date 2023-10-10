@@ -1,5 +1,5 @@
 import { buttonClasses } from '../../Button'
-import { ContentType, ContentTypeSingular, Exam, TeachingLanguage } from '../../../types'
+import { AssignmentFilterOptions, ContentType, ContentTypeSingular, Exam } from '../../../types'
 import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
@@ -7,25 +7,28 @@ import { AssignmentFilters } from '../assignment/AssignmentFilters'
 import { uusiKey } from '../../routes/LudosRoutes'
 import { InternalLink } from '../../InternalLink'
 import { preventLineBreaks } from '../../../formatUtils'
-import { TeachingLanguageSelect } from '../../TeachingLanguageSelect'
+import { TeachingLanguageSelect, TeachingLanguageSelectProps } from '../../TeachingLanguageSelect'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 
 interface ContentListHeaderProps {
   exam: Exam
   contentType: ContentType
-  filterValues: FiltersType
-  setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
-  teachingLanguage: TeachingLanguage
-  setTeachingLanguage: (value: TeachingLanguage) => void
+  filterValues: {
+    filterValues: FiltersType
+    setFilterValue: (key: keyof FiltersType, value: ParamsValue, replace: boolean) => void
+  }
+  assignmentFilterOptions?: AssignmentFilterOptions
+  teachingLanguageProps: TeachingLanguageSelectProps
+  isFavorite: boolean
 }
 
 export const ContentListHeader = ({
   exam,
   contentType,
-  filterValues,
-  setFilterValue,
-  teachingLanguage,
-  setTeachingLanguage
+  filterValues: { filterValues, setFilterValue },
+  assignmentFilterOptions,
+  teachingLanguageProps,
+  isFavorite
 }: ContentListHeaderProps) => {
   const { isYllapitaja } = useUserDetails()
   const { lt, t } = useLudosTranslation()
@@ -39,7 +42,7 @@ export const ContentListHeader = ({
     <>
       <div className="row my-5 flex-wrap justify-between">
         <div className="w-full md:w-[20%]">
-          {isYllapitaja && (
+          {isYllapitaja && !isFavorite && (
             <InternalLink
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
@@ -55,19 +58,26 @@ export const ContentListHeader = ({
                 <p className="mt-2">
                   {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}
                 </p>
-                <TeachingLanguageSelect teachingLanguage={teachingLanguage} setTeachingLanguage={setTeachingLanguage} />
+                <TeachingLanguageSelect {...teachingLanguageProps} />
               </div>
             )}
 
             <ContentOrderFilter
               contentOrder={filterValues.jarjesta}
-              setContentOrder={(contentOrder) => setFilterValue('jarjesta', contentOrder)}
+              setContentOrder={(contentOrder) => setFilterValue('jarjesta', contentOrder, true)}
             />
           </div>
         )}
       </div>
-      {contentType === ContentType.koetehtavat && (
-        <AssignmentFilters exam={exam} filterValues={filterValues} setFilterValue={setFilterValue} />
+      {contentType === ContentType.koetehtavat && assignmentFilterOptions && (
+        <AssignmentFilters
+          exam={exam}
+          filterValues={{
+            filterValues,
+            setFilterValue
+          }}
+          assignmentFilterOptions={assignmentFilterOptions}
+        />
       )}
     </>
   )

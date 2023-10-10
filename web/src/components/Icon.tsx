@@ -2,7 +2,7 @@ import { twMerge } from 'tailwind-merge'
 
 type IconProps = {
   name: Icons
-  color: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary'
+  color: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary' | 'text-gray-secondary'
   disabled?: boolean
   isActive?: boolean
   size?: 'sm' | 'base' | 'lg'
@@ -40,6 +40,8 @@ export type Icons =
   | 'blockQuote'
   | 'link'
   | 'suosikki'
+  | 'chevronLeft'
+  | 'chevronRight'
 
 const icons: Record<Icons, string> = {
   ['koetehtavat']: 'assignment',
@@ -70,7 +72,9 @@ const icons: Record<Icons, string> = {
   ['orderedList']: 'format_list_numbered',
   ['blockQuote']: 'format_quote',
   ['link']: 'link',
-  ['suosikki']: 'favorite'
+  ['suosikki']: 'favorite',
+  ['chevronLeft']: 'chevron_left',
+  ['chevronRight']: 'chevron_right'
 }
 
 export const Icon = ({ name, color, disabled = false, isActive = false, size, dataTestId, customClass }: IconProps) => {

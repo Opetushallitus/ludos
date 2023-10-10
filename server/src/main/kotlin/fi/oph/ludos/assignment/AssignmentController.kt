@@ -27,20 +27,20 @@ class AssignmentController(val service: AssignmentService) {
     @GetMapping("SUKO")
     @RequireAtLeastOpettajaRole
     fun getSukoAssignments(
-        @Valid filters: SukoBaseFilters
-    ): List<AssignmentOut> = service.getAssignments(filters)
+        @Valid filters: SukoFilters
+    ): AssignmentListData = service.getAssignments(filters)
 
     @GetMapping("PUHVI")
     @RequireAtLeastOpettajaRole
     fun getPuhviAssignments(
-        @Valid filters: PuhviBaseFilters
-    ): List<AssignmentOut> = service.getAssignments(filters)
+        @Valid filters: PuhviFilters
+    ): AssignmentListData = service.getAssignments(filters)
 
     @GetMapping("LD")
     @RequireAtLeastOpettajaRole
     fun getLdAssignments(
-        @Valid filters: LdBaseFilters
-    ): List<AssignmentOut> = service.getAssignments(filters)
+        @Valid filters: LdFilters
+    ): AssignmentListData = service.getAssignments(filters)
 
     @GetMapping("favoriteCount")
     @RequireAtLeastOpettajaRole

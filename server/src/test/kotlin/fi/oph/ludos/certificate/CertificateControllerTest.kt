@@ -2,6 +2,7 @@ package fi.oph.ludos.certificate
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
+import jakarta.transaction.Transactional
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.emptyString
@@ -15,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import jakarta.transaction.Transactional
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -276,7 +276,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         mockMvc.perform(seedDbWithCertificates())
         val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val allCertificates = objectMapper.readValue(res, Array<TestCertificateOut>::class.java)
+        val allCertificates = objectMapper.readValue(res, TestCertificatesOut::class.java).content
         assertEquals(4, allCertificates.size)
         idsOfCertificateDrafts = allCertificates.filter { it.publishState == PublishState.DRAFT }.map { it.id }
     }
@@ -295,7 +295,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val certificates = objectMapper.readValue(res, Array<TestCertificateOut>::class.java)
+        val certificates = objectMapper.readValue(res, TestCertificatesOut::class.java).content
 
         // make sure that draft certificate is not returned
         assertTrue(

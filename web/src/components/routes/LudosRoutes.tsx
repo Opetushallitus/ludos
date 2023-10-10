@@ -9,7 +9,7 @@ import { Frontpage } from '../frontpage/Frontpage'
 import ContentListPage from '../exam/ContentListPage'
 import { PresentationHeader } from '../header/PresentationHeader'
 import { Footer } from '../Footer'
-import { AssignmentFavorite } from '../exam/assignment/assignmentFavorite/AssignmentFavorite'
+import { AssignmentFavorite } from '../exam/assignment/AssignmentFavorite'
 import { Notification } from '../notification/Notification'
 
 export const etusivuKey = 'etusivu'

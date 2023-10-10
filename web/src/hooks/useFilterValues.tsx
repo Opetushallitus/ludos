@@ -12,9 +12,10 @@ export type FiltersType = {
   aine: string[] | null
   tehtavatyyppipuhvi: string[] | null
   suosikki: boolean | null
+  sivu: number
 }
 
-export type ParamsValue = string | string[] | null | boolean
+export type ParamsValue = number | string | string[] | null | boolean
 
 export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
   const navigate = useNavigate()
@@ -38,7 +39,8 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
       lukuvuosi: null,
       aine: null,
       tehtavatyyppipuhvi: null,
-      suosikki: showOnlyFavorites ? true : null
+      suosikki: showOnlyFavorites ? true : null,
+      sivu: 1
     }
 
     urlParams.forEach((value, stringKey) => {
@@ -47,6 +49,8 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
         currentParams[key] = value === 'true'
       } else if (key === 'jarjesta') {
         currentParams[key] = value === 'asc' ? 'asc' : 'desc'
+      } else if (key === 'sivu') {
+        currentParams[key] = Number(value)
       } else if (examKeyMap[exam]?.includes(key)) {
         currentParams[key] = value.split(',')
       }
@@ -55,7 +59,7 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
     return currentParams
   }, [exam, location.search, showOnlyFavorites])
 
-  const setFilterValue = (key: keyof FiltersType, value: ParamsValue) => {
+  const setFilterValue = (key: keyof FiltersType, value: ParamsValue, replace: boolean = true) => {
     const urlParams = new URLSearchParams(location.search)
     if (value === null) {
       urlParams.delete(key)
@@ -68,11 +72,18 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
         }
       } else if (typeof value === 'boolean') {
         urlParams.set(key, value.toString())
+      } else if (typeof value === 'number') {
+        urlParams.set(key, value.toString())
       } else {
         urlParams.set(key, value)
       }
     }
-    navigate({ search: `?${urlParams.toString()}` }, { replace: true })
+
+    if (key !== 'sivu') {
+      urlParams.set('sivu', '1')
+    }
+
+    navigate({ search: `?${urlParams.toString()}` }, { replace })
   }
 
   return { filterValues, setFilterValue }

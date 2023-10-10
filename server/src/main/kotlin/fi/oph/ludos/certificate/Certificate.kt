@@ -1,9 +1,9 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.*
+import jakarta.validation.constraints.NotBlank
 import java.sql.Timestamp
 import java.time.ZonedDateTime
-import jakarta.validation.constraints.NotBlank
 
 interface Certificate {
     val exam: Exam
@@ -39,3 +39,7 @@ data class CertificateAttachmentDtoOut(
     override val fileName: String,
     override val fileUploadDate: ZonedDateTime,
 ): AttachmentOut
+
+data class CertificatesOut(
+    val content: List<CertificateDtoOut>
+)

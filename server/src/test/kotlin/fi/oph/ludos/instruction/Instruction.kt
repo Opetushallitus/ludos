@@ -43,3 +43,7 @@ data class TestInstructionAttachmentMetadata(
 data class TestInstructionAttachmentData(
     val file: MockMultipartFile, val instructionAttachmentMetadata: TestInstructionAttachmentMetadata
 )
+
+data class TestInstructionsOut(
+    val content: List<TestInstructionOut>
+)

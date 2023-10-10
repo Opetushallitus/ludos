@@ -29,7 +29,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         authenticateAsYllapitaja()
         mockMvc.perform(emptyDb())
         mockMvc.perform(seedDbWithAssignments())
-        idsOfAssignmentDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>()
+        idsOfAssignmentDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
             .filter { it.publishState == PublishState.DRAFT }
             .map { it.id }
     }
@@ -489,11 +489,11 @@ class AssignmentControllerTest : AssignmentRequests() {
     @Test
     @WithOpettajaRole
     fun getAssignmentsAsOpettaja() {
-        val assignments: Array<SukoAssignmentDtoOut> = getAllAssignmentsForExam()
+        val assignments = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
         assertTrue(
             assignments.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft assignments"
         )
-        assertEquals(8, assignments.size)
+        assertEquals(20, assignments.size)
     }
 
     @Test
@@ -518,7 +518,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     private fun testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja: Int) {
         setAssignmentIsFavoriteAndVerify<SukoAssignmentDtoOut>(localAssignmentIdToFavoriteAsOpettaja, true)
 
-        val assignments: Array<SukoAssignmentDtoOut> = getAllAssignmentsForExam()
+        val assignments = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
         assignments.forEach {
             if (it.id == localAssignmentIdToFavoriteAsOpettaja) {
                 assertEquals(true, it.isFavorite, "Assignment ${it.id} should be favorite")
@@ -542,7 +542,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `as opettaja toggle assignment to be favorite and query it`() {
         // get all assignments and choose one of them to favorite
         val localAssignmentIdToFavoriteAsOpettaja =
-            getAllAssignmentsForExam<SukoAssignmentDtoOut>().first { it.publishState == PublishState.PUBLISHED }.id
+            getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.first { it.publishState == PublishState.PUBLISHED }.id
 
         testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja)
     }

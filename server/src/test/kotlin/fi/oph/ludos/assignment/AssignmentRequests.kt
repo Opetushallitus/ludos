@@ -71,16 +71,16 @@ abstract class AssignmentRequests {
     fun getAllAssignmentsReq(exam: Exam) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam").contentType(MediaType.APPLICATION_JSON)
 
-    inline fun <reified T : AssignmentOut> getAllAssignmentsForExam(): Array<T> {
+    inline fun <reified T : AssignmentOut> getAllAssignmentsForExam(): TestAssignmentsOut<T> {
         val exam = examByTestAssignmentOutClass(T::class)
-        val responseContent = mockMvc.perform(getAllAssignmentsReq(exam)).andExpect(MockMvcResultMatchers.status().isOk())
-            .andReturn().response.contentAsString
-        val ret = mapper.readValue<Array<T>>(responseContent)
-        return ret
+        val responseContent =
+            mockMvc.perform(getAllAssignmentsReq(exam)).andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().response.contentAsString
+        return mapper.readValue<TestAssignmentsOut<T>>(responseContent)
     }
 
-    private fun getSukoAssignmentsReq(filter: SukoBaseFilters): MockHttpServletRequestBuilder {
-        val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/SUKO")
+    private fun getSukoAssignmentsReq(filter: SukoFilters): MockHttpServletRequestBuilder {
+        val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/${Exam.SUKO}")
 
         filter.jarjesta?.let { uriBuilder.queryParam("jarjesta", it) }
         filter.oppimaara?.let { uriBuilder.queryParam("oppimaara", it) }
@@ -88,11 +88,12 @@ abstract class AssignmentRequests {
         filter.aihe?.let { uriBuilder.queryParam("aihe", it) }
         filter.tavoitetaitotaso?.let { uriBuilder.queryParam("tavoitetaitotaso", it) }
         filter.suosikki?.let { uriBuilder.queryParam("suosikki", it) }
+        filter.sivu.let { uriBuilder.queryParam("sivu", it) }
 
         return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
     }
 
-    fun getSukoAssignments(filter: SukoBaseFilters): Array<SukoAssignmentDtoOut> {
+    fun getSukoAssignments(filter: SukoFilters): TestAssignmentsOut<SukoAssignmentDtoOut> {
         val assignmentsString = mockMvc.perform(getSukoAssignmentsReq(filter))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn().response.contentAsString
@@ -100,24 +101,42 @@ abstract class AssignmentRequests {
         return mapper.readValue(assignmentsString)
     }
 
-    fun getPuhviAssignmentsReq(exam: Exam, filter: PuhviBaseFilters): MockHttpServletRequestBuilder {
-        val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
+    private fun getPuhviAssignmentsReq(filter: PuhviFilters): MockHttpServletRequestBuilder {
+        val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/${Exam.PUHVI}")
 
         filter.jarjesta?.let { uriBuilder.queryParam("jarjesta", it) }
         filter.tehtavatyyppipuhvi?.let { uriBuilder.queryParam("tehtavatyyppipuhvi", it) }
         filter.lukuvuosi?.let { uriBuilder.queryParam("lukuvuosi", it) }
+        filter.sivu.let { uriBuilder.queryParam("sivu", it) }
 
         return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
     }
 
-    fun getLdAssignmentsReq(exam: Exam, filter: LdBaseFilters): MockHttpServletRequestBuilder {
-        val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/$exam")
+    fun getPuhviAssignments(filter: PuhviFilters): TestAssignmentsOut<PuhviAssignmentDtoOut> {
+        val assignmentsString = mockMvc.perform(getPuhviAssignmentsReq(filter))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn().response.contentAsString
+
+        return mapper.readValue(assignmentsString)
+    }
+
+    private fun getLdAssignmentsReq(filter: LdFilters): MockHttpServletRequestBuilder {
+        val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/${Exam.LD}")
 
         filter.jarjesta?.let { uriBuilder.queryParam("jarjesta", it) }
         filter.aine?.let { uriBuilder.queryParam("aine", it) }
         filter.lukuvuosi?.let { uriBuilder.queryParam("lukuvuosi", it) }
+        filter.sivu.let { uriBuilder.queryParam("sivu", it) }
 
         return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
+    }
+
+    fun getLdAssignments(filter: LdFilters): TestAssignmentsOut<LdAssignmentDtoOut> {
+        val assignmentsString = mockMvc.perform(getLdAssignmentsReq(filter))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andReturn().response.contentAsString
+
+        return mapper.readValue(assignmentsString)
     }
 
     fun setAssignmentIsFavoriteReq(exam: Exam, id: Int, isFavorite: Boolean) =
@@ -129,7 +148,7 @@ abstract class AssignmentRequests {
         mockMvc.perform(setAssignmentIsFavoriteReq(exam, id, isFavorite))
             .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().response.contentAsString.toInt()
 
-    fun getTotalFavoriteCountReq() =
+    private fun getTotalFavoriteCountReq() =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favoriteCount")
             .contentType(MediaType.APPLICATION_JSON)
 

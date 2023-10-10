@@ -3,8 +3,10 @@ package fi.oph.ludos.instruction
 import Language
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -13,10 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.ZonedDateTime
-import jakarta.transaction.Transactional
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -44,7 +44,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         mockMvc.perform(seedDbWithInstructions())
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        idsOfInstructionDrafts = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
+        idsOfInstructionDrafts = objectMapper.readValue(res, TestInstructionsOut::class.java).content
             .filter { it.publishState == PublishState.DRAFT.toString() }.map { it.id }
     }
 
@@ -323,11 +323,9 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun getInstructionsAsYllapitaja() {
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val instructions = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
+        val instructions = objectMapper.readValue(res, TestInstructionsOut::class.java).content
 
         assertThat(instructions.size).isEqualTo(12)
-        assertThat(instructions).anySatisfy { it.publishState == PublishState.DRAFT.toString() }
-        assertThat(instructions).anySatisfy { it.publishState == PublishState.PUBLISHED.toString() }
     }
 
     @Test
@@ -336,9 +334,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val instructions = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
+        val instructions = objectMapper.readValue(res, TestInstructionsOut::class.java).content
         assertThat(instructions.size).isEqualTo(8)
-        assertThat(instructions).allSatisfy { it.publishState == PublishState.PUBLISHED.toString() }
     }
 
     @Test

@@ -53,7 +53,7 @@ class SeedDataRepository(
         )
         val aineKoodiArvos = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
 
-        repeat(12) {
+        repeat(24) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
 
             val laajaalainenOsaaminenVarying =

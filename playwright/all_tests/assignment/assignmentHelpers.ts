@@ -304,7 +304,7 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
 export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
-export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[], exam: Exam) {
+export async function checkListAfterFiltering(page: Page, exam: Exam, expectedAssignmentTitleNumbers: number[]) {
   await expect(
     page.getByRole('link', {
       name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, exam)

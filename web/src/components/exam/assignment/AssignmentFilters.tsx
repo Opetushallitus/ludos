@@ -1,8 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
-import { useFetch } from '../../../hooks/useFetch'
-import { Exam } from '../../../types'
+import { AssignmentFilterOptions, Exam } from '../../../types'
 import {
   KoodiDtoOut,
   Oppimaara,
@@ -12,8 +11,8 @@ import {
 } from '../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../ludosSelect/LudosSelect'
 import {
-  currentOppimaaraSelectOptions,
   currentKoodistoSelectOptions,
+  currentOppimaaraSelectOptions,
   koodistoSelectOptions,
   oppimaaraSelectOptions
 } from '../../ludosSelect/helpers'
@@ -21,14 +20,11 @@ import { MultiValue } from 'react-select'
 
 type AssignmentFiltersProps = {
   exam: Exam
-  filterValues: FiltersType
-  setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
-  oppimaaraOptionsOverride?: Oppimaara[]
-  tehtavaTyyppiOptionsOverride?: string[]
-  aiheOptionsOverride?: string[]
-  lukuvuosiOptionsOverride?: string[]
-  lukiodiplomiaineOptionsOverride?: string[]
-  tehavatyyppipuhviOptionsOverride?: string[]
+  filterValues: {
+    filterValues: FiltersType
+    setFilterValue: (key: keyof FiltersType, value: ParamsValue, replace: boolean) => void
+  }
+  assignmentFilterOptions: AssignmentFilterOptions
 }
 
 const getFilteredOptions = (allOptions: Record<string, KoodiDtoOut>, overrides?: string[]) =>
@@ -36,32 +32,25 @@ const getFilteredOptions = (allOptions: Record<string, KoodiDtoOut>, overrides?:
 
 export const AssignmentFilters = ({
   exam,
-  filterValues,
-  setFilterValue,
-  oppimaaraOptionsOverride,
-  tehtavaTyyppiOptionsOverride,
-  aiheOptionsOverride,
-  lukuvuosiOptionsOverride,
-  lukiodiplomiaineOptionsOverride,
-  tehavatyyppipuhviOptionsOverride
+  filterValues: { filterValues, setFilterValue },
+  assignmentFilterOptions: { oppimaara, aihe, tehtavatyyppi, lukuvuosi, aine }
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
-
-  const { data: oppimaarasInUse } = useFetch<Oppimaara[]>('assignment/oppimaarasInUse')
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
       setFilterValue(
         key,
-        value.map((it) => it.value)
+        value.map((it) => it.value),
+        true
       )
     },
     [setFilterValue]
   )
 
   const oppimaaraOptions = useMemo(() => {
-    const actualOptions = oppimaaraOptionsOverride || oppimaarasInUse || []
+    const actualOptions = oppimaara || []
     const oppimaaraKoodiarvosWithTarkenteet = [
       ...new Set(actualOptions.filter((o) => o.kielitarjontaKoodiArvo !== null).map((o) => o.oppimaaraKoodiArvo))
     ]
@@ -80,15 +69,13 @@ export const AssignmentFilters = ({
       kielitarjontaKoodiArvo: null
     }))
     return [...actualOptions, ...missingParentOppimaaras]
-  }, [oppimaaraOptionsOverride, oppimaarasInUse])
+  }, [oppimaara])
 
-  const tehtavaTyyppiOptions = () => getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavaTyyppiOptionsOverride)
-  const aiheOptions = () => getFilteredOptions(koodistos.aihesuko, aiheOptionsOverride)
-  const lukuvuosiOptions = () => getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosiOptionsOverride)
-  const lukiodiplomiaineOptions = () =>
-    getFilteredOptions(koodistos.ludoslukiodiplomiaine, lukiodiplomiaineOptionsOverride)
-  const tehavatyyppipuhviOptions = () =>
-    getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehavatyyppipuhviOptionsOverride)
+  const tehtavaTyyppiOptions = () => getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavatyyppi)
+  const aiheOptions = () => getFilteredOptions(koodistos.aihesuko, aihe)
+  const lukuvuosiOptions = () => getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosi)
+  const lukiodiplomiaineOptions = () => getFilteredOptions(koodistos.ludoslukiodiplomiaine, aine)
+  const tehavatyyppipuhviOptions = () => getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehtavatyyppi)
 
   return (
     <div className="border border-gray-light bg-gray-bg">

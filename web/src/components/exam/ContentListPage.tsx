@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom'
 import { ContentType, Exam, TeachingLanguage } from '../../types'
 import { ContentList } from './contentList/ContentList'
 import { ContentTypeMenu } from '../ContentTypeMenu'
-import { ContentListHeader } from './contentList/ContentListHeader'
 import { useFilterValues } from '../../hooks/useFilterValues'
 import { useState } from 'react'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -15,7 +14,7 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { lt } = useLudosTranslation()
   const { contentType: contentTypeParam } = useParams<{ contentType: ContentType }>()
   const contentType = contentTypeParam || ContentType.koetehtavat
-  const { filterValues, setFilterValue } = useFilterValues(exam)
+  const filterValues = useFilterValues(exam)
   const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
 
   const languageOverrideIfSukoAssignment =
@@ -32,19 +31,15 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
       <div role="tabpanel">
         {contentType && (
           <>
-            <ContentListHeader
-              exam={exam}
-              contentType={contentType}
-              filterValues={filterValues}
-              setFilterValue={setFilterValue}
-              teachingLanguage={languageOverrideIfSukoAssignment}
-              setTeachingLanguage={setTeachingLanguage}
-            />
             <ContentList
               exam={exam}
               contentType={contentType}
-              teachingLanguage={languageOverrideIfSukoAssignment}
+              teachingLanguageSelectProps={{
+                teachingLanguage: languageOverrideIfSukoAssignment,
+                setTeachingLanguage
+              }}
               filterValues={filterValues}
+              isFavorite={false}
             />
           </>
         )}

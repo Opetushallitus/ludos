@@ -3,6 +3,8 @@ package fi.oph.ludos.test
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.assignment.*
 
+const val AMOUNT_OF_ASSIGNMENTS = 23
+
 object AssignmentFiltersTestData {
     private val sukoAssignmentTypeKoodiArvos = arrayOf("002", "001", "003")
     private val puhviAssignmentTypeKoodiArvos = arrayOf("002", "001")
@@ -40,7 +42,7 @@ object AssignmentFiltersTestData {
 
 
     private fun sukoAssignments(): List<SukoAssignmentDtoIn> =
-        (0..11).map { i ->
+        (0..AMOUNT_OF_ASSIGNMENTS).map { i ->
             SukoAssignmentDtoIn(
                 nameFi = "Filter test name $i FI SUKO",
                 nameSv = "Filter test name $i SV SUKO",
@@ -58,7 +60,7 @@ object AssignmentFiltersTestData {
         }
 
     private fun ldAssignments(): List<LdAssignmentDtoIn> =
-        (0..11).map { i ->
+        (0..AMOUNT_OF_ASSIGNMENTS).map { i ->
             LdAssignmentDtoIn(
                 nameFi = "Filter test name $i FI LD",
                 nameSv = "Filter test name $i SV LD",
@@ -74,7 +76,7 @@ object AssignmentFiltersTestData {
         }
 
     private fun puhviAssignments(): List<PuhviAssignmentDtoIn> =
-        (0..11).map { i ->
+        (0..AMOUNT_OF_ASSIGNMENTS).map { i ->
             PuhviAssignmentDtoIn(
                 nameFi = "Filter test name $i FI PUHVI",
                 nameSv = "Filter test name $i SV PUHVI",
@@ -90,7 +92,5 @@ object AssignmentFiltersTestData {
         }
 
 
-    fun assignmentsForFilterTest(): List<Assignment> {
-        return sukoAssignments() + ldAssignments() + puhviAssignments()
-    }
+    fun assignmentsForFilterTest(): List<Assignment> = sukoAssignments() + ldAssignments() + puhviAssignments()
 }

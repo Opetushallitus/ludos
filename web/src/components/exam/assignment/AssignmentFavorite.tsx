@@ -1,8 +1,10 @@
-import { Exam } from '../../../../types'
-import { FavoriteContentList } from './FavoriteContentList'
+import { ContentType, Exam, TeachingLanguage } from '../../../types'
 import { NavLink, useParams } from 'react-router-dom'
-import { favoritesPagePath } from '../../../routes/LudosRoutes'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { favoritesPagePath } from '../../routes/LudosRoutes'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ContentList } from '../contentList/ContentList'
+import { useState } from 'react'
+import { useFilterValues } from '../../../hooks/useFilterValues'
 
 const ExamMenu = () => {
   const { lt } = useLudosTranslation()
@@ -31,12 +33,12 @@ const ExamMenu = () => {
 export const AssignmentFavorite = () => {
   const { t } = useLudosTranslation()
   const { exam: examParamLowerCase } = useParams<{ exam: string }>()
-
-  if (!((examParamLowerCase?.toUpperCase() as Exam) in Exam)) {
-    return null
-  }
-
   const exam = Exam[examParamLowerCase?.toUpperCase() as Exam]
+  const filterValues = useFilterValues(exam, true)
+
+  const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
+
+  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
 
   return (
     <div className="pt-3">
@@ -47,7 +49,16 @@ export const AssignmentFavorite = () => {
       <ExamMenu />
 
       <div role="tabpanel">
-        <FavoriteContentList exam={exam} />
+        <ContentList
+          exam={exam}
+          contentType={ContentType.koetehtavat}
+          teachingLanguageSelectProps={{
+            teachingLanguage: languageOverrideIfSukoAssignment,
+            setTeachingLanguage
+          }}
+          filterValues={filterValues}
+          isFavorite={true}
+        />
       </div>
     </div>
   )

@@ -1,5 +1,6 @@
 package fi.oph.ludos.instruction
 
+import BaseFilters
 import Language
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -24,14 +25,19 @@ import kotlin.reflect.KClass
 interface Instruction {
     @get:ValidContentName
     val nameFi: String
+
     @get:ValidHtmlContent
     val contentFi: String
+
     @get:ValidContentName
     val nameSv: String
+
     @get:ValidHtmlContent
     val contentSv: String
+
     @get:ValidContentDescription
     val shortDescriptionFi: String
+
     @get:ValidContentDescription
     val shortDescriptionSv: String
     val publishState: PublishState
@@ -118,6 +124,15 @@ data class InstructionDtoOut(
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
 
+data class InstructionsOut(
+    val content: List<InstructionDtoOut>
+)
+
+data class InstructionFilters(
+    override val jarjesta: String?,
+    override val sivu: Int = 1
+) : BaseFilters
+
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Constraint(validatedBy = [AtLeastOneInstructionNameIsNotEmptyValidator::class])
@@ -127,7 +142,8 @@ annotation class AtLeastOneInstructionNameIsNotBlank(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class AtLeastOneInstructionNameIsNotEmptyValidator : ConstraintValidator<AtLeastOneInstructionNameIsNotBlank, Instruction> {
+class AtLeastOneInstructionNameIsNotEmptyValidator :
+    ConstraintValidator<AtLeastOneInstructionNameIsNotBlank, Instruction> {
     override fun isValid(value: Instruction, context: ConstraintValidatorContext?): Boolean {
         return value.nameFi.isNotEmpty() || value.nameSv.isNotEmpty()
     }

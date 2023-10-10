@@ -28,3 +28,7 @@ data class TestCertificateOut(
     val createdAt: Timestamp,
     val updatedAt: Timestamp
 )
+
+data class TestCertificatesOut(
+    val content: List<TestCertificateOut>
+)

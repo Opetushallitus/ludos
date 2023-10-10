@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class AssignmentService(val repository: AssignmentRepository) {
-    fun getAssignments(filters: BaseFilters): List<AssignmentOut> = repository.getAssignments(filters)
+    fun getAssignments(filters: BaseFilters): AssignmentListData = repository.getAssignments(filters)
 
     fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {
         is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
