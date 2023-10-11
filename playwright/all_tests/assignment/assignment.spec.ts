@@ -60,6 +60,7 @@ test.describe('Suko assignment form tests', () => {
 
     await expect(page.getByTestId('notification-success')).toBeVisible()
     await expect(page.getByTestId('assignment-header')).toHaveText(createContent.nameTextFi)
+    await expect(page.getByTestId('suko-oppimaara')).toHaveText('Vieraat kielet, A-oppimäärä')
     await expect(page.getByTestId('publish-state')).toHaveText('Julkaistu')
 
     await page.getByTestId('return').click()
@@ -88,6 +89,8 @@ test.describe('Suko assignment form tests', () => {
 
     await expect(updatedAssignmentHeader).toHaveText(updatedFormData.nameTextFi)
 
+    const expectedOppimaara = 'Vieraat kielet, A-oppimäärä, saksan kieli'
+    await expect(page.getByTestId('suko-oppimaara')).toHaveText(expectedOppimaara)
     await expect(page.getByTestId('suko-tehtavatyyppi')).toHaveText('Tekstin tiivistäminen')
     // await expect(page.getByTestId('suko-tavoitetaso')).toBeVisible()
     await expect(page.getByTestId('suko-aihe')).toHaveText('kulttuuri ja luova ilmaisu')
@@ -95,12 +98,14 @@ test.describe('Suko assignment form tests', () => {
       'Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await expect(page.getByTestId('language-dropdown')).toBeHidden()
+    await expect(page.getByTestId('languageDropdown')).toBeHidden()
 
     await page.getByTestId('return').click()
-    await expect(page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`)).toBeVisible()
+    const assignmentCard = page.getByTestId(`assignment-list-item-${createdAssignmentId}`)
+    await expect(assignmentCard).toBeVisible()
+    await expect(assignmentCard.getByTestId('suko-oppimaara')).toHaveText(expectedOppimaara)
 
-    await expect(page.getByTestId('language-dropdown')).toBeHidden()
+    await expect(page.getByTestId('languageDropdown')).toBeHidden()
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -160,8 +165,8 @@ test.describe('Ld assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await page.getByTestId('language-dropdown').click()
-    await page.getByTestId('language-dropdown-option-sv').click()
+    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextSv)
     await expect(page.getByTestId('instruction-sv')).toHaveText(formData.instructionTextSv)
@@ -199,8 +204,8 @@ test.describe('Ld assignment form tests', () => {
     for (const [i, content] of updatedFormData.contentTextFi.entries()) {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
-    await page.getByTestId('language-dropdown').click()
-    await page.getByTestId('language-dropdown-option-sv').click()
+    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {
@@ -293,8 +298,8 @@ test.describe('Puhvi assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await page.getByTestId('language-dropdown').click()
-    await page.getByTestId('language-dropdown-option-sv').click()
+    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {

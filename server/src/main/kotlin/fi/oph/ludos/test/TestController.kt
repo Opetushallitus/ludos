@@ -76,6 +76,14 @@ class TestController(
         return httpServletResponse.sendRedirect(appUrl)
     }
 
+    @GetMapping("/seedAssignmentsForFilterTest")
+    @RequireAtLeastYllapitajaRole
+    fun seedDatabaseWithAssignmentsForFilterTest(httpServletResponse: HttpServletResponse) {
+        val assignments = AssignmentFiltersTestData.assignmentsForFilterTest()
+        assignments.forEach { assignmentService.createAssignment(it) }
+        return httpServletResponse.sendRedirect(appUrl)
+    }
+
     // this endpoint is used by api tests
     @PostMapping("/seedAssignments")
     @RequireAtLeastYllapitajaRole

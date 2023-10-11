@@ -1,5 +1,5 @@
 import { Icon } from '../../Icon'
-import { AssignmentIn, ContentType, Exam } from '../../../types'
+import { AssignmentOut, ContentType, Exam } from '../../../types'
 import { StateTag } from '../../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
@@ -14,14 +14,14 @@ import { contentPagePath, editingFormPath } from '../../routes/LudosRoutes'
 
 type AssignmentCardProps = {
   language: string
-  assignment: AssignmentIn
+  assignment: AssignmentOut
   exam: Exam
   refreshData?: () => void
 }
 
 export const AssignmentCard = ({ language, assignment, exam, refreshData }: AssignmentCardProps) => {
   const { t } = useTranslation()
-  const { getKoodisLabel, getKoodiLabel } = useKoodisto()
+  const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
   const [isFavorite, setIsFavorite] = useState(false)
 
@@ -71,15 +71,13 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
             <>
               <div>
                 <p className="text-xs text-gray-secondary">{t('assignment.lukuvuosi')}</p>
-                <p className="text-xs text-black">
-                  {getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi') || '*'}
-                </p>
+                <p className="text-xs text-black">{getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi')}</p>
               </div>
               {isLd && (
                 <div>
                   <p className="text-xs text-gray-secondary">{t('assignment.aine')}</p>
                   <p className="text-xs text-black">
-                    {getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine') || '*'}
+                    {getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine')}
                   </p>
                 </div>
               )}
@@ -87,7 +85,7 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
                 <div>
                   <p className="text-xs text-gray-secondary">{t('assignment.tehtavatyyppi')}</p>
                   <p className="text-xs text-black">
-                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi') || '*'}
+                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi')}
                   </p>
                 </div>
               )}
@@ -97,8 +95,8 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
             <>
               <div>
                 <p className="text-xs text-gray-secondary">{t('assignment.oppimaara')}</p>
-                <p className="text-xs text-black">
-                  {getKoodiLabel(assignment.oppimaaraKoodiArvo, 'oppiaineetjaoppimaaratlops2021') || '*'}
+                <p className="text-xs text-black" data-testid="suko-oppimaara">
+                  {getOppimaaraLabel(assignment.oppimaara)}
                 </p>
               </div>
               <div>

@@ -9,13 +9,17 @@ import fi.oph.ludos.*
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
-import jakarta.validation.Constraint
-import jakarta.validation.ConstraintValidator
-import jakarta.validation.ConstraintValidatorContext
-import jakarta.validation.Payload
+import fi.oph.ludos.koodisto.ValidOppimaara
+import jakarta.validation.*
 import jakarta.validation.constraints.Pattern
 import java.sql.Timestamp
 import kotlin.reflect.KClass
+
+@ValidOppimaara
+data class Oppimaara(
+    val oppimaaraKoodiArvo: String,
+    val kielitarjontaKoodiArvo: String? = null
+)
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -40,6 +44,7 @@ interface Assignment {
     val publishState: PublishState
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
     val laajaalainenOsaaminenKoodiArvos: Array<String>
+    val exam: Exam
 }
 
 @JsonTypeName("SUKO")
@@ -54,13 +59,14 @@ data class SukoAssignmentDtoIn(
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_SUKO)
     val assignmentTypeKoodiArvo: String,
-    @field:ValidKoodiArvo(koodisto = KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021)
-    val oppimaaraKoodiArvo: String,
+    @field:Valid
+    val oppimaara: Oppimaara,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TAITOTASO)
-    @JsonProperty(required = true) // always require tavoitetasoKoodiArvo field even if null
+    @JsonProperty(required = true)
     val tavoitetasoKoodiArvo: String?,
     @field:ValidKoodiArvos(koodisto = KoodistoName.AIHE_SUKO)
     val aiheKoodiArvos: Array<String>,
+    override val exam: Exam = Exam.SUKO,
 ) : Assignment
 
 @JsonTypeName("LD")
@@ -76,7 +82,8 @@ data class LdAssignmentDtoIn(
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
     val lukuvuosiKoodiArvos: Array<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
-    val aineKoodiArvo: String
+    val aineKoodiArvo: String,
+    override val exam: Exam = Exam.LD,
 ) : Assignment
 
 @JsonTypeName("PUHVI")
@@ -93,17 +100,24 @@ data class PuhviAssignmentDtoIn(
     val assignmentTypeKoodiArvo: String,
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
     val lukuvuosiKoodiArvos: Array<String>,
+    override val exam: Exam = Exam.PUHVI,
 ) : Assignment
 
-interface AssignmentOut {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = SukoAssignmentDtoOut::class, name = "SUKO"),
+    JsonSubTypes.Type(value = PuhviAssignmentDtoOut::class, name = "PUHVI"),
+    JsonSubTypes.Type(value = LdAssignmentDtoOut::class, name = "LD")
+)
+interface AssignmentOut : Assignment {
     val id: Int
-    val exam: Exam
     val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
     val isFavorite: Boolean
 }
 
+@JsonTypeName("SUKO")
 data class SukoAssignmentDtoOut(
     override val id: Int,
     override val nameFi: String,
@@ -119,12 +133,13 @@ data class SukoAssignmentDtoOut(
     override val authorOid: String,
     override val isFavorite: Boolean,
     val assignmentTypeKoodiArvo: String,
-    val oppimaaraKoodiArvo: String,
+    val oppimaara: Oppimaara,
     val tavoitetasoKoodiArvo: String?,
     val aiheKoodiArvos: Array<String>,
     override val exam: Exam = Exam.SUKO
-) : Assignment, AssignmentOut
+) : AssignmentOut
 
+@JsonTypeName("PUHVI")
 data class PuhviAssignmentDtoOut(
     override val id: Int,
     override val nameFi: String,
@@ -142,8 +157,9 @@ data class PuhviAssignmentDtoOut(
     val assignmentTypeKoodiArvo: String,
     val lukuvuosiKoodiArvos: Array<String>,
     override val exam: Exam = Exam.PUHVI
-) : Assignment, AssignmentOut
+) : AssignmentOut
 
+@JsonTypeName("LD")
 data class LdAssignmentDtoOut(
     override val id: Int,
     override val nameFi: String,
@@ -161,13 +177,13 @@ data class LdAssignmentDtoOut(
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
-) : Assignment, AssignmentOut
+) : AssignmentOut
 
 data class SukoBaseFilters(
     override val jarjesta: String?,
     override val suosikki: Boolean?,
-    // allow alphabetical letters, numbers and commas
-    @field:Pattern(regexp = "^[a-zA-Z0-9,]+\$")
+    // format OPPIMAARAKOODIARVO or OPPIMAARAKOODIARVO.KIELITARJONTAKOODIARVO
+    @field:Pattern(regexp = "^([A-Z0-9]+(\\.[A-Z0-9]+)?)(,[A-Z0-9]+(\\.[A-Z0-9]+)?)*\$")
     val oppimaara: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppisuko: String?,

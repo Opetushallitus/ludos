@@ -1,7 +1,7 @@
 import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
 import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentIn, AttachmentLanguage, Exam, MapWithFileKeyAndMetadata } from './types'
+import { AttachmentDtoOut, AttachmentLanguage, Exam, MapWithFileKeyAndMetadata } from './types'
 
 const doRequest = async (
   url: string,
@@ -115,7 +115,7 @@ export async function uploadInstructionAttachment(
   instructionId: number,
   exam: Exam,
   newAttachment: { file: File; name: string; lang: AttachmentLanguage }
-): Promise<AttachmentIn> {
+): Promise<AttachmentDtoOut> {
   const formData = new FormData()
 
   formData.append('file', newAttachment.file)

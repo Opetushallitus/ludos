@@ -1,4 +1,4 @@
-import { InstructionIn } from '../../types'
+import { InstructionDtoOut } from '../../types'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
@@ -6,7 +6,7 @@ import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 
 type InstructionContentProps = {
-  instruction: InstructionIn
+  instruction: InstructionDtoOut
   language: string
   isPresentation: boolean
 }

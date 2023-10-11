@@ -1,14 +1,14 @@
 import { Control, Controller } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { Koodisto } from '../../../LudosContext'
 import { FormError } from './FormErrors'
 import { ErrorMessages } from '../../../types'
+import { KoodiDtoOut } from '../../../hooks/useKoodisto'
 
 interface AssignmentTypeFieldProps {
   control: Control<any>
   name: string
   required: boolean
-  options: Koodisto
+  options: KoodiDtoOut[]
   requiredError: boolean
 }
 

@@ -1,0 +1,5 @@
+ALTER TABLE suko_assignment ADD COLUMN suko_assignment_oppimaara_kielitarjonta_koodi_arvo TEXT;
+
+DROP INDEX suko_assignment_suko_oppimaara_koodi_arvo_index;
+CREATE INDEX suko_assignment_suko_oppimaara_index on suko_assignment (suko_assignment_oppimaara_koodi_arvo, suko_assignment_oppimaara_kielitarjonta_koodi_arvo);
+COMMENT ON INDEX suko_assignment_suko_oppimaara_index IS 'For AssignmentRepository.getOppimaarasInUse()';

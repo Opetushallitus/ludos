@@ -1,17 +1,23 @@
 import { FieldLabel } from '../../../FieldLabel'
-import { Dropdown } from '../../../Dropdown'
-import { getSelectedOptions, sortKooditAlphabetically, sortKooditByArvo } from '../../../../koodistoUtils'
 import { FormProvider } from 'react-hook-form'
-import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
 import { SukoAssignmentFormType } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { ContentFormAction, Exam } from '../../../../types'
-import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { Oppimaara, sortKooditAlphabetically, sortKooditByArvo, useKoodisto } from '../../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../../formCommon/AssignmentFileTypeRadio'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormContentInput } from '../../formCommon/FormContentInput'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { useAssignmentForm } from '../useAssignmentForm'
+import { LudosSelect } from '../../../ludosSelect/LudosSelect'
+import {
+  currentKoodistoSelectOption,
+  currentKoodistoSelectOptions,
+  currentOppimaaraSelectOption,
+  koodistoSelectOptions,
+  oppimaaraSelectOptions
+} from '../../../ludosSelect/helpers'
+import { useCallback } from 'react'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -20,7 +26,7 @@ type SukoAssignmentFormProps = {
 
 export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
-  const { koodistos } = useKoodisto()
+  const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
   const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow } = useAssignmentForm<SukoAssignmentFormType>(
     Exam.SUKO,
@@ -34,20 +40,29 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     clearErrors,
     formState: { errors }
   } = methods
-  console.log(errors)
-
   const currentNameFi = watch('nameFi')
-  const currentOppimaara = watch('oppimaaraKoodiArvo')
+  const currentOppimaara: Oppimaara = watch('oppimaara')
   const currentTavoitetaso = watch('tavoitetasoKoodiArvo')
   const currentAihe = watch('aiheKoodiArvos')
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const watchPublishState = watch('publishState')
 
-  const assignmentTypeKoodisto = koodistos.tehtavatyyppisuko || []
-  const oppimaaraKoodisto = sortKooditAlphabetically(koodistos.oppiaineetjaoppimaaratlops2021 || [])
-  const tavoitetasoKoodisto = sortKooditByArvo(koodistos.taitotaso || [])
-  const aiheKoodisto = sortKooditAlphabetically(koodistos.aihesuko || [])
-  const laajaalainenOsaaminenKoodisto = sortKooditAlphabetically(koodistos.laajaalainenosaaminenlops2021 || [])
+  const allOppimaaras = useCallback(() => {
+    return Object.values(koodistos.oppiaineetjaoppimaaratlops2021).flatMap((oppimaaraKoodi) => {
+      const tarkenneOppimaaras =
+        oppimaaraKoodi.tarkenteet?.map((tarkenne) => ({
+          oppimaaraKoodiArvo: oppimaaraKoodi.koodiArvo,
+          kielitarjontaKoodiArvo: tarkenne
+        })) ?? []
+      return [
+        {
+          oppimaaraKoodiArvo: oppimaaraKoodi.koodiArvo,
+          kielitarjontaKoodiArvo: null
+        },
+        ...tarkenneOppimaaras
+      ]
+    })
+  }, [koodistos.oppiaineetjaoppimaaratlops2021])
 
   return (
     <>
@@ -59,66 +74,76 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
             <FieldLabel id="oppimaara" name={t('form.oppimaara')} required />
-            <Dropdown
-              id="oppimaara"
-              selectedOption={oppimaaraKoodisto.find((it) => it.koodiArvo === currentOppimaara)}
-              options={oppimaaraKoodisto}
-              onSelectedOptionsChange={(opt: string) => {
-                setValue('oppimaaraKoodiArvo', opt)
-                clearErrors('oppimaaraKoodiArvo')
+            <LudosSelect
+              name="oppimaara"
+              options={oppimaaraSelectOptions(allOppimaaras(), getKoodiLabel)}
+              value={currentOppimaaraSelectOption(currentOppimaara, getOppimaaraLabel)}
+              onChange={(opt) => {
+                if (!opt) {
+                  return
+                }
+                const oppimaaraParts = opt.value.split('.')
+                setValue('oppimaara.oppimaaraKoodiArvo', oppimaaraParts[0])
+                setValue('oppimaara.kielitarjontaKoodiArvo', oppimaaraParts[1])
+                clearErrors('oppimaara.oppimaaraKoodiArvo')
+                clearErrors('oppimaara.kielitarjontaKoodiArvo')
               }}
-              testId="oppimaara"
-              requiredError={!!errors.oppimaaraKoodiArvo}
+              isSearchable
             />
-            <FormError error={errors.oppimaaraKoodiArvo?.message} />
+            <FormError error={errors.oppimaara?.oppimaaraKoodiArvo?.message} />
           </fieldset>
 
           <AssignmentTypeField
             control={control}
             name="assignmentTypeKoodiArvo"
             required
-            options={assignmentTypeKoodisto}
+            options={sortKooditAlphabetically(Object.values(koodistos.tehtavatyyppisuko))}
             requiredError={!!errors.assignmentTypeKoodiArvo}
           />
 
           <fieldset className="mb-6">
             <FieldLabel id="tavoitetaso" name={t('form.tavoitetaso')} />
-            <Dropdown
-              id="tavoitetaso"
-              selectedOption={
-                tavoitetasoKoodisto && tavoitetasoKoodisto.find((it) => it.koodiArvo === currentTavoitetaso)
-              }
-              options={tavoitetasoKoodisto}
-              onSelectedOptionsChange={(opt: string | null) => {
-                setValue('tavoitetasoKoodiArvo', opt)
+            <LudosSelect
+              name="tavoitetaso"
+              options={koodistoSelectOptions(sortKooditByArvo(koodistos.taitotaso))}
+              value={currentKoodistoSelectOption(currentTavoitetaso, koodistos.taitotaso)}
+              onChange={(opt) => {
+                if (!opt) {
+                  return
+                }
+                setValue('tavoitetasoKoodiArvo', opt.value)
               }}
-              canReset
-              testId="tavoitetaso"
+              isSearchable
             />
             <FormError error={errors.tavoitetasoKoodiArvo?.message} />
           </fieldset>
 
           <fieldset className="mb-6">
             <FieldLabel id="aihe" name={t('form.aihe')} />
-            <MultiSelectDropdown
-              id="aihe"
-              options={aiheKoodisto}
-              selectedOptions={getSelectedOptions(currentAihe, aiheKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvos', opt)}
-              testId="aihe"
-              canReset
+            <LudosSelect
+              name="aihe"
+              options={koodistoSelectOptions(sortKooditAlphabetically(Object.values(koodistos.aihesuko)))}
+              value={currentKoodistoSelectOptions(currentAihe, koodistos.aihesuko)}
+              onChange={(opt) => handleMultiselectOptionChange('aiheKoodiArvos', opt)}
+              isMulti
+              isSearchable
             />
           </fieldset>
 
           <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} />
-            <MultiSelectDropdown
-              id="laajaalainenOsaaminen"
-              options={laajaalainenOsaaminenKoodisto}
-              selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
-              testId="laajaalainenOsaaminen"
-              canReset
+            <LudosSelect
+              name="laajaalainenOsaaminen"
+              options={koodistoSelectOptions(
+                sortKooditAlphabetically(Object.values(koodistos.laajaalainenosaaminenlops2021))
+              )}
+              value={currentKoodistoSelectOptions(
+                currentLaajaalainenOsaaminen,
+                koodistos.laajaalainenosaaminenlops2021
+              )}
+              onChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
+              isMulti
+              isSearchable
             />
           </fieldset>
 

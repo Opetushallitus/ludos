@@ -12,9 +12,10 @@ import {
   SukoAssignmentFormType
 } from './form/assignmentSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { KoodiDtoIn } from '../../../LudosContext'
 import { FormButtonRow } from '../formCommon/FormButtonRow'
 import { useTranslation } from 'react-i18next'
+import { MultiValue } from 'react-select'
+import { LudosSelectOption } from '../../ludosSelect/LudosSelect'
 
 export function useAssignmentForm<T extends SukoAssignmentFormType | LdAssignmentFormType | PuhviAssignmentFormType>(
   exam: Exam,
@@ -39,8 +40,8 @@ export function useAssignmentForm<T extends SukoAssignmentFormType | LdAssignmen
     resolver: zodResolver(assignmentSchemaByExam[exam])
   })
 
-  const handleMultiselectOptionChange = (fieldName: FieldPath<T>, selectedOptions: KoodiDtoIn[]) => {
-    methods.setValue(fieldName, selectedOptions.map((it) => it.koodiArvo) as PathValue<T, FieldPath<T>>)
+  const handleMultiselectOptionChange = (fieldName: FieldPath<T>, selectedOptions: MultiValue<LudosSelectOption>) => {
+    methods.setValue(fieldName, selectedOptions.map((it) => it.value) as PathValue<T, FieldPath<T>>)
     methods.clearErrors(fieldName)
   }
 

@@ -1,16 +1,18 @@
-import { AssignmentIn, ContentTypeSingularEng, Exam } from '../../../../types'
+import { AssignmentOut, ContentTypeSingularEng, Exam } from '../../../../types'
 import { FiltersType, useFilterValues } from '../../../../hooks/useFilterValues'
 import { useState } from 'react'
 import { removeEmpty } from '../assignmentUtils'
 import { AssignmentCard } from '../AssignmentCard'
 import { Spinner } from '../../../Spinner'
 import { AssignmentFilters } from '../AssignmentFilters'
-import { Dropdown } from '../../../Dropdown'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useFetch } from '../../../../hooks/useFetch'
 import { useAssignmentFilterOverrides } from '../../../../hooks/useAssignmentFilterOverrides'
+import { LudosSelect } from '../../../ludosSelect/LudosSelect'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../../ludosSelect/helpers'
+import { sortKooditByArvo } from '../../../../hooks/useKoodisto'
 
-const filterByLanguage = (data: AssignmentIn, language: string) => {
+const filterByLanguage = (data: AssignmentOut, language: string) => {
   if (language === 'fi') {
     return data.nameFi !== ''
   } else if (language === 'sv') {
@@ -24,13 +26,12 @@ interface FavoriteContentListProps {
 }
 
 export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
-  const { SUKO_ASSIGNMENT_ORDER_OPTIONS, LANGUAGE_OPTIONS, t } = useLudosTranslation()
-
+  const { ORDER_OPTIONS, LANGUAGE_OPTIONS, t } = useLudosTranslation()
   const { filterValues, setFilterValue } = useFilterValues(exam, true)
 
   const [language, setLanguage] = useState<string>('fi')
 
-  const { data, loading, refresh } = useFetch<AssignmentIn[]>(
+  const { data, loading, refresh } = useFetch<AssignmentOut[]>(
     `${ContentTypeSingularEng.koetehtavat}/${exam}?${new URLSearchParams(
       removeEmpty<FiltersType>(filterValues)
     ).toString()}`
@@ -53,12 +54,11 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
           <div className="flex flex-col gap-2 md:flex-row">
             <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
             <div className="w-36">
-              <Dropdown
-                id="languageDropdown"
-                options={LANGUAGE_OPTIONS}
-                selectedOption={LANGUAGE_OPTIONS.find((opt) => opt.koodiArvo === language)}
-                onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
-                testId="language-dropdown"
+              <LudosSelect
+                name="languageDropdown"
+                options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
+                value={currentKoodistoSelectOption(language, LANGUAGE_OPTIONS)}
+                onChange={(opt) => opt && setLanguage(opt.value)}
               />
             </div>
           </div>
@@ -67,11 +67,11 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
         <div className="flex flex-col gap-2 md:flex-row">
           <p className="mt-2">{t('filter.jarjesta')}</p>
           <div className="w-36">
-            <Dropdown
-              id="orderFilter"
-              options={SUKO_ASSIGNMENT_ORDER_OPTIONS}
-              selectedOption={SUKO_ASSIGNMENT_ORDER_OPTIONS.find((opt) => opt.koodiArvo === filterValues.jarjesta)}
-              onSelectedOptionsChange={(opt: string) => setFilterValue('jarjesta', opt)}
+            <LudosSelect
+              name="orderFilter"
+              options={koodistoSelectOptions(sortKooditByArvo(ORDER_OPTIONS))}
+              value={currentKoodistoSelectOption(filterValues.jarjesta, ORDER_OPTIONS)}
+              onChange={(opt) => opt && setFilterValue('jarjesta', opt.value)}
             />
           </div>
         </div>

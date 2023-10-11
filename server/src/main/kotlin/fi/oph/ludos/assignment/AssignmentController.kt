@@ -20,9 +20,9 @@ class AssignmentController(val service: AssignmentService) {
     fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut =
         service.createAssignment(assignment)
 
-    @GetMapping("oppimaaras")
+    @GetMapping("oppimaarasInUse")
     @RequireAtLeastOpettajaRole
-    fun getOppimaarasInUse(): List<String> = service.getOppimaarasInUse()
+    fun getOppimaarasInUse(): List<Oppimaara> = service.getOppimaarasInUse()
 
     @GetMapping("SUKO")
     @RequireAtLeastOpettajaRole

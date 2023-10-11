@@ -20,7 +20,12 @@ export const ContentType = {
   ohjeet: 'ohjeet',
   todistukset: 'todistukset'
 } as const
-export type ContentTypeKey = keyof typeof ContentType
+
+export const Language = {
+  FI: 'FI',
+  SV: 'SV'
+} as const
+export type Language = (typeof Language)[keyof typeof Language]
 
 export const authFileByRole: Record<Role, string> = Object.fromEntries(
   Object.values(Role).map((role) => [role, `.auth/${role}.json`])
@@ -40,7 +45,7 @@ export async function postWithSession(context: BrowserContext, url: string, body
   if (!sessionCookie) {
     throw new Error('Session cookie not found from storagestate, did you authenticate?')
   }
-  const response = await fetch(url, {
+  return await fetch(url, {
     method: 'POST',
     body,
     headers: {
@@ -48,5 +53,19 @@ export async function postWithSession(context: BrowserContext, url: string, body
       Cookie: `SESSION=${sessionCookie?.value}`
     }
   })
-  return response
+}
+export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: string, optionIds: string[]) {
+  if (await page.getByTestId(`${dropdownTestId}-reset-selected-options`).isVisible()) {
+    await page.getByTestId(`${dropdownTestId}-reset-selected-options`).click()
+  }
+  await page.getByTestId(dropdownTestId).click()
+  for (const option of optionIds) {
+    await page.getByTestId(`${dropdownTestId}-option-${option}`).click()
+  }
+  await page.getByTestId(`${dropdownTestId}-multi-select-ready-button`).click()
+}
+
+export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: string, optionId: string) {
+  await page.getByTestId(dropdownTestId).click()
+  await page.getByTestId(`${dropdownTestId}-option-${optionId}`).click()
 }

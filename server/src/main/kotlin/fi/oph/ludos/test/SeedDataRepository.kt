@@ -3,10 +3,7 @@ package fi.oph.ludos.test
 import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
-import fi.oph.ludos.assignment.AssignmentRepository
-import fi.oph.ludos.assignment.LdAssignmentDtoIn
-import fi.oph.ludos.assignment.PuhviAssignmentDtoIn
-import fi.oph.ludos.assignment.SukoAssignmentDtoIn
+import fi.oph.ludos.assignment.*
 import fi.oph.ludos.certificate.CertificateDtoIn
 import fi.oph.ludos.certificate.CertificateRepository
 import fi.oph.ludos.instruction.*
@@ -37,8 +34,18 @@ class SeedDataRepository(
         val taitotasoKoodiArvos = arrayOf(
             "0010", "0009", "0012", "0011", "0002", "0001", "0004", "0003", "0006", "0005", "0008", "0007"
         )
-        val oppimaaraKoodiArvos = arrayOf(
-            "TKFIA1", "TKFIB1", "TKFIB3", "TKFIAI", "TKRUB1", "TKRUB3", "TKRUAI", "TKFI", "VKB2", "VKB3", "VKAAA1"
+        val oppimaaras = arrayOf(
+            Oppimaara("TKFIA1"),
+            Oppimaara("TKFIB1"),
+            Oppimaara("TKFIB3"),
+            Oppimaara("TKFIAI"),
+            Oppimaara("TKRUB1"),
+            Oppimaara("TKRUB3"),
+            Oppimaara("TKRUAI"),
+            Oppimaara("VKB1", "IA"),
+            Oppimaara("VKA1", "RA"),
+            Oppimaara("VKA1", "SA"),
+            Oppimaara("VKA1")
         )
         val aiheKoodiArvos = arrayOf("001", "003", "013", "017", "005", "007")
         val lukuvuosiKoodiArvos = arrayOf(
@@ -62,10 +69,10 @@ class SeedDataRepository(
                 contentFi = arrayOf("Test content $it FI SUKO"),
                 contentSv = arrayOf("Test content $it SV SUKO"),
                 publishState = publishState,
-                assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size],
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
+                assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size],
+                oppimaara = oppimaaras[it % oppimaaras.size],
                 tavoitetasoKoodiArvo = taitotasoKoodiArvos[it % taitotasoKoodiArvos.size],
-                oppimaaraKoodiArvo = oppimaaraKoodiArvos[it % oppimaaraKoodiArvos.size],
                 aiheKoodiArvos = Array(if (it % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + it) % aiheKoodiArvos.size] },
             )
             assignmentRepository.saveSukoAssignment(sukoAssignment)

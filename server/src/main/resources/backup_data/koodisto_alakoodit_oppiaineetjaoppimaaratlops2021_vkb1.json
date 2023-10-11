@@ -1,0 +1,258 @@
+[
+  {
+    "koodiArvo": "EA",
+    "koodiUri": "lukiokielitarjonta_ea",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "espanjan kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_ea",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "IA",
+    "koodiUri": "lukiokielitarjonta_ia",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "italian kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_ia",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "JP",
+    "koodiUri": "lukiokielitarjonta_jp",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "japanin kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_jp",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "KI",
+    "koodiUri": "lukiokielitarjonta_ki",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "kiinan kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_ki",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "PO",
+    "koodiUri": "lukiokielitarjonta_po",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "portugalin kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_po",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "RA",
+    "koodiUri": "lukiokielitarjonta_ra",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "ranskan kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_ra",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "SA",
+    "koodiUri": "lukiokielitarjonta_sa",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "saksan kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_sa",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "VE",
+    "koodiUri": "lukiokielitarjonta_ve",
+    "koodisto": {
+      "koodistoUri": "lukiokielitarjonta",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "venäjän kieli",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": null,
+    "paivitysPvm": "2015-12-10",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/lukiokielitarjonta_ve",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2015-12-10",
+    "voimassaLoppuPvm": null
+  }
+]

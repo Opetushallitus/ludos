@@ -1,16 +1,16 @@
 import { FieldLabel } from '../../../FieldLabel'
-import { getSelectedOptions, sortKooditAlphabetically } from '../../../../koodistoUtils'
 import { FormProvider } from 'react-hook-form'
-import { MultiSelectDropdown } from '../../../MultiSelectDropdown'
 import { PuhviAssignmentFormType } from './assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, ContentType, Exam } from '../../../../types'
-import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { ContentFormAction, Exam } from '../../../../types'
+import { sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../../formCommon/AssignmentFileTypeRadio'
 import { FormError } from '../../formCommon/FormErrors'
 import { FormHeader } from '../../formCommon/FormHeader'
 import { useAssignmentForm } from '../useAssignmentForm'
 import { FormContentInput } from '../../formCommon/FormContentInput'
+import { LudosSelect } from '../../../ludosSelect/LudosSelect'
+import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../../ludosSelect/helpers'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -35,10 +35,6 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
   const watchPublishState = watch('publishState')
 
-  const assignmentTypeKoodisto = koodistos.tehtavatyyppipuhvi
-  const lukuvuosiKoodisto = koodistos.ludoslukuvuosi
-  const laajaalainenOsaaminenKoodisto = koodistos.laajaalainenosaaminenlops2021
-
   return (
     <>
       <FormHeader
@@ -49,14 +45,13 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
-            <MultiSelectDropdown
-              id="lukuvuosiKoodiArvos"
-              options={sortKooditAlphabetically(lukuvuosiKoodisto || [])}
-              selectedOptions={getSelectedOptions(currentLukuvuosi, lukuvuosiKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
-              testId="lukuvuosiKoodiArvos"
-              canReset
-              requiredError={!!errors.lukuvuosiKoodiArvos}
+            <LudosSelect
+              name="lukuvuosiKoodiArvos"
+              options={koodistoSelectOptions(sortKooditAlphabetically(Object.values(koodistos.ludoslukuvuosi)))}
+              value={currentKoodistoSelectOptions(currentLukuvuosi, koodistos.ludoslukuvuosi)}
+              onChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
+              isMulti
+              isSearchable
             />
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>
@@ -65,19 +60,24 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
             control={control}
             name="assignmentTypeKoodiArvo"
             required
-            options={assignmentTypeKoodisto}
+            options={sortKooditAlphabetically(Object.values(koodistos.tehtavatyyppipuhvi))}
             requiredError={!!errors.assignmentTypeKoodiArvo}
           />
 
           <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
-            <MultiSelectDropdown
-              id="laajaalainenOsaaminenKoodiArvos"
-              options={sortKooditAlphabetically(laajaalainenOsaaminenKoodisto || [])}
-              selectedOptions={getSelectedOptions(currentLaajaalainenOsaaminen, laajaalainenOsaaminenKoodisto || [])}
-              onSelectedOptionsChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
-              testId="laajaalainenOsaaminenKoodiArvos"
-              canReset
+            <LudosSelect
+              name="laajaalainenOsaaminenKoodiArvos"
+              options={koodistoSelectOptions(
+                sortKooditAlphabetically(Object.values(koodistos.laajaalainenosaaminenlops2021))
+              )}
+              value={currentKoodistoSelectOptions(
+                currentLaajaalainenOsaaminen,
+                koodistos.laajaalainenosaaminenlops2021
+              )}
+              onChange={(opt) => handleMultiselectOptionChange('laajaalainenOsaaminenKoodiArvos', opt)}
+              isMulti
+              isSearchable
             />
           </fieldset>
 

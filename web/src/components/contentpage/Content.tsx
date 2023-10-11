@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { BaseIn, ContentType, ContentTypeSingularEng, Exam } from '../../types'
+import { BaseOut, ContentType, ContentTypeSingularEng, Exam } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { isAssignment, isCertificate, isInstruction } from '../exam/assignment/assignmentUtils'
 import { Spinner } from '../Spinner'
@@ -32,7 +32,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const languageOverrideIfSukoAssignment =
     exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : language
 
-  const { data, loading } = useFetch<BaseIn>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
+  const { data, loading } = useFetch<BaseOut>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
   const handleNavigation = () => {
     if (state?.returnLocation) {
@@ -54,7 +54,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                   <ContentHeader
                     language={languageOverrideIfSukoAssignment}
                     data={data}
-                    onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
+                    onSelectedOptionsChange={(opt) => setLanguage(opt!.value)}
                     contentType={contentType!}
                     isPresentation={isPresentation}
                   />

@@ -1,4 +1,4 @@
-import { CertificateIn } from '../../../types'
+import { CertificateDtoOut } from '../../../types'
 import { InternalLink } from '../../InternalLink'
 import { StateTag } from '../../StateTag'
 import { Icon } from '../../Icon'
@@ -8,7 +8,7 @@ import { useUserDetails } from '../../../hooks/useUserDetails'
 import { muokkausKey } from '../../routes/LudosRoutes'
 
 type CertificateCardProps = {
-  certificate: CertificateIn
+  certificate: CertificateDtoOut
 }
 
 export const CertificateCard = ({ certificate }: CertificateCardProps) => {

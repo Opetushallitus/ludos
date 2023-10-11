@@ -1,4 +1,4 @@
-import { AssignmentIn, Exam } from '../../types'
+import { AssignmentOut, Exam } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
@@ -7,14 +7,14 @@ import { useEffect, useState } from 'react'
 import { useToggleFavorite } from '../../hooks/useToggleFavorite'
 
 type AssignmentContentProps = {
-  assignment: AssignmentIn
+  assignment: AssignmentOut
   exam: Exam
   language: string
   isPresentation: boolean
 }
 export const AssignmentContent = ({ assignment, exam, language, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
-  const { getKoodisLabel, getKoodiLabel } = useKoodisto()
+  const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const [isFavorite, setIsFavorite] = useState(false)
 
   const { toggleFavorite } = useToggleFavorite({
@@ -37,6 +37,10 @@ export const AssignmentContent = ({ assignment, exam, language, isPresentation }
           <ul>
             {suko && (
               <>
+                <li>
+                  <span className="pr-1 font-semibold">{t('assignment.oppimaara')}:</span>
+                  <span data-testid="suko-oppimaara">{getOppimaaraLabel(assignment.oppimaara)}</span>
+                </li>
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>
                   <span data-testid="suko-tehtavatyyppi">

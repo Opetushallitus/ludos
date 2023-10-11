@@ -26,7 +26,7 @@ class AssignmentService(val repository: AssignmentRepository) {
         else -> throw UnknownError("Unreachable")
     }
 
-    fun getOppimaarasInUse(): List<String> = repository.getOppimaarasInUse()
+    fun getOppimaarasInUse(): List<Oppimaara> = repository.getOppimaarasInUse()
 
     fun setAssignmentFavorite(exam: Exam, id: Int, isFavorite: Boolean): Int? =
         repository.setAssignmentFavorite(exam, id, isFavorite)

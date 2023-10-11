@@ -6,6 +6,9 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
+import fi.oph.ludos.koodisto.KoodistoLanguage
+import fi.oph.ludos.koodisto.KoodistoName
+import fi.oph.ludos.koodisto.KoodistoService
 import fi.oph.ludos.repository.getKotlinArray
 import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
@@ -15,7 +18,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.server.ResponseStatusException
+import java.sql.Connection
 import java.sql.ResultSet
+import javax.sql.rowset.serial.SerialArray
 
 
 @Component
@@ -23,6 +28,7 @@ class AssignmentRepository(
     private val namedJdbcTemplate: NamedParameterJdbcTemplate,
     private val jdbcTemplate: JdbcTemplate,
     private val transactionTemplate: TransactionTemplate,
+    private val koodistoService: KoodistoService,
 ) {
 
     val mapSukoResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut = { rs: ResultSet, _: Int ->
@@ -41,7 +47,10 @@ class AssignmentRepository(
             rs.getString("assignment_author_oid"),
             rs.getBoolean("is_favorite"),
             rs.getString("suko_assignment_assignment_type_koodi_arvo"),
-            rs.getString("suko_assignment_oppimaara_koodi_arvo"),
+            Oppimaara(
+                rs.getString("suko_assignment_oppimaara_koodi_arvo"),
+                rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
+            ),
             rs.getString("suko_assignment_tavoitetaso_koodi_arvo"),
             rs.getKotlinArray<String>("suko_assignment_aihe_koodi_arvos")
         )
@@ -170,10 +179,50 @@ class AssignmentRepository(
         }
 
         if (filters.oppimaara != null) {
-            val values = filters.oppimaara.split(",")
+            val oppimaaras = filters.oppimaara.split(",").map {
+                val parts = it.split(".")
+                Oppimaara(parts[0], parts.elementAtOrNull(1))
+            }
 
-            queryBuilder.append(" AND suko_assignment_oppimaara_koodi_arvo IN (:oppimaaraKoodiArvo)")
-            parameters.addValue("oppimaaraKoodiArvo", values)
+            // Oppimääriä on kolmea eri tyyppiä
+            // 1) Oppimäärät, joille ei voi antaa tarkennetta
+            //    => palautetaan tehtävät, joiden (oppimääräkoodiarvo,kielitarkennekoodiarvo)-pari mätsää (kielitakennekoodiarvo==null)
+            // 2) Oppimäärät, joille voi antaa tarkenteen, ja tarkenne on annettu
+            //    => palautetaan tehtävät, joiden (oppimääräkoodiarvo,kielitarkennekoodiarvo)-pari mätsää (kielitarkennekoodiarvo!=null)
+            // 3) Oppimäärät, joille voi antaa tarkenteen, mutta sitä ei ole annettu
+            //    => palautetaan tehtävät, joiden oppimääräkoodiarvo mätsää riippumatta tarkenteesta
+
+            val (tarkennettavatOppimaaratIlmanTarkennetta, restOfOppimaaras) = oppimaaras.partition {
+                (koodistoService.getKoodi(
+                    KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021,
+                    KoodistoLanguage.FI,
+                    it.oppimaaraKoodiArvo
+                )?.tarkenteet?.size ?: 0) > 0 && it.kielitarjontaKoodiArvo == null
+            }
+
+            queryBuilder.append(" AND (")
+            if (restOfOppimaaras.isNotEmpty()) {
+                queryBuilder.append("ARRAY[suko_assignment_oppimaara_koodi_arvo, suko_assignment_oppimaara_kielitarjonta_koodi_arvo] IN (:oppimaaras)")
+                val oppimaaraArrays = jdbcTemplate.execute { connection: Connection ->
+                    restOfOppimaaras.map {
+                        connection.createArrayOf(
+                            "text",
+                            arrayOf(it.oppimaaraKoodiArvo, it.kielitarjontaKoodiArvo)
+                        )
+                    }
+                }
+                parameters.addValue("oppimaaras", oppimaaraArrays)
+            }
+            if (restOfOppimaaras.isNotEmpty() && tarkennettavatOppimaaratIlmanTarkennetta.isNotEmpty()) {
+                queryBuilder.append(" OR ")
+            }
+            if (tarkennettavatOppimaaratIlmanTarkennetta.isNotEmpty()) {
+                queryBuilder.append("suko_assignment_oppimaara_koodi_arvo IN (:tarkennettavatOppimaaratIlmanTarkennetta)")
+                parameters.addValue(
+                    "tarkennettavatOppimaaratIlmanTarkennetta",
+                    tarkennettavatOppimaaratIlmanTarkennetta.map { it.oppimaaraKoodiArvo })
+            }
+            queryBuilder.append(")")
         }
 
         if (filters.aihe != null) {
@@ -290,10 +339,11 @@ class AssignmentRepository(
                             suko_assignment_aihe_koodi_arvos, 
                             suko_assignment_assignment_type_koodi_arvo, 
                             suko_assignment_oppimaara_koodi_arvo, 
+                            suko_assignment_oppimaara_kielitarjonta_koodi_arvo, 
                             suko_assignment_tavoitetaso_koodi_arvo,
                             assignment_laajaalainen_osaaminen_koodi_arvos,
                             assignment_author_oid) 
-                            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?) 
+                            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?) 
                             RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimIndent(),
                     arrayOf("assignment_id")
                 )
@@ -304,10 +354,11 @@ class AssignmentRepository(
                 ps.setString(5, assignment.publishState.toString())
                 ps.setArray(6, con.createArrayOf("text", assignment.aiheKoodiArvos))
                 ps.setString(7, assignment.assignmentTypeKoodiArvo)
-                ps.setString(8, assignment.oppimaaraKoodiArvo)
-                ps.setString(9, assignment.tavoitetasoKoodiArvo)
-                ps.setArray(10, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
-                ps.setString(11, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setString(8, assignment.oppimaara.oppimaaraKoodiArvo)
+                ps.setString(9, assignment.oppimaara.kielitarjontaKoodiArvo)
+                ps.setString(10, assignment.tavoitetasoKoodiArvo)
+                ps.setArray(11, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
+                ps.setString(12, Kayttajatiedot.fromSecurityContext().oidHenkilo)
                 ps
             }, keyHolder)
 
@@ -330,7 +381,7 @@ class AssignmentRepository(
                 keyHolder.keys?.get("assignment_author_oid") as String,
                 false,
                 assignment.assignmentTypeKoodiArvo,
-                assignment.oppimaaraKoodiArvo,
+                Oppimaara(assignment.oppimaara.oppimaaraKoodiArvo, assignment.oppimaara.kielitarjontaKoodiArvo),
                 assignment.tavoitetasoKoodiArvo,
                 assignment.aiheKoodiArvos,
             )
@@ -484,6 +535,7 @@ class AssignmentRepository(
                    assignment_laajaalainen_osaaminen_koodi_arvos = ?,
                    suko_assignment_assignment_type_koodi_arvo = ?,
                    suko_assignment_oppimaara_koodi_arvo = ?,
+                   suko_assignment_oppimaara_kielitarjonta_koodi_arvo = ?,
                    suko_assignment_tavoitetaso_koodi_arvo = ?,
                    assignment_updated_at = clock_timestamp()
                WHERE assignment_id = ?""".trimIndent(),
@@ -495,7 +547,8 @@ class AssignmentRepository(
             assignment.aiheKoodiArvos,
             assignment.laajaalainenOsaaminenKoodiArvos,
             assignment.assignmentTypeKoodiArvo,
-            assignment.oppimaaraKoodiArvo,
+            assignment.oppimaara.oppimaaraKoodiArvo,
+            assignment.oppimaara.kielitarjontaKoodiArvo,
             assignment.tavoitetasoKoodiArvo,
             id
         )
@@ -582,21 +635,17 @@ class AssignmentRepository(
     }
 
 
-    fun getOppimaarasInUse(): List<String> = jdbcTemplate.query(
-        // The same as `SELECT DISTINCT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment` but 10x faster
-        // since postgres SELECT DISTINCT is slow, see https://wiki.postgresql.org/wiki/Loose_indexscan
+    fun getOppimaarasInUse(): List<Oppimaara> = jdbcTemplate.query(
         """
-        WITH RECURSIVE t AS (
-           (SELECT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment ORDER BY suko_assignment_oppimaara_koodi_arvo LIMIT 1)
-           UNION ALL
-           SELECT (SELECT suko_assignment_oppimaara_koodi_arvo FROM suko_assignment WHERE suko_assignment_oppimaara_koodi_arvo > t.suko_assignment_oppimaara_koodi_arvo ORDER BY suko_assignment_oppimaara_koodi_arvo LIMIT 1)
-           FROM t
-           WHERE t.suko_assignment_oppimaara_koodi_arvo IS NOT NULL
-           )
-        SELECT suko_assignment_oppimaara_koodi_arvo FROM t WHERE suko_assignment_oppimaara_koodi_arvo IS NOT NULL;
+        -- getOppimaarasInUse. Leans on suko_assignment_suko_oppimaara_index
+        SELECT DISTINCT suko_assignment_oppimaara_koodi_arvo, suko_assignment_oppimaara_kielitarjonta_koodi_arvo
+        FROM suko_assignment;
         """.trimIndent()
     ) { rs: ResultSet, _: Int ->
-        rs.getString("suko_assignment_oppimaara_koodi_arvo")
+        Oppimaara(
+            rs.getString("suko_assignment_oppimaara_koodi_arvo"),
+            rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
+        )
     }
 
     fun getFavoriteAssignmentsCount(): Int {

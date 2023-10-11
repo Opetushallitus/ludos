@@ -1,18 +1,29 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
-import { sortKooditAlphabetically } from '../../../koodistoUtils'
 import { useTranslation } from 'react-i18next'
-import { KoodiDtoIn } from '../../../LudosContext'
-import { MultiSelectDropdown } from '../../MultiSelectDropdown'
 import { useFetch } from '../../../hooks/useFetch'
 import { Exam } from '../../../types'
-import { useKoodisto } from '../../../hooks/useKoodisto'
+import {
+  KoodiDtoOut,
+  Oppimaara,
+  oppimaaraFromId,
+  sortKooditAlphabetically,
+  useKoodisto
+} from '../../../hooks/useKoodisto'
+import { LudosSelect, LudosSelectOption } from '../../ludosSelect/LudosSelect'
+import {
+  currentOppimaaraSelectOptions,
+  currentKoodistoSelectOptions,
+  koodistoSelectOptions,
+  oppimaaraSelectOptions
+} from '../../ludosSelect/helpers'
+import { MultiValue } from 'react-select'
 
 type AssignmentFiltersProps = {
   exam: Exam
   filterValues: FiltersType
   setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
-  oppimaaraOptionsOverride?: string[]
+  oppimaaraOptionsOverride?: Oppimaara[]
   tehtavaTyyppiOptionsOverride?: string[]
   aiheOptionsOverride?: string[]
   lukuvuosiOptionsOverride?: string[]
@@ -20,8 +31,8 @@ type AssignmentFiltersProps = {
   tehavatyyppipuhviOptionsOverride?: string[]
 }
 
-const getFilteredOptions = (allOptions: KoodiDtoIn[], overrides?: string[]) =>
-  overrides ? allOptions.filter((it) => overrides.includes(it.koodiArvo)) : allOptions
+const getFilteredOptions = (allOptions: Record<string, KoodiDtoOut>, overrides?: string[]) =>
+  overrides ? Object.values(allOptions).filter((it) => overrides.includes(it.koodiArvo)) : Object.values(allOptions)
 
 export const AssignmentFilters = ({
   exam,
@@ -35,31 +46,41 @@ export const AssignmentFilters = ({
   tehavatyyppipuhviOptionsOverride
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
-  const { koodistos, getSelectedOptions } = useKoodisto()
+  const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
-  const { data: oppimaaras } = useFetch<string[]>('assignment/oppimaaras')
+  const { data: oppimaarasInUse } = useFetch<Oppimaara[]>('assignment/oppimaarasInUse')
 
   const handleMultiselectFilterChange = useCallback(
-    (key: keyof FiltersType, value: KoodiDtoIn[]) => {
+    (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
       setFilterValue(
         key,
-        value.map((it) => it.koodiArvo)
+        value.map((it) => it.value)
       )
     },
     [setFilterValue]
   )
 
-  const oppimaaraOptions = (): KoodiDtoIn[] => {
-    const { oppiaineetjaoppimaaratlops2021 } = koodistos
-
-    if (!oppimaaras) {
-      return oppiaineetjaoppimaaratlops2021
-    }
-
-    const filterCriteria = oppimaaraOptionsOverride || oppimaaras
-
-    return oppiaineetjaoppimaaratlops2021.filter((it) => filterCriteria.includes(it.koodiArvo))
-  }
+  const oppimaaraOptions = useMemo(() => {
+    const actualOptions = oppimaaraOptionsOverride || oppimaarasInUse || []
+    const oppimaaraKoodiarvosWithTarkenteet = [
+      ...new Set(actualOptions.filter((o) => o.kielitarjontaKoodiArvo !== null).map((o) => o.oppimaaraKoodiArvo))
+    ]
+    const oppimaaraKoodiArvosWithMissingHeaders = [
+      ...new Set(
+        oppimaaraKoodiarvosWithTarkenteet.filter(
+          (oppimaaraKoodiArvo) =>
+            !actualOptions.find(
+              (io) => io.oppimaaraKoodiArvo === oppimaaraKoodiArvo && io.kielitarjontaKoodiArvo === null
+            )
+        )
+      )
+    ]
+    const missingParentOppimaaras: Oppimaara[] = oppimaaraKoodiArvosWithMissingHeaders.map((oppimaaraKoodiArvo) => ({
+      oppimaaraKoodiArvo,
+      kielitarjontaKoodiArvo: null
+    }))
+    return [...actualOptions, ...missingParentOppimaaras]
+  }, [oppimaaraOptionsOverride, oppimaarasInUse])
 
   const tehtavaTyyppiOptions = () => getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavaTyyppiOptionsOverride)
   const aiheOptions = () => getFilteredOptions(koodistos.aihesuko, aiheOptionsOverride)
@@ -72,42 +93,43 @@ export const AssignmentFilters = ({
   return (
     <div className="border border-gray-light bg-gray-bg">
       <p className="px-2 py-1">{t('filter.otsikko')}</p>
-      <div className="row flex-wrap justify-start">
+      <div className="row flex-wrap justify-start pb-2">
         {exam === Exam.SUKO && (
           <>
             <div className="w-full px-2 md:w-6/12 lg:w-3/12">
-              <label htmlFor="oppimaaraFilter">{t('filter.oppimaara')}</label>
-              <MultiSelectDropdown
-                id="oppimaaraFilter"
-                options={sortKooditAlphabetically(oppimaaraOptions())}
-                size="lg"
-                selectedOptions={getSelectedOptions(filterValues.oppimaara, 'oppiaineetjaoppimaaratlops2021')}
-                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
-                testId="oppimaara"
-                canReset
+              <p>{t('filter.oppimaara')}</p>
+              <LudosSelect
+                name="oppimaaraFilter"
+                menuSize="lg"
+                options={oppimaaraSelectOptions(oppimaaraOptions, getKoodiLabel)}
+                value={currentOppimaaraSelectOptions(filterValues.oppimaara?.map(oppimaaraFromId), getOppimaaraLabel)}
+                onChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
+                isMulti
+                isSearchable
               />
             </div>
             <div className="w-full px-2 md:w-6/12 lg:w-3/12">
               <p>{t('filter.tyyppi')}</p>
-              <MultiSelectDropdown
-                id="contentTypeFilter"
-                options={sortKooditAlphabetically(tehtavaTyyppiOptions())}
-                size="md"
-                selectedOptions={getSelectedOptions(filterValues.tehtavatyyppisuko, 'tehtavatyyppisuko')}
-                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
-                testId="contentType"
-                canReset
+              <LudosSelect
+                name="contentTypeFilter"
+                menuSize="md"
+                options={koodistoSelectOptions(sortKooditAlphabetically(tehtavaTyyppiOptions()))}
+                value={currentKoodistoSelectOptions(filterValues.tehtavatyyppisuko, koodistos['tehtavatyyppisuko'])}
+                onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
+                isMulti
+                isSearchable
               />
             </div>
             <div className="w-full px-2 lg:w-3/12">
               <p>{t('filter.aihe')}</p>
-              <MultiSelectDropdown
-                id="aihe"
-                options={sortKooditAlphabetically(aiheOptions())}
-                size="md"
-                selectedOptions={getSelectedOptions(filterValues.aihe, 'aihesuko')}
-                onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
-                canReset
+              <LudosSelect
+                name="aiheFilter"
+                menuSize="md"
+                options={koodistoSelectOptions(sortKooditAlphabetically(aiheOptions()))}
+                value={currentKoodistoSelectOptions(filterValues.aihe, koodistos['aihesuko'])}
+                onChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
+                isMulti
+                isSearchable
               />
             </div>
             {/* OPHLUDOS-125: https://jira.eduuni.fi/browse/OPHLUDOS-125 */}
@@ -127,36 +149,39 @@ export const AssignmentFilters = ({
         {(exam === Exam.LD || exam === Exam.PUHVI) && (
           <div className="w-full px-2 md:w-3/12">
             <p>{t('filter.lukuvuosi')}</p>
-            <MultiSelectDropdown
-              id="lukuvuosi"
-              options={sortKooditAlphabetically(lukuvuosiOptions())}
-              selectedOptions={getSelectedOptions(filterValues.lukuvuosi, 'ludoslukuvuosi')}
-              onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
-              canReset
+            <LudosSelect
+              name="lukuvuosiFilter"
+              options={koodistoSelectOptions(sortKooditAlphabetically(lukuvuosiOptions()))}
+              value={currentKoodistoSelectOptions(filterValues.lukuvuosi, koodistos['ludoslukuvuosi'])}
+              onChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
+              isMulti
+              isSearchable
             />
           </div>
         )}
         {exam === Exam.LD && (
           <div className="w-full px-2 md:w-3/12">
             <p>{t('filter.aine')}</p>
-            <MultiSelectDropdown
-              id="aine"
-              options={sortKooditAlphabetically(lukiodiplomiaineOptions())}
-              selectedOptions={getSelectedOptions(filterValues.aine, 'ludoslukiodiplomiaine')}
-              onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('aine', opt)}
-              canReset
+            <LudosSelect
+              name="aineFilter"
+              options={koodistoSelectOptions(sortKooditAlphabetically(lukiodiplomiaineOptions()))}
+              value={currentKoodistoSelectOptions(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
+              onChange={(opt) => handleMultiselectFilterChange('aine', opt)}
+              isMulti
+              isSearchable
             />
           </div>
         )}
         {exam === Exam.PUHVI && (
           <div className="w-full px-2 md:w-3/12">
             <p>{t('filter.tehtavatyyppi')}</p>
-            <MultiSelectDropdown
-              id="tehtavatyyppiPuhvi"
-              options={sortKooditAlphabetically(tehavatyyppipuhviOptions())}
-              selectedOptions={getSelectedOptions(filterValues.tehtavatyyppipuhvi, 'tehtavatyyppipuhvi')}
-              onSelectedOptionsChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
-              canReset
+            <LudosSelect
+              name="tehtavatyyppiPuhviFilter"
+              options={koodistoSelectOptions(sortKooditAlphabetically(tehavatyyppipuhviOptions()))}
+              value={currentKoodistoSelectOptions(filterValues.tehtavatyyppipuhvi, koodistos['tehtavatyyppipuhvi'])}
+              onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
+              isMulti
+              isSearchable
             />
           </div>
         )}

@@ -1,5 +1,11 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
-import { Exam, postWithSession } from '../../helpers'
+import {
+  Exam,
+  Language,
+  postWithSession,
+  setMultiSelectDropdownOptions,
+  setSingleSelectDropdownOption
+} from '../../helpers'
 
 type AssignmentBase = {
   page: Page
@@ -10,28 +16,8 @@ type AssignmentBase = {
   contentTextFi: string[]
   contentTextSv: string[]
 }
-
-async function selectDropdownOption(page: Page, testId: string, optionId: string) {
-  await page.getByTestId(testId).click()
-  await page.getByTestId(`${testId}-option-${optionId}`).click()
-}
-
-async function fillMultiselectDropdownOption(page: Page, testId: string, optionsIds: string[]) {
-  await page.getByTestId(testId).click()
-
-  for (const optionId of optionsIds) {
-    await page.getByTestId(`${testId}-option-${optionId}`).click()
-  }
-
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
-}
-
 async function fillLukuvuosi(page: Page) {
-  await page.getByTestId('lukuvuosiKoodiArvos').click()
-  // 2020-2021
-  await page.getByTestId('lukuvuosiKoodiArvos-option-20202021').click()
-  // Close dropdown onBlur
-  await page.getByTestId('lukuvuosiKoodiArvos-multi-select-ready-button').click()
+  await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', ['20202021'])
 }
 
 export async function fillSukoAssignmentForm({
@@ -43,18 +29,11 @@ export async function fillSukoAssignmentForm({
   instructionTextFi,
   instructionTextSv
 }: AssignmentBase) {
-  await selectDropdownOption(page, 'oppimaara', 'KT7')
+  await setSingleSelectDropdownOption(page, 'oppimaara', 'VKA1')
   await page.getByTestId('assignmentTypeRadio-001').click()
-  await selectDropdownOption(page, 'tavoitetaso', '0002')
-
-  await page.getByTestId('aihe').click()
-  await page.getByTestId('aihe-option-001').click()
-  await page.getByTestId('aihe-option-002').click()
-  await page.getByTestId('aihe-multi-select-ready-button').click()
-
-  await page.getByTestId('laajaalainenOsaaminen-expand-dropdown-icon').click()
-  await page.getByTestId('laajaalainenOsaaminen-option-01').click()
-  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
+  await setSingleSelectDropdownOption(page, 'tavoitetaso', '0002')
+  await setMultiSelectDropdownOptions(page, 'aihe', ['001', '002'])
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminen', ['01'])
 
   // Test searching for non-existing option
   await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
@@ -70,11 +49,11 @@ export async function fillSukoAssignmentForm({
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
-  await page.getByTestId('laajaalainenOsaaminen-input').click()
+  await page.getByTestId('laajaalainenOsaaminen').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
-  await fillLdAssignmentTextFields(
+  await fillAssignmentTextFields(
     page,
     Exam.Suko,
     nameTextFi,
@@ -95,27 +74,27 @@ export async function updateSukoAssignmentForm({
   instructionTextFi,
   instructionTextSv
 }: AssignmentBase) {
-  await selectDropdownOption(page, 'oppimaara', 'KT8')
+  await setSingleSelectDropdownOption(page, 'oppimaara', 'VKA1.SA')
   await page.getByTestId('assignmentTypeRadio-002').click()
-  await selectDropdownOption(page, 'tavoitetaso', '0003')
+  await setSingleSelectDropdownOption(page, 'tavoitetaso', '0003')
   // remove first selected option
   await page.getByTestId('aihe-remove-selected-option').first().click()
   await page.getByTestId('aihe').click()
+  await page.getByTestId('aihe-multi-select-ready-button').click()
   // Verify that option has been removed
-  const selectedOptionsAihe = await page.getByTestId('selected-option-aihe').count()
+  const selectedOptionsAihe = await page.getByTestId('aihe-remove-selected-option').count()
   expect(selectedOptionsAihe).toBe(1)
   // remove all selected options
   await page.getByTestId('aihe-reset-selected-options').first().click()
-  await page.getByTestId('aihe-multi-select-ready-button').click()
+
   // Verify that all options have been removed
   const selectedOptionsAiheResetted = await page.getByTestId('selected-option-aihe').count()
-
   expect(selectedOptionsAiheResetted).toBe(0)
 
-  await selectDropdownOption(page, 'aihe', '003')
+  await setSingleSelectDropdownOption(page, 'aihe', '003')
   await page.getByTestId('aihe-multi-select-ready-button').click()
 
-  await fillLdAssignmentTextFields(
+  await fillAssignmentTextFields(
     page,
     Exam.Suko,
     nameTextFi,
@@ -127,7 +106,7 @@ export async function updateSukoAssignmentForm({
   )
 }
 
-async function fillLdAssignmentTextFields(
+async function fillAssignmentTextFields(
   page: Page,
   exam: Exam,
   nameTextFi: string,
@@ -177,14 +156,14 @@ export async function fillLdAssignmentForm({
   instructionTextSv
 }: AssignmentBase) {
   // Kotitalous
-  await selectDropdownOption(page, 'aineKoodiArvo', '1')
+  await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '1')
 
   await fillLukuvuosi(page)
 
   // Eettisyys ja ympäristöosaaminen
-  await fillMultiselectDropdownOption(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
 
-  await fillLdAssignmentTextFields(
+  await fillAssignmentTextFields(
     page,
     Exam.Ld,
     nameTextFi,
@@ -196,6 +175,10 @@ export async function fillLdAssignmentForm({
   )
 }
 
+async function fillLaajaalainenOsaaminenKoodiArvos(page: Page) {
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['02'])
+}
+
 export async function updateLdAssignment({
   page,
   nameTextFi,
@@ -205,11 +188,9 @@ export async function updateLdAssignment({
   contentTextFi,
   contentTextSv
 }: AssignmentBase) {
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
+  await fillLaajaalainenOsaaminenKoodiArvos(page)
 
-  await fillLdAssignmentTextFields(
+  await fillAssignmentTextFields(
     page,
     Exam.Ld,
     nameTextFi,
@@ -236,9 +217,9 @@ export async function fillPuhviAssignmentForm({
   // Esiintymistaidot
   await page.getByTestId('assignmentTypeRadio-002').click()
   await fillLukuvuosi(page)
-  await fillMultiselectDropdownOption(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
 
-  await fillLdAssignmentTextFields(
+  await fillAssignmentTextFields(
     page,
     Exam.Puhvi,
     nameTextFi,
@@ -259,11 +240,9 @@ export async function updatePuhviAssignment({
   instructionTextFi,
   instructionTextSv
 }: AssignmentBase) {
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-input').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-option-02').click()
-  await page.getByTestId('laajaalainenOsaaminenKoodiArvos-multi-select-ready-button').click()
+  await fillLaajaalainenOsaaminenKoodiArvos(page)
 
-  await fillLdAssignmentTextFields(
+  await fillAssignmentTextFields(
     page,
     Exam.Puhvi,
     nameTextFi,
@@ -295,7 +274,10 @@ export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
     return {
       ...base,
       assignmentTypeKoodiArvo: '003',
-      oppimaaraKoodiArvo: 'TKRUA1',
+      oppimaara: {
+        oppimaaraKoodiArvo: 'TKRUA1'
+      },
+      oppimaaraKielitarjontaKoodiArvo: null,
       tavoitetasoKoodiArvo: null,
       aiheKoodiArvos: []
     }
@@ -320,11 +302,19 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
   return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
 }
 
+export const filterTestAssignmentName = (number: number, language: Language, exam: Exam) =>
+  `Filter test name ${number} ${language} ${exam}`
+
 export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[], exam: Exam) {
+  await expect(
+    page.getByRole('link', { name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], Language.FI, exam) })
+  ).toBeVisible()
   const assignments = await page.getByTestId('assignment-list').locator('li').all()
   const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
   const names = await Promise.all(namePromises)
-  expect(names).toEqual(expectedAssignmentTitleNumbers.map((number) => `Test name ${number} FI ${exam}`))
+  expect(names).toEqual(
+    expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, Language.FI, exam))
+  )
 }
 
 export async function assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
@@ -336,9 +326,9 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
   const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
   await expect(assignmentCard).toBeVisible()
 
-  await expect(page.getByTestId('language-dropdown')).toBeVisible()
-  await page.getByTestId('language-dropdown').click()
-  await page.getByTestId('language-dropdown-option-sv').click()
+  await expect(page.getByTestId('languageDropdown')).toBeVisible()
+  await page.getByTestId('languageDropdown').click()
+  await page.getByTestId('languageDropdown-option-sv').click()
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }

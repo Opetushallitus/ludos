@@ -4,6 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
+import org.assertj.core.api.AbstractStringAssert
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
@@ -20,23 +22,30 @@ abstract class AssignmentRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
-    fun examByTestAssignmentOutClass(testAssignmentOutClass: KClass<out TestAssignmentOut>): Exam =
+    fun examByTestAssignmentOutClass(testAssignmentOutClass: KClass<out AssignmentOut>): Exam =
         when (testAssignmentOutClass) {
-            TestSukoAssignmentDtoOut::class -> Exam.SUKO
-            TestLdAssignmentDtoOut::class -> Exam.LD
-            TestPuhviAssignmentDtoOut::class -> Exam.PUHVI
-            else -> throw RuntimeException("invalid TestAssignmentOutClass")
+            SukoAssignmentDtoOut::class -> Exam.SUKO
+            LdAssignmentDtoOut::class -> Exam.LD
+            PuhviAssignmentDtoOut::class -> Exam.PUHVI
+            else -> throw RuntimeException("unsupported AssignmentOutClass '$testAssignmentOutClass'")
         }
 
     fun createAssignmentReq(body: String) =
         MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment").contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
-    inline fun <reified T : TestAssignmentOut> createAssignment(assignmentIn: TestAssignmentIn): T {
+    inline fun <reified T : AssignmentOut> createAssignment(assignmentIn: TestAssignmentIn): T {
         val responseBody =
             mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentIn)))
                 .andExpect(MockMvcResultMatchers.status().isOk).andReturn().response.contentAsString
         return mapper.readValue(responseBody)
+    }
+
+    fun assertThatCreateInvalidAssignmentError(assignmentIn: TestAssignmentIn): AbstractStringAssert<*> {
+        val errorMessage =
+            mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentIn)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest).andReturn().response.contentAsString
+        return assertThat(errorMessage)
     }
 
     fun getAssignmentsWithAnyFilterReq(exam: Exam, str: String) =
@@ -47,7 +56,7 @@ abstract class AssignmentRequests {
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id")
             .contentType(MediaType.APPLICATION_JSON)
 
-    inline fun <reified T : TestAssignmentOut> getAssignmentById(id: Int): T {
+    inline fun <reified T : AssignmentOut> getAssignmentById(id: Int): T {
         val exam = examByTestAssignmentOutClass(T::class)
         val getUpdatedByIdStr = mockMvc.perform(getAssignmentByIdReq(exam, id)).andExpect(
             MockMvcResultMatchers.status().isOk()
@@ -62,11 +71,12 @@ abstract class AssignmentRequests {
     fun getAllAssignmentsReq(exam: Exam) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam").contentType(MediaType.APPLICATION_JSON)
 
-    inline fun <reified T : TestAssignmentOut> getAllAssignmentsForExam(): Array<T> {
+    inline fun <reified T : AssignmentOut> getAllAssignmentsForExam(): Array<T> {
         val exam = examByTestAssignmentOutClass(T::class)
         val responseContent = mockMvc.perform(getAllAssignmentsReq(exam)).andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn().response.contentAsString
-        return mapper.readValue<Array<T>>(responseContent)
+        val ret = mapper.readValue<Array<T>>(responseContent)
+        return ret
     }
 
     private fun getSukoAssignmentsReq(filter: SukoBaseFilters): MockHttpServletRequestBuilder {
@@ -82,7 +92,7 @@ abstract class AssignmentRequests {
         return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
     }
 
-    fun getSukoAssignments(filter: SukoBaseFilters): Array<TestSukoAssignmentDtoOut> {
+    fun getSukoAssignments(filter: SukoBaseFilters): Array<SukoAssignmentDtoOut> {
         val assignmentsString = mockMvc.perform(getSukoAssignmentsReq(filter))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn().response.contentAsString
