@@ -18,6 +18,9 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { filterValues, setFilterValue } = useFilterValues(exam)
   const [language, setLanguage] = useState<string>('fi')
 
+  const languageOverrideIfSukoAssignment =
+    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : language
+
   return (
     <div className="pt-3">
       <h2 className="mb-3" data-testid={`page-heading-${exam.toLowerCase()}`}>
@@ -34,10 +37,15 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
               contentType={contentType}
               filterValues={filterValues}
               setFilterValue={setFilterValue}
-              language={language}
+              language={languageOverrideIfSukoAssignment}
               setLanguage={setLanguage}
             />
-            <ContentList exam={exam} contentType={contentType} language={language} filterValues={filterValues} />
+            <ContentList
+              exam={exam}
+              contentType={contentType}
+              language={languageOverrideIfSukoAssignment}
+              filterValues={filterValues}
+            />
           </>
         )}
       </div>

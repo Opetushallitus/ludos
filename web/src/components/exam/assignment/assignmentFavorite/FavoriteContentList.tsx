@@ -44,6 +44,8 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
     lukuvuosiOverride
   } = useAssignmentFilterOverrides(exam, data)
 
+  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : language
+
   return (
     <div>
       <div className="row gap-6 my-3 flex-wrap justify-end">
@@ -88,9 +90,15 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
       <ul>
         {data &&
           data
-            .filter((data) => filterByLanguage(data, language))
+            .filter((data) => filterByLanguage(data, languageOverrideIfSukoAssignment))
             .map((assignment, i) => (
-              <AssignmentCard language={language} assignment={assignment} exam={exam} key={i} refreshData={refresh} />
+              <AssignmentCard
+                language={languageOverrideIfSukoAssignment}
+                assignment={assignment}
+                exam={exam}
+                key={i}
+                refreshData={refresh}
+              />
             ))}
       </ul>
     </div>
