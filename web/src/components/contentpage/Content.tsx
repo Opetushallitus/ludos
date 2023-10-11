@@ -29,6 +29,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { isYllapitaja } = useUserDetails()
 
   const [language, setLanguage] = useState<string>('fi')
+  const languageOverrideIfSukoAssignment =
+    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : language
 
   const { data, loading } = useFetch<BaseIn>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
@@ -50,7 +52,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               <div className="row pb-3">
                 <div className="col min-h-[40vh] w-full">
                   <ContentHeader
-                    language={language}
+                    language={languageOverrideIfSukoAssignment}
                     data={data}
                     onSelectedOptionsChange={(opt: string) => setLanguage(opt)}
                     contentType={contentType!}
@@ -72,7 +74,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                     <AssignmentContent
                       assignment={data}
                       exam={exam}
-                      language={language}
+                      language={languageOverrideIfSukoAssignment}
                       isPresentation={isPresentation}
                     />
                   )}

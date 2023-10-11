@@ -76,6 +76,7 @@ export async function fillSukoAssignmentForm({
 
   await fillLdAssignmentTextFields(
     page,
+    Exam.Suko,
     nameTextFi,
     instructionTextFi,
     contentTextFi,
@@ -116,6 +117,7 @@ export async function updateSukoAssignmentForm({
 
   await fillLdAssignmentTextFields(
     page,
+    Exam.Suko,
     nameTextFi,
     instructionTextFi,
     contentTextFi,
@@ -127,6 +129,7 @@ export async function updateSukoAssignmentForm({
 
 async function fillLdAssignmentTextFields(
   page: Page,
+  exam: Exam,
   nameTextFi: string,
   instructionTextFi: string,
   contentTextFi: string[],
@@ -143,6 +146,11 @@ async function fillLdAssignmentTextFields(
     if (index !== contentTextFi.length - 1) {
       await page.getByTestId('contentFi-add-content-field').click()
     }
+  }
+
+  if (exam === Exam.Suko) {
+    await expect(page.getByTestId('tab-sv')).toBeHidden()
+    return
   }
 
   await page.getByTestId('tab-sv').click()
@@ -178,6 +186,7 @@ export async function fillLdAssignmentForm({
 
   await fillLdAssignmentTextFields(
     page,
+    Exam.Ld,
     nameTextFi,
     instructionTextFi,
     contentTextFi,
@@ -202,6 +211,7 @@ export async function updateLdAssignment({
 
   await fillLdAssignmentTextFields(
     page,
+    Exam.Ld,
     nameTextFi,
     instructionTextFi,
     contentTextFi,
@@ -230,6 +240,7 @@ export async function fillPuhviAssignmentForm({
 
   await fillLdAssignmentTextFields(
     page,
+    Exam.Puhvi,
     nameTextFi,
     instructionTextFi,
     contentTextFi,
@@ -254,6 +265,7 @@ export async function updatePuhviAssignment({
 
   await fillLdAssignmentTextFields(
     page,
+    Exam.Puhvi,
     nameTextFi,
     instructionTextFi,
     contentTextFi,
