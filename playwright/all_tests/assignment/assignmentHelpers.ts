@@ -4,7 +4,8 @@ import {
   Language,
   postWithSession,
   setMultiSelectDropdownOptions,
-  setSingleSelectDropdownOption
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
 } from '../../helpers'
 
 type AssignmentBase = {
@@ -324,9 +325,7 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
   const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
   await expect(assignmentCard).toBeVisible()
 
-  await expect(page.locator('#languageDropdown')).toBeVisible()
-  await page.getByTestId('languageDropdown-open').click()
-  await page.getByTestId('languageDropdown-option-sv').click()
+  await setTeachingLanguage(page, Language.SV)
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }

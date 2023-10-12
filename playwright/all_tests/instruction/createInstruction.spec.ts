@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { fillInstructionForm } from './instructionHelpers'
-import { loginTestGroup, Role } from '../../helpers'
+import { Language, loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
 import path from 'path'
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -51,9 +51,7 @@ test.describe('Instruction form tests', () => {
     await expect(page.getByRole('link', { name: 'Testi liite 2 open_in_new' })).toBeVisible()
 
     // change language and check that everything is correct
-    await page.getByTestId('languageDropdown-open').click()
-    await page.getByTestId('languageDropdown-option-sv').click()
-
+    await setTeachingLanguage(page, Language.SV)
     await expect(header).toHaveText('Testuppgifter')
     await expect(page.getByText('Testa kort beskrivning', { exact: true })).toBeVisible()
     await expect(page.getByText('Testa innehåll', { exact: true })).toBeVisible()
@@ -64,8 +62,7 @@ test.describe('Instruction form tests', () => {
     await page.getByTestId('nav-link-suko').click()
     await page.getByTestId('tab-ohjeet').click()
 
-    await page.getByTestId('languageDropdown-open').click()
-    await page.getByTestId('languageDropdown-option-sv').click()
+    await setTeachingLanguage(page, Language.SV)
 
     const instructionCard = page.getByTestId(`instruction-${instructionToUpdate}`)
 
@@ -88,8 +85,7 @@ test.describe('Instruction form tests', () => {
 
     await expect(updatedInstructionHeader).toHaveText('Testi ohje muokattu')
 
-    await page.getByTestId('languageDropdown-open').click()
-    await page.getByTestId('languageDropdown-option-sv').click()
+    await setTeachingLanguage(page, Language.SV)
 
     const updatedInstructionHeaderSv = page.getByTestId('assignment-header')
 

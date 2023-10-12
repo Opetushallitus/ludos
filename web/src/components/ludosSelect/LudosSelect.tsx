@@ -3,7 +3,6 @@ import Select, {
   components,
   DropdownIndicatorProps,
   GroupBase,
-  InputProps,
   MenuProps,
   MultiValueRemoveProps,
   OptionProps,

@@ -10,6 +10,7 @@ import { preventLineBreaks } from '../../../formatUtils'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
 import { LudosSelect } from '../../ludosSelect/LudosSelect'
 import { sortKooditByArvo } from '../../../hooks/useKoodisto'
+import { TeachingLanguageSelect } from '../../TeachingLanguageSelect'
 
 interface ContentListHeaderProps {
   exam: Exam
@@ -29,7 +30,7 @@ export const ContentListHeader = ({
   language
 }: ContentListHeaderProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { lt, t, ORDER_OPTIONS, LANGUAGE_OPTIONS } = useLudosTranslation()
+  const { lt, t, ORDER_OPTIONS } = useLudosTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
@@ -56,14 +57,7 @@ export const ContentListHeader = ({
                 <p className="mt-2">
                   {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}
                 </p>
-                <div className="w-32">
-                  <LudosSelect
-                    name="languageDropdown"
-                    options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
-                    value={currentKoodistoSelectOption(language, LANGUAGE_OPTIONS)}
-                    onChange={(opt) => opt && setLanguage(opt.value)}
-                  />
-                </div>
+                <TeachingLanguageSelect teachingLanguge={language} setTeachingLanguage={setLanguage} />
               </div>
             )}
 

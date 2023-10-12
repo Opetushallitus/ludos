@@ -53,8 +53,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 <div className="col min-h-[40vh] w-full">
                   <ContentHeader
                     language={languageOverrideIfSukoAssignment}
+                    setLanguage={setLanguage}
                     data={data}
-                    onSelectedOptionsChange={(opt) => setLanguage(opt!.value)}
                     contentType={contentType!}
                     isPresentation={isPresentation}
                   />

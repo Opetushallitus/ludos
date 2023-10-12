@@ -8,27 +8,18 @@ import { TipTap } from '../exam/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
 import { esitysnakymaKey } from '../routes/LudosRoutes'
-import { SingleValue } from 'react-select'
-import { LudosSelect, LudosSelectOption } from '../ludosSelect/LudosSelect'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from '../ludosSelect/helpers'
-import { sortKooditByArvo } from '../../hooks/useKoodisto'
+import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
 
 type ContentHeaderProps = {
   language: string
+  setLanguage: (language: string) => void
   data: BaseOut
-  onSelectedOptionsChange: (opt: SingleValue<LudosSelectOption>) => void
   contentType: ContentType
   isPresentation: boolean
 }
 
-export function ContentHeader({
-  onSelectedOptionsChange,
-  data,
-  language,
-  contentType,
-  isPresentation
-}: ContentHeaderProps) {
-  const { LANGUAGE_OPTIONS, t } = useLudosTranslation()
+export function ContentHeader({ data, language, setLanguage, contentType, isPresentation }: ContentHeaderProps) {
+  const { t } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
     contentType === ContentType.ohjeet || (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
@@ -50,12 +41,7 @@ export function ContentHeader({
       {shouldShowTeachingLanguageDropdown && (
         <div>
           <p>{contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}</p>
-          <LudosSelect
-            name="languageDropdown"
-            options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
-            value={currentKoodistoSelectOption(language, LANGUAGE_OPTIONS)}
-            onChange={(opt) => onSelectedOptionsChange(opt)}
-          />
+          <TeachingLanguageSelect teachingLanguge={language} setTeachingLanguage={setLanguage} />
         </div>
       )}
     </div>
