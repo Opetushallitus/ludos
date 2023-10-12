@@ -21,7 +21,7 @@ test.describe('Assignment filter tests', () => {
     await setMultiSelectDropdownOptions(page, 'aiheFilter', ['013']) // pohjoismaat
     await checkListAfterFiltering(page, [8, 2], Exam.Suko)
 
-    // await page.getByTestId('tavoitetaitotaso-input').fill('b1')
+    // await page.locator('#tavoitetaitotaso-input').fill('b1')
     // await page.getByTestId('tavoitetaitotaso').click()
     // B1.1
     // await page.getByTestId('tavoitetaitotaso-option-0007').click()

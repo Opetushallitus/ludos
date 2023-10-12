@@ -58,7 +58,7 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
   if (await page.getByTestId(`${dropdownTestId}-reset-selected-options`).isVisible()) {
     await page.getByTestId(`${dropdownTestId}-reset-selected-options`).click()
   }
-  await page.getByTestId(dropdownTestId).click()
+  await page.getByTestId(`${dropdownTestId}-open`).click()
   for (const option of optionIds) {
     await page.getByTestId(`${dropdownTestId}-option-${option}`).click()
   }
@@ -66,6 +66,6 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
 }
 
 export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: string, optionId: string) {
-  await page.getByTestId(dropdownTestId).click()
+  await page.getByTestId(`${dropdownTestId}-open`).click()
   await page.getByTestId(`${dropdownTestId}-option-${optionId}`).click()
 }

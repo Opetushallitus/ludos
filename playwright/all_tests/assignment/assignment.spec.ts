@@ -98,14 +98,14 @@ test.describe('Suko assignment form tests', () => {
       'Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await expect(page.getByTestId('languageDropdown')).toBeHidden()
+    await expect(page.locator('#languageDropdown')).toBeHidden()
 
     await page.getByTestId('return').click()
     const assignmentCard = page.getByTestId(`assignment-list-item-${createdAssignmentId}`)
     await expect(assignmentCard).toBeVisible()
     await expect(assignmentCard.getByTestId('suko-oppimaara')).toHaveText(expectedOppimaara)
 
-    await expect(page.getByTestId('languageDropdown')).toBeHidden()
+    await expect(page.locator('#languageDropdown')).toBeHidden()
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -165,7 +165,7 @@ test.describe('Ld assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-open').click()
     await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextSv)
@@ -204,7 +204,7 @@ test.describe('Ld assignment form tests', () => {
     for (const [i, content] of updatedFormData.contentTextFi.entries()) {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
-    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-open').click()
     await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
@@ -298,7 +298,7 @@ test.describe('Puhvi assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-open').click()
     await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)

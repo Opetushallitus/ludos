@@ -51,14 +51,14 @@ export function LudosSelect<
 
   const DropdownIndicator = (props: DropdownIndicatorProps<Option, boolean, GroupBase<Option>>) => (
     <components.DropdownIndicator {...props}>
-      <Icon name="laajenna" color="text-black" dataTestId={props.selectProps.inputId} />
+      <Icon name="laajenna" color="text-black" dataTestId={`${props.selectProps.name}-open`} />
     </components.DropdownIndicator>
   )
 
   const ClearIndicator = (props: ClearIndicatorProps<Option, IsMulti, Group> | undefined) =>
     props && (
       <components.ClearIndicator {...props}>
-        <Icon name="sulje" color="text-black" dataTestId={`${props.selectProps.inputId}-reset-selected-options`} />
+        <Icon name="sulje" color="text-black" dataTestId={`${props.selectProps.name}-reset-selected-options`} />
       </components.ClearIndicator>
     )
 
@@ -67,7 +67,7 @@ export function LudosSelect<
       <components.Option {...props}>
         <span
           className={props.data.isChildOption ? 'pl-5' : ''}
-          data-testid={`${props.selectProps.inputId}-option-${props.data.value}`}>
+          data-testid={`${props.selectProps.name}-option-${props.data.value}`}>
           {props.data.label}
         </span>
       </components.Option>
@@ -81,7 +81,7 @@ export function LudosSelect<
           <Button
             variant="buttonPrimary"
             onClick={() => setIsOpen(!isOpen)}
-            data-testid={`${props.selectProps.inputId}-multi-select-ready-button`}>
+            data-testid={`${props.selectProps.name}-multi-select-ready-button`}>
             {t('button.valmis')}
           </Button>
         </div>
@@ -89,13 +89,9 @@ export function LudosSelect<
     </components.Menu>
   )
 
-  const Input = (props: InputProps<Option, boolean, GroupBase<Option>>) => (
-    <components.Input {...props} data-testid={`${props.selectProps.inputId}-input`} />
-  )
-
   const MultiValueRemove = (props: MultiValueRemoveProps<Option, boolean, GroupBase<Option>>) => (
     <components.MultiValueRemove {...props}>
-      <span data-testid={`${props.selectProps.inputId}-remove-selected-option`}>
+      <span data-testid={`${props.selectProps.name}-remove-selected-option`}>
         <Icon customClass="pt-0.5" name="sulje" color="text-white" />
       </span>
     </components.MultiValueRemove>
@@ -103,11 +99,12 @@ export function LudosSelect<
 
   return (
     <Select
-      inputId={props.name}
+      id={props.name}
+      inputId={`${props.name}-input`}
       classNamePrefix="ludos-select"
       closeMenuOnSelect={!props.isMulti}
       hideSelectedOptions={false}
-      components={{ DropdownIndicator, Option, Menu, Input, MultiValueRemove, ClearIndicator }}
+      components={{ DropdownIndicator, Option, Menu, MultiValueRemove, ClearIndicator }}
       placeholder={t('filter.valitse')}
       menuIsOpen={isOpen}
       onMenuOpen={() => setIsOpen(true)}

@@ -51,7 +51,7 @@ test.describe('Instruction form tests', () => {
     await expect(page.getByRole('link', { name: 'Testi liite 2 open_in_new' })).toBeVisible()
 
     // change language and check that everything is correct
-    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-open').click()
     await page.getByTestId('languageDropdown-option-sv').click()
 
     await expect(header).toHaveText('Testuppgifter')
@@ -64,7 +64,7 @@ test.describe('Instruction form tests', () => {
     await page.getByTestId('nav-link-suko').click()
     await page.getByTestId('tab-ohjeet').click()
 
-    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-open').click()
     await page.getByTestId('languageDropdown-option-sv').click()
 
     const instructionCard = page.getByTestId(`instruction-${instructionToUpdate}`)
@@ -88,7 +88,7 @@ test.describe('Instruction form tests', () => {
 
     await expect(updatedInstructionHeader).toHaveText('Testi ohje muokattu')
 
-    await page.getByTestId('languageDropdown').click()
+    await page.getByTestId('languageDropdown-open').click()
     await page.getByTestId('languageDropdown-option-sv').click()
 
     const updatedInstructionHeaderSv = page.getByTestId('assignment-header')

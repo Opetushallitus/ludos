@@ -36,7 +36,7 @@ export async function fillSukoAssignmentForm({
   await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminen', ['01'])
 
   // Test searching for non-existing option
-  await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
+  await page.locator('#laajaalainenOsaaminen-input').fill('non-existing-option')
 
   const allAvailableLaajaalainenOptions = ['01', '02', '03', '04', '05', '06']
 
@@ -45,11 +45,11 @@ export async function fillSukoAssignmentForm({
   }
 
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
-  await page.getByTestId('laajaalainenOsaaminen-input').fill('globa')
+  await page.locator('#laajaalainenOsaaminen-input').fill('globa')
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
-  await page.getByTestId('laajaalainenOsaaminen').click()
+  await page.getByTestId('laajaalainenOsaaminen-open').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
@@ -79,8 +79,6 @@ export async function updateSukoAssignmentForm({
   await setSingleSelectDropdownOption(page, 'tavoitetaso', '0003')
   // remove first selected option
   await page.getByTestId('aihe-remove-selected-option').first().click()
-  await page.getByTestId('aihe').click()
-  await page.getByTestId('aihe-multi-select-ready-button').click()
   // Verify that option has been removed
   const selectedOptionsAihe = await page.getByTestId('aihe-remove-selected-option').count()
   expect(selectedOptionsAihe).toBe(1)
@@ -326,8 +324,8 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
   const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
   await expect(assignmentCard).toBeVisible()
 
-  await expect(page.getByTestId('languageDropdown')).toBeVisible()
-  await page.getByTestId('languageDropdown').click()
+  await expect(page.locator('#languageDropdown')).toBeVisible()
+  await page.getByTestId('languageDropdown-open').click()
   await page.getByTestId('languageDropdown-option-sv').click()
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
