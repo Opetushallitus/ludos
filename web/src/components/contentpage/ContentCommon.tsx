@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../Icon'
-import { BaseOut, ContentType, Exam } from '../../types'
+import { BaseOut, ContentType, Exam, TeachingLanguage } from '../../types'
 import { getContentName } from '../exam/assignment/assignmentUtils'
 import { toLocaleDate } from '../../formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -11,14 +11,20 @@ import { esitysnakymaKey } from '../routes/LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
 
 type ContentHeaderProps = {
-  language: string
-  setLanguage: (language: string) => void
+  teachingLanguage: TeachingLanguage
+  setTeachingLanguage: (teachingLanguage: TeachingLanguage) => void
   data: BaseOut
   contentType: ContentType
   isPresentation: boolean
 }
 
-export function ContentHeader({ data, language, setLanguage, contentType, isPresentation }: ContentHeaderProps) {
+export function ContentHeader({
+  data,
+  teachingLanguage,
+  setTeachingLanguage,
+  contentType,
+  isPresentation
+}: ContentHeaderProps) {
   const { t } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
@@ -34,14 +40,14 @@ export function ContentHeader({ data, language, setLanguage, contentType, isPres
         )}
         <div className="row">
           <h2 className="w-full md:w-1/2" data-testid="assignment-header">
-            {getContentName(data, contentType, language) || t('form.nimeton')}
+            {getContentName(data, contentType, teachingLanguage) || t('form.nimeton')}
           </h2>
         </div>
       </div>
       {shouldShowTeachingLanguageDropdown && (
         <div>
           <p>{contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}</p>
-          <TeachingLanguageSelect teachingLanguge={language} setTeachingLanguage={setLanguage} />
+          <TeachingLanguageSelect teachingLanguage={teachingLanguage} setTeachingLanguage={setTeachingLanguage} />
         </div>
       )}
     </div>
@@ -139,43 +145,59 @@ export function ContentActionRow({
 }
 
 export function ContentInstruction({
-  language,
+  teachingLanguage,
   instructionFi,
   instructionSv
 }: {
-  language: string
+  teachingLanguage: string
   instructionFi: string
   instructionSv: string
 }) {
   return (
     <div className="mb-4 mt-3">
-      <p className="text-sm font-semibold" key={language} data-testid={`instruction-${language}`}>
-        {language === 'fi' ? instructionFi : instructionSv}
+      <p className="text-sm font-semibold" key={teachingLanguage} data-testid={`instruction-${teachingLanguage}`}>
+        {teachingLanguage === 'fi' ? instructionFi : instructionSv}
       </p>
     </div>
   )
 }
 
-const RenderContent = ({ content, language }: { content: string | string[]; language: string }) =>
+const RenderContent = ({
+  content,
+  teachingLanguage
+}: {
+  content: string | string[]
+  teachingLanguage: TeachingLanguage
+}) =>
   Array.isArray(content) ? (
     content.map((it, i) => (
-      <TipTap key={`${language}-${i}`} content={it} editable={false} dataTestId={`editor-content-${language}-${i}`} />
+      <TipTap
+        key={`${teachingLanguage}-${i}`}
+        content={it}
+        editable={false}
+        dataTestId={`editor-content-${teachingLanguage}-${i}`}
+      />
     ))
   ) : (
-    <TipTap key={language} content={content} editable={false} dataTestId={`editor-content-${language}-0`} />
+    <TipTap
+      key={teachingLanguage}
+      content={content}
+      editable={false}
+      dataTestId={`editor-content-${teachingLanguage}-0`}
+    />
   )
 
 // instructions content is not in array while assignments are always
 export function ContentContent({
-  language,
+  teachingLanguage,
   contentFi,
   contentSv
 }: {
-  language: string
+  teachingLanguage: TeachingLanguage
   contentFi: string | string[]
   contentSv: string | string[]
 }) {
-  const content = language === 'fi' ? contentFi : contentSv
+  const content = teachingLanguage === 'fi' ? contentFi : contentSv
 
-  return <RenderContent content={content} language={language} />
+  return <RenderContent content={content} teachingLanguage={teachingLanguage} />
 }

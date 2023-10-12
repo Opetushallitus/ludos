@@ -1,5 +1,13 @@
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentOut, BaseOut, ContentType, ContentTypeSingularEng, Exam, InstructionDtoOut } from '../../../types'
+import {
+  AssignmentOut,
+  BaseOut,
+  ContentType,
+  ContentTypeSingularEng,
+  Exam,
+  InstructionDtoOut,
+  TeachingLanguage
+} from '../../../types'
 import { FiltersType } from '../../../hooks/useFilterValues'
 import { InstructionCard } from '../instruction/InstructionCard'
 import { Spinner } from '../../Spinner'
@@ -28,16 +36,16 @@ const urlByContentType = (exam: Exam, contentType: ContentType, filters: Filters
 interface ContentListProps {
   exam: Exam
   contentType: ContentType
-  language: string
+  teachingLanguage: TeachingLanguage
   filterValues: FiltersType
 }
 
-export const ContentList = ({ exam, contentType, language, filterValues }: ContentListProps) => {
+export const ContentList = ({ exam, contentType, teachingLanguage, filterValues }: ContentListProps) => {
   const { data, loading, error } = useFetch<BaseOut[]>(urlByContentType(exam, contentType, filterValues))
   const filterByLanguage = (data: AssignmentOut | InstructionDtoOut) => {
-    if (language === 'fi') {
+    if (teachingLanguage === 'fi') {
       return data.nameFi !== ''
-    } else if (language === 'sv') {
+    } else if (teachingLanguage === 'sv') {
       return data.nameSv !== ''
     }
     return true
@@ -53,7 +61,7 @@ export const ContentList = ({ exam, contentType, language, filterValues }: Conte
             <ul data-testid="assignment-list">
               {data.filter(filterByLanguage).map((assignment, i) => (
                 <AssignmentCard
-                  language={language}
+                  teachingLanguage={teachingLanguage}
                   assignment={assignment}
                   exam={exam}
                   key={`${exam}-${contentType}-${i}`}
@@ -65,7 +73,7 @@ export const ContentList = ({ exam, contentType, language, filterValues }: Conte
             <ul className="mt-3 flex flex-wrap gap-5">
               {data.filter(filterByLanguage).map((instruction, i) => (
                 <InstructionCard
-                  language={language}
+                  teachingLanguage={teachingLanguage}
                   instruction={instruction}
                   exam={exam}
                   key={`${exam}-${contentType}-${i}`}

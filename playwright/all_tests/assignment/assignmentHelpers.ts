@@ -1,12 +1,12 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
   Exam,
-  Language,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../../helpers'
+import { TeachingLanguage } from 'web/src/types'
 
 type AssignmentBase = {
   page: Page
@@ -301,18 +301,20 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
   return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
 }
 
-export const filterTestAssignmentName = (number: number, language: Language, exam: Exam) =>
-  `Filter test name ${number} ${language} ${exam}`
+export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
+  `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
 export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[], exam: Exam) {
   await expect(
-    page.getByRole('link', { name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], Language.FI, exam) })
+    page.getByRole('link', {
+      name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, exam)
+    })
   ).toBeVisible()
   const assignments = await page.getByTestId('assignment-list').locator('li').all()
   const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
   const names = await Promise.all(namePromises)
   expect(names).toEqual(
-    expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, Language.FI, exam))
+    expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, exam))
   )
 }
 
@@ -325,7 +327,7 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
   const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
   await expect(assignmentCard).toBeVisible()
 
-  await setTeachingLanguage(page, Language.SV)
+  await setTeachingLanguage(page, TeachingLanguage.sv)
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }

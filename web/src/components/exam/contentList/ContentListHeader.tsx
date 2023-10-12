@@ -1,5 +1,5 @@
 import { buttonClasses } from '../../Button'
-import { ContentType, ContentTypeSingular, Exam } from '../../../types'
+import { ContentType, ContentTypeSingular, Exam, TeachingLanguage } from '../../../types'
 import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
@@ -17,8 +17,8 @@ interface ContentListHeaderProps {
   contentType: ContentType
   filterValues: FiltersType
   setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
-  setLanguage: (value: string) => void
-  language: string
+  teachingLanguage: TeachingLanguage
+  setTeachingLanguage: (value: TeachingLanguage) => void
 }
 
 export const ContentListHeader = ({
@@ -26,8 +26,8 @@ export const ContentListHeader = ({
   contentType,
   filterValues,
   setFilterValue,
-  setLanguage,
-  language
+  teachingLanguage,
+  setTeachingLanguage
 }: ContentListHeaderProps) => {
   const { isYllapitaja } = useUserDetails()
   const { lt, t, ORDER_OPTIONS } = useLudosTranslation()
@@ -57,7 +57,7 @@ export const ContentListHeader = ({
                 <p className="mt-2">
                   {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}
                 </p>
-                <TeachingLanguageSelect teachingLanguge={language} setTeachingLanguage={setLanguage} />
+                <TeachingLanguageSelect teachingLanguage={teachingLanguage} setTeachingLanguage={setTeachingLanguage} />
               </div>
             )}
 

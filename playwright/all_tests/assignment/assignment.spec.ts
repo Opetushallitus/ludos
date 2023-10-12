@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
-import { ContentType, Exam, Language, loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
+import { ContentType, Exam, loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
 import {
   assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage,
   createAssignment,
@@ -11,6 +11,7 @@ import {
   updatePuhviAssignment,
   updateSukoAssignmentForm
 } from './assignmentHelpers'
+import { TeachingLanguage } from 'web/src/types'
 
 const createContent = {
   nameTextFi: 'Testi tehtävä',
@@ -165,7 +166,7 @@ test.describe('Ld assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await setTeachingLanguage(page, Language.SV)
+    await setTeachingLanguage(page, TeachingLanguage.sv)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextSv)
     await expect(page.getByTestId('instruction-sv')).toHaveText(formData.instructionTextSv)
@@ -204,7 +205,7 @@ test.describe('Ld assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await setTeachingLanguage(page, Language.SV)
+    await setTeachingLanguage(page, TeachingLanguage.sv)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {
@@ -297,7 +298,7 @@ test.describe('Puhvi assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await setTeachingLanguage(page, Language.SV)
+    await setTeachingLanguage(page, TeachingLanguage.sv)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {

@@ -2,16 +2,22 @@ import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { LudosSelect } from './ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from './ludosSelect/helpers'
 import { sortKooditByArvo } from '../hooks/useKoodisto'
+import { TeachingLanguage } from '../types'
 
-export function TeachingLanguageSelect(props: { teachingLanguge: string; setTeachingLanguage: (opt: string) => void }) {
+type TeachingLanguageSelectProps = {
+  teachingLanguage: TeachingLanguage
+  setTeachingLanguage: (opt: TeachingLanguage) => void
+}
+
+export const TeachingLanguageSelect = ({ teachingLanguage, setTeachingLanguage }: TeachingLanguageSelectProps) => {
   const { LANGUAGE_OPTIONS } = useLudosTranslation()
 
   return (
     <LudosSelect
       name="teachingLanguageDropdown"
       options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
-      value={currentKoodistoSelectOption(props.teachingLanguge, LANGUAGE_OPTIONS)}
-      onChange={(opt) => props.setTeachingLanguage(opt!.value)}
+      value={currentKoodistoSelectOption(teachingLanguage, LANGUAGE_OPTIONS)}
+      onChange={(opt) => setTeachingLanguage(opt!.value as TeachingLanguage)}
       className="w-28"
     />
   )

@@ -1,4 +1,4 @@
-import { AssignmentOut, Exam } from '../../types'
+import { AssignmentOut, Exam, TeachingLanguage } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
@@ -9,10 +9,10 @@ import { useToggleFavorite } from '../../hooks/useToggleFavorite'
 type AssignmentContentProps = {
   assignment: AssignmentOut
   exam: Exam
-  language: string
+  teachingLanguage: TeachingLanguage
   isPresentation: boolean
 }
-export const AssignmentContent = ({ assignment, exam, language, isPresentation }: AssignmentContentProps) => {
+export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const [isFavorite, setIsFavorite] = useState(false)
@@ -95,14 +95,18 @@ export const AssignmentContent = ({ assignment, exam, language, isPresentation }
       )}
 
       <ContentInstruction
-        language={language}
+        teachingLanguage={teachingLanguage}
         instructionFi={assignment.instructionFi}
         instructionSv={assignment.instructionSv}
       />
 
       <div className="mb-4 border-b border-gray-separator" />
 
-      <ContentContent language={language} contentFi={assignment.contentFi} contentSv={assignment.contentSv} />
+      <ContentContent
+        teachingLanguage={teachingLanguage}
+        contentFi={assignment.contentFi}
+        contentSv={assignment.contentSv}
+      />
     </>
   )
 }

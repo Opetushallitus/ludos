@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
-import { BaseOut, ContentType, ContentTypeSingularEng, Exam } from '../../types'
+import { BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { isAssignment, isCertificate, isInstruction } from '../exam/assignment/assignmentUtils'
 import { Spinner } from '../Spinner'
@@ -28,9 +28,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { state } = useLocation()
   const { isYllapitaja } = useUserDetails()
 
-  const [language, setLanguage] = useState<string>('fi')
-  const languageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : language
+  const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
+  const teachingLanguageOverrideIfSukoAssignment =
+    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
 
   const { data, loading } = useFetch<BaseOut>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
@@ -52,8 +52,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               <div className="row pb-3">
                 <div className="col min-h-[40vh] w-full">
                   <ContentHeader
-                    language={languageOverrideIfSukoAssignment}
-                    setLanguage={setLanguage}
+                    teachingLanguage={teachingLanguageOverrideIfSukoAssignment}
+                    setTeachingLanguage={setTeachingLanguage}
                     data={data}
                     contentType={contentType!}
                     isPresentation={isPresentation}
@@ -74,7 +74,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                     <AssignmentContent
                       assignment={data}
                       exam={exam}
-                      language={languageOverrideIfSukoAssignment}
+                      teachingLanguage={teachingLanguageOverrideIfSukoAssignment}
                       isPresentation={isPresentation}
                     />
                   )}
@@ -82,7 +82,11 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                   {contentType && isCertificate(data, contentType) && <CertificateContent certificate={data} />}
 
                   {contentType && isInstruction(data, contentType) && (
-                    <InstructionContent instruction={data} language={language} isPresentation={isPresentation} />
+                    <InstructionContent
+                      instruction={data}
+                      teachingLanguage={teachingLanguage}
+                      isPresentation={isPresentation}
+                    />
                   )}
                 </div>
               </div>

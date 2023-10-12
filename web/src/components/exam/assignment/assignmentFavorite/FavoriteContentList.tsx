@@ -1,4 +1,4 @@
-import { AssignmentOut, ContentTypeSingularEng, Exam } from '../../../../types'
+import { AssignmentOut, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../../../types'
 import { FiltersType, useFilterValues } from '../../../../hooks/useFilterValues'
 import { useState } from 'react'
 import { removeEmpty } from '../assignmentUtils'
@@ -13,10 +13,10 @@ import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../../lud
 import { sortKooditByArvo } from '../../../../hooks/useKoodisto'
 import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
 
-const filterByLanguage = (data: AssignmentOut, language: string) => {
-  if (language === 'fi') {
+const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
+  if (teachingLanguage === TeachingLanguage.fi) {
     return data.nameFi !== ''
-  } else if (language === 'sv') {
+  } else if (teachingLanguage === TeachingLanguage.sv) {
     return data.nameSv !== ''
   }
   return true
@@ -30,7 +30,7 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
   const { ORDER_OPTIONS, t } = useLudosTranslation()
   const { filterValues, setFilterValue } = useFilterValues(exam, true)
 
-  const [language, setLanguage] = useState<string>('fi')
+  const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
 
   const { data, loading, refresh } = useFetch<AssignmentOut[]>(
     `${ContentTypeSingularEng.koetehtavat}/${exam}?${new URLSearchParams(
@@ -46,7 +46,7 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
     lukuvuosiOverride
   } = useAssignmentFilterOverrides(exam, data)
 
-  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : language
+  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? TeachingLanguage.fi : teachingLanguage
 
   return (
     <div>
@@ -54,7 +54,7 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
         {exam !== Exam.SUKO && (
           <div className="flex flex-col gap-2 md:flex-row">
             <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
-            <TeachingLanguageSelect teachingLanguge={language} setTeachingLanguage={setLanguage} />
+            <TeachingLanguageSelect teachingLanguage={teachingLanguage} setTeachingLanguage={setTeachingLanguage} />
           </div>
         )}
 
@@ -84,10 +84,10 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
       <ul>
         {data &&
           data
-            .filter((data) => filterByLanguage(data, languageOverrideIfSukoAssignment))
+            .filter((data) => filterByTeachingLanguage(data, languageOverrideIfSukoAssignment))
             .map((assignment, i) => (
               <AssignmentCard
-                language={languageOverrideIfSukoAssignment}
+                teachingLanguage={languageOverrideIfSukoAssignment}
                 assignment={assignment}
                 exam={exam}
                 key={i}
