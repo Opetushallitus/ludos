@@ -12,6 +12,12 @@ export const TeachingLanguage = {
 } as const
 export type TeachingLanguage = (typeof TeachingLanguage)[keyof typeof TeachingLanguage]
 
+export const ContentOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+export type ContentOrder = (typeof ContentOrder)[keyof typeof ContentOrder]
+
 export const PublishState = {
   Draft: 'DRAFT',
   Published: 'PUBLISHED',

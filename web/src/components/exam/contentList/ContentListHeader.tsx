@@ -7,10 +7,8 @@ import { AssignmentFilters } from '../assignment/AssignmentFilters'
 import { uusiKey } from '../../routes/LudosRoutes'
 import { InternalLink } from '../../InternalLink'
 import { preventLineBreaks } from '../../../formatUtils'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
-import { LudosSelect } from '../../ludosSelect/LudosSelect'
-import { sortKooditByArvo } from '../../../hooks/useKoodisto'
 import { TeachingLanguageSelect } from '../../TeachingLanguageSelect'
+import { ContentOrderFilter } from '../ContentOrderFilter'
 
 interface ContentListHeaderProps {
   exam: Exam
@@ -30,7 +28,7 @@ export const ContentListHeader = ({
   setTeachingLanguage
 }: ContentListHeaderProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { lt, t, ORDER_OPTIONS } = useLudosTranslation()
+  const { lt, t } = useLudosTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
@@ -61,17 +59,10 @@ export const ContentListHeader = ({
               </div>
             )}
 
-            <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{t('filter.jarjesta')}</p>
-              <div className="w-40">
-                <LudosSelect
-                  name="orderFilter"
-                  options={koodistoSelectOptions(sortKooditByArvo(ORDER_OPTIONS))}
-                  value={currentKoodistoSelectOption(filterValues.jarjesta, ORDER_OPTIONS)}
-                  onChange={(opt) => opt && setFilterValue('jarjesta', opt.value)}
-                />
-              </div>
-            </div>
+            <ContentOrderFilter
+              contentOrder={filterValues.jarjesta}
+              setContentOrder={(contentOrder) => setFilterValue('jarjesta', contentOrder)}
+            />
           </div>
         )}
       </div>

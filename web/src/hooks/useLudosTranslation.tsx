@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
 import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
-import { ContentType, Exam, TeachingLanguage } from '../types'
+import { ContentOrder, ContentType, Exam, TeachingLanguage } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
 
 export type ContentAction = {
@@ -26,7 +26,7 @@ export const useLudosTranslation = () => {
     keys: { name: 'Näytä avaimet' }
   }
 
-  const ORDER_OPTIONS: Record<string, KoodiDtoOut> = {
+  const ORDER_OPTIONS: Record<ContentOrder, KoodiDtoOut> = {
     asc: {
       koodiArvo: 'asc',
       nimi: t('filter.nouseva')

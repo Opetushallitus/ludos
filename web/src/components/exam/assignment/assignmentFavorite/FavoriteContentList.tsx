@@ -8,10 +8,8 @@ import { AssignmentFilters } from '../AssignmentFilters'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useFetch } from '../../../../hooks/useFetch'
 import { useAssignmentFilterOverrides } from '../../../../hooks/useAssignmentFilterOverrides'
-import { LudosSelect } from '../../../ludosSelect/LudosSelect'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../../ludosSelect/helpers'
-import { sortKooditByArvo } from '../../../../hooks/useKoodisto'
 import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
+import { ContentOrderFilter } from '../../ContentOrderFilter'
 
 const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -27,7 +25,7 @@ interface FavoriteContentListProps {
 }
 
 export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
-  const { ORDER_OPTIONS, t } = useLudosTranslation()
+  const { t } = useLudosTranslation()
   const { filterValues, setFilterValue } = useFilterValues(exam, true)
 
   const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
@@ -58,17 +56,10 @@ export const FavoriteContentList = ({ exam }: FavoriteContentListProps) => {
           </div>
         )}
 
-        <div className="flex flex-col gap-2 md:flex-row">
-          <p className="mt-2">{t('filter.jarjesta')}</p>
-          <div className="w-36">
-            <LudosSelect
-              name="orderFilter"
-              options={koodistoSelectOptions(sortKooditByArvo(ORDER_OPTIONS))}
-              value={currentKoodistoSelectOption(filterValues.jarjesta, ORDER_OPTIONS)}
-              onChange={(opt) => opt && setFilterValue('jarjesta', opt.value)}
-            />
-          </div>
-        </div>
+        <ContentOrderFilter
+          contentOrder={filterValues.jarjesta}
+          setContentOrder={(contentOrder) => setFilterValue('jarjesta', contentOrder)}
+        />
       </div>
       <AssignmentFilters
         exam={exam}
