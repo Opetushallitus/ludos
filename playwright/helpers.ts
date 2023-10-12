@@ -1,10 +1,11 @@
 import { BrowserContext, Page, test as importedTest } from '@playwright/test'
+import { TeachingLanguage } from 'web/src/types'
 
 export const Role = {
   YLLAPITAJA: 'YLLAPITAJA',
   OPETTAJA: 'OPETTAJA',
   UNAUTHORIZED: 'UNAUTHORIZED'
-}
+} as const
 export type Role = (typeof Role)[keyof typeof Role]
 
 export const Exam = {
@@ -21,15 +22,9 @@ export const ContentType = {
   todistukset: 'todistukset'
 } as const
 
-export const Language = {
-  FI: 'FI',
-  SV: 'SV'
-} as const
-export type Language = (typeof Language)[keyof typeof Language]
-
 export const authFileByRole: Record<Role, string> = Object.fromEntries(
   Object.values(Role).map((role) => [role, `.auth/${role}.json`])
-)
+) as Record<Role, string>
 
 export async function login(page: Page, role: Role) {
   await page.goto(`/api/test/mocklogin/${role}`)
@@ -54,11 +49,12 @@ export async function postWithSession(context: BrowserContext, url: string, body
     }
   })
 }
+
 export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: string, optionIds: string[]) {
   if (await page.getByTestId(`${dropdownTestId}-reset-selected-options`).isVisible()) {
     await page.getByTestId(`${dropdownTestId}-reset-selected-options`).click()
   }
-  await page.getByTestId(dropdownTestId).click()
+  await page.getByTestId(`${dropdownTestId}-open`).click()
   for (const option of optionIds) {
     await page.getByTestId(`${dropdownTestId}-option-${option}`).click()
   }
@@ -66,6 +62,10 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
 }
 
 export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: string, optionId: string) {
-  await page.getByTestId(dropdownTestId).click()
+  await page.getByTestId(`${dropdownTestId}-open`).click()
   await page.getByTestId(`${dropdownTestId}-option-${optionId}`).click()
+}
+
+export async function setTeachingLanguage(page: Page, teachingLanguage: TeachingLanguage) {
+  await setSingleSelectDropdownOption(page, 'teachingLanguageDropdown', teachingLanguage)
 }

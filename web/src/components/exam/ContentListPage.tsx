@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { ContentType, Exam } from '../../types'
+import { ContentType, Exam, TeachingLanguage } from '../../types'
 import { ContentList } from './contentList/ContentList'
 import { ContentTypeMenu } from '../ContentTypeMenu'
 import { ContentListHeader } from './contentList/ContentListHeader'
@@ -16,10 +16,10 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { contentType: contentTypeParam } = useParams<{ contentType: ContentType }>()
   const contentType = contentTypeParam || ContentType.koetehtavat
   const { filterValues, setFilterValue } = useFilterValues(exam)
-  const [language, setLanguage] = useState<string>('fi')
+  const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
 
   const languageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : language
+    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : teachingLanguage
 
   return (
     <div className="pt-3">
@@ -37,13 +37,13 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
               contentType={contentType}
               filterValues={filterValues}
               setFilterValue={setFilterValue}
-              language={languageOverrideIfSukoAssignment}
-              setLanguage={setLanguage}
+              teachingLanguage={languageOverrideIfSukoAssignment}
+              setTeachingLanguage={setTeachingLanguage}
             />
             <ContentList
               exam={exam}
               contentType={contentType}
-              language={languageOverrideIfSukoAssignment}
+              teachingLanguage={languageOverrideIfSukoAssignment}
               filterValues={filterValues}
             />
           </>

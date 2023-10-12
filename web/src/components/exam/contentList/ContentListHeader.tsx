@@ -1,5 +1,5 @@
 import { buttonClasses } from '../../Button'
-import { ContentType, ContentTypeSingular, Exam } from '../../../types'
+import { ContentType, ContentTypeSingular, Exam, TeachingLanguage } from '../../../types'
 import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
 import { useUserDetails } from '../../../hooks/useUserDetails'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
@@ -7,17 +7,16 @@ import { AssignmentFilters } from '../assignment/AssignmentFilters'
 import { uusiKey } from '../../routes/LudosRoutes'
 import { InternalLink } from '../../InternalLink'
 import { preventLineBreaks } from '../../../formatUtils'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
-import { LudosSelect } from '../../ludosSelect/LudosSelect'
-import { sortKooditByArvo } from '../../../hooks/useKoodisto'
+import { TeachingLanguageSelect } from '../../TeachingLanguageSelect'
+import { ContentOrderFilter } from '../ContentOrderFilter'
 
 interface ContentListHeaderProps {
   exam: Exam
   contentType: ContentType
   filterValues: FiltersType
   setFilterValue: (key: keyof FiltersType, value: ParamsValue) => void
-  setLanguage: (value: string) => void
-  language: string
+  teachingLanguage: TeachingLanguage
+  setTeachingLanguage: (value: TeachingLanguage) => void
 }
 
 export const ContentListHeader = ({
@@ -25,11 +24,11 @@ export const ContentListHeader = ({
   contentType,
   filterValues,
   setFilterValue,
-  setLanguage,
-  language
+  teachingLanguage,
+  setTeachingLanguage
 }: ContentListHeaderProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { lt, t, ORDER_OPTIONS, LANGUAGE_OPTIONS } = useLudosTranslation()
+  const { lt, t } = useLudosTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
@@ -56,28 +55,14 @@ export const ContentListHeader = ({
                 <p className="mt-2">
                   {contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}
                 </p>
-                <div className="w-32">
-                  <LudosSelect
-                    name="languageDropdown"
-                    options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
-                    value={currentKoodistoSelectOption(language, LANGUAGE_OPTIONS)}
-                    onChange={(opt) => opt && setLanguage(opt.value)}
-                  />
-                </div>
+                <TeachingLanguageSelect teachingLanguage={teachingLanguage} setTeachingLanguage={setTeachingLanguage} />
               </div>
             )}
 
-            <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{t('filter.jarjesta')}</p>
-              <div className="w-40">
-                <LudosSelect
-                  name="orderFilter"
-                  options={koodistoSelectOptions(sortKooditByArvo(ORDER_OPTIONS))}
-                  value={currentKoodistoSelectOption(filterValues.jarjesta, ORDER_OPTIONS)}
-                  onChange={(opt) => opt && setFilterValue('jarjesta', opt.value)}
-                />
-              </div>
-            </div>
+            <ContentOrderFilter
+              contentOrder={filterValues.jarjesta}
+              setContentOrder={(contentOrder) => setFilterValue('jarjesta', contentOrder)}
+            />
           </div>
         )}
       </div>

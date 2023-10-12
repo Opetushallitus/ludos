@@ -1,4 +1,4 @@
-import { InstructionDtoOut } from '../../types'
+import { InstructionDtoOut, TeachingLanguage } from '../../types'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
@@ -7,14 +7,14 @@ import { useTranslation } from 'react-i18next'
 
 type InstructionContentProps = {
   instruction: InstructionDtoOut
-  language: string
+  teachingLanguage: TeachingLanguage
   isPresentation: boolean
 }
 
-export const InstructionContent = ({ instruction, language, isPresentation }: InstructionContentProps) => {
+export const InstructionContent = ({ instruction, teachingLanguage, isPresentation }: InstructionContentProps) => {
   const { t } = useTranslation()
   const attachmentsFilteredWithLanguage = instruction.attachments
-    .filter((it) => it.language.toLowerCase() === language)
+    .filter((it) => it.language.toLowerCase() === teachingLanguage)
     .map((it) => it)
 
   return (
@@ -25,18 +25,24 @@ export const InstructionContent = ({ instruction, language, isPresentation }: In
         </div>
       )}
       <ContentInstruction
-        language={language}
+        teachingLanguage={teachingLanguage}
         instructionFi={instruction.instructionFi}
         instructionSv={instruction.instructionSv}
       />
 
       <div className="mb-4">
-        <p className="text-sm">{language === 'fi' ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}</p>
+        <p className="text-sm">
+          {teachingLanguage === TeachingLanguage.fi ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}
+        </p>
       </div>
 
       <div className="mb-4 border-b border-gray-separator" />
 
-      <ContentContent language={language} contentFi={instruction.contentFi} contentSv={instruction.contentSv} />
+      <ContentContent
+        teachingLanguage={teachingLanguage}
+        contentFi={instruction.contentFi}
+        contentSv={instruction.contentSv}
+      />
 
       {attachmentsFilteredWithLanguage.length > 0 && (
         <div className="mb-4 mt-3">

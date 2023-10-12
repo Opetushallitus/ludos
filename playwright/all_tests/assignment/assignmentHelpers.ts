@@ -1,11 +1,12 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
   Exam,
-  Language,
   postWithSession,
   setMultiSelectDropdownOptions,
-  setSingleSelectDropdownOption
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
 } from '../../helpers'
+import { TeachingLanguage } from 'web/src/types'
 
 type AssignmentBase = {
   page: Page
@@ -36,7 +37,7 @@ export async function fillSukoAssignmentForm({
   await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminen', ['01'])
 
   // Test searching for non-existing option
-  await page.getByTestId('laajaalainenOsaaminen-input').fill('non-existing-option')
+  await page.locator('#laajaalainenOsaaminen-input').fill('non-existing-option')
 
   const allAvailableLaajaalainenOptions = ['01', '02', '03', '04', '05', '06']
 
@@ -45,11 +46,11 @@ export async function fillSukoAssignmentForm({
   }
 
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
-  await page.getByTestId('laajaalainenOsaaminen-input').fill('globa')
+  await page.locator('#laajaalainenOsaaminen-input').fill('globa')
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
-  await page.getByTestId('laajaalainenOsaaminen').click()
+  await page.getByTestId('laajaalainenOsaaminen-open').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
   await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
@@ -79,8 +80,6 @@ export async function updateSukoAssignmentForm({
   await setSingleSelectDropdownOption(page, 'tavoitetaso', '0003')
   // remove first selected option
   await page.getByTestId('aihe-remove-selected-option').first().click()
-  await page.getByTestId('aihe').click()
-  await page.getByTestId('aihe-multi-select-ready-button').click()
   // Verify that option has been removed
   const selectedOptionsAihe = await page.getByTestId('aihe-remove-selected-option').count()
   expect(selectedOptionsAihe).toBe(1)
@@ -302,18 +301,20 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
   return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
 }
 
-export const filterTestAssignmentName = (number: number, language: Language, exam: Exam) =>
-  `Filter test name ${number} ${language} ${exam}`
+export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
+  `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
 export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[], exam: Exam) {
   await expect(
-    page.getByRole('link', { name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], Language.FI, exam) })
+    page.getByRole('link', {
+      name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, exam)
+    })
   ).toBeVisible()
   const assignments = await page.getByTestId('assignment-list').locator('li').all()
   const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
   const names = await Promise.all(namePromises)
   expect(names).toEqual(
-    expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, Language.FI, exam))
+    expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, exam))
   )
 }
 
@@ -326,9 +327,7 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
   const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
   await expect(assignmentCard).toBeVisible()
 
-  await expect(page.getByTestId('languageDropdown')).toBeVisible()
-  await page.getByTestId('languageDropdown').click()
-  await page.getByTestId('languageDropdown-option-sv').click()
+  await setTeachingLanguage(page, TeachingLanguage.sv)
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }

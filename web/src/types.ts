@@ -3,15 +3,26 @@ import { Oppimaara } from './hooks/useKoodisto'
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'
-}
+} as const
 export type ContentFormAction = (typeof ContentFormAction)[keyof typeof ContentFormAction]
+
+export const TeachingLanguage = {
+  fi: 'fi',
+  sv: 'sv'
+} as const
+export type TeachingLanguage = (typeof TeachingLanguage)[keyof typeof TeachingLanguage]
+
+export const ContentOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+export type ContentOrder = (typeof ContentOrder)[keyof typeof ContentOrder]
 
 export const PublishState = {
   Draft: 'DRAFT',
   Published: 'PUBLISHED',
   Archived: 'ARCHIVED'
 } as const
-
 export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
 export const Exam = {

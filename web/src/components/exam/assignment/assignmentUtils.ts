@@ -7,7 +7,8 @@ import {
   InstructionDtoOut,
   LdAssignmentDtoOut,
   PuhviAssignmentDtoOut,
-  SukoAssignmentDtoOut
+  SukoAssignmentDtoOut,
+  TeachingLanguage
 } from '../../../types'
 
 // exam type checkers
@@ -61,9 +62,9 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
   )
 }
 
-export const getContentName = (data: BaseOut, contentType: ContentType, language: string) => {
+export const getContentName = (data: BaseOut, contentType: ContentType, teachingLanguage: TeachingLanguage) => {
   if (isAssignment(data, contentType) || isInstruction(data, contentType)) {
-    return language === 'fi' ? data.nameFi : data.nameSv
+    return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
   } else if (isCertificate(data, contentType)) {
     return data.name
   }

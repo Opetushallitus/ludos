@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
-import { ContentType, Exam, loginTestGroup, Role } from '../../helpers'
+import { ContentType, Exam, loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
 import {
   assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage,
   createAssignment,
@@ -11,6 +11,7 @@ import {
   updatePuhviAssignment,
   updateSukoAssignmentForm
 } from './assignmentHelpers'
+import { TeachingLanguage } from 'web/src/types'
 
 const createContent = {
   nameTextFi: 'Testi tehtävä',
@@ -98,14 +99,14 @@ test.describe('Suko assignment form tests', () => {
       'Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, Vuorovaikutusosaaminen'
     )
 
-    await expect(page.getByTestId('languageDropdown')).toBeHidden()
+    await expect(page.locator('#languageDropdown')).toBeHidden()
 
     await page.getByTestId('return').click()
     const assignmentCard = page.getByTestId(`assignment-list-item-${createdAssignmentId}`)
     await expect(assignmentCard).toBeVisible()
     await expect(assignmentCard.getByTestId('suko-oppimaara')).toHaveText(expectedOppimaara)
 
-    await expect(page.getByTestId('languageDropdown')).toBeHidden()
+    await expect(page.locator('#languageDropdown')).toBeHidden()
   })
 
   test('can create draft assignment', async ({ page }) => {
@@ -165,8 +166,7 @@ test.describe('Ld assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await page.getByTestId('languageDropdown').click()
-    await page.getByTestId('languageDropdown-option-sv').click()
+    await setTeachingLanguage(page, TeachingLanguage.sv)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameTextSv)
     await expect(page.getByTestId('instruction-sv')).toHaveText(formData.instructionTextSv)
@@ -204,8 +204,8 @@ test.describe('Ld assignment form tests', () => {
     for (const [i, content] of updatedFormData.contentTextFi.entries()) {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
-    await page.getByTestId('languageDropdown').click()
-    await page.getByTestId('languageDropdown-option-sv').click()
+
+    await setTeachingLanguage(page, TeachingLanguage.sv)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {
@@ -298,8 +298,7 @@ test.describe('Puhvi assignment form tests', () => {
       await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
     }
 
-    await page.getByTestId('languageDropdown').click()
-    await page.getByTestId('languageDropdown-option-sv').click()
+    await setTeachingLanguage(page, TeachingLanguage.sv)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextSv)
     for (const [i, content] of updatedFormData.contentTextSv.entries()) {

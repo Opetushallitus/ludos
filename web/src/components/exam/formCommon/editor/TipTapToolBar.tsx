@@ -1,5 +1,5 @@
 import { Editor } from '@tiptap/react'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Icon } from '../../../Icon'
 import { Button } from '../../../Button'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +25,7 @@ export const TipTapToolBar = ({ editor, dataTestId }: { editor: Editor; dataTest
     setIsUrlModalOpen(false)
   }
 
+  /*
   const addImage = useCallback(() => {
     const url = window.prompt('URL')
 
@@ -32,6 +33,7 @@ export const TipTapToolBar = ({ editor, dataTestId }: { editor: Editor; dataTest
       editor?.chain().focus().setImage({ src: url }).run()
     }
   }, [editor])
+ */
 
   if (!editor) {
     return null

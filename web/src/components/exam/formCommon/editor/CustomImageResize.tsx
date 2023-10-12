@@ -1,3 +1,4 @@
+/*
 import { mergeAttributes, nodeInputRule, Node } from '@tiptap/core'
 import { ReactNodeViewRenderer } from '@tiptap/react'
 
@@ -75,3 +76,4 @@ export const CustomImageResize = Node.create({
     ]
   }
 })
+*/

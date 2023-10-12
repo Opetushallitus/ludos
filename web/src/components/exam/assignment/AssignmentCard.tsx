@@ -1,5 +1,5 @@
 import { Icon } from '../../Icon'
-import { AssignmentOut, ContentType, Exam } from '../../../types'
+import { AssignmentOut, ContentType, Exam, TeachingLanguage } from '../../../types'
 import { StateTag } from '../../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../InternalLink'
@@ -13,13 +13,13 @@ import { useToggleFavorite } from '../../../hooks/useToggleFavorite'
 import { contentPagePath, editingFormPath } from '../../routes/LudosRoutes'
 
 type AssignmentCardProps = {
-  language: string
+  teachingLanguage: TeachingLanguage
   assignment: AssignmentOut
   exam: Exam
   refreshData?: () => void
 }
 
-export const AssignmentCard = ({ language, assignment, exam, refreshData }: AssignmentCardProps) => {
+export const AssignmentCard = ({ teachingLanguage, assignment, exam, refreshData }: AssignmentCardProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
@@ -51,7 +51,7 @@ export const AssignmentCard = ({ language, assignment, exam, refreshData }: Assi
           to={contentPagePath(exam, ContentType.koetehtavat, assignment.id)}
           state={{ returnLocation }}
           data-testid="assignment-name-link">
-          {(language === 'fi' ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')}
+          {(teachingLanguage === TeachingLanguage.fi ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
           <>
