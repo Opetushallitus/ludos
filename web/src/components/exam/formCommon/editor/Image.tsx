@@ -1,3 +1,4 @@
+/*
 import Image from '@tiptap/extension-image'
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
 import styles from './ImageStyles.module.css'
@@ -43,3 +44,4 @@ export default Image.extend({
     return ReactNodeViewRenderer(ImageNode)
   }
 })
+*/

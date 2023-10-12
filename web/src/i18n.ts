@@ -26,6 +26,4 @@ const i18nOptions = {
   resources: await loadResources()
 }
 
-i18n.use(LanguageDetector).use(initReactI18next).init(i18nOptions)
-
-export default i18n
+await i18n.use(LanguageDetector).use(initReactI18next).init(i18nOptions)

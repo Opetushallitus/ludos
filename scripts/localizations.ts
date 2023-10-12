@@ -497,4 +497,4 @@ const app = subcommands({
   }
 })
 
-run(app, process.argv.slice(2))
+await run(app, process['argv'].slice(2))
