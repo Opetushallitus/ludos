@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { HeaderFavorites } from './HeaderFavorites'
-import { LudosContext } from '../../LudosContext'
+import { LudosContext } from '../../contexts/LudosContext'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
 

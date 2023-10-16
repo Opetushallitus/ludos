@@ -1,7 +1,7 @@
 import { ContentType, Exam } from '../../types'
 import { Icon } from '../Icon'
 import { InternalLink } from '../InternalLink'
-import { contentListPath } from '../routes/LudosRoutes'
+import { contentListPath } from '../LudosRoutes'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const NavigationBoxes = () => {

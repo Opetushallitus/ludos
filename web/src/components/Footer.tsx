@@ -3,7 +3,7 @@ import { ExternalLink } from './ExternalLink'
 import { InternalLink } from './InternalLink'
 import { OPH_URL, TIETOSUOJA_SELOSTE_URL } from '../constants'
 import { useTranslation } from 'react-i18next'
-import { feedbackPath } from './routes/LudosRoutes'
+import { feedbackPath } from './LudosRoutes'
 
 type FooterProps = {
   isPresentation?: boolean

@@ -13,7 +13,7 @@ import {
   palautteetKey,
   puhviKey,
   sukoKey
-} from '../routes/LudosRoutes'
+} from '../LudosRoutes'
 import { ContentType, Exam } from '../../types'
 import { useTranslation } from 'react-i18next'
 

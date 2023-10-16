@@ -1,7 +1,7 @@
 import { NavigationBoxes } from './FrontpageNavigationBoxes'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useTranslation } from 'react-i18next'
-import { etusivuKey } from '../routes/LudosRoutes'
+import { etusivuKey } from '../LudosRoutes'
 
 export const Frontpage = () => {
   const { t } = useTranslation()

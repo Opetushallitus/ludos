@@ -2,7 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { buttonClasses } from '../Button'
 import { Icon } from '../Icon'
-import { favoritesPagePath } from '../routes/LudosRoutes'
+import { favoritesPagePath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { twMerge } from 'tailwind-merge'
 
