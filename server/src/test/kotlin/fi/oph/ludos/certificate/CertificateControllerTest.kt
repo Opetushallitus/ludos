@@ -272,7 +272,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
     @BeforeAll
     fun setup() {
         authenticateAsYllapitaja()
-        mockMvc.perform(emptyDb())
+        mockMvc.perform(emptyDbRequest())
         mockMvc.perform(seedDbWithCertificates())
         val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString

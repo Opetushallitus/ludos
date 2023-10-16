@@ -17,6 +17,14 @@ export type FiltersType = {
 
 export type ParamsValue = number | string | string[] | null | boolean
 
+export type SearchStringForNewFilterValue = (key: keyof FiltersType, value: ParamsValue) => string
+
+export type FilterValues = {
+  filterValues: FiltersType
+  setFilterValue: (key: keyof FiltersType, value: ParamsValue, replace: boolean) => void
+  searchStringForNewFilterValue: (key: keyof FiltersType, value: ParamsValue) => string
+}
+
 export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -59,7 +67,7 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
     return currentParams
   }, [exam, location.search, showOnlyFavorites])
 
-  const setFilterValue = (key: keyof FiltersType, value: ParamsValue, replace: boolean = true) => {
+  const searchStringForNewFilterValue = (key: keyof FiltersType, value: ParamsValue) => {
     const urlParams = new URLSearchParams(location.search)
     if (value === null) {
       urlParams.delete(key)
@@ -83,8 +91,12 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
       urlParams.set('sivu', '1')
     }
 
-    navigate({ search: `?${urlParams.toString()}` }, { replace })
+    return `?${urlParams.toString()}`
   }
 
-  return { filterValues, setFilterValue }
+  const setFilterValue = (key: keyof FiltersType, value: ParamsValue, replace: boolean = true) => {
+    navigate({ search: searchStringForNewFilterValue(key, value) }, { replace })
+  }
+
+  return { filterValues, setFilterValue, searchStringForNewFilterValue }
 }

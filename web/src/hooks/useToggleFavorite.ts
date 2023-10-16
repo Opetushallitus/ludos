@@ -9,6 +9,7 @@ interface UseToggleFavoriteProps {
   assignmentId: number
   isFavorite: boolean
   setIsFavorite: Dispatch<SetStateAction<boolean>>
+  isFavoritePage?: boolean
   refreshData?: () => void
 }
 
@@ -17,6 +18,7 @@ export function useToggleFavorite({
   assignmentId,
   isFavorite,
   setIsFavorite,
+  isFavoritePage,
   refreshData
 }: UseToggleFavoriteProps) {
   const { t } = useTranslation()
@@ -37,7 +39,7 @@ export function useToggleFavorite({
     } catch (e) {
       console.error(e)
     } finally {
-      refreshData?.()
+      isFavoritePage && refreshData?.()
     }
   }
 

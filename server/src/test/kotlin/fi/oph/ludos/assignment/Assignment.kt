@@ -77,5 +77,5 @@ data class TestAssignmentsOut<T : AssignmentOut>(
     val content: List<T>,
     val totalPages: Int,
     val currentPage: Int,
-    val assignmentFilterOptions: AssignmentFilterOptions
+    val assignmentFilterOptions: AssignmentFilterOptionsDtoOut
 )

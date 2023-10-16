@@ -62,9 +62,13 @@ export type AssignmentFilterOptions = {
 
 export type ContentOut<T = BaseOut> = {
   content: T[]
-  totalPages?: number
-  currentPage?: number
-  assignmentFilterOptions?: AssignmentFilterOptions
+}
+
+export type AssignmentsOut = {
+  content: AssignmentOut[]
+  totalPages: number
+  currentPage: number
+  assignmentFilterOptions: AssignmentFilterOptions
 }
 
 export type SukoAssignmentDtoOut = AssignmentOut & {

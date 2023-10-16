@@ -1,10 +1,10 @@
-import { ContentType, Exam, TeachingLanguage } from '../../../types'
+import { Exam, TeachingLanguage } from '../../../../types'
 import { NavLink, useParams } from 'react-router-dom'
-import { favoritesPagePath } from '../../LudosRoutes'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { ContentList } from './ContentList'
+import { favoritesPagePath } from '../../../LudosRoutes'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { AssignmentList } from './AssignmentList'
 import { useState } from 'react'
-import { useFilterValues } from '../../../hooks/useFilterValues'
+import { useFilterValues } from '../../../../hooks/useFilterValues'
 
 const ExamMenu = () => {
   const { lt } = useLudosTranslation()
@@ -49,15 +49,14 @@ export const AssignmentFavorite = () => {
       <ExamMenu />
 
       <div role="tabpanel">
-        <ContentList
+        <AssignmentList
           exam={exam}
-          contentType={ContentType.koetehtavat}
           teachingLanguageSelectProps={{
             teachingLanguage: languageOverrideIfSukoAssignment,
             setTeachingLanguage
           }}
           filterValues={filterValues}
-          isFavorite={true}
+          isFavoritePage
         />
       </div>
     </div>

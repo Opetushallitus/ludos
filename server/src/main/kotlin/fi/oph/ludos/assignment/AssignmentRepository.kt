@@ -20,8 +20,12 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.server.ResponseStatusException
 import java.sql.Connection
 import java.sql.ResultSet
+import java.util.*
 
-const val PAGE_SIZE = 20
+data class AssignmentListMetadata(
+    val assignmentFilterOptions: AssignmentFilterOptionsDtoOut,
+    val totalCount: Int
+)
 
 @Component
 class AssignmentRepository(
@@ -31,79 +35,71 @@ class AssignmentRepository(
     private val koodistoService: KoodistoService,
 ) {
 
-    val mapSukoListResultSet: (ResultSet, Int) -> Pair<SukoAssignmentDtoOut, Int> = { rs: ResultSet, _: Int ->
-        Pair(
-            SukoAssignmentDtoOut(
-                rs.getInt("assignment_id"),
-                rs.getString("assignment_name_fi"),
-                rs.getString("assignment_name_sv"),
-                rs.getString("assignment_instruction_fi"),
-                rs.getString("assignment_instruction_sv"),
-                rs.getKotlinArray("assignment_content_fi"),
-                rs.getKotlinArray("assignment_content_sv"),
-                PublishState.valueOf(rs.getString("assignment_publish_state")),
-                rs.getTimestamp("assignment_created_at"),
-                rs.getTimestamp("assignment_updated_at"),
-                rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
-                rs.getString("assignment_author_oid"),
-                rs.getBoolean("is_favorite"),
-                rs.getString("suko_assignment_assignment_type_koodi_arvo"),
-                Oppimaara(
-                    rs.getString("suko_assignment_oppimaara_koodi_arvo"),
-                    rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
-                ),
-                rs.getString("suko_assignment_tavoitetaso_koodi_arvo"),
-                rs.getKotlinArray<String>("suko_assignment_aihe_koodi_arvos")
+    val mapSukoListResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut = { rs: ResultSet, _: Int ->
+        SukoAssignmentDtoOut(
+            rs.getInt("assignment_id"),
+            rs.getString("assignment_name_fi"),
+            rs.getString("assignment_name_sv"),
+            rs.getString("assignment_instruction_fi"),
+            rs.getString("assignment_instruction_sv"),
+            rs.getKotlinArray("assignment_content_fi"),
+            rs.getKotlinArray("assignment_content_sv"),
+            PublishState.valueOf(rs.getString("assignment_publish_state")),
+            rs.getTimestamp("assignment_created_at"),
+            rs.getTimestamp("assignment_updated_at"),
+            rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
+            rs.getString("assignment_author_oid"),
+            rs.getBoolean("is_favorite"),
+            rs.getString("suko_assignment_assignment_type_koodi_arvo"),
+            Oppimaara(
+                rs.getString("suko_assignment_oppimaara_koodi_arvo"),
+                rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
             ),
-            rs.getInt("total_count")
+            rs.getString("suko_assignment_tavoitetaso_koodi_arvo"),
+            rs.getKotlinArray<String>("suko_assignment_aihe_koodi_arvos")
         )
     }
 
-    val mapPuhviResultSet: (ResultSet, Int) -> Pair<PuhviAssignmentDtoOut, Int> = { rs: ResultSet, _: Int ->
-        Pair(
-            PuhviAssignmentDtoOut(
-                rs.getInt("assignment_id"),
-                rs.getString("assignment_name_fi"),
-                rs.getString("assignment_name_sv"),
-                rs.getString("assignment_instruction_fi"),
-                rs.getString("assignment_instruction_sv"),
-                rs.getKotlinArray("assignment_content_fi"),
-                rs.getKotlinArray("assignment_content_sv"),
-                PublishState.valueOf(rs.getString("assignment_publish_state")),
-                rs.getTimestamp("assignment_created_at"),
-                rs.getTimestamp("assignment_updated_at"),
-                rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
-                rs.getString("assignment_author_oid"),
-                rs.getBoolean("is_favorite"),
-                rs.getString("puhvi_assignment_assignment_type_koodi_arvo"),
-                rs.getKotlinArray<String>("puhvi_assignment_lukuvuosi_koodi_arvos"),
-            ),
-            rs.getInt("total_count")
+    val mapLdResultSet: (ResultSet, Int) -> LdAssignmentDtoOut = { rs: ResultSet, _: Int ->
+        LdAssignmentDtoOut(
+            rs.getInt("assignment_id"),
+            rs.getString("assignment_name_fi"),
+            rs.getString("assignment_name_sv"),
+            rs.getString("assignment_instruction_fi"),
+            rs.getString("assignment_instruction_sv"),
+            rs.getKotlinArray("assignment_content_fi"),
+            rs.getKotlinArray("assignment_content_sv"),
+            PublishState.valueOf(rs.getString("assignment_publish_state")),
+            rs.getTimestamp("assignment_created_at"),
+            rs.getTimestamp("assignment_updated_at"),
+            rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
+            rs.getString("assignment_author_oid"),
+            rs.getBoolean("is_favorite"),
+            rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos"),
+            rs.getString("ld_assignment_aine_koodi_arvo")
         )
     }
 
-    val mapLdResultSet: (ResultSet, Int) -> Pair<LdAssignmentDtoOut, Int> = { rs: ResultSet, _: Int ->
-        Pair(
-            LdAssignmentDtoOut(
-                rs.getInt("assignment_id"),
-                rs.getString("assignment_name_fi"),
-                rs.getString("assignment_name_sv"),
-                rs.getString("assignment_instruction_fi"),
-                rs.getString("assignment_instruction_sv"),
-                rs.getKotlinArray("assignment_content_fi"),
-                rs.getKotlinArray("assignment_content_sv"),
-                PublishState.valueOf(rs.getString("assignment_publish_state")),
-                rs.getTimestamp("assignment_created_at"),
-                rs.getTimestamp("assignment_updated_at"),
-                rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
-                rs.getString("assignment_author_oid"),
-                rs.getBoolean("is_favorite"),
-                rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos"),
-                rs.getString("ld_assignment_aine_koodi_arvo")
-            ),
-            rs.getInt("total_count")
+    val mapPuhviResultSet: (ResultSet, Int) -> PuhviAssignmentDtoOut = { rs: ResultSet, _: Int ->
+        PuhviAssignmentDtoOut(
+            rs.getInt("assignment_id"),
+            rs.getString("assignment_name_fi"),
+            rs.getString("assignment_name_sv"),
+            rs.getString("assignment_instruction_fi"),
+            rs.getString("assignment_instruction_sv"),
+            rs.getKotlinArray("assignment_content_fi"),
+            rs.getKotlinArray("assignment_content_sv"),
+            PublishState.valueOf(rs.getString("assignment_publish_state")),
+            rs.getTimestamp("assignment_created_at"),
+            rs.getTimestamp("assignment_updated_at"),
+            rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
+            rs.getString("assignment_author_oid"),
+            rs.getBoolean("is_favorite"),
+            rs.getString("puhvi_assignment_assignment_type_koodi_arvo"),
+            rs.getKotlinArray<String>("puhvi_assignment_lukuvuosi_koodi_arvos"),
         )
     }
+
 
     private fun getTableNameFromExam(exam: Exam) = when (exam) {
         Exam.SUKO -> "suko_assignment"
@@ -111,31 +107,35 @@ class AssignmentRepository(
         Exam.LD -> "ld_assignment"
     }
 
-    fun getAssignments(assignmentFilter: BaseFilters): AssignmentListData {
+    fun getAssignments(assignmentFilter: BaseFilters): AssignmentListDtoOut {
         val role = Kayttajatiedot.fromSecurityContext().role
         val userOid = Kayttajatiedot.fromSecurityContext().oidHenkilo
-        val (listQuery, listParameters, listMapper) = buildListQuery(assignmentFilter, role, userOid)
 
-        val (metadataQuery, metadataParameters, metadataExtractor) = buildListMetadataQuery(assignmentFilter, role, userOid)
-
+        // NOTE: both metadata and data can be fetched relatively easily in a single query if required: https://opetushallitus.slack.com/archives/D04TDKGKMK9/p1697460263573769
+        val (metadataQuery, metadataParameters, metadataExtractor) = buildListMetadataQuery(
+            assignmentFilter,
+            role,
+            userOid
+        )
         val metadata = namedJdbcTemplate.query(metadataQuery, metadataParameters, metadataExtractor)
 
-        val assignmentsAndTotalCounts = namedJdbcTemplate.query(listQuery, listParameters, listMapper)
+        val (listQuery, listParameters, listMapper) = buildListQuery(assignmentFilter, role, userOid)
+        val assignments = namedJdbcTemplate.query(listQuery, listParameters, listMapper)
 
-        val totalCount = if (assignmentsAndTotalCounts.size > 0) assignmentsAndTotalCounts[0].second else 0
-        val totalPages = if (totalCount == 0) 1 else (totalCount + PAGE_SIZE - 1) / PAGE_SIZE
+        val totalCount = metadata!!.totalCount
+        val totalPages = if (totalCount == 0) 1 else (totalCount + ASSIGNMENT_PAGE_SIZE - 1) / ASSIGNMENT_PAGE_SIZE
 
-        return AssignmentListData(
-            assignmentsAndTotalCounts.map { it.first },
+        return AssignmentListDtoOut(
+            assignments,
             totalPages,
             assignmentFilter.sivu,
-            metadata!!
+            metadata.assignmentFilterOptions
         )
     }
 
     private fun buildListMetadataQuery(
         filters: BaseFilters, role: Role, userOid: String
-    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentFilterOptions> = when (filters) {
+    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> = when (filters) {
         is SukoFilters -> buildSukoListMetadataQuery(filters, role, userOid)
         is PuhviFilters -> buildPuhviListMetadataQuery(filters, role, userOid)
         is LdFilters -> buildLdListMetadataQuery(filters, role, userOid)
@@ -144,7 +144,7 @@ class AssignmentRepository(
 
     private fun buildListQuery(
         filters: BaseFilters, role: Role, userOid: String, noLimit: Boolean = false
-    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> Pair<AssignmentOut, Int>> = when (filters) {
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> AssignmentOut> = when (filters) {
         is SukoFilters -> buildSukoListQuery(filters, role, userOid, noLimit)
         is PuhviFilters -> buildPuhviListQuery(filters, role, userOid, noLimit)
         is LdFilters -> buildLdListQuery(filters, role, userOid, noLimit)
@@ -155,8 +155,7 @@ class AssignmentRepository(
         val table = getTableNameFromExam(exam)
 
         val query = """
-        SELECT COUNT(*) OVER() AS total_count,
-               a.*, 
+        SELECT a.*, 
                ARRAY_AGG(content.assignment_content_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.FI}') AS assignment_content_fi,
                ARRAY_AGG(content.assignment_content_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.SV}') AS assignment_content_sv,
                MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
@@ -204,8 +203,8 @@ class AssignmentRepository(
         page: Int
     ) {
         query.append(" LIMIT :limit OFFSET :offset")
-        parameters.addValue("limit", PAGE_SIZE)
-        parameters.addValue("offset", (page - 1) * PAGE_SIZE)
+        parameters.addValue("limit", ASSIGNMENT_PAGE_SIZE)
+        parameters.addValue("offset", (page - 1) * ASSIGNMENT_PAGE_SIZE)
     }
 
     private fun commonQueryFilters(
@@ -240,7 +239,7 @@ class AssignmentRepository(
 
             // Oppimääriä on kolmea eri tyyppiä
             // 1) Oppimäärät, joille ei voi antaa tarkennetta
-            //    => palautetaan tehtävät, joiden (oppimääräkoodiarvo,kielitarkennekoodiarvo)-pari mätsää (kielitakennekoodiarvo==null)
+            //    => palautetaan tehtävät, joiden (oppimääräkoodiarvo,kielitarkennekoodiarvo)-pari mätsää (kielitarkennekoodiarvo==null)
             // 2) Oppimäärät, joille voi antaa tarkenteen, ja tarkenne on annettu
             //    => palautetaan tehtävät, joiden (oppimääräkoodiarvo,kielitarkennekoodiarvo)-pari mätsää (kielitarkennekoodiarvo!=null)
             // 3) Oppimäärät, joille voi antaa tarkenteen, mutta sitä ei ole annettu
@@ -294,7 +293,7 @@ class AssignmentRepository(
 
     private fun buildSukoListQuery(
         filters: SukoFilters, role: Role, userOid: String, noLimit: Boolean
-    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> Pair<SukoAssignmentDtoOut, Int>> {
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentDtoOut> {
         val (queryBuilder, parameters) = baseAssignmentListQuery(Exam.SUKO, userOid)
 
         addSukoFilters(queryBuilder, parameters, filters)
@@ -303,32 +302,42 @@ class AssignmentRepository(
         return Triple(queryBuilder.toString(), parameters, mapSukoListResultSet)
     }
 
-    private val sukoListMetadataResultSetExtractor: (ResultSet) -> AssignmentFilterOptions = { rs: ResultSet ->
-        val oppimaaraOptions: MutableSet<Oppimaara> = mutableSetOf()
-        val tehtavatyyppiOptions: MutableSet<String> = mutableSetOf()
-        val aiheOptions: MutableSet<String> = mutableSetOf()
-        val tavoitetaitotasoOptions: MutableSet<String> = mutableSetOf()
+    private val sukoListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
+        val oppimaaraOptions: SortedSet<Oppimaara> = sortedSetOf()
+        val tehtavatyyppiOptions: SortedSet<String> = sortedSetOf()
+        val aiheOptions: SortedSet<String> = sortedSetOf()
+        val tavoitetaitotasoOptions: SortedSet<String> = sortedSetOf()
+        var totalCount = 0
 
         while (rs.next()) {
+            totalCount++
             oppimaaraOptions.add(
                 Oppimaara(
                     rs.getString("suko_assignment_oppimaara_koodi_arvo"),
                     rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
-            ))
+                )
+            )
             tehtavatyyppiOptions.add(rs.getString("suko_assignment_assignment_type_koodi_arvo"))
             rs.getKotlinArray<String>("suko_assignment_aihe_koodi_arvos").forEach { aiheOptions.add(it) }
-            tavoitetaitotasoOptions.add(rs.getString("suko_assignment_tavoitetaso_koodi_arvo"))
+            rs.getString("suko_assignment_tavoitetaso_koodi_arvo")?.let { tavoitetaitotasoOptions.add(it) }
         }
 
-        AssignmentFilterOptions(
-            oppimaara = oppimaaraOptions.toList(),
-            tehtavatyyppi = tehtavatyyppiOptions.toList(),
-            aihe = aiheOptions.toList(),
-            tavoitetaitotaso = tavoitetaitotasoOptions.toList(),
+        AssignmentListMetadata(
+            assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                oppimaara = oppimaaraOptions.toList(),
+                tehtavatyyppi = tehtavatyyppiOptions.toList(),
+                aihe = aiheOptions.toList(),
+                tavoitetaitotaso = tavoitetaitotasoOptions.toList(),
+            ),
+            totalCount = totalCount
         )
     }
 
-    private fun buildSukoListMetadataQuery(filters: SukoFilters, role: Role, userOid: String): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentFilterOptions> {
+    private fun buildSukoListMetadataQuery(
+        filters: SukoFilters,
+        role: Role,
+        userOid: String
+    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
         val queryBuilder = StringBuilder(
             """
             SELECT
@@ -353,22 +362,31 @@ class AssignmentRepository(
         return Triple(queryBuilder.toString(), parameters, sukoListMetadataResultSetExtractor)
     }
 
-    private val puhviListMetadataResultSetExtractor: (ResultSet) -> AssignmentFilterOptions = { rs: ResultSet ->
-        val lukuvuosiOptions: MutableSet<String> = mutableSetOf()
-        val tehtavatyyppiOptions: MutableSet<String> = mutableSetOf()
+    private val puhviListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
+        val lukuvuosiOptions: SortedSet<String> = sortedSetOf()
+        val tehtavatyyppiOptions: SortedSet<String> = sortedSetOf()
+        var totalCount = 0
 
         while (rs.next()) {
+            totalCount++
             tehtavatyyppiOptions.add(rs.getString("puhvi_assignment_assignment_type_koodi_arvo"))
             rs.getKotlinArray<String>("puhvi_assignment_lukuvuosi_koodi_arvos").forEach { lukuvuosiOptions.add(it) }
         }
 
-        AssignmentFilterOptions(
-            lukuvuosi = lukuvuosiOptions.toList(),
-            tehtavatyyppi = tehtavatyyppiOptions.toList()
+        AssignmentListMetadata(
+            assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = lukuvuosiOptions.toList(),
+                tehtavatyyppi = tehtavatyyppiOptions.toList()
+            ),
+            totalCount = totalCount
         )
     }
 
-    private fun buildPuhviListMetadataQuery(filters: PuhviFilters, role: Role, userOid: String): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentFilterOptions> {
+    private fun buildPuhviListMetadataQuery(
+        filters: PuhviFilters,
+        role: Role,
+        userOid: String
+    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
         val queryBuilder = StringBuilder(
             """
             SELECT
@@ -405,7 +423,7 @@ class AssignmentRepository(
 
     private fun buildPuhviListQuery(
         filters: PuhviFilters, role: Role, userOid: String, noLimit: Boolean
-    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> Pair<PuhviAssignmentDtoOut, Int>> {
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentDtoOut> {
         val (queryBuilder, parameters) = baseAssignmentListQuery(Exam.PUHVI, userOid)
 
         addPuhviFilters(queryBuilder, parameters, filters)
@@ -414,22 +432,31 @@ class AssignmentRepository(
         return Triple(queryBuilder.toString(), parameters, mapPuhviResultSet)
     }
 
-    private val ldListMetadataResultSetExtractor: (ResultSet) -> AssignmentFilterOptions = { rs: ResultSet ->
-        val lukuvuosiOptions: MutableSet<String> = mutableSetOf()
-        val aineOptions: MutableSet<String> = mutableSetOf()
+    private val ldListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
+        val lukuvuosiOptions: SortedSet<String> = sortedSetOf()
+        val aineOptions: SortedSet<String> = sortedSetOf()
+        var totalCount = 0
 
         while (rs.next()) {
+            totalCount++
             rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos").forEach { lukuvuosiOptions.add(it) }
             aineOptions.add(rs.getString("ld_assignment_aine_koodi_arvo"))
         }
 
-        AssignmentFilterOptions(
-            lukuvuosi = lukuvuosiOptions.toList(),
-            aine = aineOptions.toList(),
+        AssignmentListMetadata(
+            assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = lukuvuosiOptions.toList(),
+                aine = aineOptions.toList(),
+            ),
+            totalCount = totalCount
         )
     }
 
-    private fun buildLdListMetadataQuery(filters: LdFilters, role: Role, userOid: String): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentFilterOptions> {
+    private fun buildLdListMetadataQuery(
+        filters: LdFilters,
+        role: Role,
+        userOid: String
+    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
         val queryBuilder = StringBuilder(
             """
             SELECT
@@ -465,7 +492,7 @@ class AssignmentRepository(
 
     private fun buildLdListQuery(
         filters: LdFilters, role: Role, userOid: String, noLimit: Boolean = false
-    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> Pair<LdAssignmentDtoOut, Int>> {
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> LdAssignmentDtoOut> {
         val (query, parameters) = baseAssignmentListQuery(Exam.LD, userOid)
         val queryBuilder = StringBuilder(query)
 
@@ -694,7 +721,6 @@ class AssignmentRepository(
 
         val query = """
             SELECT 
-                1 as total_count,
                 a.*,
                 ARRAY_AGG(content.assignment_content_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.FI}') AS assignment_content_fi,
                 ARRAY_AGG(content.assignment_content_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.SV}') AS assignment_content_sv,
@@ -706,7 +732,7 @@ class AssignmentRepository(
             GROUP BY a.assignment_id;
             """
 
-        return jdbcTemplate.query(query, mapper, userOid, id).firstOrNull()?.first
+        return jdbcTemplate.query(query, mapper, userOid, id).firstOrNull()
     }
 
     fun updateSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? = transactionTemplate.execute { _ ->
@@ -819,20 +845,6 @@ class AssignmentRepository(
         insertAssignmentContent(Exam.LD, id, assignment.contentFi, assignment.contentSv, true)
 
         return@execute id
-    }
-
-
-    fun getOppimaarasInUse(): List<Oppimaara> = jdbcTemplate.query(
-        """
-        -- getOppimaarasInUse. Leans on suko_assignment_suko_oppimaara_index
-        SELECT DISTINCT suko_assignment_oppimaara_koodi_arvo, suko_assignment_oppimaara_kielitarjonta_koodi_arvo
-        FROM suko_assignment;
-        """.trimIndent()
-    ) { rs: ResultSet, _: Int ->
-        Oppimaara(
-            rs.getString("suko_assignment_oppimaara_koodi_arvo"),
-            rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
-        )
     }
 
     fun getFavoriteAssignmentsCount(): Int {

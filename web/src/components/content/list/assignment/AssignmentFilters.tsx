@@ -1,30 +1,27 @@
 import { useCallback, useMemo } from 'react'
-import { FiltersType, ParamsValue } from '../../../hooks/useFilterValues'
+import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
-import { AssignmentFilterOptions, Exam } from '../../../types'
+import { AssignmentFilterOptions, Exam } from '../../../../types'
 import {
   KoodiDtoOut,
   Oppimaara,
   oppimaaraFromId,
   sortKooditAlphabetically,
   useKoodisto
-} from '../../../hooks/useKoodisto'
-import { LudosSelect, LudosSelectOption } from '../../ludosSelect/LudosSelect'
+} from '../../../../hooks/useKoodisto'
+import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
   currentKoodistoSelectOptions,
   currentOppimaaraSelectOptions,
   koodistoSelectOptions,
   oppimaaraSelectOptions
-} from '../../ludosSelect/helpers'
+} from '../../../ludosSelect/helpers'
 import { MultiValue } from 'react-select'
 
 type AssignmentFiltersProps = {
   exam: Exam
-  filterValues: {
-    filterValues: FiltersType
-    setFilterValue: (key: keyof FiltersType, value: ParamsValue, replace: boolean) => void
-  }
-  assignmentFilterOptions: AssignmentFilterOptions
+  filterValues: FilterValues
+  assignmentFilterOptions?: AssignmentFilterOptions
 }
 
 const getFilteredOptions = (allOptions: Record<string, KoodiDtoOut>, overrides?: string[]) =>
@@ -33,10 +30,12 @@ const getFilteredOptions = (allOptions: Record<string, KoodiDtoOut>, overrides?:
 export const AssignmentFilters = ({
   exam,
   filterValues: { filterValues, setFilterValue },
-  assignmentFilterOptions: { oppimaara, aihe, tehtavatyyppi, lukuvuosi, aine }
+  assignmentFilterOptions
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
+
+  const { oppimaara, aihe, tehtavatyyppi, lukuvuosi, aine } = assignmentFilterOptions || {}
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
@@ -71,11 +70,11 @@ export const AssignmentFilters = ({
     return [...actualOptions, ...missingParentOppimaaras]
   }, [oppimaara])
 
-  const tehtavaTyyppiOptions = () => getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavatyyppi)
-  const aiheOptions = () => getFilteredOptions(koodistos.aihesuko, aihe)
-  const lukuvuosiOptions = () => getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosi)
-  const lukiodiplomiaineOptions = () => getFilteredOptions(koodistos.ludoslukiodiplomiaine, aine)
-  const tehavatyyppipuhviOptions = () => getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehtavatyyppi)
+  const tehtavaTyyppiOptions = getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavatyyppi)
+  const aiheOptions = getFilteredOptions(koodistos.aihesuko, aihe)
+  const lukuvuosiOptions = getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosi)
+  const lukiodiplomiaineOptions = getFilteredOptions(koodistos.ludoslukiodiplomiaine, aine)
+  const tehavatyyppipuhviOptions = getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehtavatyyppi)
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -100,7 +99,7 @@ export const AssignmentFilters = ({
               <LudosSelect
                 name="contentTypeFilter"
                 menuSize="md"
-                options={koodistoSelectOptions(sortKooditAlphabetically(tehtavaTyyppiOptions()))}
+                options={koodistoSelectOptions(sortKooditAlphabetically(tehtavaTyyppiOptions))}
                 value={currentKoodistoSelectOptions(filterValues.tehtavatyyppisuko, koodistos['tehtavatyyppisuko'])}
                 onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
                 isMulti
@@ -112,7 +111,7 @@ export const AssignmentFilters = ({
               <LudosSelect
                 name="aiheFilter"
                 menuSize="md"
-                options={koodistoSelectOptions(sortKooditAlphabetically(aiheOptions()))}
+                options={koodistoSelectOptions(sortKooditAlphabetically(aiheOptions))}
                 value={currentKoodistoSelectOptions(filterValues.aihe, koodistos['aihesuko'])}
                 onChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
                 isMulti
@@ -138,7 +137,7 @@ export const AssignmentFilters = ({
             <p>{t('filter.lukuvuosi')}</p>
             <LudosSelect
               name="lukuvuosiFilter"
-              options={koodistoSelectOptions(sortKooditAlphabetically(lukuvuosiOptions()))}
+              options={koodistoSelectOptions(sortKooditAlphabetically(lukuvuosiOptions))}
               value={currentKoodistoSelectOptions(filterValues.lukuvuosi, koodistos['ludoslukuvuosi'])}
               onChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
               isMulti
@@ -151,7 +150,7 @@ export const AssignmentFilters = ({
             <p>{t('filter.aine')}</p>
             <LudosSelect
               name="aineFilter"
-              options={koodistoSelectOptions(sortKooditAlphabetically(lukiodiplomiaineOptions()))}
+              options={koodistoSelectOptions(sortKooditAlphabetically(lukiodiplomiaineOptions))}
               value={currentKoodistoSelectOptions(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
               onChange={(opt) => handleMultiselectFilterChange('aine', opt)}
               isMulti
@@ -164,7 +163,7 @@ export const AssignmentFilters = ({
             <p>{t('filter.tehtavatyyppi')}</p>
             <LudosSelect
               name="tehtavatyyppiPuhviFilter"
-              options={koodistoSelectOptions(sortKooditAlphabetically(tehavatyyppipuhviOptions()))}
+              options={koodistoSelectOptions(sortKooditAlphabetically(tehavatyyppipuhviOptions))}
               value={currentKoodistoSelectOptions(filterValues.tehtavatyyppipuhvi, koodistos['tehtavatyyppipuhvi'])}
               onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
               isMulti

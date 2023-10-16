@@ -1,25 +1,32 @@
-import { Icon } from '../../Icon'
-import { AssignmentOut, ContentType, Exam, TeachingLanguage } from '../../../types'
-import { StateTag } from '../../StateTag'
+import { Icon } from '../../../Icon'
+import { AssignmentOut, ContentType, Exam, TeachingLanguage } from '../../../../types'
+import { StateTag } from '../../../StateTag'
 import { useTranslation } from 'react-i18next'
-import { InternalLink } from '../../InternalLink'
-import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../../utils/assignmentUtils'
-import { toLocaleDate } from '../../../utils/formatUtils'
-import { useKoodisto } from '../../../hooks/useKoodisto'
-import { useUserDetails } from '../../../hooks/useUserDetails'
+import { InternalLink } from '../../../InternalLink'
+import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../../../utils/assignmentUtils'
+import { toLocaleDate } from '../../../../utils/formatUtils'
+import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { useEffect, useState } from 'react'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
-import { useToggleFavorite } from '../../../hooks/useToggleFavorite'
-import { contentPagePath, editingFormPath } from '../../LudosRoutes'
+import { useToggleFavorite } from '../../../../hooks/useToggleFavorite'
+import { contentPagePath, editingFormPath } from '../../../LudosRoutes'
 
 type AssignmentCardProps = {
   teachingLanguage: TeachingLanguage
   assignment: AssignmentOut
   exam: Exam
+  isFavoritePage?: boolean
   refreshData?: () => void
 }
 
-export const AssignmentCard = ({ teachingLanguage, assignment, exam, refreshData }: AssignmentCardProps) => {
+export const AssignmentCard = ({
+  teachingLanguage,
+  assignment,
+  exam,
+  isFavoritePage,
+  refreshData
+}: AssignmentCardProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
@@ -30,6 +37,7 @@ export const AssignmentCard = ({ teachingLanguage, assignment, exam, refreshData
     assignmentId: assignment.id,
     isFavorite,
     setIsFavorite,
+    isFavoritePage,
     refreshData
   })
 

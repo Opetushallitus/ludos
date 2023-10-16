@@ -1,12 +1,12 @@
-import { InstructionDtoOut, TeachingLanguage } from '../../../types'
-import { InternalLink } from '../../InternalLink'
-import { StateTag } from '../../StateTag'
-import { Icon } from '../../Icon'
-import { toLocaleDate } from '../../../utils/formatUtils'
-import { useUserDetails } from '../../../hooks/useUserDetails'
+import { InstructionDtoOut, TeachingLanguage } from '../../../../types'
+import { InternalLink } from '../../../InternalLink'
+import { StateTag } from '../../../StateTag'
+import { Icon } from '../../../Icon'
+import { toLocaleDate } from '../../../../utils/formatUtils'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { useTranslation } from 'react-i18next'
 
-import { muokkausKey } from '../../LudosRoutes'
+import { muokkausKey } from '../../../LudosRoutes'
 
 type InstructionCardProps = {
   teachingLanguage: TeachingLanguage
@@ -27,7 +27,7 @@ export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCa
           className="text-sm font-semibold text-green-primary"
           to={`${instruction.id}`}
           data-testid="instruction-name">
-          {(teachingLanguage === 'fi' ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')}
+          {(teachingLanguage === TeachingLanguage.fi ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (
           <InternalLink
@@ -39,7 +39,7 @@ export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCa
         )}
       </div>
       <p className="mb-2 mt-2 text-center text-xs">
-        {teachingLanguage === 'fi' ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}
+        {teachingLanguage === TeachingLanguage.fi ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}
       </p>
       <p className="mb-2 mt-2 text-center text-xs">{toLocaleDate(instruction.createdAt)}</p>
       {isYllapitaja && <StateTag state={instruction.publishState} />}

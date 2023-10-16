@@ -1,5 +1,5 @@
 import { expect, Page, test } from '@playwright/test'
-import { Exam, loginTestGroup, Role, setMultiSelectDropdownOptions } from '../../helpers'
+import { Exam, loginTestGroup, Role, setMultiSelectDropdownOptions, setSingleSelectDropdownOption } from '../../helpers'
 import { checkListAfterFiltering, filterTestAssignmentName } from './assignmentHelpers'
 import { TeachingLanguage } from 'web/src/types'
 
@@ -11,12 +11,14 @@ test.describe('Assignment filter tests', () => {
     await page.goto('/api/test/seedAssignmentsForFilterTest')
   })
 
-  const sukoUnfilteredStartPageCheck = async (page: Page) =>
-    await checkListAfterFiltering(
-      page,
-      Exam.Suko,
-      [23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4]
-    )
+  const sukoUnfilteredStartPageCheck = async (page: Page, order: 'asc' | 'desc' = 'desc') => {
+    const arr =
+      order === 'desc'
+        ? Array.from({ length: 20 }, (_, i) => 24 - i) // from 25 to 5
+        : Array.from({ length: 20 }, (_, i) => i + 1) // from 1 to 20
+
+    return await checkListAfterFiltering(page, Exam.Suko, arr)
+  }
 
   test('suko', async ({ page }) => {
     await page.goto('/suko/koetehtavat')
@@ -24,15 +26,18 @@ test.describe('Assignment filter tests', () => {
     await expect(page.getByTestId('page-button-1')).toBeVisible()
     await expect(page.getByTestId('page-button-2')).toBeVisible()
 
+    // assert ordering asc and desc works
+    await setSingleSelectDropdownOption(page, 'orderFilter', 'asc')
+    await sukoUnfilteredStartPageCheck(page, 'asc')
+    await setSingleSelectDropdownOption(page, 'orderFilter', 'desc')
     await sukoUnfilteredStartPageCheck(page)
-
     // assert pagination button states
     await expect(page.getByTestId('previous-page')).toBeDisabled()
     await page.getByTestId('next-page').click()
     await expect(page.getByTestId('next-page')).toBeDisabled()
     await expect(page.getByTestId('previous-page')).toBeEnabled()
 
-    await checkListAfterFiltering(page, Exam.Suko, [3, 2, 1, 0])
+    await checkListAfterFiltering(page, Exam.Suko, [4, 3, 2, 1])
 
     await page.getByTestId('page-button-1').click()
 

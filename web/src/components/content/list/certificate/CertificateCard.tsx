@@ -1,11 +1,11 @@
-import { CertificateDtoOut } from '../../../types'
-import { InternalLink } from '../../InternalLink'
-import { StateTag } from '../../StateTag'
-import { Icon } from '../../Icon'
-import { toLocaleDate } from '../../../utils/formatUtils'
-import { PdfTag } from '../../PdfTag'
-import { useUserDetails } from '../../../hooks/useUserDetails'
-import { muokkausKey } from '../../LudosRoutes'
+import { CertificateDtoOut } from '../../../../types'
+import { InternalLink } from '../../../InternalLink'
+import { StateTag } from '../../../StateTag'
+import { Icon } from '../../../Icon'
+import { toLocaleDate } from '../../../../utils/formatUtils'
+import { PdfTag } from '../../../PdfTag'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
+import { muokkausKey } from '../../../LudosRoutes'
 
 type CertificateCardProps = {
   certificate: CertificateDtoOut

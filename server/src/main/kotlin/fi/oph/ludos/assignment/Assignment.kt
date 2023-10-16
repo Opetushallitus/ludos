@@ -19,7 +19,21 @@ import kotlin.reflect.KClass
 data class Oppimaara(
     val oppimaaraKoodiArvo: String,
     val kielitarjontaKoodiArvo: String? = null
-)
+) : Comparable<Oppimaara> {
+    override fun compareTo(other: Oppimaara): Int {
+        val oppimaaraOrder = oppimaaraKoodiArvo.compareTo(other.oppimaaraKoodiArvo)
+        return if (oppimaaraOrder != 0) {
+            oppimaaraOrder
+        } else if (kielitarjontaKoodiArvo == null && other.kielitarjontaKoodiArvo == null) {
+            0
+        } else if (kielitarjontaKoodiArvo == null || other.kielitarjontaKoodiArvo == null) {
+            if (kielitarjontaKoodiArvo == null) -1 else 1 // sort parent before child
+        } else {
+            kielitarjontaKoodiArvo.compareTo(other.kielitarjontaKoodiArvo)
+        }
+
+    }
+}
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -244,7 +258,7 @@ class AtLeastOneAssignmentNameIsNotEmptyValidator :
 
 data class SetFavoriteRequest(val suosikki: Boolean)
 
-data class AssignmentFilterOptions(
+data class AssignmentFilterOptionsDtoOut(
     val oppimaara: List<Oppimaara>? = null,
     val tehtavatyyppi: List<String>? = null,
     val aihe: List<String>? = null,
@@ -253,9 +267,11 @@ data class AssignmentFilterOptions(
     val aine: List<String>? = null,
 )
 
-data class AssignmentListData(
+data class AssignmentListDtoOut(
     val content: List<AssignmentOut>,
     val totalPages: Int,
     val currentPage: Int,
-    val assignmentFilterOptions: AssignmentFilterOptions
+    val assignmentFilterOptions: AssignmentFilterOptionsDtoOut
 )
+
+const val ASSIGNMENT_PAGE_SIZE = 20

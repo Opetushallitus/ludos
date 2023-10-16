@@ -48,11 +48,9 @@ export async function fillSukoAssignmentForm({
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
   await page.locator('#laajaalainenOsaaminen-input').fill('globa')
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
-  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
   await page.getByTestId('laajaalainenOsaaminen-open').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
-  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
   await fillAssignmentTextFields(
     page,
@@ -91,7 +89,6 @@ export async function updateSukoAssignmentForm({
   expect(selectedOptionsAiheResetted).toBe(0)
 
   await setSingleSelectDropdownOption(page, 'aihe', '003')
-  await page.getByTestId('aihe-multi-select-ready-button').click()
 
   await fillAssignmentTextFields(
     page,

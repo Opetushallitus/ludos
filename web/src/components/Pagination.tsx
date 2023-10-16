@@ -1,78 +1,91 @@
-import { Button } from './Button'
 import { Icon } from './Icon'
 import { useTranslation } from 'react-i18next'
-import { ReactNode } from 'react'
+import { InternalLink } from './InternalLink'
+import { SearchStringForNewFilterValue } from '../hooks/useFilterValues'
+import { twMerge } from 'tailwind-merge'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { IS_MOBILE_QUERY } from '../constants'
 
 const FIRST_PAGE = 1
 const START_ELLIPSIS_THRESHOLD = 1
 const END_ELLIPSIS_THRESHOLD = 2
 
-type OnPageChange = (page: number) => void
-
 type PaginationProps = {
-  children: ReactNode
   page: number
-  totalPages?: number
-  onPageChange: OnPageChange
+  totalPages: number
+  searchStringForNewFilterValue: SearchStringForNewFilterValue
 }
 
-export const Pagination = ({ children, page, totalPages, onPageChange }: PaginationProps) => {
+export const Pagination = ({ page, totalPages, searchStringForNewFilterValue }: PaginationProps) => {
   const { t } = useTranslation()
-
-  if (!children || !totalPages) {
-    return null
-  }
+  const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   const prevDisabled = page === FIRST_PAGE
   const nextDisabled = page === totalPages
 
-  const surroundingPageCount = 1
+  const surroundingPageCount = isMobile ? 0 : 2
   const startPage = Math.max(FIRST_PAGE, page - surroundingPageCount)
   const endPage = Math.min(totalPages, page + surroundingPageCount)
 
   const centerPagesArr = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i)
 
   return (
-    <div className="flex justify-center items-center my-4">
-      <Button
-        className="row my-auto text-green-primary font-semibold disabled:text-gray-secondary pr-10"
-        variant="buttonGhost"
+    <div className="flex flex-wrap justify-center items-center my-4">
+      <InternalLink
+        className="row my-auto font-semibold pr-10"
+        to={searchStringForNewFilterValue('sivu', page - 1)}
         disabled={prevDisabled}
-        onClick={() => onPageChange(page - 1)}
         data-testid="previous-page">
         <Icon name="chevronLeft" color={prevDisabled ? 'text-gray-secondary' : 'text-green-primary'} size="lg" />
-        {t('button.pagination.edellinen-sivu')}
-      </Button>
+        {!isMobile && t('pagination.link.edellinen-sivu')}
+      </InternalLink>
 
-      {startPage > START_ELLIPSIS_THRESHOLD && <StartPagination currentPage={page} onPageChange={onPageChange} />}
+      {startPage > START_ELLIPSIS_THRESHOLD && (
+        <StartPagination currentPage={page} searchStringForNewFilterValue={searchStringForNewFilterValue} />
+      )}
 
       {centerPagesArr.map((pageNumber) => (
-        <PageButton key={pageNumber} number={pageNumber} currentPage={page} onPageChange={onPageChange} />
+        <PageLink
+          key={pageNumber}
+          number={pageNumber}
+          currentPage={page}
+          searchStringForNewFilterValue={searchStringForNewFilterValue}
+        />
       ))}
 
-      {endPage < totalPages && <EndPagination totalPages={totalPages} currentPage={page} onPageChange={onPageChange} />}
+      {endPage < totalPages && (
+        <EndPagination
+          totalPages={totalPages}
+          currentPage={page}
+          searchStringForNewFilterValue={searchStringForNewFilterValue}
+        />
+      )}
 
-      <Button
-        className="row my-auto text-green-primary font-semibold disabled:text-gray-secondary pl-10"
-        variant="buttonGhost"
+      <InternalLink
+        className="row my-auto font-semibold pl-10"
         disabled={nextDisabled}
-        onClick={() => onPageChange(page + 1)}
+        to={searchStringForNewFilterValue('sivu', page + 1)}
         data-testid="next-page">
-        {t('button.pagination.seuraava-sivu')}
+        {!isMobile && t('pagination.link.seuraava-sivu')}
         <Icon name="chevronRight" color={nextDisabled ? 'text-gray-secondary' : 'text-green-primary'} size="lg" />
-      </Button>
+      </InternalLink>
     </div>
   )
 }
 
 type PaginationComponentsBaseType = {
   currentPage: number
-  onPageChange: OnPageChange
+  searchStringForNewFilterValue: SearchStringForNewFilterValue
 }
 
-const StartPagination = ({ currentPage, onPageChange }: PaginationComponentsBaseType) => (
+const StartPagination = ({ currentPage, searchStringForNewFilterValue }: PaginationComponentsBaseType) => (
   <>
-    <PageButton number={FIRST_PAGE} currentPage={currentPage} onPageChange={onPageChange} data-testid="first-page" />
+    <PageLink
+      number={FIRST_PAGE}
+      currentPage={currentPage}
+      searchStringForNewFilterValue={searchStringForNewFilterValue}
+      data-testid="first-page"
+    />
     {currentPage > START_ELLIPSIS_THRESHOLD && <span className="px-2">...</span>}
   </>
 )
@@ -80,24 +93,33 @@ const StartPagination = ({ currentPage, onPageChange }: PaginationComponentsBase
 const EndPagination = ({
   totalPages,
   currentPage,
-  onPageChange
+  searchStringForNewFilterValue
 }: PaginationComponentsBaseType & {
   totalPages: number
 }) => (
   <>
     {currentPage < totalPages - END_ELLIPSIS_THRESHOLD && <span className="px-2">...</span>}
-    <PageButton number={totalPages} currentPage={currentPage} onPageChange={onPageChange} data-testid="last-page" />
+    <PageLink
+      number={totalPages}
+      currentPage={currentPage}
+      searchStringForNewFilterValue={searchStringForNewFilterValue}
+      data-testid="last-page"
+    />
   </>
 )
 
-const PageButton = ({ number, currentPage, onPageChange }: PaginationComponentsBaseType & { number: number }) => (
-  <Button
-    variant="buttonGhost"
-    className={`px-2 py-1 rounded-xl mx-1 cursor-pointer font-semibold ${
+const PageLink = ({
+  number,
+  currentPage,
+  searchStringForNewFilterValue
+}: PaginationComponentsBaseType & { number: number }) => (
+  <InternalLink
+    className={twMerge(
+      'px-2 py-1 rounded-xl mx-1 cursor-pointer font-semibold',
       currentPage === number ? 'bg-green-primary text-white' : 'text-green-primary'
-    }`}
-    onClick={() => onPageChange(number)}
+    )}
+    to={searchStringForNewFilterValue('sivu', number)}
     data-testid={`page-button-${number}`}>
     {number}
-  </Button>
+  </InternalLink>
 )

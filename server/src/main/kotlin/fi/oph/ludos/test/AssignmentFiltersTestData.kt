@@ -3,7 +3,7 @@ package fi.oph.ludos.test
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.assignment.*
 
-const val AMOUNT_OF_ASSIGNMENTS = 23
+const val DEFAULT_NUMBER_OF_ASSIGNMENTS = 24
 
 object AssignmentFiltersTestData {
     private val sukoAssignmentTypeKoodiArvos = arrayOf("002", "001", "003")
@@ -41,8 +41,8 @@ object AssignmentFiltersTestData {
         Array(if (i % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + i) % lukuvuosiKoodiArvos.size] }
 
 
-    private fun sukoAssignments(): List<SukoAssignmentDtoIn> =
-        (0..AMOUNT_OF_ASSIGNMENTS).map { i ->
+    fun sukoAssignments(n: Int): List<SukoAssignmentDtoIn> =
+        (1..n).map { i ->
             SukoAssignmentDtoIn(
                 nameFi = "Filter test name $i FI SUKO",
                 nameSv = "Filter test name $i SV SUKO",
@@ -59,8 +59,8 @@ object AssignmentFiltersTestData {
             )
         }
 
-    private fun ldAssignments(): List<LdAssignmentDtoIn> =
-        (0..AMOUNT_OF_ASSIGNMENTS).map { i ->
+    private fun ldAssignments(n: Int): List<LdAssignmentDtoIn> =
+        (1..n).map { i ->
             LdAssignmentDtoIn(
                 nameFi = "Filter test name $i FI LD",
                 nameSv = "Filter test name $i SV LD",
@@ -75,8 +75,8 @@ object AssignmentFiltersTestData {
             )
         }
 
-    private fun puhviAssignments(): List<PuhviAssignmentDtoIn> =
-        (0..AMOUNT_OF_ASSIGNMENTS).map { i ->
+    private fun puhviAssignments(n: Int): List<PuhviAssignmentDtoIn> =
+        (1..n).map { i ->
             PuhviAssignmentDtoIn(
                 nameFi = "Filter test name $i FI PUHVI",
                 nameSv = "Filter test name $i SV PUHVI",
@@ -92,5 +92,8 @@ object AssignmentFiltersTestData {
         }
 
 
-    fun assignmentsForFilterTest(): List<Assignment> = sukoAssignments() + ldAssignments() + puhviAssignments()
+    fun assignmentsForFilterTest(): List<Assignment> =
+        sukoAssignments(DEFAULT_NUMBER_OF_ASSIGNMENTS) +
+                ldAssignments(DEFAULT_NUMBER_OF_ASSIGNMENTS) +
+                puhviAssignments(DEFAULT_NUMBER_OF_ASSIGNMENTS)
 }

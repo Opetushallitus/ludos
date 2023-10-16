@@ -5,7 +5,6 @@ import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
-import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -27,7 +26,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @BeforeAll
     fun setup() {
         authenticateAsYllapitaja()
-        mockMvc.perform(emptyDb())
+        mockMvc.perform(emptyDbRequest())
         mockMvc.perform(seedDbWithAssignments())
         idsOfAssignmentDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
             .filter { it.publishState == PublishState.DRAFT }
@@ -474,11 +473,6 @@ class AssignmentControllerTest : AssignmentRequests() {
     }
 
     @Test
-    fun getAssignmentsWithNoRole() {
-        mockMvc.perform(getAllAssignmentsReq(Exam.SUKO)).andExpect(status().is3xxRedirection())
-    }
-
-    @Test
     @WithOpettajaRole
     fun getAssignmentDraftAsOpettaja() {
         idsOfAssignmentDrafts.forEach {
@@ -488,17 +482,7 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @Test
     @WithOpettajaRole
-    fun getAssignmentsAsOpettaja() {
-        val assignments = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
-        assertTrue(
-            assignments.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft assignments"
-        )
-        assertEquals(20, assignments.size)
-    }
-
-    @Test
-    @WithOpettajaRole
-    fun assignmentTestInsufficientRole() {
+    fun `create and update with insufficient role`() {
         val testAssignmentStr = mapper.writeValueAsString(minimalSukoAssignmentIn)
         mockMvc.perform(createAssignmentReq(testAssignmentStr)).andExpect(status().isUnauthorized())
         mockMvc.perform(updateAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())

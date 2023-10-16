@@ -1,10 +1,10 @@
-import { Icon } from '../../Icon'
+import { Icon } from '../../../Icon'
 import { useTranslation } from 'react-i18next'
-import { InternalLink } from '../../InternalLink'
-import { ContentAction } from '../../../hooks/useLudosTranslation'
-import { Button } from '../../Button'
-import { esitysnakymaKey } from '../../LudosRoutes'
-import { ContentType, Exam } from '../../../types'
+import { InternalLink } from '../../../InternalLink'
+import { ContentAction } from '../../../../hooks/useLudosTranslation'
+import { Button } from '../../../Button'
+import { esitysnakymaKey } from '../../../LudosRoutes'
+import { ContentType, Exam } from '../../../../types'
 
 type AssignmentCardContentActionButtonProps = {
   contentId: number

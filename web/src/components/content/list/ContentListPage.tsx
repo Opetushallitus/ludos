@@ -1,10 +1,12 @@
 import { useParams } from 'react-router-dom'
 import { ContentType, Exam, TeachingLanguage } from '../../../types'
-import { ContentList } from './ContentList'
+import { AssignmentList } from './assignment/AssignmentList'
 import { ContentTypeMenu } from '../../ContentTypeMenu'
 import { useFilterValues } from '../../../hooks/useFilterValues'
 import { useState } from 'react'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { InstructionList } from './instruction/InstructionList'
+import { CertificateList } from './certificate/CertificateList'
 
 type ContentListPageProps = {
   exam: Exam
@@ -31,16 +33,27 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
       <div role="tabpanel">
         {contentType && (
           <>
-            <ContentList
-              exam={exam}
-              contentType={contentType}
-              teachingLanguageSelectProps={{
-                teachingLanguage: languageOverrideIfSukoAssignment,
-                setTeachingLanguage
-              }}
-              filterValues={filterValues}
-              isFavorite={false}
-            />
+            {contentType === ContentType.koetehtavat ? (
+              <AssignmentList
+                exam={exam}
+                teachingLanguageSelectProps={{
+                  teachingLanguage: languageOverrideIfSukoAssignment,
+                  setTeachingLanguage
+                }}
+                filterValues={filterValues}
+              />
+            ) : contentType === ContentType.ohjeet ? (
+              <InstructionList
+                exam={exam}
+                teachingLanguageSelectProps={{
+                  teachingLanguage: languageOverrideIfSukoAssignment,
+                  setTeachingLanguage
+                }}
+                filterValues={filterValues}
+              />
+            ) : (
+              <CertificateList exam={exam} />
+            )}
           </>
         )}
       </div>
