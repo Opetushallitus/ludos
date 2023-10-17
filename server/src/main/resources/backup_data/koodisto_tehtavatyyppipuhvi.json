@@ -45,7 +45,7 @@
       }
     ],
     "paivittajaOid": "1.2.246.562.24.20745323310",
-    "paivitysPvm": "2023-10-03",
+    "paivitysPvm": "2023-10-17",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_001",
     "tila": "LUONNOS",
     "versio": 1,
@@ -99,7 +99,7 @@
       }
     ],
     "paivittajaOid": "1.2.246.562.24.20745323310",
-    "paivitysPvm": "2023-10-03",
+    "paivitysPvm": "2023-10-17",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppipuhvi_002",
     "tila": "LUONNOS",
     "versio": 1,
