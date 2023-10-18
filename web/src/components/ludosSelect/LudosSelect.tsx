@@ -101,7 +101,7 @@ export function LudosSelect<
       id={props.name}
       inputId={`${props.name}-input`}
       classNamePrefix="ludos-select"
-      closeMenuOnSelect={!props.isMulti}
+      closeMenuOnSelect={true}
       hideSelectedOptions={false}
       components={{ DropdownIndicator, Option, Menu, MultiValueRemove, ClearIndicator }}
       placeholder={t('filter.valitse')}

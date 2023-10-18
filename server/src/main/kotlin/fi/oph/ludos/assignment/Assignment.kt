@@ -19,7 +19,21 @@ import kotlin.reflect.KClass
 data class Oppimaara(
     val oppimaaraKoodiArvo: String,
     val kielitarjontaKoodiArvo: String? = null
-)
+) : Comparable<Oppimaara> {
+    override fun compareTo(other: Oppimaara): Int {
+        val oppimaaraOrder = oppimaaraKoodiArvo.compareTo(other.oppimaaraKoodiArvo)
+        return if (oppimaaraOrder != 0) {
+            oppimaaraOrder
+        } else if (kielitarjontaKoodiArvo == null && other.kielitarjontaKoodiArvo == null) {
+            0
+        } else if (kielitarjontaKoodiArvo == null || other.kielitarjontaKoodiArvo == null) {
+            if (kielitarjontaKoodiArvo == null) -1 else 1 // sort parent before child
+        } else {
+            kielitarjontaKoodiArvo.compareTo(other.kielitarjontaKoodiArvo)
+        }
+
+    }
+}
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -31,17 +45,23 @@ data class Oppimaara(
 interface Assignment {
     @get:ValidContentName
     val nameFi: String
+
     @get:ValidContentName
     val nameSv: String
+
     @get:ValidContentDescription
     val instructionFi: String
+
     @get:ValidContentDescription
     val instructionSv: String
+
     @get:ValidHtmlContentArray
     val contentFi: Array<String>
+
     @get:ValidHtmlContentArray
     val contentSv: Array<String>
     val publishState: PublishState
+
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
     val laajaalainenOsaaminenKoodiArvos: Array<String>
     val exam: Exam
@@ -179,37 +199,46 @@ data class LdAssignmentDtoOut(
     override val exam: Exam = Exam.LD
 ) : AssignmentOut
 
-data class SukoBaseFilters(
+interface AssignmentBaseFilters : BaseFilters {
+    override val jarjesta: String?
+    override val sivu: Int
+    val suosikki: Boolean?
+}
+
+data class SukoFilters(
     override val jarjesta: String?,
     override val suosikki: Boolean?,
-    // format OPPIMAARAKOODIARVO or OPPIMAARAKOODIARVO.KIELITARJONTAKOODIARVO
     @field:Pattern(regexp = "^([A-Z0-9]+(\\.[A-Z0-9]+)?)(,[A-Z0-9]+(\\.[A-Z0-9]+)?)*\$")
     val oppimaara: String?,
+    // format OPPIMAARAKOODIARVO or OPPIMAARAKOODIARVO.KIELITARJONTAKOODIARVO
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppisuko: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val aihe: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tavoitetaitotaso: String?,
-) : BaseFilters
+    override val sivu: Int = 1
+) : AssignmentBaseFilters
 
-data class LdBaseFilters(
+data class LdFilters(
     override val jarjesta: String?,
     override val suosikki: Boolean?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val aine: String?,
-) : BaseFilters
+    override val sivu: Int = 1
+) : AssignmentBaseFilters
 
-data class PuhviBaseFilters(
+data class PuhviFilters(
     override val jarjesta: String?,
     override val suosikki: Boolean?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val tehtavatyyppipuhvi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
-) : BaseFilters
+    override val sivu: Int = 1
+) : AssignmentBaseFilters
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -228,3 +257,21 @@ class AtLeastOneAssignmentNameIsNotEmptyValidator :
 }
 
 data class SetFavoriteRequest(val suosikki: Boolean)
+
+data class AssignmentFilterOptionsDtoOut(
+    val oppimaara: List<Oppimaara>? = null,
+    val tehtavatyyppi: List<String>? = null,
+    val aihe: List<String>? = null,
+    val tavoitetaitotaso: List<String>? = null,
+    val lukuvuosi: List<String>? = null,
+    val aine: List<String>? = null,
+)
+
+data class AssignmentListDtoOut(
+    val content: List<AssignmentOut>,
+    val totalPages: Int,
+    val currentPage: Int,
+    val assignmentFilterOptions: AssignmentFilterOptionsDtoOut
+)
+
+const val ASSIGNMENT_PAGE_SIZE = 20

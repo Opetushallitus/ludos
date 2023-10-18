@@ -51,6 +51,26 @@ export type AssignmentOut = BaseOut & {
   laajaalainenOsaaminenKoodiArvos: string[]
 }
 
+export type AssignmentFilterOptions = {
+  oppimaara: Oppimaara[]
+  tehtavatyyppi: string[]
+  aihe: string[]
+  tavoitetaitotaso: string[]
+  lukuvuosi: string[]
+  aine: string[]
+}
+
+export type ContentOut<T = BaseOut> = {
+  content: T[]
+}
+
+export type AssignmentsOut = {
+  content: AssignmentOut[]
+  totalPages: number
+  currentPage: number
+  assignmentFilterOptions: AssignmentFilterOptions
+}
+
 export type SukoAssignmentDtoOut = AssignmentOut & {
   assignmentTypeKoodiArvo: string
   oppimaara: Oppimaara

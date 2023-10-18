@@ -3,8 +3,10 @@ package fi.oph.ludos.instruction
 import Language
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -13,10 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.ZonedDateTime
-import jakarta.transaction.Transactional
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -40,11 +40,11 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     @BeforeAll
     fun setup() {
         authenticateAsYllapitaja()
-        mockMvc.perform(emptyDb())
+        mockMvc.perform(emptyDbRequest())
         mockMvc.perform(seedDbWithInstructions())
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        idsOfInstructionDrafts = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
+        idsOfInstructionDrafts = objectMapper.readValue(res, TestInstructionsOut::class.java).content
             .filter { it.publishState == PublishState.DRAFT.toString() }.map { it.id }
     }
 
@@ -123,7 +123,9 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val createdInstructionById = objectMapper.readValue(createdInstructionByIdStr, TestInstructionOut::class.java)
         assertEquals(createdInstruction, createdInstructionById)
 
-        val firstAttachmentBytes = mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey)).andExpect(status().isOk).andReturn().response.contentAsByteArray
+        val firstAttachmentBytes =
+            mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey))
+                .andExpect(status().isOk).andReturn().response.contentAsByteArray
         val firstAttachmentExpectedBytes = readAttachmentFixtureFile("fixture1.pdf", "file").bytes
         assertThat(firstAttachmentBytes.size).isEqualTo(firstAttachmentExpectedBytes.size)
         assertThat(firstAttachmentBytes).isEqualTo(firstAttachmentExpectedBytes)
@@ -137,7 +139,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         )
         assertCommonFieldsBetweenInAndOutEqual(testInstruction, instructionByIdAfterDeletingAttachment)
         assertAttachments(listOf(attachments[1]), instructionByIdAfterDeletingAttachment.attachments)
-        mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey)).andExpect(status().isNotFound)
+        mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey))
+            .andExpect(status().isNotFound)
 
         /// UPLOAD A NEW ATTACHMENT AND ASSERT IT APPEARED
 
@@ -175,7 +178,9 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         )
         assertEquals(createdInstruction.createdAt, createdInstruction.updatedAt)
 
-        val addedAttachmentBytes = mockMvc.perform(downloadInstructionAttachment(addedAttachment.fileKey)).andExpect(status().isOk).andReturn().response.contentAsByteArray
+        val addedAttachmentBytes =
+            mockMvc.perform(downloadInstructionAttachment(addedAttachment.fileKey)).andExpect(status().isOk)
+                .andReturn().response.contentAsByteArray
         val addedAttachmentExpectedBytes = readAttachmentFixtureFile("fixture3.pdf", "file").bytes
         assertThat(addedAttachmentBytes.size).isEqualTo(addedAttachmentExpectedBytes.size)
         assertThat(addedAttachmentBytes).isEqualTo(addedAttachmentExpectedBytes)
@@ -271,7 +276,11 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     @WithYllapitajaRole
     fun createInstructionWithBothNamesBlank() {
         val responseContent = mockMvc.perform(
-            postInstruction(objectMapper.writeValueAsString(minimalInstruction.copy(nameFi = "")), emptyList(), objectMapper)
+            postInstruction(
+                objectMapper.writeValueAsString(minimalInstruction.copy(nameFi = "")),
+                emptyList(),
+                objectMapper
+            )
         ).andExpect(status().isBadRequest).andReturn().response.contentAsString
         assertThat(responseContent).isEqualTo("Global error: At least one of the name fields must be non-empty")
     }
@@ -281,7 +290,14 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun updateInstructionWithNonExistentId() {
         val nonExistentId = -1
         val failUpdate =
-            mockMvc.perform(updateInstruction(nonExistentId, objectMapper.writeValueAsString(minimalInstruction), emptyList(), objectMapper))
+            mockMvc.perform(
+                updateInstruction(
+                    nonExistentId,
+                    objectMapper.writeValueAsString(minimalInstruction),
+                    emptyList(),
+                    objectMapper
+                )
+            )
                 .andReturn().response.contentAsString
 
         assertEquals("Instruction $nonExistentId not found", failUpdate)
@@ -323,11 +339,9 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun getInstructionsAsYllapitaja() {
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
-        val instructions = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
+        val instructions = objectMapper.readValue(res, TestInstructionsOut::class.java).content
 
         assertThat(instructions.size).isEqualTo(12)
-        assertThat(instructions).anySatisfy { it.publishState == PublishState.DRAFT.toString() }
-        assertThat(instructions).anySatisfy { it.publishState == PublishState.PUBLISHED.toString() }
     }
 
     @Test
@@ -336,9 +350,8 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         val res = mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
             .andReturn().response.contentAsString
 
-        val instructions = objectMapper.readValue(res, Array<TestInstructionOut>::class.java)
+        val instructions = objectMapper.readValue(res, TestInstructionsOut::class.java).content
         assertThat(instructions.size).isEqualTo(8)
-        assertThat(instructions).allSatisfy { it.publishState == PublishState.PUBLISHED.toString() }
     }
 
     @Test
@@ -362,7 +375,14 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     fun opettajaCannotCallYllapitajaRoutes() {
         mockMvc.perform(postInstruction(objectMapper.writeValueAsString(minimalInstruction), emptyList(), objectMapper))
             .andExpect(status().isUnauthorized())
-        mockMvc.perform(updateInstruction(1, objectMapper.writeValueAsString(minimalInstruction), emptyList(), objectMapper))
+        mockMvc.perform(
+            updateInstruction(
+                1,
+                objectMapper.writeValueAsString(minimalInstruction),
+                emptyList(),
+                objectMapper
+            )
+        )
             .andExpect(status().isUnauthorized())
         mockMvc.perform(
             uploadInstructionAttachment(

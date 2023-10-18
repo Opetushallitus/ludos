@@ -31,7 +31,7 @@ class CertificateController(val service: CertificateService) {
     @RequireAtLeastOpettajaRole
     fun getCertificates(
         @PathVariable exam: Exam
-    ) = service.getCertificates(exam)
+    ): CertificatesOut = CertificatesOut(service.getCertificates(exam))
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole

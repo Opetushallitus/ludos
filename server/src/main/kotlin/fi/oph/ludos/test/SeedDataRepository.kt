@@ -53,7 +53,7 @@ class SeedDataRepository(
         )
         val aineKoodiArvos = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
 
-        repeat(12) {
+        repeat(24) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
 
             val laajaalainenOsaaminenVarying =
@@ -82,8 +82,8 @@ class SeedDataRepository(
                 nameSv = "Test name $it SV LD",
                 instructionFi = "Test Instruction LD",
                 instructionSv = "Test Instruction LD",
-                contentFi = arrayOf("Test content $it FI LD"),
-                contentSv = arrayOf("Test content $it SV LD"),
+                contentFi = (1..5).map { i -> "Test content $it FI LD part $i" }.toTypedArray(),
+                contentSv = (1..5).map { i -> "Test content $it SV LD part $i" }.toTypedArray(),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 lukuvuosiKoodiArvos = lukuvuosiVarying,

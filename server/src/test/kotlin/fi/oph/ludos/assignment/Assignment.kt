@@ -72,3 +72,10 @@ data class TestPuhviAssignmentDtoIn(
     val lukuvuosiKoodiArvos: Array<String>,
     override val exam: String = Exam.PUHVI.toString()
 ) : TestAssignmentIn
+
+data class TestAssignmentsOut<T : AssignmentOut>(
+    val content: List<T>,
+    val totalPages: Int,
+    val currentPage: Int,
+    val assignmentFilterOptions: AssignmentFilterOptionsDtoOut
+)

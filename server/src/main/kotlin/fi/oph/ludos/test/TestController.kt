@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Profile
@@ -35,23 +34,26 @@ import kotlin.system.exitProcess
 class TestController(
     val seedDataRepository: SeedDataRepository,
     val assignmentService: AssignmentService,
-    @Value("\${ludos.appUrl}") private val appUrl: String,
     private val environment: Environment,
     private val applicationContext: ApplicationContext,
     private val jdbcTemplate: JdbcTemplate,
 ) {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
-    private val securityContextRepository = HttpSessionSecurityContextRepository();
+    private val securityContextRepository = HttpSessionSecurityContextRepository()
 
     companion object {
         fun isEnabled(): Boolean {
-            val testControllerProfileAnnotation: Profile = TestController::class.annotations.find { it.annotationClass == Profile::class } as Profile?
-                ?: throw AssertionError("@Profile annotation missing from TestController")
+            val testControllerProfileAnnotation: Profile =
+                TestController::class.annotations.find { it.annotationClass == Profile::class } as Profile?
+                    ?: throw AssertionError("@Profile annotation missing from TestController")
             val activeProfiles = LudosApplication.activeProfiles().toSet()
             val testControllerEnabledForProfiles = testControllerProfileAnnotation.value.toSet()
             return testControllerEnabledForProfiles.intersect(activeProfiles).isNotEmpty()
         }
     }
+
+    private val redirectToRoot: ResponseEntity<Unit> =
+        ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/")).build()
 
     @PostConstruct
     fun init() {
@@ -64,24 +66,24 @@ class TestController(
     // this endpoint is used by playwright
     @GetMapping("/seed")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabase(httpServletResponse: HttpServletResponse) {
+    fun seedDatabase(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
         seedDataRepository.seedDatabase()
-        return httpServletResponse.sendRedirect(appUrl)
+        return redirectToRoot
     }
 
     @GetMapping("/seedAssignments")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithAssignments(httpServletResponse: HttpServletResponse) {
+    fun seedDatabaseWithAssignments(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
         seedDataRepository.seedAssignments()
-        return httpServletResponse.sendRedirect(appUrl)
+        return redirectToRoot
     }
 
     @GetMapping("/seedAssignmentsForFilterTest")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithAssignmentsForFilterTest(httpServletResponse: HttpServletResponse) {
+    fun seedDatabaseWithAssignmentsForFilterTest(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
         val assignments = AssignmentFiltersTestData.assignmentsForFilterTest()
         assignments.forEach { assignmentService.createAssignment(it) }
-        return httpServletResponse.sendRedirect(appUrl)
+        return redirectToRoot
     }
 
     // this endpoint is used by api tests
@@ -96,34 +98,32 @@ class TestController(
 
     @GetMapping("/seedInstructions")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithInstructions(httpServletResponse: HttpServletResponse) {
+    fun seedDatabaseWithInstructions(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
         seedDataRepository.seedInstructions()
-        return httpServletResponse.sendRedirect(appUrl)
+        return redirectToRoot
     }
 
     @GetMapping("/seedCertificates")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithCertificates(httpServletResponse: HttpServletResponse) {
+    fun seedDatabaseWithCertificates(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
         seedDataRepository.seedCertificates()
-        return httpServletResponse.sendRedirect(appUrl)
+        return redirectToRoot
     }
 
     @GetMapping("/empty")
     @RequireAtLeastYllapitajaRole
-    fun emptyDatabase(httpServletResponse: HttpServletResponse) {
+    fun emptyDatabase(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
         seedDataRepository.nukeAssignments()
         seedDataRepository.nukeCertificates()
         seedDataRepository.nukeInstructions()
 
-        return httpServletResponse.sendRedirect(appUrl)
+        return redirectToRoot
     }
 
     @GetMapping("/now")
     @RequireAtLeastOpettajaRole
-    fun now(httpServletResponse: HttpServletResponse): Timestamp {
-        val nowFromDb: Timestamp = jdbcTemplate.query("SELECT clock_timestamp()") { rs, _ -> rs.getTimestamp("clock_timestamp") }[0]
-        return nowFromDb
-    }
+    fun now(httpServletResponse: HttpServletResponse): Timestamp =
+        jdbcTemplate.query("SELECT clock_timestamp()") { rs, _ -> rs.getTimestamp("clock_timestamp") }[0]
 
     @GetMapping("/mocklogin/{role}")
     @PreAuthorize("permitAll()")
@@ -145,7 +145,7 @@ class TestController(
 
         SecurityContextHolder.getContext().authentication = authentication
         securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response)
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/")).build()
+        return redirectToRoot
     }
 
     @GetMapping("/testOpettajaRequired")

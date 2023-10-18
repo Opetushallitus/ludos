@@ -4,7 +4,7 @@ import { currentKoodistoSelectOption, koodistoSelectOptions } from './ludosSelec
 import { sortKooditByArvo } from '../hooks/useKoodisto'
 import { TeachingLanguage } from '../types'
 
-type TeachingLanguageSelectProps = {
+export type TeachingLanguageSelectProps = {
   teachingLanguage: TeachingLanguage
   setTeachingLanguage: (opt: TeachingLanguage) => void
 }

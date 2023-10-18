@@ -1,6 +1,6 @@
 import { ContentType, Exam } from '../types'
 import { NavLink } from 'react-router-dom'
-import { contentListPath } from './routes/LudosRoutes'
+import { contentListPath } from './LudosRoutes'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 type ContentTypeMenuProps = {

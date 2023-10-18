@@ -1,5 +1,5 @@
-import { InstructionFormType } from './components/exam/instruction/form/instructionSchema'
-import { CertificateFormType } from './components/exam/certificate/form/certificateSchema'
+import { InstructionFormType } from './components/forms/schemas/instructionSchema'
+import { CertificateFormType } from './components/forms/schemas/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
 import { AttachmentDtoOut, AttachmentLanguage, Exam, MapWithFileKeyAndMetadata } from './types'
 

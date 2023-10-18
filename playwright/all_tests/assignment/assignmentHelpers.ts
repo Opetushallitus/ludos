@@ -48,11 +48,9 @@ export async function fillSukoAssignmentForm({
   // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
   await page.locator('#laajaalainenOsaaminen-input').fill('globa')
   await page.getByTestId('laajaalainenOsaaminen-option-06').click()
-  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
   await page.getByTestId('laajaalainenOsaaminen-open').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
-  await page.getByTestId('laajaalainenOsaaminen-multi-select-ready-button').click()
 
   await fillAssignmentTextFields(
     page,
@@ -91,7 +89,6 @@ export async function updateSukoAssignmentForm({
   expect(selectedOptionsAiheResetted).toBe(0)
 
   await setSingleSelectDropdownOption(page, 'aihe', '003')
-  await page.getByTestId('aihe-multi-select-ready-button').click()
 
   await fillAssignmentTextFields(
     page,
@@ -304,7 +301,7 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
 export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
-export async function checkListAfterFiltering(page: Page, expectedAssignmentTitleNumbers: number[], exam: Exam) {
+export async function checkListAfterFiltering(page: Page, exam: Exam, expectedAssignmentTitleNumbers: number[]) {
   await expect(
     page.getByRole('link', {
       name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, exam)

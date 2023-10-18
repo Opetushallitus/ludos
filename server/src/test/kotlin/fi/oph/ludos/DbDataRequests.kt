@@ -2,7 +2,6 @@ package fi.oph.ludos
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.assignment.Assignment
-import fi.oph.ludos.assignment.TestAssignmentIn
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
@@ -34,4 +33,5 @@ fun seedDbWithInstructions(): MockHttpServletRequestBuilder =
 fun seedDbWithCertificates(): MockHttpServletRequestBuilder =
     MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedCertificates").contentType(MediaType.APPLICATION_JSON)
 
-fun emptyDb() = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/empty").contentType(MediaType.APPLICATION_JSON)
+fun emptyDbRequest() =
+    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/empty").contentType(MediaType.APPLICATION_JSON)

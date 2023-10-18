@@ -1,7 +1,19 @@
 import { Link, LinkProps } from 'react-router-dom'
+import { twMerge } from 'tailwind-merge'
 
-export const InternalLink = ({ className, children, ...props }: LinkProps) => (
-  <Link className={`${className ? className : 'text-green-primary hover:underline'}`} {...props}>
+interface InternalLinkProps extends LinkProps {
+  disabled?: boolean
+}
+
+export const InternalLink = ({ className, disabled, children, ...props }: InternalLinkProps) => (
+  <Link
+    className={twMerge(
+      'text-green-primary hover:underline',
+      disabled && 'text-gray-secondary pointer-events-none',
+      className
+    )}
+    aria-disabled={disabled}
+    {...props}>
     {children}
   </Link>
 )

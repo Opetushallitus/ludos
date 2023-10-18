@@ -1,0 +1,14 @@
+COMMENT ON INDEX suko_assignment_suko_oppimaara_index IS NULL; -- Index is no longer for oppimaarasInUse, so remove comment
+
+CREATE INDEX suko_assignment_laajaalainen_osaaminen_koodi_arvos_index on suko_assignment (assignment_laajaalainen_osaaminen_koodi_arvos);
+CREATE INDEX suko_assignment_aihe_koodi_arvos_index on suko_assignment (suko_assignment_aihe_koodi_arvos);
+CREATE INDEX suko_assignment_assignment_type_koodi_arvo_index on suko_assignment (suko_assignment_assignment_type_koodi_arvo);
+CREATE INDEX suko_assignment_tavoitetaso_koodi_arvo_index on suko_assignment (suko_assignment_tavoitetaso_koodi_arvo);
+
+CREATE INDEX ld_assignment_laajaalainen_osaaminen_koodi_arvos_index on ld_assignment (assignment_laajaalainen_osaaminen_koodi_arvos);
+CREATE INDEX ld_assignment_lukuvuosi_koodi_arvos_index on ld_assignment (ld_assignment_lukuvuosi_koodi_arvos);
+CREATE INDEX ld_assignment_aine_koodi_arvo_index on ld_assignment (ld_assignment_aine_koodi_arvo);
+
+CREATE INDEX puhvi_assignment_laajaalainen_osaaminen_koodi_arvos_index on puhvi_assignment (assignment_laajaalainen_osaaminen_koodi_arvos);
+CREATE INDEX puhvi_assignment_assignment_type_koodi_arvo_index on puhvi_assignment (puhvi_assignment_assignment_type_koodi_arvo);
+CREATE INDEX puhvi_assignment_lukuvuosi_koodi_arvos_index on puhvi_assignment (puhvi_assignment_lukuvuosi_koodi_arvos);

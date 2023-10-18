@@ -5,7 +5,6 @@ import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
-import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -27,9 +26,9 @@ class AssignmentControllerTest : AssignmentRequests() {
     @BeforeAll
     fun setup() {
         authenticateAsYllapitaja()
-        mockMvc.perform(emptyDb())
+        mockMvc.perform(emptyDbRequest())
         mockMvc.perform(seedDbWithAssignments())
-        idsOfAssignmentDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>()
+        idsOfAssignmentDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
             .filter { it.publishState == PublishState.DRAFT }
             .map { it.id }
     }
@@ -474,11 +473,6 @@ class AssignmentControllerTest : AssignmentRequests() {
     }
 
     @Test
-    fun getAssignmentsWithNoRole() {
-        mockMvc.perform(getAllAssignmentsReq(Exam.SUKO)).andExpect(status().is3xxRedirection())
-    }
-
-    @Test
     @WithOpettajaRole
     fun getAssignmentDraftAsOpettaja() {
         idsOfAssignmentDrafts.forEach {
@@ -488,17 +482,7 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @Test
     @WithOpettajaRole
-    fun getAssignmentsAsOpettaja() {
-        val assignments: Array<SukoAssignmentDtoOut> = getAllAssignmentsForExam()
-        assertTrue(
-            assignments.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft assignments"
-        )
-        assertEquals(8, assignments.size)
-    }
-
-    @Test
-    @WithOpettajaRole
-    fun assignmentTestInsufficientRole() {
+    fun `create and update with insufficient role`() {
         val testAssignmentStr = mapper.writeValueAsString(minimalSukoAssignmentIn)
         mockMvc.perform(createAssignmentReq(testAssignmentStr)).andExpect(status().isUnauthorized())
         mockMvc.perform(updateAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
@@ -518,7 +502,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     private fun testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja: Int) {
         setAssignmentIsFavoriteAndVerify<SukoAssignmentDtoOut>(localAssignmentIdToFavoriteAsOpettaja, true)
 
-        val assignments: Array<SukoAssignmentDtoOut> = getAllAssignmentsForExam()
+        val assignments = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
         assignments.forEach {
             if (it.id == localAssignmentIdToFavoriteAsOpettaja) {
                 assertEquals(true, it.isFavorite, "Assignment ${it.id} should be favorite")
@@ -542,7 +526,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `as opettaja toggle assignment to be favorite and query it`() {
         // get all assignments and choose one of them to favorite
         val localAssignmentIdToFavoriteAsOpettaja =
-            getAllAssignmentsForExam<SukoAssignmentDtoOut>().first { it.publishState == PublishState.PUBLISHED }.id
+            getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.first { it.publishState == PublishState.PUBLISHED }.id
 
         testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja)
     }

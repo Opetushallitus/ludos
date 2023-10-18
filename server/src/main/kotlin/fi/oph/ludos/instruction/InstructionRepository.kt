@@ -1,6 +1,5 @@
 package fi.oph.ludos.instruction
 
-import BaseFilters
 import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
@@ -206,7 +205,7 @@ class InstructionRepository(
         return results.firstOrNull()
     }
 
-    fun getInstructions(exam: Exam, filters: BaseFilters): List<InstructionDtoOut> {
+    fun getInstructions(exam: Exam, filters: InstructionFilters): List<InstructionDtoOut> {
         val role = Kayttajatiedot.fromSecurityContext().role
         val table = getTableNameByExam(exam)
 
