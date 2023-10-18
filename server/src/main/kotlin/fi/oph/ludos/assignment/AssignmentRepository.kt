@@ -124,9 +124,9 @@ class AssignmentRepository(
 
         val query = """
         SELECT a.*, 
-                ARRAY_AGG(CASE WHEN content.assignment_content_language = '${Language.FI}' THEN content.assignment_content_content END) AS assignment_content_fi,
-                ARRAY_AGG(CASE WHEN content.assignment_content_language = '${Language.SV}' THEN content.assignment_content_content END) AS assignment_content_sv,
-                MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
+               ARRAY_AGG(content.assignment_content_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.FI}') AS assignment_content_fi,
+               ARRAY_AGG(content.assignment_content_content ORDER BY content.assignment_content_order_index) FILTER (WHERE content.assignment_content_language = '${Language.SV}') AS assignment_content_sv,
+               MAX(CASE WHEN fav.assignment_id IS NOT NULL THEN 1 ELSE 0 END)::boolean AS is_favorite
         FROM $table a
         LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_id
         LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = :userOid
