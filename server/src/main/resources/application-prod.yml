@@ -1,0 +1,9 @@
+ludos:
+  appUrl: "https://ludos.opintopolku.fi"
+  opintopolkuHostname: "virkailija.opintopolku.fi"
+  instruction-bucket-name: ludos-application-instruction-bucket-prod
+  certificate-bucket-name: ludos-application-certificate-bucket-prod
+
+server:
+  tomcat:
+      pattern: "%{X-Forwarded-For}i %l %u %t \"%r\" %s %b"
