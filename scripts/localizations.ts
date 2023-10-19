@@ -11,7 +11,8 @@ const CALLER_ID = 'ludos-localizations'
 
 const Environment = {
   untuva: 'untuva',
-  qa: 'qa'
+  qa: 'qa',
+  prod: 'prod'
 } as const
 type Environment = (typeof Environment)[keyof typeof Environment]
 
@@ -50,6 +51,8 @@ function environmentBaseUrl(env: Environment) {
       return 'https://virkailija.untuvaopintopolku.fi'
     case Environment.qa:
       return 'https://virkailija.testiopintopolku.fi'
+    case Environment.prod:
+      return 'https://virkailija.opintopolku.fi'
   }
 }
 
