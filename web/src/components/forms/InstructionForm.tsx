@@ -11,9 +11,9 @@ import {
   Exam,
   InstructionDtoOut,
   MapWithFileKeyAndMetadata,
-  PublishState
+  PublishState,
+  TeachingLanguage
 } from '../../types'
-import { useTranslation } from 'react-i18next'
 import {
   createInstruction,
   deleteInstructionAttachment,
@@ -32,6 +32,8 @@ import { FormError } from './formCommon/FormErrors'
 import { TipTap } from './formCommon/editor/TipTap'
 import { NotificationEnum, useNotification } from '../../contexts/NotificationContext'
 import { contentListPath, contentPagePath } from '../LudosRoutes'
+import { DeleteModal } from '../modal/DeleteModal'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -53,7 +55,7 @@ function mapInstructionInAttachmentDataWithLanguage(
 }
 
 const InstructionForm = ({ action }: InstructionFormProps) => {
-  const { t } = useTranslation()
+  const { t, lt, i18n } = useLudosTranslation()
   const navigate = useNavigate()
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
@@ -64,6 +66,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
@@ -95,72 +98,87 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   })
 
   const watchNameFi = watch('nameFi')
+  const watchNameSv = watch('nameSv')
   const watchContentFi = watch('contentFi')
   const watchContentSv = watch('contentSv')
   const watchPublishState = watch('publishState')
 
-  async function submitAssignment({ publishState }: { publishState: PublishState }) {
+  async function submitInstructionData(instruction: InstructionFormType) {
+    if (isUpdate && id) {
+      const mapWithFileKeyAndName: MapWithFileKeyAndMetadata = new Map()
+
+      const combinedAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
+
+      combinedAttachmentData.forEach(({ attachment, name, language }) => {
+        mapWithFileKeyAndName.set(attachment!.fileKey, { name: name, language: language ?? 'fi' })
+      })
+
+      return await updateInstruction(Number(id), instruction, mapWithFileKeyAndName)
+    } else {
+      const findFilesFromAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
+        .filter(({ file }) => file !== undefined)
+        .map(({ file, name, language }) => ({
+          file: file!,
+          name,
+          language: language ?? 'fi'
+        }))
+
+      return await createInstruction(instruction, findFilesFromAttachmentData).then((res) => res.id)
+    }
+  }
+
+  function setSuccessNotification(newPublishState: PublishState) {
+    const currentState = watchPublishState as typeof PublishState.Published | typeof PublishState.Draft
+
+    setNotification({
+      message: isUpdate
+        ? lt.contentUpdateSuccessNotification[ContentType.ohjeet][currentState][newPublishState]
+        : lt.contentCreateSuccessNotification[ContentType.ohjeet][
+            newPublishState as typeof PublishState.Published | typeof PublishState.Draft
+          ],
+      type: NotificationEnum.success
+    })
+  }
+
+  function handleSuccess(newPublishState: PublishState, resultId: number) {
+    setSubmitError('')
+    setSuccessNotification(newPublishState)
+
+    if (newPublishState === PublishState.Deleted) {
+      return navigate(contentListPath(exam, ContentType.ohjeet), {
+        replace: true // so that user cannot back navigate to edit deleted instruction
+      })
+    }
+
+    navigate(contentPagePath(exam, ContentType.ohjeet, resultId), {
+      state: { returnLocation: contentListPath(exam, ContentType.ohjeet) }
+    })
+  }
+
+  function setErrorNotification(publishState: PublishState) {
+    setNotification({
+      message:
+        publishState === PublishState.Deleted
+          ? t('form.notification.ohjeen-poisto.epaonnistui')
+          : t('form.notification.ohjeen-tallennus.epaonnistui'),
+      type: NotificationEnum.error
+    })
+  }
+
+  async function submitInstruction(publishState: PublishState) {
     await handleSubmit(async (data: InstructionFormType) => {
-      const instructionIn = { ...data, publishState }
+      const instruction = { ...data, publishState }
 
       try {
         setIsLoading(true)
-        let resultId: number
-
-        if (isUpdate && id) {
-          const mapWithFileKeyAndName: MapWithFileKeyAndMetadata = new Map()
-
-          const combinedAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
-
-          combinedAttachmentData.forEach(({ attachment, name, language }) => {
-            mapWithFileKeyAndName.set(attachment!.fileKey, { name: name, language: language ?? 'fi' })
-          })
-
-          resultId = await updateInstruction(Number(id), instructionIn, mapWithFileKeyAndName)
-        } else {
-          const findFilesFromAttachmentData = [...attachmentDataFi, ...attachmentDataSv]
-            .filter(({ file }) => file !== undefined)
-            .map(({ file, name, language }) => ({
-              file: file!,
-              name,
-              language: language ?? 'fi'
-            }))
-
-          const { id } = await createInstruction(instructionIn, findFilesFromAttachmentData)
-          resultId = id
-        }
-
+        const resultId = await submitInstructionData(instruction)
         setSubmitError('')
-
-        if (publishState === PublishState.Draft) {
-          setNotification({
-            message: isUpdate
-              ? t('form.notification.ohjeen-tallennus.palautettu-luonnostilaan')
-              : t('form.notification.ohjeen-tallennus.luonnos-onnistui'),
-            type: NotificationEnum.success
-          })
-        }
-
-        if (publishState === PublishState.Published) {
-          setNotification({
-            message: isUpdate
-              ? t('form.notification.ohjeen-tallennus.onnistui')
-              : t('form.notification.ohjeen-tallennus.julkaisu-onnistui'),
-            type: NotificationEnum.success
-          })
-        }
-
-        navigate(contentPagePath(exam, ContentType.ohjeet, resultId), {
-          state: { returnLocation: contentListPath(exam, ContentType.ohjeet) }
-        })
+        handleSuccess(publishState, resultId)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
         }
-        setNotification({
-          message: t('form.notification.ohjeen-tallennus.epaonnistui'),
-          type: NotificationEnum.error
-        })
+        setErrorNotification(publishState)
         console.error(e)
       } finally {
         setIsLoading(false)
@@ -322,7 +340,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           />
         </div>
 
-        <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
+        <div className={`${activeTab === TeachingLanguage.sv ? '' : 'hidden'}`}>
           <TextInput
             id="nameSv"
             register={register}
@@ -368,8 +386,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
       <FormButtonRow
         actions={{
-          onSubmitClick: () => submitAssignment({ publishState: PublishState.Published }),
-          onSaveDraftClick: () => submitAssignment({ publishState: PublishState.Draft })
+          onSubmitClick: () => submitInstruction(PublishState.Published),
+          onSaveDraftClick: () => submitInstruction(PublishState.Draft),
+          onDeleteClick: () => setOpenDeleteModal(true)
         }}
         state={{
           isUpdate,
@@ -379,6 +398,16 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         formHasValidationErrors={Object.keys(errors).length > 0}
         errorMessage={submitError}
       />
+
+      <DeleteModal
+        modalTitle={lt.contentDeleteModalTitle[ContentType.ohjeet]}
+        open={openDeleteModal}
+        onDeleteAction={() => submitInstruction(PublishState.Deleted)}
+        onClose={() => setOpenDeleteModal(false)}>
+        <div className="h-[15vh] p-6">
+          <p>{lt.contentDeleteModalText[ContentType.ohjeet](i18n.language === 'fi' ? watchNameFi : watchNameSv)}</p>
+        </div>
+      </DeleteModal>
     </div>
   )
 }

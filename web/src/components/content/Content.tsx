@@ -3,7 +3,6 @@ import { Button } from '../Button'
 import { BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { isAssignment, isCertificate, isInstruction } from '../../utils/assignmentUtils'
-import { Spinner } from '../Spinner'
 import { ContentHeader } from './ContentCommon'
 import { useState } from 'react'
 import { StateTag } from '../StateTag'
@@ -15,6 +14,7 @@ import { useUserDetails } from '../../hooks/useUserDetails'
 import { contentListPath, editingFormPath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { ListError } from './list/ListError'
 
 type ContentProps = {
   exam: Exam
@@ -32,7 +32,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const teachingLanguageOverrideIfSukoAssignment =
     exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
 
-  const { data, loading } = useFetch<BaseOut>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
+  const { DataWrapper } = useFetch<BaseOut>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
   const handleNavigation = () => {
     if (state?.returnLocation) {
@@ -44,9 +44,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
   return (
     <div className="min-h-[80vh]">
-      {!data && loading && <Spinner className="mt-32 text-center" />}
-      {data && (
-        <>
+      <DataWrapper
+        errorEl={<>{contentType && <ListError contentType={contentType} />}</>}
+        render={(data) => (
           <div className="row">
             <div className="col w-full pr-5 md:w-9/12">
               <div className="row pb-3">
@@ -100,8 +100,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
             </div>
             {!isPresentation && <div className="hidden w-3/12 flex-col border-l border-gray-separator md:flex" />}
           </div>
-        </>
-      )}
+        )}
+      />
     </div>
   )
 }

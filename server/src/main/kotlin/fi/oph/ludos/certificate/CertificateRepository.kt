@@ -33,6 +33,11 @@ class CertificateRepository(
         Exam.LD -> "ld_certificate"
     }
 
+    fun publishStateFilter(role: Role) = when (role) {
+        Role.OPETTAJA -> "AND c.certificate_publish_state = '${PublishState.PUBLISHED}'"
+        else -> "AND c.certificate_publish_state in ('${PublishState.PUBLISHED}', '${PublishState.DRAFT}')"
+    }
+
     fun createCertificate(certificateDtoIn: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut {
         val createdCertificate = transactionTemplate.execute { _ ->
             val certificateAttachment = createAttachment(attachment)
@@ -140,14 +145,12 @@ class CertificateRepository(
     fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? {
         val role = Kayttajatiedot.fromSecurityContext().role
 
-        val isPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND c.certificate_publish_state = 'PUBLISHED'" else ""
-
         return jdbcTemplate.query(
             """
             SELECT c.*, ca.attachment_file_key, ca.attachment_file_name, ca.attachment_upload_date
             FROM ${tableNameFromExam(exam)} c
             NATURAL JOIN certificate_attachment ca
-            WHERE c.certificate_id = ? $isPublishedIfOpettaja
+            WHERE c.certificate_id = ? ${publishStateFilter(role)}
             """.trimIndent(), { rs, _ -> mapResultSet(rs, exam) }, id
         ).firstOrNull()
     }
@@ -173,8 +176,6 @@ class CertificateRepository(
     fun getCertificates(exam: Exam): List<CertificateDtoOut> {
         val role = Kayttajatiedot.fromSecurityContext().role
 
-        val isPublishedIfOpettaja = if (role == Role.OPETTAJA) "WHERE certificate_publish_state = 'PUBLISHED'" else ""
-
         return jdbcTemplate.query(
             """
             SELECT 
@@ -184,7 +185,7 @@ class CertificateRepository(
                 ca.attachment_upload_date AS attachment_upload_date 
             FROM ${tableNameFromExam(exam)} AS c 
             NATURAL JOIN certificate_attachment AS ca
-             $isPublishedIfOpettaja
+            WHERE true ${publishStateFilter(role)}
             """.trimIndent()
         ) { rs, _ ->
             mapResultSet(rs, exam)

@@ -3,7 +3,7 @@ package fi.oph.ludos.assignment
 import fi.oph.ludos.Exam
 
 enum class TestPublishState {
-    DRAFT, PUBLISHED, ARCHIVED, OLEMATON
+    DRAFT, PUBLISHED, ARCHIVED, DELETED, OLEMATON
 }
 
 interface TestAssignment {

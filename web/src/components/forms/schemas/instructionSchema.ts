@@ -5,7 +5,7 @@ import { ErrorMessages, Exam, PublishState } from '../../../types'
 export const instructionSchema = z
   .object({
     exam: z.enum([Exam.SUKO, Exam.LD, Exam.PUHVI], { required_error: ErrorMessages.REQUIRED }),
-    publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Archived]).optional(),
+    publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Deleted]).optional(),
     nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
     nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
     contentFi: z.string().default(''),

@@ -1,5 +1,7 @@
-import { BrowserContext, Page, test as importedTest } from '@playwright/test'
+import { BrowserContext, expect, Page, test as importedTest } from '@playwright/test'
 import { TeachingLanguage } from 'web/src/types'
+
+export type FormAction = 'submit' | 'draft' | 'cancel' | 'delete'
 
 export const Role = {
   YLLAPITAJA: 'YLLAPITAJA',
@@ -68,4 +70,8 @@ export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: 
 
 export async function setTeachingLanguage(page: Page, teachingLanguage: TeachingLanguage) {
   await setSingleSelectDropdownOption(page, 'teachingLanguageDropdown', teachingLanguage)
+}
+
+export async function assertSuccessNotification(page: Page, notificationLocalisationKey: string) {
+  await expect(page.getByText(notificationLocalisationKey)).toBeVisible()
 }

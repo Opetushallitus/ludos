@@ -37,6 +37,11 @@ class InstructionRepository(
         Exam.LD -> "ld_instruction"
     }
 
+    fun publishStateFilter(role: Role) = when (role) {
+        Role.OPETTAJA -> "AND i.instruction_publish_state = '${PublishState.PUBLISHED}'"
+        else -> "AND i.instruction_publish_state in ('${PublishState.PUBLISHED}', '${PublishState.DRAFT}')"
+    }
+
     fun getTableNameAndExamTypeByInference(instruction: Instruction) = when (instruction) {
         is SukoInstructionDtoIn -> Pair("suko_instruction", Exam.SUKO)
         is PuhviInstructionDtoIn -> Pair("puhvi_instruction", Exam.PUHVI)
@@ -174,8 +179,6 @@ class InstructionRepository(
         val role = Kayttajatiedot.fromSecurityContext().role
         val table = getTableNameByExam(exam)
 
-        val andIsPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND instruction_publish_state = 'PUBLISHED'" else ""
-
         val sql = """SELECT
                      i.*,
                      ARRAY_AGG(ia.attachment_file_key) AS attachment_file_keys,
@@ -185,7 +188,7 @@ class InstructionRepository(
                      ARRAY_AGG(ia.instruction_attachment_language) AS instruction_attachment_languages
                 FROM $table i
                 NATURAL LEFT JOIN ${table}_attachment ia
-                WHERE instruction_id = ? $andIsPublishedIfOpettaja
+                WHERE instruction_id = ? ${publishStateFilter(role)}
                 GROUP BY
                     i.instruction_id, 
                     i.instruction_name_fi, 
@@ -209,9 +212,6 @@ class InstructionRepository(
         val role = Kayttajatiedot.fromSecurityContext().role
         val table = getTableNameByExam(exam)
 
-        val whereIsPublishedIfOpettaja =
-            if (role == Role.OPETTAJA) "WHERE instruction_publish_state = 'PUBLISHED'" else ""
-
         val orderDirection = filters.jarjesta ?: ""
 
         val sql = """SELECT
@@ -224,7 +224,7 @@ class InstructionRepository(
                 FROM
                     $table i 
                 NATURAL LEFT JOIN ${table}_attachment ia
-                $whereIsPublishedIfOpettaja
+                WHERE true ${publishStateFilter(role)}
                 GROUP BY
                     i.instruction_id, 
                     i.instruction_name_fi, 

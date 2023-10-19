@@ -6,8 +6,9 @@ import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type FormButtonRowProps = {
   actions: {
-    onSubmitClick: () => Promise<void>
-    onSaveDraftClick: () => Promise<void>
+    onSubmitClick: () => void
+    onSaveDraftClick: () => void
+    onDeleteClick: () => void
   }
   state: {
     isUpdate: boolean
@@ -49,28 +50,36 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
   }
 
   return (
-    <>
-      <div className="row mt-4 flex-wrap justify-center gap-3 md:justify-end">
+    <div className="row mt-4 justify-center md:justify-between flex-wrap-reverse">
+      <div className="flex md:w-1/2">
+        {state.isUpdate && (
+          <Button variant="buttonDanger" onClick={actions.onDeleteClick} disabled={isLoading} data-testid="form-delete">
+            {t('form.button.poista')}
+          </Button>
+        )}
+      </div>
+      <div className="flex justify-center flex-wrap-reverse gap-4 py-2 md:py-0 md:w-1/2 md:justify-end">
         <Button
           variant="buttonGhost"
-          type="button"
+          // fixme: voiko tästä tulla ongelmia jos joku navigoi /uusi sivulle suoraan eri sivustolta?
           onClick={() => navigate(-1)}
+          customClass="w-full md:w-auto"
           disabled={isLoading}
           data-testid="form-cancel">
           {t('button.peruuta')}
         </Button>
         <Button
           variant="buttonSecondary"
-          type="button"
-          onClick={actions.onSaveDraftClick}
+          customClass="w-full md:w-auto"
           disabled={isLoading}
+          onClick={actions.onSaveDraftClick}
           data-testid={isUpdate ? 'form-update-draft' : 'form-draft'}>
           {draftButtonText()}
         </Button>
         <Button
           variant="buttonPrimary"
-          type="button"
           onClick={actions.onSubmitClick}
+          customClass="w-full md:w-auto"
           disabled={isLoading}
           data-testid={isUpdate ? 'form-update-submit' : 'form-submit'}>
           {submitButtonText()}
@@ -93,6 +102,6 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           </ul>
         </div>
       )}
-    </>
+    </div>
   )
 }

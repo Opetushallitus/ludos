@@ -255,7 +255,7 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
                 .andReturn().response.contentAsString
         assertThat(
             putResponseBody,
-            CoreMatchers.containsString("String \"NON_EXISTENT_PUBLISH_STATE\": not one of the values accepted for Enum class: [DRAFT, ARCHIVED, PUBLISHED]")
+            CoreMatchers.containsString("String \"NON_EXISTENT_PUBLISH_STATE\": not one of the values accepted for Enum class: [DRAFT, ARCHIVED, PUBLISHED, DELETED]")
         )
     }
 
@@ -303,5 +303,36 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         )
 
         assertEquals(2, certificates.size)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `test deleting a certificate`() {
+        val createdCertificateOut = createCertificateAndCheckIt(PublishState.PUBLISHED)
+
+        mockMvc.perform(
+            putCertificate(
+                createdCertificateOut.id, objectMapper.writeValueAsString(
+                    TestCertificateIn(
+                        createdCertificateOut.exam,
+                        createdCertificateOut.name,
+                        createdCertificateOut.description,
+                        PublishState.DELETED
+                    )
+                ), null
+            )
+        ).andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        mockMvc.perform(getCertificateById(Exam.SUKO, createdCertificateOut.id)).andExpect(status().isNotFound())
+
+        val certificates = objectMapper.readValue(
+            mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
+                .andReturn().response.contentAsString, TestCertificatesOut::class.java
+        ).content
+
+        val noneHaveMatchingId = certificates.none { it.id == createdCertificateOut.id }
+
+        assertTrue(noneHaveMatchingId, "No certificate should have the ID of the deleted one")
     }
 }

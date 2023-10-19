@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
@@ -87,8 +88,6 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
     }
 
     fun testInstruction(exam: Exam) {
-        /// CREATE INSTRUCTION AND ASSERT IT WAS AS EXPECTED
-
         val testInstruction = TestInstructionIn(
             nameFi = "$exam Test Instruction FI",
             nameSv = "$exam Test Instruction SV",
@@ -130,8 +129,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertThat(firstAttachmentBytes.size).isEqualTo(firstAttachmentExpectedBytes.size)
         assertThat(firstAttachmentBytes).isEqualTo(firstAttachmentExpectedBytes)
 
-        /// DELETE fixture1.pdf ATTACHMENT AND ASSERT IT DISAPPEARED
-
+        // Delete fixture1.pdf attachment and assert it disappears
         mockMvc.perform(deleteInstructionAttachment(createdInstruction.attachments[0].fileKey)).andExpect(status().isOk)
         val instructionByIdAfterDeletingAttachment = objectMapper.readValue(
             mockMvc.perform(getInstruction(exam, createdInstruction.id)).andExpect(status().isOk)
@@ -142,8 +140,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey))
             .andExpect(status().isNotFound)
 
-        /// UPLOAD A NEW ATTACHMENT AND ASSERT IT APPEARED
-
+        // Upload new attachment and assert it appears
         val attachmentToAdd = TestInstructionAttachmentData(
             readAttachmentFixtureFile("fixture3.pdf", "file"),
             TestInstructionAttachmentMetadata(null, "Fixture3 pdf", Language.FI.toString())
@@ -185,8 +182,7 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
         assertThat(addedAttachmentBytes.size).isEqualTo(addedAttachmentExpectedBytes.size)
         assertThat(addedAttachmentBytes).isEqualTo(addedAttachmentExpectedBytes)
 
-        // UPDATE ALL FIELDS AND THE NAME OF fixture2.pdf ATTACHMENT
-
+        // Update all fields and the name of fixture2.pdf attachment
         val updatedInstructionIn = TestInstructionIn(
             nameFi = "$exam Test Instruction FI updated",
             nameSv = "$exam Test Instruction SV updated",
@@ -394,5 +390,39 @@ class InstructionControllerTest(@Autowired val mockMvc: MockMvc) {
             )
         ).andExpect(status().isUnauthorized)
         mockMvc.perform(deleteInstructionAttachment("does_not_matter")).andExpect(status().isUnauthorized)
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `test deleting a instruction`() {
+        val instructionOut = objectMapper.readValue(
+            mockMvc.perform(
+                postInstruction(
+                    objectMapper.writeValueAsString(minimalInstruction),
+                    emptyList(),
+                    objectMapper
+                )
+            ).andExpect(status().isOk).andReturn().response.contentAsString, TestInstructionOut::class.java
+        )
+
+        mockMvc.perform(
+            updateInstruction(
+                instructionOut.id,
+                objectMapper.writeValueAsString(minimalInstruction.copy(publishState = PublishState.DELETED.toString())),
+                emptyList(),
+                objectMapper
+            )
+        ).andReturn().response.contentAsString
+
+        mockMvc.perform(getInstructionById(Exam.SUKO, instructionOut.id)).andExpect(status().isNotFound)
+
+        val instructions = objectMapper.readValue(
+            mockMvc.perform(getAllInstructions(Exam.SUKO)).andExpect(status().isOk())
+                .andReturn().response.contentAsString, TestInstructionsOut::class.java
+        ).content
+
+        val noneHaveMatchingId = instructions.none { it.id == instructionOut.id }
+
+        Assertions.assertTrue(noneHaveMatchingId, "No instructions should have the ID of the deleted one")
     }
 }

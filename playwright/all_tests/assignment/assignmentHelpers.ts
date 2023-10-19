@@ -196,9 +196,6 @@ export async function updateLdAssignment({
     instructionTextSv,
     contentTextSv
   )
-
-  await page.getByTestId('form-update-submit').click()
-  await expect(page.getByTestId('notification-success')).toBeVisible()
 }
 
 export async function fillPuhviAssignmentForm({
@@ -248,9 +245,6 @@ export async function updatePuhviAssignment({
     instructionTextSv,
     contentTextSv
   )
-
-  await page.getByTestId('form-update-submit').click()
-  await expect(page.getByTestId('notification-success')).toBeVisible()
 }
 
 export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {

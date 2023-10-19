@@ -5,7 +5,7 @@ const MIN_LENGTH = 3
 
 export const certificateSchema = z.object({
   exam: z.enum([Exam.SUKO, Exam.LD, Exam.PUHVI], { required_error: ErrorMessages.REQUIRED }),
-  publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Archived]).optional(),
+  publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Deleted]).optional(),
   name: z
     .string()
     .refine((val) => val !== '', { message: ErrorMessages.REQUIRED })

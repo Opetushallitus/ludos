@@ -133,7 +133,7 @@ function examRoutes(exam: Exam) {
       </Route>
       <Route index element={<Navigate replace to={contentListPath(exam, ContentType.koetehtavat)} />} />
       <Route
-        path={':contentType'}
+        path=":contentType"
         element={
           <Layout>
             <ContentListPage exam={exam} />
@@ -141,7 +141,7 @@ function examRoutes(exam: Exam) {
         }
       />
       <Route
-        path={':contentType/:id'}
+        path=":contentType/:id"
         element={
           <Layout>
             <SpinnerSuspense>
@@ -161,6 +161,17 @@ function examRoutes(exam: Exam) {
         }
       />
     </Route>
+  )
+}
+
+export function PageNotFound() {
+  const { t } = useTranslation()
+
+  return (
+    <div className="p-10">
+      <h2 className="text-green-primary">404</h2>
+      <p>{t('error.sivua-ei-loydy')}</p>
+    </div>
   )
 }
 
@@ -209,10 +220,7 @@ function AuthorizedRoutes() {
           path="*"
           element={
             <Layout>
-              <div className="p-10">
-                <h2 className="text-green-primary">404</h2>
-                <p>{t('error.sivua-ei-loydy')}</p>
-              </div>
+              <PageNotFound />
             </Layout>
           }
         />

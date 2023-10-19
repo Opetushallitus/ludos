@@ -18,7 +18,7 @@ const examEnumZodType = z.enum([Exam.SUKO, Exam.LD, Exam.PUHVI], { required_erro
 
 const commonSchema = z.object({
   exam: examEnumZodType,
-  publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Archived]).optional(),
+  publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Deleted]).optional(),
   nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   instructionFi: z.string().default(''),
@@ -27,6 +27,8 @@ const commonSchema = z.object({
   contentSv: z.array(z.string()).optional().default(['']),
   laajaalainenOsaaminenKoodiArvos: z.array(z.string()).default([])
 })
+
+export type CommonAssignmentFormType = z.infer<typeof commonSchema>
 
 export const sukoAssignmentSchema = commonSchema
   .merge(
