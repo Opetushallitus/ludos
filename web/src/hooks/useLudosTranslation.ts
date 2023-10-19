@@ -67,6 +67,11 @@ export const useLudosTranslation = () => {
       [ContentType.koetehtavat]: t('error.koetehtavien-lataus-epaonnistui'),
       [ContentType.ohjeet]: t('error.ohjeiden-lataus-epaonnistui'),
       [ContentType.todistukset]: t('error.todistusten-lataus-epaonnistui')
+    },
+    formValidationErrorMessage: {
+      [ContentType.koetehtavat]: t('form.error.koetehtavan-tallennus-epaonnistui'),
+      [ContentType.ohjeet]: t('form.error.ohjeen-tallennus-epaonnistui'),
+      [ContentType.todistukset]: t('form.error.todistuksen-tallennus-epaonnistui')
     }
   }
 

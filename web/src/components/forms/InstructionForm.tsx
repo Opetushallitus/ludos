@@ -376,7 +376,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           isLoading,
           publishState: watchPublishState
         }}
-        notValidFormMessageKey={Object.keys(errors).length > 0 ? 'form.ohjeen-lisays-epaonnistui' : ''}
+        contentType={ContentType.ohjeet}
+        formHasValidationErrors={Object.keys(errors).length > 0}
         errorMessage={submitError}
       />
     </div>

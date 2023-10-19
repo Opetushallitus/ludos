@@ -186,7 +186,8 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
           isLoading,
           publishState: watchPublishState
         }}
-        notValidFormMessageKey={Object.keys(errors).length > 0 ? 'form.todistuksen-lisays-epaonnistui' : ''}
+        contentType={ContentType.todistukset}
+        formHasValidationErrors={Object.keys(errors).length > 0}
         errorMessage={submitError}
       />
     </div>

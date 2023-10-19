@@ -102,9 +102,8 @@ export function useAssignmentForm<T extends SukoAssignmentFormType | LdAssignmen
         isLoading,
         publishState
       }}
-      notValidFormMessageKey={
-        Object.keys(methods.formState.errors).length > 0 ? 'form.koetehtavan-lisays-epaonnistui' : ''
-      }
+      contentType={ContentType.koetehtavat}
+      formHasValidationErrors={Object.keys(methods.formState.errors).length > 0}
       errorMessage={submitError}
     />
   )
