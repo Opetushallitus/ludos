@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { useFetch } from '../../../../hooks/useFetch'
 import {
   CertificateDtoOut,
@@ -15,7 +14,8 @@ import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaks } from '../../../../utils/formatUtils'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useShowContentListError } from '../../../../hooks/useShowContentListError'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { Icon } from '../../../Icon'
 
 type CertificateListProps = {
   exam: Exam
@@ -24,15 +24,13 @@ type CertificateListProps = {
 export const CertificateList = ({ exam }: CertificateListProps) => {
   const contentType = ContentType.todistukset
   const { isYllapitaja } = useUserDetails()
-  const { t } = useTranslation()
+  const { t, lt } = useLudosTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
   const { data, loading, error } = useFetch<ContentOut<CertificateDtoOut>>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}`
   )
-
-  useShowContentListError(contentType, error)
 
   return (
     <div>
@@ -48,7 +46,16 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
           )}
         </div>
       </div>
+
       {loading && <Spinner className="mt-10 text-center" />}
+
+      {error && (
+        <div className="flex justify-center w-full gap-2 text-red-primary">
+          <Icon name="virheellinen" color="text-red-primary" />
+          {lt.contentListErrorMessage[contentType]}
+        </div>
+      )}
+
       {data && (
         <ul className="mt-3 flex flex-wrap gap-5">
           {data.content.map((certificate, i) => (

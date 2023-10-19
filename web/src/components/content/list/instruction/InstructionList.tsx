@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { useFetch } from '../../../../hooks/useFetch'
 import {
   AssignmentOut,
@@ -21,7 +20,8 @@ import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaks } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useShowContentListError } from '../../../../hooks/useShowContentListError'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { Icon } from '../../../Icon'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -40,7 +40,7 @@ type InstructionListProps = {
 
 export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValues }: InstructionListProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t } = useTranslation()
+  const { t, lt } = useLudosTranslation()
 
   const singularActiveTab = ContentTypeSingular[ContentType.ohjeet]
 
@@ -52,8 +52,6 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
       removeNullsFromFilterObj
     ).toString()}`
   )
-
-  useShowContentListError(contentType, error)
 
   const teachingLanguage = teachingLanguageSelectProps.teachingLanguage
 
@@ -84,6 +82,13 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
       </div>
 
       {loading && <Spinner className="mt-10 text-center" />}
+
+      {error && (
+        <div className="flex justify-center w-full gap-2 text-red-primary">
+          <Icon name="virheellinen" color="text-red-primary" />
+          {lt.contentListErrorMessage[contentType]}
+        </div>
+      )}
 
       {data && (
         <ul className="mt-3 flex flex-wrap gap-5">
