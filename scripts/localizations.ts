@@ -328,28 +328,29 @@ async function listLocalizationKeysUsedAndLintErrorsInDirectory(
   return [localizationKeys, lintErrors]
 }
 
-function reportLintErrors(errors: string[]) {
-  errors.forEach((e) => console.error(`LOCALIZATION LINT ERROR: ${e}`))
+function reportLintErrors(lintErrors: string[]) {
+  lintErrors.forEach((e) => console.error(`LOCALIZATION LINT ERROR: ${e}`))
+  if (lintErrors.length > 0) {
+    process.exit(1)
+  }
 }
 
 async function listMissing(from: Environment | XlsxInput, locale: Locale) {
   const localizations = await fetchLocalizations(from)
-  const [localizationKeysUsedInCode, errors] = await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
+  const [localizationKeysUsedInCode, lintErrors] =
+    await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
 
   const missingKeys = [...localizationKeysUsedInCode].filter((key) => !localizations.get(key, locale)?.value)
   if (missingKeys.length > 0) {
     console.log(`Keys missing from ${from}:\n  ${missingKeys.join('\n  ')}`)
   }
 
-  reportLintErrors(errors)
+  reportLintErrors(lintErrors)
 }
 
 async function lint() {
   const [_, lintErrors] = await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
-  lintErrors.forEach((e) => console.error(`LOCALIZATION LINT ERROR: ${e}`))
-  if (lintErrors.length > 0) {
-    process.exit(1)
-  }
+  reportLintErrors(lintErrors)
 }
 
 function sourceName(envOrXlsx: Environment | XlsxInput) {
