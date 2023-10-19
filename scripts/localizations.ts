@@ -1,13 +1,16 @@
-import { command, positional, run, subcommands, Type, union } from 'cmd-ts'
-import chalk, { ChalkInstance } from 'chalk'
 import fs, { promises as fsPromises } from 'fs'
 import * as path from 'path'
 import { homedir } from 'os'
+
+import ts from 'typescript'
+import { command, positional, run, subcommands, Type, union, option, string } from 'cmd-ts'
+import chalk, { ChalkInstance } from 'chalk'
 import * as XLSX from 'xlsx'
 
 XLSX.set_fs(fs)
 
 const CALLER_ID = 'ludos-localizations'
+const WEB_SRC_DIR_PATH = '../web/src'
 
 const Environment = {
   untuva: 'untuva',
@@ -272,6 +275,83 @@ async function list(from: Environment | XlsxInput) {
   console.log(`\nStats: ${JSON.stringify(localizations.stats(), null, 2)}`)
 }
 
+function formatTypescriptError(node: ts.Node, message: string) {
+  const { line, character } = node.getSourceFile().getLineAndCharacterOfPosition(node.getStart())
+  return `${node.getSourceFile().fileName} (${line + 1},${character + 1}): ${message}`
+}
+function listLocalizationKeysUsedAndLintErrorsInFile(filePath: string): [Set<string>, string[]] {
+  const sourceFile = ts.createSourceFile(filePath, fs.readFileSync(filePath).toString(), ts.ScriptTarget.ESNext, true)
+
+  const keysInUse: Set<string> = new Set()
+  const errors: string[] = []
+  function findLocalizationKeysUsedInAstNode(node: ts.Node) {
+    if (ts.isCallExpression(node) && node.expression.getText() === 't') {
+      if (node.arguments.length === 0) {
+        errors.push(formatTypescriptError(node, 't function called without arguments'))
+        return
+      }
+      if (ts.isStringLiteral(node.arguments[0])) {
+        keysInUse.add(node.arguments[0].text)
+      } else {
+        errors.push(formatTypescriptError(node, 't function called with a non-string-literal'))
+      }
+    }
+    node.forEachChild(findLocalizationKeysUsedInAstNode)
+  }
+  findLocalizationKeysUsedInAstNode(sourceFile)
+
+  return [keysInUse, errors]
+}
+
+async function listLocalizationKeysUsedAndLintErrorsInDirectory(
+  dirPath: string,
+  localizationKeys: Set<string> = new Set(),
+  lintErrors: string[] = []
+): Promise<[Set<string>, string[]]> {
+  const pathStat = await fsPromises.stat(dirPath)
+  if (!pathStat.isDirectory()) {
+    throw new Error(`${dirPath} is not a directory`)
+  }
+
+  const files = await fsPromises.readdir(dirPath)
+  for (const file of files) {
+    const filePath = path.join(dirPath, file)
+    const fileStat = await fsPromises.stat(filePath)
+    if (fileStat.isDirectory()) {
+      await listLocalizationKeysUsedAndLintErrorsInDirectory(filePath, localizationKeys, lintErrors)
+    } else {
+      const [newLocalizationKeys, newLintErrors] = listLocalizationKeysUsedAndLintErrorsInFile(path.join(dirPath, file))
+      newLocalizationKeys.forEach((k) => localizationKeys.add(k))
+      newLintErrors.forEach((e) => lintErrors.push(e))
+    }
+  }
+  return [localizationKeys, lintErrors]
+}
+
+function reportLintErrors(errors: string[]) {
+  errors.forEach((e) => console.error(`LOCALIZATION LINT ERROR: ${e}`))
+}
+
+async function listMissing(from: Environment | XlsxInput, locale: Locale) {
+  const localizations = await fetchLocalizations(from)
+  const [localizationKeysUsedInCode, errors] = await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
+
+  const missingKeys = [...localizationKeysUsedInCode].filter((key) => !localizations.get(key, locale)?.value)
+  if (missingKeys.length > 0) {
+    console.log(`Keys missing from ${from}:\n  ${missingKeys.join('\n  ')}`)
+  }
+
+  reportLintErrors(errors)
+}
+
+async function lint() {
+  const [_, lintErrors] = await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
+  lintErrors.forEach((e) => console.error(`LOCALIZATION LINT ERROR: ${e}`))
+  if (lintErrors.length > 0) {
+    process.exit(1)
+  }
+}
+
 function sourceName(envOrXlsx: Environment | XlsxInput) {
   return isEnvironment(envOrXlsx) ? envOrXlsx : envOrXlsx.filepath
 }
@@ -423,6 +503,17 @@ const EnvironmentParameter: Type<string, Environment> = {
   description: `${Object.values(Environment).join('|')}`
 }
 
+const LocaleParameter: Type<string, Locale> = {
+  async from(localeString: string) {
+    if (localeString in Locale) {
+      return localeString as Locale
+    } else {
+      throw new Error(`Unknown environment ${localeString}`)
+    }
+  },
+  description: `${Object.values(Locale).join('|')}`
+}
+
 const XlsxInputParameter: Type<string, XlsxInput> = {
   async from(path: string) {
     return {
@@ -448,6 +539,15 @@ const XlsxOutputParameter: Type<string, XlsxOutput> = {
 const envOrXlsxInputType = union([EnvironmentParameter, XlsxInputParameter])
 const envOrXlsxOutputType = union([EnvironmentParameter, XlsxOutputParameter])
 
+const lintCommand = command({
+  name: 'lint',
+  description: 'Lint localization usages in frontend',
+  args: {},
+  handler: async (_: {}) => {
+    await lint()
+  }
+})
+
 const listCommand = command({
   name: 'list',
   description: 'Lists keys in an environment',
@@ -456,6 +556,25 @@ const listCommand = command({
   },
   handler: async (args: { env: Environment | XlsxInput }) => {
     await list(args.env)
+  }
+})
+
+const listMissingCommand = command({
+  name: 'list-missing',
+  description: 'Lists keys that are used in code but are missing from an environment',
+  args: {
+    env: positional({ type: envOrXlsxInputType, displayName: 'environment' }),
+    locale: option({
+      type: LocaleParameter,
+      long: 'locale',
+      defaultValue(): Locale {
+        return Locale.fi
+      },
+      defaultValueIsSerializable: true
+    })
+  },
+  handler: async (args: { env: Environment | XlsxInput; locale: Locale }) => {
+    await listMissing(args.env, args.locale)
   }
 })
 
@@ -494,7 +613,9 @@ const app = subcommands({
      {"qa": {"username": "foo", "password: "bar"}}`.replace(/  +/g, ''),
   version: '1.0.0',
   cmds: {
+    lint: lintCommand,
     list: listCommand,
+    'list-missing': listMissingCommand,
     diff: diffCommand,
     copy: copyCommand
   }

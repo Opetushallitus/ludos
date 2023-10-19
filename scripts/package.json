@@ -14,6 +14,6 @@
   },
   "scripts": {
     "lint": "tsc && eslint *.ts",
-    "localizations": "node --loader @swc-node/register/esm localizations.ts"
+    "localizations": "node --no-warnings --loader @swc-node/register/esm localizations.ts"
   }
 }
