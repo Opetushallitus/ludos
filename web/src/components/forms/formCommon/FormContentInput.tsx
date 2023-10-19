@@ -54,7 +54,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
               <TipTap
                 onContentChange={(newContent) => handleContentChange(newContent, index)}
                 content={field.value || ''}
-                labelKey="form.tehtavansisalto"
+                label={t('form.tehtavansisalto')}
                 dataTestId={`${fieldName}-${index}`}
                 key={index}
               />
