@@ -3,7 +3,7 @@ import * as path from 'path'
 import { homedir } from 'os'
 
 import ts from 'typescript'
-import { boolean, command, flag, option, positional, run, subcommands, string, Type, union } from 'cmd-ts'
+import { boolean, command, flag, option, positional, run, subcommands, string, Type, union, optional } from 'cmd-ts'
 import chalk, { ChalkInstance } from 'chalk'
 import * as XLSX from 'xlsx'
 import * as process from 'process'
@@ -155,6 +155,7 @@ interface LocalizationIn {
   locale: Locale
   value: string
   modified?: number
+  id?: number
 }
 
 interface LocalizationOut {
@@ -239,8 +240,16 @@ class Localizations {
   }
 }
 
-async function fetchLocalizationsFromEnv(env: Environment): Promise<Localizations> {
-  const endpointUrl = `${localizationApiBaseUrlByEnv(env)}/localisation?value=NOCACHE&category=ludos`
+async function fetchLocalizationsFromEnv(
+  env: Environment,
+  key: string | undefined = undefined,
+  locale: Locale | undefined = undefined
+): Promise<Localizations> {
+  const keyParamString = key ? `&key=${key}` : ''
+  const localeParamString = locale ? `&locale=${locale}` : ''
+  const endpointUrl = `${localizationApiBaseUrlByEnv(
+    env
+  )}/localisation?value=NOCACHE&category=ludos${keyParamString}${localeParamString}`
   const response = await fetch(endpointUrl)
   if (response.status === 200) {
     const localizations: LocalizationIn[] = await response.json()
@@ -274,16 +283,26 @@ async function fetchLocalizationsFromXlsxInput(from: XlsxInput): Promise<Localiz
   return new Localizations(locs, from.filepath)
 }
 
-async function fetchLocalizations(from: Environment | XlsxInput): Promise<Localizations> {
+async function fetchLocalizations(
+  from: Environment | XlsxInput,
+  key: string | undefined = undefined,
+  locale: Locale | undefined = undefined
+): Promise<Localizations> {
   if (isEnvironment(from)) {
-    return fetchLocalizationsFromEnv(from)
+    return fetchLocalizationsFromEnv(from, key, locale)
+  } else if (key || locale) {
+    throw new Error('Filters not supported for XLSX input')
   } else {
     return fetchLocalizationsFromXlsxInput(from)
   }
 }
 
-async function list(from: Environment | XlsxInput) {
-  const localizations = await fetchLocalizations(from)
+async function list(
+  from: Environment | XlsxInput,
+  key: string | undefined = undefined,
+  locale: Locale | undefined = undefined
+) {
+  const localizations = await fetchLocalizations(from, key, locale)
 
   localizations.keys().forEach((key) => {
     console.log(`${key}:`)
@@ -504,7 +523,7 @@ async function writeLocalizationsToEnv(
   localizations: Localizations,
   to: Environment,
   retryWithoutCache: boolean = true
-) {
+): Promise<void> {
   const sessionCookies = await loginToLokalisointi(to, retryWithoutCache)
   const cookieString = Object.entries(sessionCookies)
     .map(([k, v]) => `${k}=${v}`)
@@ -574,13 +593,18 @@ const LocaleParameterType: Type<string, Locale> = {
   description: `${Object.values(Locale).join('|')}`
 }
 
-const localeParameter = option({
+const localeParameterWithDefault = option({
   type: LocaleParameterType,
   long: 'locale',
   defaultValue(): Locale {
     return Locale.fi
   },
   defaultValueIsSerializable: true
+})
+
+const localeParameterWithoutDefault = option({
+  type: optional(LocaleParameterType),
+  long: 'locale'
 })
 
 const XlsxInputParameter: Type<string, XlsxInput> = {
@@ -608,6 +632,19 @@ const XlsxOutputParameter: Type<string, XlsxOutput> = {
 const envOrXlsxInputType = union([EnvironmentParameterType, XlsxInputParameter])
 const envOrXlsxOutputType = union([EnvironmentParameterType, XlsxOutputParameter])
 
+const getCommand = command({
+  name: 'get',
+  description: 'get localization',
+  args: {
+    from: positional({ type: EnvironmentParameterType, displayName: 'from' }),
+    key: positional({ type: string, displayName: 'key' }),
+    locale: localeParameterWithoutDefault
+  },
+  handler: async (args: { from: Environment; key: string; locale: Locale | undefined }) => {
+    await list(args.from, args.key, args.locale)
+  }
+})
+
 const lintCommand = command({
   name: 'lint',
   description: 'Lint localization usages in frontend',
@@ -633,7 +670,7 @@ const listMissingCommand = command({
   description: 'Lists keys that are used in code but are missing from an environment',
   args: {
     env: positional({ type: envOrXlsxInputType, displayName: 'environment' }),
-    locale: localeParameter,
+    locale: localeParameterWithDefault,
     errorIfMissing: flag({
       type: boolean,
       long: 'error-if-missing',
@@ -694,7 +731,7 @@ const putCommand = command({
     to: positional({ type: EnvironmentParameterType, displayName: 'to' }),
     key: positional({ type: string, displayName: 'key' }),
     value: positional({ type: string, displayName: 'value' }),
-    locale: localeParameter
+    locale: localeParameterWithDefault
   },
   handler: async (args: { to: Environment; key: string; locale: Locale; value: string }) => {
     await put(args.to, args.key, args.locale, args.value)
@@ -710,6 +747,7 @@ const app = subcommands({
      {"qa": {"username": "foo", "password: "bar"}}`.replace(/  +/g, ''),
   version: '1.0.0',
   cmds: {
+    get: getCommand,
     lint: lintCommand,
     list: listCommand,
     'list-missing': listMissingCommand,
