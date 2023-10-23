@@ -1,0 +1,9 @@
+name: Localization check
+description: Localization checks
+
+runs:
+  using: composite
+  steps:
+    - name: Check for missing keys in untuva
+      shell: bash
+      run: yarn workspace scripts localizations list-missing --error-if-missing --github-actions untuva

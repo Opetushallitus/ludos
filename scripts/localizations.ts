@@ -3,9 +3,10 @@ import * as path from 'path'
 import { homedir } from 'os'
 
 import ts from 'typescript'
-import { command, positional, run, subcommands, Type, union, option, string } from 'cmd-ts'
+import { boolean, command, flag, option, positional, run, subcommands, Type, union } from 'cmd-ts'
 import chalk, { ChalkInstance } from 'chalk'
 import * as XLSX from 'xlsx'
+import * as process from 'process'
 
 XLSX.set_fs(fs)
 
@@ -335,17 +336,33 @@ function reportLintErrors(lintErrors: string[]) {
   }
 }
 
-async function listMissing(from: Environment | XlsxInput, locale: Locale) {
+async function listMissing(
+  from: Environment | XlsxInput,
+  locale: Locale,
+  errorIfMissing: boolean,
+  githubActions: boolean
+) {
   const localizations = await fetchLocalizations(from)
   const [localizationKeysUsedInCode, lintErrors] =
     await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
 
   const missingKeys = [...localizationKeysUsedInCode].filter((key) => !localizations.get(key, locale)?.value)
   if (missingKeys.length > 0) {
-    console.log(`Keys missing from ${from}:\n  ${missingKeys.join('\n  ')}`)
+    if (githubActions) {
+      for (const missingKey of missingKeys) {
+        console.log(`::error::Localization key '${missingKey}' missing from ${from}`)
+      }
+    } else {
+      console.log(`Keys missing from ${from}:\n  ${missingKeys.join('\n  ')}`)
+    }
   }
 
   reportLintErrors(lintErrors)
+
+  if (errorIfMissing && missingKeys.length > 0) {
+    console.log('ERROR: Exiting with error because there are missing keys and errorIfMissing is set')
+    process.exit(2)
+  }
 }
 
 async function lint() {
@@ -572,10 +589,33 @@ const listMissingCommand = command({
         return Locale.fi
       },
       defaultValueIsSerializable: true
+    }),
+    errorIfMissing: flag({
+      type: boolean,
+      long: 'error-if-missing',
+      description: 'Exit with error code if there are missing keys',
+      defaultValue(): boolean {
+        return false
+      },
+      defaultValueIsSerializable: true
+    }),
+    githubActions: flag({
+      type: boolean,
+      long: 'github-actions',
+      description: 'print github actions workflow commands',
+      defaultValue(): boolean {
+        return false
+      },
+      defaultValueIsSerializable: true
     })
   },
-  handler: async (args: { env: Environment | XlsxInput; locale: Locale }) => {
-    await listMissing(args.env, args.locale)
+  handler: async (args: {
+    env: Environment | XlsxInput
+    locale: Locale
+    errorIfMissing: boolean
+    githubActions: boolean
+  }) => {
+    await listMissing(args.env, args.locale, args.errorIfMissing, args.githubActions)
   }
 })
 
