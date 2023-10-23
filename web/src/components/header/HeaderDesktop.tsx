@@ -8,20 +8,13 @@ import { HeaderFavorites } from './HeaderFavorites'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
 
-export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
-
 export const HeaderDesktop = ({ pages }: { pages: HeaderPage[] }) => {
-  const { LANGUAGE_DROPDOWN, t, i18n } = useLudosTranslation()
+  const { LANGUAGE_DROPDOWN, t } = useLudosTranslation()
   const { isYllapitaja } = useUserDetails()
-  const { userFavoriteAssignmentCount } = useContext(LudosContext)
+  const { userFavoriteAssignmentCount, uiLanguage, setUiLanguage } = useContext(LudosContext)
 
   const { firstNames, lastName, role } = useUserDetails()
 
-  const currentLanguageKey = i18n.language
-
-  const changeLanguage = (lang: string) => {
-    void i18n.changeLanguage(lang)
-  }
   const handleOptionClick = (opt: string | null) => {
     if (opt === 'logout') {
       document.location = LOGOUT_URL
@@ -56,9 +49,9 @@ export const HeaderDesktop = ({ pages }: { pages: HeaderPage[] }) => {
 
             <div className="relative border-l-2 border-green-primary pl-5">
               <HeaderDropdown
-                currentOption={languageDropdownOptions[currentLanguageKey].name}
+                currentOption={languageDropdownOptions[uiLanguage].name}
                 options={languageDropdownOptions}
-                onOptionClick={(str) => changeLanguage(str)}
+                onOptionClick={setUiLanguage}
                 testId="header-language-dropdown"
               />
             </div>

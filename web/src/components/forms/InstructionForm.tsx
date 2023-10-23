@@ -21,7 +21,7 @@ import {
   updateInstruction,
   uploadInstructionAttachment
 } from '../../request'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { LanguageTabs } from '../LanguageTabs'
 import { InstructionFormType, instructionSchema } from './schemas/instructionSchema'
 import { TextInput } from '../TextInput'
@@ -34,6 +34,7 @@ import { NotificationEnum, useNotification } from '../../contexts/NotificationCo
 import { contentListPath, contentPagePath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { LudosContext } from '../../contexts/LudosContext'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -55,7 +56,8 @@ function mapInstructionInAttachmentDataWithLanguage(
 }
 
 const InstructionForm = ({ action }: InstructionFormProps) => {
-  const { t, lt, i18n } = useLudosTranslation()
+  const { t, lt } = useLudosTranslation()
+  const { uiLanguage } = useContext(LudosContext)
   const navigate = useNavigate()
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
@@ -405,7 +407,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         onDeleteAction={() => submitInstruction(PublishState.Deleted)}
         onClose={() => setOpenDeleteModal(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText[ContentType.ohjeet](i18n.language === 'fi' ? watchNameFi : watchNameSv)}</p>
+          <p>{lt.contentDeleteModalText[ContentType.ohjeet](uiLanguage === 'fi' ? watchNameFi : watchNameSv)}</p>
         </div>
       </DeleteModal>
     </div>

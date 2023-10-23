@@ -12,12 +12,9 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
   const { LANGUAGE_DROPDOWN, t, i18n } = useLudosTranslation()
   const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { uiLanguage, setUiLanguage } = useContext(LudosContext)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
-
-  const changeLanguage = (lang: string) => {
-    void i18n.changeLanguage(lang)
-  }
 
   return (
     <div className="flex justify-center bg-green-primary">
@@ -56,18 +53,18 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                   <div className="row w-full flex-wrap">
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
-                        i18n.language === 'fi' ? ' border-l-5 border-green-primary' : ''
+                        uiLanguage === 'fi' ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
-                      onClick={() => changeLanguage('fi')}>
+                      onClick={() => setUiLanguage('fi')}>
                       {LANGUAGE_DROPDOWN.fi.name}
                     </Button>
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
-                        i18n.language === 'sv' ? ' border-l-5 border-green-primary' : ''
+                        uiLanguage === 'sv' ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
-                      onClick={() => changeLanguage('sv')}>
+                      onClick={() => setUiLanguage('sv')}>
                       {LANGUAGE_DROPDOWN.sv.name}
                     </Button>
                   </div>

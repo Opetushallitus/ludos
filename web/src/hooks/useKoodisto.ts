@@ -1,5 +1,6 @@
 import { LudosContext } from '../contexts/LudosContext'
 import { useContext } from 'react'
+import { BusinessLanguage } from '../types'
 
 export const KoodistoName = {
   OPPIAINEET_JA_OPPIMAARAT_LOPS2021: 'oppiaineetjaoppimaaratlops2021',
@@ -77,7 +78,7 @@ export const oppimaaraFromId: (oppimaaraId: string) => Oppimaara = (oppimaaraId:
 }
 export const sortKooditAlphabetically = (koodit: KoodiDtoOut[]) => {
   const language = document.documentElement.lang
-  const locale = language === 'fi' ? 'fi-FI' : 'sv-SE'
+  const locale = language === BusinessLanguage.fi ? 'fi-FI' : 'sv-SE'
 
   return koodit.sort((a, b) =>
     a.nimi.localeCompare(b.nimi, locale, {

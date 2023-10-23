@@ -85,6 +85,7 @@ export async function updateAttachments(page: Page) {
   await page.getByTestId('form-update-submit').click()
   await assertSuccessNotification(page, 'form.notification.ohjeen-tallennus.onnistui')
 
+  await setTeachingLanguage(page, TeachingLanguage.fi)
   await expect(page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
   await expect(page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
 }
@@ -117,6 +118,7 @@ export async function assertCreatedInstruction(page: Page, action: FormAction) {
 }
 
 export async function assertUpdatedInstruction(page: Page) {
+  await setTeachingLanguage(page, TeachingLanguage.fi)
   const updatedInstructionHeader = page.getByTestId('assignment-header')
   await expect(updatedInstructionHeader).toHaveText('Testi ohje muokattu')
   await setTeachingLanguage(page, TeachingLanguage.sv)

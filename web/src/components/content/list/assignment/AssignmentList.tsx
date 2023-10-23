@@ -13,7 +13,7 @@ import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { AssignmentCard } from './AssignmentCard'
 import { Pagination } from '../../../Pagination'
-import { TeachingLanguageSelect, TeachingLanguageSelectProps } from '../../../TeachingLanguageSelect'
+import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
@@ -21,8 +21,10 @@ import { preventLineBreaks } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { AssignmentFilters } from './AssignmentFilters'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { useContext } from 'react'
+import { LudosContext } from '../../../../contexts/LudosContext'
 import { ListError } from '../ListError'
-import { useTranslation } from 'react-i18next'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -35,19 +37,14 @@ const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teach
 
 type ContentListProps = {
   exam: Exam
-  teachingLanguageSelectProps: TeachingLanguageSelectProps
   filterValues: FilterValues
   isFavoritePage?: boolean
 }
 
-export const AssignmentList = ({
-  exam,
-  teachingLanguageSelectProps,
-  filterValues,
-  isFavoritePage
-}: ContentListProps) => {
+export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentListProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
+  const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
   const singularActiveTab = ContentTypeSingular[ContentType.koetehtavat]
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
@@ -60,7 +57,7 @@ export const AssignmentList = ({
     ).toString()}`
   )
 
-  const teachingLanguage = teachingLanguageSelectProps.teachingLanguage
+  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
 
   return (
     <div>
@@ -79,7 +76,10 @@ export const AssignmentList = ({
           {shouldShowTeachingLanguageDropdown && (
             <div className="flex flex-col gap-2 md:flex-row">
               <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
-              <TeachingLanguageSelect {...teachingLanguageSelectProps} />
+              <TeachingLanguageSelect
+                teachingLanguage={languageOverrideIfSukoAssignment}
+                setTeachingLanguage={setTeachingLanguage}
+              />
             </div>
           )}
 

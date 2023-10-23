@@ -139,7 +139,7 @@ class TestController(
             listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(role.oikeus)))),
             "Vale",
             "Käyttäjä",
-            null
+            "fi"
         )
         val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
 

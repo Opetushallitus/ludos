@@ -145,10 +145,19 @@ export const Roles = {
 
 type RolesType = keyof typeof Roles
 
+export const BusinessLanguage = {
+  fi: 'fi',
+  sv: 'sv',
+  en: 'en'
+}
+
+export type BusinessLanguageType = keyof typeof BusinessLanguage
+
 export type UserDetails = {
   firstNames: string | null
   lastName: string | null
   role: RolesType | null
+  businessLanguage: BusinessLanguageType | null
 }
 
 export const ErrorMessages = {
