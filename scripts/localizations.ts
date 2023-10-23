@@ -316,6 +316,64 @@ async function list(
   console.log(`\nStats: ${JSON.stringify(localizations.stats(), null, 2)}`)
 }
 
+async function deleteKeyRequest(
+  from: Environment,
+  idToDelete: number,
+  retryWithoutSessionCache: boolean = true
+): Promise<void> {
+  const sessionCookies = await loginToLokalisointi(from, retryWithoutSessionCache)
+  const deleteResponse = await fetch(`${localizationApiBaseUrlByEnv(from)}/localisation/${idToDelete}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'caller-id': CALLER_ID,
+      Cookie: cookieString(sessionCookies)
+    },
+    redirect: 'manual'
+  })
+
+  if (deleteResponse.status === 302) {
+    if (retryWithoutSessionCache) {
+      console.log(`Delete endpoint sent a redirect so session is not valid, retrying without session cache...`)
+      return await deleteKeyRequest(from, idToDelete, false)
+    } else {
+      throw new Error(
+        `Got a redirect response from delete endpoint (to ${deleteResponse.headers.get(
+          'location'
+        )}), maybe the session is invalid?`
+      )
+    }
+  } else if (deleteResponse.status !== 200) {
+    throw new Error(
+      `Error deleting localization id ${idToDelete} from ${from}, status=${
+        deleteResponse.status
+      }, response='${await deleteResponse.text()}'`
+    )
+  }
+}
+
+async function deleteKey(from: Environment, key: string, locale: Locale | undefined = undefined) {
+  const localizations = await fetchLocalizations(from, key, locale)
+
+  if (localizations.keys().length === 0) {
+    console.log(`No localizations match key '${key}' and locale '${locale}'`)
+    return
+  }
+
+  for (const key of localizations.keys()) {
+    const locales = [...localizations.localizationsByKeyAndLocale.get(key)!.keys()].sort()
+    for (const locale of locales) {
+      const localization = localizations.localizationsByKeyAndLocale.get(key)!.get(locale)!
+      if (localization.id) {
+        await deleteKeyRequest(from, localization.id)
+        console.log(`Deleted key '${key}' (${locale}) with id=${localization.id} (value was "${localization.value})"`)
+      } else {
+        console.log(`Could not get ID for ${key} ${locale}, should be unreachable`)
+      }
+    }
+  }
+}
+
 function formatTypescriptError(node: ts.Node, message: string) {
   const { line, character } = node.getSourceFile().getLineAndCharacterOfPosition(node.getStart())
   return `${node.getSourceFile().fileName} (${line + 1},${character + 1}): ${message}`
@@ -519,21 +577,24 @@ async function getNewAndChangedLocalizations(
   }
 }
 
+function cookieString(sessionCookies: SessionCookies): string {
+  return Object.entries(sessionCookies)
+    .map(([k, v]) => `${k}=${v}`)
+    .join('; ')
+}
+
 async function writeLocalizationsToEnv(
   localizations: Localizations,
   to: Environment,
   retryWithoutCache: boolean = true
 ): Promise<void> {
   const sessionCookies = await loginToLokalisointi(to, retryWithoutCache)
-  const cookieString = Object.entries(sessionCookies)
-    .map(([k, v]) => `${k}=${v}`)
-    .join('; ')
   const updateResponse = await fetch(`${localizationApiBaseUrlByEnv(to)}/localisation/update`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'caller-id': CALLER_ID,
-      Cookie: cookieString
+      Cookie: cookieString(sessionCookies)
     },
     redirect: 'manual',
     body: JSON.stringify(localizations.localizationServicePayload())
@@ -645,6 +706,19 @@ const getCommand = command({
   }
 })
 
+const deleteCommand = command({
+  name: 'delete',
+  description: 'delete localization',
+  args: {
+    from: positional({ type: EnvironmentParameterType, displayName: 'from' }),
+    key: positional({ type: string, displayName: 'key' }),
+    locale: localeParameterWithoutDefault
+  },
+  handler: async (args: { from: Environment; key: string; locale: Locale | undefined }) => {
+    await deleteKey(args.from, args.key, args.locale)
+  }
+})
+
 const lintCommand = command({
   name: 'lint',
   description: 'Lint localization usages in frontend',
@@ -748,6 +822,7 @@ const app = subcommands({
   version: '1.0.0',
   cmds: {
     get: getCommand,
+    delete: deleteCommand,
     lint: lintCommand,
     list: listCommand,
     'list-missing': listMissingCommand,
