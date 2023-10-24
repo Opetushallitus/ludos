@@ -52,6 +52,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
               onChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
               isMulti
               isSearchable
+              error={!!errors.lukuvuosiKoodiArvos}
             />
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>

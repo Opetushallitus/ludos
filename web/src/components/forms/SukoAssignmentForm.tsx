@@ -88,6 +88,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 clearErrors('oppimaara')
               }}
               isSearchable
+              error={!!errors.oppimaara}
             />
             <FormError error={errors.oppimaara?.message} />
           </fieldset>
@@ -113,6 +114,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 setValue('tavoitetasoKoodiArvo', opt.value)
               }}
               isSearchable
+              error={!!errors.tavoitetasoKoodiArvo}
             />
             <FormError error={errors.tavoitetasoKoodiArvo?.message} />
           </fieldset>
