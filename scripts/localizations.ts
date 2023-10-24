@@ -444,7 +444,7 @@ async function listMissing(
   const [localizationKeysUsedInCode, lintErrors] =
     await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
 
-  const missingKeys = [...localizationKeysUsedInCode].filter((key) => !localizations.get(key, locale)?.value)
+  const missingKeys = [...localizationKeysUsedInCode].filter((key) => !localizations.get(key, locale)?.value).sort()
   if (missingKeys.length > 0) {
     if (githubActions) {
       for (const missingKey of missingKeys) {
