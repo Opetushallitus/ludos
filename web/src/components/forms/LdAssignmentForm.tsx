@@ -58,6 +58,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
               onChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
               isMulti
               isSearchable
+              error={!!errors.lukuvuosiKoodiArvos}
             />
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>
@@ -76,6 +77,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
                 clearErrors('aineKoodiArvo')
               }}
               isSearchable
+              error={!!errors.aineKoodiArvo}
             />
             <FormError error={errors.aineKoodiArvo?.message} />
           </fieldset>

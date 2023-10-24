@@ -85,12 +85,12 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 const oppimaaraParts = opt.value.split('.')
                 setValue('oppimaara.oppimaaraKoodiArvo', oppimaaraParts[0])
                 setValue('oppimaara.kielitarjontaKoodiArvo', oppimaaraParts[1])
-                clearErrors('oppimaara.oppimaaraKoodiArvo')
-                clearErrors('oppimaara.kielitarjontaKoodiArvo')
+                clearErrors('oppimaara')
               }}
               isSearchable
+              error={!!errors.oppimaara}
             />
-            <FormError error={errors.oppimaara?.oppimaaraKoodiArvo?.message} />
+            <FormError error={errors.oppimaara?.message} />
           </fieldset>
 
           <AssignmentTypeField
@@ -114,6 +114,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 setValue('tavoitetasoKoodiArvo', opt.value)
               }}
               isSearchable
+              error={!!errors.tavoitetasoKoodiArvo}
             />
             <FormError error={errors.tavoitetasoKoodiArvo?.message} />
           </fieldset>

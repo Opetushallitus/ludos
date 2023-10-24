@@ -1,13 +1,18 @@
-import { command, positional, run, subcommands, Type, union } from 'cmd-ts'
-import chalk, { ChalkInstance } from 'chalk'
 import fs, { promises as fsPromises } from 'fs'
 import * as path from 'path'
 import { homedir } from 'os'
+
+import ts from 'typescript'
+import { boolean, command, flag, option, positional, run, subcommands, string, Type, union, optional } from 'cmd-ts'
+import chalk, { ChalkInstance } from 'chalk'
 import * as XLSX from 'xlsx'
+import * as process from 'process'
 
 XLSX.set_fs(fs)
 
 const CALLER_ID = 'ludos-localizations'
+const WEB_SRC_DIR_PATH = '../web/src'
+const LOKALISAATIOPALVELU_SESSION_CACHE_FILE = path.join(process.env['HOME']!, '.lokalisaatiopalvelu_session')
 
 const Environment = {
   untuva: 'untuva',
@@ -71,7 +76,20 @@ async function credentialsForEnv(env: Environment): Promise<Credentials> {
   }
 }
 
-async function loginToLokalisointi(env: Environment) {
+interface SessionCookies {
+  JSESSIONID: string
+}
+
+async function loginToLokalisointi(env: Environment, useSessionCache: boolean): Promise<SessionCookies> {
+  if (useSessionCache) {
+    try {
+      return JSON.parse(await fsPromises.readFile(LOKALISAATIOPALVELU_SESSION_CACHE_FILE, 'utf-8'))
+    } catch (e) {
+      if (fs.existsSync(LOKALISAATIOPALVELU_SESSION_CACHE_FILE)) {
+        console.log(`Error reading session cache file ${LOKALISAATIOPALVELU_SESSION_CACHE_FILE}`, e)
+      }
+    }
+  }
   const credentials = await credentialsForEnv(env)
   const tgtResponse = await fetch(`${environmentBaseUrl(env)}/cas/v1/tickets`, {
     method: 'POST',
@@ -119,10 +137,17 @@ async function loginToLokalisointi(env: Environment) {
     }
     return match[1]
   }
-
-  return {
+  const sessionCookies = {
     JSESSIONID: extractCookieValue('JSESSIONID', cookiesString)
   }
+
+  try {
+    await fsPromises.writeFile(LOKALISAATIOPALVELU_SESSION_CACHE_FILE, JSON.stringify(sessionCookies, null, 2))
+  } catch (e) {
+    console.log(`Error writing '${LOKALISAATIOPALVELU_SESSION_CACHE_FILE}'`, e)
+  }
+
+  return sessionCookies
 }
 
 interface LocalizationIn {
@@ -130,6 +155,7 @@ interface LocalizationIn {
   locale: Locale
   value: string
   modified?: number
+  id?: number
 }
 
 interface LocalizationOut {
@@ -214,8 +240,16 @@ class Localizations {
   }
 }
 
-async function fetchLocalizationsFromEnv(env: Environment): Promise<Localizations> {
-  const endpointUrl = `${localizationApiBaseUrlByEnv(env)}/localisation?value=NOCACHE&category=ludos`
+async function fetchLocalizationsFromEnv(
+  env: Environment,
+  key: string | undefined = undefined,
+  locale: Locale | undefined = undefined
+): Promise<Localizations> {
+  const keyParamString = key ? `&key=${key}` : ''
+  const localeParamString = locale ? `&locale=${locale}` : ''
+  const endpointUrl = `${localizationApiBaseUrlByEnv(
+    env
+  )}/localisation?value=NOCACHE&category=ludos${keyParamString}${localeParamString}`
   const response = await fetch(endpointUrl)
   if (response.status === 200) {
     const localizations: LocalizationIn[] = await response.json()
@@ -249,16 +283,26 @@ async function fetchLocalizationsFromXlsxInput(from: XlsxInput): Promise<Localiz
   return new Localizations(locs, from.filepath)
 }
 
-async function fetchLocalizations(from: Environment | XlsxInput): Promise<Localizations> {
+async function fetchLocalizations(
+  from: Environment | XlsxInput,
+  key: string | undefined = undefined,
+  locale: Locale | undefined = undefined
+): Promise<Localizations> {
   if (isEnvironment(from)) {
-    return fetchLocalizationsFromEnv(from)
+    return fetchLocalizationsFromEnv(from, key, locale)
+  } else if (key || locale) {
+    throw new Error('Filters not supported for XLSX input')
   } else {
     return fetchLocalizationsFromXlsxInput(from)
   }
 }
 
-async function list(from: Environment | XlsxInput) {
-  const localizations = await fetchLocalizations(from)
+async function list(
+  from: Environment | XlsxInput,
+  key: string | undefined = undefined,
+  locale: Locale | undefined = undefined
+) {
+  const localizations = await fetchLocalizations(from, key, locale)
 
   localizations.keys().forEach((key) => {
     console.log(`${key}:`)
@@ -270,6 +314,158 @@ async function list(from: Environment | XlsxInput) {
     })
   })
   console.log(`\nStats: ${JSON.stringify(localizations.stats(), null, 2)}`)
+}
+
+async function deleteKeyRequest(
+  from: Environment,
+  idToDelete: number,
+  retryWithoutSessionCache: boolean = true
+): Promise<void> {
+  const sessionCookies = await loginToLokalisointi(from, retryWithoutSessionCache)
+  const deleteResponse = await fetch(`${localizationApiBaseUrlByEnv(from)}/localisation/${idToDelete}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'caller-id': CALLER_ID,
+      Cookie: cookieString(sessionCookies)
+    },
+    redirect: 'manual'
+  })
+
+  if (deleteResponse.status === 302) {
+    if (retryWithoutSessionCache) {
+      console.log(`Delete endpoint sent a redirect so session is not valid, retrying without session cache...`)
+      return await deleteKeyRequest(from, idToDelete, false)
+    } else {
+      throw new Error(
+        `Got a redirect response from delete endpoint (to ${deleteResponse.headers.get(
+          'location'
+        )}), maybe the session is invalid?`
+      )
+    }
+  } else if (deleteResponse.status !== 200) {
+    throw new Error(
+      `Error deleting localization id ${idToDelete} from ${from}, status=${
+        deleteResponse.status
+      }, response='${await deleteResponse.text()}'`
+    )
+  }
+}
+
+async function deleteKey(from: Environment, key: string, locale: Locale | undefined = undefined) {
+  const localizations = await fetchLocalizations(from, key, locale)
+
+  if (localizations.keys().length === 0) {
+    console.log(`No localizations match key '${key}' and locale '${locale}'`)
+    return
+  }
+
+  for (const key of localizations.keys()) {
+    const locales = [...localizations.localizationsByKeyAndLocale.get(key)!.keys()].sort()
+    for (const locale of locales) {
+      const localization = localizations.localizationsByKeyAndLocale.get(key)!.get(locale)!
+      if (localization.id) {
+        await deleteKeyRequest(from, localization.id)
+        console.log(`Deleted key '${key}' (${locale}) with id=${localization.id} (value was "${localization.value})"`)
+      } else {
+        console.log(`Could not get ID for ${key} ${locale}, should be unreachable`)
+      }
+    }
+  }
+}
+
+function formatTypescriptError(node: ts.Node, message: string) {
+  const { line, character } = node.getSourceFile().getLineAndCharacterOfPosition(node.getStart())
+  return `${node.getSourceFile().fileName} (${line + 1},${character + 1}): ${message}`
+}
+function listLocalizationKeysUsedAndLintErrorsInFile(filePath: string): [Set<string>, string[]] {
+  const sourceFile = ts.createSourceFile(filePath, fs.readFileSync(filePath).toString(), ts.ScriptTarget.ESNext, true)
+
+  const keysInUse: Set<string> = new Set()
+  const errors: string[] = []
+  function findLocalizationKeysUsedInAstNode(node: ts.Node) {
+    if (ts.isCallExpression(node) && node.expression.getText() === 't') {
+      if (node.arguments.length === 0) {
+        errors.push(formatTypescriptError(node, 't function called without arguments'))
+        return
+      }
+      if (ts.isStringLiteral(node.arguments[0])) {
+        keysInUse.add(node.arguments[0].text)
+      } else {
+        errors.push(formatTypescriptError(node, 't function called with a non-string-literal'))
+      }
+    }
+    node.forEachChild(findLocalizationKeysUsedInAstNode)
+  }
+  findLocalizationKeysUsedInAstNode(sourceFile)
+
+  return [keysInUse, errors]
+}
+
+async function listLocalizationKeysUsedAndLintErrorsInDirectory(
+  dirPath: string,
+  localizationKeys: Set<string> = new Set(),
+  lintErrors: string[] = []
+): Promise<[Set<string>, string[]]> {
+  const pathStat = await fsPromises.stat(dirPath)
+  if (!pathStat.isDirectory()) {
+    throw new Error(`${dirPath} is not a directory`)
+  }
+
+  const files = await fsPromises.readdir(dirPath)
+  for (const file of files) {
+    const filePath = path.join(dirPath, file)
+    const fileStat = await fsPromises.stat(filePath)
+    if (fileStat.isDirectory()) {
+      await listLocalizationKeysUsedAndLintErrorsInDirectory(filePath, localizationKeys, lintErrors)
+    } else {
+      const [newLocalizationKeys, newLintErrors] = listLocalizationKeysUsedAndLintErrorsInFile(path.join(dirPath, file))
+      newLocalizationKeys.forEach((k) => localizationKeys.add(k))
+      newLintErrors.forEach((e) => lintErrors.push(e))
+    }
+  }
+  return [localizationKeys, lintErrors]
+}
+
+function reportLintErrors(lintErrors: string[]) {
+  lintErrors.forEach((e) => console.error(`LOCALIZATION LINT ERROR: ${e}`))
+  if (lintErrors.length > 0) {
+    process.exit(1)
+  }
+}
+
+async function listMissing(
+  from: Environment | XlsxInput,
+  locale: Locale,
+  errorIfMissing: boolean,
+  githubActions: boolean
+) {
+  const localizations = await fetchLocalizations(from)
+  const [localizationKeysUsedInCode, lintErrors] =
+    await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
+
+  const missingKeys = [...localizationKeysUsedInCode].filter((key) => !localizations.get(key, locale)?.value)
+  if (missingKeys.length > 0) {
+    if (githubActions) {
+      for (const missingKey of missingKeys) {
+        console.log(`::error::Localization key '${missingKey}' missing from ${from}`)
+      }
+    } else {
+      console.log(`Keys missing from ${from}:\n  ${missingKeys.join('\n  ')}`)
+    }
+  }
+
+  reportLintErrors(lintErrors)
+
+  if (errorIfMissing && missingKeys.length > 0) {
+    console.log('ERROR: Exiting with error because there are missing keys and errorIfMissing is set')
+    process.exit(2)
+  }
+}
+
+async function lint() {
+  const [_, lintErrors] = await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
+  reportLintErrors(lintErrors)
 }
 
 function sourceName(envOrXlsx: Environment | XlsxInput) {
@@ -381,21 +577,40 @@ async function getNewAndChangedLocalizations(
   }
 }
 
-async function writeLocalizationsToEnv(localizations: Localizations, to: Environment) {
-  const sessionCookies = await loginToLokalisointi(to)
-  const cookieString = Object.entries(sessionCookies)
+function cookieString(sessionCookies: SessionCookies): string {
+  return Object.entries(sessionCookies)
     .map(([k, v]) => `${k}=${v}`)
     .join('; ')
+}
+
+async function writeLocalizationsToEnv(
+  localizations: Localizations,
+  to: Environment,
+  retryWithoutCache: boolean = true
+): Promise<void> {
+  const sessionCookies = await loginToLokalisointi(to, retryWithoutCache)
   const updateResponse = await fetch(`${localizationApiBaseUrlByEnv(to)}/localisation/update`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'caller-id': CALLER_ID,
-      Cookie: cookieString
+      Cookie: cookieString(sessionCookies)
     },
+    redirect: 'manual',
     body: JSON.stringify(localizations.localizationServicePayload())
   })
-  if (updateResponse.status !== 200) {
+  if (updateResponse.status === 302) {
+    if (retryWithoutCache) {
+      console.log(`Update endpoint sent a redirect so session is not valid, retrying without session cache...`)
+      return await writeLocalizationsToEnv(localizations, to, false)
+    } else {
+      throw new Error(
+        `Got a redirect response from update endpoint (to ${updateResponse.headers.get(
+          'location'
+        )}), maybe the session is invalid?`
+      )
+    }
+  } else if (updateResponse.status !== 200) {
     throw new Error(`Error updating ${to}, status=${updateResponse.status}, response='${await updateResponse.text()}'`)
   }
 
@@ -412,7 +627,12 @@ async function copy(from: Environment | XlsxInput, to: Environment | XlsxOutput)
   }
 }
 
-const EnvironmentParameter: Type<string, Environment> = {
+async function put(to: Environment, key: string, locale: Locale, value: string) {
+  const newLocalization = new Localizations([{ key, locale, value }], 'command line')
+  await writeLocalizationsToEnv(newLocalization, to)
+}
+
+const EnvironmentParameterType: Type<string, Environment> = {
   async from(envString: string) {
     if (isEnvironment(envString)) {
       return envString as Environment
@@ -423,6 +643,31 @@ const EnvironmentParameter: Type<string, Environment> = {
   description: `${Object.values(Environment).join('|')}`
 }
 
+const LocaleParameterType: Type<string, Locale> = {
+  async from(localeString: string) {
+    if (localeString in Locale) {
+      return localeString as Locale
+    } else {
+      throw new Error(`Unknown environment ${localeString}`)
+    }
+  },
+  description: `${Object.values(Locale).join('|')}`
+}
+
+const localeParameterWithDefault = option({
+  type: LocaleParameterType,
+  long: 'locale',
+  defaultValue(): Locale {
+    return Locale.fi
+  },
+  defaultValueIsSerializable: true
+})
+
+const localeParameterWithoutDefault = option({
+  type: optional(LocaleParameterType),
+  long: 'locale'
+})
+
 const XlsxInputParameter: Type<string, XlsxInput> = {
   async from(path: string) {
     return {
@@ -430,7 +675,7 @@ const XlsxInputParameter: Type<string, XlsxInput> = {
       filepath: path
     }
   },
-  description: `${EnvironmentParameter.description} OR path to an existing .xlsx file`
+  description: `${EnvironmentParameterType.description} OR path to an existing .xlsx file`
 }
 
 const XlsxOutputParameter: Type<string, XlsxOutput> = {
@@ -442,11 +687,46 @@ const XlsxOutputParameter: Type<string, XlsxOutput> = {
       filepath: path
     }
   },
-  description: `${EnvironmentParameter.description} OR Path to the .xlsx file to write`
+  description: `${EnvironmentParameterType.description} OR Path to the .xlsx file to write`
 }
 
-const envOrXlsxInputType = union([EnvironmentParameter, XlsxInputParameter])
-const envOrXlsxOutputType = union([EnvironmentParameter, XlsxOutputParameter])
+const envOrXlsxInputType = union([EnvironmentParameterType, XlsxInputParameter])
+const envOrXlsxOutputType = union([EnvironmentParameterType, XlsxOutputParameter])
+
+const getCommand = command({
+  name: 'get',
+  description: 'get localization',
+  args: {
+    from: positional({ type: EnvironmentParameterType, displayName: 'from' }),
+    key: positional({ type: string, displayName: 'key' }),
+    locale: localeParameterWithoutDefault
+  },
+  handler: async (args: { from: Environment; key: string; locale: Locale | undefined }) => {
+    await list(args.from, args.key, args.locale)
+  }
+})
+
+const deleteCommand = command({
+  name: 'delete',
+  description: 'delete localization',
+  args: {
+    from: positional({ type: EnvironmentParameterType, displayName: 'from' }),
+    key: positional({ type: string, displayName: 'key' }),
+    locale: localeParameterWithoutDefault
+  },
+  handler: async (args: { from: Environment; key: string; locale: Locale | undefined }) => {
+    await deleteKey(args.from, args.key, args.locale)
+  }
+})
+
+const lintCommand = command({
+  name: 'lint',
+  description: 'Lint localization usages in frontend',
+  args: {},
+  handler: async (_: {}) => {
+    await lint()
+  }
+})
 
 const listCommand = command({
   name: 'list',
@@ -456,6 +736,41 @@ const listCommand = command({
   },
   handler: async (args: { env: Environment | XlsxInput }) => {
     await list(args.env)
+  }
+})
+
+const listMissingCommand = command({
+  name: 'list-missing',
+  description: 'Lists keys that are used in code but are missing from an environment',
+  args: {
+    env: positional({ type: envOrXlsxInputType, displayName: 'environment' }),
+    locale: localeParameterWithDefault,
+    errorIfMissing: flag({
+      type: boolean,
+      long: 'error-if-missing',
+      description: 'Exit with error code if there are missing keys',
+      defaultValue(): boolean {
+        return false
+      },
+      defaultValueIsSerializable: true
+    }),
+    githubActions: flag({
+      type: boolean,
+      long: 'github-actions',
+      description: 'print github actions workflow commands',
+      defaultValue(): boolean {
+        return false
+      },
+      defaultValueIsSerializable: true
+    })
+  },
+  handler: async (args: {
+    env: Environment | XlsxInput
+    locale: Locale
+    errorIfMissing: boolean
+    githubActions: boolean
+  }) => {
+    await listMissing(args.env, args.locale, args.errorIfMissing, args.githubActions)
   }
 })
 
@@ -473,15 +788,27 @@ const diffCommand = command({
 
 const copyCommand = command({
   name: 'copy',
-  description: `Copy new and changed localizations from one env/file to another.
-  
-                See main --help for help setting up env credentials.`.replace(/  +/g, ''),
+  description: 'Copy new and changed localizations from one env/file to another.',
   args: {
     from: positional({ type: envOrXlsxInputType, displayName: 'from' }),
     to: positional({ type: envOrXlsxOutputType, displayName: 'to' })
   },
   handler: async (args: { from: Environment | XlsxInput; to: Environment | XlsxOutput }) => {
     await copy(args.from, args.to)
+  }
+})
+
+const putCommand = command({
+  name: 'put',
+  description: 'Upsert localization value to environment',
+  args: {
+    to: positional({ type: EnvironmentParameterType, displayName: 'to' }),
+    key: positional({ type: string, displayName: 'key' }),
+    value: positional({ type: string, displayName: 'value' }),
+    locale: localeParameterWithDefault
+  },
+  handler: async (args: { to: Environment; key: string; locale: Locale; value: string }) => {
+    await put(args.to, args.key, args.locale, args.value)
   }
 })
 
@@ -494,9 +821,14 @@ const app = subcommands({
      {"qa": {"username": "foo", "password: "bar"}}`.replace(/  +/g, ''),
   version: '1.0.0',
   cmds: {
+    get: getCommand,
+    delete: deleteCommand,
+    lint: lintCommand,
     list: listCommand,
+    'list-missing': listMissingCommand,
     diff: diffCommand,
-    copy: copyCommand
+    copy: copyCommand,
+    put: putCommand
   }
 })
 

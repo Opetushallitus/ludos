@@ -89,13 +89,13 @@ export const TipTap = ({
   content,
   onContentChange,
   editable = true,
-  labelKey = '',
+  label = '',
   dataTestId
 }: {
   content: string | undefined
   onContentChange?: (newContent: string) => void
   editable?: boolean
-  labelKey?: string
+  label?: string
   dataTestId: string
 }) => {
   const { t } = useTranslation()
@@ -116,7 +116,7 @@ export const TipTap = ({
     <>
       {editable ? (
         <fieldset className="mt-6">
-          <legend className="font-semibold">{t(labelKey)}</legend>
+          <legend className="font-semibold">{label}</legend>
           <div className="mt-2 border border-gray-border">
             <TipTapToolBar editor={editor} dataTestId={dataTestId} />
             <EditorContent editor={editor} data-testid={dataTestId} />

@@ -24,6 +24,18 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Code check
         uses: ./.github/actions/code_check
+  localization_check:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: yarn
+      - name: yarn install
+        run: yarn install --frozen-lockfile
+      - name: Localization check
+        uses: ./.github/actions/localization_check
   build-jar-and-test-api:
     runs-on: "ubuntu-22.04"
     permissions:

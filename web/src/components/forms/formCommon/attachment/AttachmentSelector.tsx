@@ -2,7 +2,6 @@ import { ChangeEvent, useRef, useState } from 'react'
 import { Button } from '../../../Button'
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
-import { fileUploadErrorMessage } from '../../../../utils/errorUtils'
 import { AttachmentData, AttachmentLanguage, ContentType } from '../../../../types'
 
 interface AttachmentSelectorProps {
@@ -37,34 +36,40 @@ export const AttachmentSelector = ({
     }
 
     const newFiles: File[] = []
-    const maxSizeInBytes = 5 * 1024 * 1024 // 5MB
+    const maxSizeInMiB = 5
+    const maxSizeInBytes = maxSizeInMiB * 1024 * 1024
 
     for (const file of attachmentFiles) {
       if (file.size > maxSizeInBytes) {
-        setError('FILE_TOO_LARGE')
+        setError(t('error.liian-iso-tiedosto', { maxSize: `${maxSizeInMiB} MiB` }))
         return
       }
       newFiles.push(file)
     }
 
-    if (isMultiple) {
-      handleNewAttachmentSelected(
-        newFiles.map((it) => ({ file: it, name: it.name })),
-        language
-      )
-    } else {
-      handleNewAttachmentSelected(
-        [
-          {
-            file: newFiles[0],
-            name: newFiles[0].name
-          }
-        ],
-        language
-      )
+    try {
+      if (isMultiple) {
+        handleNewAttachmentSelected(
+          newFiles.map((it) => ({ file: it, name: it.name })),
+          language
+        )
+      } else {
+        handleNewAttachmentSelected(
+          [
+            {
+              file: newFiles[0],
+              name: newFiles[0].name
+            }
+          ],
+          language
+        )
+      }
+      // reset the input so that the same file can be selected again
+      event.target.value = ''
+    } catch (e) {
+      console.warn('Error uploading file', e)
+      setError(t('error.lataaminen-epaonnistui'))
     }
-    // reset the input so that the same file can be selected again
-    event.target.value = ''
   }
 
   const handleAttachmentNameChange = (newName: string, index: number) => {
@@ -115,7 +120,7 @@ export const AttachmentSelector = ({
       )}
       {error && (
         <p className="text-red-primary" data-testid="file-upload-error-message">
-          {fileUploadErrorMessage(error, t)}
+          {error}
         </p>
       )}
     </div>

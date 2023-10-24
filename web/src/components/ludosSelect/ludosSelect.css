@@ -3,6 +3,10 @@ div.ludos-select__control {
     border-radius: 0;
 }
 
+div.ludos-select__control.ludos-select-error {
+    @apply border border-red-primary
+}
+
 div.ludos-select__option--is-focused {
     @apply bg-gray-light;
 }

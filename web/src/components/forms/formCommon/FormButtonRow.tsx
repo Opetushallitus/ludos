@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { useNavigate } from 'react-router-dom'
-import { PublishState } from '../../../types'
+import { ContentType, PublishState } from '../../../types'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type FormButtonRowProps = {
   actions: {
@@ -14,12 +14,12 @@ type FormButtonRowProps = {
     isLoading: boolean
     publishState?: PublishState
   }
-  notValidFormMessageKey: string
+  formHasValidationErrors: boolean
   errorMessage?: string
 }
 
-export const FormButtonRow = ({ actions, state, notValidFormMessageKey, errorMessage }: FormButtonRowProps) => {
-  const { t } = useTranslation()
+export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMessage }: FormButtonRowProps) => {
+  const { t } = useLudosTranslation()
   const navigate = useNavigate()
   const { isUpdate, isLoading } = state
   const isDraft = state.publishState === PublishState.Draft
@@ -76,11 +76,10 @@ export const FormButtonRow = ({ actions, state, notValidFormMessageKey, errorMes
           {submitButtonText()}
         </Button>
       </div>
-      {notValidFormMessageKey && (
+      {formHasValidationErrors && (
         <div className="flex justify-end text-red-primary gap-1">
           <Icon name="virheellinen" color="text-red-primary" />
-          {t(notValidFormMessageKey)}
-          {t('form.tayta-pakolliset-kentat')}
+          {t('form.error.validaatiovirhe')}
         </div>
       )}
       {errorMessage && (

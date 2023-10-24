@@ -38,13 +38,14 @@ export type LudosSelectProps<
   Group extends GroupBase<Option> = GroupBase<Option>
 > = Props<Option, IsMulti, Group> & {
   menuSize?: MenuSize
+  error?: boolean
 }
 
 export function LudosSelect<
   Option = LudosSelectOption,
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>
->({ menuSize = 'full', ...props }: LudosSelectProps<Option, IsMulti, Group>) {
+>({ menuSize = 'full', error = false, ...props }: LudosSelectProps<Option, IsMulti, Group>) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -101,6 +102,9 @@ export function LudosSelect<
       id={props.name}
       inputId={`${props.name}-input`}
       classNamePrefix="ludos-select"
+      classNames={{
+        control: () => (error ? 'ludos-select-error' : '')
+      }}
       closeMenuOnSelect={true}
       hideSelectedOptions={false}
       components={{ DropdownIndicator, Option, Menu, MultiValueRemove, ClearIndicator }}
