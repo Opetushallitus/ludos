@@ -102,7 +102,6 @@ export function useAssignmentForm<T extends SukoAssignmentFormType | LdAssignmen
         isLoading,
         publishState
       }}
-      contentType={ContentType.koetehtavat}
       formHasValidationErrors={Object.keys(methods.formState.errors).length > 0}
       errorMessage={submitError}
     />

@@ -186,7 +186,6 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
           isLoading,
           publishState: watchPublishState
         }}
-        contentType={ContentType.todistukset}
         formHasValidationErrors={Object.keys(errors).length > 0}
         errorMessage={submitError}
       />

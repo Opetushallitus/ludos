@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { useNavigate } from 'react-router-dom'
@@ -15,19 +14,12 @@ type FormButtonRowProps = {
     isLoading: boolean
     publishState?: PublishState
   }
-  contentType: ContentType
   formHasValidationErrors: boolean
   errorMessage?: string
 }
 
-export const FormButtonRow = ({
-  actions,
-  state,
-  contentType,
-  formHasValidationErrors,
-  errorMessage
-}: FormButtonRowProps) => {
-  const { t, lt } = useLudosTranslation()
+export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMessage }: FormButtonRowProps) => {
+  const { t } = useLudosTranslation()
   const navigate = useNavigate()
   const { isUpdate, isLoading } = state
   const isDraft = state.publishState === PublishState.Draft
@@ -87,7 +79,7 @@ export const FormButtonRow = ({
       {formHasValidationErrors && (
         <div className="flex justify-end text-red-primary gap-1">
           <Icon name="virheellinen" color="text-red-primary" />
-          {lt.formValidationErrorMessage[contentType]}
+          {t('form.error.validaatiovirhe')}
         </div>
       )}
       {errorMessage && (
