@@ -34,7 +34,6 @@ jobs:
           ludos-environment: untuva
   localization_check_qa:
     runs-on: "ubuntu-22.04"
-    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
       - name: Localization check
@@ -43,7 +42,6 @@ jobs:
           ludos-environment: qa
   localization_check_prod:
     runs-on: "ubuntu-22.04"
-    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v3
       - name: Localization check
