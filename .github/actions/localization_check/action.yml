@@ -1,9 +1,20 @@
 name: Localization check
 description: Localization checks
 
+inputs:
+  ludos-environment:
+    description: Ludos environment to check against
+    required: true
 runs:
   using: composite
   steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        cache: yarn
+    - name: yarn install
+      shell: bash
+      run: yarn install --frozen-lockfile
     - name: Check for missing keys in untuva
       shell: bash
-      run: yarn workspace scripts localizations list-missing --error-if-missing --github-actions untuva
+      run: yarn workspace scripts localizations list-missing --error-if-missing --github-actions ${{ inputs.ludos-environment }}
