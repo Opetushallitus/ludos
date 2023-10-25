@@ -366,7 +366,7 @@ async function deleteKey(from: Environment, key: string, locale: Locale | undefi
       const localization = localizations.localizationsByKeyAndLocale.get(key)!.get(locale)!
       if (localization.id) {
         await deleteKeyRequest(from, localization.id)
-        console.log(`Deleted key '${key}' (${locale}) with id=${localization.id} (value was "${localization.value})"`)
+        console.log(`Deleted key '${key}' (${locale}) with id=${localization.id} (value was "${localization.value}")`)
       } else {
         console.log(`Could not get ID for ${key} ${locale}, should be unreachable`)
       }
