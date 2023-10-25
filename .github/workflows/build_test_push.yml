@@ -24,18 +24,32 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Code check
         uses: ./.github/actions/code_check
-  localization_check:
+  localization_check_untuva:
     runs-on: "ubuntu-22.04"
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-      - name: yarn install
-        run: yarn install --frozen-lockfile
       - name: Localization check
         uses: ./.github/actions/localization_check
+        with:
+          ludos-environment: untuva
+  localization_check_qa:
+    runs-on: "ubuntu-22.04"
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Localization check
+        uses: ./.github/actions/localization_check
+        with:
+          ludos-environment: qa
+  localization_check_prod:
+    runs-on: "ubuntu-22.04"
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Localization check
+        uses: ./.github/actions/localization_check
+        with:
+          ludos-environment: prod
   build-jar-and-test-api:
     runs-on: "ubuntu-22.04"
     permissions:
