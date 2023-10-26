@@ -322,3 +322,13 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }
+
+export async function testEsitysNakyma(page: Page, linkTestId: string, assignmentIn: any) {
+  const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
+  await page.getByTestId(linkTestId).click()
+  const newTabPage = await newTabPagePromise
+
+  await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
+  await expect(newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
+  await newTabPage.close()
+}
