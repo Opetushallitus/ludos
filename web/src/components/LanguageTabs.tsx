@@ -1,11 +1,12 @@
 import { Button } from './Button'
 import { useTranslation } from 'react-i18next'
+import { TeachingLanguage } from '../types'
 
-const options = ['fi', 'sv']
+const options: TeachingLanguage[] = ['fi', 'sv']
 
 type LanguageTabsProps = {
   activeTab: string
-  setActiveTab: (opt: string) => void
+  setActiveTab: (opt: TeachingLanguage) => void
 }
 
 export const LanguageTabs = ({ activeTab, setActiveTab }: LanguageTabsProps) => {

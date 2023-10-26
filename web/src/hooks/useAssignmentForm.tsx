@@ -1,5 +1,5 @@
 import { ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../types'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { createAssignment, fetchData, updateAssignment } from '../request'
@@ -12,9 +12,11 @@ import { MultiValue } from 'react-select'
 import { LudosSelectOption } from '../components/ludosSelect/LudosSelect'
 import { DeleteModal } from '../components/modal/DeleteModal'
 import { useLudosTranslation } from './useLudosTranslation'
+import { LudosContext } from '../contexts/LudosContext'
 
 export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam, id: string | undefined) {
-  const { lt, t, i18n } = useLudosTranslation()
+  const { lt, t } = useLudosTranslation()
+  const { uiLanguage } = useContext(LudosContext)
   const { state } = useLocation()
   const navigate = useNavigate()
   const { setNotification } = useNotification()
@@ -34,13 +36,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
     resolver: zodResolver(assignmentSchemaByExam[exam])
   })
 
-  const {
-    getValues,
-    setValue,
-    clearErrors,
-    handleSubmit,
-    formState: { errors }
-  } = methods
+  const { getValues, setValue, clearErrors, handleSubmit } = methods
 
   const handleMultiselectOptionChange = (fieldName: FieldPath<T>, selectedOptions: MultiValue<LudosSelectOption>) => {
     setValue(fieldName, selectedOptions.map((it) => it.value) as PathValue<T, FieldPath<T>>)
@@ -136,7 +132,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
         <div className="h-[15vh] p-6">
           <p>
             {lt.contentDeleteModalText[ContentType.koetehtavat](
-              i18n.language === 'fi' ? getValues().nameFi : getValues().nameSv
+              uiLanguage === 'fi' ? getValues().nameFi : getValues().nameSv
             )}
           </p>
         </div>

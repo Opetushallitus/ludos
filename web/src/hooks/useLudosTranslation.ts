@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
-import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
 import { ContentOrder, ContentType, Exam, PublishState, TeachingLanguage } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
+
+export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
 export type ContentAction = {
   actionName: string

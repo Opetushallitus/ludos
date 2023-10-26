@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { TipTap } from './editor/TipTap'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { Exam } from '../../../types'
+import { Exam, TeachingLanguage } from '../../../types'
 
 interface Field {
   id: string
@@ -96,7 +96,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
 
 export const FormContentInput = () => {
   const { t } = useTranslation()
-  const [activeTab, setActiveTab] = useState('fi')
+  const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
 
   const {
     watch,

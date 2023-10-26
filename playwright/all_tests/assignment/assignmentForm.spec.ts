@@ -108,6 +108,7 @@ async function assertUpdatedLdAssignment(
   action: FormAction
 ) {
   await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
+  await setTeachingLanguage(page, TeachingLanguage.fi)
   await expect(page.getByTestId('assignment-header')).toBeVisible()
   await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextFi)
   await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
@@ -128,6 +129,7 @@ async function assertUpdatedPuhviAssignment(
   createdAssignmentId: number,
   action: FormAction
 ) {
+  await setTeachingLanguage(page, TeachingLanguage.fi)
   await expect(page.getByTestId('assignment-header')).toBeVisible()
   await expect(page.getByTestId('assignment-header')).toHaveText(updatedFormData.nameTextFi)
   await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')

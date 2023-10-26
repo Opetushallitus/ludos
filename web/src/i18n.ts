@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
+import { defaultLanguage } from './contexts/LudosContext'
 
 const loadResources = async () => {
   try {
@@ -19,7 +20,7 @@ const loadResources = async () => {
 
 const i18nOptions = {
   debug: false,
-  lng: localStorage.getItem('i18nextLng') || 'fi',
+  lng: localStorage.getItem('i18nextLng') || defaultLanguage,
   detection: {
     order: ['localStorage']
   },

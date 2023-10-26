@@ -4,7 +4,6 @@ import { BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } 
 import { useFetch } from '../../hooks/useFetch'
 import { isAssignment, isCertificate, isInstruction } from '../../utils/assignmentUtils'
 import { ContentHeader } from './ContentCommon'
-import { useState } from 'react'
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
 import { AssignmentContent } from './AssignmentContent'
@@ -14,6 +13,8 @@ import { useUserDetails } from '../../hooks/useUserDetails'
 import { contentListPath, editingFormPath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useContext } from 'react'
+import { LudosContext } from '../../contexts/LudosContext'
 import { ListError } from './list/ListError'
 
 type ContentProps = {
@@ -27,8 +28,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { contentType, id } = useParams<{ contentType: ContentType; id: string }>()
   const { state } = useLocation()
   const { isYllapitaja } = useUserDetails()
+  const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
 
-  const [teachingLanguage, setTeachingLanguage] = useState<TeachingLanguage>(TeachingLanguage.fi)
   const teachingLanguageOverrideIfSukoAssignment =
     exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
 

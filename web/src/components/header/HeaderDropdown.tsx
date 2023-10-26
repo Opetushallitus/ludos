@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Button } from '../Button'
-import { LocaleDropdownOptions } from './HeaderDesktop'
 import { Icon } from '../Icon'
 import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
+import { LocaleDropdownOptions } from '../../hooks/useLudosTranslation'
 
 interface LocaleDropdownProps {
   currentOption: string
