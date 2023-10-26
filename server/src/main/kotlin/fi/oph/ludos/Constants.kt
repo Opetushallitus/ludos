@@ -7,7 +7,7 @@ interface Constants {
 }
 
 enum class PublishState {
-    DRAFT, PUBLISHED, ARCHIVED
+    DRAFT, PUBLISHED, ARCHIVED, DELETED
 }
 
 enum class Exam {

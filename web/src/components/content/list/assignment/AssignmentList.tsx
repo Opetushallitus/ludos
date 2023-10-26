@@ -10,7 +10,6 @@ import {
   TeachingLanguage
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
-import { Spinner } from '../../../Spinner'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { AssignmentCard } from './AssignmentCard'
 import { Pagination } from '../../../Pagination'
@@ -22,8 +21,8 @@ import { preventLineBreaks } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { AssignmentFilters } from './AssignmentFilters'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
-import { Icon } from '../../../Icon'
+import { ListError } from '../ListError'
+import { useTranslation } from 'react-i18next'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -48,14 +47,14 @@ export const AssignmentList = ({
   isFavoritePage
 }: ContentListProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t, lt } = useLudosTranslation()
+  const { t } = useTranslation()
   const singularActiveTab = ContentTypeSingular[ContentType.koetehtavat]
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
   const contentType = ContentType.koetehtavat
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { data, loading, error, refresh } = useFetch<AssignmentsOut>(
+  const { data, refresh, DataWrapper } = useFetch<AssignmentsOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -97,39 +96,33 @@ export const AssignmentList = ({
         assignmentFilterOptions={data?.assignmentFilterOptions}
       />
 
-      {loading && <Spinner className="mt-10 text-center" />}
+      <DataWrapper
+        errorEl={<ListError contentType={contentType} />}
+        render={(data) => (
+          <>
+            <ul data-testid="assignment-list">
+              {data.content
+                .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
+                .map((assignment, i) => (
+                  <AssignmentCard
+                    teachingLanguage={teachingLanguage}
+                    assignment={assignment}
+                    exam={exam}
+                    key={`${exam}-${contentType}-${i}`}
+                    isFavoritePage={isFavoritePage}
+                    refreshData={refresh}
+                  />
+                ))}
+            </ul>
 
-      {error && (
-        <div className="flex justify-center w-full gap-2 text-red-primary">
-          <Icon name="virheellinen" color="text-red-primary" />
-          {lt.contentListErrorMessage[contentType]}
-        </div>
-      )}
-
-      {data && (
-        <>
-          <ul data-testid="assignment-list">
-            {data.content
-              .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
-              .map((assignment, i) => (
-                <AssignmentCard
-                  teachingLanguage={teachingLanguage}
-                  assignment={assignment}
-                  exam={exam}
-                  key={`${exam}-${contentType}-${i}`}
-                  isFavoritePage={isFavoritePage}
-                  refreshData={refresh}
-                />
-              ))}
-          </ul>
-
-          <Pagination
-            page={filterValues.filterValues.sivu}
-            totalPages={data.totalPages!}
-            searchStringForNewFilterValue={filterValues.searchStringForNewFilterValue}
-          />
-        </>
-      )}
+            <Pagination
+              page={filterValues.filterValues.sivu}
+              totalPages={data.totalPages!}
+              searchStringForNewFilterValue={filterValues.searchStringForNewFilterValue}
+            />
+          </>
+        )}
+      />
     </div>
   )
 }

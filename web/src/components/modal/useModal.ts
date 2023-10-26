@@ -38,7 +38,6 @@ export function useModal({ open, onClose }: { open: boolean; onClose: () => void
   useEffect(() => {
     const { current } = modalRef
     if (open) {
-      current?.close() // Ensure the dialog is closed before opening
       current?.showModal()
     } else {
       current?.close()

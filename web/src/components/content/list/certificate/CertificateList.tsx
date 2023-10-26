@@ -7,15 +7,14 @@ import {
   ContentTypeSingularEng,
   Exam
 } from '../../../../types'
-import { Spinner } from '../../../Spinner'
 import { CertificateCard } from './CertificateCard'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaks } from '../../../../utils/formatUtils'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
-import { Icon } from '../../../Icon'
+import { ListError } from '../ListError'
+import { useTranslation } from 'react-i18next'
 
 type CertificateListProps = {
   exam: Exam
@@ -24,11 +23,11 @@ type CertificateListProps = {
 export const CertificateList = ({ exam }: CertificateListProps) => {
   const contentType = ContentType.todistukset
   const { isYllapitaja } = useUserDetails()
-  const { t, lt } = useLudosTranslation()
+  const { t } = useTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
-  const { data, loading, error } = useFetch<ContentOut<CertificateDtoOut>>(
+  const { DataWrapper } = useFetch<ContentOut<CertificateDtoOut>>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}`
   )
 
@@ -47,22 +46,16 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
         </div>
       </div>
 
-      {loading && <Spinner className="mt-10 text-center" />}
-
-      {error && (
-        <div className="flex justify-center w-full gap-2 text-red-primary">
-          <Icon name="virheellinen" color="text-red-primary" />
-          {lt.contentListErrorMessage[contentType]}
-        </div>
-      )}
-
-      {data && (
-        <ul className="mt-3 flex flex-wrap gap-5">
-          {data.content.map((certificate, i) => (
-            <CertificateCard certificate={certificate} key={`${exam}-${contentType}-${i}`} />
-          ))}
-        </ul>
-      )}
+      <DataWrapper
+        errorEl={<ListError contentType={contentType} />}
+        render={(data) => (
+          <ul className="mt-3 flex flex-wrap gap-5">
+            {data.content.map((certificate, i) => (
+              <CertificateCard certificate={certificate} key={`${exam}-${contentType}-${i}`} />
+            ))}
+          </ul>
+        )}
+      />
     </div>
   )
 }

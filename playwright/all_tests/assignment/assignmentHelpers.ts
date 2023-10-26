@@ -196,9 +196,6 @@ export async function updateLdAssignment({
     instructionTextSv,
     contentTextSv
   )
-
-  await page.getByTestId('form-update-submit').click()
-  await expect(page.getByTestId('notification-success')).toBeVisible()
 }
 
 export async function fillPuhviAssignmentForm({
@@ -248,9 +245,6 @@ export async function updatePuhviAssignment({
     instructionTextSv,
     contentTextSv
   )
-
-  await page.getByTestId('form-update-submit').click()
-  await expect(page.getByTestId('notification-success')).toBeVisible()
 }
 
 export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
@@ -327,4 +321,14 @@ export async function assertTeachingLanguageDropdownWorksInAssignmentListReturni
   await setTeachingLanguage(page, TeachingLanguage.sv)
 
   await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
+}
+
+export async function testEsitysNakyma(page: Page, linkTestId: string, assignmentIn: any) {
+  const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
+  await page.getByTestId(linkTestId).click()
+  const newTabPage = await newTabPagePromise
+
+  await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
+  await expect(newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
+  await newTabPage.close()
 }

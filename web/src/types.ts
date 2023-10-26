@@ -21,7 +21,7 @@ export type ContentOrder = (typeof ContentOrder)[keyof typeof ContentOrder]
 export const PublishState = {
   Draft: 'DRAFT',
   Published: 'PUBLISHED',
-  Archived: 'ARCHIVED'
+  Deleted: 'DELETED'
 } as const
 export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 

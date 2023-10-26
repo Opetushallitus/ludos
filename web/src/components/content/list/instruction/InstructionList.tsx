@@ -11,7 +11,6 @@ import {
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { InstructionCard } from './InstructionCard'
-import { Spinner } from '../../../Spinner'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { TeachingLanguageSelect, TeachingLanguageSelectProps } from '../../../TeachingLanguageSelect'
 import { InternalLink } from '../../../InternalLink'
@@ -20,8 +19,8 @@ import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaks } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
-import { Icon } from '../../../Icon'
+import { ListError } from '../ListError'
+import { useTranslation } from 'react-i18next'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -40,14 +39,14 @@ type InstructionListProps = {
 
 export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValues }: InstructionListProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t, lt } = useLudosTranslation()
+  const { t } = useTranslation()
 
   const singularActiveTab = ContentTypeSingular[ContentType.ohjeet]
 
   const contentType = ContentType.ohjeet
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { data, loading, error } = useFetch<ContentOut<InstructionDtoOut>>(
+  const { DataWrapper } = useFetch<ContentOut<InstructionDtoOut>>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -81,29 +80,23 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
         </div>
       </div>
 
-      {loading && <Spinner className="mt-10 text-center" />}
-
-      {error && (
-        <div className="flex justify-center w-full gap-2 text-red-primary">
-          <Icon name="virheellinen" color="text-red-primary" />
-          {lt.contentListErrorMessage[contentType]}
-        </div>
-      )}
-
-      {data && (
-        <ul className="mt-3 flex flex-wrap gap-5">
-          {data.content
-            .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
-            .map((instruction, i) => (
-              <InstructionCard
-                teachingLanguage={teachingLanguage}
-                instruction={instruction}
-                exam={exam}
-                key={`${exam}-${contentType}-${i}`}
-              />
-            ))}
-        </ul>
-      )}
+      <DataWrapper
+        errorEl={<ListError contentType={contentType} />}
+        render={(data) => (
+          <ul className="mt-3 flex flex-wrap gap-5">
+            {data.content
+              .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
+              .map((instruction, i) => (
+                <InstructionCard
+                  teachingLanguage={teachingLanguage}
+                  instruction={instruction}
+                  exam={exam}
+                  key={`${exam}-${contentType}-${i}`}
+                />
+              ))}
+          </ul>
+        )}
+      />
     </div>
   )
 }

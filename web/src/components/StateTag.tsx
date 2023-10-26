@@ -17,8 +17,13 @@ export const StateTag = ({ state }: { state: PublishState }) => {
         return { localizationKey: t('state.luonnos'), variant: 'bg-yellow' }
       case PublishState.Published:
         return { localizationKey: t('state.julkaistu'), variant: 'bg-green-light' }
-      case PublishState.Archived:
-        return { localizationKey: t('state.arkistoitu'), variant: 'bg-gray-secondary' }
+      // case PublishState.Archived:
+      //   return { localizationKey: t('state.arkistoitu'), variant: 'bg-gray-secondary' }
+      case PublishState.Deleted:
+        return {
+          localizationKey: '',
+          variant: ''
+        }
     }
   }
 

@@ -15,7 +15,7 @@ interface ModalProps {
 
 export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, children }: ModalProps) => {
   const { t } = useTranslation()
-  const { dialogClasses, onCancel, onAnimEnd, modalRef, onClick } = useModal({ open, onClose })
+  const { modalRef, dialogClasses, onCancel, onAnimEnd, onClick } = useModal({ open, onClose })
 
   return (
     <dialog

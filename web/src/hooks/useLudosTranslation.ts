@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
 import { LocaleDropdownOptions } from '../components/header/HeaderDesktop'
-import { ContentOrder, ContentType, Exam, TeachingLanguage } from '../types'
+import { ContentOrder, ContentType, Exam, PublishState, TeachingLanguage } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
 
 export type ContentAction = {
@@ -36,7 +36,8 @@ export const useLudosTranslation = () => {
       nimi: t('filter.laskeva')
     }
   }
-  // grouped translations for different content and exam types
+  // Grouped translations for different content and exam types.
+  // Motivation: no dynamic keys, so we know what keys are used
   const lt = {
     headingTextByExam: {
       [Exam.SUKO]: t('header.suko'),
@@ -67,6 +68,69 @@ export const useLudosTranslation = () => {
       [ContentType.koetehtavat]: t('error.koetehtavien-lataus-epaonnistui'),
       [ContentType.ohjeet]: t('error.ohjeiden-lataus-epaonnistui'),
       [ContentType.todistukset]: t('error.todistusten-lataus-epaonnistui')
+    },
+    contentDeleteModalTitle: {
+      [ContentType.koetehtavat]: t('form.assignment.delete-modal.title'),
+      [ContentType.ohjeet]: t('form.instruction.delete-modal.title'),
+      [ContentType.todistukset]: t('form.certificate.delete-modal.title')
+    },
+    contentDeleteModalText: {
+      [ContentType.koetehtavat]: (tehtavanNimi: string) => t('form.assignment.delete-modal.text', { tehtavanNimi }),
+      [ContentType.ohjeet]: (ohjeenNimi: string) => t('form.instruction.delete-modal.text', { ohjeenNimi }),
+      [ContentType.todistukset]: (todistuksenNimi: string) =>
+        t('form.certificate.delete-modal.text', { todistuksenNimi })
+    },
+    contentCreateSuccessNotification: {
+      [ContentType.koetehtavat]: {
+        [PublishState.Published]: t('form.notification.tehtavan-tallennus.julkaisu-onnistui'),
+        [PublishState.Draft]: t('form.notification.tehtavan-tallennus.luonnos-onnistui')
+      },
+      [ContentType.ohjeet]: {
+        [PublishState.Published]: t('form.notification.ohjeen-tallennus.julkaisu-onnistui'),
+        [PublishState.Draft]: t('form.notification.ohjeen-tallennus.luonnos-onnistui')
+      },
+      [ContentType.todistukset]: {
+        [PublishState.Published]: t('form.notification.todistuksen-tallennus.julkaisu-onnistui'),
+        [PublishState.Draft]: t('form.notification.todistuksen-tallennus.luonnos-onnistui')
+      }
+    },
+    contentUpdateSuccessNotification: {
+      [ContentType.koetehtavat]: {
+        [PublishState.Published]: {
+          [PublishState.Published]: t('form.notification.tehtavan-tallennus.onnistui'),
+          [PublishState.Draft]: t('form.notification.tehtavan-tallennus.palautettu-luonnostilaan'),
+          [PublishState.Deleted]: t('form.notification.tehtavan-poisto.onnistui')
+        },
+        [PublishState.Draft]: {
+          [PublishState.Published]: t('form.notification.tehtavan-tallennus.julkaisu-onnistui'),
+          [PublishState.Draft]: t('form.notification.tehtavan-tallennus.onnistui'),
+          [PublishState.Deleted]: t('form.notification.tehtavan-poisto.onnistui')
+        }
+      },
+      [ContentType.ohjeet]: {
+        [PublishState.Published]: {
+          [PublishState.Published]: t('form.notification.ohjeen-tallennus.onnistui'),
+          [PublishState.Draft]: t('form.notification.ohjeen-tallennus.palautettu-luonnostilaan'),
+          [PublishState.Deleted]: t('form.notification.ohjeen-poisto.onnistui')
+        },
+        [PublishState.Draft]: {
+          [PublishState.Published]: t('form.notification.ohjeen-tallennus.julkaisu-onnistui'),
+          [PublishState.Draft]: t('form.notification.ohjeen-tallennus.onnistui'),
+          [PublishState.Deleted]: t('form.notification.ohjeen-poisto.onnistui')
+        }
+      },
+      [ContentType.todistukset]: {
+        [PublishState.Published]: {
+          [PublishState.Published]: t('form.notification.todistuksen-tallennus.onnistui'),
+          [PublishState.Draft]: t('form.notification.todistuksen-tallennus.palautettu-luonnostilaan'),
+          [PublishState.Deleted]: t('form.notification.todistuksen-poisto.onnistui')
+        },
+        [PublishState.Draft]: {
+          [PublishState.Published]: t('form.notification.todistuksen-tallennus.julkaisu-onnistui'),
+          [PublishState.Draft]: t('form.notification.todistuksen-tallennus.onnistui'),
+          [PublishState.Deleted]: t('form.notification.todistuksen-poisto.onnistui')
+        }
+      }
     }
   }
 

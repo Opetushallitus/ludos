@@ -5,6 +5,7 @@ import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -150,6 +151,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         null,
         emptyArray(),
     )
+
     val minimalLdAssignmentIn = TestLdAssignmentDtoIn(
         "nameFi",
         "",
@@ -594,5 +596,24 @@ class AssignmentControllerTest : AssignmentRequests() {
         assertEquals(9, totalMarkedAsFavorite)
         assertEquals(totalMarkedAsFavorite, getTotalFavoriteCount())
         assertEquals(totalMarkedAsFavorite - 1, setAssignmentIsFavorite(Exam.SUKO, sukoAssignmentIds[0], false))
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `test deleting a assignment`() {
+        val assignmentId = createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn).id
+
+        mockMvc.perform(
+            updateAssignmentReq(
+                assignmentId,
+                mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = TestPublishState.DELETED))
+            )
+        ).andExpect(status().isOk())
+
+        mockMvc.perform(getAssignmentByIdReq(Exam.SUKO, assignmentId)).andExpect(status().isNotFound)
+
+        val noneHaveMatchingId = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.none { it.id == assignmentId }
+
+        Assertions.assertTrue(noneHaveMatchingId, "No assignments should have the ID of the deleted one")
     }
 }

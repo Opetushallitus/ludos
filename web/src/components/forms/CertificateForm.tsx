@@ -2,7 +2,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { AttachmentData, ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../../types'
-import { useTranslation } from 'react-i18next'
 import { createCertificate, fetchData, updateCertificate } from '../../request'
 import { useState } from 'react'
 import { CertificateFormType, certificateSchema } from './schemas/certificateSchema'
@@ -14,13 +13,15 @@ import { AttachmentSelector } from './formCommon/attachment/AttachmentSelector'
 import { FormError } from './formCommon/FormErrors'
 import { NotificationEnum, useNotification } from '../../contexts/NotificationContext'
 import { contentListPath, contentPagePath } from '../LudosRoutes'
+import { DeleteModal } from '../modal/DeleteModal'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type CertificateFormProps = {
   action: ContentFormAction
 }
 
 const CertificateForm = ({ action }: CertificateFormProps) => {
-  const { t } = useTranslation()
+  const { t, lt } = useLudosTranslation()
   const navigate = useNavigate()
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
@@ -30,6 +31,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
   const [newAttachment, setNewAttachment] = useState<File | null>(null)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
   const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
@@ -55,51 +57,66 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const watchAttachment = watch('attachment')
   const watchPublishState = watch('publishState')
 
-  async function submitCertificate({ publishState }: { publishState: PublishState }) {
+  async function submitCertificateData(certificate: CertificateFormType) {
+    if (isUpdate && id) {
+      return await updateCertificate(Number(id), certificate, newAttachment)
+    } else {
+      return await createCertificate(certificate, newAttachment!).then((res) => res.id)
+    }
+  }
+
+  function setSuccessNotification(newPublishState: PublishState) {
+    const currentState = watchPublishState as typeof PublishState.Published | typeof PublishState.Draft
+
+    setNotification({
+      message: isUpdate
+        ? lt.contentUpdateSuccessNotification[ContentType.todistukset][currentState][newPublishState]
+        : lt.contentCreateSuccessNotification[ContentType.todistukset][
+            newPublishState as typeof PublishState.Published | typeof PublishState.Draft
+          ],
+      type: NotificationEnum.success
+    })
+  }
+
+  function handleSuccess(newPublishState: PublishState, resultId: number) {
+    setSubmitError('')
+    setSuccessNotification(newPublishState)
+
+    if (newPublishState === PublishState.Deleted) {
+      return navigate(contentListPath(exam, ContentType.todistukset), {
+        replace: true // so that user cannot back navigate to edit deleted certificate
+      })
+    }
+
+    navigate(contentPagePath(exam, ContentType.todistukset, resultId), {
+      state: { returnLocation: contentListPath(exam, ContentType.todistukset) }
+    })
+  }
+
+  function setErrorNotification(publishState: PublishState) {
+    setNotification({
+      message:
+        publishState === PublishState.Deleted
+          ? t('form.notification.todistuksen-poisto.epaonnistui')
+          : t('form.notification.todistuksen-tallennus.epaonnistui'),
+      type: NotificationEnum.error
+    })
+  }
+
+  async function submitCertificate(publishState: PublishState) {
     await handleSubmit(async (data: CertificateFormType) => {
-      const certificateIn = { ...data, publishState }
+      const certificate = { ...data, publishState }
 
       try {
         setIsLoading(true)
-        let resultId: number
-        if (isUpdate && id) {
-          resultId = await updateCertificate(Number(id), certificateIn, newAttachment)
-        } else {
-          resultId = await createCertificate(certificateIn, newAttachment!).then((res) => res.id)
-        }
-
+        const resultId = await submitCertificateData(certificate)
         setSubmitError('')
-
-        if (publishState === PublishState.Draft) {
-          setNotification({
-            message: isUpdate
-              ? t('form.notification.todistuksen-tallennus.palautettu-luonnostilaan')
-              : t('form.notification.todistuksen-tallennus.luonnos-onnistui'),
-            type: NotificationEnum.success
-          })
-        }
-
-        if (publishState === PublishState.Published) {
-          setNotification({
-            message: isUpdate
-              ? t('form.notification.todistuksen-tallennus.onnistui')
-              : t('form.notification.todistuksen-tallennus.julkaisu-onnistui'),
-            type: NotificationEnum.success
-          })
-        }
-
-        navigate(contentPagePath(exam, ContentType.todistukset, resultId), {
-          state: { returnLocation: contentListPath(exam, ContentType.todistukset) }
-        })
+        handleSuccess(publishState, resultId)
       } catch (e) {
         if (e instanceof Error) {
           setSubmitError(e.message || 'Unexpected error')
         }
-        setNotification({
-          message: t('form.notification.todistuksen-tallennus.epaonnistui'),
-          type: NotificationEnum.error
-        })
-        console.error(e)
+        setErrorNotification(publishState)
       } finally {
         setIsLoading(false)
       }
@@ -178,8 +195,9 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
       <FormButtonRow
         actions={{
-          onSubmitClick: () => submitCertificate({ publishState: PublishState.Published }),
-          onSaveDraftClick: () => submitCertificate({ publishState: PublishState.Draft })
+          onSubmitClick: () => submitCertificate(PublishState.Published),
+          onSaveDraftClick: () => submitCertificate(PublishState.Draft),
+          onDeleteClick: () => setOpenDeleteModal(true)
         }}
         state={{
           isUpdate,
@@ -189,6 +207,16 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         formHasValidationErrors={Object.keys(errors).length > 0}
         errorMessage={submitError}
       />
+
+      <DeleteModal
+        modalTitle={lt.contentDeleteModalTitle[ContentType.todistukset]}
+        open={openDeleteModal}
+        onDeleteAction={() => submitCertificate(PublishState.Deleted)}
+        onClose={() => setOpenDeleteModal(false)}>
+        <div className="h-[15vh] p-6">
+          <p>{lt.contentDeleteModalText[ContentType.todistukset](watchName)}</p>
+        </div>
+      </DeleteModal>
     </div>
   )
 }

@@ -17,10 +17,10 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [koodistosResponse, userDetailsResponse, userFavoriteAssignmentCountResponse] = await Promise.all([
-          getKoodistos(i18n.language.toUpperCase()),
+        const [userDetailsResponse, userFavoriteAssignmentCountResponse, koodistosResponse] = await Promise.all([
           getUserDetails(),
-          getUserFavoriteCount()
+          getUserFavoriteCount(),
+          i18n.language !== 'keys' && getKoodistos(i18n.language.toUpperCase())
         ])
 
         if (userDetailsResponse.status === 401) {
@@ -36,7 +36,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
           console.error('Could not fetch userDetails')
         }
 
-        if (koodistosResponse.ok) {
+        if (koodistosResponse && koodistosResponse.ok) {
           setKoodistos(await koodistosResponse.json())
         } else {
           console.error('Could not fetch koodistos')

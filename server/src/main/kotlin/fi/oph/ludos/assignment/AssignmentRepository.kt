@@ -34,6 +34,10 @@ class AssignmentRepository(
     private val transactionTemplate: TransactionTemplate,
     private val koodistoService: KoodistoService,
 ) {
+    fun publishStateFilter(role: Role) = when (role) {
+        Role.OPETTAJA -> " AND a.assignment_publish_state = '${PublishState.PUBLISHED}'"
+        else -> " AND a.assignment_publish_state in ('${PublishState.PUBLISHED}', '${PublishState.DRAFT}')"
+    }
 
     val mapSukoListResultSet: (ResultSet, Int) -> SukoAssignmentDtoOut = { rs: ResultSet, _: Int ->
         SukoAssignmentDtoOut(
@@ -169,12 +173,6 @@ class AssignmentRepository(
         return Pair(StringBuilder(query), parameters)
     }
 
-    private fun addRoleBasedFilter(query: StringBuilder, role: Role) {
-        if (role == Role.OPETTAJA) {
-            query.append(" AND assignment_publish_state = 'PUBLISHED'")
-        }
-    }
-
     private fun addLukuvuosiQuery(
         query: StringBuilder, parameters: MapSqlParameterSource, exam: Exam, lukuvuosi: String?
     ) {
@@ -215,7 +213,7 @@ class AssignmentRepository(
         noLimit: Boolean
     ) {
         addFavoriteFilter(query, filters.suosikki)
-        addRoleBasedFilter(query, role)
+        query.append(publishStateFilter(role))
         query.append(" GROUP BY a.assignment_id")
         addOrderClause(query, filters.jarjesta)
         if (!noLimit) {
@@ -357,7 +355,7 @@ class AssignmentRepository(
 
         addSukoFilters(queryBuilder, parameters, filters)
         addFavoriteFilter(queryBuilder, filters.suosikki)
-        addRoleBasedFilter(queryBuilder, role)
+        queryBuilder.append(publishStateFilter(role))
 
         return Triple(queryBuilder.toString(), parameters, sukoListMetadataResultSetExtractor)
     }
@@ -404,8 +402,7 @@ class AssignmentRepository(
 
         addPuhviFilters(queryBuilder, parameters, filters)
         addFavoriteFilter(queryBuilder, filters.suosikki)
-        addRoleBasedFilter(queryBuilder, role)
-
+        queryBuilder.append(publishStateFilter(role))
         return Triple(queryBuilder.toString(), parameters, puhviListMetadataResultSetExtractor)
     }
 
@@ -474,8 +471,7 @@ class AssignmentRepository(
 
         addLdFilters(queryBuilder, parameters, filters)
         addFavoriteFilter(queryBuilder, filters.suosikki)
-        addRoleBasedFilter(queryBuilder, role)
-
+        queryBuilder.append(publishStateFilter(role))
         return Triple(queryBuilder.toString(), parameters, ldListMetadataResultSetExtractor)
     }
 
@@ -717,8 +713,6 @@ class AssignmentRepository(
             Exam.LD -> "ld_assignment" to mapLdResultSet
         }
 
-        val andIsPublishedIfOpettaja = if (role == Role.OPETTAJA) "AND assignment_publish_state = 'PUBLISHED'" else ""
-
         val query = """
             SELECT 
                 a.*,
@@ -728,7 +722,7 @@ class AssignmentRepository(
             FROM $table a
             LEFT JOIN ${table}_content content ON a.assignment_id = content.assignment_id
             LEFT JOIN ${table}_favorite fav ON a.assignment_id = fav.assignment_id AND fav.user_oid = ?
-            WHERE a.assignment_id = ? $andIsPublishedIfOpettaja
+            WHERE a.assignment_id = ? ${publishStateFilter(role)}
             GROUP BY a.assignment_id;
             """
 
