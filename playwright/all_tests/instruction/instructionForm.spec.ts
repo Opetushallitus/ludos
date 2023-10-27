@@ -7,26 +7,27 @@ import {
 } from './instructionHelpers'
 import {
   assertSuccessNotification,
-  examsLowerCase,
   FormAction,
+  koodiLabel,
   loginTestGroup,
   Role,
   setTeachingLanguage
 } from '../../helpers'
 import path from 'path'
-import { TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-async function createInstruction(page: Page, action: FormAction, expectedNotification: string) {
+async function createInstruction(page: Page, exam: Exam, action: FormAction, expectedNotification: string) {
   await fillInstructionForm({
     page,
     nameFi: 'Testi ohje',
     nameSv: 'Testuppgifter',
     contentFi: 'Testi sisältö',
     contentSv: 'Testa innehåll',
-    shortDescriptionFi: 'Testi lyhyt kuvaus',
-    shortDescriptionSv: 'Testa kort beskrivning',
+    aineKoodiArvo: exam === Exam.LD ? '9' : undefined,
+    shortDescriptionFi: exam !== Exam.LD ? 'Testi lyhyt kuvaus' : undefined,
+    shortDescriptionSv: exam !== Exam.LD ? 'Testa kort beskrivning' : undefined,
     attachmentNameFi: 'Testi liite',
     attachmentNameSv: 'Testa bilaga'
   })
@@ -44,14 +45,14 @@ async function createInstruction(page: Page, action: FormAction, expectedNotific
   const instructionToUpdate = responseData.id
 
   await assertSuccessNotification(page, expectedNotification)
-  await assertCreatedInstruction(page, action)
+  await assertCreatedInstruction(page, exam, action)
 
   return instructionToUpdate
 }
 
 async function updateInstruction(
   page: Page,
-  exam: string,
+  exam: Exam,
   instructionId: number,
   action: FormAction,
   previousName: string,
@@ -63,7 +64,14 @@ async function updateInstruction(
   const instructionCard = page.getByTestId(`instruction-${instructionId}`)
 
   await expect(instructionCard).toBeVisible()
-  await expect(instructionCard.getByTestId('instruction-name')).toHaveText(previousName)
+
+  if (exam === Exam.LD) {
+    await expect(instructionCard.getByTestId('card-title')).toHaveText(
+      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9')
+    )
+  } else {
+    await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)
+  }
 
   await page.getByTestId(`instruction-${instructionId}-edit`).click()
   await fillInstructionForm({
@@ -85,13 +93,18 @@ async function updateInstruction(
   await assertUpdatedInstruction(page)
 }
 
-async function navigateToInstructionExamPage(page: Page, exam: string) {
-  await page.getByTestId(`nav-link-${exam}`).click()
+async function navigateToInstructionExamPage(page: Page, exam: Exam) {
+  await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
   await page.getByTestId('tab-ohjeet').click()
 }
 
-async function createAndUpdatePublishedInstruction(page: Page, exam: string) {
-  const instructionId = await createInstruction(page, 'submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
+async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
+  const instructionId = await createInstruction(
+    page,
+    exam,
+    'submit',
+    'form.notification.ohjeen-tallennus.julkaisu-onnistui'
+  )
   await updateInstruction(
     page,
     exam,
@@ -113,8 +126,13 @@ async function createAndUpdatePublishedInstruction(page: Page, exam: string) {
   await deleteInstruction(page, instructionId, exam)
 }
 
-async function createAndUpdateDraftInstruction(page: Page, exam: string) {
-  const instructionId = await createInstruction(page, 'draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
+async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
+  const instructionId = await createInstruction(
+    page,
+    exam,
+    'draft',
+    'form.notification.ohjeen-tallennus.luonnos-onnistui'
+  )
 
   await updateInstruction(
     page,
@@ -135,28 +153,27 @@ async function createAndUpdateDraftInstruction(page: Page, exam: string) {
 
   await deleteInstruction(page, instructionId, exam)
 }
-async function deleteInstruction(page: Page, instructionId: number, exam: string) {
+async function deleteInstruction(page: Page, instructionId: number, exam: Exam) {
   await page.getByTestId('edit-content-btn').click()
 
   await page.getByTestId('form-delete').click()
   await page.getByTestId('modal-button-delete').last().click()
 
   await assertSuccessNotification(page, 'ohjeen-poisto.onnistui')
-
-  // expect not to find the deleted certificate from list
+  // expect not to find the deleted certificate from a list
   await expect(page.getByTestId(`instruction-${instructionId}`)).toBeHidden()
 
-  await page.goto(`/${exam}/ohjeet/${instructionId}`)
+  await page.goto(`/${exam.toLowerCase()}/ohjeet/${instructionId}`)
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 
-examsLowerCase.forEach((exam) => {
+Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} instruction form tests`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/')
       await page.getByTestId('header-language-dropdown-expand').click()
       await page.getByText('Näytä avaimet').click()
-      await page.getByTestId(`nav-link-${exam}`).click()
+      await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
       await page.getByTestId('tab-ohjeet').click()
       await page.getByTestId('create-ohje-button').click()
     })
@@ -175,14 +192,33 @@ examsLowerCase.forEach((exam) => {
       await expect(page.getByTestId('create-ohje-button')).toBeVisible()
     })
 
+    test(`can cancel ${exam} updating instruction`, async ({ page }) => {
+      const instructionId = await createInstruction(
+        page,
+        exam,
+        'submit',
+        'form.notification.ohjeen-tallennus.julkaisu-onnistui'
+      )
+      await navigateToInstructionExamPage(page, exam)
+      const instructionCard = page.getByTestId(`instruction-${instructionId}`)
+
+      await expect(instructionCard).toBeVisible()
+      await page.getByTestId(`instruction-${instructionId}-edit`).click()
+
+      const btn = page.getByTestId('form-cancel')
+      await expect(btn).toHaveText('button.peruuta')
+      await btn.click()
+    })
+
     test(`${exam} failing of attachment upload is handled correctly`, async ({ page }) => {
       await fillInstructionForm({
         page,
-        nameFi: 'Testi ohje'
+        nameFi: 'Liitteen poisto epäonnistumis testi',
+        aineKoodiArvo: exam === Exam.LD ? '9' : undefined
       })
 
       await page.getByTestId('form-submit').click()
-      await assertSuccessNotification(page, 'ohjeen-tallennus.julkaisu-onnistui')
+      await assertSuccessNotification(page, 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
 
       await page.getByTestId('edit-content-btn').click()
 

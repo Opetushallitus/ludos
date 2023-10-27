@@ -10,8 +10,10 @@ import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithSecurityContext
 import org.springframework.security.test.context.support.WithSecurityContextFactory
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.RequestPostProcessor
 import java.time.ZonedDateTime
 
 @Target(AnnotationTarget.FUNCTION)
@@ -90,6 +92,7 @@ class LaatijaSecurityContextFactory : LudosSecurityContextFactory() {
         null
     )
 }
+
 class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
     override fun kayttajatiedot() = Kayttajatiedot(
         "1.2.246.562.24.00000000004",
@@ -107,10 +110,14 @@ class OpettajaAndLaatijaSecurityContextFactory : LudosSecurityContextFactory() {
         "1.2.246.562.24.00000000005",
         "OpettajaLaatija",
         "VIRKAILIJA",
-        listOf(Organisaatio("123", listOf(
-            Kayttooikeus.ludosOikeus(Role.OPETTAJA.oikeus),
-            Kayttooikeus.ludosOikeus(Role.LAATIJA.oikeus))
-        )),
+        listOf(
+            Organisaatio(
+                "123", listOf(
+                    Kayttooikeus.ludosOikeus(Role.OPETTAJA.oikeus),
+                    Kayttooikeus.ludosOikeus(Role.LAATIJA.oikeus)
+                )
+            )
+        ),
         "Opettaja",
         "Laatija",
         null
@@ -123,11 +130,10 @@ fun nowFromDb(mockMvc: MockMvc): ZonedDateTime {
     return ZonedDateTime.parse(isoString)
 }
 
-fun authenticateAsYllapitaja() {
-    // Useful when @WithYllapitajaRole cannot be used, e.g. in @BeforeAll
-    SecurityContextHolder.getContext().authentication = YllapitajaSecurityContextFactory().createAuthentication()
+val yllapitajaUser: RequestPostProcessor = user(YllapitajaSecurityContextFactory().kayttajatiedot())
+val opettajaUser: RequestPostProcessor = user(OpettajaSecurityContextFactory().kayttajatiedot())
+
+enum class TestPublishState {
+    DRAFT, PUBLISHED, ARCHIVED, DELETED, OLEMATON
 }
 
-fun authenticateAsOpettaja() {
-    SecurityContextHolder.getContext().authentication = OpettajaSecurityContextFactory().createAuthentication()
-}

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.reflect.full.memberProperties
 
@@ -22,16 +23,11 @@ import kotlin.reflect.full.memberProperties
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AssignmentControllerTest : AssignmentRequests() {
-    var idsOfAssignmentDrafts = listOf<Int>()
 
     @BeforeAll
     fun setup() {
-        authenticateAsYllapitaja()
-        mockMvc.perform(emptyDbRequest())
-        mockMvc.perform(seedDbWithAssignments())
-        idsOfAssignmentDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
-            .filter { it.publishState == PublishState.DRAFT }
-            .map { it.id }
+        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+        mockMvc.perform(seedDbWithAssignments().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
     }
 
     fun assertCommonFieldsBetweenInAndOutEqual(assignmentIn: TestAssignmentIn, assignmentOut: AssignmentOut) {
@@ -477,7 +473,11 @@ class AssignmentControllerTest : AssignmentRequests() {
     @Test
     @WithOpettajaRole
     fun getAssignmentDraftAsOpettaja() {
-        idsOfAssignmentDrafts.forEach {
+        val idsOfDrafts = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
+            .filter { it.publishState == PublishState.DRAFT }
+            .map { it.id }
+
+        idsOfDrafts.forEach {
             mockMvc.perform(getAssignmentByIdReq(Exam.SUKO, it)).andExpect(status().isNotFound())
         }
     }
@@ -492,11 +492,12 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     private inline fun <reified T : AssignmentOut> setAssignmentIsFavoriteAndVerify(
         id: Int,
-        isFavorite: Boolean
+        isFavorite: Boolean,
+        user: RequestPostProcessor? = null
     ): T {
         val exam = examByTestAssignmentOutClass(T::class)
-        setAssignmentIsFavorite(exam, id, isFavorite)
-        val assignmentById = getAssignmentById<T>(id)
+        setAssignmentIsFavorite(exam, id, isFavorite, user)
+        val assignmentById = getAssignmentById<T>(id, user)
         assertThat(assignmentById.isFavorite).isEqualTo(isFavorite)
         return assignmentById
     }
@@ -517,7 +518,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     }
 
     @Test
-    @WithYllapitajaRole
+    @WithOpettajaRole
     fun `set assignment as favorite and query it`() {
         val createdAssignment: SukoAssignmentDtoOut = createAssignment(minimalSukoAssignmentIn)
         testMarkingAndQueryFavorites(createdAssignment.id)
@@ -528,7 +529,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `as opettaja toggle assignment to be favorite and query it`() {
         // get all assignments and choose one of them to favorite
         val localAssignmentIdToFavoriteAsOpettaja =
-            getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.first { it.publishState == PublishState.PUBLISHED }.id
+            getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.first().id
 
         testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja)
     }
@@ -544,13 +545,13 @@ class AssignmentControllerTest : AssignmentRequests() {
     }
 
     @Test
+    @WithYllapitajaRole
     fun `favorite same assignment as different users`() {
-        authenticateAsYllapitaja()
         val createdAssignment: SukoAssignmentDtoOut = createAssignment(minimalSukoAssignmentIn)
 
         setAssignmentIsFavoriteAndVerify<SukoAssignmentDtoOut>(createdAssignment.id, true)
-        authenticateAsOpettaja()
-        setAssignmentIsFavoriteAndVerify<SukoAssignmentDtoOut>(createdAssignment.id, true)
+        // as opettaja
+        setAssignmentIsFavoriteAndVerify<SukoAssignmentDtoOut>(createdAssignment.id, true, opettajaUser)
     }
 
     @Test
@@ -564,8 +565,8 @@ class AssignmentControllerTest : AssignmentRequests() {
     }
 
     @Test
+    @WithOpettajaRole
     fun `test querying for the total amount of favorites`() {
-        authenticateAsYllapitaja()
         val sukoAssignmentIds = (1..3).map {
             createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn).id
         }
@@ -575,9 +576,8 @@ class AssignmentControllerTest : AssignmentRequests() {
         val puhviAssignmentIds = (1..3).map {
             createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn).id
         }
-        assertEquals(0, getTotalFavoriteCount())
+        assertEquals(0, getTotalFavoriteCount(yllapitajaUser))
 
-        authenticateAsOpettaja()
         // mark all assignments as favorite
         var totalMarkedAsFavorite = 0
         sukoAssignmentIds.forEach {
@@ -595,7 +595,10 @@ class AssignmentControllerTest : AssignmentRequests() {
 
         assertEquals(9, totalMarkedAsFavorite)
         assertEquals(totalMarkedAsFavorite, getTotalFavoriteCount())
-        assertEquals(totalMarkedAsFavorite - 1, setAssignmentIsFavorite(Exam.SUKO, sukoAssignmentIds[0], false))
+        assertEquals(
+            totalMarkedAsFavorite - 1,
+            setAssignmentIsFavorite(Exam.SUKO, sukoAssignmentIds[0], false)
+        )
     }
 
     @Test

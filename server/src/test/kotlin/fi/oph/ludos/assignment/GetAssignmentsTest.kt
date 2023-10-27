@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -21,15 +21,14 @@ class GetAssignmentsTest : AssignmentRequests() {
 
     @BeforeAll
     fun setup() {
-        authenticateAsYllapitaja()
-        mockMvc.perform(emptyDbRequest())
+        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
         val testData = AssignmentFiltersTestData.assignmentsForFilterTest()
         seedDbWithCustomAssignments(mockMvc, testData)
     }
 
     @Test
     fun getAssignmentsWithNoRole() {
-        mockMvc.perform(getAllAssignmentsReq(Exam.SUKO)).andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+        mockMvc.perform(getAllAssignmentsReq(Exam.SUKO)).andExpect(status().is3xxRedirection())
     }
 
     @Test
@@ -58,8 +57,7 @@ class GetAssignmentsTest : AssignmentRequests() {
 
     @Test
     @WithYllapitajaRole
-    fun `paging with 0 suko assignments`() =
-        testPaging(0, listOf(listOf()))
+    fun `paging with 0 suko assignments`() = testPaging(0, listOf(listOf()))
 
     @Test
     @WithYllapitajaRole
@@ -124,7 +122,6 @@ class GetAssignmentsTest : AssignmentRequests() {
                 24.downTo(5).toList(),
                 4.downTo(1).toList()
             )
-
         )
 
         testSukoFilterOptions(
@@ -253,7 +250,7 @@ class GetAssignmentsTest : AssignmentRequests() {
             val puhviFilters = PuhviFilters(
                 orderDirection, null, tehtavatyyppipuhvi, lukuvuosi, page
             )
-            
+
             val content = getPuhviAssignments(puhviFilters)
             testPageNumber(content, page, expectedTotalPages)
 
@@ -331,7 +328,7 @@ class GetAssignmentsTest : AssignmentRequests() {
 
     private fun testNonAllowedFilterOptions(exam: Exam, filterStr: String, expectedErrorString: String) {
         val errorStr = mockMvc.perform(getAssignmentsWithAnyFilterReq(exam, filterStr))
-            .andExpect(MockMvcResultMatchers.status().isBadRequest).andReturn().response.contentAsString
+            .andExpect(status().isBadRequest).andReturn().response.contentAsString
 
         assertEquals(expectedErrorString, errorStr)
     }
@@ -352,10 +349,11 @@ class GetAssignmentsTest : AssignmentRequests() {
         val allAssignments: List<SukoAssignmentDtoOut> = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
         val favoriteAssignments = allAssignments.slice(1..3)
         favoriteAssignments.forEach {
-            setAssignmentIsFavorite(Exam.SUKO, it.id, true)
+            setAssignmentIsFavorite(Exam.SUKO, it.id, true, opettajaUser)
         }
 
-        val filteredFavoriteAssignments = getSukoAssignments(emptySukoFilters.copy(suosikki = true)).content
+        val filteredFavoriteAssignments =
+            getSukoAssignments(emptySukoFilters.copy(suosikki = true)).content
         // check that we get only assignments that were favored
         assertThat(filteredFavoriteAssignments.map { it.id })
             .containsExactlyInAnyOrder(*(favoriteAssignments.map { it.id }.toTypedArray()))

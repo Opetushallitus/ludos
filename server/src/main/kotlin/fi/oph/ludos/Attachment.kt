@@ -1,9 +1,9 @@
 package fi.oph.ludos
 
-import java.time.ZonedDateTime
+import java.sql.Timestamp
 
 interface AttachmentOut {
     val fileKey: String
     val fileName: String
-    val fileUploadDate: ZonedDateTime
+    val fileUploadDate: Timestamp
 }

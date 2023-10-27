@@ -4,8 +4,10 @@ import Language
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.assignment.*
-import fi.oph.ludos.certificate.CertificateDtoIn
 import fi.oph.ludos.certificate.CertificateRepository
+import fi.oph.ludos.certificate.LdCertificateDtoIn
+import fi.oph.ludos.certificate.PuhviCertificateDtoIn
+import fi.oph.ludos.certificate.SukoCertificateDtoIn
 import fi.oph.ludos.instruction.*
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.MediaType
@@ -27,32 +29,32 @@ class SeedDataRepository(
         seedCertificates()
     }
 
-    fun seedAssignments() {
-        val sukoAssignmentTypeKoodiArvos = arrayOf("002", "001", "003")
-        val puhviAssignmentTypeKoodiArvos = arrayOf("002", "001")
-        val laajaalainenOsaaminenKoodiArvos = arrayOf("04", "02", "01", "06", "05", "03")
-        val taitotasoKoodiArvos = arrayOf(
-            "0010", "0009", "0012", "0011", "0002", "0001", "0004", "0003", "0006", "0005", "0008", "0007"
-        )
-        val oppimaaras = arrayOf(
-            Oppimaara("TKFIA1"),
-            Oppimaara("TKFIB1"),
-            Oppimaara("TKFIB3"),
-            Oppimaara("TKFIAI"),
-            Oppimaara("TKRUB1"),
-            Oppimaara("TKRUB3"),
-            Oppimaara("TKRUAI"),
-            Oppimaara("VKB1", "IA"),
-            Oppimaara("VKA1", "RA"),
-            Oppimaara("VKA1", "SA"),
-            Oppimaara("VKA1")
-        )
-        val aiheKoodiArvos = arrayOf("001", "003", "013", "017", "005", "007")
-        val lukuvuosiKoodiArvos = arrayOf(
-            "20202021", "20222023", "20212022", "20242025", "20232024"
-        )
-        val aineKoodiArvos = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
+    val sukoAssignmentTypeKoodiArvos = arrayOf("002", "001", "003")
+    val puhviAssignmentTypeKoodiArvos = arrayOf("002", "001")
+    val laajaalainenOsaaminenKoodiArvos = arrayOf("04", "02", "01", "06", "05", "03")
+    val taitotasoKoodiArvos = arrayOf(
+        "0010", "0009", "0012", "0011", "0002", "0001", "0004", "0003", "0006", "0005", "0008", "0007"
+    )
+    val oppimaaras = arrayOf(
+        Oppimaara("TKFIA1"),
+        Oppimaara("TKFIB1"),
+        Oppimaara("TKFIB3"),
+        Oppimaara("TKFIAI"),
+        Oppimaara("TKRUB1"),
+        Oppimaara("TKRUB3"),
+        Oppimaara("TKRUAI"),
+        Oppimaara("VKB1", "IA"),
+        Oppimaara("VKA1", "RA"),
+        Oppimaara("VKA1", "SA"),
+        Oppimaara("VKA1")
+    )
+    val aiheKoodiArvos = arrayOf("001", "003", "013", "017", "005", "007")
+    val lukuvuosiKoodiArvos = arrayOf(
+        "20202021", "20222023", "20212022", "20242025", "20232024"
+    )
+    val aineKoodiArvos = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
 
+    fun seedAssignments() {
         repeat(24) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
 
@@ -143,7 +145,7 @@ class SeedDataRepository(
                 contentSv = "Test content $it SV",
                 shortDescriptionFi = "Test short description $it FI",
                 shortDescriptionSv = "Test short description $it SV",
-                publishState = publishState
+                publishState = publishState,
             )
 
             instructionRepository.createInstruction(sukoInstruction, if (it == 0) attachments else emptyList())
@@ -154,9 +156,8 @@ class SeedDataRepository(
                 nameSv = "LD Test name $it SV",
                 contentFi = "LD Test content $it FI",
                 contentSv = "LD Test content $it SV",
-                shortDescriptionFi = "LD Test short description $it FI",
-                shortDescriptionSv = "LD Test short description $it SV",
-                publishState = publishState
+                publishState = publishState,
+                aineKoodiArvo = aineKoodiArvos[it % aineKoodiArvos.size]
             )
 
             instructionRepository.createInstruction(ldInstruction, emptyList())
@@ -179,33 +180,38 @@ class SeedDataRepository(
         repeat(4) {
             val publishState = if (it % 2 == 0) PublishState.PUBLISHED else PublishState.DRAFT
 
-            val certificateDtoIn = CertificateDtoIn(
+            val sukoCertificateDtoIn = SukoCertificateDtoIn(
                 exam = Exam.SUKO,
-                name = "SUKO Test Certificate $it",
-                description = "SUKO Test Certificate Description $it",
-                publishState = publishState
+                nameFi = "SUKO Test Certificate $it",
+                nameSv = "",
+                descriptionFi = "SUKO Test Certificate Description $it",
+                descriptionSv = "",
+                publishState = publishState,
             )
 
             val multipartFile = readAttachmentFixtureFile("fixture1.pdf")
-            certificateRepository.createCertificate(certificateDtoIn, multipartFile)
+            certificateRepository.createSukoCertificate(multipartFile, sukoCertificateDtoIn)
 
-            val ldCertificateDtoIn = CertificateDtoIn(
+            val ldCertificateDtoIn = LdCertificateDtoIn(
                 exam = Exam.LD,
-                name = "LD Test Certificate $it",
-                description = "LD Test Certificate Description $it",
-                publishState = publishState
+                nameFi = "LD Test Certificate $it FI",
+                nameSv = "LD Test Certificate $it SV",
+                publishState = publishState,
+                aineKoodiArvo = "1"
             )
 
-            certificateRepository.createCertificate(ldCertificateDtoIn, multipartFile)
+            certificateRepository.createLdCertificate(multipartFile, multipartFile, ldCertificateDtoIn)
 
-            val puhviCertificateDtoIn = CertificateDtoIn(
+            val puhviCertificateDtoIn = PuhviCertificateDtoIn(
                 exam = Exam.PUHVI,
-                name = "PUHVI Test Certificate $it",
-                description = "PUHVI Test Certificate Description $it",
-                publishState = publishState
+                nameFi = "PUHVI Test Certificate $it FI",
+                nameSv = "PUHVI Test Certificate $it Sv",
+                descriptionFi = "PUHVI Test Certificate Description $it FI",
+                descriptionSv = "PUHVI Test Certificate Description $it SV",
+                publishState = publishState,
             )
 
-            certificateRepository.createCertificate(puhviCertificateDtoIn, multipartFile)
+            certificateRepository.createPuhviCertificate(multipartFile, multipartFile, puhviCertificateDtoIn)
         }
     }
 

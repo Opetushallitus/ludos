@@ -1,10 +1,7 @@
 package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Exam
-
-enum class TestPublishState {
-    DRAFT, PUBLISHED, ARCHIVED, DELETED, OLEMATON
-}
+import fi.oph.ludos.TestPublishState
 
 interface TestAssignment {
     val nameFi: String

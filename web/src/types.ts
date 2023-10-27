@@ -74,6 +74,15 @@ export type ContentOut<T = BaseOut> = {
   content: T[]
 }
 
+export type InstructionsOut = {
+  content: InstructionDtoOut[]
+  totalPages: number
+  currentPage: number
+  instructionFilterOptions: {
+    aine: AssignmentFilterOptions['aine']
+  }
+}
+
 export type AssignmentsOut = {
   content: AssignmentOut[]
   totalPages: number
@@ -105,9 +114,16 @@ export type InstructionDtoOut = BaseOut & {
   contentSv: string
   instructionFi: string
   instructionSv: string
+  attachments: AttachmentDtoOut[]
+}
+
+export type SukoOrPuhviInstructionDtoOut = InstructionDtoOut & {
   shortDescriptionFi: string
   shortDescriptionSv: string
-  attachments: AttachmentDtoOut[]
+}
+
+export type LdInstructionDtoOut = InstructionDtoOut & {
+  aineKoodiArvo: string
 }
 
 export type AttachmentDtoOut = {
@@ -119,9 +135,26 @@ export type AttachmentDtoOut = {
 }
 
 export type CertificateDtoOut = BaseOut & {
-  name: string
-  description: string
-  attachment: AttachmentDtoOut
+  nameFi: string
+  nameSv: string
+}
+
+export type SukoCertificateDtoOut = CertificateDtoOut & {
+  descriptionFi: string
+  attachmentFi: AttachmentDtoOut
+}
+
+export type LdCertificateDtoOut = CertificateDtoOut & {
+  aineKoodiArvo: string
+  attachmentFi: AttachmentDtoOut
+  attachmentSv: AttachmentDtoOut
+}
+
+export type PuhviCertificateDtoOut = CertificateDtoOut & {
+  descriptionFi: string
+  descriptionSv: string
+  attachmentFi: AttachmentDtoOut
+  attachmentSv: AttachmentDtoOut
 }
 
 export const ContentType = {

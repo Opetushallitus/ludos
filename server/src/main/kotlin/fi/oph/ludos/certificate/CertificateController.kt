@@ -23,31 +23,77 @@ class CertificateController(val service: CertificateService) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun createCertificate(
-        @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
-        @RequestPart("attachment") attachment: MultipartFile
-    ): CertificateDtoOut? = service.createCertificate(certificate, attachment)
+        @Valid @RequestPart("certificate") certificate: Certificate,
+        @RequestPart("attachmentFi") attachment: MultipartFile,
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
+    ): Certificate = when (certificate) {
+        is SukoCertificateDtoIn -> service.createSukoCertificate(certificate, attachment)
+        is LdCertificateDtoIn -> if (attachmentSv != null) service.createLdCertificate(
+            certificate,
+            attachment,
+            attachmentSv
+        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
 
-    @GetMapping("/{exam}")
+        is PuhviCertificateDtoIn -> if (attachmentSv != null) service.createPuhviCertificate(
+            certificate,
+            attachment,
+            attachmentSv
+        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+    }
+
+    @GetMapping("SUKO")
     @RequireAtLeastOpettajaRole
-    fun getCertificates(
-        @PathVariable exam: Exam
-    ): CertificatesOut = CertificatesOut(service.getCertificates(exam))
+    fun getSukoCertificates(
+        @Valid filters: CertificateFilters
+    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.SUKO, filters))
+
+    @GetMapping("PUHVI")
+    @RequireAtLeastOpettajaRole
+    fun getPuhviCertificates(
+        @Valid filters: CertificateFilters
+    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.PUHVI, filters))
+
+    @GetMapping("LD")
+    @RequireAtLeastOpettajaRole
+    fun getLdCertificates(
+        @Valid filters: CertificateFilters
+    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.LD, filters))
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole
-    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateDtoOut? {
-        val certificateDtoOut = service.getCertificateById(id, exam)
-
-        return certificateDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
-    }
+    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? =
+        service.getCertificateById(id, exam) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Certificate not found $id"
+        )
 
     @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int,
-        @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
-        @RequestPart("attachment") attachment: MultipartFile?
-    ): Int? = service.updateCertificate(id, certificate, attachment)
+        @Valid @RequestPart("certificate") certificate: Certificate,
+        @RequestPart("attachmentFi") attachment: MultipartFile?,
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
+    ): Int? = when (certificate) {
+        is SukoCertificateDtoIn -> service.updateSukoCertificate(id, certificate, attachment)
+        is LdCertificateDtoIn -> service.updateLdCertificate(
+            id,
+            certificate,
+            attachment,
+            attachmentSv
+        )
+
+        is PuhviCertificateDtoIn -> service.updatePuhviCertificate(
+            id,
+            certificate,
+            attachment,
+            attachmentSv
+        )
+
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+    }
 
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole

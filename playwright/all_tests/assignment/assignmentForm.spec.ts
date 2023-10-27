@@ -88,13 +88,13 @@ const updateAssignmentFormDataByExam = {
   } as PuhviAssignmentFormType
 }
 
-function formDataForCreate(exam: Exam, action: 'submit' | 'draft'): AnyAssignmentFormType {
+function formDataForCreate(exam: Exam, action: FormAction): AnyAssignmentFormType {
   const createFormData = createAssignmentFormDataByExam[exam]
   createFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
   return createFormData as AnyAssignmentFormType
 }
 
-function formDataForUpdate(exam: Exam, action: 'submit' | 'draft') {
+function formDataForUpdate(exam: Exam, action: FormAction) {
   const updateFormData = updateAssignmentFormDataByExam[exam]
   updateFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
   return updateFormData
@@ -199,11 +199,6 @@ async function createAndUpdateAndDeleteAssignment(page: Page, exam: Exam, create
   await deleteAssignment(page, exam, assignmentId)
 }
 
-async function cancelAssignmentCreation(page: Page) {
-  await clickFormAction(page, 'cancel')
-  await expect(page.getByTestId('create-koetehtava-button')).toBeVisible()
-}
-
 async function deleteAssignment(page: Page, exam: Exam, assignmentId: number) {
   await page.getByTestId('edit-content-btn').click()
 
@@ -233,7 +228,5 @@ Object.values(Exam).forEach((exam) => {
 
     test('can create draft, update and delete', async ({ page }) =>
       await createAndUpdateAndDeleteAssignment(page, exam, 'draft'))
-
-    test(`can cancel assignment creation`, async ({ page }) => await cancelAssignmentCreation(page))
   })
 })

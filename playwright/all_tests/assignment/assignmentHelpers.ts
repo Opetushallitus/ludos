@@ -1,6 +1,6 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
-  koodiNimi,
+  koodiLabel,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
@@ -104,15 +104,6 @@ async function oppimaaraLabel(oppimaara: Oppimaara) {
     return preventLineBreaksFromHyphen(`${oppimaaraKoodiArvoLabel}, ${kielitarjontaKoodiArvoLabel}`)
   } else {
     return preventLineBreaksFromHyphen(oppimaaraKoodiArvoLabel)
-  }
-}
-
-async function koodiLabel(koodistoName: KoodistoName, koodiArvos: string | string[]): Promise<string> {
-  if (typeof koodiArvos === 'string') {
-    return koodiNimi(koodistoName, koodiArvos)
-  } else {
-    const labels = await Promise.all(koodiArvos.map((ka) => koodiLabel(koodistoName, ka)))
-    return labels.sort().join(', ')
   }
 }
 
@@ -253,8 +244,8 @@ export async function checkListAfterFiltering(page: Page, exam: Exam, expectedAs
       name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, exam)
     })
   ).toBeVisible()
-  const assignments = await page.getByTestId('assignment-list').locator('li').all()
-  const namePromises = assignments.map((listItem) => listItem.getByTestId('assignment-name-link').innerText())
+  const assignments = await page.getByTestId('card-list').locator('li').all()
+  const namePromises = assignments.map((listItem) => listItem.getByTestId('card-title').innerText())
   const names = await Promise.all(namePromises)
   expect(names).toEqual(
     expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, exam))

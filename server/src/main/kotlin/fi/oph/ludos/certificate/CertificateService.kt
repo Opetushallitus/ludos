@@ -16,15 +16,48 @@ import java.io.InputStream
 class CertificateService(val repository: CertificateRepository, val s3Helper: S3Helper) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun getCertificates(exam: Exam): List<CertificateDtoOut> = repository.getCertificates(exam)
+    fun getCertificates(exam: Exam, filters: CertificateFilters): List<CertificateOut> =
+        repository.getCertificates(exam, filters)
 
-    fun createCertificate(certificate: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut =
-        repository.createCertificate(certificate, attachment)
+    fun createSukoCertificate(certificate: SukoCertificateDtoIn, attachment: MultipartFile): CertificateOut =
+        repository.createSukoCertificate(attachment, certificate)
 
-    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? = repository.getCertificateById(id, exam)
+    fun createLdCertificate(
+        certificate: LdCertificateDtoIn,
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile
+    ): CertificateOut =
+        repository.createLdCertificate(attachmentFi, attachmentSv, certificate)
 
-    fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?): Int? =
-        repository.updateCertificate(id, certificate, attachment)
+    fun createPuhviCertificate(
+        certificate: PuhviCertificateDtoIn,
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile
+    ): CertificateOut =
+        repository.createPuhviCertificate(attachmentFi, attachmentSv, certificate)
+
+    fun getCertificateById(id: Int, exam: Exam): CertificateOut? = repository.getCertificateById(id, exam)
+
+    fun updateSukoCertificate(
+        id: Int,
+        certificateDtoIn: SukoCertificateDtoIn,
+        attachmentFi: MultipartFile?
+    ) = repository.updateSukoCertificate(id, certificateDtoIn, attachmentFi)
+
+    fun updateLdCertificate(
+        id: Int,
+        certificateDtoIn: LdCertificateDtoIn,
+        attachmentFi: MultipartFile?,
+        attachmentSv: MultipartFile?
+    ) = repository.updateLdCertificate(id, certificateDtoIn, attachmentFi, attachmentSv)
+
+    fun updatePuhviCertificate(
+        id: Int,
+        certificateDtoIn: PuhviCertificateDtoIn,
+        attachmentFi: MultipartFile?,
+        attachmentSv: MultipartFile?
+    ) = repository.updatePuhviCertificate(id, certificateDtoIn, attachmentFi, attachmentSv)
+
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(

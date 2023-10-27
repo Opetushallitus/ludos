@@ -144,13 +144,17 @@ export function deleteInstructionAttachment(attachmentFileKey: string) {
 
 export async function createCertificate(
   certificateIn: CertificateFormType,
-  newAttachment: File
+  newAttachmentFi: File,
+  newAttachmentSv: File | null
 ): Promise<{ id: number }> {
   const formData = new FormData()
 
   const certificatePart = new Blob([JSON.stringify(certificateIn)], { type: 'application/json' })
   formData.append('certificate', certificatePart)
-  formData.append('attachment', newAttachment)
+  formData.append('attachmentFi', newAttachmentFi)
+  if (newAttachmentSv) {
+    formData.append('attachmentSv', newAttachmentSv)
+  }
 
   const result = await doRequest(CERTIFICATE_URL, 'POST', formData, { type: 'multipart/form-data' })
 
@@ -164,14 +168,18 @@ export async function createCertificate(
 export async function updateCertificate(
   id: number,
   certificateIn: CertificateFormType,
-  newAttachment: File | null
+  newAttachmentFi: File | null,
+  newAttachmentSv: File | null
 ): Promise<number> {
   const formData = new FormData()
 
   const certificatePart = new Blob([JSON.stringify(certificateIn)], { type: 'application/json' })
   formData.append('certificate', certificatePart)
-  if (newAttachment) {
-    formData.append('attachment', newAttachment)
+  if (newAttachmentFi) {
+    formData.append('attachmentFi', newAttachmentFi)
+  }
+  if (newAttachmentSv) {
+    formData.append('attachmentSv', newAttachmentSv)
   }
 
   const result = await doRequest(`${CERTIFICATE_URL}/${id}`, 'PUT', formData, { type: 'multipart/form-data' })

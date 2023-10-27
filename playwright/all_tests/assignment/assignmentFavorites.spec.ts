@@ -22,7 +22,7 @@ test.describe('Assignment favorites', () => {
   })
   async function prepAssignmentGoToAssignmentList(
     page: Page,
-    exam: 'SUKO' | 'PUHVI' | 'LD',
+    exam: Exam,
     context: BrowserContext,
     baseURL: string
   ): Promise<[any, number]> {
@@ -30,23 +30,18 @@ test.describe('Assignment favorites', () => {
     const assignment = await createAssignment(context, baseURL, assignmentIn)
 
     await page.goto(`/${exam.toLowerCase()}/${ContentType.koetehtavat}`)
-    await page.getByTestId('assignment-list').locator('li').isVisible()
+    await page.getByTestId('card-list').locator('li').isVisible()
 
     const favoriteCountBefore = await favoritesCount(page)
 
     return [assignment, favoriteCountBefore]
   }
 
-  async function assertFavoritesPage(
-    page: Page,
-    exam: 'SUKO' | 'PUHVI' | 'LD',
-    assignment: any,
-    favoriteCountBefore: number
-  ) {
+  async function assertFavoritesPage(page: Page, exam: Exam, assignment: any, favoriteCountBefore: number) {
     await page.getByTestId('header-favorites').click()
     await page.getByTestId(`tab-${exam.toLowerCase()}`).click()
     await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeVisible()
-    await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
+    await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('card-title').click()
     await expect(page.getByTestId('assignment-header')).toHaveText(assignment.nameFi)
     await page.goBack()
     await testEsitysNakyma(page, `assignment-${assignment.id}-action-esitysnakyma`, assignment)
@@ -91,7 +86,7 @@ test.describe('Assignment favorites', () => {
   Object.values(Exam).forEach(async (exam) => {
     test(`Can favorite an ${exam} assignment from assignment content page`, async ({ page, context, baseURL }) => {
       const [assignment, favoriteCountBefore] = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
-      await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
+      await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('card-title').click()
       await expect(page.getByTestId('assignment-header')).toBeVisible()
       await testSettingAndUnsettingAsFavorite(page, assignment, favoriteCountBefore, exam)
     })

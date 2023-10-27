@@ -111,7 +111,7 @@ class AssignmentRepository(
         Exam.LD -> "ld_assignment"
     }
 
-    fun getAssignments(assignmentFilter: BaseFilters): AssignmentListDtoOut {
+    fun getAssignments(assignmentFilter: AssignmentBaseFilters): AssignmentListDtoOut {
         val role = Kayttajatiedot.fromSecurityContext().role
         val userOid = Kayttajatiedot.fromSecurityContext().oidHenkilo
 
