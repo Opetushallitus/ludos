@@ -1,35 +1,22 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
-import path from 'path'
-import { assertSuccessNotification, examsLowerCase, FormAction, loginTestGroup, Role } from '../../helpers'
+import {
+  assertSuccessNotification,
+  FormAction,
+  loginTestGroup,
+  Role,
+  setSingleSelectDropdownOption
+} from '../../helpers'
+import { Exam } from 'web/src/types'
+import { assertContentPage, selectAttachmentFile } from './certificateHelpers'
 
-async function selectAttachmentFile(page: Page, file: string) {
-  const filePath = path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`)
-
-  await page.locator('#fileInput-fi').setInputFiles(filePath)
-
-  const currentDate = new Date()
-
-  const day = currentDate.getDate()
-  const month = currentDate.getMonth() + 1
-  const year = currentDate.getFullYear()
-  const formattedDate = `${day}.${month}.${year}`
-
-  await expect(page.getByTestId(file)).toHaveText(`${file}${formattedDate}`)
+const attachment1 = {
+  name: 'fixture1.pdf',
+  size: 323
 }
 
-async function testAttachmentLink(page: Page, context: BrowserContext, filename: string, expectedSize: number) {
-  const attachmentLink = page.getByRole('link', { name: `${filename} open_in_new` })
-  const attachmentLinkTarget = await attachmentLink.evaluate((l) => l.getAttribute('target'))
-  const attachmentLinkHref = await attachmentLink.evaluate((l) => l.getAttribute('href'))
-
-  expect(attachmentLinkTarget).toBe('_blank')
-  expect(attachmentLinkHref).not.toBeNull()
-
-  const attachmentResponse = await context.request.get(attachmentLinkHref!)
-  expect(attachmentResponse.status()).toBe(200)
-  expect(attachmentResponse.headers()['content-type']).toBe('application/pdf')
-  expect(attachmentResponse.headers()['content-disposition']).toBe(`inline; filename="${filename}"`)
-  expect(Buffer.byteLength(await attachmentResponse.body())).toBe(expectedSize)
+const attachment2 = {
+  name: 'fixture2.pdf',
+  size: 331
 }
 
 function certificateNameByAction(action: FormAction): string {
@@ -48,6 +35,7 @@ function certificateNameByAction(action: FormAction): string {
 async function createCertificate(
   page: Page,
   context: BrowserContext,
+  exam: Exam,
   action: FormAction,
   expectedNotification: string
 ) {
@@ -57,7 +45,11 @@ async function createCertificate(
   const descriptionText = 'Todistuksen kuvaus'
 
   await page.getByTestId('name').fill(nameText)
-  await page.getByTestId('description').fill(descriptionText)
+  if (exam === Exam.LD) {
+    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '9')
+  } else {
+    await page.getByTestId('description').fill(descriptionText)
+  }
 
   if (action === 'submit') {
     void page.getByTestId('form-submit').click()
@@ -72,17 +64,7 @@ async function createCertificate(
   const responseData = await responseFromClick.json()
 
   await assertSuccessNotification(page, expectedNotification)
-
-  const header = page.getByTestId('assignment-header')
-  await expect(header).toHaveText(nameText)
-  await expect(page.getByText(descriptionText, { exact: true })).toBeVisible()
-
-  const attachment = await page.getByTestId('fixture1.pdf').allTextContents()
-  expect(attachment[0]).toContain('fixture1.pdf')
-
-  await testAttachmentLink(page, context, 'fixture1.pdf', 323)
-
-  await expect(page.getByText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos', { exact: true })).toBeVisible()
+  await assertContentPage(page, context, exam, action, nameText, descriptionText, attachment1)
 
   return { id: responseData.id, nameFromCreate: nameText }
 }
@@ -90,6 +72,7 @@ async function createCertificate(
 async function updateCertificate(
   page: Page,
   context: BrowserContext,
+  exam: Exam,
   expectedCurrentName: string,
   action: FormAction,
   expectedNotification: string
@@ -105,7 +88,12 @@ async function updateCertificate(
   const descriptionText = 'Todistuksen kuvaus päivitetty'
 
   await page.getByTestId('name').fill(nameText)
-  await page.getByTestId('description').fill(descriptionText)
+
+  if (exam === Exam.LD) {
+    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '9')
+  } else {
+    await page.getByTestId('description').fill(descriptionText)
+  }
 
   await selectAttachmentFile(page, 'fixture2.pdf')
 
@@ -115,17 +103,7 @@ async function updateCertificate(
     await page.getByTestId('form-draft').click()
   }
   await assertSuccessNotification(page, expectedNotification)
-
-  const contentPageHeader = page.getByTestId('assignment-header')
-  const name = page.getByTestId('certificate-name')
-  const description = page.getByTestId('certificate-description')
-
-  await expect(contentPageHeader).toHaveText(nameText)
-  await expect(name).toHaveText(nameText)
-  await expect(description).toHaveText(descriptionText)
-  await expect(page.getByText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos', { exact: true })).toBeVisible()
-
-  await testAttachmentLink(page, context, 'fixture2.pdf', 331)
+  await assertContentPage(page, context, exam, action, nameText, descriptionText, attachment2)
 
   return nameText
 }
@@ -138,18 +116,18 @@ async function deleteCertificate(page: Page, certificateId: string, exam: string
   await page.getByTestId('modal-button-delete').click()
 
   await assertSuccessNotification(page, 'todistuksen-poisto.onnistui')
-
   // expect not to find the deleted certificate from a list
   await expect(page.getByTestId(`certificate-${certificateId}`)).toBeHidden()
 
-  await page.goto(`/${exam}/todistukset/${certificateId}`)
+  await page.goto(`/${exam.toLowerCase()}/todistukset/${certificateId}`)
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 
-async function createPublishedAndUpdateAndDelete(page: Page, context: BrowserContext, exam: string) {
+async function createPublishedAndUpdateAndDelete(page: Page, context: BrowserContext, exam: Exam) {
   const { id, nameFromCreate } = await createCertificate(
     page,
     context,
+    exam,
     'submit',
     'form.notification.todistuksen-tallennus.julkaisu-onnistui'
   )
@@ -157,6 +135,7 @@ async function createPublishedAndUpdateAndDelete(page: Page, context: BrowserCon
   const nameFromUpdate = await updateCertificate(
     page,
     context,
+    exam,
     nameFromCreate,
     'draft',
     'form.notification.todistuksen-tallennus.palautettu-luonnostilaan'
@@ -165,6 +144,7 @@ async function createPublishedAndUpdateAndDelete(page: Page, context: BrowserCon
   const nameFromUpdate2 = await updateCertificate(
     page,
     context,
+    exam,
     nameFromUpdate,
     'draft',
     'form.notification.todistuksen-tallennus.onnistui'
@@ -173,6 +153,7 @@ async function createPublishedAndUpdateAndDelete(page: Page, context: BrowserCon
   await updateCertificate(
     page,
     context,
+    exam,
     nameFromUpdate2,
     'submit',
     'form.notification.todistuksen-tallennus.julkaisu-onnistui'
@@ -181,10 +162,11 @@ async function createPublishedAndUpdateAndDelete(page: Page, context: BrowserCon
   await deleteCertificate(page, id, exam)
 }
 
-async function createDraftAndUpdateAndDelete(page: Page, context: BrowserContext, exam: string) {
+async function createDraftAndUpdateAndDelete(page: Page, context: BrowserContext, exam: Exam) {
   const { id, nameFromCreate } = await createCertificate(
     page,
     context,
+    exam,
     'draft',
     'form.notification.todistuksen-tallennus.luonnos-onnistui'
   )
@@ -192,6 +174,7 @@ async function createDraftAndUpdateAndDelete(page: Page, context: BrowserContext
   const nameFromUpdate = await updateCertificate(
     page,
     context,
+    exam,
     nameFromCreate,
     'submit',
     'form.notification.todistuksen-tallennus.julkaisu-onnistui'
@@ -200,6 +183,7 @@ async function createDraftAndUpdateAndDelete(page: Page, context: BrowserContext
   const nameFromUpdate2 = await updateCertificate(
     page,
     context,
+    exam,
     nameFromUpdate,
     'submit',
     'form.notification.todistuksen-tallennus.onnistui'
@@ -208,6 +192,7 @@ async function createDraftAndUpdateAndDelete(page: Page, context: BrowserContext
   await updateCertificate(
     page,
     context,
+    exam,
     nameFromUpdate2,
     'draft',
     'form.notification.todistuksen-tallennus.palautettu-luonnostilaan'
@@ -223,10 +208,11 @@ async function cancelCreatingCertificate(page: Page) {
   await expect(page.getByTestId('create-todistus-button')).toBeVisible()
 }
 
-async function cancelUpdatingCertificate(page: Page, context: BrowserContext) {
+async function cancelUpdatingCertificate(page: Page, context: BrowserContext, exam: Exam) {
   const { nameFromCreate } = await createCertificate(
     page,
     context,
+    exam,
     'submit',
     'form.notification.todistuksen-tallennus.julkaisu-onnistui'
   )
@@ -243,14 +229,13 @@ async function cancelUpdatingCertificate(page: Page, context: BrowserContext) {
 }
 
 loginTestGroup(test, Role.YLLAPITAJA)
-
-examsLowerCase.forEach((exam) => {
+Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} certificate form tests`, () => {
     test.beforeEach(async ({ page }) => {
       await page.goto('/')
       await page.getByTestId('header-language-dropdown-expand').click()
       await page.getByText('Näytä avaimet').click()
-      await page.getByTestId(`nav-link-${exam}`).click()
+      await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
       await page.getByTestId('tab-todistukset').click()
       await page.getByTestId('create-todistus-button').click()
     })
@@ -259,8 +244,8 @@ examsLowerCase.forEach((exam) => {
       await createPublishedAndUpdateAndDelete(page, context, exam))
     test(`can create, update and delete a new draft ${exam} certificate`, async ({ page, context }) =>
       await createDraftAndUpdateAndDelete(page, context, exam))
-    test(`can cancel ${exam} certificate creation`, async ({ page, context }) => await cancelCreatingCertificate(page))
+    test(`can cancel ${exam} certificate creation`, async ({ page }) => await cancelCreatingCertificate(page))
     test(`can cancel ${exam} certificate update`, async ({ page, context }) =>
-      await cancelUpdatingCertificate(page, context))
+      await cancelUpdatingCertificate(page, context, exam))
   })
 })

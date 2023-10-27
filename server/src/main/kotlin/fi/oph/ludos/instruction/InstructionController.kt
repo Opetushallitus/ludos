@@ -33,7 +33,8 @@ class InstructionController(val service: InstructionService, private val objectM
 
         if (nonNullAttachments.size != nonNullAttachmentsMetadata.size) {
             throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "Got ${nonNullAttachments.size} attachments, but ${nonNullAttachmentsMetadata.size} metadata"
+                HttpStatus.BAD_REQUEST,
+                "Got ${nonNullAttachments.size} attachments, but ${nonNullAttachmentsMetadata.size} metadata"
             )
         }
 
@@ -77,7 +78,7 @@ class InstructionController(val service: InstructionService, private val objectM
     fun getInstructions(
         @PathVariable exam: Exam,
         @Valid filters: InstructionFilters
-    ): InstructionsOut = InstructionsOut(service.getInstructions(exam, filters))
+    ): InstructionListDtoOut = service.getInstructions(exam, filters)
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole

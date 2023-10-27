@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { AttachmentData, ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../../types'
@@ -15,6 +15,7 @@ import { NotificationEnum, useNotification } from '../../contexts/NotificationCo
 import { contentListPath, contentPagePath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { FormAineDropdown } from './formCommon/FormAineDropdown'
 
 type CertificateFormProps = {
   action: ContentFormAction
@@ -37,13 +38,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const {
-    watch,
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors }
-  } = useForm<CertificateFormType>({
+  const methods = useForm<CertificateFormType>({
     defaultValues: isUpdate
       ? async () => fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
       : {
@@ -52,6 +47,14 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     mode: 'onBlur',
     resolver: zodResolver(certificateSchema)
   })
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors }
+  } = methods
 
   const watchName = watch('name')
   const watchAttachment = watch('attachment')
@@ -167,31 +170,39 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         heading={action === ContentFormAction.uusi ? t('form.otsikkotodistus') : watchName}
         description={action === ContentFormAction.uusi ? t('form.kuvaustodistus') : t('form.muokkauskuvaus')}
       />
-      <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
-        <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+      <FormProvider {...methods}>
+        <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+          {exam === Exam.LD && <FormAineDropdown />}
 
-        <TextInput id="name" register={register} required error={!!nameError}>
-          {t('form.todistuksennimi')}
-        </TextInput>
-        <FormError error={nameError} />
+          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-        <TextAreaInput id="description" register={register} required error={!!contentError}>
-          {t('form.todistuksenkuvaus')}
-        </TextAreaInput>
-        <FormError error={contentError} />
+          <TextInput id="name" register={register} required error={!!nameError}>
+            {t('form.todistuksennimi')}
+          </TextInput>
+          <FormError error={nameError} />
 
-        <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
-        <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
+          {exam !== Exam.LD && (
+            <>
+              <TextAreaInput id="description" register={register} required error={!!contentError}>
+                {t('form.todistuksenkuvaus')}
+              </TextAreaInput>
+              <FormError error={contentError} />
+            </>
+          )}
 
-        <AttachmentSelector
-          contentType={ContentType.todistukset}
-          attachmentData={currentAttachment()}
-          handleNewAttachmentSelected={handleNewAttachmentSelected}
-          language="fi"
-        />
+          <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
+          <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
-        <FormError error={fileError} />
-      </form>
+          <AttachmentSelector
+            contentType={ContentType.todistukset}
+            attachmentData={currentAttachment()}
+            handleNewAttachmentSelected={handleNewAttachmentSelected}
+            language="fi"
+          />
+
+          <FormError error={fileError} />
+        </form>
+      </FormProvider>
 
       <FormButtonRow
         actions={{

@@ -10,9 +10,14 @@ export const instructionSchema = z
     nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
     contentFi: z.string().default(''),
     contentSv: z.string().default(''),
-    shortDescriptionFi: z.string(),
-    shortDescriptionSv: z.string(),
-    nameRequired: z.custom()
+    shortDescriptionFi: z.string().optional(),
+    shortDescriptionSv: z.string().optional(),
+    nameRequired: z.custom(),
+    aineKoodiArvo: z.string().optional()
+  })
+  .refine((data) => !(data.exam === 'LD' && !data.aineKoodiArvo), {
+    message: ErrorMessages.REQUIRED,
+    path: ['aineKoodiArvo']
   })
   .superRefine(commonSuperRefine)
 

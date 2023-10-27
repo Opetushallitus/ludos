@@ -21,9 +21,14 @@ class InstructionService(val repository: InstructionRepository, val s3Helper: S3
 
     fun updateInstruction(
         id: Int, instruction: Instruction, attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
-    ): Int? = repository.updateInstruction(id, instruction, attachmentsMetadata)
+    ): Int? = when (instruction) {
+        is SukoInstructionDtoIn -> repository.updateSukoInstruction(id, instruction, attachmentsMetadata)
+        is LdInstructionDtoIn -> repository.updateLdInstruction(id, instruction, attachmentsMetadata)
+        is PuhviInstructionDtoIn -> repository.updatePuhviInstruction(id, instruction, attachmentsMetadata)
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid instruction type")
+    }
 
-    fun getInstructions(exam: Exam, filters: InstructionFilters): List<InstructionDtoOut> =
+    fun getInstructions(exam: Exam, filters: InstructionFilters): InstructionListDtoOut =
         repository.getInstructions(exam, filters)
 
     fun getInstructionById(exam: Exam, id: Int): InstructionOut? = repository.getInstructionById(exam, id)
@@ -33,8 +38,7 @@ class InstructionService(val repository: InstructionRepository, val s3Helper: S3
         instructionId: Int,
         metadata: InstructionAttachmentMetadataDtoIn,
         file: MultipartFile
-    ) =
-        repository.uploadAttachmentToInstruction(exam, instructionId, metadata, file)
+    ) = repository.uploadAttachmentToInstruction(exam, instructionId, metadata, file)
 
     fun deleteAttachmentFromInstruction(fileKey: String) = repository.deleteAttachment(fileKey)
 

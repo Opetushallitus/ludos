@@ -1,12 +1,12 @@
 import { useFetch } from '../../../../hooks/useFetch'
 import {
   AssignmentOut,
-  ContentOut,
   ContentType,
   ContentTypeSingular,
   ContentTypeSingularEng,
   Exam,
   InstructionDtoOut,
+  InstructionsOut,
   TeachingLanguage
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
@@ -21,6 +21,11 @@ import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { ListError } from '../ListError'
 import { useTranslation } from 'react-i18next'
+import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
+import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../../ludosSelect/helpers'
+import { sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
+import { useCallback } from 'react'
+import { MultiValue } from 'react-select'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -37,19 +42,35 @@ type InstructionListProps = {
   filterValues: FilterValues
 }
 
-export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValues }: InstructionListProps) => {
+export const InstructionList = ({
+  exam,
+  teachingLanguageSelectProps,
+  filterValues: { filterValues, setFilterValue }
+}: InstructionListProps) => {
   const { isYllapitaja } = useUserDetails()
   const { t } = useTranslation()
+  const { koodistos } = useKoodisto()
 
   const singularActiveTab = ContentTypeSingular[ContentType.ohjeet]
 
   const contentType = ContentType.ohjeet
-  const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
+  const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
-  const { DataWrapper } = useFetch<ContentOut<InstructionDtoOut>>(
+  const { DataWrapper } = useFetch<InstructionsOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
+  )
+
+  const handleMultiselectFilterChange = useCallback(
+    (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
+      setFilterValue(
+        key,
+        value.map((it) => it.value),
+        true
+      )
+    },
+    [setFilterValue]
   )
 
   const teachingLanguage = teachingLanguageSelectProps.teachingLanguage
@@ -74,11 +95,27 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
           </div>
 
           <ContentOrderFilter
-            contentOrder={filterValues.filterValues.jarjesta}
-            setContentOrder={(contentOrder) => filterValues.setFilterValue('jarjesta', contentOrder, true)}
+            contentOrder={filterValues.jarjesta}
+            setContentOrder={(contentOrder) => setFilterValue('jarjesta', contentOrder, true)}
           />
         </div>
       </div>
+      {exam === Exam.LD && (
+        <div className="border border-gray-light bg-gray-bg">
+          <p className="px-2 py-1">{t('filter.ohjeet.otsikko')}</p>
+          <div className="w-full p-2 md:w-3/12">
+            <p>{t('filter.aine')}</p>
+            <LudosSelect
+              name="aineFilter"
+              options={koodistoSelectOptions(sortKooditAlphabetically(Object.values(koodistos.ludoslukiodiplomiaine)))}
+              value={currentKoodistoSelectOptions(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
+              onChange={(opt) => handleMultiselectFilterChange('aine', opt)}
+              isMulti
+              isSearchable
+            />
+          </div>
+        </div>
+      )}
 
       <DataWrapper
         errorEl={<ListError contentType={contentType} />}

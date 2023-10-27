@@ -100,6 +100,7 @@ export function LudosSelect<
   return (
     <Select
       id={props.name}
+      instanceId={props.name}
       inputId={`${props.name}-input`}
       classNamePrefix="ludos-select"
       classNames={{

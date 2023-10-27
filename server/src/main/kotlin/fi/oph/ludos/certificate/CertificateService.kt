@@ -16,15 +16,24 @@ import java.io.InputStream
 class CertificateService(val repository: CertificateRepository, val s3Helper: S3Helper) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun getCertificates(exam: Exam): List<CertificateDtoOut> = repository.getCertificates(exam)
+    fun getCertificates(exam: Exam): List<CertificateOut> = repository.getCertificates(exam)
 
-    fun createCertificate(certificate: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut =
-        repository.createCertificate(certificate, attachment)
+    fun createCertificate(certificate: Certificate, attachment: MultipartFile): CertificateOut = when (certificate) {
+        is SukoCertificateDtoIn -> repository.createSukoCertificate(attachment, certificate)
+        is PuhviCertificateDtoIn -> repository.createPuhviCertificate(attachment, certificate)
+        is LdCertificateDtoIn -> repository.createLdCertificate(attachment, certificate)
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+    }
 
-    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? = repository.getCertificateById(id, exam)
+    fun getCertificateById(id: Int, exam: Exam): CertificateOut? = repository.getCertificateById(id, exam)
 
-    fun updateCertificate(id: Int, certificate: CertificateDtoIn, attachment: MultipartFile?): Int? =
-        repository.updateCertificate(id, certificate, attachment)
+    fun updateCertificate(id: Int, certificateDtoIn: Certificate, attachment: MultipartFile?): Int? =
+        when (certificateDtoIn) {
+            is SukoCertificateDtoIn -> repository.updateSukoCertificate(id, certificateDtoIn, attachment)
+            is LdCertificateDtoIn -> repository.updateLdCertificate(id, certificateDtoIn, attachment)
+            is PuhviCertificateDtoIn -> repository.updatePuhviCertificate(id, certificateDtoIn, attachment)
+            else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+        }
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(

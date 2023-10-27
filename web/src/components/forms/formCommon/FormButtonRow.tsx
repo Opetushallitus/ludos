@@ -51,7 +51,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
 
   return (
     <div className="row mt-4 justify-center md:justify-between flex-wrap-reverse">
-      <div className="flex md:w-1/2">
+      <div className="flex md:w-1/3">
         {state.isUpdate && (
           <Button
             variant="buttonDanger"
@@ -62,7 +62,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           </Button>
         )}
       </div>
-      <div className="flex justify-center flex-wrap-reverse gap-4 py-2 md:py-0 md:w-1/2 md:justify-end">
+      <div className="flex justify-center flex-wrap-reverse gap-4 py-2 md:py-0 md:w-2/3 md:justify-end">
         <Button
           variant="buttonGhost"
           // fixme: voiko tästä tulla ongelmia jos joku navigoi /uusi sivulle suoraan eri sivustolta?

@@ -1,15 +1,15 @@
 import {
   AssignmentOut,
   BaseOut,
-  CertificateDtoOut,
   ContentType,
   Exam,
-  InstructionDtoOut,
   LdAssignmentDtoOut,
   PuhviAssignmentDtoOut,
   SukoAssignmentDtoOut,
   TeachingLanguage
 } from '../types'
+import { isInstruction } from './instructionUtils'
+import { isCertificate } from './certificateUtils'
 
 // exam type checkers
 export const assertPuhviOrLdAssignment = (
@@ -33,19 +33,6 @@ export const isLdAssignment = (assignment: AssignmentOut, exam: Exam): assignmen
 // content type checkers
 export const isAssignment = (data: BaseOut, contentType: ContentType): data is AssignmentOut =>
   contentType === ContentType.koetehtavat
-export const isInstruction = (data: BaseOut, contentType: ContentType): data is InstructionDtoOut =>
-  contentType === ContentType.ohjeet
-export const isCertificate = (data: BaseOut, contentType: ContentType): data is CertificateDtoOut =>
-  contentType === ContentType.todistukset
-
-export const isAssignmentsArr = (data: BaseOut[], contentType: ContentType): data is AssignmentOut[] =>
-  data.every((item) => isAssignment(item, contentType))
-
-export const isInstructionsArr = (data: BaseOut[], contentType: ContentType): data is InstructionDtoOut[] =>
-  data.every((item) => isInstruction(item, contentType))
-
-export const isCertificatesArr = (data: BaseOut[], contentType: ContentType): data is CertificateDtoOut[] =>
-  data.every((item) => isCertificate(item, contentType))
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript

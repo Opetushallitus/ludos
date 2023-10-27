@@ -51,7 +51,7 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
         render={(data) => (
           <ul className="mt-3 flex flex-wrap gap-5">
             {data.content.map((certificate, i) => (
-              <CertificateCard certificate={certificate} key={`${exam}-${contentType}-${i}`} />
+              <CertificateCard exam={exam} certificate={certificate} key={`${exam}-${contentType}-${i}`} />
             ))}
           </ul>
         )}

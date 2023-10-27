@@ -1,6 +1,6 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
-  koodiNimi,
+  koodiLabel,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
@@ -101,15 +101,6 @@ async function oppimaaraLabel(oppimaara: Oppimaara) {
     return `${oppimaaraKoodiArvoLabel}, ${kielitarjontaKoodiArvoLabel}`
   } else {
     return oppimaaraKoodiArvoLabel
-  }
-}
-
-async function koodiLabel(koodistoName: KoodistoName, koodiArvos: string | string[]): Promise<string> {
-  if (typeof koodiArvos === 'string') {
-    return koodiNimi(koodistoName, koodiArvos)
-  } else {
-    const labels = await Promise.all(koodiArvos.map((ka) => koodiLabel(koodistoName, ka)))
-    return labels.sort().join(', ')
   }
 }
 

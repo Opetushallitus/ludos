@@ -6,10 +6,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fi.oph.ludos.*
+import fi.oph.ludos.koodisto.KoodistoName
+import fi.oph.ludos.koodisto.ValidKoodiArvo
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import jakarta.validation.Payload
+import jakarta.validation.constraints.Pattern
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
 import java.time.ZonedDateTime
@@ -23,6 +26,8 @@ import kotlin.reflect.KClass
 )
 @AtLeastOneInstructionNameIsNotBlank
 interface Instruction {
+    val exam: Exam
+
     @get:ValidContentName
     val nameFi: String
 
@@ -35,12 +40,8 @@ interface Instruction {
     @get:ValidHtmlContent
     val contentSv: String
 
-    @get:ValidContentDescription
-    val shortDescriptionFi: String
-
-    @get:ValidContentDescription
-    val shortDescriptionSv: String
     val publishState: PublishState
+
 }
 
 @JsonTypeName("SUKO")
@@ -49,20 +50,12 @@ data class SukoInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val shortDescriptionFi: String,
-    override val shortDescriptionSv: String,
+    @field:ValidContentDescription
+    val shortDescriptionFi: String,
+    @field:ValidContentDescription
+    val shortDescriptionSv: String,
     override val publishState: PublishState,
-) : Instruction
-
-@JsonTypeName("PUHVI")
-data class PuhviInstructionDtoIn(
-    override val nameFi: String,
-    override val nameSv: String,
-    override val contentFi: String,
-    override val contentSv: String,
-    override val shortDescriptionFi: String,
-    override val shortDescriptionSv: String,
-    override val publishState: PublishState,
+    override val exam: Exam = Exam.SUKO
 ) : Instruction
 
 @JsonTypeName("LD")
@@ -71,9 +64,24 @@ data class LdInstructionDtoIn(
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val shortDescriptionFi: String,
-    override val shortDescriptionSv: String,
     override val publishState: PublishState,
+    @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
+    val aineKoodiArvo: String,
+    override val exam: Exam = Exam.LD
+) : Instruction
+
+@JsonTypeName("PUHVI")
+data class PuhviInstructionDtoIn(
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    @field:ValidContentDescription
+    val shortDescriptionFi: String,
+    @field:ValidContentDescription
+    val shortDescriptionSv: String,
+    override val publishState: PublishState,
+    override val exam: Exam = Exam.PUHVI
 ) : Instruction
 
 interface InstructionAttachmentMetadata {
@@ -108,15 +116,15 @@ data class InstructionAttachmentDtoOut(
     override val language: Language
 ) : AttachmentOut, InstructionAttachmentMetadata
 
-data class InstructionDtoOut(
+data class SukoOrPuhviInstructionDtoOut(
     override val id: Int,
     override val exam: Exam,
     override val nameFi: String,
     override val nameSv: String,
     override val contentFi: String,
     override val contentSv: String,
-    override val shortDescriptionFi: String,
-    override val shortDescriptionSv: String,
+    val shortDescriptionFi: String,
+    val shortDescriptionSv: String,
     override val publishState: PublishState,
     val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
@@ -124,13 +132,35 @@ data class InstructionDtoOut(
     override val updatedAt: Timestamp
 ) : Instruction, InstructionOut
 
-data class InstructionsOut(
-    val content: List<InstructionDtoOut>
+data class LdInstructionDtoOut(
+    override val id: Int,
+    override val exam: Exam,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val contentFi: String,
+    override val contentSv: String,
+    override val publishState: PublishState,
+    val aineKoodiArvo: String,
+    val attachments: List<InstructionAttachmentDtoOut>,
+    override val authorOid: String,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp
+) : Instruction, InstructionOut
+
+data class InstructionFilterOptionsDtoOut(
+    val aine: List<String>? = null,
+)
+
+data class InstructionListDtoOut(
+    val content: List<InstructionOut>,
+    val instructionFilterOptions: InstructionFilterOptionsDtoOut
 )
 
 data class InstructionFilters(
     override val jarjesta: String?,
-    override val sivu: Int = 1
+    override val sivu: Int = 1,
+    @field:Pattern(regexp = "^[0-9,]+\$")
+    val aine: String?
 ) : BaseFilters
 
 @Target(AnnotationTarget.CLASS)

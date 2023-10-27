@@ -23,19 +23,25 @@ class CertificateController(val service: CertificateService) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun createCertificate(
-        @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
+        @Valid @RequestPart("certificate") certificate: Certificate,
         @RequestPart("attachment") attachment: MultipartFile
-    ): CertificateDtoOut? = service.createCertificate(certificate, attachment)
+    ): Certificate = service.createCertificate(certificate, attachment)
 
-    @GetMapping("/{exam}")
+    @GetMapping("SUKO")
     @RequireAtLeastOpettajaRole
-    fun getCertificates(
-        @PathVariable exam: Exam
-    ): CertificatesOut = CertificatesOut(service.getCertificates(exam))
+    fun getSukoCertificates(): CertificatesOut = CertificatesOut(service.getCertificates(Exam.SUKO))
+
+    @GetMapping("PUHVI")
+    @RequireAtLeastOpettajaRole
+    fun getPuhviCertificates(): CertificatesOut = CertificatesOut(service.getCertificates(Exam.PUHVI))
+
+    @GetMapping("LD")
+    @RequireAtLeastOpettajaRole
+    fun getLdCertificates(): CertificatesOut = CertificatesOut(service.getCertificates(Exam.LD))
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole
-    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateDtoOut? {
+    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? {
         val certificateDtoOut = service.getCertificateById(id, exam)
 
         return certificateDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
@@ -45,7 +51,7 @@ class CertificateController(val service: CertificateService) {
     @RequireAtLeastYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int,
-        @Valid @RequestPart("certificate") certificate: CertificateDtoIn,
+        @Valid @RequestPart("certificate") certificate: Certificate,
         @RequestPart("attachment") attachment: MultipartFile?
     ): Int? = service.updateCertificate(id, certificate, attachment)
 

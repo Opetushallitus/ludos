@@ -8,12 +8,9 @@ import { FormError } from './formCommon/FormErrors'
 import { FormContentInput } from './formCommon/FormContentInput'
 import { FormHeader } from './formCommon/FormHeader'
 import { useAssignmentForm } from '../../hooks/useAssignmentForm'
-import {
-  currentKoodistoSelectOption,
-  currentKoodistoSelectOptions,
-  koodistoSelectOptions
-} from '../ludosSelect/helpers'
+import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
 import { LudosSelect } from '../ludosSelect/LudosSelect'
+import { FormAineDropdown } from './formCommon/FormAineDropdown'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -30,15 +27,12 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   )
   const {
     watch,
-    setValue,
-    clearErrors,
     formState: { errors }
   } = methods
 
   const currentNameFi = watch('nameFi')
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
-  const currentAine = watch('aineKoodiArvo')
   const watchPublishState = watch('publishState')
 
   return (
@@ -63,24 +57,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
             <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>
 
-          <fieldset className="mb-6">
-            <FieldLabel id="aineKoodiArvo" name={t('form.aine')} required />
-            <LudosSelect
-              name="aineKoodiArvo"
-              options={koodistoSelectOptions(sortKooditAlphabetically(Object.values(koodistos.ludoslukiodiplomiaine)))}
-              value={currentKoodistoSelectOption(currentAine, koodistos.ludoslukiodiplomiaine)}
-              onChange={(opt) => {
-                if (!opt) {
-                  return
-                }
-                setValue('aineKoodiArvo', opt.value)
-                clearErrors('aineKoodiArvo')
-              }}
-              isSearchable
-              error={!!errors.aineKoodiArvo}
-            />
-            <FormError error={errors.aineKoodiArvo?.message} />
-          </fieldset>
+          <FormAineDropdown />
 
           <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />

@@ -6,7 +6,6 @@ import {
   ContentTypeSingular,
   ContentTypeSingularEng,
   Exam,
-  InstructionDtoOut,
   TeachingLanguage
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
@@ -26,7 +25,7 @@ import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { ListError } from '../ListError'
 
-const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
+const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
     return data.nameFi !== ''
   } else if (teachingLanguage === TeachingLanguage.sv) {

@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
 import {
@@ -35,6 +35,7 @@ import { contentListPath, contentPagePath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { LudosContext } from '../../contexts/LudosContext'
+import { FormAineDropdown } from './formCommon/FormAineDropdown'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -77,13 +78,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const {
-    watch,
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors }
-  } = useForm<InstructionFormType>({
+  const methods = useForm<InstructionFormType>({
     defaultValues: isUpdate
       ? async (): Promise<InstructionFormType> => {
           const instruction = await fetchData<InstructionDtoOut>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
@@ -99,6 +94,14 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     mode: 'onBlur',
     resolver: zodResolver(instructionSchema)
   })
+
+  const {
+    watch,
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors }
+  } = methods
 
   const watchNameFi = watch('nameFi')
   const watchNameSv = watch('nameSv')
@@ -293,99 +296,106 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         heading={action === ContentFormAction.uusi ? t('form.otsikkoohje') : watchNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvausohje') : t('form.muokkauskuvaus')}
       />
+      <FormProvider {...methods}>
+        <form
+          className="min-h-[50vh] border-y-2 border-gray-light py-5"
+          id="newAssignment"
+          onSubmit={(e) => e.preventDefault()}>
+          <input type="hidden" {...register('exam')} />
 
-      <form
-        className="min-h-[50vh] border-y-2 border-gray-light py-5"
-        id="newAssignment"
-        onSubmit={(e) => e.preventDefault()}>
-        <input type="hidden" {...register('exam')} />
+          {exam === Exam.LD && <FormAineDropdown />}
 
-        <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+          <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-        <div className="mb-6">
-          <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        </div>
-
-        <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
-          <TextInput
-            id="nameFi"
-            register={register}
-            deps={['nameRequired']}
-            error={!!nameFiError || !!instructionNameError}
-            required>
-            {t('form.ohjeennimi')}
-          </TextInput>
-          <FormError error={nameFiError || instructionNameError} />
-
-          <TipTap
-            onContentChange={handleContentChange}
-            content={watchContentFi}
-            label={t('form.ohjeensisalto')}
-            dataTestId="editor-content-fi"
-            key={`content-fi-${isLoaded ? 'loaded' : 'not-loaded'}`}
-          />
-
-          <div className="mb-3 mt-6">
-            <TextInput id="shortDescriptionFi" register={register}>
-              {t('form.lyhyt-kuvaus')}
-            </TextInput>
+          <div className="mb-6">
+            <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
-          <label className="font-semibold">{t('form.tiedostot')}</label>
-          <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
-          <AttachmentSelector
-            contentType={ContentType.ohjeet}
-            language="fi"
-            attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
-            handleNewAttachmentSelected={handleNewAttachmentSelected}
-            handleNewAttachmentName={handleAttachmentNameChange}
-            deleteFileByIndex={deleteFileByIndex}
-          />
-        </div>
-
-        <div className={`${activeTab === TeachingLanguage.sv ? '' : 'hidden'}`}>
-          <TextInput
-            id="nameSv"
-            register={register}
-            deps={['nameRequired']}
-            error={!!nameSvError || !!instructionNameError}
-            required>
-            {t('form.ohjeennimi')}
-          </TextInput>
-          <FormError error={nameSvError || instructionNameError} />
-
-          <TipTap
-            onContentChange={handleContentChange}
-            content={watchContentSv}
-            label={t('form.ohjeensisalto')}
-            dataTestId="editor-content-sv"
-            key={`content-sv-${isLoaded ? 'loaded' : 'not-loaded'}`}
-          />
-
-          <div className="mb-3 mt-6">
-            <TextInput id="shortDescriptionSv" register={register}>
-              {t('form.lyhyt-kuvaus')}
+          <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
+            <TextInput
+              id="nameFi"
+              register={register}
+              deps={['nameRequired']}
+              error={!!nameFiError || !!instructionNameError}
+              required>
+              {t('form.ohjeennimi')}
             </TextInput>
+            <FormError error={nameFiError || instructionNameError} />
+
+            <TipTap
+              onContentChange={handleContentChange}
+              content={watchContentFi}
+              label={t('form.ohjeensisalto')}
+              dataTestId="editor-content-fi"
+              key={`content-fi-${isLoaded ? 'loaded' : 'not-loaded'}`}
+            />
+
+            {exam !== Exam.LD && (
+              <div className="mb-3 mt-6">
+                <TextInput id="shortDescriptionFi" register={register}>
+                  {t('form.lyhyt-kuvaus')}
+                </TextInput>
+              </div>
+            )}
+
+            <label className="font-semibold">{t('form.tiedostot')}</label>
+            <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
+            <AttachmentSelector
+              contentType={ContentType.ohjeet}
+              language="fi"
+              attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
+              handleNewAttachmentSelected={handleNewAttachmentSelected}
+              handleNewAttachmentName={handleAttachmentNameChange}
+              deleteFileByIndex={deleteFileByIndex}
+            />
           </div>
 
-          <label className="font-semibold">{t('form.tiedostot')}</label>
-          <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
-          <AttachmentSelector
-            contentType={ContentType.ohjeet}
-            language="sv"
-            attachmentData={attachmentDataSv}
-            handleNewAttachmentSelected={handleNewAttachmentSelected}
-            handleNewAttachmentName={handleAttachmentNameChange}
-            deleteFileByIndex={deleteFileByIndex}
-          />
-        </div>
+          <div className={`${activeTab === TeachingLanguage.sv ? '' : 'hidden'}`}>
+            <TextInput
+              id="nameSv"
+              register={register}
+              deps={['nameRequired']}
+              error={!!nameSvError || !!instructionNameError}
+              required>
+              {t('form.ohjeennimi')}
+            </TextInput>
+            <FormError error={nameSvError || instructionNameError} />
 
-        {fileUploadErrorMessage && (
-          <p className="ml-2 text-red-primary" data-testid="file-upload-error-message">
-            {fileUploadErrorMessage}
-          </p>
-        )}
-      </form>
+            <TipTap
+              onContentChange={handleContentChange}
+              content={watchContentSv}
+              label={t('form.ohjeensisalto')}
+              dataTestId="editor-content-sv"
+              key={`content-sv-${isLoaded ? 'loaded' : 'not-loaded'}`}
+            />
+
+            {exam !== Exam.LD && (
+              <div className="mb-3 mt-6">
+                <TextInput id="shortDescriptionSv" register={register}>
+                  {t('form.lyhyt-kuvaus')}
+                </TextInput>
+              </div>
+            )}
+
+            <label className="font-semibold">{t('form.tiedostot')}</label>
+            <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
+            <AttachmentSelector
+              contentType={ContentType.ohjeet}
+              language="sv"
+              attachmentData={attachmentDataSv}
+              handleNewAttachmentSelected={handleNewAttachmentSelected}
+              handleNewAttachmentName={handleAttachmentNameChange}
+              deleteFileByIndex={deleteFileByIndex}
+            />
+          </div>
+
+          {fileUploadErrorMessage && (
+            <p className="ml-2 text-red-primary" data-testid="file-upload-error-message">
+              {fileUploadErrorMessage}
+            </p>
+          )}
+        </form>
+      </FormProvider>
 
       <FormButtonRow
         actions={{

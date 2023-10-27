@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import { BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
-import { isAssignment, isCertificate, isInstruction } from '../../utils/assignmentUtils'
+import { isAssignment } from '../../utils/assignmentUtils'
 import { ContentHeader } from './ContentCommon'
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
@@ -15,6 +15,8 @@ import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
+import { isCertificate } from '../../utils/certificateUtils'
+import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
 
 type ContentProps = {
@@ -71,6 +73,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                       </InternalLink>
                     </div>
                   )}
+
+                  <div className="mb-4 border-b border-gray-separator mt-2" />
+
                   {contentType && isAssignment(data, contentType) && (
                     <AssignmentContent
                       assignment={data}
@@ -80,7 +85,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                     />
                   )}
 
-                  {contentType && isCertificate(data, contentType) && <CertificateContent certificate={data} />}
+                  {contentType && isCertificate(data, contentType) && (
+                    <CertificateContent exam={exam} certificate={data} />
+                  )}
 
                   {contentType && isInstruction(data, contentType) && (
                     <InstructionContent

@@ -120,3 +120,12 @@ export async function assertInputValues(page: Page, inputName: string, expectedV
   const values = await Promise.all(locators.map((l) => l.inputValue()))
   expect(values.sort()).toEqual(expectedValues.slice().sort())
 }
+
+export async function koodiLabel(koodistoName: KoodistoName, koodiArvos: string | string[]): Promise<string> {
+  if (typeof koodiArvos === 'string') {
+    return koodiNimi(koodistoName, koodiArvos)
+  } else {
+    const labels = await Promise.all(koodiArvos.map((ka) => koodiLabel(koodistoName, ka)))
+    return labels.sort().join(', ')
+  }
+}
