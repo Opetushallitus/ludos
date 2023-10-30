@@ -42,18 +42,29 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFavoriteCount = async () => {
       try {
-        const [userDetailsResponse, userFavoriteAssignmentCountResponse, koodistosResponse] = await Promise.all([
-          getUserDetails(),
-          getUserFavoriteCount(),
-          i18n.language !== 'keys' && getKoodistos(i18n.language.toUpperCase())
-        ])
+        const userFavoriteAssignmentCountResponse = await getUserFavoriteCount()
+
+        if (userFavoriteAssignmentCountResponse.ok) {
+          setUserFavoriteAssignmentCount(await userFavoriteAssignmentCountResponse.json())
+        } else {
+          console.error('Could not fetch userFavoriteAssignmentCount')
+        }
+      } catch (e) {
+        console.error('Error occurred while fetching userFavoriteAssignmentCount:', e)
+      }
+    }
+
+    const fetchUserDetails = async () => {
+      try {
+        const userDetailsResponse = await getUserDetails()
 
         if (userDetailsResponse.status === 401) {
           setUserDetails(unauthorizedUserDetails)
         } else if (userDetailsResponse.ok) {
           const userDetailsJson: UserDetails = await userDetailsResponse.json()
+
           // set businessLanguage to localStorage if it is not set beforehand
           const validBusinessLanguageOrDefault =
             userDetailsJson.businessLanguage === BusinessLanguage.fi ||
@@ -64,6 +75,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
           if (!localStorage.getItem(ludosUILanguageKey)) {
             void i18n.changeLanguage(validBusinessLanguageOrDefault)
           }
+
           // for first time users set teaching language to be the same as business language
           if (!localStorage.getItem(ludosTeachingLanguageKey)) {
             setTeachingLanguageState(validBusinessLanguageOrDefault)
@@ -73,25 +85,34 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         } else {
           console.error('Could not fetch userDetails')
         }
-
-        if (koodistosResponse && koodistosResponse.ok) {
-          setKoodistos(await koodistosResponse.json())
-        } else {
-          console.error('Could not fetch koodistos')
-        }
-
-        if (userFavoriteAssignmentCountResponse.ok) {
-          setUserFavoriteAssignmentCount(await userFavoriteAssignmentCountResponse.json())
-        } else {
-          console.error('Could not fetch userFavoriteAssignmentCount')
-        }
       } catch (e) {
-        console.error('Error occurred while fetching data:', e)
+        console.error('Error occurred while fetching userDetails:', e)
       }
     }
 
-    void fetchData()
+    void fetchUserDetails()
+    void fetchFavoriteCount()
   }, [i18n])
+
+  useEffect(() => {
+    const fetchKoodistos = async () => {
+      try {
+        if (i18n.language !== 'keys') {
+          const koodistosResponse = await getKoodistos(i18n.language.toUpperCase())
+
+          if (koodistosResponse.ok) {
+            setKoodistos(await koodistosResponse.json())
+          } else {
+            console.error('Could not fetch koodistos')
+          }
+        }
+      } catch (e) {
+        console.error('Error occurred while fetching koodistos:', e)
+      }
+    }
+
+    void fetchKoodistos()
+  }, [i18n.language])
 
   return (
     <LudosContext.Provider

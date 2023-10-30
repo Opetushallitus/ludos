@@ -28,8 +28,12 @@ export const authFileByRole: Record<Role, string> = Object.fromEntries(
   Object.values(Role).map((role) => [role, `.auth/${role}.json`])
 ) as Record<Role, string>
 
-export async function login(page: Page, role: Role) {
-  await page.goto(`/api/test/mocklogin/${role}`)
+export async function login(page: Page, role: Role, asiointiKieli?: string) {
+  const urlParams = new URLSearchParams()
+  if (asiointiKieli) {
+    urlParams.set('asiointiKieli', asiointiKieli)
+  }
+  await page.goto(`/api/test/mocklogin/${role}?${urlParams.toString()}`)
 }
 
 export function loginTestGroup(test: typeof importedTest, role: Role) {
