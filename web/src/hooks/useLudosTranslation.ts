@@ -65,6 +65,11 @@ export const useLudosTranslation = () => {
       [ContentType.ohjeet]: t('instruction.palaa'),
       [ContentType.todistukset]: t('certificate.palaa')
     },
+    contentErrorMessage: {
+      [ContentType.koetehtavat]: t('error.koetehtavan-lataus-epaonnistui'),
+      [ContentType.ohjeet]: t('error.ohjeen-lataus-epaonnistui'),
+      [ContentType.todistukset]: t('error.todistuksen-lataus-epaonnistui')
+    },
     contentListErrorMessage: {
       [ContentType.koetehtavat]: t('error.koetehtavien-lataus-epaonnistui'),
       [ContentType.ohjeet]: t('error.ohjeiden-lataus-epaonnistui'),
