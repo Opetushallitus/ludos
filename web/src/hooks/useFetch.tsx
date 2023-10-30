@@ -28,10 +28,10 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
       } catch (e) {
         if (e instanceof Error) {
           const match = e.message.match(/status=(\d+)/)
-          const status = match ? match[1] : null
+          const status = match ? match[1] : 'unknown_error'
           setError(status)
         } else {
-          setError('500')
+          setError('unknown_exception')
         }
       } finally {
         setLoading(false)
