@@ -113,6 +113,7 @@ export function LudosSelect<
       onMenuOpen={() => setIsOpen(true)}
       onMenuClose={() => setIsOpen(false)}
       isSearchable={false}
+      noOptionsMessage={() => t('filter.ei-tuloksia')}
       {...props}
     />
   )
