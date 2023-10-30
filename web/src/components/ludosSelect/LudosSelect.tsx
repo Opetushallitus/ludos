@@ -112,6 +112,7 @@ export function LudosSelect<
       menuIsOpen={isOpen}
       onMenuOpen={() => setIsOpen(true)}
       onMenuClose={() => setIsOpen(false)}
+      isSearchable={false}
       {...props}
     />
   )
