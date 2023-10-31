@@ -20,6 +20,7 @@ export const ContentOrderFilter = ({ contentOrder, setContentOrder }: ContentOrd
         options={koodistoSelectOptions(sortKooditByArvo(ORDER_OPTIONS))}
         value={currentKoodistoSelectOption(contentOrder, ORDER_OPTIONS)}
         onChange={(opt) => setContentOrder(opt!.value as ContentOrder)}
+        className="w-40"
       />
     </div>
   )

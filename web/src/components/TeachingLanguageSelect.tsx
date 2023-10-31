@@ -18,7 +18,7 @@ export const TeachingLanguageSelect = ({ teachingLanguage, setTeachingLanguage }
       options={koodistoSelectOptions(sortKooditByArvo(LANGUAGE_OPTIONS))}
       value={currentKoodistoSelectOption(teachingLanguage, LANGUAGE_OPTIONS)}
       onChange={(opt) => setTeachingLanguage(opt!.value as TeachingLanguage)}
-      className="w-28"
+      className="w-32"
     />
   )
 }
