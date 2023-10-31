@@ -1,7 +1,7 @@
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { useNavigate } from 'react-router-dom'
-import { ContentType, PublishState } from '../../../types'
+import { PublishState } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type FormButtonRowProps = {
@@ -12,7 +12,7 @@ type FormButtonRowProps = {
   }
   state: {
     isUpdate: boolean
-    isLoading: boolean
+    isSubmitting: boolean
     publishState?: PublishState
   }
   formHasValidationErrors: boolean
@@ -22,7 +22,7 @@ type FormButtonRowProps = {
 export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMessage }: FormButtonRowProps) => {
   const { t } = useLudosTranslation()
   const navigate = useNavigate()
-  const { isUpdate, isLoading } = state
+  const { isUpdate, isSubmitting } = state
   const isDraft = state.publishState === PublishState.Draft
 
   const draftButtonText = () => {
@@ -53,7 +53,11 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
     <div className="row mt-4 justify-center md:justify-between flex-wrap-reverse">
       <div className="flex md:w-1/2">
         {state.isUpdate && (
-          <Button variant="buttonDanger" onClick={actions.onDeleteClick} disabled={isLoading} data-testid="form-delete">
+          <Button
+            variant="buttonDanger"
+            onClick={actions.onDeleteClick}
+            disabled={isSubmitting}
+            data-testid="form-delete">
             {t('form.button.poista')}
           </Button>
         )}
@@ -64,14 +68,14 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           // fixme: voiko tästä tulla ongelmia jos joku navigoi /uusi sivulle suoraan eri sivustolta?
           onClick={() => navigate(-1)}
           customClass="w-full md:w-auto"
-          disabled={isLoading}
+          disabled={isSubmitting}
           data-testid="form-cancel">
           {t('button.peruuta')}
         </Button>
         <Button
           variant="buttonSecondary"
           customClass="w-full md:w-auto"
-          disabled={isLoading}
+          disabled={isSubmitting}
           onClick={actions.onSaveDraftClick}
           data-testid={isUpdate ? 'form-update-draft' : 'form-draft'}>
           {draftButtonText()}
@@ -80,7 +84,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           variant="buttonPrimary"
           onClick={actions.onSubmitClick}
           customClass="w-full md:w-auto"
-          disabled={isLoading}
+          disabled={isSubmitting}
           data-testid={isUpdate ? 'form-update-submit' : 'form-submit'}>
           {submitButtonText()}
         </Button>

@@ -21,7 +21,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
   const navigate = useNavigate()
   const { setNotification } = useNotification()
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -95,7 +95,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
       const assignment = { ...data, publishState }
 
       try {
-        setIsLoading(true)
+        setIsSubmitting(true)
         const resultId = await submitAssignmentData(assignment)
         setSubmitError('')
         handleSuccess(publishState, resultId)
@@ -103,7 +103,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
         setSubmitError(e instanceof Error ? e.message || 'Unexpected error' : 'Unexpected error')
         setErrorNotification(publishState)
       } finally {
-        setIsLoading(false)
+        setIsSubmitting(false)
       }
     })()
   }
@@ -118,7 +118,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
         }}
         state={{
           isUpdate,
-          isLoading,
+          isSubmitting,
           publishState
         }}
         formHasValidationErrors={Object.keys(methods.formState.errors).length > 0}
