@@ -64,7 +64,7 @@ export async function fillSukoAssignmentForm({
   )
 }
 
-export async function updateSukoAssignmentForm({
+export async function fillSukoUpdateForm({
   page,
   contentTextFi,
   contentTextSv,
@@ -156,8 +156,7 @@ export async function fillLdAssignmentForm({
 
   await fillLukuvuosi(page)
 
-  // Eettisyys ja ympäristöosaaminen
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
+  await setLaajaalainenOsaaminenKoodiArvos(page, ['05']) // Eettisyys ja ympäristöosaaminen
 
   await fillAssignmentTextFields(
     page,
@@ -171,11 +170,11 @@ export async function fillLdAssignmentForm({
   )
 }
 
-async function fillLaajaalainenOsaaminenKoodiArvos(page: Page) {
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['02'])
+async function setLaajaalainenOsaaminenKoodiArvos(page: Page, koodiArvos: string[]) {
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', koodiArvos)
 }
 
-export async function updateLdAssignment({
+export async function fillLdAssignmentUpdateForm({
   page,
   nameTextFi,
   nameTextSv,
@@ -184,7 +183,7 @@ export async function updateLdAssignment({
   contentTextFi,
   contentTextSv
 }: AssignmentBase) {
-  await fillLaajaalainenOsaaminenKoodiArvos(page)
+  await setLaajaalainenOsaaminenKoodiArvos(page, ['01', '02']) // Hyvinvointiosaaminen, Vuorovaikutusosaaminen
 
   await fillAssignmentTextFields(
     page,
@@ -210,7 +209,7 @@ export async function fillPuhviAssignmentForm({
   // Esiintymistaidot
   await page.getByTestId('assignmentTypeRadio-002').click()
   await fillLukuvuosi(page)
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
+  await setLaajaalainenOsaaminenKoodiArvos(page, ['05']) // Eettisyys ja ympäristöosaaminen
 
   await fillAssignmentTextFields(
     page,
@@ -224,7 +223,7 @@ export async function fillPuhviAssignmentForm({
   )
 }
 
-export async function updatePuhviAssignment({
+export async function fillPuhviAssignmentUpdateForm({
   page,
   nameTextFi,
   nameTextSv,
@@ -233,7 +232,7 @@ export async function updatePuhviAssignment({
   instructionTextFi,
   instructionTextSv
 }: AssignmentBase) {
-  await fillLaajaalainenOsaaminenKoodiArvos(page)
+  await setLaajaalainenOsaaminenKoodiArvos(page, ['01', '02']) // Hyvinvointiosaaminen, Vuorovaikutusosaaminen
 
   await fillAssignmentTextFields(
     page,
