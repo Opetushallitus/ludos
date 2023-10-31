@@ -202,10 +202,31 @@ async function assertDraftAssignmentStateChanges(
   await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'draft')
 }
 
-async function navigateToAssignmentUpdateFormAndWaitForDataToLoad(page: Page, assignmentId: number) {
+async function navigateToAssignmentUpdateFormAndAssertDataLoaded(
+  page: Page,
+  assignmentId: number,
+  exam: Exam,
+  expectedAssignmentTextContent: AssignmentTextContent
+) {
   await page.getByTestId(`assignment-list-item-${assignmentId.toString()}`).click()
   await page.getByTestId(`assignment-${assignmentId.toString()}-edit`).click()
-  await expect(page.getByTestId('heading')).toHaveText(/.{6,}/) // Wait for data to load
+  await expect(page.getByTestId('heading')).toHaveText(expectedAssignmentTextContent.nameTextFi)
+
+  await expect(page.getByTestId('nameFi')).toHaveValue(expectedAssignmentTextContent.nameTextFi)
+  await expect(page.getByTestId('instructionFi')).toHaveValue(expectedAssignmentTextContent.instructionTextFi)
+  for (const i of expectedAssignmentTextContent.contentTextFi.keys()) {
+    await expect(page.getByTestId(`contentFi-${i}`)).toContainText(expectedAssignmentTextContent.contentTextFi[i])
+  }
+
+  if (exam !== Exam.Suko) {
+    await page.getByTestId('tab-sv').click()
+    await expect(page.getByTestId('nameSv')).toHaveValue(expectedAssignmentTextContent.nameTextSv)
+    await expect(page.getByTestId('instructionSv')).toHaveValue(expectedAssignmentTextContent.instructionTextSv)
+    for (const i of expectedAssignmentTextContent.contentTextSv.keys()) {
+      await expect(page.getByTestId(`contentSv-${i}`)).toContainText(expectedAssignmentTextContent.contentTextSv[i])
+    }
+    await page.getByTestId('tab-fi').click()
+  }
 }
 
 async function createAndUpdateSukoAssignment(page: Page, action: 'submit' | 'draft') {
@@ -217,24 +238,25 @@ async function createAndUpdateSukoAssignment(page: Page, action: 'submit' | 'dra
       : 'form.notification.tehtavan-tallennus.luonnos-onnistui'
   )
 
-  await navigateToAssignmentUpdateFormAndWaitForDataToLoad(page, createdAssignmentId)
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(
+    page,
+    createdAssignmentId,
+    Exam.Suko,
+    createAssignmentTextContentByExam[Exam.Suko]
+  )
 
-  await fillSukoAssignmentUpdateForm(page, updateAssignmentTextContentByExam[Exam.Suko])
+  const updateTextContent = updateAssignmentTextContentByExam[Exam.Suko]
+  await fillSukoAssignmentUpdateForm(page, updateTextContent)
 
   if (action === 'submit') {
     await assertPublishedAssignmentStateChanges(
       page,
-      updateAssignmentTextContentByExam[Exam.Suko],
+      updateTextContent,
       assertUpdatedSukoAssignment,
       createdAssignmentId
     )
   } else {
-    await assertDraftAssignmentStateChanges(
-      page,
-      updateAssignmentTextContentByExam[Exam.Suko],
-      assertUpdatedSukoAssignment,
-      createdAssignmentId
-    )
+    await assertDraftAssignmentStateChanges(page, updateTextContent, assertUpdatedSukoAssignment, createdAssignmentId)
   }
 
   await deleteAssignment(page, 'suko', createdAssignmentId)
@@ -300,7 +322,12 @@ async function createAndAssertLdAssignment(page: Page, action: FormAction) {
 async function createLdAssignmentAndFillUpdateForm(page: Page, action: 'submit' | 'draft' | 'cancel' | 'delete') {
   const createdAssignmentId = await createAndAssertLdAssignment(page, action)
 
-  await navigateToAssignmentUpdateFormAndWaitForDataToLoad(page, createdAssignmentId)
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(
+    page,
+    createdAssignmentId,
+    Exam.Ld,
+    createAssignmentTextContentByExam[Exam.Ld]
+  )
 
   await fillLdAssignmentUpdateForm(page, updateAssignmentTextContentByExam[Exam.Ld])
   return { createdAssignmentId, updatedAssignmentTextContent: updateAssignmentTextContentByExam[Exam.Ld] }
@@ -351,24 +378,25 @@ async function createAndUpdatePuhviAssignment(page: Page, action: 'submit' | 'dr
       : 'form.notification.tehtavan-tallennus.luonnos-onnistui'
   )
 
-  await navigateToAssignmentUpdateFormAndWaitForDataToLoad(page, createdAssignmentId)
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(
+    page,
+    createdAssignmentId,
+    Exam.Puhvi,
+    createAssignmentTextContentByExam[Exam.Puhvi]
+  )
 
-  await fillPuhviAssignmentUpdateForm(page, updateAssignmentTextContentByExam[Exam.Puhvi])
+  const updateTextContent = updateAssignmentTextContentByExam[Exam.Puhvi]
+  await fillPuhviAssignmentUpdateForm(page, updateTextContent)
 
   if (action === 'submit') {
     await assertPublishedAssignmentStateChanges(
       page,
-      updateAssignmentTextContentByExam[Exam.Puhvi],
+      updateTextContent,
       assertUpdatedPuhviAssignment,
       createdAssignmentId
     )
   } else {
-    await assertDraftAssignmentStateChanges(
-      page,
-      updateAssignmentTextContentByExam[Exam.Puhvi],
-      assertUpdatedPuhviAssignment,
-      createdAssignmentId
-    )
+    await assertDraftAssignmentStateChanges(page, updateTextContent, assertUpdatedPuhviAssignment, createdAssignmentId)
   }
   await deleteAssignment(page, 'puhvi', createdAssignmentId)
 }
