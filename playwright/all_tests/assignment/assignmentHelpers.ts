@@ -8,8 +8,7 @@ import {
 } from '../../helpers'
 import { TeachingLanguage } from 'web/src/types'
 
-type AssignmentBase = {
-  page: Page
+export type AssignmentTextContent = {
   nameTextFi: string
   nameTextSv: string
   instructionTextFi: string
@@ -17,19 +16,12 @@ type AssignmentBase = {
   contentTextFi: string[]
   contentTextSv: string[]
 }
+
 async function fillLukuvuosi(page: Page) {
   await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', ['20202021'])
 }
 
-export async function fillSukoAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
+export async function fillSukoAssignmentCreateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   await setSingleSelectDropdownOption(page, 'oppimaara', 'VKA1')
   await page.getByTestId('assignmentTypeRadio-001').click()
   await setSingleSelectDropdownOption(page, 'tavoitetaso', '0002')
@@ -52,27 +44,10 @@ export async function fillSukoAssignmentForm({
   await page.getByTestId('laajaalainenOsaaminen-open').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Suko,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
+  await fillAssignmentTextContent(page, Exam.Suko, assignmentTextContent)
 }
 
-export async function fillSukoUpdateForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
+export async function fillSukoAssignmentUpdateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   await setSingleSelectDropdownOption(page, 'oppimaara', 'VKA1.SA')
   await page.getByTestId('assignmentTypeRadio-002').click()
   await setSingleSelectDropdownOption(page, 'tavoitetaso', '0003')
@@ -90,27 +65,13 @@ export async function fillSukoUpdateForm({
 
   await setSingleSelectDropdownOption(page, 'aihe', '003')
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Suko,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
+  await fillAssignmentTextContent(page, Exam.Suko, assignmentTextContent)
 }
 
-async function fillAssignmentTextFields(
+async function fillAssignmentTextContent(
   page: Page,
   exam: Exam,
-  nameTextFi: string,
-  instructionTextFi: string,
-  contentTextFi: string[],
-  nameTextSv: string,
-  instructionTextSv: string,
-  contentTextSv: string[]
+  { nameTextFi, instructionTextFi, contentTextFi, nameTextSv, instructionTextSv, contentTextSv }: AssignmentTextContent
 ) {
   await page.getByTestId('nameFi').fill(nameTextFi)
   await page.getByTestId('instructionFi').fill(instructionTextFi)
@@ -142,15 +103,7 @@ async function fillAssignmentTextFields(
   }
 }
 
-export async function fillLdAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
+export async function fillLdAssignmentCreateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   // Kotitalous
   await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '1')
 
@@ -158,92 +111,32 @@ export async function fillLdAssignmentForm({
 
   await setLaajaalainenOsaaminenKoodiArvos(page, ['05']) // Eettisyys ja ympäristöosaaminen
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Ld,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
+  await fillAssignmentTextContent(page, Exam.Ld, assignmentTextContent)
 }
 
 async function setLaajaalainenOsaaminenKoodiArvos(page: Page, koodiArvos: string[]) {
   await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', koodiArvos)
 }
 
-export async function fillLdAssignmentUpdateForm({
-  page,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv,
-  contentTextFi,
-  contentTextSv
-}: AssignmentBase) {
+export async function fillLdAssignmentUpdateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   await setLaajaalainenOsaaminenKoodiArvos(page, ['01', '02']) // Hyvinvointiosaaminen, Vuorovaikutusosaaminen
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Ld,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
+  await fillAssignmentTextContent(page, Exam.Ld, assignmentTextContent)
 }
 
-export async function fillPuhviAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
+export async function fillPuhviAssignmentCreateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   // Esiintymistaidot
   await page.getByTestId('assignmentTypeRadio-002').click()
   await fillLukuvuosi(page)
   await setLaajaalainenOsaaminenKoodiArvos(page, ['05']) // Eettisyys ja ympäristöosaaminen
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Puhvi,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
+  await fillAssignmentTextContent(page, Exam.Puhvi, assignmentTextContent)
 }
 
-export async function fillPuhviAssignmentUpdateForm({
-  page,
-  nameTextFi,
-  nameTextSv,
-  contentTextFi,
-  contentTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
+export async function fillPuhviAssignmentUpdateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   await setLaajaalainenOsaaminenKoodiArvos(page, ['01', '02']) // Hyvinvointiosaaminen, Vuorovaikutusosaaminen
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Puhvi,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
+  await fillAssignmentTextContent(page, Exam.Puhvi, assignmentTextContent)
 }
 
 export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
