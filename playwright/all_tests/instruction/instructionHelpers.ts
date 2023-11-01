@@ -5,20 +5,20 @@ import { TeachingLanguage } from 'web/src/types'
 
 export async function fillInstructionForm({
   page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
+  contentFi,
+  contentSv,
+  nameFi,
+  nameSv,
   shortDescriptionFi,
   shortDescriptionSv,
   attachmentNameFi,
   attachmentNameSv
 }: {
   page: Page
-  nameTextFi?: string
-  nameTextSv?: string
-  contentTextFi?: string
-  contentTextSv?: string
+  nameFi?: string
+  nameSv?: string
+  contentFi?: string
+  contentSv?: string
   shortDescriptionFi?: string
   shortDescriptionSv?: string
   attachmentNameFi?: string
@@ -26,11 +26,11 @@ export async function fillInstructionForm({
 }) {
   await expect(page.getByTestId('heading')).toBeVisible()
 
-  if (nameTextFi) {
-    await page.getByTestId('nameFi').fill(nameTextFi)
+  if (nameFi) {
+    await page.getByTestId('nameFi').fill(nameFi)
   }
-  if (contentTextFi) {
-    await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentTextFi)
+  if (contentFi) {
+    await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentFi)
   }
   if (shortDescriptionFi) {
     await page.getByTestId('shortDescriptionFi').fill(shortDescriptionFi)
@@ -49,15 +49,15 @@ export async function fillInstructionForm({
     }
   }
 
-  const hasSvFields = nameTextSv || contentTextSv || shortDescriptionSv || attachmentNameSv
+  const hasSvFields = nameSv || contentSv || shortDescriptionSv || attachmentNameSv
 
   if (hasSvFields) {
     await page.getByTestId('tab-sv').click()
-    if (nameTextSv) {
-      await page.getByTestId('nameSv').fill(nameTextSv)
+    if (nameSv) {
+      await page.getByTestId('nameSv').fill(nameSv)
     }
-    if (contentTextSv) {
-      await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentTextSv)
+    if (contentSv) {
+      await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentSv)
     }
     if (shortDescriptionSv) {
       await page.getByTestId('shortDescriptionSv').fill(shortDescriptionSv)

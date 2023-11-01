@@ -1,14 +1,8 @@
 import { useCallback, useMemo } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
-import { AssignmentFilterOptions, Exam } from '../../../../types'
-import {
-  KoodiDtoOut,
-  Oppimaara,
-  oppimaaraFromId,
-  sortKooditAlphabetically,
-  useKoodisto
-} from '../../../../hooks/useKoodisto'
+import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
+import { KoodiDtoOut, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
   currentKoodistoSelectOptions,
