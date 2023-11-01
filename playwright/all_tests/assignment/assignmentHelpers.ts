@@ -1,12 +1,11 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
-  Exam,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../../helpers'
-import { TeachingLanguage } from 'web/src/types'
+import { Exam, TeachingLanguage } from 'web/src/types'
 
 export type AssignmentTextContent = {
   nameTextFi: string
@@ -44,7 +43,7 @@ export async function fillSukoAssignmentCreateForm(page: Page, assignmentTextCon
   await page.getByTestId('laajaalainenOsaaminen-open').click()
   await page.getByTestId('laajaalainenOsaaminen-option-02').click()
 
-  await fillAssignmentTextContent(page, Exam.Suko, assignmentTextContent)
+  await fillAssignmentTextContent(page, Exam.SUKO, assignmentTextContent)
 }
 
 export async function fillSukoAssignmentUpdateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
@@ -65,7 +64,7 @@ export async function fillSukoAssignmentUpdateForm(page: Page, assignmentTextCon
 
   await setSingleSelectDropdownOption(page, 'aihe', '003')
 
-  await fillAssignmentTextContent(page, Exam.Suko, assignmentTextContent)
+  await fillAssignmentTextContent(page, Exam.SUKO, assignmentTextContent)
 }
 
 async function fillAssignmentTextContent(
@@ -84,7 +83,7 @@ async function fillAssignmentTextContent(
     }
   }
 
-  if (exam === Exam.Suko) {
+  if (exam === Exam.SUKO) {
     await expect(page.getByTestId('tab-sv')).toBeHidden()
     return
   }
@@ -111,7 +110,7 @@ export async function fillLdAssignmentCreateForm(page: Page, assignmentTextConte
 
   await setLaajaalainenOsaaminenKoodiArvos(page, ['05']) // Eettisyys ja ympäristöosaaminen
 
-  await fillAssignmentTextContent(page, Exam.Ld, assignmentTextContent)
+  await fillAssignmentTextContent(page, Exam.LD, assignmentTextContent)
 }
 
 async function setLaajaalainenOsaaminenKoodiArvos(page: Page, koodiArvos: string[]) {
@@ -121,7 +120,7 @@ async function setLaajaalainenOsaaminenKoodiArvos(page: Page, koodiArvos: string
 export async function fillLdAssignmentUpdateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   await setLaajaalainenOsaaminenKoodiArvos(page, ['01', '02']) // Hyvinvointiosaaminen, Vuorovaikutusosaaminen
 
-  await fillAssignmentTextContent(page, Exam.Ld, assignmentTextContent)
+  await fillAssignmentTextContent(page, Exam.LD, assignmentTextContent)
 }
 
 export async function fillPuhviAssignmentCreateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
@@ -130,13 +129,13 @@ export async function fillPuhviAssignmentCreateForm(page: Page, assignmentTextCo
   await fillLukuvuosi(page)
   await setLaajaalainenOsaaminenKoodiArvos(page, ['05']) // Eettisyys ja ympäristöosaaminen
 
-  await fillAssignmentTextContent(page, Exam.Puhvi, assignmentTextContent)
+  await fillAssignmentTextContent(page, Exam.PUHVI, assignmentTextContent)
 }
 
 export async function fillPuhviAssignmentUpdateForm(page: Page, assignmentTextContent: AssignmentTextContent) {
   await setLaajaalainenOsaaminenKoodiArvos(page, ['01', '02']) // Hyvinvointiosaaminen, Vuorovaikutusosaaminen
 
-  await fillAssignmentTextContent(page, Exam.Puhvi, assignmentTextContent)
+  await fillAssignmentTextContent(page, Exam.PUHVI, assignmentTextContent)
 }
 
 export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
@@ -152,7 +151,7 @@ export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
     laajaalainenOsaaminenKoodiArvos: []
   }
 
-  if (exam === Exam.Suko) {
+  if (exam === Exam.SUKO) {
     return {
       ...base,
       assignmentTypeKoodiArvo: '003',
@@ -163,13 +162,13 @@ export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
       tavoitetasoKoodiArvo: null,
       aiheKoodiArvos: []
     }
-  } else if (exam === Exam.Ld) {
+  } else if (exam === Exam.LD) {
     return {
       ...base,
       lukuvuosiKoodiArvos: ['20202021'],
       aineKoodiArvo: '1'
     }
-  } else if (exam === Exam.Puhvi) {
+  } else if (exam === Exam.PUHVI) {
     return {
       ...base,
       assignmentTypeKoodiArvo: '002',

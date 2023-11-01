@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page, test as importedTest } from '@playwright/test'
-import { TeachingLanguage } from 'web/src/types'
+import { Exam, TeachingLanguage } from 'web/src/types'
 
 export type FormAction = 'submit' | 'draft' | 'cancel' | 'delete'
 
@@ -10,12 +10,6 @@ export const Role = {
 } as const
 export type Role = (typeof Role)[keyof typeof Role]
 
-export const Exam = {
-  Suko: 'SUKO',
-  Puhvi: 'PUHVI',
-  Ld: 'LD'
-} as const
-export type Exam = (typeof Exam)[keyof typeof Exam]
 export const examsLowerCase = Object.values(Exam).map((e) => e.toLocaleLowerCase())
 
 export const ContentType = {

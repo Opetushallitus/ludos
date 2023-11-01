@@ -1,7 +1,6 @@
 import { expect, Page, test } from '@playwright/test'
 import {
   assertSuccessNotification,
-  Exam,
   examsLowerCase,
   FormAction,
   loginTestGroup,
@@ -18,10 +17,10 @@ import {
   fillSukoAssignmentUpdateForm,
   AssignmentTextContent
 } from './assignmentHelpers'
-import { TeachingLanguage } from 'web/src/types'
+import { Exam, TeachingLanguage } from 'web/src/types'
 
 const createAssignmentTextContentByExam: Record<Exam, AssignmentTextContent> = {
-  [Exam.Suko]: {
+  [Exam.SUKO]: {
     nameTextFi: 'Testitehtävä SUKO',
     nameTextSv: 'Testuppgift SUKO',
     instructionTextFi: 'Testiohje SUKO',
@@ -29,7 +28,7 @@ const createAssignmentTextContentByExam: Record<Exam, AssignmentTextContent> = {
     contentTextFi: ['Testisisältö SUKO'],
     contentTextSv: ['Testinnehåll SUKO']
   },
-  [Exam.Ld]: {
+  [Exam.LD]: {
     nameTextFi: 'Testitehtävä LD',
     nameTextSv: 'Testuppgift LD',
     instructionTextFi: 'Testiohjeet LD',
@@ -37,7 +36,7 @@ const createAssignmentTextContentByExam: Record<Exam, AssignmentTextContent> = {
     contentTextFi: ['Testisisältö LD 1', 'Testisisältö LD 2'],
     contentTextSv: ['Testinnehåll LD 1', 'Testinnehåll LD 2']
   },
-  [Exam.Puhvi]: {
+  [Exam.PUHVI]: {
     nameTextFi: 'Testitehtävä PUHVI',
     nameTextSv: 'Testuppgift PUHVI',
     instructionTextFi: 'Testiohje PUHVI',
@@ -59,9 +58,9 @@ function appendMuokattuToTextContent(assignmentTextContent: AssignmentTextConten
 }
 
 const updateAssignmentTextContentByExam: Record<Exam, AssignmentTextContent> = {
-  [Exam.Suko]: appendMuokattuToTextContent(createAssignmentTextContentByExam[Exam.Suko]),
-  [Exam.Ld]: appendMuokattuToTextContent(createAssignmentTextContentByExam[Exam.Ld]),
-  [Exam.Puhvi]: appendMuokattuToTextContent(createAssignmentTextContentByExam[Exam.Puhvi])
+  [Exam.SUKO]: appendMuokattuToTextContent(createAssignmentTextContentByExam[Exam.SUKO]),
+  [Exam.LD]: appendMuokattuToTextContent(createAssignmentTextContentByExam[Exam.LD]),
+  [Exam.PUHVI]: appendMuokattuToTextContent(createAssignmentTextContentByExam[Exam.PUHVI])
 }
 
 async function getAssignmentIdFromResponse(page: Page): Promise<number> {
@@ -75,7 +74,7 @@ async function getAssignmentIdFromResponse(page: Page): Promise<number> {
 loginTestGroup(test, Role.YLLAPITAJA)
 
 async function createAndAssertSukoAssignment(page: Page, action: FormAction, expectedNotification: string) {
-  await fillSukoAssignmentCreateForm(page, createAssignmentTextContentByExam[Exam.Suko])
+  await fillSukoAssignmentCreateForm(page, createAssignmentTextContentByExam[Exam.SUKO])
 
   void page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
 
@@ -83,7 +82,7 @@ async function createAndAssertSukoAssignment(page: Page, action: FormAction, exp
 
   await assertSuccessNotification(page, expectedNotification)
   await expect(page.getByTestId('assignment-header')).toHaveText(
-    createAssignmentTextContentByExam[Exam.Suko].nameTextFi
+    createAssignmentTextContentByExam[Exam.SUKO].nameTextFi
   )
   await expect(page.getByTestId('suko-oppimaara')).toHaveText('Vieraat kielet, A-oppimäärä')
   await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
@@ -218,7 +217,7 @@ async function navigateToAssignmentUpdateFormAndAssertDataLoaded(
     await expect(page.getByTestId(`contentFi-${i}`)).toContainText(expectedAssignmentTextContent.contentTextFi[i])
   }
 
-  if (exam !== Exam.Suko) {
+  if (exam !== Exam.SUKO) {
     await page.getByTestId('tab-sv').click()
     await expect(page.getByTestId('nameSv')).toHaveValue(expectedAssignmentTextContent.nameTextSv)
     await expect(page.getByTestId('instructionSv')).toHaveValue(expectedAssignmentTextContent.instructionTextSv)
@@ -241,11 +240,11 @@ async function createAndUpdateSukoAssignment(page: Page, action: 'submit' | 'dra
   await navigateToAssignmentUpdateFormAndAssertDataLoaded(
     page,
     createdAssignmentId,
-    Exam.Suko,
-    createAssignmentTextContentByExam[Exam.Suko]
+    Exam.SUKO,
+    createAssignmentTextContentByExam[Exam.SUKO]
   )
 
-  const updateTextContent = updateAssignmentTextContentByExam[Exam.Suko]
+  const updateTextContent = updateAssignmentTextContentByExam[Exam.SUKO]
   await fillSukoAssignmentUpdateForm(page, updateTextContent)
 
   if (action === 'submit') {
@@ -290,7 +289,7 @@ async function assertCommonBetweenLdAndPuhvi(
 async function createAndAssertLdAssignment(page: Page, action: FormAction) {
   let createdAssignmentId: number
 
-  const assignmentTextContent = createAssignmentTextContentByExam[Exam.Ld]
+  const assignmentTextContent = createAssignmentTextContentByExam[Exam.LD]
   await fillLdAssignmentCreateForm(page, assignmentTextContent)
 
   void page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
@@ -325,12 +324,12 @@ async function createLdAssignmentAndFillUpdateForm(page: Page, action: 'submit' 
   await navigateToAssignmentUpdateFormAndAssertDataLoaded(
     page,
     createdAssignmentId,
-    Exam.Ld,
-    createAssignmentTextContentByExam[Exam.Ld]
+    Exam.LD,
+    createAssignmentTextContentByExam[Exam.LD]
   )
 
-  await fillLdAssignmentUpdateForm(page, updateAssignmentTextContentByExam[Exam.Ld])
-  return { createdAssignmentId, updatedAssignmentTextContent: updateAssignmentTextContentByExam[Exam.Ld] }
+  await fillLdAssignmentUpdateForm(page, updateAssignmentTextContentByExam[Exam.LD])
+  return { createdAssignmentId, updatedAssignmentTextContent: updateAssignmentTextContentByExam[Exam.LD] }
 }
 
 async function createAndUpdateLdAssignment(page: Page, action: 'submit' | 'draft') {
@@ -354,7 +353,7 @@ async function createAndUpdateLdAssignment(page: Page, action: 'submit' | 'draft
 }
 
 async function createAndAssertPuhviAssignment(page: Page, action: FormAction, expectedNotification: string) {
-  await fillPuhviAssignmentCreateForm(page, createAssignmentTextContentByExam[Exam.Puhvi])
+  await fillPuhviAssignmentCreateForm(page, createAssignmentTextContentByExam[Exam.PUHVI])
 
   void page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
 
@@ -362,7 +361,7 @@ async function createAndAssertPuhviAssignment(page: Page, action: FormAction, ex
 
   await assertSuccessNotification(page, expectedNotification)
   await expect(page.getByTestId('assignment-header')).toHaveText(
-    createAssignmentTextContentByExam[Exam.Puhvi].nameTextFi
+    createAssignmentTextContentByExam[Exam.PUHVI].nameTextFi
   )
 
   await page.getByTestId('return').click()
@@ -381,11 +380,11 @@ async function createAndUpdatePuhviAssignment(page: Page, action: 'submit' | 'dr
   await navigateToAssignmentUpdateFormAndAssertDataLoaded(
     page,
     createdAssignmentId,
-    Exam.Puhvi,
-    createAssignmentTextContentByExam[Exam.Puhvi]
+    Exam.PUHVI,
+    createAssignmentTextContentByExam[Exam.PUHVI]
   )
 
-  const updateTextContent = updateAssignmentTextContentByExam[Exam.Puhvi]
+  const updateTextContent = updateAssignmentTextContentByExam[Exam.PUHVI]
   await fillPuhviAssignmentUpdateForm(page, updateTextContent)
 
   if (action === 'submit') {
