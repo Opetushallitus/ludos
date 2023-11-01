@@ -1,20 +1,16 @@
 import { expect, Page, test } from '@playwright/test'
+import { assertSuccessNotification, examsLowerCase, FormAction, loginTestGroup, Role } from '../../helpers'
 import {
-  assertSuccessNotification,
-  examsLowerCase,
-  FormAction,
-  loginTestGroup,
-  Role,
-  setTeachingLanguage
-} from '../../helpers'
-import {
-  assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage,
+  assertLdAssignmentContentPage,
+  assertPuhviAssignmentContentPage,
+  assertSukoAssignmentContentPage,
   AssignmentTextContent,
+  contentIdFromContentPage,
   fillLdAssignmentForm,
   fillPuhviAssignmentForm,
   fillSukoAssignmentForm
 } from './assignmentHelpers'
-import { Exam, PublishState, TeachingLanguage } from 'web/src/types'
+import { Exam, PublishState } from 'web/src/types'
 import {
   LdAssignmentFormType,
   PuhviAssignmentFormType,
@@ -92,6 +88,18 @@ const updateAssignmentFormDataByExam = {
   } as PuhviAssignmentFormType
 }
 
+function createFormData(exam: Exam, action: 'submit' | 'draft') {
+  const createFormData = createAssignmentFormDataByExam[exam]
+  createFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
+  return createFormData
+}
+
+function updateFormData(exam: Exam, action: 'submit' | 'draft') {
+  const updateFormData = updateAssignmentFormDataByExam[exam]
+  updateFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
+  return updateFormData
+}
+
 function appendMuokattuToTextFields(assignmentTextContent: AssignmentTextContent): AssignmentTextContent {
   return {
     nameFi: `${assignmentTextContent.nameFi} muokattu`,
@@ -103,150 +111,71 @@ function appendMuokattuToTextFields(assignmentTextContent: AssignmentTextContent
   }
 }
 
-async function getAssignmentIdFromResponse(page: Page): Promise<number> {
-  const response = await page.waitForResponse(
-    (response) => response.url().includes('/api/assignment/') && response.ok()
-  )
-
-  return (await response.json()).id
-}
-
 loginTestGroup(test, Role.YLLAPITAJA)
 
-async function createAndAssertSukoAssignment(page: Page, action: FormAction, expectedNotification: string) {
-  await fillSukoAssignmentForm(page, createAssignmentFormDataByExam[Exam.SUKO])
+async function createAndAssertSukoAssignment(page: Page, action: 'submit' | 'draft') {
+  const formData = createFormData(Exam.SUKO, action) as SukoAssignmentFormType
 
-  void page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
+  await fillSukoAssignmentForm(page, formData)
 
-  const createdAssignmentId = await getAssignmentIdFromResponse(page)
+  await page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
+  await assertSuccessNotification(
+    page,
+    action === 'submit'
+      ? 'form.notification.tehtavan-tallennus.julkaisu-onnistui'
+      : 'form.notification.tehtavan-tallennus.luonnos-onnistui'
+  )
 
-  await assertSuccessNotification(page, expectedNotification)
-  await expect(page.getByTestId('assignment-header')).toHaveText(createAssignmentFormDataByExam[Exam.SUKO].nameFi)
-  await expect(page.getByTestId('suko-oppimaara')).toHaveText('Vieraat kielet, A-oppimäärä')
-  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
-
-  await page.getByTestId('return').click()
+  const createdAssignmentId = await contentIdFromContentPage(page)
+  await assertSukoAssignmentContentPage(page, formData)
   return createdAssignmentId
 }
 
-async function assertUpdatedSukoAssignment(
-  page: Page,
-  updatedAssignmentTextContent: AssignmentTextContent,
-  createdAssignmentId: number,
-  action: FormAction
-) {
-  const updatedAssignmentHeader = page.getByTestId('assignment-header')
-
-  await expect(updatedAssignmentHeader).toHaveText(updatedAssignmentTextContent.nameFi)
-  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
-
-  const expectedOppimaara = 'Vieraat kielet, A-oppimäärä, saksan kieli'
-  await expect(page.getByTestId('suko-oppimaara')).toHaveText(expectedOppimaara)
-  await expect(page.getByTestId('suko-tehtavatyyppi')).toHaveText('Tekstin tiivistäminen')
-  // await expect(page.getByTestId('suko-tavoitetaso')).toBeVisible()
-  await expect(page.getByTestId('suko-aihe')).toHaveText('kulttuuri ja luova ilmaisu')
-  await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
-    'Globaali- ja kulttuuriosaaminen, Hyvinvointiosaaminen, Vuorovaikutusosaaminen'
-  )
-
-  await expect(page.locator('#languageDropdown')).toBeHidden()
-
-  await page.getByTestId('return').click()
-  const assignmentCard = page.getByTestId(`assignment-list-item-${createdAssignmentId}`)
-  await expect(assignmentCard).toBeVisible()
-  await expect(assignmentCard.getByTestId('suko-oppimaara')).toHaveText(expectedOppimaara)
-
-  await expect(page.locator('#languageDropdown')).toBeHidden()
-}
-
-async function assertUpdatedLdAssignment(
-  page: Page,
-  updatedAssignmentTextContent: AssignmentTextContent,
-  createdAssignmentId: number,
-  action: FormAction
-) {
-  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
-  await setTeachingLanguage(page, TeachingLanguage.fi)
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
-  await expect(page.getByTestId('assignment-header')).toHaveText(updatedAssignmentTextContent.nameFi)
-  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
-  await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
-  await assertCommonBetweenLdAndPuhvi(page, updatedAssignmentTextContent, createdAssignmentId)
-}
-
-async function assertUpdatedPuhviAssignment(
-  page: Page,
-  updatedAssignmentTextContent: AssignmentTextContent,
-  createdAssignmentId: number,
-  action: FormAction
-) {
-  await setTeachingLanguage(page, TeachingLanguage.fi)
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
-  await expect(page.getByTestId('assignment-header')).toHaveText(updatedAssignmentTextContent.nameFi)
-  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
-  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
-  await assertCommonBetweenLdAndPuhvi(page, updatedAssignmentTextContent, createdAssignmentId)
-}
-
-async function changeAssignmentPublishState(page: Page, createdAssignmentId: number, action: FormAction) {
-  await page.getByTestId(`assignment-${createdAssignmentId}-edit`).click()
+async function changeAssignmentPublishState(page: Page, action: FormAction) {
+  await page.getByTestId(`edit-content-btn`).click()
   await page.getByTestId(`form-update-${action}`).click()
 }
 
 async function assertPublishedAssignmentStateChanges(
   page: Page,
-  updatedAssignmentTextContent: AssignmentTextContent,
-  assertAssignmentFn: (page: Page, data: any, assignmentId: number, action: FormAction) => Promise<void>,
-  createdAssignmentId: number
+  assertUpdatedAssignment: (page: Page) => Promise<void>
 ) {
   await page.getByTestId('form-update-submit').click()
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.onnistui')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'submit')
+  await assertUpdatedAssignment(page)
 
-  await changeAssignmentPublishState(page, createdAssignmentId, 'draft')
+  await changeAssignmentPublishState(page, 'draft')
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.palautettu-luonnostilaan')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'draft')
 
-  await changeAssignmentPublishState(page, createdAssignmentId, 'draft')
+  await changeAssignmentPublishState(page, 'draft')
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.onnistui')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'draft')
 
-  await changeAssignmentPublishState(page, createdAssignmentId, 'submit')
+  await changeAssignmentPublishState(page, 'submit')
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.julkaisu-onnistui')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'submit')
 }
 
-async function assertDraftAssignmentStateChanges(
-  page: Page,
-  updatedAssignmentTextContent: AssignmentTextContent,
-  assertAssignmentFn: (page: Page, data: any, assignmentId: number, action: FormAction) => Promise<void>,
-  createdAssignmentId: number
-) {
+async function assertDraftAssignmentStateChanges(page: Page, assertUpdatedAssignment: (page: Page) => Promise<void>) {
   await page.getByTestId('form-update-draft').click()
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.onnistui')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'draft')
+  await assertUpdatedAssignment(page)
 
-  await changeAssignmentPublishState(page, createdAssignmentId, 'submit')
+  await changeAssignmentPublishState(page, 'submit')
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.julkaisu-onnistui')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'submit')
 
-  await changeAssignmentPublishState(page, createdAssignmentId, 'submit')
+  await changeAssignmentPublishState(page, 'submit')
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.onnistui')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'submit')
 
-  await changeAssignmentPublishState(page, createdAssignmentId, 'draft')
+  await changeAssignmentPublishState(page, 'draft')
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.palautettu-luonnostilaan')
-  await assertAssignmentFn(page, updatedAssignmentTextContent, createdAssignmentId, 'draft')
 }
 
 async function navigateToAssignmentUpdateFormAndAssertDataLoaded(
   page: Page,
-  assignmentId: number,
   exam: Exam,
   expectedAssignmentTextContent: AssignmentTextContent
 ) {
-  await page.getByTestId(`assignment-list-item-${assignmentId.toString()}`).click()
-  await page.getByTestId(`assignment-${assignmentId.toString()}-edit`).click()
+  // TODO: metadata
+  await page.getByTestId('edit-content-btn').click()
   await expect(page.getByTestId('heading')).toHaveText(expectedAssignmentTextContent.nameFi)
 
   await expect(page.getByTestId('nameFi')).toHaveValue(expectedAssignmentTextContent.nameFi)
@@ -266,163 +195,87 @@ async function navigateToAssignmentUpdateFormAndAssertDataLoaded(
   }
 }
 
-async function createAndUpdateSukoAssignment(page: Page, action: 'submit' | 'draft') {
-  const createdAssignmentId = await createAndAssertSukoAssignment(
-    page,
-    action,
-    action === 'submit'
-      ? 'form.notification.tehtavan-tallennus.julkaisu-onnistui'
-      : 'form.notification.tehtavan-tallennus.luonnos-onnistui'
-  )
+async function createAndUpdateAndDeleteSukoAssignment(page: Page, action: 'submit' | 'draft') {
+  const createdAssignmentId = await createAndAssertSukoAssignment(page, action)
 
-  await navigateToAssignmentUpdateFormAndAssertDataLoaded(
-    page,
-    createdAssignmentId,
-    Exam.SUKO,
-    createAssignmentFormDataByExam[Exam.SUKO]
-  )
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(page, Exam.SUKO, createFormData(Exam.SUKO, action))
 
-  const updateFormData = updateAssignmentFormDataByExam[Exam.SUKO]
-  await fillSukoAssignmentForm(page, updateFormData)
+  await fillSukoAssignmentForm(page, updateFormData(Exam.SUKO, action) as SukoAssignmentFormType)
 
+  const assertUpdatedAssignment = (page: Page) => {
+    return assertSukoAssignmentContentPage(page, updateFormData(Exam.SUKO, action) as SukoAssignmentFormType)
+  }
   if (action === 'submit') {
-    await assertPublishedAssignmentStateChanges(page, updateFormData, assertUpdatedSukoAssignment, createdAssignmentId)
+    await assertPublishedAssignmentStateChanges(page, assertUpdatedAssignment)
   } else {
-    await assertDraftAssignmentStateChanges(page, updateFormData, assertUpdatedSukoAssignment, createdAssignmentId)
+    await assertDraftAssignmentStateChanges(page, assertUpdatedAssignment)
   }
 
   await deleteAssignment(page, 'suko', createdAssignmentId)
 }
 
-async function assertCommonBetweenLdAndPuhvi(
-  page: Page,
-  assignmentTextContent: AssignmentTextContent,
-  createdAssignmentId: number
-) {
-  await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText('Hyvinvointiosaaminen, Vuorovaikutusosaaminen')
-
-  for (const [i, content] of assignmentTextContent.contentFi.entries()) {
-    await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
-  }
-
-  await setTeachingLanguage(page, TeachingLanguage.sv)
-
-  await expect(page.getByTestId('assignment-header')).toHaveText(assignmentTextContent.nameSv)
-  for (const [i, content] of assignmentTextContent.contentSv.entries()) {
-    await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
-  }
-
-  await assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
-    page,
-    createdAssignmentId,
-    assignmentTextContent.nameSv
-  )
-}
-
-async function createAndAssertLdAssignment(page: Page, action: FormAction) {
-  let createdAssignmentId: number
-
-  const formData = createAssignmentFormDataByExam[Exam.LD]
+async function createAndAssertLdAssignment(page: Page, action: 'submit' | 'draft') {
+  const formData = createFormData(Exam.LD, action) as LdAssignmentFormType
   await fillLdAssignmentForm(page, formData)
 
-  void page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
+  await page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
 
-  createdAssignmentId = await getAssignmentIdFromResponse(page)
+  const createdAssignmentId = await contentIdFromContentPage(page)
+  await assertLdAssignmentContentPage(page, formData)
 
-  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
-  await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameFi)
-  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText('2020-2021')
-  await expect(page.getByTestId('ld-aine')).toHaveText('Kotitalous')
-  await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText('Eettisyys ja ympäristöosaaminen')
-  await expect(page.getByTestId('instruction-fi')).toHaveText(formData.instructionFi)
-  for (const [i, content] of formData.contentFi.entries()) {
-    await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
-  }
-
-  await setTeachingLanguage(page, TeachingLanguage.sv)
-
-  await expect(page.getByTestId('assignment-header')).toHaveText(formData.nameSv)
-  await expect(page.getByTestId('instruction-sv')).toHaveText(formData.instructionSv)
-  for (const [i, content] of formData.contentSv.entries()) {
-    await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
-  }
-
-  await page.getByTestId('return').click()
   return createdAssignmentId
 }
 
-async function createLdAssignmentAndFillUpdateForm(page: Page, action: 'submit' | 'draft' | 'cancel' | 'delete') {
+async function createAndUpdateAndDeleteLdAssignment(page: Page, action: 'submit' | 'draft') {
   const createdAssignmentId = await createAndAssertLdAssignment(page, action)
 
-  await navigateToAssignmentUpdateFormAndAssertDataLoaded(
-    page,
-    createdAssignmentId,
-    Exam.LD,
-    createAssignmentFormDataByExam[Exam.LD]
-  )
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(page, Exam.LD, createFormData(Exam.LD, action))
 
-  await fillLdAssignmentForm(page, updateAssignmentFormDataByExam[Exam.LD])
-  return createdAssignmentId
-}
+  await fillLdAssignmentForm(page, updateFormData(Exam.LD, action) as LdAssignmentFormType)
 
-async function createAndUpdateLdAssignment(page: Page, action: 'submit' | 'draft') {
-  const createdAssignmentId = await createLdAssignmentAndFillUpdateForm(page, action)
-  if (action === 'submit') {
-    await assertPublishedAssignmentStateChanges(
-      page,
-      updateAssignmentFormDataByExam[Exam.LD],
-      assertUpdatedLdAssignment,
-      createdAssignmentId
-    )
-  } else {
-    await assertDraftAssignmentStateChanges(
-      page,
-      updateAssignmentFormDataByExam[Exam.LD],
-      assertUpdatedLdAssignment,
-      createdAssignmentId
-    )
+  const assertUpdatedAssignment = (page: Page) => {
+    return assertLdAssignmentContentPage(page, updateFormData(Exam.LD, action) as LdAssignmentFormType)
   }
+  if (action === 'submit') {
+    await assertPublishedAssignmentStateChanges(page, assertUpdatedAssignment)
+  } else {
+    await assertDraftAssignmentStateChanges(page, assertUpdatedAssignment)
+  }
+
   await deleteAssignment(page, 'ld', createdAssignmentId)
 }
 
-async function createAndAssertPuhviAssignment(page: Page, action: FormAction, expectedNotification: string) {
+async function createAndAssertPuhviAssignment(page: Page, action: FormAction) {
   await fillPuhviAssignmentForm(page, createAssignmentFormDataByExam[Exam.PUHVI])
 
-  void page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
-
-  const createdAssignmentId = await getAssignmentIdFromResponse(page)
-
-  await assertSuccessNotification(page, expectedNotification)
-  await expect(page.getByTestId('assignment-header')).toHaveText(createAssignmentFormDataByExam[Exam.PUHVI].nameFi)
-
-  await page.getByTestId('return').click()
-  return createdAssignmentId
-}
-
-async function createAndUpdatePuhviAssignment(page: Page, action: 'submit' | 'draft') {
-  const createdAssignmentId = await createAndAssertPuhviAssignment(
+  await page.getByTestId(action === 'submit' ? 'form-submit' : 'form-draft').click()
+  await assertSuccessNotification(
     page,
-    action,
     action === 'submit'
       ? 'form.notification.tehtavan-tallennus.julkaisu-onnistui'
       : 'form.notification.tehtavan-tallennus.luonnos-onnistui'
   )
+  await expect(page.getByTestId('assignment-header')).toHaveText(createAssignmentFormDataByExam[Exam.PUHVI].nameFi)
 
-  await navigateToAssignmentUpdateFormAndAssertDataLoaded(
-    page,
-    createdAssignmentId,
-    Exam.PUHVI,
-    createAssignmentFormDataByExam[Exam.PUHVI]
-  )
+  return await contentIdFromContentPage(page)
+}
 
-  const updateFormData = updateAssignmentFormDataByExam[Exam.PUHVI]
-  await fillPuhviAssignmentForm(page, updateFormData)
+async function createAndUpdateDeletePuhviAssignment(page: Page, action: 'submit' | 'draft') {
+  const createdAssignmentId = await createAndAssertPuhviAssignment(page, action)
 
-  if (action === 'submit') {
-    await assertPublishedAssignmentStateChanges(page, updateFormData, assertUpdatedPuhviAssignment, createdAssignmentId)
-  } else {
-    await assertDraftAssignmentStateChanges(page, updateFormData, assertUpdatedPuhviAssignment, createdAssignmentId)
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(page, Exam.PUHVI, createFormData(Exam.PUHVI, action))
+
+  await fillPuhviAssignmentForm(page, updateFormData(Exam.PUHVI, action) as PuhviAssignmentFormType)
+
+  const assertUpdatedAssignment = (page: Page) => {
+    return assertPuhviAssignmentContentPage(page, updateFormData(Exam.PUHVI, action) as PuhviAssignmentFormType)
   }
+  if (action === 'submit') {
+    await assertPublishedAssignmentStateChanges(page, assertUpdatedAssignment)
+  } else {
+    await assertDraftAssignmentStateChanges(page, assertUpdatedAssignment)
+  }
+
   await deleteAssignment(page, 'puhvi', createdAssignmentId)
 }
 
@@ -434,37 +287,8 @@ async function cancelAssignmentCreation(page: Page) {
   page.getByTestId('create-koetehtava-button')
 }
 
-async function cancelAssignmentUpdate(page: Page, exam: string) {
-  let createdAssignmentId
-
-  if (exam === 'suko') {
-    createdAssignmentId = await createAndAssertSukoAssignment(
-      page,
-      'draft',
-      'form.notification.tehtavan-tallennus.luonnos-onnistui'
-    )
-  } else if (exam === 'ld') {
-    createdAssignmentId = await createAndAssertLdAssignment(page, 'draft')
-  } else {
-    createdAssignmentId = await createAndAssertPuhviAssignment(
-      page,
-      'draft',
-      'form.notification.tehtavan-tallennus.luonnos-onnistui'
-    )
-  }
-
-  await page.getByTestId(`assignment-list-item-${createdAssignmentId.toString()}`).click()
-  await page.getByTestId(`assignment-${createdAssignmentId.toString()}-edit`).click()
-
-  const btn = page.getByTestId('form-cancel')
-  await expect(btn).toHaveText('button.peruuta')
-
-  await btn.click()
-  page.getByTestId('create-koetehtava-button')
-}
-
 async function deleteAssignment(page: Page, exam: LowerCaseExam, assignmentId: number) {
-  await page.getByTestId(`assignment-${assignmentId.toString()}-edit`).click()
+  await page.getByTestId('edit-content-btn').click()
 
   await page.getByTestId('form-delete').click()
   await page.getByTestId('modal-button-delete').click()
@@ -485,16 +309,16 @@ type LowerCaseExam = `${Lowercase<Exam>}`
 
 const testsByExam: Record<LowerCaseExam, ExamTest> = {
   suko: {
-    publishTest: (page: Page) => createAndUpdateSukoAssignment(page, 'submit'),
-    draftTest: (page: Page) => createAndUpdateSukoAssignment(page, 'draft')
+    publishTest: (page: Page) => createAndUpdateAndDeleteSukoAssignment(page, 'submit'),
+    draftTest: (page: Page) => createAndUpdateAndDeleteSukoAssignment(page, 'draft')
   },
   ld: {
-    publishTest: (page: Page) => createAndUpdateLdAssignment(page, 'submit'),
-    draftTest: (page: Page) => createAndUpdateLdAssignment(page, 'draft')
+    publishTest: (page: Page) => createAndUpdateAndDeleteLdAssignment(page, 'submit'),
+    draftTest: (page: Page) => createAndUpdateAndDeleteLdAssignment(page, 'draft')
   },
   puhvi: {
-    publishTest: (page: Page) => createAndUpdatePuhviAssignment(page, 'submit'),
-    draftTest: (page: Page) => createAndUpdatePuhviAssignment(page, 'draft')
+    publishTest: (page: Page) => createAndUpdateDeletePuhviAssignment(page, 'submit'),
+    draftTest: (page: Page) => createAndUpdateDeletePuhviAssignment(page, 'draft')
   }
 }
 
@@ -510,14 +334,11 @@ examsLowerCase.forEach((examStr) => {
       await page.getByTestId('create-koetehtava-button').click()
     })
 
-    test(`can create, update and delete ${exam} published assignment`, async ({ page }) =>
+    test(`can create, update and delete published assignment`, async ({ page }) =>
       await testsByExam[exam].publishTest(page))
 
-    test(`can create, update and delete ${exam} draft assignment`, async ({ page }) =>
-      await testsByExam[exam].draftTest(page))
+    test(`can create, update and delete draft assignment`, async ({ page }) => await testsByExam[exam].draftTest(page))
 
     test(`can cancel ${exam} assignment creation`, async ({ page }) => await cancelAssignmentCreation(page))
-
-    test(`can cancel ${exam} assignment update`, async ({ page }) => await cancelAssignmentUpdate(page, exam))
   })
 })

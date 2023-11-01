@@ -1,11 +1,12 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
+  koodiNimi,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../../helpers'
-import { Exam, oppimaaraId, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Oppimaara, oppimaaraId, TeachingLanguage } from 'web/src/types'
 import {
   CommonAssignmentFormType,
   LdAssignmentFormType,
@@ -79,7 +80,98 @@ export async function fillPuhviAssignmentForm(page: Page, formData: PuhviAssignm
   await fillAssignmentTextFields(page, Exam.PUHVI, formData)
 }
 
-export async function assertSukoAssignmentContentView(page: Page, expectedFormData: SukoAssignmentFormType) {}
+async function oppimaaraLabel(oppimaara: Oppimaara) {
+  const oppimaaraKoodiArvoLabel = await koodiLabel(
+    KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021,
+    oppimaara.oppimaaraKoodiArvo
+  )
+  if (oppimaara.kielitarjontaKoodiArvo) {
+    const kielitarjontaKoodiArvoLabel = await koodiLabel(KoodistoName.KIELITARJONTA, oppimaara.kielitarjontaKoodiArvo)
+    return `${oppimaaraKoodiArvoLabel}, ${kielitarjontaKoodiArvoLabel}`
+  } else {
+    return oppimaaraKoodiArvoLabel
+  }
+}
+
+async function koodiLabel(koodistoName: KoodistoName, koodiArvos: string | string[]): Promise<string> {
+  if (typeof koodiArvos === 'string') {
+    return koodiNimi(koodistoName, koodiArvos)
+  } else {
+    const labels = await Promise.all(koodiArvos.map((ka) => koodiLabel(koodistoName, ka)))
+    return labels.sort().join(', ')
+  }
+}
+
+export async function contentIdFromContentPage(page: Page): Promise<number> {
+  await expect(page.getByTestId('content-common')).toBeVisible()
+  const idString = page.url().split('/').pop()
+  if (idString && /^\d+$/.test(idString)) {
+    return parseInt(idString)
+  } else {
+    throw new Error(`Unable to parse id from url ${page.url()}`)
+  }
+}
+
+async function assertCommonAssignmentContentPage(page: Page, expectedFormData: CommonAssignmentFormType) {
+  await expect(page.getByTestId('publish-state')).toHaveText(
+    expectedFormData.publishState === 'PUBLISHED' ? 'state.julkaistu' : 'state.luonnos'
+  )
+  await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
+    await koodiLabel(KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021, expectedFormData.laajaalainenOsaaminenKoodiArvos)
+  )
+
+  await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
+  await expect(page.getByTestId('instruction-fi')).toHaveText(expectedFormData.instructionFi)
+  for (const [i, content] of expectedFormData.contentFi.entries()) {
+    await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+  }
+
+  if (expectedFormData.exam !== Exam.SUKO) {
+    await setTeachingLanguage(page, TeachingLanguage.sv)
+
+    await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
+    await expect(page.getByTestId('instruction-sv')).toHaveText(expectedFormData.instructionSv)
+    for (const [i, content] of expectedFormData.contentSv.entries()) {
+      await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+    }
+
+    await setTeachingLanguage(page, TeachingLanguage.fi)
+  }
+}
+export async function assertSukoAssignmentContentPage(page: Page, expectedFormData: SukoAssignmentFormType) {
+  await assertCommonAssignmentContentPage(page, expectedFormData)
+
+  await expect(page.getByTestId('suko-oppimaara')).toHaveText(await oppimaaraLabel(expectedFormData.oppimaara))
+  await expect(page.getByTestId('suko-tehtavatyyppi')).toHaveText(
+    await koodiLabel(KoodistoName.TEHTAVATYYPPI_SUKO, expectedFormData.assignmentTypeKoodiArvo)
+  )
+  // await expect(page.getByTestId('suko-tavoitetaso')).toBeVisible()
+  await expect(page.getByTestId('suko-aihe')).toHaveText(
+    await koodiLabel(KoodistoName.AIHE_SUKO, expectedFormData.aiheKoodiArvos)
+  )
+}
+
+export async function assertLdAssignmentContentPage(page: Page, expectedFormData: LdAssignmentFormType) {
+  await assertCommonAssignmentContentPage(page, expectedFormData)
+
+  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText(
+    await koodiLabel(KoodistoName.LUDOS_LUKUVUOSI, expectedFormData.lukuvuosiKoodiArvos)
+  )
+  await expect(page.getByTestId('ld-aine')).toHaveText(
+    await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, expectedFormData.aineKoodiArvo)
+  )
+}
+
+export async function assertPuhviAssignmentContentPage(page: Page, expectedFormData: PuhviAssignmentFormType) {
+  await assertCommonAssignmentContentPage(page, expectedFormData)
+
+  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText(
+    await koodiLabel(KoodistoName.LUDOS_LUKUVUOSI, expectedFormData.lukuvuosiKoodiArvos)
+  )
+  await expect(page.getByTestId('puhvi-tehtavatyyppi')).toHaveText(
+    await koodiLabel(KoodistoName.TEHTAVATYYPPI_PUHVI, expectedFormData.assignmentTypeKoodiArvo)
+  )
+}
 
 export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
   const base = {
@@ -141,20 +233,6 @@ export async function checkListAfterFiltering(page: Page, exam: Exam, expectedAs
   expect(names).toEqual(
     expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, exam))
   )
-}
-
-export async function assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
-  page: Page,
-  assignmentId: number,
-  expectedNameSv: string
-) {
-  await page.getByTestId('return').click()
-  const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
-  await expect(assignmentCard).toBeVisible()
-
-  await setTeachingLanguage(page, TeachingLanguage.sv)
-
-  await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }
 
 export async function testEsitysNakyma(page: Page, linkTestId: string, assignmentIn: any) {

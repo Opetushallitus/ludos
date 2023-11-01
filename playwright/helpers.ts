@@ -1,5 +1,7 @@
 import { BrowserContext, expect, Page, test as importedTest } from '@playwright/test'
-import { Exam, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
+import { promises as fsPromises } from 'fs'
+import path from 'path'
 
 export type FormAction = 'submit' | 'draft' | 'cancel' | 'delete'
 
@@ -48,6 +50,45 @@ export async function postWithSession(context: BrowserContext, url: string, body
       Cookie: `SESSION=${sessionCookie?.value}`
     }
   })
+}
+
+const koodistoCache: { [key in KoodistoName]?: object[] } = {}
+
+async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
+  const koodistoFilePath = path.join(
+    __dirname,
+    '..',
+    'server',
+    'src',
+    'main',
+    'resources',
+    'backup_data',
+    `koodisto_${koodistoName}.json`
+  )
+  return JSON.parse(await fsPromises.readFile(koodistoFilePath, { encoding: 'utf-8' }))
+}
+
+export async function koodiNimi(
+  koodistoName: KoodistoName,
+  koodiArvo: string,
+  language: 'FI' | 'SV' = 'FI'
+): Promise<string> {
+  let koodisto = koodistoCache[koodistoName]
+  if (!koodisto) {
+    koodistoCache[koodistoName] = await readKoodistoFile(koodistoName)
+    koodisto = koodistoCache[koodistoName]
+  }
+  const koodi: any = koodisto?.find((k: any) => k['koodiArvo'] === koodiArvo)
+  if (!koodi) {
+    throw new Error(`Could not find koodiArvo ${koodiArvo} from koodisto ${koodistoName}`)
+  } else {
+    const koodiMetadata = koodi['metadata'].find((m: any) => m['kieli'] === language)
+    if (!koodiMetadata) {
+      throw new Error(`Could not find language ${language} for koodiArvo ${koodiArvo} in koodisto ${koodistoName}`)
+    } else {
+      return koodiMetadata['nimi']
+    }
+  }
 }
 
 export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: string, optionIds: string[]) {

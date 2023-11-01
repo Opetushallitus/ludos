@@ -1,20 +1,6 @@
 import { LudosContext } from '../contexts/LudosContext'
 import { useContext } from 'react'
-import { BusinessLanguage, Oppimaara } from '../types'
-
-export const KoodistoName = {
-  OPPIAINEET_JA_OPPIMAARAT_LOPS2021: 'oppiaineetjaoppimaaratlops2021',
-  KIELITARJONTA: 'lukiokielitarjonta',
-  LAAJA_ALAINEN_OSAAMINEN_LOPS2021: 'laajaalainenosaaminenlops2021',
-  TEHTAVATYYPPI_SUKO: 'tehtavatyyppisuko',
-  TAITOTASO: 'taitotaso',
-  LUDOS_LUKUVUOSI: 'ludoslukuvuosi',
-  LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine',
-  TEHTAVATYYPPI_PUHVI: 'tehtavatyyppipuhvi',
-  AIHE_SUKO: 'aihesuko'
-} as const
-
-export type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
+import { BusinessLanguage, KoodistoName, Oppimaara } from '../types'
 
 export type KoodiDtoOut = {
   koodiArvo: string

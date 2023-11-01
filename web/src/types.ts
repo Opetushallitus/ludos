@@ -204,3 +204,15 @@ export const oppimaaraFromId: (oppimaaraId: string) => Oppimaara = (oppimaaraId:
     kielitarjontaKoodiArvo: oppimaaraParts.length === 2 ? oppimaaraParts[1] : null
   }
 }
+export const KoodistoName = {
+  OPPIAINEET_JA_OPPIMAARAT_LOPS2021: 'oppiaineetjaoppimaaratlops2021',
+  KIELITARJONTA: 'lukiokielitarjonta',
+  LAAJA_ALAINEN_OSAAMINEN_LOPS2021: 'laajaalainenosaaminenlops2021',
+  TEHTAVATYYPPI_SUKO: 'tehtavatyyppisuko',
+  TAITOTASO: 'taitotaso',
+  LUDOS_LUKUVUOSI: 'ludoslukuvuosi',
+  LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine',
+  TEHTAVATYYPPI_PUHVI: 'tehtavatyyppipuhvi',
+  AIHE_SUKO: 'aihesuko'
+} as const
+export type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
