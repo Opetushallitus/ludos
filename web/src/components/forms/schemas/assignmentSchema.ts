@@ -75,6 +75,20 @@ export const puhviAssignmentSchema = commonSchema
 
 export type PuhviAssignmentFormType = z.infer<typeof puhviAssignmentSchema>
 
+export type AnyAssignmentFormType = SukoAssignmentFormType | LdAssignmentFormType | PuhviAssignmentFormType
+
+export function isSukoAssignmentFormType(formData: AnyAssignmentFormType): formData is SukoAssignmentFormType {
+  return formData.exam === Exam.SUKO
+}
+
+export function isLdAssignmentFormType(formData: AnyAssignmentFormType): formData is LdAssignmentFormType {
+  return formData.exam === Exam.LD
+}
+
+export function isPuhviAssignmentFormType(formData: AnyAssignmentFormType): formData is PuhviAssignmentFormType {
+  return formData.exam === Exam.PUHVI
+}
+
 export const assignmentSchemaByExam = {
   [Exam.SUKO]: sukoAssignmentSchema,
   [Exam.LD]: ldAssignmentSchema,

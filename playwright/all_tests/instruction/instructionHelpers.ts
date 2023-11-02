@@ -82,7 +82,7 @@ export async function updateAttachments(page: Page) {
   // rename other finnish file
   await page.getByTestId('attachment-name-input-0-fi').first().fill('Testi liite muokattu')
 
-  await page.getByTestId('form-update-submit').click()
+  await page.getByTestId('form-submit').click()
   await assertSuccessNotification(page, 'form.notification.ohjeen-tallennus.onnistui')
 
   await setTeachingLanguage(page, TeachingLanguage.fi)

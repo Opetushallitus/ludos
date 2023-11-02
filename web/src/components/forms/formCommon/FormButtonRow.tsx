@@ -77,7 +77,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           customClass="w-full md:w-auto"
           disabled={isSubmitting}
           onClick={actions.onSaveDraftClick}
-          data-testid={isUpdate ? 'form-update-draft' : 'form-draft'}>
+          data-testid="form-draft">
           {draftButtonText()}
         </Button>
         <Button
@@ -85,7 +85,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           onClick={actions.onSubmitClick}
           customClass="w-full md:w-auto"
           disabled={isSubmitting}
-          data-testid={isUpdate ? 'form-update-submit' : 'form-submit'}>
+          data-testid="form-submit">
           {submitButtonText()}
         </Button>
       </div>

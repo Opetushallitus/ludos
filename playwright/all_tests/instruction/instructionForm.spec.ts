@@ -75,9 +75,9 @@ async function updateInstruction(
   })
 
   if (action === 'submit') {
-    await page.getByTestId('form-update-submit').click()
+    await page.getByTestId('form-submit').click()
   } else {
-    await page.getByTestId('form-update-draft').click()
+    await page.getByTestId('form-draft').click()
   }
 
   await assertSuccessNotification(page, expectedNotification)

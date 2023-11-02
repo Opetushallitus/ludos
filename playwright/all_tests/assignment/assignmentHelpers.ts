@@ -8,7 +8,11 @@ import {
 } from '../../helpers'
 import { Exam, KoodistoName, Oppimaara, oppimaaraId, TeachingLanguage } from 'web/src/types'
 import {
+  AnyAssignmentFormType,
   CommonAssignmentFormType,
+  isLdAssignmentFormType,
+  isPuhviAssignmentFormType,
+  isSukoAssignmentFormType,
   LdAssignmentFormType,
   PuhviAssignmentFormType,
   SukoAssignmentFormType
@@ -51,6 +55,18 @@ async function fillAssignmentTextFields(
     if (index !== contentSv.length - 1) {
       await page.getByTestId('contentSv-add-content-field').click()
     }
+  }
+}
+
+export async function fillAssignmentForm(page: Page, formData: AnyAssignmentFormType) {
+  if (isSukoAssignmentFormType(formData)) {
+    await fillSukoAssignmentForm(page, formData)
+  } else if (isLdAssignmentFormType(formData)) {
+    await fillLdAssignmentForm(page, formData)
+  } else if (isPuhviAssignmentFormType(formData)) {
+    await fillPuhviAssignmentForm(page, formData)
+  } else {
+    throw new Error(`Unknown form type: ${formData}`)
   }
 }
 
@@ -109,6 +125,18 @@ export async function contentIdFromContentPage(page: Page): Promise<number> {
     return parseInt(idString)
   } else {
     throw new Error(`Unable to parse id from url ${page.url()}`)
+  }
+}
+
+export async function assertAssignmentContentPage(page: Page, formData: AnyAssignmentFormType) {
+  if (isSukoAssignmentFormType(formData)) {
+    await assertSukoAssignmentContentPage(page, formData)
+  } else if (isLdAssignmentFormType(formData)) {
+    await assertLdAssignmentContentPage(page, formData)
+  } else if (isPuhviAssignmentFormType(formData)) {
+    await assertPuhviAssignmentContentPage(page, formData)
+  } else {
+    throw new Error(`Unknown form type: ${formData}`)
   }
 }
 
