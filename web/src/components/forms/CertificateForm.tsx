@@ -28,7 +28,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const match = useMatch(matchUrl)
   const { setNotification } = useNotification()
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
   const [newAttachment, setNewAttachment] = useState<File | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
@@ -108,7 +108,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
       const certificate = { ...data, publishState }
 
       try {
-        setIsLoading(true)
+        setIsSubmitting(true)
         const resultId = await submitCertificateData(certificate)
         setSubmitError('')
         handleSuccess(publishState, resultId)
@@ -118,7 +118,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         }
         setErrorNotification(publishState)
       } finally {
-        setIsLoading(false)
+        setIsSubmitting(false)
       }
     })()
   }
@@ -201,7 +201,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         }}
         state={{
           isUpdate,
-          isLoading,
+          isSubmitting,
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}

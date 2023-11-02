@@ -1,5 +1,7 @@
 import { BrowserContext, expect, Page, test as importedTest } from '@playwright/test'
-import { TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
+import { promises as fsPromises } from 'fs'
+import path from 'path'
 
 export type FormAction = 'submit' | 'draft' | 'cancel' | 'delete'
 
@@ -10,12 +12,6 @@ export const Role = {
 } as const
 export type Role = (typeof Role)[keyof typeof Role]
 
-export const Exam = {
-  Suko: 'SUKO',
-  Puhvi: 'PUHVI',
-  Ld: 'LD'
-} as const
-export type Exam = (typeof Exam)[keyof typeof Exam]
 export const examsLowerCase = Object.values(Exam).map((e) => e.toLocaleLowerCase())
 
 export const ContentType = {
@@ -28,8 +24,12 @@ export const authFileByRole: Record<Role, string> = Object.fromEntries(
   Object.values(Role).map((role) => [role, `.auth/${role}.json`])
 ) as Record<Role, string>
 
-export async function login(page: Page, role: Role) {
-  await page.goto(`/api/test/mocklogin/${role}`)
+export async function login(page: Page, role: Role, asiointiKieli?: string) {
+  const urlParams = new URLSearchParams()
+  if (asiointiKieli) {
+    urlParams.set('asiointiKieli', asiointiKieli)
+  }
+  await page.goto(`/api/test/mocklogin/${role}?${urlParams.toString()}`)
 }
 
 export function loginTestGroup(test: typeof importedTest, role: Role) {
@@ -50,6 +50,45 @@ export async function postWithSession(context: BrowserContext, url: string, body
       Cookie: `SESSION=${sessionCookie?.value}`
     }
   })
+}
+
+const koodistoCache: { [key in KoodistoName]?: object[] } = {}
+
+async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
+  const koodistoFilePath = path.join(
+    __dirname,
+    '..',
+    'server',
+    'src',
+    'main',
+    'resources',
+    'backup_data',
+    `koodisto_${koodistoName}.json`
+  )
+  return JSON.parse(await fsPromises.readFile(koodistoFilePath, { encoding: 'utf-8' }))
+}
+
+export async function koodiNimi(
+  koodistoName: KoodistoName,
+  koodiArvo: string,
+  language: 'FI' | 'SV' = 'FI'
+): Promise<string> {
+  let koodisto = koodistoCache[koodistoName]
+  if (!koodisto) {
+    koodistoCache[koodistoName] = await readKoodistoFile(koodistoName)
+    koodisto = koodistoCache[koodistoName]
+  }
+  const koodi: any = koodisto?.find((k: any) => k['koodiArvo'] === koodiArvo)
+  if (!koodi) {
+    throw new Error(`Could not find koodiArvo ${koodiArvo} from koodisto ${koodistoName}`)
+  } else {
+    const koodiMetadata = koodi['metadata'].find((m: any) => m['kieli'] === language)
+    if (!koodiMetadata) {
+      throw new Error(`Could not find language ${language} for koodiArvo ${koodiArvo} in koodisto ${koodistoName}`)
+    } else {
+      return koodiMetadata['nimi']
+    }
+  }
 }
 
 export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: string, optionIds: string[]) {
@@ -74,4 +113,10 @@ export async function setTeachingLanguage(page: Page, teachingLanguage: Teaching
 
 export async function assertSuccessNotification(page: Page, notificationLocalisationKey: string) {
   await expect(page.getByText(notificationLocalisationKey)).toBeVisible()
+}
+
+export async function assertInputValues(page: Page, inputName: string, expectedValues: string[]): Promise<void> {
+  const locators = await page.locator(`input[name="${inputName}"]`).all()
+  const values = await Promise.all(locators.map((l) => l.inputValue()))
+  expect(values.sort()).toEqual(expectedValues.slice().sort())
 }

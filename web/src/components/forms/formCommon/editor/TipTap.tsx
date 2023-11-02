@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { EditorContent, mergeAttributes, useEditor } from '@tiptap/react'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -98,7 +97,6 @@ export const TipTap = ({
   label?: string
   dataTestId: string
 }) => {
-  const { t } = useTranslation()
   const editor = useEditor({
     editable,
     extensions,

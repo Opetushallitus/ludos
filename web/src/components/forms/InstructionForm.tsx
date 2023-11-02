@@ -69,8 +69,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
-
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
 
   const exam = match!.params.exam!.toUpperCase() as Exam
@@ -92,6 +92,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
           setAttachmentDataFi(attachmentDataFi)
           setAttachmentDataSv(attachmentDataSv)
+          setIsLoaded(true)
           return instruction
         }
       : { exam },
@@ -172,7 +173,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       const instruction = { ...data, publishState }
 
       try {
-        setIsLoading(true)
+        setIsSubmitting(true)
         const resultId = await submitInstructionData(instruction)
         setSubmitError('')
         handleSuccess(publishState, resultId)
@@ -183,7 +184,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         setErrorNotification(publishState)
         console.error(e)
       } finally {
-        setIsLoading(false)
+        setIsSubmitting(false)
       }
     })()
   }
@@ -321,7 +322,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             content={watchContentFi}
             label={t('form.ohjeensisalto')}
             dataTestId="editor-content-fi"
-            key={id ? 'content-fi' : 'content-fi-new'}
+            key={`content-fi-${isLoaded ? 'loaded' : 'not-loaded'}`}
           />
 
           <div className="mb-3 mt-6">
@@ -358,7 +359,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             content={watchContentSv}
             label={t('form.ohjeensisalto')}
             dataTestId="editor-content-sv"
-            key={id ? 'content-sv' : 'content-sv-new'}
+            key={`content-sv-${isLoaded ? 'loaded' : 'not-loaded'}`}
           />
 
           <div className="mb-3 mt-6">
@@ -394,7 +395,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         }}
         state={{
           isUpdate,
-          isLoading,
+          isSubmitting,
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}

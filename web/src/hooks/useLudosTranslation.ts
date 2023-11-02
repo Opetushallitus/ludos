@@ -22,9 +22,9 @@ export const useLudosTranslation = () => {
   }
 
   const LANGUAGE_DROPDOWN: LocaleDropdownOptions = {
-    fi: { name: t('language.suomi') },
-    sv: { name: t('language.ruotsi') },
-    keys: { name: 'Näytä avaimet' }
+    fi: { name: t('language.suomi'), testId: 'fi' },
+    sv: { name: t('language.ruotsi'), testId: 'sv' },
+    keys: { name: 'Näytä avaimet', testId: 'keys' }
   }
 
   const ORDER_OPTIONS: Record<ContentOrder, KoodiDtoOut> = {
@@ -64,6 +64,11 @@ export const useLudosTranslation = () => {
       [ContentType.koetehtavat]: t('assignment.palaa'),
       [ContentType.ohjeet]: t('instruction.palaa'),
       [ContentType.todistukset]: t('certificate.palaa')
+    },
+    contentErrorMessage: {
+      [ContentType.koetehtavat]: t('error.koetehtavan-lataus-epaonnistui'),
+      [ContentType.ohjeet]: t('error.ohjeen-lataus-epaonnistui'),
+      [ContentType.todistukset]: t('error.todistuksen-lataus-epaonnistui')
     },
     contentListErrorMessage: {
       [ContentType.koetehtavat]: t('error.koetehtavien-lataus-epaonnistui'),

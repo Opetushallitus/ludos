@@ -1,5 +1,6 @@
-import { getKoodi, KoodiDtoOut, KoodistoName, Oppimaara, oppimaaraId } from '../../hooks/useKoodisto'
+import { getKoodi, KoodiDtoOut } from '../../hooks/useKoodisto'
 import { LudosSelectOption } from './LudosSelect'
+import { KoodistoName, Oppimaara, oppimaaraId } from '../../types'
 
 export function koodistoSelectOptions(koodiList: KoodiDtoOut[]): LudosSelectOption[] {
   return koodiList.flatMap((k) => ({ value: k.koodiArvo, label: k.nimi }))

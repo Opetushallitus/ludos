@@ -2,8 +2,8 @@ import { FieldLabel } from '../FieldLabel'
 import { FormProvider } from 'react-hook-form'
 import { SukoAssignmentFormType } from './schemas/assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, Exam } from '../../types'
-import { Oppimaara, sortKooditAlphabetically, sortKooditByArvo, useKoodisto } from '../../hooks/useKoodisto'
+import { ContentFormAction, Exam, Oppimaara } from '../../types'
+import { sortKooditAlphabetically, sortKooditByArvo, useKoodisto } from '../../hooks/useKoodisto'
 import { AssignmentTypeField } from './formCommon/AssignmentFileTypeRadio'
 import { FormError } from './formCommon/FormErrors'
 import { FormContentInput } from './formCommon/FormContentInput'
@@ -134,7 +134,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
           <fieldset className="mb-6">
             <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} />
             <LudosSelect
-              name="laajaalainenOsaaminen"
+              name="laajaalainenOsaaminenKoodiArvos"
               options={koodistoSelectOptions(
                 sortKooditAlphabetically(Object.values(koodistos.laajaalainenosaaminenlops2021))
               )}

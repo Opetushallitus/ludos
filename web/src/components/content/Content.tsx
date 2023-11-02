@@ -15,7 +15,7 @@ import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
-import { ListError } from './list/ListError'
+import { ContentError } from './ContentError'
 
 type ContentProps = {
   exam: Exam
@@ -46,7 +46,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   return (
     <div className="min-h-[80vh]">
       <DataWrapper
-        errorEl={<>{contentType && <ListError contentType={contentType} />}</>}
+        errorEl={<>{contentType && <ContentError contentType={contentType} />}</>}
         render={(data) => (
           <div className="row">
             <div className="col w-full pr-5 md:w-9/12">

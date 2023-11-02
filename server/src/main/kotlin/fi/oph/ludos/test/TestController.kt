@@ -130,7 +130,8 @@ class TestController(
     fun mockLogin(
         @Valid @PathVariable("role") role: Role,
         request: HttpServletRequest,
-        response: HttpServletResponse
+        response: HttpServletResponse,
+        @RequestParam(required = false) asiointiKieli: String?,
     ): ResponseEntity<Unit> {
         val userDetails = Kayttajatiedot(
             "1.2.246.562.24.10000000001",
@@ -139,7 +140,7 @@ class TestController(
             listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(role.oikeus)))),
             "Vale",
             "Käyttäjä",
-            "fi"
+            asiointiKieli
         )
         val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
 

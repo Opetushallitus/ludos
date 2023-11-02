@@ -21,10 +21,10 @@ loginTestGroup(test, Role.YLLAPITAJA)
 async function createInstruction(page: Page, action: FormAction, expectedNotification: string) {
   await fillInstructionForm({
     page,
-    nameTextFi: 'Testi ohje',
-    nameTextSv: 'Testuppgifter',
-    contentTextFi: 'Testi sisältö',
-    contentTextSv: 'Testa innehåll',
+    nameFi: 'Testi ohje',
+    nameSv: 'Testuppgifter',
+    contentFi: 'Testi sisältö',
+    contentSv: 'Testa innehåll',
     shortDescriptionFi: 'Testi lyhyt kuvaus',
     shortDescriptionSv: 'Testa kort beskrivning',
     attachmentNameFi: 'Testi liite',
@@ -68,16 +68,16 @@ async function updateInstruction(
   await page.getByTestId(`instruction-${instructionId}-edit`).click()
   await fillInstructionForm({
     page,
-    nameTextFi: 'Testi ohje muokattu',
-    nameTextSv: 'Testuppgifter redigerade',
-    contentTextFi: 'Testi sisältö muokattu',
-    contentTextSv: 'Testinstruktioner redigerade'
+    nameFi: 'Testi ohje muokattu',
+    nameSv: 'Testuppgifter redigerade',
+    contentFi: 'Testi sisältö muokattu',
+    contentSv: 'Testinstruktioner redigerade'
   })
 
   if (action === 'submit') {
-    await page.getByTestId('form-update-submit').click()
+    await page.getByTestId('form-submit').click()
   } else {
-    await page.getByTestId('form-update-draft').click()
+    await page.getByTestId('form-draft').click()
   }
 
   await assertSuccessNotification(page, expectedNotification)
@@ -195,7 +195,7 @@ examsLowerCase.forEach((exam) => {
     test(`${exam} failing of attachment upload is handled correctly`, async ({ page }) => {
       await fillInstructionForm({
         page,
-        nameTextFi: 'Testi ohje'
+        nameFi: 'Testi ohje'
       })
 
       await page.getByTestId('form-submit').click()

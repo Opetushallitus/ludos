@@ -1,249 +1,198 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
-  Exam,
+  koodiNimi,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../../helpers'
-import { TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Oppimaara, oppimaaraId, TeachingLanguage } from 'web/src/types'
+import {
+  AnyAssignmentFormType,
+  CommonAssignmentFormType,
+  isLdAssignmentFormType,
+  isPuhviAssignmentFormType,
+  isSukoAssignmentFormType,
+  LdAssignmentFormType,
+  PuhviAssignmentFormType,
+  SukoAssignmentFormType
+} from 'web/src/components/forms/schemas/assignmentSchema'
 
-type AssignmentBase = {
-  page: Page
-  nameTextFi: string
-  nameTextSv: string
-  instructionTextFi: string
-  instructionTextSv: string
-  contentTextFi: string[]
-  contentTextSv: string[]
-}
-async function fillLukuvuosi(page: Page) {
-  await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', ['20202021'])
-}
+export type AssignmentTextContent = Pick<
+  CommonAssignmentFormType,
+  'nameFi' | 'nameSv' | 'instructionFi' | 'instructionSv' | 'contentFi' | 'contentSv'
+>
 
-export async function fillSukoAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
-  await setSingleSelectDropdownOption(page, 'oppimaara', 'VKA1')
-  await page.getByTestId('assignmentTypeRadio-001').click()
-  await setSingleSelectDropdownOption(page, 'tavoitetaso', '0002')
-  await setMultiSelectDropdownOptions(page, 'aihe', ['001', '002'])
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminen', ['01'])
+async function fillCommonAssignmentFields(page: Page, exam: Exam, formData: AnyAssignmentFormType) {
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', formData.laajaalainenOsaaminenKoodiArvos)
 
-  // Test searching for non-existing option
-  await page.locator('#laajaalainenOsaaminen-input').fill('non-existing-option')
+  await page.getByTestId('nameFi').fill(formData.nameFi)
+  await page.getByTestId('instructionFi').fill(formData.instructionFi)
 
-  const allAvailableLaajaalainenOptions = ['01', '02', '03', '04', '05', '06']
-
-  for (const option of allAvailableLaajaalainenOptions) {
-    await expect(page.getByTestId(`laajaalainenOsaaminen-option-${option}`)).toBeHidden()
-  }
-
-  // Test searching for existing option Globaali- ja kulttuurinen osaaminen, KoodiArvo: 06
-  await page.locator('#laajaalainenOsaaminen-input').fill('globa')
-  await page.getByTestId('laajaalainenOsaaminen-option-06').click()
-
-  await page.getByTestId('laajaalainenOsaaminen-open').click()
-  await page.getByTestId('laajaalainenOsaaminen-option-02').click()
-
-  await fillAssignmentTextFields(
-    page,
-    Exam.Suko,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
-}
-
-export async function updateSukoAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
-  await setSingleSelectDropdownOption(page, 'oppimaara', 'VKA1.SA')
-  await page.getByTestId('assignmentTypeRadio-002').click()
-  await setSingleSelectDropdownOption(page, 'tavoitetaso', '0003')
-  // remove first selected option
-  await page.getByTestId('aihe-remove-selected-option').first().click()
-  // Verify that option has been removed
-  const selectedOptionsAihe = await page.getByTestId('aihe-remove-selected-option').count()
-  expect(selectedOptionsAihe).toBe(1)
-  // remove all selected options
-  await page.getByTestId('aihe-reset-selected-options').first().click()
-
-  // Verify that all options have been removed
-  const selectedOptionsAiheResetted = await page.getByTestId('selected-option-aihe').count()
-  expect(selectedOptionsAiheResetted).toBe(0)
-
-  await setSingleSelectDropdownOption(page, 'aihe', '003')
-
-  await fillAssignmentTextFields(
-    page,
-    Exam.Suko,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
-  )
-}
-
-async function fillAssignmentTextFields(
-  page: Page,
-  exam: Exam,
-  nameTextFi: string,
-  instructionTextFi: string,
-  contentTextFi: string[],
-  nameTextSv: string,
-  instructionTextSv: string,
-  contentTextSv: string[]
-) {
-  await page.getByTestId('nameFi').fill(nameTextFi)
-  await page.getByTestId('instructionFi').fill(instructionTextFi)
-
-  for (const [index, content] of contentTextFi.entries()) {
+  for (const [index, content] of formData.contentFi.entries()) {
     await page.getByTestId(`contentFi-${index}`).locator('div[contenteditable="true"]').fill(content)
     // if not last content press add content field button
-    if (index !== contentTextFi.length - 1) {
+    if (index !== formData.contentFi.length - 1) {
       await page.getByTestId('contentFi-add-content-field').click()
     }
   }
 
-  if (exam === Exam.Suko) {
+  if (exam === Exam.SUKO) {
     await expect(page.getByTestId('tab-sv')).toBeHidden()
     return
   }
 
   await page.getByTestId('tab-sv').click()
 
-  await page.getByTestId('nameSv').fill(nameTextSv)
-  await page.getByTestId('instructionSv').fill(instructionTextSv)
+  await page.getByTestId('nameSv').fill(formData.nameSv)
+  await page.getByTestId('instructionSv').fill(formData.instructionSv)
 
-  for (const [index, content] of contentTextSv.entries()) {
+  for (const [index, content] of formData.contentSv.entries()) {
     await page.getByTestId(`contentSv-${index}`).locator('div[contenteditable="true"]').fill(content)
     // if not last content press add content field button
-    if (index !== contentTextSv.length - 1) {
+    if (index !== formData.contentSv.length - 1) {
       await page.getByTestId('contentSv-add-content-field').click()
     }
   }
 }
 
-export async function fillLdAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
-  // Kotitalous
-  await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '1')
+export async function fillAssignmentForm(page: Page, formData: AnyAssignmentFormType) {
+  if (isSukoAssignmentFormType(formData)) {
+    await fillSukoAssignmentForm(page, formData)
+  } else if (isLdAssignmentFormType(formData)) {
+    await fillLdAssignmentForm(page, formData)
+  } else if (isPuhviAssignmentFormType(formData)) {
+    await fillPuhviAssignmentForm(page, formData)
+  } else {
+    throw new Error(`Unknown form type: ${formData}`)
+  }
+}
 
-  await fillLukuvuosi(page)
+export async function fillSukoAssignmentForm(page: Page, formData: SukoAssignmentFormType) {
+  await setSingleSelectDropdownOption(page, 'oppimaara', oppimaaraId(formData.oppimaara))
+  await page.getByTestId(`assignmentTypeRadio-${formData.assignmentTypeKoodiArvo}`).click()
+  if (formData.tavoitetasoKoodiArvo) {
+    await setSingleSelectDropdownOption(page, 'tavoitetaso', formData.tavoitetasoKoodiArvo)
+  }
+  await setMultiSelectDropdownOptions(page, 'aihe', formData.aiheKoodiArvos)
 
-  // Eettisyys ja ympäristöosaaminen
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
+  await fillCommonAssignmentFields(page, Exam.SUKO, formData)
+}
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Ld,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
+export async function fillLdAssignmentForm(page: Page, formData: LdAssignmentFormType) {
+  await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
+  await setSingleSelectDropdownOption(page, 'aineKoodiArvo', formData.aineKoodiArvo)
+  await fillCommonAssignmentFields(page, Exam.LD, formData)
+}
+
+export async function fillPuhviAssignmentForm(page: Page, formData: PuhviAssignmentFormType) {
+  await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
+  await page.getByTestId(`assignmentTypeRadio-${formData.assignmentTypeKoodiArvo}`).click()
+  await fillCommonAssignmentFields(page, Exam.PUHVI, formData)
+}
+
+async function oppimaaraLabel(oppimaara: Oppimaara) {
+  const oppimaaraKoodiArvoLabel = await koodiLabel(
+    KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021,
+    oppimaara.oppimaaraKoodiArvo
+  )
+  if (oppimaara.kielitarjontaKoodiArvo) {
+    const kielitarjontaKoodiArvoLabel = await koodiLabel(KoodistoName.KIELITARJONTA, oppimaara.kielitarjontaKoodiArvo)
+    return `${oppimaaraKoodiArvoLabel}, ${kielitarjontaKoodiArvoLabel}`
+  } else {
+    return oppimaaraKoodiArvoLabel
+  }
+}
+
+async function koodiLabel(koodistoName: KoodistoName, koodiArvos: string | string[]): Promise<string> {
+  if (typeof koodiArvos === 'string') {
+    return koodiNimi(koodistoName, koodiArvos)
+  } else {
+    const labels = await Promise.all(koodiArvos.map((ka) => koodiLabel(koodistoName, ka)))
+    return labels.sort().join(', ')
+  }
+}
+
+export async function contentIdFromContentPage(page: Page): Promise<number> {
+  await expect(page.getByTestId('content-common')).toBeVisible()
+  const idString = page.url().split('/').pop()
+  if (idString && /^\d+$/.test(idString)) {
+    return parseInt(idString)
+  } else {
+    throw new Error(`Unable to parse id from url ${page.url()}`)
+  }
+}
+
+export async function assertAssignmentContentPage(page: Page, formData: AnyAssignmentFormType) {
+  if (isSukoAssignmentFormType(formData)) {
+    await assertSukoAssignmentContentPage(page, formData)
+  } else if (isLdAssignmentFormType(formData)) {
+    await assertLdAssignmentContentPage(page, formData)
+  } else if (isPuhviAssignmentFormType(formData)) {
+    await assertPuhviAssignmentContentPage(page, formData)
+  } else {
+    throw new Error(`Unknown form type: ${formData}`)
+  }
+}
+
+async function assertCommonAssignmentContentPage(page: Page, expectedFormData: CommonAssignmentFormType) {
+  await expect(page.getByTestId('publish-state')).toHaveText(
+    expectedFormData.publishState === 'PUBLISHED' ? 'state.julkaistu' : 'state.luonnos'
+  )
+  await expect(page.getByTestId('laajaalainenosaaminen')).toHaveText(
+    await koodiLabel(KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021, expectedFormData.laajaalainenOsaaminenKoodiArvos)
+  )
+
+  await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
+  await expect(page.getByTestId('instruction-fi')).toHaveText(expectedFormData.instructionFi)
+  for (const [i, content] of expectedFormData.contentFi.entries()) {
+    await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+  }
+
+  if (expectedFormData.exam !== Exam.SUKO) {
+    await setTeachingLanguage(page, TeachingLanguage.sv)
+
+    await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
+    await expect(page.getByTestId('instruction-sv')).toHaveText(expectedFormData.instructionSv)
+    for (const [i, content] of expectedFormData.contentSv.entries()) {
+      await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+    }
+
+    await setTeachingLanguage(page, TeachingLanguage.fi)
+  }
+}
+export async function assertSukoAssignmentContentPage(page: Page, expectedFormData: SukoAssignmentFormType) {
+  await assertCommonAssignmentContentPage(page, expectedFormData)
+
+  await expect(page.getByTestId('suko-oppimaara')).toHaveText(await oppimaaraLabel(expectedFormData.oppimaara))
+  await expect(page.getByTestId('suko-tehtavatyyppi')).toHaveText(
+    await koodiLabel(KoodistoName.TEHTAVATYYPPI_SUKO, expectedFormData.assignmentTypeKoodiArvo)
+  )
+  // await expect(page.getByTestId('suko-tavoitetaso')).toBeVisible()
+  await expect(page.getByTestId('suko-aihe')).toHaveText(
+    await koodiLabel(KoodistoName.AIHE_SUKO, expectedFormData.aiheKoodiArvos)
   )
 }
 
-async function fillLaajaalainenOsaaminenKoodiArvos(page: Page) {
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['02'])
-}
+export async function assertLdAssignmentContentPage(page: Page, expectedFormData: LdAssignmentFormType) {
+  await assertCommonAssignmentContentPage(page, expectedFormData)
 
-export async function updateLdAssignment({
-  page,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv,
-  contentTextFi,
-  contentTextSv
-}: AssignmentBase) {
-  await fillLaajaalainenOsaaminenKoodiArvos(page)
-
-  await fillAssignmentTextFields(
-    page,
-    Exam.Ld,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
+  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText(
+    await koodiLabel(KoodistoName.LUDOS_LUKUVUOSI, expectedFormData.lukuvuosiKoodiArvos)
+  )
+  await expect(page.getByTestId('ld-aine')).toHaveText(
+    await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, expectedFormData.aineKoodiArvo)
   )
 }
 
-export async function fillPuhviAssignmentForm({
-  page,
-  contentTextFi,
-  contentTextSv,
-  nameTextFi,
-  nameTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
-  // Esiintymistaidot
-  await page.getByTestId('assignmentTypeRadio-002').click()
-  await fillLukuvuosi(page)
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', ['05'])
+export async function assertPuhviAssignmentContentPage(page: Page, expectedFormData: PuhviAssignmentFormType) {
+  await assertCommonAssignmentContentPage(page, expectedFormData)
 
-  await fillAssignmentTextFields(
-    page,
-    Exam.Puhvi,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
+  await expect(page.getByTestId('ld-puhvi-lukuvuosi')).toHaveText(
+    await koodiLabel(KoodistoName.LUDOS_LUKUVUOSI, expectedFormData.lukuvuosiKoodiArvos)
   )
-}
-
-export async function updatePuhviAssignment({
-  page,
-  nameTextFi,
-  nameTextSv,
-  contentTextFi,
-  contentTextSv,
-  instructionTextFi,
-  instructionTextSv
-}: AssignmentBase) {
-  await fillLaajaalainenOsaaminenKoodiArvos(page)
-
-  await fillAssignmentTextFields(
-    page,
-    Exam.Puhvi,
-    nameTextFi,
-    instructionTextFi,
-    contentTextFi,
-    nameTextSv,
-    instructionTextSv,
-    contentTextSv
+  await expect(page.getByTestId('puhvi-tehtavatyyppi')).toHaveText(
+    await koodiLabel(KoodistoName.TEHTAVATYYPPI_PUHVI, expectedFormData.assignmentTypeKoodiArvo)
   )
 }
 
@@ -260,7 +209,7 @@ export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
     laajaalainenOsaaminenKoodiArvos: []
   }
 
-  if (exam === Exam.Suko) {
+  if (exam === Exam.SUKO) {
     return {
       ...base,
       assignmentTypeKoodiArvo: '003',
@@ -271,13 +220,13 @@ export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
       tavoitetasoKoodiArvo: null,
       aiheKoodiArvos: []
     }
-  } else if (exam === Exam.Ld) {
+  } else if (exam === Exam.LD) {
     return {
       ...base,
       lukuvuosiKoodiArvos: ['20202021'],
       aineKoodiArvo: '1'
     }
-  } else if (exam === Exam.Puhvi) {
+  } else if (exam === Exam.PUHVI) {
     return {
       ...base,
       assignmentTypeKoodiArvo: '002',
@@ -307,20 +256,6 @@ export async function checkListAfterFiltering(page: Page, exam: Exam, expectedAs
   expect(names).toEqual(
     expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, exam))
   )
-}
-
-export async function assertTeachingLanguageDropdownWorksInAssignmentListReturningFromContentPage(
-  page: Page,
-  assignmentId: number,
-  expectedNameSv: string
-) {
-  await page.getByTestId('return').click()
-  const assignmentCard = page.getByTestId(`assignment-list-item-${assignmentId}`)
-  await expect(assignmentCard).toBeVisible()
-
-  await setTeachingLanguage(page, TeachingLanguage.sv)
-
-  await expect(assignmentCard.getByTestId('assignment-name-link')).toHaveText(expectedNameSv)
 }
 
 export async function testEsitysNakyma(page: Page, linkTestId: string, assignmentIn: any) {

@@ -1,6 +1,6 @@
 import { createContext } from 'react'
-import { TeachingLanguage, UserDetails } from '../types'
-import { KoodiDtoOut, KoodistoName } from '../hooks/useKoodisto'
+import { KoodistoName, TeachingLanguage, UserDetails } from '../types'
+import { KoodiDtoOut } from '../hooks/useKoodisto'
 
 export const defaultLanguage = 'fi'
 export const ludosUILanguageKey = 'ludosUILanguage'

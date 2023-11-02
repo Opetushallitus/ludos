@@ -1,30 +1,11 @@
 import { LudosContext } from '../contexts/LudosContext'
 import { useContext } from 'react'
-import { BusinessLanguage } from '../types'
-
-export const KoodistoName = {
-  OPPIAINEET_JA_OPPIMAARAT_LOPS2021: 'oppiaineetjaoppimaaratlops2021',
-  KIELITARJONTA: 'lukiokielitarjonta',
-  LAAJA_ALAINEN_OSAAMINEN_LOPS2021: 'laajaalainenosaaminenlops2021',
-  TEHTAVATYYPPI_SUKO: 'tehtavatyyppisuko',
-  TAITOTASO: 'taitotaso',
-  LUDOS_LUKUVUOSI: 'ludoslukuvuosi',
-  LUDOS_LUKIODIPLOMI_AINE: 'ludoslukiodiplomiaine',
-  TEHTAVATYYPPI_PUHVI: 'tehtavatyyppipuhvi',
-  AIHE_SUKO: 'aihesuko'
-} as const
-
-export type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
+import { BusinessLanguage, KoodistoName, Oppimaara } from '../types'
 
 export type KoodiDtoOut = {
   koodiArvo: string
   nimi: string
   tarkenteet?: string[]
-}
-
-export type Oppimaara = {
-  oppimaaraKoodiArvo: string
-  kielitarjontaKoodiArvo: string | null
 }
 
 export function useKoodisto() {
@@ -61,21 +42,6 @@ export function getKoodi(koodiArvo: string, koodisto: Record<string, KoodiDtoOut
   return koodisto[koodiArvo] || null
 }
 
-export const oppimaaraId: (oppimaara: Oppimaara) => string = (oppimaara: Oppimaara) =>
-  oppimaara.kielitarjontaKoodiArvo
-    ? `${oppimaara.oppimaaraKoodiArvo}.${oppimaara.kielitarjontaKoodiArvo}`
-    : oppimaara.oppimaaraKoodiArvo
-
-export const oppimaaraFromId: (oppimaaraId: string) => Oppimaara = (oppimaaraId: string) => {
-  if (!/^([A-Z0-9]+(\.[A-Z0-9]+)?)$/.test(oppimaaraId)) {
-    throw new Error(`Invalid oppimaaraId: ${oppimaaraId}}`)
-  }
-  const oppimaaraParts = oppimaaraId.split('.')
-  return {
-    oppimaaraKoodiArvo: oppimaaraParts[0],
-    kielitarjontaKoodiArvo: oppimaaraParts.length === 2 ? oppimaaraParts[1] : null
-  }
-}
 export const sortKooditAlphabetically = (koodit: KoodiDtoOut[]) => {
   const language = document.documentElement.lang
   const locale = language === BusinessLanguage.fi ? 'fi-FI' : 'sv-SE'

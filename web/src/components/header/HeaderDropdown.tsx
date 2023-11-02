@@ -16,7 +16,7 @@ export const HeaderDropdown = ({ currentOption, options, onOptionClick, testId }
   const dropdownRef = useDropdownCloseOnBlur<boolean>(false, setIsOpen)
 
   return (
-    <div ref={dropdownRef}>
+    <div ref={dropdownRef} data-testid={testId}>
       <Button
         className="flex items-center text-green-primary"
         data-testid={`${testId}-expand`}

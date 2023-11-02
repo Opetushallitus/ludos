@@ -31,7 +31,7 @@ export function ContentHeader({
     contentType === ContentType.ohjeet || (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
 
   return (
-    <div className="row mb-3 mt-5 flex-wrap items-center justify-between">
+    <div data-testid="content-common" className="row mb-3 mt-5 flex-wrap items-center justify-between">
       <div className="flex w-2/3 flex-col">
         {!isPresentation && (
           <div className="row my-1">
