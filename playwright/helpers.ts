@@ -114,3 +114,9 @@ export async function setTeachingLanguage(page: Page, teachingLanguage: Teaching
 export async function assertSuccessNotification(page: Page, notificationLocalisationKey: string) {
   await expect(page.getByText(notificationLocalisationKey)).toBeVisible()
 }
+
+export async function assertInputValues(page: Page, inputName: string, expectedValues: string[]): Promise<void> {
+  const locators = await page.locator(`input[name="${inputName}"]`).all()
+  const values = await Promise.all(locators.map((l) => l.inputValue()))
+  expect(values.sort()).toEqual(expectedValues.slice().sort())
+}

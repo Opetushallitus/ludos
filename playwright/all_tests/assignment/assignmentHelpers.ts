@@ -23,18 +23,16 @@ export type AssignmentTextContent = Pick<
   'nameFi' | 'nameSv' | 'instructionFi' | 'instructionSv' | 'contentFi' | 'contentSv'
 >
 
-async function fillAssignmentTextFields(
-  page: Page,
-  exam: Exam,
-  { nameFi, instructionFi, contentFi, nameSv, instructionSv, contentSv }: AssignmentTextContent
-) {
-  await page.getByTestId('nameFi').fill(nameFi)
-  await page.getByTestId('instructionFi').fill(instructionFi)
+async function fillCommonAssignmentFields(page: Page, exam: Exam, formData: AnyAssignmentFormType) {
+  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', formData.laajaalainenOsaaminenKoodiArvos)
 
-  for (const [index, content] of contentFi.entries()) {
+  await page.getByTestId('nameFi').fill(formData.nameFi)
+  await page.getByTestId('instructionFi').fill(formData.instructionFi)
+
+  for (const [index, content] of formData.contentFi.entries()) {
     await page.getByTestId(`contentFi-${index}`).locator('div[contenteditable="true"]').fill(content)
     // if not last content press add content field button
-    if (index !== contentFi.length - 1) {
+    if (index !== formData.contentFi.length - 1) {
       await page.getByTestId('contentFi-add-content-field').click()
     }
   }
@@ -46,13 +44,13 @@ async function fillAssignmentTextFields(
 
   await page.getByTestId('tab-sv').click()
 
-  await page.getByTestId('nameSv').fill(nameSv)
-  await page.getByTestId('instructionSv').fill(instructionSv)
+  await page.getByTestId('nameSv').fill(formData.nameSv)
+  await page.getByTestId('instructionSv').fill(formData.instructionSv)
 
-  for (const [index, content] of contentSv.entries()) {
+  for (const [index, content] of formData.contentSv.entries()) {
     await page.getByTestId(`contentSv-${index}`).locator('div[contenteditable="true"]').fill(content)
     // if not last content press add content field button
-    if (index !== contentSv.length - 1) {
+    if (index !== formData.contentSv.length - 1) {
       await page.getByTestId('contentSv-add-content-field').click()
     }
   }
@@ -77,23 +75,20 @@ export async function fillSukoAssignmentForm(page: Page, formData: SukoAssignmen
     await setSingleSelectDropdownOption(page, 'tavoitetaso', formData.tavoitetasoKoodiArvo)
   }
   await setMultiSelectDropdownOptions(page, 'aihe', formData.aiheKoodiArvos)
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminen', formData.laajaalainenOsaaminenKoodiArvos)
 
-  await fillAssignmentTextFields(page, Exam.SUKO, formData)
+  await fillCommonAssignmentFields(page, Exam.SUKO, formData)
 }
 
 export async function fillLdAssignmentForm(page: Page, formData: LdAssignmentFormType) {
   await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
   await setSingleSelectDropdownOption(page, 'aineKoodiArvo', formData.aineKoodiArvo)
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', formData.laajaalainenOsaaminenKoodiArvos)
-  await fillAssignmentTextFields(page, Exam.LD, formData)
+  await fillCommonAssignmentFields(page, Exam.LD, formData)
 }
 
 export async function fillPuhviAssignmentForm(page: Page, formData: PuhviAssignmentFormType) {
   await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
   await page.getByTestId(`assignmentTypeRadio-${formData.assignmentTypeKoodiArvo}`).click()
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', formData.laajaalainenOsaaminenKoodiArvos)
-  await fillAssignmentTextFields(page, Exam.PUHVI, formData)
+  await fillCommonAssignmentFields(page, Exam.PUHVI, formData)
 }
 
 async function oppimaaraLabel(oppimaara: Oppimaara) {

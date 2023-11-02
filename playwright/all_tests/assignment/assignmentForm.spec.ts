@@ -1,14 +1,17 @@
 import { expect, Page, test } from '@playwright/test'
-import { assertSuccessNotification, FormAction, loginTestGroup, Role } from '../../helpers'
+import { assertInputValues, assertSuccessNotification, FormAction, loginTestGroup, Role } from '../../helpers'
 import {
   assertAssignmentContentPage,
   AssignmentTextContent,
   contentIdFromContentPage,
   fillAssignmentForm
 } from './assignmentHelpers'
-import { Exam, PublishState } from 'web/src/types'
+import { Exam, oppimaaraId, PublishState } from 'web/src/types'
 import {
   AnyAssignmentFormType,
+  isLdAssignmentFormType,
+  isPuhviAssignmentFormType,
+  isSukoAssignmentFormType,
   LdAssignmentFormType,
   PuhviAssignmentFormType,
   SukoAssignmentFormType
@@ -120,9 +123,26 @@ async function changeAssignmentPublishState(page: Page, action: FormAction) {
 }
 
 async function navigateToAssignmentUpdateFormAndAssertDataLoaded(page: Page, expectedFormData: AnyAssignmentFormType) {
-  // TODO: metadata
   await page.getByTestId('edit-content-btn').click()
   await expect(page.getByTestId('heading')).toHaveText(expectedFormData.nameFi)
+
+  if (isSukoAssignmentFormType(expectedFormData)) {
+    await assertInputValues(page, 'oppimaara', [oppimaaraId(expectedFormData.oppimaara)])
+    await expect(page.getByTestId(`assignmentTypeRadio-${expectedFormData.assignmentTypeKoodiArvo}`)).toBeChecked()
+    if (expectedFormData.tavoitetasoKoodiArvo) {
+      await assertInputValues(page, 'tavoitetaso', [expectedFormData.tavoitetasoKoodiArvo])
+    }
+    await assertInputValues(page, 'aihe', expectedFormData.aiheKoodiArvos)
+  } else if (isLdAssignmentFormType(expectedFormData)) {
+    await assertInputValues(page, 'lukuvuosiKoodiArvos', expectedFormData.lukuvuosiKoodiArvos)
+    await assertInputValues(page, 'aineKoodiArvo', [expectedFormData.aineKoodiArvo])
+  } else if (isPuhviAssignmentFormType(expectedFormData)) {
+    await assertInputValues(page, 'lukuvuosiKoodiArvos', expectedFormData.lukuvuosiKoodiArvos)
+    await expect(page.getByTestId(`assignmentTypeRadio-${expectedFormData.assignmentTypeKoodiArvo}`)).toBeChecked()
+  } else {
+    throw new Error(`Unsupported type for expectedFormData ${expectedFormData}`)
+  }
+  await assertInputValues(page, 'laajaalainenOsaaminenKoodiArvos', expectedFormData.laajaalainenOsaaminenKoodiArvos)
 
   await expect(page.getByTestId('nameFi')).toHaveValue(expectedFormData.nameFi)
   await expect(page.getByTestId('instructionFi')).toHaveValue(expectedFormData.instructionFi)
@@ -208,10 +228,10 @@ Object.values(Exam).forEach((exam) => {
       await page.getByTestId('create-koetehtava-button').click()
     })
 
-    test(`can create, update and delete published assignment`, async ({ page }) =>
+    test('can create published, update and delete', async ({ page }) =>
       await createAndUpdateAndDeleteAssignment(page, exam, 'submit'))
 
-    test(`can create, update and delete draft assignment`, async ({ page }) =>
+    test('can create draft, update and delete', async ({ page }) =>
       await createAndUpdateAndDeleteAssignment(page, exam, 'draft'))
 
     test(`can cancel assignment creation`, async ({ page }) => await cancelAssignmentCreation(page))
