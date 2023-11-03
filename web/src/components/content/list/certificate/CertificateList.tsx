@@ -1,11 +1,11 @@
 import { useFetch } from '../../../../hooks/useFetch'
 import {
-  CertificateDtoOut,
   ContentOut,
   ContentType,
   ContentTypeSingular,
   ContentTypeSingularEng,
-  Exam
+  Exam,
+  TeachingLanguage
 } from '../../../../types'
 import { CertificateCard } from './CertificateCard'
 import { InternalLink } from '../../../InternalLink'
@@ -18,18 +18,17 @@ import { useTranslation } from 'react-i18next'
 
 type CertificateListProps = {
   exam: Exam
+  teachingLanguage: TeachingLanguage
 }
 
-export const CertificateList = ({ exam }: CertificateListProps) => {
+export const CertificateList = ({ exam, teachingLanguage }: CertificateListProps) => {
   const contentType = ContentType.todistukset
   const { isYllapitaja } = useUserDetails()
   const { t } = useTranslation()
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
-  const { DataWrapper } = useFetch<ContentOut<CertificateDtoOut>>(
-    `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}`
-  )
+  const { DataWrapper } = useFetch<ContentOut>(`${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}`)
 
   return (
     <div>
@@ -51,7 +50,11 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
         render={(data) => (
           <ul className="mt-3 flex flex-wrap gap-5">
             {data.content.map((certificate, i) => (
-              <CertificateCard exam={exam} certificate={certificate} key={`${exam}-${contentType}-${i}`} />
+              <CertificateCard
+                certificate={certificate}
+                teachingLanguage={teachingLanguage}
+                key={`${exam}-${contentType}-${i}`}
+              />
             ))}
           </ul>
         )}

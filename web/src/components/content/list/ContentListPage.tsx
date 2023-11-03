@@ -46,7 +46,7 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
                 filterValues={filterValues}
               />
             ) : (
-              <CertificateList exam={exam} />
+              <CertificateList exam={exam} teachingLanguage={languageOverrideIfSukoAssignment} />
             )}
           </>
         )}

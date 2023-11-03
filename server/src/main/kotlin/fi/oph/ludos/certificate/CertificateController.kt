@@ -24,8 +24,24 @@ class CertificateController(val service: CertificateService) {
     @RequireAtLeastYllapitajaRole
     fun createCertificate(
         @Valid @RequestPart("certificate") certificate: Certificate,
-        @RequestPart("attachment") attachment: MultipartFile
-    ): Certificate = service.createCertificate(certificate, attachment)
+        @RequestPart("attachmentFi") attachment: MultipartFile,
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
+    ): Certificate = when (certificate) {
+        is SukoCertificateDtoIn -> service.createSukoCertificate(certificate, attachment)
+        is LdCertificateDtoIn -> if (attachmentSv != null) service.createLdCertificate(
+            certificate,
+            attachment,
+            attachmentSv
+        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+
+        is PuhviCertificateDtoIn -> if (attachmentSv != null) service.createPuhviCertificate(
+            certificate,
+            attachment,
+            attachmentSv
+        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+    }
 
     @GetMapping("SUKO")
     @RequireAtLeastOpettajaRole
@@ -41,19 +57,37 @@ class CertificateController(val service: CertificateService) {
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole
-    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? {
-        val certificateDtoOut = service.getCertificateById(id, exam)
-
-        return certificateDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate not found $id")
-    }
+    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? =
+        service.getCertificateById(id, exam) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Certificate not found $id"
+        )
 
     @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun updateCertificate(
         @PathVariable("id") id: Int,
         @Valid @RequestPart("certificate") certificate: Certificate,
-        @RequestPart("attachment") attachment: MultipartFile?
-    ): Int? = service.updateCertificate(id, certificate, attachment)
+        @RequestPart("attachmentFi") attachment: MultipartFile?,
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
+    ): Int? = when (certificate) {
+        is SukoCertificateDtoIn -> service.updateSukoCertificate(id, certificate, attachment)
+        is LdCertificateDtoIn -> service.updateLdCertificate(
+            id,
+            certificate,
+            attachment,
+            attachmentSv
+        )
+
+        is PuhviCertificateDtoIn -> service.updatePuhviCertificate(
+            id,
+            certificate,
+            attachment,
+            attachmentSv
+        )
+
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+    }
 
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole

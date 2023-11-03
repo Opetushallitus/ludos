@@ -182,8 +182,10 @@ class SeedDataRepository(
 
             val sukoCertificateDtoIn = SukoCertificateDtoIn(
                 exam = Exam.SUKO,
-                name = "SUKO Test Certificate $it",
-                description = "SUKO Test Certificate Description $it",
+                nameFi = "SUKO Test Certificate $it",
+                nameSv = "",
+                descriptionFi = "SUKO Test Certificate Description $it",
+                descriptionSv = "",
                 publishState = publishState,
             )
 
@@ -192,21 +194,24 @@ class SeedDataRepository(
 
             val ldCertificateDtoIn = LdCertificateDtoIn(
                 exam = Exam.LD,
-                name = "LD Test Certificate $it",
+                nameFi = "LD Test Certificate $it FI",
+                nameSv = "LD Test Certificate $it SV",
                 publishState = publishState,
                 aineKoodiArvo = "1"
             )
 
-            certificateRepository.createLdCertificate(multipartFile, ldCertificateDtoIn)
+            certificateRepository.createLdCertificate(multipartFile, multipartFile, ldCertificateDtoIn)
 
             val puhviCertificateDtoIn = PuhviCertificateDtoIn(
                 exam = Exam.PUHVI,
-                name = "PUHVI Test Certificate $it",
-                description = "PUHVI Test Certificate Description $it",
+                nameFi = "PUHVI Test Certificate $it FI",
+                nameSv = "PUHVI Test Certificate $it Sv",
+                descriptionFi = "PUHVI Test Certificate Description $it FI",
+                descriptionSv = "PUHVI Test Certificate Description $it SV",
                 publishState = publishState,
             )
 
-            certificateRepository.createPuhviCertificate(multipartFile, puhviCertificateDtoIn)
+            certificateRepository.createPuhviCertificate(multipartFile, multipartFile, puhviCertificateDtoIn)
         }
     }
 

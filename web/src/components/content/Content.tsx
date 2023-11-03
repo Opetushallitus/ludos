@@ -15,9 +15,9 @@ import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
-import { isCertificate } from '../../utils/certificateUtils'
 import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
+import { isCertificate } from '../../utils/certificateUtils'
 
 type ContentProps = {
   exam: Exam
@@ -76,7 +76,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
                   <div className="mb-4 border-b border-gray-separator mt-2" />
 
-                  {contentType && isAssignment(data, contentType) && (
+                  {contentType === ContentType.koetehtavat && isAssignment(data) && (
                     <AssignmentContent
                       assignment={data}
                       exam={exam}
@@ -85,11 +85,11 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                     />
                   )}
 
-                  {contentType && isCertificate(data, contentType) && (
-                    <CertificateContent exam={exam} certificate={data} />
+                  {contentType === ContentType.todistukset && isCertificate(data) && (
+                    <CertificateContent certificate={data} teachingLanguage={teachingLanguage} />
                   )}
 
-                  {contentType && isInstruction(data, contentType) && (
+                  {contentType === ContentType.ohjeet && isInstruction(data, contentType) && (
                     <InstructionContent
                       instruction={data}
                       teachingLanguage={teachingLanguage}

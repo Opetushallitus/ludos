@@ -6,7 +6,6 @@ import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
 import fi.oph.ludos.repository.getKotlinArray
-import fi.oph.ludos.repository.getZonedDateTime
 import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
@@ -22,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException
 import software.amazon.awssdk.core.exception.SdkException
 import java.sql.ResultSet
 import java.sql.Timestamp
-import java.time.ZoneId
 import java.util.*
 
 @Component
@@ -190,7 +188,7 @@ class InstructionRepository(
                     )
                VALUES (?, ?, clock_timestamp(), ?, ?, ?::language)
                RETURNING attachment_upload_date""".trimIndent(),
-            { rs: ResultSet, _: Int -> rs.getZonedDateTime("attachment_upload_date") },
+            { rs: ResultSet, _: Int -> rs.getTimestamp("attachment_upload_date") },
             fileKey,
             originalFilename,
             instructionId,
@@ -215,7 +213,7 @@ class InstructionRepository(
                 InstructionAttachmentDtoOut(
                     attachmentFileKeys[i]!!,
                     attachmentFileNames[i],
-                    attachmentUploadDates[i].toInstant().atZone(ZoneId.systemDefault()),
+                    attachmentUploadDates[i],
                     instructionAttachmentNames[i],
                     Language.valueOf(instructionAttachmentLanguages[i])
                 )
@@ -576,7 +574,7 @@ class InstructionRepository(
                 InstructionAttachmentDtoOut(
                     rs.getString("attachment_file_key"),
                     rs.getString("attachment_file_name"),
-                    rs.getZonedDateTime("attachment_upload_date"),
+                    rs.getTimestamp("attachment_upload_date"),
                     rs.getString("instruction_attachment_name"),
                     Language.valueOf(rs.getString("instruction_attachment_language"))
                 )

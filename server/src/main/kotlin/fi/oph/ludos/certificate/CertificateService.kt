@@ -18,22 +18,45 @@ class CertificateService(val repository: CertificateRepository, val s3Helper: S3
 
     fun getCertificates(exam: Exam): List<CertificateOut> = repository.getCertificates(exam)
 
-    fun createCertificate(certificate: Certificate, attachment: MultipartFile): CertificateOut = when (certificate) {
-        is SukoCertificateDtoIn -> repository.createSukoCertificate(attachment, certificate)
-        is PuhviCertificateDtoIn -> repository.createPuhviCertificate(attachment, certificate)
-        is LdCertificateDtoIn -> repository.createLdCertificate(attachment, certificate)
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
-    }
+    fun createSukoCertificate(certificate: SukoCertificateDtoIn, attachment: MultipartFile): CertificateOut =
+        repository.createSukoCertificate(attachment, certificate)
+
+    fun createLdCertificate(
+        certificate: LdCertificateDtoIn,
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile
+    ): CertificateOut =
+        repository.createLdCertificate(attachmentFi, attachmentSv, certificate)
+
+    fun createPuhviCertificate(
+        certificate: PuhviCertificateDtoIn,
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile
+    ): CertificateOut =
+        repository.createPuhviCertificate(attachmentFi, attachmentSv, certificate)
 
     fun getCertificateById(id: Int, exam: Exam): CertificateOut? = repository.getCertificateById(id, exam)
 
-    fun updateCertificate(id: Int, certificateDtoIn: Certificate, attachment: MultipartFile?): Int? =
-        when (certificateDtoIn) {
-            is SukoCertificateDtoIn -> repository.updateSukoCertificate(id, certificateDtoIn, attachment)
-            is LdCertificateDtoIn -> repository.updateLdCertificate(id, certificateDtoIn, attachment)
-            is PuhviCertificateDtoIn -> repository.updatePuhviCertificate(id, certificateDtoIn, attachment)
-            else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
-        }
+    fun updateSukoCertificate(
+        id: Int,
+        certificateDtoIn: SukoCertificateDtoIn,
+        attachmentFi: MultipartFile?
+    ) = repository.updateSukoCertificate(id, certificateDtoIn, attachmentFi)
+
+    fun updateLdCertificate(
+        id: Int,
+        certificateDtoIn: LdCertificateDtoIn,
+        attachmentFi: MultipartFile?,
+        attachmentSv: MultipartFile?
+    ) = repository.updateLdCertificate(id, certificateDtoIn, attachmentFi, attachmentSv)
+
+    fun updatePuhviCertificate(
+        id: Int,
+        certificateDtoIn: PuhviCertificateDtoIn,
+        attachmentFi: MultipartFile?,
+        attachmentSv: MultipartFile?
+    ) = repository.updatePuhviCertificate(id, certificateDtoIn, attachmentFi, attachmentSv)
+
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(

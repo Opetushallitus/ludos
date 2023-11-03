@@ -3,6 +3,59 @@ import { Exam, KoodistoName } from 'web/src/types'
 import { FormAction, koodiLabel } from '../../helpers'
 import path from 'path'
 
+function certificateNameByAction(action: FormAction): string {
+  switch (action) {
+    case 'submit':
+      return 'Testi todistus'
+    case 'draft':
+      return 'Testi todistus draft'
+    case 'cancel':
+      return 'Testi todistus cancel'
+    case 'delete':
+      return 'Testi todistus delete'
+  }
+}
+
+const attachment1 = {
+  name: 'fixture1.pdf',
+  size: 323
+}
+
+const attachment2 = {
+  name: 'fixture2.pdf',
+  size: 331
+}
+
+export type CertificateInput = {
+  nameFi: string
+  nameSv: string
+  aineKoodiArvo: string
+  descriptionFi: string
+  descriptionSv: string
+  fixtureFi: { size: number; name: string }
+  fixtureSv: { size: number; name: string }
+}
+
+export const createCertificateInputs = (action: FormAction): CertificateInput => ({
+  nameFi: certificateNameByAction(action),
+  nameSv: `${certificateNameByAction(action)} sv`,
+  descriptionFi: 'Todistuksen kuvaus FI',
+  descriptionSv: 'Todistuksen kuvaus SV',
+  fixtureFi: attachment1,
+  fixtureSv: attachment1,
+  aineKoodiArvo: '9'
+})
+
+export const updateCertificateInputs = (action: FormAction): CertificateInput => ({
+  nameFi: `${certificateNameByAction(action)} updated`,
+  nameSv: `${certificateNameByAction(action)} sv updated`,
+  descriptionFi: 'Todistuksen kuvaus FI updated',
+  descriptionSv: 'Todistuksen kuvaus SV updated',
+  fixtureFi: attachment2,
+  fixtureSv: attachment2,
+  aineKoodiArvo: '9'
+})
+
 export async function testAttachmentLink(
   page: Page,
   context: BrowserContext,
@@ -26,37 +79,32 @@ export async function assertContentPage(
   page: Page,
   context: BrowserContext,
   exam: Exam,
-  action: FormAction,
-  nameText: string,
-  descriptionText: string,
-  expectedAttachment: {
-    name: string
-    size: number
-  }
+  inputs: CertificateInput,
+  action: FormAction
 ) {
   const header = page.getByTestId('assignment-header')
-  await expect(header).toHaveText(nameText)
+  await expect(header).toHaveText(inputs.nameFi)
 
   if (exam === Exam.LD) {
     await expect(page.getByTestId('certificate-aine')).toHaveText(
-      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9')
+      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, inputs.aineKoodiArvo)
     )
   } else {
-    await expect(page.getByText(descriptionText, { exact: true })).toBeVisible()
+    await expect(page.getByText(inputs.descriptionFi, { exact: true })).toBeVisible()
   }
 
-  const attachment = await page.getByTestId(expectedAttachment.name).allTextContents()
-  expect(attachment[0]).toContain(expectedAttachment.name)
+  const attachment = await page.getByTestId(inputs.fixtureFi.name).allTextContents()
+  expect(attachment[0]).toContain(inputs.fixtureFi.name)
 
   await expect(page.getByText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos', { exact: true })).toBeVisible()
 
-  await testAttachmentLink(page, context, expectedAttachment)
+  await testAttachmentLink(page, context, inputs.fixtureFi)
 }
 
-export async function selectAttachmentFile(page: Page, file: string) {
+export async function selectAttachmentFile(page: Page, file: string, language: 'fi' | 'sv' = 'fi') {
   const filePath = path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`)
 
-  await page.locator('#fileInput-fi').setInputFiles(filePath)
+  await page.locator(`#fileInput-${language}`).setInputFiles(filePath)
 
   const currentDate = new Date()
 
@@ -65,5 +113,5 @@ export async function selectAttachmentFile(page: Page, file: string) {
   const year = currentDate.getFullYear()
   const formattedDate = `${day}.${month}.${year}`
 
-  await expect(page.getByTestId(file)).toHaveText(`${file}${formattedDate}`)
+  await expect(page.getByTestId(file).first()).toHaveText(`${file}${formattedDate}`)
 }

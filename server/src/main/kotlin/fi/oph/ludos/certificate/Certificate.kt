@@ -7,8 +7,8 @@ import fi.oph.ludos.*
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.ValidKoodiArvo
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import java.sql.Timestamp
-import java.time.ZonedDateTime
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -18,30 +18,35 @@ import java.time.ZonedDateTime
 )
 interface Certificate {
     val exam: Exam
-
-    @get:NotBlank
-    @get:ValidContentName
-    val name: String
+    val nameFi: String
+    val nameSv: String
     val publishState: PublishState
-}
-
-interface SukoOrPuhviCertificate : Certificate {
-    @get:NotBlank
-    @get:ValidContentDescription
-    val description: String
 }
 
 @JsonTypeName("SUKO")
 data class SukoCertificateDtoIn(
-    override val name: String,
-    override val description: String,
+    @field:NotBlank
+    @field:ValidContentName
+    override val nameFi: String,
+    @field:Size(min = 0, max = 0)
+    override val nameSv: String,
+    @field:NotBlank
+    @field:ValidContentDescription
+    val descriptionFi: String,
+    @field:Size(min = 0, max = 0)
+    val descriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.SUKO
-) : SukoOrPuhviCertificate
+) : Certificate
 
 @JsonTypeName("LD")
 data class LdCertificateDtoIn(
-    override val name: String,
+    @field:NotBlank
+    @field:ValidContentName
+    override val nameFi: String,
+    @field:NotBlank
+    @field:ValidContentName
+    override val nameSv: String,
     override val publishState: PublishState,
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     val aineKoodiArvo: String,
@@ -50,52 +55,87 @@ data class LdCertificateDtoIn(
 
 @JsonTypeName("PUHVI")
 data class PuhviCertificateDtoIn(
-    override val name: String,
-    override val description: String,
+    @field:NotBlank
+    @field:ValidContentName
+    override val nameFi: String,
+    @field:NotBlank
+    @field:ValidContentName
+    override val nameSv: String,
+    @field:NotBlank
+    @field:ValidContentDescription
+    val descriptionFi: String,
+    @field:NotBlank
+    @field:ValidContentDescription
+    val descriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.PUHVI
-) : SukoOrPuhviCertificate
+) : Certificate
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = SukoCertificateDtoOut::class, name = "SUKO"),
+    JsonSubTypes.Type(value = PuhviCertificateDtoOut::class, name = "PUHVI"),
+    JsonSubTypes.Type(value = LdCertificateDtoOut::class, name = "LD")
+)
 interface CertificateOut : Certificate {
     val id: Int
     override val exam: Exam
-    override val name: String
     override val publishState: PublishState
-    val attachment: CertificateAttachmentDtoOut
     val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
 }
 
-data class SukoOrPuhviCertificateDtoOut(
+@JsonTypeName("SUKO")
+data class SukoCertificateDtoOut(
     override val id: Int,
-    override val exam: Exam,
-    override val name: String,
-    val description: String,
+    override val nameFi: String,
+    override val nameSv: String,
     override val publishState: PublishState,
-    override val attachment: CertificateAttachmentDtoOut,
-    override val authorOid: String,
-    override val createdAt: Timestamp,
-    override val updatedAt: Timestamp
-) : CertificateOut
-
-data class LdCertificateDtoOut(
-    override val id: Int,
-    override val exam: Exam,
-    override val name: String,
-    override val publishState: PublishState,
-    override val attachment: CertificateAttachmentDtoOut,
+    val attachmentFi: CertificateAttachmentDtoOut,
     override val authorOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
-    val aineKoodiArvo: String
+    val descriptionFi: String,
+    val descriptionSv: String,
+    override val exam: Exam = Exam.SUKO
 ) : CertificateOut
 
+@JsonTypeName("LD")
+data class LdCertificateDtoOut(
+    override val id: Int,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val publishState: PublishState,
+    val attachmentFi: CertificateAttachmentDtoOut,
+    val attachmentSv: CertificateAttachmentDtoOut,
+    override val authorOid: String,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp,
+    val aineKoodiArvo: String,
+    override val exam: Exam = Exam.LD
+) : CertificateOut
+
+@JsonTypeName("PUHVI")
+data class PuhviCertificateDtoOut(
+    override val id: Int,
+    override val nameFi: String,
+    override val nameSv: String,
+    override val publishState: PublishState,
+    val attachmentFi: CertificateAttachmentDtoOut,
+    val attachmentSv: CertificateAttachmentDtoOut,
+    override val authorOid: String,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp,
+    val descriptionFi: String,
+    val descriptionSv: String,
+    override val exam: Exam = Exam.PUHVI
+) : CertificateOut
 
 data class CertificateAttachmentDtoOut(
     override val fileKey: String,
     override val fileName: String,
-    override val fileUploadDate: ZonedDateTime,
+    override val fileUploadDate: Timestamp,
 ) : AttachmentOut
 
 data class CertificatesOut(

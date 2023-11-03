@@ -1,4 +1,4 @@
-import { CertificateDtoOut, Exam } from '../../../../types'
+import { BaseOut, TeachingLanguage } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -6,17 +6,39 @@ import { toLocaleDate } from '../../../../utils/formatUtils'
 import { PdfTag } from '../../../PdfTag'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
-import { isLdCertificate, isSukoOrPuhviCertificate } from '../../../../utils/certificateUtils'
+import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../../../utils/certificateUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
 type CertificateCardProps = {
-  exam: Exam
-  certificate: CertificateDtoOut
+  certificate: BaseOut
+  teachingLanguage: TeachingLanguage
 }
 
-export const CertificateCard = ({ exam, certificate }: CertificateCardProps) => {
+export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCardProps) => {
   const { isYllapitaja } = useUserDetails()
   const { getKoodiLabel } = useKoodisto()
+
+  const getCertificateName = () => {
+    if (isSukoCertificate(certificate)) {
+      return certificate.nameFi
+    } else if (isLdCertificate(certificate)) {
+      return getKoodiLabel(certificate.aineKoodiArvo, 'ludoslukiodiplomiaine')
+    } else if (isPuhviCertificate(certificate)) {
+      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+    }
+    return null
+  }
+
+  const getCertificateDescription = () => {
+    if (isSukoCertificate(certificate)) {
+      return certificate.descriptionFi
+    } else if (isLdCertificate(certificate)) {
+      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+    } else if (isPuhviCertificate(certificate)) {
+      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+    }
+    return null
+  }
 
   return (
     <div
@@ -24,11 +46,7 @@ export const CertificateCard = ({ exam, certificate }: CertificateCardProps) => 
       data-testid={`certificate-${certificate.id}`}>
       <div className="text-center flex-1 px-2 break-words">
         <InternalLink className="text-sm font-semibold text-green-primary" to={`${certificate.id}`}>
-          {isLdCertificate(certificate, exam) ? (
-            <>{getKoodiLabel(certificate.aineKoodiArvo, 'ludoslukiodiplomiaine')}</>
-          ) : (
-            <>{certificate.name}</>
-          )}
+          {getCertificateName()}
         </InternalLink>
         {isYllapitaja && (
           <InternalLink
@@ -40,9 +58,7 @@ export const CertificateCard = ({ exam, certificate }: CertificateCardProps) => 
         )}
       </div>
 
-      <p className="mb-2 mt-2 text-center text-xs">
-        {isSukoOrPuhviCertificate(certificate, exam) ? certificate.description : certificate.name}
-      </p>
+      <p className="mb-2 mt-2 text-center text-xs">{getCertificateDescription()}</p>
 
       <div className="row mt-3 justify-between">
         <div className="w-20">{isYllapitaja && <StateTag state={certificate.publishState} />}</div>

@@ -7,28 +7,47 @@ import {
   setSingleSelectDropdownOption
 } from '../../helpers'
 import { Exam } from 'web/src/types'
-import { assertContentPage, selectAttachmentFile } from './certificateHelpers'
+import {
+  assertContentPage,
+  CertificateInput,
+  createCertificateInputs,
+  selectAttachmentFile,
+  updateCertificateInputs
+} from './certificateHelpers'
 
-const attachment1 = {
-  name: 'fixture1.pdf',
-  size: 323
+async function fillIfSukoForm(exam: Exam, page: Page, inputs: CertificateInput) {
+  if (exam === Exam.SUKO) {
+    await page.getByTestId('nameFi').fill(inputs.nameFi)
+    await page.getByTestId('descriptionFi').fill(inputs.descriptionFi)
+    await selectAttachmentFile(page, inputs.fixtureFi.name)
+  }
 }
 
-const attachment2 = {
-  name: 'fixture2.pdf',
-  size: 331
+async function fillIfLdForm(exam: 'SUKO' | 'LD' | 'PUHVI', page: Page, inputs: CertificateInput) {
+  if (exam === Exam.LD) {
+    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', inputs.aineKoodiArvo)
+
+    await page.getByTestId('nameFi').fill(inputs.nameFi)
+    await selectAttachmentFile(page, inputs.fixtureFi.name)
+
+    await page.getByTestId('tab-sv').click()
+
+    await page.getByTestId('nameSv').fill(inputs.nameSv)
+    await selectAttachmentFile(page, inputs.fixtureSv.name, 'sv')
+  }
 }
 
-function certificateNameByAction(action: FormAction): string {
-  switch (action) {
-    case 'submit':
-      return 'Testi todistus'
-    case 'draft':
-      return 'Testi todistus draft'
-    case 'cancel':
-      return 'Testi todistus cancel'
-    case 'delete':
-      return 'Testi todistus delete'
+async function fillIfPuhviForm(exam: 'SUKO' | 'LD' | 'PUHVI', page: Page, inputs: CertificateInput) {
+  if (exam === Exam.PUHVI) {
+    await page.getByTestId('nameFi').fill(inputs.nameFi)
+    await page.getByTestId('descriptionFi').fill(inputs.descriptionFi)
+    await selectAttachmentFile(page, inputs.fixtureFi.name)
+
+    await page.getByTestId('tab-sv').click()
+
+    await page.getByTestId('nameSv').fill(inputs.nameSv)
+    await page.getByTestId('descriptionSv').fill(inputs.descriptionSv)
+    await selectAttachmentFile(page, inputs.fixtureSv.name, 'sv')
   }
 }
 
@@ -39,17 +58,11 @@ async function createCertificate(
   action: FormAction,
   expectedNotification: string
 ) {
-  await selectAttachmentFile(page, 'fixture1.pdf')
+  const inputs = createCertificateInputs(action)
 
-  const nameText = certificateNameByAction(action)
-  const descriptionText = 'Todistuksen kuvaus'
-
-  await page.getByTestId('name').fill(nameText)
-  if (exam === Exam.LD) {
-    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '9')
-  } else {
-    await page.getByTestId('description').fill(descriptionText)
-  }
+  await fillIfSukoForm(exam, page, inputs)
+  await fillIfLdForm(exam, page, inputs)
+  await fillIfPuhviForm(exam, page, inputs)
 
   if (action === 'submit') {
     void page.getByTestId('form-submit').click()
@@ -64,9 +77,9 @@ async function createCertificate(
   const responseData = await responseFromClick.json()
 
   await assertSuccessNotification(page, expectedNotification)
-  await assertContentPage(page, context, exam, action, nameText, descriptionText, attachment1)
+  await assertContentPage(page, context, exam, inputs, action)
 
-  return { id: responseData.id, nameFromCreate: nameText }
+  return { id: responseData.id, nameFromCreate: inputs.nameFi }
 }
 
 async function updateCertificate(
@@ -77,6 +90,8 @@ async function updateCertificate(
   action: FormAction,
   expectedNotification: string
 ) {
+  const inputs = updateCertificateInputs(action)
+
   await expect(page.getByTestId('assignment-header')).toBeVisible()
 
   await page.getByTestId('edit-content-btn').click()
@@ -84,18 +99,9 @@ async function updateCertificate(
   const formHeader = page.getByTestId('heading')
   await expect(formHeader).toHaveText(expectedCurrentName)
 
-  const nameText = `${expectedCurrentName} päivitetty`
-  const descriptionText = 'Todistuksen kuvaus päivitetty'
-
-  await page.getByTestId('name').fill(nameText)
-
-  if (exam === Exam.LD) {
-    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '9')
-  } else {
-    await page.getByTestId('description').fill(descriptionText)
-  }
-
-  await selectAttachmentFile(page, 'fixture2.pdf')
+  await fillIfSukoForm(exam, page, inputs)
+  await fillIfLdForm(exam, page, inputs)
+  await fillIfPuhviForm(exam, page, inputs)
 
   if (action === 'submit') {
     await page.getByTestId('form-submit').click()
@@ -103,9 +109,9 @@ async function updateCertificate(
     await page.getByTestId('form-draft').click()
   }
   await assertSuccessNotification(page, expectedNotification)
-  await assertContentPage(page, context, exam, action, nameText, descriptionText, attachment2)
+  await assertContentPage(page, context, exam, inputs, action)
 
-  return nameText
+  return inputs.nameFi
 }
 
 async function deleteCertificate(page: Page, certificateId: string, exam: string) {
@@ -229,6 +235,7 @@ async function cancelUpdatingCertificate(page: Page, context: BrowserContext, ex
 }
 
 loginTestGroup(test, Role.YLLAPITAJA)
+
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} certificate form tests`, () => {
     test.beforeEach(async ({ page }) => {

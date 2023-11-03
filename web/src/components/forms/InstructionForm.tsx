@@ -65,7 +65,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const match = useMatch(matchUrl)
   const { setNotification } = useNotification()
 
-  const [activeTab, setActiveTab] = useState('fi')
+  const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
@@ -311,7 +311,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
-          <div className={`${activeTab === 'fi' ? '' : 'hidden'}`}>
+          <div className={`${activeTab === TeachingLanguage.fi ? '' : 'hidden'}`}>
             <TextInput
               id="nameFi"
               register={register}

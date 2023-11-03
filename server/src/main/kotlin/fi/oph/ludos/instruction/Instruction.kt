@@ -15,7 +15,6 @@ import jakarta.validation.Payload
 import jakarta.validation.constraints.Pattern
 import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
-import java.time.ZonedDateTime
 import kotlin.reflect.KClass
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
@@ -111,7 +110,7 @@ interface InstructionOut {
 data class InstructionAttachmentDtoOut(
     override val fileKey: String,
     override val fileName: String,
-    override val fileUploadDate: ZonedDateTime,
+    override val fileUploadDate: Timestamp,
     override val name: String,
     override val language: Language
 ) : AttachmentOut, InstructionAttachmentMetadata

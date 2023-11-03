@@ -1,22 +1,15 @@
-import {
-  BaseOut,
-  CertificateDtoOut,
-  ContentType,
-  Exam,
-  LdCertificateDtoOut,
-  SukoOrPuhviCertificateDtoOut
-} from '../types'
+import { BaseOut, Exam, LdCertificateDtoOut, PuhviCertificateDtoOut, SukoCertificateDtoOut } from '../types'
 
-export const isLdCertificate = (certificate: CertificateDtoOut, exam: Exam): certificate is LdCertificateDtoOut =>
-  exam === Exam.LD && 'aineKoodiArvo' in certificate
+export const isSukoCertificate = (data: BaseOut): data is SukoCertificateDtoOut =>
+  data.exam === Exam.SUKO && !('aineKoodiArvo' in data)
 
-export const isSukoOrPuhviCertificate = (
-  certificate: CertificateDtoOut,
-  exam: Exam
-): certificate is SukoOrPuhviCertificateDtoOut =>
-  (exam === Exam.SUKO || exam === Exam.PUHVI) && 'description' in certificate
+export const isLdCertificate = (data: BaseOut): data is LdCertificateDtoOut =>
+  data.exam === Exam.LD && 'aineKoodiArvo' in data
+
+export const isPuhviCertificate = (data: BaseOut): data is PuhviCertificateDtoOut =>
+  data.exam === Exam.PUHVI && !('aineKoodiArvo' in data)
 
 export const isCertificate = (
-  data: BaseOut,
-  contentType: ContentType
-): data is SukoOrPuhviCertificateDtoOut | LdCertificateDtoOut => contentType === ContentType.todistukset
+  data: BaseOut
+): data is LdCertificateDtoOut | PuhviCertificateDtoOut | SukoCertificateDtoOut =>
+  isLdCertificate(data) || isPuhviCertificate(data) || isSukoCertificate(data)

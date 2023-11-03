@@ -1,10 +1,18 @@
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
-import { AttachmentData, ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../../types'
+import {
+  AttachmentData,
+  AttachmentLanguage,
+  ContentFormAction,
+  ContentType,
+  ContentTypeSingularEng,
+  Exam,
+  PublishState,
+  TeachingLanguage
+} from '../../types'
 import { createCertificate, fetchData, updateCertificate } from '../../request'
 import { useState } from 'react'
-import { CertificateFormType, certificateSchema } from './schemas/certificateSchema'
 import { TextInput } from '../TextInput'
 import { TextAreaInput } from '../TextAreaInput'
 import { FormHeader } from './formCommon/FormHeader'
@@ -16,6 +24,8 @@ import { contentListPath, contentPagePath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
+import { CertificateFormType, certificateSchema } from './schemas/certificateSchema'
+import { LanguageTabs } from '../LanguageTabs'
 
 type CertificateFormProps = {
   action: ContentFormAction
@@ -29,9 +39,11 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const match = useMatch(matchUrl)
   const { setNotification } = useNotification()
 
+  const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
-  const [newAttachment, setNewAttachment] = useState<File | null>(null)
+  const [newAttachmentFi, setNewAttachmentFi] = useState<File | null>(null)
+  const [newAttachmentSv, setNewAttachmentSv] = useState<File | null>(null)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
   const exam = match!.params.exam!.toUpperCase() as Exam
@@ -56,15 +68,16 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     formState: { errors }
   } = methods
 
-  const watchName = watch('name')
-  const watchAttachment = watch('attachment')
+  const watchNameFi = watch('nameFi')
+  const watchAttachmentFi = watch('attachmentFi')
+  const watchAttachmentSv = watch('attachmentSv')
   const watchPublishState = watch('publishState')
 
   async function submitCertificateData(certificate: CertificateFormType) {
     if (isUpdate && id) {
-      return await updateCertificate(Number(id), certificate, newAttachment)
+      return await updateCertificate(Number(id), certificate, newAttachmentFi, newAttachmentSv)
     } else {
-      return await createCertificate(certificate, newAttachment!).then((res) => res.id)
+      return await createCertificate(certificate, newAttachmentFi!, newAttachmentSv).then((res) => res.id)
     }
   }
 
@@ -126,48 +139,88 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     })()
   }
 
-  function handleNewAttachmentSelected(newAttachment: AttachmentData[]) {
+  function handleNewAttachmentSelected(newAttachment: AttachmentData[], language?: AttachmentLanguage) {
     const file = newAttachment[0].file
-    if (file) {
-      setNewAttachment(file)
-      setValue('attachment', {
-        fileName: file.name,
-        name: file.name,
-        fileKey: ''
-      })
-    }
-  }
 
-  function currentAttachment(): AttachmentData | undefined {
-    if (newAttachment) {
-      return {
-        file: newAttachment,
-        name: newAttachment.name
+    if (file && language) {
+      if (language === 'fi') {
+        setNewAttachmentFi(file)
+        setValue('attachmentFi', {
+          fileName: file.name,
+          name: file.name,
+          fileKey: ''
+        })
       }
-    }
 
-    if (watchAttachment) {
-      return {
-        attachment: {
-          name: watchAttachment.fileName,
-          fileName: watchAttachment.fileName,
-          fileKey: watchAttachment.fileKey,
-          fileUploadDate: watchAttachment.fileUploadDate,
-          language: watchAttachment.language || 'FI'
-        },
-        name: watchAttachment.name || ''
+      if (language === 'sv') {
+        setNewAttachmentSv(file)
+        setValue('attachmentSv', {
+          fileName: file.name,
+          name: file.name,
+          fileKey: ''
+        })
       }
     }
   }
 
-  const nameError = errors.name?.message
-  const contentError = errors.description?.message
-  const fileError = errors.attachment?.message
+  function currentAttachment(lang: TeachingLanguage): AttachmentData | undefined {
+    if (lang === 'fi') {
+      if (newAttachmentFi) {
+        return {
+          file: newAttachmentFi,
+          name: newAttachmentFi.name
+        }
+      }
+
+      if (watchAttachmentFi) {
+        return {
+          attachment: {
+            name: watchAttachmentFi.fileName,
+            fileName: watchAttachmentFi.fileName,
+            fileKey: watchAttachmentFi.fileKey,
+            fileUploadDate: watchAttachmentFi.fileUploadDate,
+            language: watchAttachmentFi.language || 'FI'
+          },
+          name: watchAttachmentFi.name || ''
+        }
+      }
+    }
+
+    if (lang === 'sv') {
+      if (newAttachmentSv) {
+        return {
+          file: newAttachmentSv,
+          name: newAttachmentSv.name
+        }
+      }
+
+      if (watchAttachmentSv) {
+        return {
+          attachment: {
+            name: watchAttachmentSv.fileName,
+            fileName: watchAttachmentSv.fileName,
+            fileKey: watchAttachmentSv.fileKey,
+            fileUploadDate: watchAttachmentSv.fileUploadDate,
+            language: watchAttachmentSv.language || 'FI'
+          },
+          name: watchAttachmentSv.name || ''
+        }
+      }
+    }
+  }
+
+  const nameErrorFi = errors.nameFi?.message
+  const contentErrorFi = errors.descriptionFi?.message
+  const attachmentErrorFi = errors.attachmentFi?.message
+
+  const nameErrorSv = errors.nameSv?.message
+  const contentErrorSv = errors.descriptionSv?.message
+  const attachmentErrorSv = errors.attachmentSv?.message
 
   return (
     <div className="ludos-form">
       <FormHeader
-        heading={action === ContentFormAction.uusi ? t('form.otsikkotodistus') : watchName}
+        heading={action === ContentFormAction.uusi ? t('form.otsikkotodistus') : watchNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvaustodistus') : t('form.muokkauskuvaus')}
       />
       <FormProvider {...methods}>
@@ -176,31 +229,65 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
           <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
-          <TextInput id="name" register={register} required error={!!nameError}>
-            {t('form.todistuksennimi')}
-          </TextInput>
-          <FormError error={nameError} />
+          <div className={`${exam === Exam.SUKO && 'hidden'} mb-6`}>
+            <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          </div>
 
-          {exam !== Exam.LD && (
-            <>
-              <TextAreaInput id="description" register={register} required error={!!contentError}>
-                {t('form.todistuksenkuvaus')}
-              </TextAreaInput>
-              <FormError error={contentError} />
-            </>
-          )}
+          <div className={`${activeTab === TeachingLanguage.fi ? '' : 'hidden'}`}>
+            <TextInput id="nameFi" register={register} required error={!!nameErrorFi}>
+              {t('form.todistuksennimi')}
+            </TextInput>
+            <FormError error={nameErrorFi} />
 
-          <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
-          <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
+            {exam !== Exam.LD && (
+              <>
+                <TextAreaInput id="descriptionFi" register={register} required error={!!contentErrorFi}>
+                  {t('form.todistuksenkuvaus')}
+                </TextAreaInput>
+                <FormError error={contentErrorFi} />
+              </>
+            )}
 
-          <AttachmentSelector
-            contentType={ContentType.todistukset}
-            attachmentData={currentAttachment()}
-            handleNewAttachmentSelected={handleNewAttachmentSelected}
-            language="fi"
-          />
+            <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
+            <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
-          <FormError error={fileError} />
+            <AttachmentSelector
+              contentType={ContentType.todistukset}
+              attachmentData={currentAttachment(TeachingLanguage.fi)}
+              handleNewAttachmentSelected={handleNewAttachmentSelected}
+              language="fi"
+            />
+
+            <FormError error={attachmentErrorFi} />
+          </div>
+
+          <div className={`${activeTab === TeachingLanguage.sv ? '' : 'hidden'}`}>
+            <TextInput id="nameSv" register={register} required error={!!nameErrorSv}>
+              {t('form.todistuksennimi')}
+            </TextInput>
+            <FormError error={nameErrorSv} />
+
+            {exam !== Exam.LD && (
+              <>
+                <TextAreaInput id="descriptionSv" register={register} required error={!!contentErrorSv}>
+                  {t('form.todistuksenkuvaus')}
+                </TextAreaInput>
+                <FormError error={contentErrorSv} />
+              </>
+            )}
+
+            <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
+            <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
+
+            <AttachmentSelector
+              contentType={ContentType.todistukset}
+              attachmentData={currentAttachment(TeachingLanguage.sv)}
+              handleNewAttachmentSelected={handleNewAttachmentSelected}
+              language="sv"
+            />
+
+            <FormError error={attachmentErrorSv} />
+          </div>
         </form>
       </FormProvider>
 
@@ -225,7 +312,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         onDeleteAction={() => submitCertificate(PublishState.Deleted)}
         onClose={() => setOpenDeleteModal(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText[ContentType.todistukset](watchName)}</p>
+          <p>{lt.contentDeleteModalText[ContentType.todistukset](watchNameFi)}</p>
         </div>
       </DeleteModal>
     </div>

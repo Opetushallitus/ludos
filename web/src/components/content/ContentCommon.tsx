@@ -25,10 +25,12 @@ export function ContentHeader({
   contentType,
   isPresentation
 }: ContentHeaderProps) {
-  const { t } = useLudosTranslation()
+  const { t, lt } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
-    contentType === ContentType.ohjeet || (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
+    contentType === ContentType.ohjeet ||
+    (contentType === ContentType.todistukset && data.exam !== Exam.SUKO) ||
+    (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
 
   return (
     <div data-testid="content-common" className="row mb-3 mt-5 flex-wrap items-center justify-between">
@@ -46,7 +48,7 @@ export function ContentHeader({
       </div>
       {shouldShowTeachingLanguageDropdown && (
         <div>
-          <p>{contentType === ContentType.koetehtavat ? t('filter.koetehtavat-kieli') : t('filter.ohjeet-kieli')}</p>
+          <p>{lt.contentPageLanguageDropdownLabel[contentType]}</p>
           <TeachingLanguageSelect teachingLanguage={teachingLanguage} setTeachingLanguage={setTeachingLanguage} />
         </div>
       )}

@@ -61,7 +61,7 @@ export type AssignmentFilterOptions = {
   lukuvuosi: string[]
   aine: string[]
 }
-// todo: prob not needed
+
 export type ContentOut<T = BaseOut> = {
   content: T[]
 }
@@ -127,16 +127,26 @@ export type AttachmentDtoOut = {
 }
 
 export type CertificateDtoOut = BaseOut & {
-  name: string
-  attachment: AttachmentDtoOut
+  nameFi: string
+  nameSv: string
 }
 
-export type SukoOrPuhviCertificateDtoOut = CertificateDtoOut & {
-  description: string
+export type SukoCertificateDtoOut = CertificateDtoOut & {
+  descriptionFi: string
+  attachmentFi: AttachmentDtoOut
 }
 
 export type LdCertificateDtoOut = CertificateDtoOut & {
   aineKoodiArvo: string
+  attachmentFi: AttachmentDtoOut
+  attachmentSv: AttachmentDtoOut
+}
+
+export type PuhviCertificateDtoOut = CertificateDtoOut & {
+  descriptionFi: string
+  descriptionSv: string
+  attachmentFi: AttachmentDtoOut
+  attachmentSv: AttachmentDtoOut
 }
 
 export const ContentType = {

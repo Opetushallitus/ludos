@@ -43,9 +43,9 @@ export const AssignmentCard = ({
 
   useEffect(() => setIsFavorite(assignment.isFavorite), [assignment.isFavorite])
 
-  const isSuko = isSukoAssignment(assignment, exam)
-  const isPuhvi = isPuhviAssignment(assignment, exam)
-  const isLd = isLdAssignment(assignment, exam)
+  const isSuko = isSukoAssignment(assignment)
+  const isPuhvi = isPuhviAssignment(assignment)
+  const isLd = isLdAssignment(assignment)
 
   const returnLocation = `${location.pathname}${location.search}${location.hash}`
 
