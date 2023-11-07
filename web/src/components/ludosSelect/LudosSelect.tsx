@@ -17,7 +17,6 @@ import { useState } from 'react'
 export type LudosSelectOption = {
   value: string
   label: string
-  isChildOption?: boolean
 }
 
 function isLudosSelectOption(option: any): option is LudosSelectOption {
@@ -65,11 +64,7 @@ export function LudosSelect<
   const Option = (props: OptionProps<Option, boolean, GroupBase<Option>>) =>
     isLudosSelectOption(props.data) && (
       <components.Option {...props}>
-        <span
-          className={props.data.isChildOption ? 'pl-5' : ''}
-          data-testid={`${props.selectProps.name}-option-${props.data.value}`}>
-          {props.data.label}
-        </span>
+        <span data-testid={`${props.selectProps.name}-option-${props.data.value}`}>{props.data.label}</span>
       </components.Option>
     )
 

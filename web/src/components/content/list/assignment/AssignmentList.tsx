@@ -17,7 +17,7 @@ import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
-import { preventLineBreaks } from '../../../../utils/formatUtils'
+import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { AssignmentFilters } from './AssignmentFilters'
@@ -68,7 +68,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
               data-testid={`create-${singularActiveTab}-button`}>
-              {preventLineBreaks(t('button.lisaakoetehtava'))}
+              {preventLineBreaksFromSpace(t('button.lisaakoetehtava'))}
             </InternalLink>
           )}
         </div>

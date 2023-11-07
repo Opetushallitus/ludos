@@ -11,7 +11,7 @@ import { CertificateCard } from './CertificateCard'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
-import { preventLineBreaks } from '../../../../utils/formatUtils'
+import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { ListError } from '../ListError'
 import { useTranslation } from 'react-i18next'
@@ -40,7 +40,7 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
               data-testid={`create-${singularActiveTab}-button`}>
-              {preventLineBreaks(t('button.lisaatodistus'))}
+              {preventLineBreaksFromSpace(t('button.lisaatodistus'))}
             </InternalLink>
           )}
         </div>

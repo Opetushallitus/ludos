@@ -17,6 +17,7 @@ import {
   PuhviAssignmentFormType,
   SukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
+import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
@@ -96,11 +97,13 @@ async function oppimaaraLabel(oppimaara: Oppimaara) {
     KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021,
     oppimaara.oppimaaraKoodiArvo
   )
+  const kielitarjontaKoodiArvoLabel = oppimaara.kielitarjontaKoodiArvo
+    ? await koodiLabel(KoodistoName.KIELITARJONTA, oppimaara.kielitarjontaKoodiArvo)
+    : null
   if (oppimaara.kielitarjontaKoodiArvo) {
-    const kielitarjontaKoodiArvoLabel = await koodiLabel(KoodistoName.KIELITARJONTA, oppimaara.kielitarjontaKoodiArvo)
-    return `${oppimaaraKoodiArvoLabel}, ${kielitarjontaKoodiArvoLabel}`
+    return preventLineBreaksFromHyphen(`${oppimaaraKoodiArvoLabel}, ${kielitarjontaKoodiArvoLabel}`)
   } else {
-    return oppimaaraKoodiArvoLabel
+    return preventLineBreaksFromHyphen(oppimaaraKoodiArvoLabel)
   }
 }
 

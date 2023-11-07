@@ -24,7 +24,9 @@ div.ludos-select__multi-value {
 }
 
 div.ludos-select__multi-value__label {
-    @apply text-white
+    @apply text-white;
+    white-space: normal;
+    text-wrap: pretty;
 }
 
 div.ludos-select__multi-value__remove {

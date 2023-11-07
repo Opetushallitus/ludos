@@ -16,7 +16,7 @@ import { TeachingLanguageSelect, TeachingLanguageSelectProps } from '../../../Te
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
-import { preventLineBreaks } from '../../../../utils/formatUtils'
+import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { ListError } from '../ListError'
@@ -63,7 +63,7 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
               data-testid={`create-${singularActiveTab}-button`}>
-              {preventLineBreaks(t('button.lisaaohje'))}
+              {preventLineBreaksFromSpace(t('button.lisaaohje'))}
             </InternalLink>
           )}
         </div>
