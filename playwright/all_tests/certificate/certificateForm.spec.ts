@@ -259,7 +259,7 @@ examsLowerCase.forEach((exam) => {
       await createPublishedAndUpdateAndDelete(page, context, exam))
     test(`can create, update and delete a new draft ${exam} certificate`, async ({ page, context }) =>
       await createDraftAndUpdateAndDelete(page, context, exam))
-    test(`can cancel ${exam} certificate creation`, async ({ page, context }) => await cancelCreatingCertificate(page))
+    test(`can cancel ${exam} certificate creation`, async ({ page }) => await cancelCreatingCertificate(page))
     test(`can cancel ${exam} certificate update`, async ({ page, context }) =>
       await cancelUpdatingCertificate(page, context))
   })
