@@ -68,7 +68,7 @@ export const AssignmentFilters = ({
   const aiheOptions = getFilteredOptions(koodistos.aihesuko, aihe)
   const lukuvuosiOptions = getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosi)
   const lukiodiplomiaineOptions = getFilteredOptions(koodistos.ludoslukiodiplomiaine, aine)
-  const tehavatyyppipuhviOptions = getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehtavatyyppi)
+  const tehtavatyyppipuhviOptions = getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehtavatyyppi)
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -157,7 +157,7 @@ export const AssignmentFilters = ({
             <p>{t('filter.tehtavatyyppi')}</p>
             <LudosSelect
               name="tehtavatyyppiPuhviFilter"
-              options={koodistoSelectOptions(sortKooditAlphabetically(tehavatyyppipuhviOptions))}
+              options={koodistoSelectOptions(sortKooditAlphabetically(tehtavatyyppipuhviOptions))}
               value={currentKoodistoSelectOptions(filterValues.tehtavatyyppipuhvi, koodistos['tehtavatyyppipuhvi'])}
               onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
               isMulti
