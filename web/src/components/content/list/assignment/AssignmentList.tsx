@@ -5,6 +5,7 @@ import {
   ContentType,
   ContentTypeSingular,
   ContentTypeSingularEng,
+  emptyAssignmentFilterOptions,
   Exam,
   InstructionDtoOut,
   TeachingLanguage
@@ -93,7 +94,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
       <AssignmentFilters
         exam={exam}
         filterValues={filterValues}
-        assignmentFilterOptions={data?.assignmentFilterOptions}
+        assignmentFilterOptions={data?.assignmentFilterOptions ?? emptyAssignmentFilterOptions}
       />
 
       <DataWrapper

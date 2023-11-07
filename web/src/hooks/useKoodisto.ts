@@ -15,7 +15,7 @@ export function useKoodisto() {
   const { koodistos } = useContext(LudosContext)
 
   function getKoodiLabel(koodiArvo: string, koodistoName: KoodistoName) {
-    return getKoodi(koodiArvo, koodistos[koodistoName])?.nimi || defaultLabel
+    return koodi(koodiArvo, koodistos[koodistoName])?.nimi ?? defaultLabel
   }
 
   function getKoodisLabel(koodiArvo: string[], koodistoName: KoodistoName) {
@@ -47,21 +47,21 @@ export function oppimaaraLabel(oppimaaraKoodiArvoLabel: string, kielitarjontaKoo
   return preventLineBreaksFromHyphen(label)
 }
 
-export function getKoodi(koodiArvo: string, koodisto: Record<string, KoodiDtoOut>): KoodiDtoOut | null {
+export function koodi(koodiArvo: string, koodisto: Record<string, KoodiDtoOut>): KoodiDtoOut | null {
   return koodisto[koodiArvo] || null
 }
 
-export function getKoodiOrDefaultLabel(koodiArvo: string, koodisto: Record<string, KoodiDtoOut>): KoodiDtoOut {
-  const koodi = getKoodi(koodiArvo, koodisto)
-  if (koodi === null) {
+export function koodiOrDefaultLabel(koodiArvo: string, koodisto: Record<string, KoodiDtoOut>): KoodiDtoOut {
+  const koodiOrNull = koodi(koodiArvo, koodisto)
+  if (koodiOrNull === null) {
     return { koodiArvo, nimi: defaultLabel }
   } else {
-    return koodi
+    return koodiOrNull
   }
 }
 
-export function getKoodisOrDefaultLabel(koodiArvos: string[], koodisto: Record<string, KoodiDtoOut>): KoodiDtoOut[] {
-  return (koodiArvos || []).map((koodiArvo) => getKoodiOrDefaultLabel(koodiArvo, koodisto))
+export function koodisOrDefaultLabel(koodiArvos: string[], koodisto: Record<string, KoodiDtoOut>): KoodiDtoOut[] {
+  return (koodiArvos || []).map((koodiArvo) => koodiOrDefaultLabel(koodiArvo, koodisto))
 }
 
 export const sortKooditAlphabetically = (koodit: KoodiDtoOut[]) => {

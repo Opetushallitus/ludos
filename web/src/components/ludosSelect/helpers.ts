@@ -1,4 +1,4 @@
-import { getKoodi, KoodiDtoOut, oppimaaraLabel } from '../../hooks/useKoodisto'
+import { koodi, KoodiDtoOut, oppimaaraLabel } from '../../hooks/useKoodisto'
 import { LudosSelectOption } from './LudosSelect'
 import { KoodistoName, Oppimaara, oppimaaraId } from '../../types'
 
@@ -13,11 +13,11 @@ export function currentKoodistoSelectOption(
   if (selectedOption === null) {
     return null
   }
-  const koodi = getKoodi(selectedOption, koodisto)
-  return koodi
+  const koodiOrNull = koodi(selectedOption, koodisto)
+  return koodiOrNull
     ? {
         value: selectedOption,
-        label: koodi.nimi
+        label: koodiOrNull.nimi
       }
     : null
 }

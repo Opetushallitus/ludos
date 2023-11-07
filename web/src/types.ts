@@ -54,12 +54,20 @@ export type Oppimaara = {
   kielitarjontaKoodiArvo: string | null
 }
 export type AssignmentFilterOptions = {
-  oppimaara: Oppimaara[]
-  tehtavatyyppi: string[]
-  aihe: string[]
-  tavoitetaitotaso: string[]
-  lukuvuosi: string[]
-  aine: string[]
+  oppimaara: Oppimaara[] | null
+  tehtavatyyppi: string[] | null
+  aihe: string[] | null
+  tavoitetaitotaso: string[] | null
+  lukuvuosi: string[] | null
+  aine: string[] | null
+}
+export const emptyAssignmentFilterOptions: AssignmentFilterOptions = {
+  oppimaara: null,
+  tehtavatyyppi: null,
+  aihe: null,
+  tavoitetaitotaso: null,
+  lukuvuosi: null,
+  aine: null
 }
 
 export type ContentOut<T = BaseOut> = {
