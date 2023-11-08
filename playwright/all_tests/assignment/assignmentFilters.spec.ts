@@ -82,6 +82,9 @@ test.describe('Assignment filter tests', () => {
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1.RA'])
     await checkListAfterFiltering(page, Exam.SUKO, [19, 8])
 
+    await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKB1'])
+    await checkListAfterFiltering(page, Exam.SUKO, [18, 7])
+
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKB1.IA'])
     await checkListAfterFiltering(page, Exam.SUKO, [18, 7])
   })

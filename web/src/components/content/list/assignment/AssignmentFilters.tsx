@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
-import { AssignmentFilterOptions, Exam, oppimaaraFromId } from '../../../../types'
+import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
 import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
@@ -16,6 +16,24 @@ type AssignmentFiltersProps = {
   exam: Exam
   filterValues: FilterValues
   assignmentFilterOptions: AssignmentFilterOptions
+}
+
+function ensureTarkentamattomatPaaoppimaarasAreIncluded(oppimaaras: Oppimaara[]): Oppimaara[] {
+  const oppimaarasWithPaaoppimaaras = oppimaaras.slice()
+  for (const o of oppimaaras) {
+    if (
+      o.kielitarjontaKoodiArvo !== null &&
+      !oppimaarasWithPaaoppimaaras.find(
+        (o2) => o2.oppimaaraKoodiArvo === o.oppimaaraKoodiArvo && o2.kielitarjontaKoodiArvo === null
+      )
+    ) {
+      oppimaarasWithPaaoppimaaras.push({
+        oppimaaraKoodiArvo: o.oppimaaraKoodiArvo,
+        kielitarjontaKoodiArvo: null
+      })
+    }
+  }
+  return oppimaarasWithPaaoppimaaras
 }
 
 export const AssignmentFilters = ({
@@ -36,6 +54,8 @@ export const AssignmentFilters = ({
     },
     [setFilterValue]
   )
+
+  const oppimaaraOptions = ensureTarkentamattomatPaaoppimaarasAreIncluded(assignmentFilterOptions.oppimaara ?? [])
 
   const tehtavatyyppiSukoOptions =
     assignmentFilterOptions.tehtavatyyppi && exam === Exam.SUKO
@@ -66,7 +86,7 @@ export const AssignmentFilters = ({
               <LudosSelect
                 name="oppimaaraFilter"
                 menuSize="lg"
-                options={oppimaaraSelectOptions(assignmentFilterOptions.oppimaara ?? [], getKoodiLabel)}
+                options={oppimaaraSelectOptions(oppimaaraOptions, getKoodiLabel)}
                 value={currentOppimaaraSelectOptions(filterValues.oppimaara?.map(oppimaaraFromId), getOppimaaraLabel)}
                 onChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
                 isMulti
