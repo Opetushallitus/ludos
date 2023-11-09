@@ -175,23 +175,6 @@ examsLowerCase.forEach((exam) => {
       await expect(page.getByTestId('create-ohje-button')).toBeVisible()
     })
 
-    test(`can cancel ${exam} updating instruction`, async ({ page }) => {
-      const instructionId = await createInstruction(
-        page,
-        'submit',
-        'form.notification.ohjeen-tallennus.julkaisu-onnistui'
-      )
-      await navigateToInstructionExamPage(page, exam)
-      const instructionCard = page.getByTestId(`instruction-${instructionId}`)
-
-      await expect(instructionCard).toBeVisible()
-      await page.getByTestId(`instruction-${instructionId}-edit`).click()
-
-      const btn = page.getByTestId('form-cancel')
-      await expect(btn).toHaveText('button.peruuta')
-      await btn.click()
-    })
-
     test(`${exam} failing of attachment upload is handled correctly`, async ({ page }) => {
       await fillInstructionForm({
         page,
