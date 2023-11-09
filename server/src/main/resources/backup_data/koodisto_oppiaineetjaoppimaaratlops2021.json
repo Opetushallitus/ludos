@@ -3112,12 +3112,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.68224387211",
-    "paivitysPvm": "2023-10-17",
+    "paivittajaOid": "1.2.246.562.24.20745323310",
+    "paivitysPvm": "2023-11-09",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkb1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 2,
+    "version": 3,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
