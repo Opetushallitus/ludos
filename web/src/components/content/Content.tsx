@@ -13,7 +13,7 @@ import { useUserDetails } from '../../hooks/useUserDetails'
 import { contentListPath, editingFormPath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
 import { ContentError } from './ContentError'
 
@@ -35,13 +35,13 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
   const { DataWrapper } = useFetch<BaseOut>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}`)
 
-  const handleNavigation = () => {
+  const handleNavigation = useCallback(() => {
     if (state?.returnLocation) {
       navigate(state.returnLocation)
     } else {
       navigate(contentListPath(exam, contentType!))
     }
-  }
+  }, [contentType, exam, navigate, state?.returnLocation])
 
   return (
     <div className="min-h-[80vh]">
