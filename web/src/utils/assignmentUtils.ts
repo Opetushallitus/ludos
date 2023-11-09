@@ -11,13 +11,6 @@ import {
   TeachingLanguage
 } from '../types'
 
-// exam type checkers
-export const assertPuhviOrLdAssignment = (
-  assignment: AssignmentOut,
-  activeTab: any
-): assignment is PuhviAssignmentDtoOut | LdAssignmentDtoOut => {
-  return isLdAssignment(assignment, activeTab) || isPuhviAssignment(assignment, activeTab)
-}
 export const isSukoAssignment = (assignment: AssignmentOut, exam: Exam): assignment is SukoAssignmentDtoOut =>
   exam === Exam.SUKO &&
   'aiheKoodiArvos' in assignment &&
@@ -37,15 +30,6 @@ export const isInstruction = (data: BaseOut, contentType: ContentType): data is 
   contentType === ContentType.ohjeet
 export const isCertificate = (data: BaseOut, contentType: ContentType): data is CertificateDtoOut =>
   contentType === ContentType.todistukset
-
-export const isAssignmentsArr = (data: BaseOut[], contentType: ContentType): data is AssignmentOut[] =>
-  data.every((item) => isAssignment(item, contentType))
-
-export const isInstructionsArr = (data: BaseOut[], contentType: ContentType): data is InstructionDtoOut[] =>
-  data.every((item) => isInstruction(item, contentType))
-
-export const isCertificatesArr = (data: BaseOut[], contentType: ContentType): data is CertificateDtoOut[] =>
-  data.every((item) => isCertificate(item, contentType))
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript

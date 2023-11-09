@@ -15,16 +15,19 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
   const [refresh, setRefresh] = useState(false)
 
   useEffect(() => {
+    let isSubscribed = true
+    setData(undefined)
     ;(async () => {
       if (isNew) {
         return
       }
-      setData(undefined)
       try {
         setLoading(true)
 
         const data = await fetchData<T>(url)
-        setData(data)
+        if (isSubscribed) {
+          setData(data)
+        }
       } catch (e) {
         if (e instanceof Error) {
           const match = e.message.match(/status=(\d+)/)
@@ -37,6 +40,9 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
         setLoading(false)
       }
     })()
+    return () => {
+      isSubscribed = false
+    }
   }, [url, refresh, isNew])
 
   function DataWrapper({ render, errorEl }: DataWrapperProps<T>) {

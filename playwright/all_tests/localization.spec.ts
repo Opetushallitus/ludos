@@ -1,5 +1,5 @@
-import { expect, test, Page } from '@playwright/test'
-import { login, Role, setSingleSelectDropdownOption, setTeachingLanguage } from '../helpers'
+import { expect, Page, test } from '@playwright/test'
+import { login, Role, setTeachingLanguage } from '../helpers'
 
 async function assertUiLanguage(page: Page, language: string) {
   await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === 'fi' ? 'Etusivu' : 'Hem')

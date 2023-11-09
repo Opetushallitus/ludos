@@ -1,8 +1,8 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
 import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
-import { KoodiDtoOut, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
+import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
   currentKoodistoSelectOptions,
@@ -15,11 +15,26 @@ import { MultiValue } from 'react-select'
 type AssignmentFiltersProps = {
   exam: Exam
   filterValues: FilterValues
-  assignmentFilterOptions?: AssignmentFilterOptions
+  assignmentFilterOptions: AssignmentFilterOptions
 }
 
-const getFilteredOptions = (allOptions: Record<string, KoodiDtoOut>, overrides?: string[]) =>
-  overrides ? Object.values(allOptions).filter((it) => overrides.includes(it.koodiArvo)) : Object.values(allOptions)
+function ensureTarkentamattomatPaaoppimaarasAreIncluded(oppimaaras: Oppimaara[]): Oppimaara[] {
+  const oppimaarasWithPaaoppimaaras = oppimaaras.slice()
+  for (const o of oppimaaras) {
+    if (
+      o.kielitarjontaKoodiArvo !== null &&
+      !oppimaarasWithPaaoppimaaras.find(
+        (o2) => o2.oppimaaraKoodiArvo === o.oppimaaraKoodiArvo && o2.kielitarjontaKoodiArvo === null
+      )
+    ) {
+      oppimaarasWithPaaoppimaaras.push({
+        oppimaaraKoodiArvo: o.oppimaaraKoodiArvo,
+        kielitarjontaKoodiArvo: null
+      })
+    }
+  }
+  return oppimaarasWithPaaoppimaaras
+}
 
 export const AssignmentFilters = ({
   exam,
@@ -28,8 +43,6 @@ export const AssignmentFilters = ({
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
-
-  const { oppimaara, aihe, tehtavatyyppi, lukuvuosi, aine } = assignmentFilterOptions || {}
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
@@ -42,33 +55,25 @@ export const AssignmentFilters = ({
     [setFilterValue]
   )
 
-  const oppimaaraOptions = useMemo(() => {
-    const actualOptions = oppimaara || []
-    const oppimaaraKoodiarvosWithTarkenteet = [
-      ...new Set(actualOptions.filter((o) => o.kielitarjontaKoodiArvo !== null).map((o) => o.oppimaaraKoodiArvo))
-    ]
-    const oppimaaraKoodiArvosWithMissingHeaders = [
-      ...new Set(
-        oppimaaraKoodiarvosWithTarkenteet.filter(
-          (oppimaaraKoodiArvo) =>
-            !actualOptions.find(
-              (io) => io.oppimaaraKoodiArvo === oppimaaraKoodiArvo && io.kielitarjontaKoodiArvo === null
-            )
-        )
-      )
-    ]
-    const missingParentOppimaaras: Oppimaara[] = oppimaaraKoodiArvosWithMissingHeaders.map((oppimaaraKoodiArvo) => ({
-      oppimaaraKoodiArvo,
-      kielitarjontaKoodiArvo: null
-    }))
-    return [...actualOptions, ...missingParentOppimaaras]
-  }, [oppimaara])
+  const oppimaaraOptions = ensureTarkentamattomatPaaoppimaarasAreIncluded(assignmentFilterOptions.oppimaara ?? [])
 
-  const tehtavaTyyppiOptions = getFilteredOptions(koodistos.tehtavatyyppisuko, tehtavatyyppi)
-  const aiheOptions = getFilteredOptions(koodistos.aihesuko, aihe)
-  const lukuvuosiOptions = getFilteredOptions(koodistos.ludoslukuvuosi, lukuvuosi)
-  const lukiodiplomiaineOptions = getFilteredOptions(koodistos.ludoslukiodiplomiaine, aine)
-  const tehavatyyppipuhviOptions = getFilteredOptions(koodistos.tehtavatyyppipuhvi, tehtavatyyppi)
+  const tehtavatyyppiSukoOptions =
+    assignmentFilterOptions.tehtavatyyppi && exam === Exam.SUKO
+      ? koodisOrDefaultLabel(assignmentFilterOptions.tehtavatyyppi, koodistos.tehtavatyyppisuko)
+      : []
+  const tehtavatyyppiPuhviOptions =
+    assignmentFilterOptions.tehtavatyyppi && exam === Exam.PUHVI
+      ? koodisOrDefaultLabel(assignmentFilterOptions.tehtavatyyppi, koodistos.tehtavatyyppipuhvi)
+      : []
+  const aiheOptions = assignmentFilterOptions.aihe
+    ? koodisOrDefaultLabel(assignmentFilterOptions.aihe, koodistos.aihesuko)
+    : []
+  const lukuvuosiOptions = assignmentFilterOptions.lukuvuosi
+    ? koodisOrDefaultLabel(assignmentFilterOptions.lukuvuosi, koodistos.ludoslukuvuosi)
+    : []
+  const lukiodiplomiaineOptions = assignmentFilterOptions.aine
+    ? koodisOrDefaultLabel(assignmentFilterOptions.aine, koodistos.ludoslukiodiplomiaine)
+    : []
 
   return (
     <div className="border border-gray-light bg-gray-bg">
@@ -93,7 +98,7 @@ export const AssignmentFilters = ({
               <LudosSelect
                 name="contentTypeFilter"
                 menuSize="md"
-                options={koodistoSelectOptions(sortKooditAlphabetically(tehtavaTyyppiOptions))}
+                options={koodistoSelectOptions(sortKooditAlphabetically(tehtavatyyppiSukoOptions))}
                 value={currentKoodistoSelectOptions(filterValues.tehtavatyyppisuko, koodistos['tehtavatyyppisuko'])}
                 onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
                 isMulti
@@ -157,7 +162,7 @@ export const AssignmentFilters = ({
             <p>{t('filter.tehtavatyyppi')}</p>
             <LudosSelect
               name="tehtavatyyppiPuhviFilter"
-              options={koodistoSelectOptions(sortKooditAlphabetically(tehavatyyppipuhviOptions))}
+              options={koodistoSelectOptions(sortKooditAlphabetically(tehtavatyyppiPuhviOptions))}
               value={currentKoodistoSelectOptions(filterValues.tehtavatyyppipuhvi, koodistos['tehtavatyyppipuhvi'])}
               onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
               isMulti
