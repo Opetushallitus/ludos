@@ -65,30 +65,35 @@ test.describe('Assignment favorites', () => {
       .toBe(expectedCount)
   }
 
+  async function testSettingAndUnsettingAsFavorite(
+    page: Page,
+    assignment: any,
+    favoriteCountBefore: number,
+    exam: 'SUKO' | 'LD' | 'PUHVI'
+  ) {
+    const favoriteButtonLocator = page.getByTestId(`assignment-${assignment.id}-suosikki`)
+    await expect(favoriteButtonLocator.locator('span')).toHaveText('favorite.lisaa-suosikiksi')
+    await favoriteButtonLocator.click()
+    await assertSuccessNotification(page, 'assignment.notification.suosikki-lisatty')
+    await expect(favoriteButtonLocator.locator('span')).toHaveText('favorite.poista-suosikeista')
+    await assertFavoriteCountIsEventually(page, favoriteCountBefore + 1)
+
+    await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
+  }
+
   Object.values(Exam).forEach(async (exam) => {
     test(`Can favorite an ${exam} assignment from list`, async ({ page, context, baseURL }) => {
       const [assignment, favoriteCountBefore] = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
-      // set assignment as favorite
-      void page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
-      await page.waitForResponse(
-        (response) => response.url().includes(`/api/assignment/${exam}/${assignment.id}/favorite`) && response.ok()
-      )
-      await assertFavoriteCountIsEventually(page, favoriteCountBefore + 1)
-
-      await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
+      await testSettingAndUnsettingAsFavorite(page, assignment, favoriteCountBefore, exam)
     })
   })
 
   Object.values(Exam).forEach(async (exam) => {
-    test(`Can favorite an ${exam} assignment from assignment page`, async ({ page, context, baseURL }) => {
+    test(`Can favorite an ${exam} assignment from assignment content page`, async ({ page, context, baseURL }) => {
       const [assignment, favoriteCountBefore] = await prepAssignmentGoToAssignmentList(page, exam, context, baseURL!)
-
       await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('assignment-name-link').click()
-      await page.getByTestId(`assignment-${assignment.id}-suosikki`).click()
-      await assertSuccessNotification(page, 'assignment.notification.suosikki-lisatty')
-      await assertFavoriteCountIsEventually(page, favoriteCountBefore + 1)
-
-      await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
+      await expect(page.getByTestId('assignment-header')).toBeVisible()
+      await testSettingAndUnsettingAsFavorite(page, assignment, favoriteCountBefore, exam)
     })
   })
 })
