@@ -100,8 +100,8 @@ class GetAssignmentsTest : AssignmentRequests() {
         // Filter by Suomi, A-oppimäärä
         testSukoFilterOptions("TKFIA1", null, null, null, "asc", listOf(listOf(11, 22)))
         testSukoFilterOptions("TKRUAI", null, null, null, "asc", listOf(listOf(6, 17)))
-        testSukoFilterOptions("VKA1", null, null, null, "asc", listOf(listOf(8, 9, 10, 19, 20, 21)))
-        testSukoFilterOptions("VKA1,TKRUAI", null, null, null, "asc", listOf(listOf(6, 8, 9, 10, 17, 19, 20, 21)))
+        testSukoFilterOptions("VKA1", null, null, null, "asc", listOf(listOf(8, 9, 19, 20)))
+        testSukoFilterOptions("VKA1,TKRUAI", null, null, null, "asc", listOf(listOf(6, 8, 9, 17, 19, 20)))
         testSukoFilterOptions("VKA1.RA", null, null, null, "asc", listOf(listOf(8, 19)))
         testSukoFilterOptions("VKA1.RA,TKRUAI", null, null, null, "asc", listOf(listOf(6, 8, 17, 19)))
         // Filter by tehtavatyyppisuko "002"
@@ -114,7 +114,8 @@ class GetAssignmentsTest : AssignmentRequests() {
 
         testSukoFilterOptions("TKFIA1", "002", "001", null, "asc", listOf(listOf()))
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
+            // Kaikki oppimäärät, jotka testidatasta löytyy
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKB1,VKA1.RA,VKA1.SA,VKENA1",
             null,
             null,
             null,
@@ -127,7 +128,7 @@ class GetAssignmentsTest : AssignmentRequests() {
         )
 
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKB1,VKA1.RA,VKA1.SA,VKENA1",
             "001",
             null,
             null,
@@ -135,7 +136,7 @@ class GetAssignmentsTest : AssignmentRequests() {
             listOf(listOf(1, 4, 7, 10, 13, 16, 19, 22))
         )
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKB1,VKA1.RA,VKA1.SA,VKENA1",
             "001",
             null,
             null,
@@ -145,7 +146,7 @@ class GetAssignmentsTest : AssignmentRequests() {
 
         testSukoFilterOptions(null, "001", null, null, "asc", listOf(listOf(1, 4, 7, 10, 13, 16, 19, 22)))
         testSukoFilterOptions(
-            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKA1,VKA1.RA,VKB1,VKB1.SA",
+            "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKB1,VKA1.RA,VKA1.SA,VKENA1",
             null,
             null,
             "0003,0005,0006", "asc",

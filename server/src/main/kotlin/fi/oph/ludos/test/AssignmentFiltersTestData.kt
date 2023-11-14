@@ -20,10 +20,10 @@ object AssignmentFiltersTestData {
         Oppimaara("TKRUB1"),
         Oppimaara("TKRUB3"),
         Oppimaara("TKRUAI"),
-        Oppimaara("VKB1", "IA"),
+        Oppimaara("VKB1"),
         Oppimaara("VKA1", "RA"),
         Oppimaara("VKA1", "SA"),
-        Oppimaara("VKA1"),
+        Oppimaara("VKENA1"),
     )
     private val aiheKoodiArvos = arrayOf("001", "003", "013", "017", "005", "007")
     private val lukuvuosiKoodiArvos = arrayOf(

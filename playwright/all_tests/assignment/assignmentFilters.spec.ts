@@ -77,13 +77,13 @@ test.describe('Assignment filter tests', () => {
     await page.goto('/suko/koetehtavat')
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1'])
-    await checkListAfterFiltering(page, Exam.SUKO, [21, 20, 19, 10, 9, 8])
+    await checkListAfterFiltering(page, Exam.SUKO, [20, 19, 9, 8])
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1.RA'])
     await checkListAfterFiltering(page, Exam.SUKO, [19, 8])
 
-    await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKB1.IA'])
-    await checkListAfterFiltering(page, Exam.SUKO, [18, 7])
+    await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1.SA'])
+    await checkListAfterFiltering(page, Exam.SUKO, [20, 9])
   })
 
   test('ld', async ({ page }) => {
