@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../utils/assignmentUtils'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useToggleFavorite } from '../../hooks/useToggleFavorite'
 
 type AssignmentContentProps = {
@@ -15,7 +15,7 @@ type AssignmentContentProps = {
 export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(assignment.isFavorite)
 
   const { toggleFavorite } = useToggleFavorite({
     exam,
@@ -23,8 +23,6 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
     isFavorite,
     setIsFavorite
   })
-
-  useEffect(() => setIsFavorite(assignment.isFavorite), [assignment.isFavorite])
 
   const suko = isSukoAssignment(assignment, exam)
   const puhvi = isPuhviAssignment(assignment, exam)

@@ -27,7 +27,7 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
 
   const singularActiveTab = ContentTypeSingular[contentType]
 
-  const { DataWrapper } = useFetch<ContentOut<CertificateDtoOut>>(
+  const { data, error } = useFetch<ContentOut<CertificateDtoOut>>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}`
   )
 
@@ -46,16 +46,14 @@ export const CertificateList = ({ exam }: CertificateListProps) => {
         </div>
       </div>
 
-      <DataWrapper
-        errorEl={<ListError contentType={contentType} />}
-        render={(data) => (
-          <ul className="mt-3 flex flex-wrap gap-5">
-            {data.content.map((certificate, i) => (
-              <CertificateCard certificate={certificate} key={`${exam}-${contentType}-${i}`} />
-            ))}
-          </ul>
-        )}
-      />
+      {error && <ListError contentType={ContentType.koetehtavat} />}
+      {!error && data && (
+        <ul className="mt-3 flex flex-wrap gap-5">
+          {data.content.map((certificate, i) => (
+            <CertificateCard certificate={certificate} key={`${exam}-${contentType}-${i}`} />
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

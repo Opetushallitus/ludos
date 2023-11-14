@@ -3,11 +3,6 @@ import { fetchData } from '../request'
 import { Spinner } from '../components/Spinner'
 import { PageNotFound } from '../components/LudosRoutes'
 
-type DataWrapperProps<T> = {
-  errorEl: ReactNode
-  render: (data: T) => ReactNode
-}
-
 export function useFetch<T>(url: string, isNew: boolean = false) {
   const [data, setData] = useState<T>()
   const [loading, setLoading] = useState(false)
@@ -45,26 +40,6 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
     }
   }, [url, refresh, isNew])
 
-  function DataWrapper({ render, errorEl }: DataWrapperProps<T>) {
-    if (loading) {
-      return <Spinner className="mt-32 text-center" />
-    }
-
-    if (error) {
-      if (error === '404') {
-        return <PageNotFound />
-      } else {
-        return errorEl
-      }
-    }
-
-    if (!data) {
-      return null
-    }
-
-    return <>{render(data)}</>
-  }
-
   return {
     data,
     loading,
@@ -73,7 +48,6 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
       setData(undefined)
       setRefresh(!refresh)
       setError(null)
-    },
-    DataWrapper
+    }
   }
 }

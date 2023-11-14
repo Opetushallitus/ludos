@@ -46,7 +46,7 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
   const contentType = ContentType.ohjeet
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { DataWrapper } = useFetch<ContentOut<InstructionDtoOut>>(
+  const { data, error } = useFetch<ContentOut<InstructionDtoOut>>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -80,23 +80,21 @@ export const InstructionList = ({ exam, teachingLanguageSelectProps, filterValue
         </div>
       </div>
 
-      <DataWrapper
-        errorEl={<ListError contentType={contentType} />}
-        render={(data) => (
-          <ul className="mt-3 flex flex-wrap gap-5">
-            {data.content
-              .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
-              .map((instruction, i) => (
-                <InstructionCard
-                  teachingLanguage={teachingLanguage}
-                  instruction={instruction}
-                  exam={exam}
-                  key={`${exam}-${contentType}-${i}`}
-                />
-              ))}
-          </ul>
-        )}
-      />
+      {error && <ListError contentType={ContentType.ohjeet} />}
+      {!error && data && (
+        <ul className="mt-3 flex flex-wrap gap-5">
+          {data.content
+            .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
+            .map((instruction, i) => (
+              <InstructionCard
+                teachingLanguage={teachingLanguage}
+                instruction={instruction}
+                exam={exam}
+                key={`${exam}-${contentType}-${i}`}
+              />
+            ))}
+        </ul>
+      )}
     </div>
   )
 }

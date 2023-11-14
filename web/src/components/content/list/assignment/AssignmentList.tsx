@@ -26,6 +26,7 @@ import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { ListError } from '../ListError'
+import { ContentContent } from '../../ContentCommon'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -52,7 +53,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
   const contentType = ContentType.koetehtavat
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { data, refresh, DataWrapper } = useFetch<AssignmentsOut>(
+  const { data, error, refresh } = useFetch<AssignmentsOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -96,34 +97,31 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
         filterValues={filterValues}
         assignmentFilterOptions={data?.assignmentFilterOptions ?? emptyAssignmentFilterOptions}
       />
+      {error && <ListError contentType={ContentType.koetehtavat} />}
+      {!error && data && (
+        <>
+          <ul data-testid="assignment-list">
+            {data.content
+              .filter((val) => filterByTeachingLanguage(val, languageOverrideIfSukoAssignment))
+              .map((assignment, i) => (
+                <AssignmentCard
+                  teachingLanguage={languageOverrideIfSukoAssignment}
+                  assignment={assignment}
+                  exam={exam}
+                  key={`${exam}-${contentType}-${i}`}
+                  isFavoritePage={isFavoritePage}
+                  refreshData={refresh}
+                />
+              ))}
+          </ul>
 
-      <DataWrapper
-        errorEl={<ListError contentType={contentType} />}
-        render={(data) => (
-          <>
-            <ul data-testid="assignment-list">
-              {data.content
-                .filter((val) => filterByTeachingLanguage(val, languageOverrideIfSukoAssignment))
-                .map((assignment, i) => (
-                  <AssignmentCard
-                    teachingLanguage={languageOverrideIfSukoAssignment}
-                    assignment={assignment}
-                    exam={exam}
-                    key={`${exam}-${contentType}-${i}`}
-                    isFavoritePage={isFavoritePage}
-                    refreshData={refresh}
-                  />
-                ))}
-            </ul>
-
-            <Pagination
-              page={filterValues.filterValues.sivu}
-              totalPages={data.totalPages!}
-              searchStringForNewFilterValue={filterValues.searchStringForNewFilterValue}
-            />
-          </>
-        )}
-      />
+          <Pagination
+            page={filterValues.filterValues.sivu}
+            totalPages={data.totalPages!}
+            searchStringForNewFilterValue={filterValues.searchStringForNewFilterValue}
+          />
+        </>
+      )}
     </div>
   )
 }
