@@ -1,5 +1,5 @@
-import { BrowserRouter } from 'react-router-dom'
-import { LudosRoutes } from './components/LudosRoutes'
+import { RouterProvider } from 'react-router-dom'
+import { ludosRouter } from './components/LudosRoutes'
 import { useDocumentLanguage } from './hooks/useDocumentLanguage'
 import { LudosContextProvider } from './contexts/LudosContextProvider'
 import { NotificationProvider } from './contexts/NotificationContext'
@@ -10,13 +10,11 @@ const App = () => {
   useHideSpringSecurityMatchingRequestParameter()
 
   return (
-    <BrowserRouter>
-      <LudosContextProvider>
-        <NotificationProvider>
-          <LudosRoutes />
-        </NotificationProvider>
-      </LudosContextProvider>
-    </BrowserRouter>
+    <LudosContextProvider>
+      <NotificationProvider>
+        <RouterProvider router={ludosRouter} />
+      </NotificationProvider>
+    </LudosContextProvider>
   )
 }
 

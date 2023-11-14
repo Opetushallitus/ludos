@@ -1,5 +1,12 @@
 import { Layout } from './layout/Layout'
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  isRouteErrorResponse,
+  Navigate,
+  Outlet,
+  RouteObject,
+  useRouteError
+} from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ContentFormAction, ContentType, Exam, Roles } from '../types'
 import { useUserDetails } from '../hooks/useUserDetails'
@@ -10,7 +17,6 @@ import ContentListPage from './content/list/ContentListPage'
 import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
 import { AssignmentFavorite } from './content/list/assignment/AssignmentFavorite'
-import { Notification } from './Notification'
 
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi
@@ -20,8 +26,24 @@ export const sukoKey = Exam.SUKO.toLowerCase()
 export const puhviKey = Exam.PUHVI.toLowerCase()
 export const ldKey = Exam.LD.toLowerCase()
 export const suosikitKey = 'suosikit'
-export const luvatonKey = 'luvaton'
 export const esitysnakymaKey = 'esitysnakyma'
+
+export const frontpagePath = () => '/'
+
+export const examPath = (exam: Exam) => `/${exam.toLowerCase()}`
+
+export const feedbackPath = () => `/${palautteetKey}`
+
+export const contentPagePath = (exam: Exam, contentType: ContentType, id: number) =>
+  `${examPath(exam)}/${contentType}/${id}`
+
+export const contentListPath = (exam: Exam, contentType: ContentType, search?: string) =>
+  `${examPath(exam)}/${contentType}${search ?? ''}`
+
+export const editingFormPath = (exam: Exam, contentType: ContentType, id: number) =>
+  `${examPath(exam)}/${contentType}/${muokkausKey}/${id}`
+
+export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`
 
 const Content = lazy(() => import('./content/Content'))
 const AssignmentForm = lazy(() => import('./forms/AssignmentForm'))
@@ -32,136 +54,172 @@ const SpinnerSuspense = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<Spinner className="mt-32 text-center" />}>{children}</Suspense>
 )
 
-export const LudosRoutes = () => {
+const AuthorizedRoute = (): ReactElement => {
   const { role } = useUserDetails()
 
   const isAuthorized = role === Roles.YLLAPITAJA || role === Roles.LAATIJA || role === Roles.OPETTAJA
 
-  return (
-    <>
-      {isAuthorized ? (
-        <AuthorizedRoutes />
-      ) : (
-        <>
-          {role === Roles.UNAUTHORIZED ? (
-            <UnauthorizedRoutes />
-          ) : (
-            <Routes>
-              <Route path="*" element={<div />} />
-            </Routes>
-          )}
-        </>
-      )}
-    </>
-  )
-}
-
-const ProtectedRoute = (): ReactElement => {
-  const { isYllapitaja } = useUserDetails()
-
-  if (!isYllapitaja) {
-    return <Navigate to={unauthorizedPath()} replace />
+  if (!isAuthorized) {
+    return <UnauthorizedPage />
   }
 
   return <Outlet />
 }
 
-function examRoutes(exam: Exam) {
+const YllapitajaRoute = (): ReactElement => {
+  const { isYllapitaja } = useUserDetails()
+
+  if (!isYllapitaja) {
+    return <UnauthorizedPage />
+  }
+
+  return <Outlet />
+}
+
+const Palautteet = () => {
+  const { t } = useTranslation()
   return (
-    <Route path={examPath(exam)}>
-      <Route element={<ProtectedRoute />}>
-        <Route
-          path={`${ContentType.koetehtavat}/${uusiKey}`}
-          element={
-            <Layout>
-              <SpinnerSuspense>
-                <AssignmentForm action={uusiKey} />
-              </SpinnerSuspense>
-            </Layout>
+    <div>
+      <h2 data-testid={`page-heading-${palautteetKey}`}>{t('title.palautteet')}</h2>
+    </div>
+  )
+}
+
+const DefaultError = () => {
+  const { t } = useTranslation()
+  let error = useRouteError()
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return <PageNotFound />
+  } else {
+    console.error(error)
+    return <h2>{t('error.odottamaton-virhe')}</h2>
+  }
+}
+
+export const ludosRouter = createBrowserRouter([
+  {
+    element: <AuthorizedRoute />,
+    errorElement: <DefaultError />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <Layout>
+            <Frontpage />
+          </Layout>
+        )
+      },
+      examRoute(Exam.SUKO),
+      examRoute(Exam.LD),
+      examRoute(Exam.PUHVI),
+      {
+        index: true,
+        path: `/${suosikitKey}`,
+        element: <Navigate replace to={favoritesPagePath(Exam.SUKO)} />
+      },
+      {
+        path: `/${suosikitKey}/:exam`,
+        element: (
+          <Layout>
+            <AssignmentFavorite />
+          </Layout>
+        )
+      },
+      {
+        element: <YllapitajaRoute />,
+        children: [
+          {
+            path: `/${palautteetKey}`,
+            element: (
+              <Layout>
+                <Palautteet />
+              </Layout>
+            )
           }
-        />
-        <Route
-          path={`${ContentType.koetehtavat}/${muokkausKey}/:id`}
-          element={
-            <Layout>
-              <SpinnerSuspense>
-                <AssignmentForm action={muokkausKey} />
-              </SpinnerSuspense>
-            </Layout>
-          }
-        />
-        <Route
-          path={`${ContentType.ohjeet}/${uusiKey}`}
-          element={
-            <Layout>
-              <SpinnerSuspense>
-                <InstructionForm action={uusiKey} />
-              </SpinnerSuspense>
-            </Layout>
-          }
-        />
-        <Route
-          path={`${ContentType.ohjeet}/${muokkausKey}/:id`}
-          element={
-            <Layout>
-              <SpinnerSuspense>
-                <InstructionForm action={muokkausKey} />
-              </SpinnerSuspense>
-            </Layout>
-          }
-        />
-        <Route
-          path={`${ContentType.todistukset}/${uusiKey}`}
-          element={
-            <Layout>
-              <SpinnerSuspense>
-                <CertificateForm action={uusiKey} />
-              </SpinnerSuspense>
-            </Layout>
-          }
-        />
-        <Route
-          path={`${ContentType.todistukset}/${muokkausKey}/:id`}
-          element={
-            <Layout>
-              <SpinnerSuspense>
-                <CertificateForm action={muokkausKey} />
-              </SpinnerSuspense>
-            </Layout>
-          }
-        />
-      </Route>
-      <Route index element={<Navigate replace to={contentListPath(exam, ContentType.koetehtavat)} />} />
-      <Route
-        path=":contentType"
-        element={
+        ]
+      },
+      {
+        path: '/vitelogin',
+        element: <Navigate replace to="/" />
+      }
+    ]
+  }
+])
+
+function contentFormRoutes(
+  contentType: ContentType,
+  Form: typeof AssignmentForm | typeof InstructionForm | typeof CertificateForm
+): RouteObject[] {
+  return [
+    {
+      path: `${contentType}/${ContentFormAction.uusi}`,
+      element: (
+        <Layout>
+          <SpinnerSuspense>
+            <Form action={ContentFormAction.uusi} />
+          </SpinnerSuspense>
+        </Layout>
+      )
+    },
+    {
+      path: `${contentType}/${ContentFormAction.muokkaus}/:id`,
+      element: (
+        <Layout>
+          <SpinnerSuspense>
+            <Form action={ContentFormAction.muokkaus} />
+          </SpinnerSuspense>
+        </Layout>
+      )
+    }
+  ]
+}
+
+function examRoute(exam: Exam): RouteObject {
+  return {
+    path: examPath(exam),
+    children: [
+      {
+        index: true,
+        element: <Navigate replace to={contentListPath(exam, ContentType.koetehtavat)} />
+      },
+      {
+        path: ':contentType',
+        element: (
           <Layout>
             <ContentListPage exam={exam} />
           </Layout>
-        }
-      />
-      <Route
-        path=":contentType/:id"
-        element={
+        )
+      },
+      {
+        path: ':contentType/:id',
+        element: (
           <Layout>
             <SpinnerSuspense>
               <Content exam={exam} isPresentation={false} />
             </SpinnerSuspense>
           </Layout>
-        }
-      />
-      <Route
-        path={`:contentType/:id/${esitysnakymaKey}`}
-        element={
+        )
+      },
+      {
+        path: `:contentType/:id/${esitysnakymaKey}`,
+        element: (
           <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
             <SpinnerSuspense>
               <Content exam={exam} isPresentation={true} />
             </SpinnerSuspense>
           </Layout>
-        }
-      />
-    </Route>
-  )
+        )
+      },
+      {
+        element: <YllapitajaRoute />,
+        children: [
+          ...contentFormRoutes(ContentType.koetehtavat, AssignmentForm),
+          ...contentFormRoutes(ContentType.ohjeet, InstructionForm),
+          ...contentFormRoutes(ContentType.todistukset, CertificateForm)
+        ]
+      }
+    ]
+  }
 }
 
 export function PageNotFound() {
@@ -172,60 +230,6 @@ export function PageNotFound() {
       <h2 className="text-green-primary">404</h2>
       <p>{t('error.sivua-ei-loydy')}</p>
     </div>
-  )
-}
-
-function AuthorizedRoutes() {
-  const { t } = useTranslation()
-
-  return (
-    <>
-      <Notification />
-      <Routes>
-        <Route
-          path={`/`}
-          element={
-            <Layout>
-              <Frontpage />
-            </Layout>
-          }
-        />
-        <Route element={<ProtectedRoute />}>
-          <Route
-            path={`/${palautteetKey}`}
-            element={
-              <Layout>
-                <div>
-                  <h2 data-testid={`page-heading-${palautteetKey}`}>{t('title.palautteet')}</h2>
-                </div>
-              </Layout>
-            }
-          />
-        </Route>
-        {examRoutes(Exam.SUKO)}
-        {examRoutes(Exam.LD)}
-        {examRoutes(Exam.PUHVI)}
-        <Route path={`/${suosikitKey}`} element={<Navigate replace to={favoritesPagePath(Exam.SUKO)} />} />
-        <Route
-          path={`/${suosikitKey}/:exam`}
-          element={
-            <Layout>
-              <AssignmentFavorite />
-            </Layout>
-          }
-        />
-        <Route path={`/${luvatonKey}`} element={<UnauthorizedPage />} />
-        <Route path={`/vitelogin`} element={<Navigate replace to="/" />} />
-        <Route
-          path="*"
-          element={
-            <Layout>
-              <PageNotFound />
-            </Layout>
-          }
-        />
-      </Routes>
-    </>
   )
 }
 
@@ -240,30 +244,3 @@ function UnauthorizedPage() {
     </div>
   )
 }
-
-function UnauthorizedRoutes() {
-  return (
-    <Routes>
-      <Route path="*" element={<UnauthorizedPage />} />
-    </Routes>
-  )
-}
-
-export const frontpagePath = () => '/'
-
-export const examPath = (exam: Exam) => `/${exam.toLowerCase()}`
-
-export const feedbackPath = () => `/${palautteetKey}`
-
-export const unauthorizedPath = () => `/${luvatonKey}`
-
-export const contentPagePath = (exam: Exam, contentType: ContentType, id: number) =>
-  `${examPath(exam)}/${contentType}/${id}`
-
-export const contentListPath = (exam: Exam, contentType: ContentType, search?: string) =>
-  `${examPath(exam)}/${contentType}${search ?? ''}`
-
-export const editingFormPath = (exam: Exam, contentType: ContentType, id: number) =>
-  `${examPath(exam)}/${contentType}/${muokkausKey}/${id}`
-
-export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`
