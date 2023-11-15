@@ -1345,6 +1345,20 @@
   },
   {
     "accesscount": 0,
+    "accessed": 1699961496591,
+    "category": "ludos",
+    "created": 1699961496591,
+    "createdBy": "1.2.246.562.24.20745323310",
+    "force": false,
+    "id": 54873,
+    "key": "error.odottamaton-virhe",
+    "locale": "fi",
+    "modified": 1699961496589,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Odottamaton virhe"
+  },
+  {
+    "accesscount": 0,
     "accessed": 1698750107686,
     "category": "ludos",
     "created": 1698750107686,
