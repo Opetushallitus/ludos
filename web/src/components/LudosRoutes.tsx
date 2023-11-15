@@ -57,13 +57,15 @@ const SpinnerSuspense = ({ children }: { children: ReactNode }) => (
 const AuthorizedRoute = (): ReactElement => {
   const { role } = useUserDetails()
 
-  const isAuthorized = role === Roles.YLLAPITAJA || role === Roles.LAATIJA || role === Roles.OPETTAJA
+  const userHasAuthorizedRole = role === Roles.YLLAPITAJA || role === Roles.LAATIJA || role === Roles.OPETTAJA
 
-  if (!isAuthorized) {
+  if (!role) {
+    return <UnauthenticatedPage />
+  } else if (!userHasAuthorizedRole) {
     return <UnauthorizedPage />
+  } else {
+    return <Outlet />
   }
-
-  return <Outlet />
 }
 
 const YllapitajaRoute = (): ReactElement => {
@@ -229,6 +231,18 @@ export function PageNotFound() {
     <div className="p-10">
       <h2 className="text-green-primary">404</h2>
       <p>{t('error.sivua-ei-loydy')}</p>
+    </div>
+  )
+}
+
+function UnauthenticatedPage() {
+  return (
+    <div className="p-10">
+      <h1 className="py-3 text-green-primary" data-testid="unauthorizedPage">
+        403
+      </h1>
+      <p>Et ole kirjautunut virkailijana tai kirjautuminen epäonnistui.</p>
+      <p>Du har inte inloggad som administratören eller inloggningen misslyckades.</p>
     </div>
   )
 }
