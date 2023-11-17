@@ -670,4 +670,20 @@ class InstructionControllerTest : InstructionRequests() {
 
         assertTrue(noneHaveMatchingId, "No instructions should have the ID of the deleted one")
     }
+
+    @Test
+    @WithYllapitajaRole
+    fun `Test image html validator`() {
+        mockMvc.perform(
+            postInstruction(
+                mapper.writeValueAsString(
+                    minimalSukoInstruction.copy(
+                        contentFi = "<p>Text before image</p><img src=\"/api/image?fileKey=image_123\" alt=\"Alt text\" class=\"image-size-large image-align-left\" /><p>Text after</p>"
+                    )
+                ),
+                emptyList(),
+                mapper
+            )
+        ).andExpect(status().isOk)
+    }
 }

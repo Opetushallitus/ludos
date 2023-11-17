@@ -1,5 +1,6 @@
 package fi.oph.ludos.s3
 
+import jakarta.annotation.PostConstruct
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
@@ -12,16 +13,15 @@ import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
 import java.io.InputStream
-import java.io.OutputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import jakarta.annotation.PostConstruct
 import kotlin.io.path.deleteIfExists
 
-enum class Bucket(val bucketNameProperty: String) {
+enum class Bucket(private val bucketNameProperty: String) {
     INSTRUCTION("ludos.instruction-bucket-name"),
-    CERTIFICATE("ludos.certificate-bucket-name");
+    CERTIFICATE("ludos.certificate-bucket-name"),
+    IMAGE("ludos.image-bucket-name");
 
     fun getBucketName(environment: Environment): String =
         environment.getProperty(this.bucketNameProperty)
@@ -41,7 +41,7 @@ class CloudS3Helper(val environment: Environment, val s3: S3Client) : S3Helper {
 
     @PostConstruct
     fun checkS3Credentials() {
-        Bucket.values().forEach {
+        Bucket.entries.forEach {
             val objectRequest =
                 PutObjectRequest.builder()
                     .bucket(it.getBucketName(environment))
@@ -55,9 +55,7 @@ class CloudS3Helper(val environment: Environment, val s3: S3Client) : S3Helper {
         val bucketName = bucket.getBucketName(environment)
         val inputStream: InputStream = file.inputStream
 
-        val objectRequest =
-            PutObjectRequest.builder().bucket(bucketName).key(key).contentType(file.contentType)
-                .build()
+        val objectRequest = PutObjectRequest.builder().bucket(bucketName).key(key).contentType(file.contentType).build()
 
         try {
             s3.putObject(objectRequest, RequestBody.fromInputStream(inputStream, file.size))
@@ -103,24 +101,30 @@ class LocalS3Helper(val environment: Environment) : S3Helper {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
     val s3Dir: Path = Paths.get(System.getProperty("java.io.tmpdir"), "ludos_local_s3")
 
-    fun bucketDir(bucket: Bucket) = s3Dir.resolve(bucket.getBucketName(environment))
+    fun bucketDir(bucket: Bucket): Path = s3Dir.resolve(bucket.getBucketName(environment))
 
     @PostConstruct
     fun init() {
         if (!Files.exists(s3Dir)) {
             Files.createDirectories(s3Dir)
         }
-        Bucket.values().forEach {
+        Bucket.entries.forEach {
             if (!Files.exists(bucketDir(it))) {
                 Files.createDirectory(bucketDir(it))
             }
         }
     }
 
+    private fun contentTypeFilePath(mainFilePath: Path): Path = Paths.get("$mainFilePath.contentType")
+
     override fun putObject(bucket: Bucket, key: String, file: MultipartFile) {
         try {
-            Files.newOutputStream(bucketDir(bucket).resolve(key))
-                .use { output: OutputStream -> file.inputStream.copyTo(output) }
+            val filePath = bucketDir(bucket).resolve(key)
+            Files.newOutputStream(filePath).use { output ->
+                file.inputStream.copyTo(output)
+            }
+            // Save content type in a separate file
+            Files.writeString(contentTypeFilePath(filePath), file.contentType)
         } catch (e: Exception) {
             logger.error("Error putting $key to $bucket", e)
             throw e
@@ -130,8 +134,16 @@ class LocalS3Helper(val environment: Environment) : S3Helper {
 
     override fun getObject(bucket: Bucket, key: String): ResponseInputStream<GetObjectResponse>? {
         return try {
-            val inputStream = Files.newInputStream(bucketDir(bucket).resolve(key))
-            ResponseInputStream(GetObjectResponse.builder().build(), inputStream)
+            val filePath = bucketDir(bucket).resolve(key)
+            // Read the content type from the separate file
+            val contentTypePath = contentTypeFilePath(filePath)
+            val contentType =
+                if (Files.exists(contentTypePath)) Files.readString(contentTypePath) else "application/octet-stream"
+
+            val inputStream = Files.newInputStream(filePath)
+            val objectResponse = GetObjectResponse.builder().contentType(contentType).build()
+
+            ResponseInputStream(objectResponse, inputStream)
         } catch (e: Exception) {
             logger.error("Error getting $key from $bucket", e)
             null
@@ -140,7 +152,9 @@ class LocalS3Helper(val environment: Environment) : S3Helper {
 
     override fun deleteObject(bucket: Bucket, key: String) {
         try {
-            bucketDir(bucket).resolve(key).deleteIfExists()
+            val filePath = bucketDir(bucket).resolve(key)
+            filePath.deleteIfExists()
+            contentTypeFilePath(filePath).deleteIfExists()
         } catch (e: Exception) {
             logger.error("Error deleting $key from $bucket", e)
         }

@@ -1,6 +1,6 @@
 import { RefinementCtx, z } from 'zod'
 import { ErrorMessages, Exam } from '../../../types'
-import { examEnumZodType, MIN_NAME_LENGTH, publishStateEnumZodType } from './schemaCommon'
+import { examEnumZodType, MIN_NAME_LENGTH, publishStateEnumZodType, validateImgTagsInArray } from './schemaCommon'
 
 export const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: string }, ctx: RefinementCtx) => {
   // Either nameFi or nameSv has a length of at least 1, but not both
@@ -20,8 +20,20 @@ const commonSchema = z.object({
   nameSv: z.string().min(MIN_NAME_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   instructionFi: z.string().default(''),
   instructionSv: z.string().default(''),
-  contentFi: z.array(z.string()).optional().default(['']),
-  contentSv: z.array(z.string()).optional().default(['']),
+  contentFi: z
+    .array(z.string())
+    .optional()
+    .default([''])
+    .refine((htmlStringArray) => validateImgTagsInArray(htmlStringArray), {
+      message: ErrorMessages.REQUIRED_IMG_ALT
+    }),
+  contentSv: z
+    .array(z.string())
+    .optional()
+    .default([''])
+    .refine((htmlStringArray) => validateImgTagsInArray(htmlStringArray), {
+      message: ErrorMessages.REQUIRED_IMG_ALT
+    }),
   laajaalainenOsaaminenKoodiArvos: z.array(z.string()).default([])
 })
 

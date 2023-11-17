@@ -344,7 +344,6 @@ class CertificateControllerTest : CertificateRequests() {
                 }
 
                 when (val updatedCertificateById = updateCertificateAndAssert(createdCertificate, editedCertificate)) {
-                    // Voisko tän lambdan inlinettää helposti
                     is SukoCertificateDtoOut -> assertEquals(
                         (editedCertificate as TestSukoCertificateIn).descriptionFi,
                         updatedCertificateById.descriptionFi

@@ -1,7 +1,6 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import { Exam, KoodistoName } from 'web/src/types'
-import { FormAction, koodiLabel, setSingleSelectDropdownOption } from '../../helpers'
-import path from 'path'
+import { FormAction, koodiLabel, selectAttachmentFile, setSingleSelectDropdownOption } from '../../helpers'
 import { AttachmentFormType, CertificateFormType } from 'web/src/components/forms/schemas/certificateSchema'
 
 function certificateNameByAction(action: FormAction): string {
@@ -62,13 +61,13 @@ export async function fillCertificateForm(page: Page, exam: Exam, inputs: Certif
   isLd && (await setSingleSelectDropdownOption(page, 'aineKoodiArvo', inputs.aineKoodiArvo!))
   await page.getByTestId('nameFi').fill(inputs.nameFi)
   isSukoOrLd && (await page.getByTestId('descriptionFi').fill(inputs.descriptionFi!))
-  await selectAttachmentFile(page, inputs.attachmentFi.name!)
+  await selectAttachmentFile(page, inputs.attachmentFi.name!, page.locator('#fileInput-fi'))
 
   if (!isSuko) {
     await page.getByTestId('tab-sv').click()
 
     await page.getByTestId('nameSv').fill(inputs.nameSv!)
-    await selectAttachmentFile(page, inputs.attachmentSv!.name!, 'sv')
+    await selectAttachmentFile(page, inputs.attachmentSv!.name!, page.locator('#fileInput-sv'))
 
     isPuhvi && (await page.getByTestId('descriptionSv').fill(inputs.descriptionSv!))
   }
@@ -113,19 +112,4 @@ export async function assertContentPage(
   await expect(page.getByText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos', { exact: true })).toBeVisible()
 
   await testAttachmentLink(page, context, inputs.attachmentFi)
-}
-
-export async function selectAttachmentFile(page: Page, file: string, language: 'fi' | 'sv' = 'fi') {
-  const filePath = path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`)
-
-  await page.locator(`#fileInput-${language}`).setInputFiles(filePath)
-
-  const currentDate = new Date()
-
-  const day = currentDate.getDate()
-  const month = currentDate.getMonth() + 1
-  const year = currentDate.getFullYear()
-  const formattedDate = `${day}.${month}.${year}`
-
-  await expect(page.getByTestId(file).first()).toHaveText(`${file}${formattedDate}`)
 }

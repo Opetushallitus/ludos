@@ -11,8 +11,10 @@ import ListItem from '@tiptap/extension-list-item'
 import Bold from '@tiptap/extension-bold'
 import Italic from '@tiptap/extension-italic'
 import History from '@tiptap/extension-history'
+import LudosImage from './LudosImage'
 import { TipTapToolBar } from './TipTapToolBar'
-import './styles.css'
+import './tiptapStyles.css'
+import { twMerge } from 'tailwind-merge'
 
 type Levels = 1 | 2 | 3 | 4
 
@@ -66,37 +68,32 @@ const extensions = [
     }
   }),
   ListItem,
-  // Image.configure({
-  //   inline: true,
-  //   HTMLAttributes: {
-  //     class: 'h-[20rem]'
-  //   }
-  // }),
-  // CustomImageResize.configure({
-  //   inline: true
-  // }),
-  // CustomImage,
   Link.configure({
     openOnClick: false,
     HTMLAttributes: {
       class: 'tiptap-link'
     }
-  })
+  }),
+  LudosImage
 ]
+
+type TipTapProps = {
+  content: string | undefined
+  onContentChange?: (newContent: string) => void
+  editable?: boolean
+  label?: string
+  fieldError?: boolean
+  dataTestId: string
+}
 
 export const TipTap = ({
   content,
   onContentChange,
   editable = true,
   label = '',
+  fieldError = false,
   dataTestId
-}: {
-  content: string | undefined
-  onContentChange?: (newContent: string) => void
-  editable?: boolean
-  label?: string
-  dataTestId: string
-}) => {
+}: TipTapProps) => {
   const editor = useEditor({
     editable,
     extensions,
@@ -115,9 +112,11 @@ export const TipTap = ({
       {editable ? (
         <fieldset className="mt-6">
           <legend className="font-semibold">{label}</legend>
-          <div className="mt-2 border border-gray-border">
-            <TipTapToolBar editor={editor} dataTestId={dataTestId} />
-            <EditorContent editor={editor} data-testid={dataTestId} />
+          <div
+            className={twMerge('mt-2 border border-gray-border max-w-[80vw]', fieldError && 'border-red-primary')}
+            data-testid={dataTestId}>
+            <TipTapToolBar editor={editor} />
+            <EditorContent editor={editor} />
           </div>
         </fieldset>
       ) : (

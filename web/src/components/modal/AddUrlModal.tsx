@@ -13,7 +13,7 @@ interface ModalProps {
   dataTestId: string
 }
 
-export const TipTapAddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTestId }: ModalProps) => {
+export const AddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTestId }: ModalProps) => {
   const { t } = useTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef, onClick } = useModal({ open, onClose })
   const [url, setUrl] = useState('')

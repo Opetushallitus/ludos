@@ -134,6 +134,11 @@ export type AttachmentDtoOut = {
   language: 'FI' | 'SV'
 }
 
+export type ImageDtoOut = {
+  url: string
+  fileName: string
+}
+
 export type CertificateDtoOut = BaseOut & {
   nameFi: string
   nameSv: string
@@ -205,6 +210,7 @@ export type UserDetails = {
 
 export const ErrorMessages = {
   REQUIRED: 'required',
+  REQUIRED_IMG_ALT: 'required_img_alt',
   SHORT: 'short',
   NO_FILE: 'no_file',
   ASSIGNMENT_NAME_REQUIRED: 'assignment_name_required'
@@ -257,3 +263,14 @@ export const KoodistoName = {
   AIHE_SUKO: 'aihesuko'
 } as const
 export type KoodistoName = (typeof KoodistoName)[keyof typeof KoodistoName]
+export const ImageSizeOption = {
+  original: 'original',
+  small: 'small',
+  large: 'large'
+} as const
+export type ImageSizeOption = (typeof ImageSizeOption)[keyof typeof ImageSizeOption]
+export const ImageAlignOption = {
+  left: 'left',
+  center: 'center'
+} as const
+export type ImageAlignOption = (typeof ImageAlignOption)[keyof typeof ImageAlignOption]

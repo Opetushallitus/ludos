@@ -1,7 +1,7 @@
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
 import { CertificateFormType } from './components/forms/schemas/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentDtoOut, AttachmentLanguage, Exam, MapWithFileKeyAndMetadata } from './types'
+import { AttachmentDtoOut, AttachmentLanguage, Exam, ImageDtoOut, MapWithFileKeyAndMetadata } from './types'
 
 const doRequest = async (
   url: string,
@@ -213,4 +213,20 @@ export async function setAssignmentFavorite(exam: Exam, assignmentId: number, is
   }
 
   return result.json()
+}
+
+export async function uploadImage(file: File): Promise<ImageDtoOut> {
+  const formData = new FormData()
+
+  formData.append('file', file)
+
+  const result = await doRequest(`${BASE_API_URL}/image`, 'POST', formData, {
+    type: 'multipart/form-data'
+  })
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return await result.json()
 }

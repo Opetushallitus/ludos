@@ -6,25 +6,6 @@
     @apply min-h-[30vh] resize-y
 }
 
-.image-resizer {
-    display: inline-flex;
-    position: relative;
-    flex-grow: 0;
-}
-
-.image-resizer .resize-trigger {
-    position: absolute;
-    right: -6px;
-    bottom: -9px;
-    opacity: 0;
-    transition: opacity .3s ease;
-    color: #3259a5;
-}
-
-.image-resizer:hover .resize-trigger {
-    opacity: 1;
-}
-
 .tiptap-bullet-list {
     @apply list-disc ml-6 pl-6
 }
@@ -39,4 +20,28 @@
 
 .tiptap-link {
     @apply text-green-primary underline
+}
+
+.tiptap-image-size-small {
+    @apply w-[25rem];
+}
+
+.tiptap-image-size-large {
+    @apply w-[64rem];
+}
+
+.tiptap-image-size-original {
+    @apply w-auto max-w-[90%];
+}
+
+.tiptap-image-align-left {
+    @apply block;
+}
+
+.tiptap-image-align-center {
+    @apply block mx-auto;
+}
+
+.tiptap-image-right {
+    @apply float-right;
 }

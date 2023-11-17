@@ -32,6 +32,7 @@ async function fillCommonAssignmentFields(page: Page, exam: Exam, formData: AnyA
 
   for (const [index, content] of formData.contentFi.entries()) {
     await page.getByTestId(`contentFi-${index}`).locator('div[contenteditable="true"]').fill(content)
+
     // if not last content press add content field button
     if (index !== formData.contentFi.length - 1) {
       await page.getByTestId('contentFi-add-content-field').click()
@@ -139,6 +140,7 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
 
   await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
   await expect(page.getByTestId('instruction-fi')).toHaveText(expectedFormData.instructionFi)
+
   for (const [i, content] of expectedFormData.contentFi.entries()) {
     await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
   }

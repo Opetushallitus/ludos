@@ -7,6 +7,8 @@ import jakarta.validation.Payload
 import jakarta.validation.constraints.Size
 import org.jsoup.Jsoup
 import org.jsoup.safety.Safelist
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import kotlin.reflect.KClass
 
 @MustBeDocumented
@@ -62,14 +64,13 @@ annotation class PlainText(
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
+
 class PlainTextValidator : ConstraintValidator<PlainText, String> {
     override fun isValid(input: String?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
         return Jsoup.isValid(input, Safelist.none())
     }
 }
-
-val htmlSafelist = Safelist.relaxed().addAttributes(":all", "class")
 
 @MustBeDocumented
 @Constraint(validatedBy = [SafeHtmlValidator::class])
@@ -79,7 +80,14 @@ annotation class SafeHtml(
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
+
+val htmlSafelist: Safelist = Safelist.relaxed()
+    .addAttributes(":all", "class")
+    .removeProtocols("img", "src", "http", "https")
+
 class SafeHtmlValidator : ConstraintValidator<SafeHtml, String> {
+    val logger: Logger = LoggerFactory.getLogger(javaClass)
+
     override fun isValid(input: String?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
         return Jsoup.isValid(input, htmlSafelist)
@@ -94,6 +102,7 @@ annotation class SafeHtmlArray(
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
+
 class SafeHtmlArrayValidator : ConstraintValidator<SafeHtmlArray, Array<String>> {
     override fun isValid(input: Array<String>?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
@@ -112,6 +121,7 @@ annotation class ValidStringLengths(
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
+
 class ArrayStringLengthValidator : ConstraintValidator<ValidStringLengths, Array<String>> {
 
     private var min: Int = 0

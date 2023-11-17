@@ -3,6 +3,8 @@ import {
   assertCreatedInstruction,
   assertUpdatedInstruction,
   fillInstructionForm,
+  initializeInstructionTest,
+  instructionFormData,
   updateAttachments
 } from './instructionHelpers'
 import {
@@ -15,49 +17,41 @@ import {
 } from '../../helpers'
 import path from 'path'
 import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
+import { InstructionFormModel } from '../../models/InstructionFormModel'
 
-loginTestGroup(test, Role.YLLAPITAJA)
-
-async function createInstruction(page: Page, exam: Exam, action: FormAction, expectedNotification: string) {
+async function createInstruction(form: InstructionFormModel, action: FormAction, expectedNotification: string) {
   await fillInstructionForm({
-    page,
-    nameFi: 'Testi ohje',
-    nameSv: 'Testuppgifter',
-    contentFi: 'Testi sisältö',
-    contentSv: 'Testa innehåll',
-    aineKoodiArvo: exam === Exam.LD ? '9' : undefined,
-    shortDescriptionFi: exam !== Exam.LD ? 'Testi lyhyt kuvaus' : undefined,
-    shortDescriptionSv: exam !== Exam.LD ? 'Testa kort beskrivning' : undefined,
-    attachmentNameFi: 'Testi liite',
-    attachmentNameSv: 'Testa bilaga'
+    form,
+    ...instructionFormData
   })
 
   if (action === 'submit') {
-    void page.getByTestId('form-submit').click()
+    void form.submitButton.click()
   } else {
-    void page.getByTestId('form-draft').click()
+    void form.draftButton.click()
   }
 
-  const response = await page.waitForResponse(
+  const response = await form.page.waitForResponse(
     (response) => response.url().includes('/api/instruction') && response.ok()
   )
   const responseData = await response.json()
   const instructionToUpdate = responseData.id
 
-  await assertSuccessNotification(page, expectedNotification)
-  await assertCreatedInstruction(page, exam, action)
+  await assertSuccessNotification(form.page, expectedNotification)
+  await assertCreatedInstruction(form, action)
 
   return instructionToUpdate
 }
 
 async function updateInstruction(
-  page: Page,
-  exam: Exam,
+  form: InstructionFormModel,
   instructionId: number,
   action: FormAction,
   previousName: string,
   expectedNotification: string
 ) {
+  const { page, exam } = form
+
   await navigateToInstructionExamPage(page, exam)
 
   await setTeachingLanguage(page, TeachingLanguage.sv)
@@ -75,7 +69,7 @@ async function updateInstruction(
 
   await page.getByTestId(`instruction-${instructionId}-edit`).click()
   await fillInstructionForm({
-    page,
+    form: form,
     nameFi: 'Testi ohje muokattu',
     nameSv: 'Testuppgifter redigerade',
     contentFi: 'Testi sisältö muokattu',
@@ -99,24 +93,13 @@ async function navigateToInstructionExamPage(page: Page, exam: Exam) {
 }
 
 async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
-  const instructionId = await createInstruction(
-    page,
-    exam,
-    'submit',
-    'form.notification.ohjeen-tallennus.julkaisu-onnistui'
-  )
-  await updateInstruction(
-    page,
-    exam,
-    instructionId,
-    'submit',
-    'Testuppgifter',
-    'form.notification.ohjeen-tallennus.onnistui'
-  )
+  const form = new InstructionFormModel(page, exam)
+
+  const instructionId = await createInstruction(form, 'submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
+  await updateInstruction(form, instructionId, 'submit', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
   await updateAttachments(page)
   await updateInstruction(
-    page,
-    exam,
+    form,
     instructionId,
     'draft',
     'Testuppgifter redigerade',
@@ -127,24 +110,13 @@ async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
 }
 
 async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
-  const instructionId = await createInstruction(
-    page,
-    exam,
-    'draft',
-    'form.notification.ohjeen-tallennus.luonnos-onnistui'
-  )
+  const form = new InstructionFormModel(page, exam)
 
+  const instructionId = await createInstruction(form, 'draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
+
+  await updateInstruction(form, instructionId, 'draft', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
   await updateInstruction(
-    page,
-    exam,
-    instructionId,
-    'draft',
-    'Testuppgifter',
-    'form.notification.ohjeen-tallennus.onnistui'
-  )
-  await updateInstruction(
-    page,
-    exam,
+    form,
     instructionId,
     'submit',
     'Testuppgifter redigerade',
@@ -167,16 +139,11 @@ async function deleteInstruction(page: Page, instructionId: number, exam: Exam) 
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 
+loginTestGroup(test, Role.YLLAPITAJA)
+
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} instruction form tests`, () => {
-    test.beforeEach(async ({ page }) => {
-      await page.goto('/')
-      await page.getByTestId('header-language-dropdown-expand').click()
-      await page.getByText('Näytä avaimet').click()
-      await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
-      await page.getByTestId('tab-ohjeet').click()
-      await page.getByTestId('create-ohje-button').click()
-    })
+    test.beforeEach(async ({ page }) => await initializeInstructionTest(page, exam))
 
     test(`can create, update and delete a new published ${exam} instruction`, async ({ page }) =>
       await createAndUpdatePublishedInstruction(page, exam))
@@ -193,9 +160,10 @@ Object.values(Exam).forEach((exam) => {
     })
 
     test(`can cancel ${exam} updating instruction`, async ({ page }) => {
+      const form = new InstructionFormModel(page, exam)
+
       const instructionId = await createInstruction(
-        page,
-        exam,
+        form,
         'submit',
         'form.notification.ohjeen-tallennus.julkaisu-onnistui'
       )
@@ -211,8 +179,10 @@ Object.values(Exam).forEach((exam) => {
     })
 
     test(`${exam} failing of attachment upload is handled correctly`, async ({ page }) => {
+      const form = new InstructionFormModel(page, exam)
+
       await fillInstructionForm({
-        page,
+        form,
         nameFi: 'Liitteen poisto epäonnistumis testi',
         aineKoodiArvo: exam === Exam.LD ? '9' : undefined
       })
