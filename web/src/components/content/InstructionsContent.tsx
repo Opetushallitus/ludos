@@ -1,26 +1,47 @@
-import { InstructionDtoOut, TeachingLanguage } from '../../types'
+import {
+  Exam,
+  InstructionDtoOut,
+  LdInstructionDtoOut,
+  SukoOrPuhviInstructionDtoOut,
+  TeachingLanguage
+} from '../../types'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useKoodisto } from '../../hooks/useKoodisto'
 
 type InstructionContentProps = {
-  instruction: InstructionDtoOut
+  instruction: SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut
   teachingLanguage: TeachingLanguage
   isPresentation: boolean
 }
 
 export const InstructionContent = ({ instruction, teachingLanguage, isPresentation }: InstructionContentProps) => {
   const { t } = useTranslation()
+  const { getKoodiLabel } = useKoodisto()
   const attachmentsFilteredWithLanguage = instruction.attachments
     .filter((it) => it.language.toLowerCase() === teachingLanguage)
     .map((it) => it)
+
+  const isLdInstruction = (instruction: InstructionDtoOut, exam: Exam): instruction is LdInstructionDtoOut =>
+    exam === Exam.LD && 'aineKoodiArvo' in instruction
 
   return (
     <>
       {!isPresentation && (
         <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
+          {isLdInstruction(instruction, Exam.LD) && (
+            <ul>
+              <li>
+                <span className="pr-1 font-semibold">{t('assignment.aine')}:</span>
+                <span data-testid="instruction-aine">
+                  {getKoodiLabel(instruction.aineKoodiArvo, 'ludoslukiodiplomiaine')}
+                </span>
+              </li>
+            </ul>
+          )}
           <ContentActionRow contentId={instruction.id} />
         </div>
       )}
@@ -30,13 +51,18 @@ export const InstructionContent = ({ instruction, teachingLanguage, isPresentati
         instructionSv={instruction.instructionSv}
       />
 
-      <div className="mb-4">
-        <p className="text-sm">
-          {teachingLanguage === TeachingLanguage.fi ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}
-        </p>
-      </div>
-
-      <div className="mb-4 border-b border-gray-separator" />
+      {!isLdInstruction(instruction, Exam.LD) && (
+        <>
+          <div className="mb-4">
+            <p className="text-sm">
+              {teachingLanguage === TeachingLanguage.fi
+                ? instruction.shortDescriptionFi
+                : instruction.shortDescriptionSv}
+            </p>
+          </div>
+          <div className="mb-4 border-b border-gray-separator" />
+        </>
+      )}
 
       <ContentContent
         teachingLanguage={teachingLanguage}

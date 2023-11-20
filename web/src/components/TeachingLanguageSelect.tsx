@@ -3,13 +3,11 @@ import { LudosSelect } from './ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from './ludosSelect/helpers'
 import { sortKooditByArvo } from '../hooks/useKoodisto'
 import { TeachingLanguage } from '../types'
+import { useContext } from 'react'
+import { LudosContext } from '../contexts/LudosContext'
 
-export type TeachingLanguageSelectProps = {
-  teachingLanguage: TeachingLanguage
-  setTeachingLanguage: (opt: TeachingLanguage) => void
-}
-
-export const TeachingLanguageSelect = ({ teachingLanguage, setTeachingLanguage }: TeachingLanguageSelectProps) => {
+export const TeachingLanguageSelect = () => {
+  const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
   const { LANGUAGE_OPTIONS } = useLudosTranslation()
 
   return (

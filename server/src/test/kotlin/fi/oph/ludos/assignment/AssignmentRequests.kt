@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
+import fi.oph.ludos.yllapitajaUser
 import org.assertj.core.api.AbstractStringAssert
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +13,9 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.reflect.KClass
 
@@ -34,9 +37,12 @@ abstract class AssignmentRequests {
         MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment").contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
-    inline fun <reified T : AssignmentOut> createAssignment(assignmentIn: TestAssignmentIn): T {
+    inline fun <reified T : AssignmentOut> createAssignment(
+        assignmentIn: TestAssignmentIn,
+        user: RequestPostProcessor = yllapitajaUser
+    ): T {
         val responseBody =
-            mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentIn)))
+            mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentIn)).with(user))
                 .andExpect(MockMvcResultMatchers.status().isOk).andReturn().response.contentAsString
         return mapper.readValue(responseBody)
     }
@@ -56,10 +62,16 @@ abstract class AssignmentRequests {
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id")
             .contentType(MediaType.APPLICATION_JSON)
 
-    inline fun <reified T : AssignmentOut> getAssignmentById(id: Int): T {
+    inline fun <reified T : AssignmentOut> getAssignmentById(id: Int, user: RequestPostProcessor? = null): T {
         val exam = examByTestAssignmentOutClass(T::class)
-        val getUpdatedByIdStr = mockMvc.perform(getAssignmentByIdReq(exam, id)).andExpect(
-            MockMvcResultMatchers.status().isOk()
+        val builder = getAssignmentByIdReq(exam, id)
+
+        if (user != null) {
+            builder.with(user)
+        }
+
+        val getUpdatedByIdStr = mockMvc.perform(builder).andExpect(
+            status().isOk()
         ).andReturn().response.contentAsString
         return mapper.readValue(getUpdatedByIdStr)
     }
@@ -73,8 +85,9 @@ abstract class AssignmentRequests {
 
     inline fun <reified T : AssignmentOut> getAllAssignmentsForExam(): TestAssignmentsOut<T> {
         val exam = examByTestAssignmentOutClass(T::class)
+
         val responseContent =
-            mockMvc.perform(getAllAssignmentsReq(exam)).andExpect(MockMvcResultMatchers.status().isOk())
+            mockMvc.perform(getAllAssignmentsReq(exam)).andExpect(status().isOk())
                 .andReturn().response.contentAsString
         return mapper.readValue<TestAssignmentsOut<T>>(responseContent)
     }
@@ -93,13 +106,11 @@ abstract class AssignmentRequests {
         return MockMvcRequestBuilders.get(uriBuilder.toUriString()).contentType(MediaType.APPLICATION_JSON)
     }
 
-    fun getSukoAssignments(filter: SukoFilters): TestAssignmentsOut<SukoAssignmentDtoOut> {
-        val assignmentsString = mockMvc.perform(getSukoAssignmentsReq(filter))
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andReturn().response.contentAsString
-
-        return mapper.readValue(assignmentsString)
-    }
+    fun getSukoAssignments(
+        filter: SukoFilters,
+    ): TestAssignmentsOut<SukoAssignmentDtoOut> = mapper.readValue(
+        mockMvc.perform(getSukoAssignmentsReq(filter)).andExpect(status().isOk()).andReturn().response.contentAsString
+    )
 
     private fun getPuhviAssignmentsReq(filter: PuhviFilters): MockHttpServletRequestBuilder {
         val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/${Exam.PUHVI}")
@@ -114,7 +125,7 @@ abstract class AssignmentRequests {
 
     fun getPuhviAssignments(filter: PuhviFilters): TestAssignmentsOut<PuhviAssignmentDtoOut> {
         val assignmentsString = mockMvc.perform(getPuhviAssignmentsReq(filter))
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(status().isOk())
             .andReturn().response.contentAsString
 
         return mapper.readValue(assignmentsString)
@@ -133,7 +144,7 @@ abstract class AssignmentRequests {
 
     fun getLdAssignments(filter: LdFilters): TestAssignmentsOut<LdAssignmentDtoOut> {
         val assignmentsString = mockMvc.perform(getLdAssignmentsReq(filter))
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(status().isOk())
             .andReturn().response.contentAsString
 
         return mapper.readValue(assignmentsString)
@@ -144,15 +155,24 @@ abstract class AssignmentRequests {
             .content("{\"suosikki\": $isFavorite}")
             .contentType(MediaType.APPLICATION_JSON)
 
-    fun setAssignmentIsFavorite(exam: Exam, id: Int, isFavorite: Boolean): Int =
-        mockMvc.perform(setAssignmentIsFavoriteReq(exam, id, isFavorite))
-            .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().response.contentAsString.toInt()
+    fun setAssignmentIsFavorite(exam: Exam, id: Int, isFavorite: Boolean, user: RequestPostProcessor? = null): Int {
+        val builder = setAssignmentIsFavoriteReq(exam, id, isFavorite)
 
-    private fun getTotalFavoriteCountReq() =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favoriteCount")
-            .contentType(MediaType.APPLICATION_JSON)
+        if (user != null) {
+            builder.with(user)
+        }
 
-    fun getTotalFavoriteCount(): Int =
-        mockMvc.perform(getTotalFavoriteCountReq()).andExpect(MockMvcResultMatchers.status().isOk())
+        return mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString.toInt()
+    }
+
+    fun getTotalFavoriteCount(user: RequestPostProcessor? = null): Int {
+        val builder = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favoriteCount")
+
+        if (user != null) {
+            builder.with(user)
+        }
+
+        return mockMvc.perform(builder.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
             .andReturn().response.contentAsString.toInt()
+    }
 }

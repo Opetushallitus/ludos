@@ -137,6 +137,11 @@ export const useLudosTranslation = () => {
           [PublishState.Deleted]: t('form.notification.todistuksen-poisto.onnistui')
         }
       }
+    },
+    contentPageLanguageDropdownLabel: {
+      [ContentType.koetehtavat]: t('filter.koetehtavat-kieli'),
+      [ContentType.ohjeet]: t('filter.ohjeet-kieli'),
+      [ContentType.todistukset]: t('filter.todistukset-kieli')
     }
   }
 

@@ -33,7 +33,8 @@ class InstructionController(val service: InstructionService, private val objectM
 
         if (nonNullAttachments.size != nonNullAttachmentsMetadata.size) {
             throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST, "Got ${nonNullAttachments.size} attachments, but ${nonNullAttachmentsMetadata.size} metadata"
+                HttpStatus.BAD_REQUEST,
+                "Got ${nonNullAttachments.size} attachments, but ${nonNullAttachmentsMetadata.size} metadata"
             )
         }
 
@@ -72,12 +73,26 @@ class InstructionController(val service: InstructionService, private val objectM
         return service.updateInstruction(id, instruction, attachmentsMetadataDeserialized)
     }
 
-    @GetMapping("/{exam}")
+    @GetMapping("/SUKO")
     @RequireAtLeastOpettajaRole
-    fun getInstructions(
-        @PathVariable exam: Exam,
-        @Valid filters: InstructionFilters
-    ): InstructionsOut = InstructionsOut(service.getInstructions(exam, filters))
+    fun getSukoInstructions(
+        @Valid filters: SukoInstructionFilters
+    ): InstructionListDtoOut<InstructionOut, InstructionFilterOptions> =
+        service.getInstructions(Exam.SUKO, filters)
+
+    @GetMapping("/LD")
+    @RequireAtLeastOpettajaRole
+    fun getLdInstructions(
+        @Valid filters: LdInstructionFilters
+    ): InstructionListDtoOut<InstructionOut, InstructionFilterOptions> =
+        service.getInstructions(Exam.LD, filters)
+
+    @GetMapping("/PUHVI")
+    @RequireAtLeastOpettajaRole
+    fun getPuhviInstructions(
+        @Valid filters: PuhviInstructionFilters
+    ): InstructionListDtoOut<InstructionOut, InstructionFilterOptions> =
+        service.getInstructions(Exam.PUHVI, filters)
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole

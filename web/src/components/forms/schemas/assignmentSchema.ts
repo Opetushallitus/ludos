@@ -1,7 +1,6 @@
 import { RefinementCtx, z } from 'zod'
-import { ErrorMessages, Exam, PublishState } from '../../../types'
-
-export const MIN_LENGTH = 3
+import { ErrorMessages, Exam } from '../../../types'
+import { examEnumZodType, MIN_NAME_LENGTH, publishStateEnumZodType } from './schemaCommon'
 
 export const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: string }, ctx: RefinementCtx) => {
   // Either nameFi or nameSv has a length of at least 1, but not both
@@ -14,13 +13,11 @@ export const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: 
   }
 }
 
-const examEnumZodType = z.enum([Exam.SUKO, Exam.LD, Exam.PUHVI], { required_error: ErrorMessages.REQUIRED })
-
 const commonSchema = z.object({
   exam: examEnumZodType,
-  publishState: z.enum([PublishState.Published, PublishState.Draft, PublishState.Deleted]).optional(),
-  nameFi: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
-  nameSv: z.string().min(MIN_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
+  publishState: publishStateEnumZodType,
+  nameFi: z.string().min(MIN_NAME_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
+  nameSv: z.string().min(MIN_NAME_LENGTH, ErrorMessages.SHORT).optional().or(z.literal('')).default(''),
   instructionFi: z.string().default(''),
   instructionSv: z.string().default(''),
   contentFi: z.array(z.string()).optional().default(['']),

@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import { BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
-import { isAssignment, isCertificate, isInstruction } from '../../utils/assignmentUtils'
+import { isAssignment } from '../../utils/assignmentUtils'
 import { ContentHeader } from './ContentCommon'
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
@@ -15,7 +15,9 @@ import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useCallback, useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
+import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
+import { isCertificate } from '../../utils/certificateUtils'
 
 type ContentProps = {
   exam: Exam
@@ -69,13 +71,17 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                   <InternalLink
                     className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
                     to={editingFormPath(exam, contentType, data.id)}
+                    state={state}
                     data-testid="edit-content-btn">
                     <Icon name="muokkaa" color="text-green-primary" />
                     <p className="text-green-primary">{t('assignment.muokkaa')}</p>
                   </InternalLink>
                 </div>
               )}
-              {isAssignment(data, contentType) && (
+
+              <div className="mb-4 border-b border-gray-separator mt-2" />
+
+              {contentType === ContentType.koetehtavat && isAssignment(data) && (
                 <AssignmentContent
                   assignment={data}
                   exam={exam}
@@ -84,9 +90,10 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 />
               )}
 
-              {isCertificate(data, contentType) && <CertificateContent certificate={data} />}
-
-              {isInstruction(data, contentType) && (
+              {contentType === ContentType.todistukset && isCertificate(data) && (
+                <CertificateContent certificate={data} teachingLanguage={teachingLanguage} />
+              )}
+              {contentType === ContentType.ohjeet && isInstruction(data, contentType) && (
                 <InstructionContent
                   instruction={data}
                   teachingLanguage={teachingLanguage}

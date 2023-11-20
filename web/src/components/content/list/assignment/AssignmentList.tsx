@@ -7,7 +7,6 @@ import {
   ContentTypeSingularEng,
   emptyAssignmentFilterOptions,
   Exam,
-  InstructionDtoOut,
   TeachingLanguage
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
@@ -26,9 +25,8 @@ import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { ListError } from '../ListError'
-import { ContentContent } from '../../ContentCommon'
 
-const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
+const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
     return data.nameFi !== ''
   } else if (teachingLanguage === TeachingLanguage.sv) {
@@ -46,7 +44,7 @@ type ContentListProps = {
 export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentListProps) => {
   const { isYllapitaja } = useUserDetails()
   const { t } = useLudosTranslation()
-  const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
+  const { teachingLanguage } = useContext(LudosContext)
   const singularActiveTab = ContentTypeSingular[ContentType.koetehtavat]
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
@@ -78,10 +76,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
           {shouldShowTeachingLanguageDropdown && (
             <div className="flex flex-col gap-2 md:flex-row">
               <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
-              <TeachingLanguageSelect
-                teachingLanguage={languageOverrideIfSukoAssignment}
-                setTeachingLanguage={setTeachingLanguage}
-              />
+              <TeachingLanguageSelect />
             </div>
           )}
 
@@ -100,7 +95,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
       {error && <ListError contentType={ContentType.koetehtavat} />}
       {!error && data && (
         <>
-          <ul data-testid="assignment-list">
+          <ul data-testid="card-list">
             {data.content
               .filter((val) => filterByTeachingLanguage(val, languageOverrideIfSukoAssignment))
               .map((assignment, i) => (

@@ -4,7 +4,6 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
-import fi.oph.ludos.repository.getZonedDateTime
 import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
@@ -27,58 +26,167 @@ class CertificateRepository(
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun tableNameFromExam(exam: Exam): String = when (exam) {
-        Exam.SUKO -> "suko_certificate"
-        Exam.PUHVI -> "puhvi_certificate"
-        Exam.LD -> "ld_certificate"
-    }
-
     fun publishStateFilter(role: Role) = when (role) {
         Role.OPETTAJA -> "AND c.certificate_publish_state = '${PublishState.PUBLISHED}'"
         else -> "AND c.certificate_publish_state in ('${PublishState.PUBLISHED}', '${PublishState.DRAFT}')"
     }
 
-    fun createCertificate(certificateDtoIn: CertificateDtoIn, attachment: MultipartFile): CertificateDtoOut {
-        val createdCertificate = transactionTemplate.execute { _ ->
-            val certificateAttachment = createAttachment(attachment)
+    fun <T : Certificate, Y : CertificateOut> createSukoCertificate(
+        certificate: T,
+        attachment: MultipartFile,
+        insertCertificateRow: (attachment: CertificateAttachmentDtoOut) -> Y
+    ) = transactionTemplate.execute { _ ->
+        val certificateAttachment = createAttachment(attachment)
 
-            val certificateInsertSql = """
-                INSERT INTO ${tableNameFromExam(certificateDtoIn.exam)} (
-                    certificate_name,
-                    certificate_description,
+        insertCertificateRow(certificateAttachment)
+    }!!
+
+    fun createSukoCertificate(
+        attachment: MultipartFile,
+        certificateDtoIn: SukoCertificateDtoIn
+    ): SukoCertificateDtoOut = createSukoCertificate(certificateDtoIn, attachment) { createdAttachment ->
+        jdbcTemplate.query(
+            """
+                INSERT INTO suko_certificate (
+                    certificate_name_fi,
+                    suko_certificate_description_fi,
                     certificate_publish_state,
-                    attachment_file_key,
+                    attachment_file_key_fi,
+                    attachment_file_key_sv,
                     certificate_author_oid
                 )
-                VALUES (?, ?, ?::publish_state, ?, ?)
+                VALUES (?, ?, ?::publish_state, ?, ?, ?)
                 RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
-            """.trimIndent()
+            """.trimIndent(),
+            { rs: ResultSet, _: Int ->
+                SukoCertificateDtoOut(
+                    id = rs.getInt("certificate_id"),
+                    nameFi = certificateDtoIn.nameFi,
+                    nameSv = "",
+                    publishState = certificateDtoIn.publishState,
+                    attachmentFi = createdAttachment,
+                    attachmentSv = createdAttachment, // only attachmentFi field is actually used in SUKO
+                    authorOid = rs.getString("certificate_author_oid"),
+                    createdAt = rs.getTimestamp("certificate_created_at"),
+                    updatedAt = rs.getTimestamp("certificate_updated_at"),
+                    descriptionFi = certificateDtoIn.descriptionFi,
+                    descriptionSv = "",
+                    exam = certificateDtoIn.exam
+                )
+            },
+            certificateDtoIn.nameFi,
+            certificateDtoIn.descriptionFi,
+            certificateDtoIn.publishState.toString(),
+            createdAttachment.fileKey,
+            createdAttachment.fileKey,
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
+        )[0]
+    }
 
+    fun <T : Certificate, Y : CertificateOut> createCertificate(
+        certificate: T,
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile,
+        insertCertificateRow: (attachmentFi: CertificateAttachmentDtoOut, attachmentSv: CertificateAttachmentDtoOut) -> Y
+    ) = transactionTemplate.execute { _ ->
+        val certificateAttachmentFi = createAttachment(attachmentFi)
+        val certificateAttachmentSv = createAttachment(attachmentSv)
+
+        insertCertificateRow(certificateAttachmentFi, certificateAttachmentSv)
+    }!!
+
+    fun createLdCertificate(
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile,
+        certificateDtoIn: LdCertificateDtoIn
+    ): LdCertificateDtoOut =
+        createCertificate(certificateDtoIn, attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(
-                certificateInsertSql,
+                """
+                INSERT INTO ld_certificate (
+                    certificate_name_fi,
+                    certificate_name_sv,
+                    ld_certificate_aine_koodi_arvo,
+                    certificate_publish_state,
+                    attachment_file_key_fi,
+                    attachment_file_key_sv,
+                    certificate_author_oid
+                )
+                VALUES (?, ?, ?, ?::publish_state, ?,?, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
+            """.trimIndent(),
                 { rs: ResultSet, _: Int ->
-                    CertificateDtoOut(
-                        rs.getInt("certificate_id"),
-                        certificateDtoIn.exam,
-                        certificateDtoIn.name,
-                        certificateDtoIn.description,
-                        certificateDtoIn.publishState,
-                        certificateAttachment,
-                        rs.getString("certificate_author_oid"),
-                        rs.getTimestamp("certificate_created_at"),
-                        rs.getTimestamp("certificate_updated_at")
+                    LdCertificateDtoOut(
+                        id = rs.getInt("certificate_id"),
+                        nameFi = certificateDtoIn.nameFi,
+                        nameSv = certificateDtoIn.nameSv,
+                        publishState = certificateDtoIn.publishState,
+                        attachmentFi = createdAttachmentFi,
+                        attachmentSv = createdAttachmentSv,
+                        authorOid = rs.getString("certificate_author_oid"),
+                        createdAt = rs.getTimestamp("certificate_created_at"),
+                        updatedAt = rs.getTimestamp("certificate_updated_at"),
+                        certificateDtoIn.aineKoodiArvo,
+                        exam = certificateDtoIn.exam
                     )
                 },
-                certificateDtoIn.name,
-                certificateDtoIn.description,
+                certificateDtoIn.nameFi,
+                certificateDtoIn.nameSv,
+                certificateDtoIn.aineKoodiArvo,
                 certificateDtoIn.publishState.toString(),
-                certificateAttachment.fileKey,
+                createdAttachmentFi.fileKey,
+                createdAttachmentSv.fileKey,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
             )[0]
-        }!!
+        }
 
-        return createdCertificate
-    }
+    fun createPuhviCertificate(
+        attachmentFi: MultipartFile,
+        attachmentSv: MultipartFile,
+        certificateDtoIn: PuhviCertificateDtoIn
+    ): PuhviCertificateDtoOut =
+        createCertificate(certificateDtoIn, attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
+            jdbcTemplate.query(
+                """
+                INSERT INTO puhvi_certificate (
+                    certificate_name_fi,
+                    certificate_name_Sv,
+                    puhvi_certificate_description_fi,
+                    puhvi_certificate_description_sv,
+                    certificate_publish_state,
+                    attachment_file_key_fi,
+                    attachment_file_key_sv,
+                    certificate_author_oid
+                )
+                VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
+            """.trimIndent(),
+                { rs: ResultSet, _: Int ->
+                    PuhviCertificateDtoOut(
+                        id = rs.getInt("certificate_id"),
+                        nameFi = certificateDtoIn.nameFi,
+                        nameSv = certificateDtoIn.nameSv,
+                        publishState = certificateDtoIn.publishState,
+                        attachmentFi = createdAttachmentFi,
+                        attachmentSv = createdAttachmentSv,
+                        authorOid = rs.getString("certificate_author_oid"),
+                        createdAt = rs.getTimestamp("certificate_created_at"),
+                        updatedAt = rs.getTimestamp("certificate_updated_at"),
+                        descriptionFi = certificateDtoIn.descriptionFi,
+                        descriptionSv = certificateDtoIn.descriptionSv,
+                        exam = certificateDtoIn.exam
+                    )
+                },
+                certificateDtoIn.nameFi,
+                certificateDtoIn.nameSv,
+                certificateDtoIn.descriptionFi,
+                certificateDtoIn.descriptionSv,
+                certificateDtoIn.publishState.toString(),
+                createdAttachmentFi.fileKey,
+                createdAttachmentSv.fileKey,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
+            )[0]
+        }
 
     fun createAttachment(file: MultipartFile): CertificateAttachmentDtoOut {
         val fileKey = "todistuspohja_${UUID.randomUUID()}"
@@ -101,7 +209,7 @@ class CertificateRepository(
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
                 CertificateAttachmentDtoOut(
-                    fileKey, fileName, rs.getZonedDateTime("attachment_upload_date")
+                    fileKey, fileName, rs.getTimestamp("attachment_upload_date")
                 )
             },
             fileKey,
@@ -126,33 +234,129 @@ class CertificateRepository(
         }
     }
 
-    fun mapResultSet(rs: ResultSet, exam: Exam): CertificateDtoOut = CertificateDtoOut(
-        rs.getInt("certificate_id"),
-        exam,
-        rs.getString("certificate_name"),
-        rs.getString("certificate_description"),
-        PublishState.valueOf(rs.getString("certificate_publish_state")),
-        CertificateAttachmentDtoOut(
+    fun mapResultSetSuko(rs: ResultSet, exam: Exam): SukoCertificateDtoOut {
+        val attachment = CertificateAttachmentDtoOut(
             rs.getString("attachment_file_key"),
             rs.getString("attachment_file_name"),
-            rs.getZonedDateTime("attachment_upload_date")
+            rs.getTimestamp("attachment_upload_date")
+        )
+        return SukoCertificateDtoOut(
+            id = rs.getInt("certificate_id"),
+            nameFi = rs.getString("certificate_name_fi"),
+            nameSv = rs.getString("certificate_name_sv"),
+            publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
+            attachmentFi = attachment,
+            attachmentSv = attachment, // only attachmentFi field is actually used in SUKO
+            authorOid = rs.getString("certificate_author_oid"),
+            createdAt = rs.getTimestamp("certificate_created_at"),
+            updatedAt = rs.getTimestamp("certificate_updated_at"),
+            descriptionFi = rs.getString("suko_certificate_description_fi"),
+            descriptionSv = rs.getString("suko_certificate_description_sv"),
+            exam = exam
+        )
+    }
+
+    fun mapResultSetLd(rs: ResultSet, exam: Exam) = LdCertificateDtoOut(
+        id = rs.getInt("certificate_id"),
+        nameFi = rs.getString("certificate_name_fi"),
+        nameSv = rs.getString("certificate_name_sv"),
+        publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
+        attachmentFi = CertificateAttachmentDtoOut(
+            rs.getString("attachment_file_key_fi"),
+            rs.getString("attachment_file_name_fi"),
+            rs.getTimestamp("attachment_upload_date_fi")
         ),
-        rs.getString("certificate_author_oid"),
-        rs.getTimestamp("certificate_created_at"),
-        rs.getTimestamp("certificate_updated_at")
+        attachmentSv = CertificateAttachmentDtoOut(
+            rs.getString("attachment_file_key_sv"),
+            rs.getString("attachment_file_name_sv"),
+            rs.getTimestamp("attachment_upload_date_sv")
+        ),
+        authorOid = rs.getString("certificate_author_oid"),
+        createdAt = rs.getTimestamp("certificate_created_at"),
+        updatedAt = rs.getTimestamp("certificate_updated_at"),
+        aineKoodiArvo = rs.getString("ld_certificate_aine_koodi_arvo"),
+        exam = exam
     )
 
-    fun getCertificateById(id: Int, exam: Exam): CertificateDtoOut? {
-        val role = Kayttajatiedot.fromSecurityContext().role
+    fun mapResultSetPuhvi(rs: ResultSet, exam: Exam) = PuhviCertificateDtoOut(
+        id = rs.getInt("certificate_id"),
+        nameFi = rs.getString("certificate_name_fi"),
+        nameSv = rs.getString("certificate_name_sv"),
+        publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
+        attachmentFi = CertificateAttachmentDtoOut(
+            rs.getString("attachment_file_key_fi"),
+            rs.getString("attachment_file_name_fi"),
+            rs.getTimestamp("attachment_upload_date_fi")
+        ),
+        attachmentSv = CertificateAttachmentDtoOut(
+            rs.getString("attachment_file_key_sv"),
+            rs.getString("attachment_file_name_sv"),
+            rs.getTimestamp("attachment_upload_date_sv")
+        ),
+        authorOid = rs.getString("certificate_author_oid"),
+        createdAt = rs.getTimestamp("certificate_created_at"),
+        updatedAt = rs.getTimestamp("certificate_updated_at"),
+        descriptionFi = rs.getString("puhvi_certificate_description_fi"),
+        descriptionSv = rs.getString("puhvi_certificate_description_sv"),
+        exam = exam
+    )
 
-        return jdbcTemplate.query(
-            """
-            SELECT c.*, ca.attachment_file_key, ca.attachment_file_name, ca.attachment_upload_date
-            FROM ${tableNameFromExam(exam)} c
-            NATURAL JOIN certificate_attachment ca
-            WHERE c.certificate_id = ? ${publishStateFilter(role)}
-            """.trimIndent(), { rs, _ -> mapResultSet(rs, exam) }, id
-        ).firstOrNull()
+    fun getCertificateById(id: Int, exam: Exam): CertificateOut? {
+        val role = Kayttajatiedot.fromSecurityContext().role
+        val (sql, mapper) = when (exam) {
+            Exam.SUKO -> Pair(
+                """
+                SELECT 
+                    c.*, 
+                    ca.attachment_file_key AS attachment_file_key, 
+                    ca.attachment_file_name AS attachment_file_name, 
+                    ca.attachment_upload_date AS attachment_upload_date
+                FROM suko_certificate AS c 
+                LEFT JOIN certificate_attachment AS ca ON c.attachment_file_key_fi = ca.attachment_file_key
+                WHERE c.certificate_id = ? ${publishStateFilter(role)}
+            """.trimIndent(), ::mapResultSetSuko
+            )
+
+            Exam.LD -> Pair(
+                """
+                SELECT
+                    c.*,
+                    a_fi.attachment_file_key AS attachment_file_key_fi,
+                    a_fi.attachment_file_name AS attachment_file_name_fi,
+                    a_fi.attachment_upload_date AS attachment_upload_date_fi,
+                    a_sv.attachment_file_key AS attachment_file_key_sv,
+                    a_sv.attachment_file_name AS attachment_file_name_sv,
+                    a_sv.attachment_upload_date AS attachment_upload_date_sv
+                FROM ld_certificate AS c
+                JOIN
+                    certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
+                JOIN
+                    certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
+                WHERE c.certificate_id = ? ${publishStateFilter(role)}
+            """.trimIndent(), ::mapResultSetLd
+            )
+
+            Exam.PUHVI -> Pair(
+                """
+                SELECT
+                    c.*,
+                    a_fi.attachment_file_key AS attachment_file_key_fi,
+                    a_fi.attachment_file_name AS attachment_file_name_fi,
+                    a_fi.attachment_upload_date AS attachment_upload_date_fi,
+                    a_sv.attachment_file_key AS attachment_file_key_sv,
+                    a_sv.attachment_file_name AS attachment_file_name_sv,
+                    a_sv.attachment_upload_date AS attachment_upload_date_sv
+                FROM puhvi_certificate AS c
+                JOIN
+                    certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
+                JOIN
+                    certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
+                WHERE c.certificate_id = ? ${publishStateFilter(role)}
+            """.trimIndent(), ::mapResultSetPuhvi
+            )
+        }
+
+        return jdbcTemplate.query(sql, { rs, _ -> mapper(rs, exam) }, id).firstOrNull()
     }
 
     fun getCertificateAttachmentByFileKey(fileKey: String): CertificateAttachmentDtoOut? {
@@ -165,7 +369,7 @@ class CertificateRepository(
                 CertificateAttachmentDtoOut(
                     rs.getString("attachment_file_key"),
                     rs.getString("attachment_file_name"),
-                    rs.getZonedDateTime("attachment_upload_date")
+                    rs.getTimestamp("attachment_upload_date")
                 )
             }, fileKey
         )
@@ -173,65 +377,250 @@ class CertificateRepository(
         return results.firstOrNull()
     }
 
-    fun getCertificates(exam: Exam): List<CertificateDtoOut> {
+    fun getCertificates(exam: Exam, filters: CertificateFilters): List<CertificateOut> {
         val role = Kayttajatiedot.fromSecurityContext().role
+        val orderDirection = filters.jarjesta ?: ""
 
-        return jdbcTemplate.query(
-            """
-            SELECT 
-                c.*, 
-                ca.attachment_file_key AS attachment_file_key, 
-                ca.attachment_file_name AS attachment_file_name, 
-                ca.attachment_upload_date AS attachment_upload_date 
-            FROM ${tableNameFromExam(exam)} AS c 
-            NATURAL JOIN certificate_attachment AS ca
-            WHERE true ${publishStateFilter(role)}
-            """.trimIndent()
-        ) { rs, _ ->
-            mapResultSet(rs, exam)
-        }
-
-    }
-
-    fun updateCertificate(id: Int, certificateDtoIn: CertificateDtoIn, attachment: MultipartFile?): Int? =
-        transactionTemplate.execute { _ ->
-            val currentCertificate = getCertificateById(id, certificateDtoIn.exam) ?: throw ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Certificate $id not found"
+        val (sql, mapper) = when (exam) {
+            Exam.SUKO -> Pair(
+                """
+                SELECT 
+                    c.*, 
+                    ca.attachment_file_key AS attachment_file_key, 
+                    ca.attachment_file_name AS attachment_file_name, 
+                    ca.attachment_upload_date AS attachment_upload_date
+                FROM suko_certificate AS c 
+                LEFT JOIN certificate_attachment AS ca ON c.attachment_file_key_fi = ca.attachment_file_key
+                WHERE true ${publishStateFilter(role)}
+                ORDER BY c.certificate_updated_at $orderDirection
+            """.trimIndent(), ::mapResultSetSuko
             )
 
-            val createdAttachment: CertificateAttachmentDtoOut? = attachment?.let { createAttachment(it) }
-
-            val updatedRowCount = jdbcTemplate.update(
+            Exam.LD -> Pair(
                 """
-                UPDATE ${tableNameFromExam(certificateDtoIn.exam)}
-                SET
-                    certificate_name = ?,
-                    certificate_description = ?,
-                    certificate_publish_state = ?::publish_state,
+                SELECT
+                    c.*,
+                    a_fi.attachment_file_key AS attachment_file_key_fi,
+                    a_fi.attachment_file_name AS attachment_file_name_fi,
+                    a_fi.attachment_upload_date AS attachment_upload_date_fi,
+                    a_sv.attachment_file_key AS attachment_file_key_sv,
+                    a_sv.attachment_file_name AS attachment_file_name_sv,
+                    a_sv.attachment_upload_date AS attachment_upload_date_sv
+                FROM ld_certificate AS c
+                JOIN
+                    certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
+                JOIN
+                    certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
+                WHERE true ${publishStateFilter(role)}
+                ORDER BY c.certificate_updated_at $orderDirection
+            """.trimIndent(), ::mapResultSetLd
+            )
+
+            Exam.PUHVI -> Pair(
+                """
+                SELECT
+                    c.*,
+                    a_fi.attachment_file_key AS attachment_file_key_fi,
+                    a_fi.attachment_file_name AS attachment_file_name_fi,
+                    a_fi.attachment_upload_date AS attachment_upload_date_fi,
+                    a_sv.attachment_file_key AS attachment_file_key_sv,
+                    a_sv.attachment_file_name AS attachment_file_name_sv,
+                    a_sv.attachment_upload_date AS attachment_upload_date_sv
+                FROM puhvi_certificate AS c
+                JOIN
+                    certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
+                JOIN
+                    certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
+                WHERE true ${publishStateFilter(role)}
+                ORDER BY c.certificate_updated_at $orderDirection
+            """.trimIndent(), ::mapResultSetPuhvi
+            )
+        }
+
+        return jdbcTemplate.query(sql) { rs, _ -> mapper(rs, exam) }
+    }
+
+    fun updateSukoCertificate(id: Int, certificateDtoIn: SukoCertificateDtoIn, attachment: MultipartFile?): Int? =
+        updateCertificate(id, certificateDtoIn, attachment) { createdAttachmentFi ->
+            jdbcTemplate.update(
+                """
+                    UPDATE suko_certificate
+                    SET 
+                    certificate_name_fi = ?,
+                    certificate_name_sv = '',
+                    certificate_publish_state = ?::publish_state, 
                     certificate_updated_at = clock_timestamp(),
-                    attachment_file_key = ?
-                WHERE
-                    certificate_id = ?
+                    attachment_file_key_fi = ?,
+                    attachment_file_key_sv = ?,
+                    suko_certificate_description_fi = ?,
+                    suko_certificate_description_sv = ''
+                    WHERE certificate_id = ?
                 """.trimIndent(),
-                certificateDtoIn.name,
-                certificateDtoIn.description,
+                certificateDtoIn.nameFi,
                 certificateDtoIn.publishState.toString(),
-                createdAttachment?.fileKey ?: currentCertificate.attachment.fileKey,
+                createdAttachmentFi[0],
+                createdAttachmentFi[0],
+                certificateDtoIn.descriptionFi,
+                id
+            )
+        }
+
+    fun updateLdCertificate(
+        id: Int,
+        certificateDtoIn: LdCertificateDtoIn,
+        attachmentFi: MultipartFile?,
+        attachmentSv: MultipartFile?
+    ): Int? =
+        updateCertificate(
+            id,
+            certificateDtoIn,
+            attachmentFi,
+            attachmentSv
+        ) { createdAttachments ->
+            jdbcTemplate.update(
+                """
+                    UPDATE ld_certificate
+                    SET 
+                    certificate_name_fi = ?, 
+                    certificate_name_sv = ?, 
+                    certificate_publish_state = ?::publish_state, 
+                    certificate_updated_at = clock_timestamp(),
+                    attachment_file_key_fi = ?,
+                    attachment_file_key_sv = ?,
+                    ld_certificate_aine_koodi_arvo = ?
+                    WHERE certificate_id = ?
+                """.trimIndent(),
+                certificateDtoIn.nameFi,
+                certificateDtoIn.nameSv,
+                certificateDtoIn.publishState.toString(),
+                createdAttachments[0],
+                createdAttachments[1],
+                certificateDtoIn.aineKoodiArvo,
                 id
             )
 
-            if (updatedRowCount != 1) {
-                throw ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Updated row count was $updatedRowCount but 1 was expected when updating Certificate $id"
+        }
+
+    fun updatePuhviCertificate(
+        id: Int,
+        certificateDtoIn: PuhviCertificateDtoIn,
+        attachmentFi: MultipartFile?,
+        attachmentSv: MultipartFile?
+    ): Int? =
+        updateCertificate(
+            id,
+            certificateDtoIn,
+            attachmentFi,
+            attachmentSv
+        ) { createdAttachments ->
+            jdbcTemplate.update(
+                """
+                    UPDATE puhvi_certificate
+                    SET 
+                    certificate_name_fi = ?, 
+                    certificate_name_sv = ?, 
+                    certificate_publish_state = ?::publish_state, 
+                    certificate_updated_at = clock_timestamp(),
+                    attachment_file_key_fi = ?,
+                    attachment_file_key_sv = ?,
+                    puhvi_certificate_description_fi = ?,
+                    puhvi_certificate_description_sv = ?
+                    WHERE certificate_id = ?
+                """.trimIndent(),
+                certificateDtoIn.nameFi,
+                certificateDtoIn.nameSv,
+                certificateDtoIn.publishState.toString(),
+                createdAttachments[0],
+                createdAttachments[1],
+                certificateDtoIn.descriptionFi,
+                certificateDtoIn.descriptionSv,
+                id
+            )
+        }
+
+
+    private fun findCurrentAttachments(
+        certificateOut: CertificateOut,
+        vararg attachments: MultipartFile?
+    ): List<String> {
+        val attachmentKeys = when (certificateOut) {
+            is SukoCertificateDtoOut -> {
+                listOf(attachments.getOrNull(0)?.let { createAttachment(it).fileKey }
+                    ?: certificateOut.attachmentFi.fileKey)
+            }
+
+            is LdCertificateDtoOut -> {
+                listOf(
+                    attachments.getOrNull(0)?.let { createAttachment(it).fileKey }
+                        ?: certificateOut.attachmentFi.fileKey,
+                    attachments.getOrNull(1)?.let { createAttachment(it).fileKey }
+                        ?: certificateOut.attachmentSv.fileKey
                 )
             }
 
-            if (attachment != null) {
-                deleteAttachment(currentCertificate.attachment.fileKey)
+            is PuhviCertificateDtoOut -> {
+                listOf(
+                    attachments.getOrNull(0)?.let { createAttachment(it).fileKey }
+                        ?: certificateOut.attachmentFi.fileKey,
+                    attachments.getOrNull(1)?.let { createAttachment(it).fileKey }
+                        ?: certificateOut.attachmentSv.fileKey
+                )
             }
 
-            return@execute id
+            else -> throw IllegalArgumentException("Invalid certificate type")
+        }
+        return attachmentKeys
+    }
+
+    fun updateCertificate(
+        id: Int,
+        certificateDtoIn: Certificate,
+        vararg attachments: MultipartFile?,
+        updateCertificateRow: (List<String>) -> Int
+    ): Int? = transactionTemplate.execute { _ ->
+        val certificateOut: CertificateOut = getCertificateById(id, certificateDtoIn.exam)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate $id not found")
+
+        val attachmentKeys = findCurrentAttachments(certificateOut, *attachments)
+
+        val updatedRowCount = updateCertificateRow(attachmentKeys)
+
+        if (updatedRowCount != 1) {
+            throw ResponseStatusException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Updated row count was $updatedRowCount but 1 was expected when updating Certificate $id"
+            )
         }
 
+        // Delete the old attachments if new ones were provided
+        certificateOut.let {
+            when (it) {
+                is SukoCertificateDtoOut -> attachments.getOrNull(0)?.also { _ ->
+                    deleteAttachment(it.attachmentFi.fileKey)
+                }
+
+                is LdCertificateDtoOut -> {
+                    attachments.getOrNull(0)?.also { _ ->
+                        deleteAttachment(it.attachmentFi.fileKey)
+                    }
+                    attachments.getOrNull(1)?.also { _ ->
+                        deleteAttachment(it.attachmentSv.fileKey)
+                    }
+                }
+
+                is PuhviCertificateDtoOut -> {
+                    attachments.getOrNull(0)?.also { _ ->
+                        deleteAttachment(it.attachmentFi.fileKey)
+                    }
+                    attachments.getOrNull(1)?.also { _ ->
+                        deleteAttachment(it.attachmentSv.fileKey)
+                    }
+                }
+
+                else -> throw IllegalArgumentException("Invalid certificate type")
+            }
+        }
+
+        return@execute id
+    }
 }

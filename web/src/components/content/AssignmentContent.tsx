@@ -24,9 +24,9 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
     setIsFavorite
   })
 
-  const suko = isSukoAssignment(assignment, exam)
-  const puhvi = isPuhviAssignment(assignment, exam)
-  const ld = isLdAssignment(assignment, exam)
+  const suko = isSukoAssignment(assignment)
+  const puhvi = isPuhviAssignment(assignment)
+  const ld = isLdAssignment(assignment)
 
   return (
     <>

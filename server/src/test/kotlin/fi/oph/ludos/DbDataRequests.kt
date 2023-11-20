@@ -14,7 +14,11 @@ fun seedDbWithCustomAssignmentsRequest(data: String): MockHttpServletRequestBuil
         .content(data)
 
 fun seedDbWithCustomAssignments(mockMvc: MockMvc, assignments: List<Assignment>) {
-    val result = mockMvc.perform(seedDbWithCustomAssignmentsRequest(mapper.writeValueAsString(assignments))).andReturn()
+    val result = mockMvc.perform(
+        seedDbWithCustomAssignmentsRequest(mapper.writeValueAsString(assignments)).with(
+            yllapitajaUser
+        )
+    ).andReturn()
 
     if (result.response.status != 200) {
         throw RuntimeException("Error seeding data, response status ${result.response.status}: ${result.response.contentAsString}")

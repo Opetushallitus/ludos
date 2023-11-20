@@ -11,6 +11,7 @@ import fi.oph.ludos.koodisto.ValidKoodiArvo
 import fi.oph.ludos.koodisto.ValidKoodiArvos
 import fi.oph.ludos.koodisto.ValidOppimaara
 import jakarta.validation.*
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Pattern
 import java.sql.Timestamp
 import kotlin.reflect.KClass
@@ -201,7 +202,9 @@ data class LdAssignmentDtoOut(
 
 interface AssignmentBaseFilters : BaseFilters {
     override val jarjesta: String?
-    override val sivu: Int
+
+    @get:Min(1)
+    val sivu: Int
     val suosikki: Boolean?
 }
 

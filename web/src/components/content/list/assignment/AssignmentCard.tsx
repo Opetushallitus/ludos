@@ -7,7 +7,7 @@ import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../../..
 import { toLocaleDate } from '../../../../utils/formatUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { useToggleFavorite } from '../../../../hooks/useToggleFavorite'
 import { contentPagePath, editingFormPath } from '../../../LudosRoutes'
@@ -30,7 +30,7 @@ export const AssignmentCard = ({
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isFavorite, setIsFavorite] = useState(assignment.isFavorite)
 
   const { toggleFavorite } = useToggleFavorite({
     exam,
@@ -41,11 +41,9 @@ export const AssignmentCard = ({
     refreshData
   })
 
-  useEffect(() => setIsFavorite(assignment.isFavorite), [assignment.isFavorite])
-
-  const isSuko = isSukoAssignment(assignment, exam)
-  const isPuhvi = isPuhviAssignment(assignment, exam)
-  const isLd = isLdAssignment(assignment, exam)
+  const isSuko = isSukoAssignment(assignment)
+  const isPuhvi = isPuhviAssignment(assignment)
+  const isLd = isLdAssignment(assignment)
 
   const returnLocation = `${location.pathname}${location.search}${location.hash}`
 
@@ -58,7 +56,7 @@ export const AssignmentCard = ({
           className="text-lg font-semibold text-green-primary"
           to={contentPagePath(exam, ContentType.koetehtavat, assignment.id)}
           state={{ returnLocation }}
-          data-testid="assignment-name-link">
+          data-testid="card-title">
           {(teachingLanguage === TeachingLanguage.fi ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')}
         </InternalLink>
         {isYllapitaja && (

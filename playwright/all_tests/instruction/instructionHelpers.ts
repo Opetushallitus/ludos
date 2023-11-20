@@ -1,7 +1,12 @@
 import { expect, Page } from '@playwright/test'
 import path from 'path'
-import { assertSuccessNotification, FormAction, setTeachingLanguage } from '../../helpers'
-import { TeachingLanguage } from 'web/src/types'
+import {
+  assertSuccessNotification,
+  FormAction,
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
+} from '../../helpers'
+import { Exam, TeachingLanguage } from 'web/src/types'
 
 export async function fillInstructionForm({
   page,
@@ -9,6 +14,7 @@ export async function fillInstructionForm({
   contentSv,
   nameFi,
   nameSv,
+  aineKoodiArvo,
   shortDescriptionFi,
   shortDescriptionSv,
   attachmentNameFi,
@@ -19,12 +25,17 @@ export async function fillInstructionForm({
   nameSv?: string
   contentFi?: string
   contentSv?: string
+  aineKoodiArvo?: string
   shortDescriptionFi?: string
   shortDescriptionSv?: string
   attachmentNameFi?: string
   attachmentNameSv?: string
 }) {
   await expect(page.getByTestId('heading')).toBeVisible()
+
+  if (aineKoodiArvo) {
+    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '9')
+  }
 
   if (nameFi) {
     await page.getByTestId('nameFi').fill(nameFi)
@@ -90,7 +101,7 @@ export async function updateAttachments(page: Page) {
   await expect(page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
 }
 
-export async function assertCreatedInstruction(page: Page, action: FormAction) {
+export async function assertCreatedInstruction(page: Page, exam: Exam, action: FormAction) {
   const header = page.getByTestId('assignment-header')
 
   if (action === 'submit') {
@@ -101,7 +112,7 @@ export async function assertCreatedInstruction(page: Page, action: FormAction) {
 
   await expect(header).toHaveText('Testi ohje')
   // check short description
-  await expect(page.getByText('Testi lyhyt kuvaus', { exact: true })).toBeVisible()
+  exam !== Exam.LD && (await expect(page.getByText('Testi lyhyt kuvaus', { exact: true })).toBeVisible())
   // check content
   await expect(page.getByText('Testi sisältö', { exact: true })).toBeVisible()
   // check files
@@ -111,7 +122,7 @@ export async function assertCreatedInstruction(page: Page, action: FormAction) {
   // change language and check that everything is correct
   await setTeachingLanguage(page, TeachingLanguage.sv)
   await expect(header).toHaveText('Testuppgifter')
-  await expect(page.getByText('Testa kort beskrivning', { exact: true })).toBeVisible()
+  exam !== Exam.LD && (await expect(page.getByText('Testa kort beskrivning', { exact: true })).toBeVisible())
   await expect(page.getByText('Testa innehåll', { exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Testa bilaga 1 open_in_new' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Testa bilaga 2 open_in_new' })).toBeVisible()

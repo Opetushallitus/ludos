@@ -75,9 +75,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
       })
     }
 
-    navigate(contentPagePath(exam, ContentType.koetehtavat, resultId), {
-      state: { returnLocation: state?.returnLocation }
-    })
+    navigate(contentPagePath(exam, ContentType.koetehtavat, resultId), { state })
   }
 
   function setErrorNotification(publishState: PublishState) {

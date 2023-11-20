@@ -1,32 +1,85 @@
 package fi.oph.ludos.certificate
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.emptyString
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.stream.Stream
+
+const val attachmentFileNameToCreate = "fixture1.pdf"
+const val attachmentFileNameToCreateSv = "fixture2.pdf"
+const val attachmentFileNameToUpdate = "fixture2.pdf"
+const val attachmentFileNameToUpdateSv = "fixture3.pdf"
+
+val sukoCertificateToCreate = TestSukoCertificateIn(
+    Exam.SUKO,
+    "Test Certificate FI",
+    "",
+    "Certificate content FI",
+    "",
+    TestPublishState.PUBLISHED,
+)
+
+val sukoCertificateToUpdate = TestSukoCertificateIn(
+    Exam.SUKO,
+    "Test Certificate FI updated",
+    "",
+    "Certificate content FI updated",
+    "",
+    TestPublishState.PUBLISHED,
+)
+
+val puhviCertificateToCreate = TestPuhviCertificateIn(
+    Exam.PUHVI,
+    "Test Certificate FI",
+    "Test Certificate SV",
+    "Certificate content Fi",
+    "Certificate content SV",
+    TestPublishState.PUBLISHED,
+)
+
+val puhviCertificateToUpdate = TestPuhviCertificateIn(
+    Exam.PUHVI,
+    "Test Certificate FI updated",
+    "Test Certificate SV updated",
+    "Certificate content FI updated",
+    "Certificate content SV updated",
+    TestPublishState.PUBLISHED,
+)
+
+val ldCertificateToCreate = TestLdCertificateIn(
+    Exam.LD,
+    "Test Certificate FI",
+    "Test Certificate SV",
+    TestPublishState.PUBLISHED,
+    "1"
+)
+
+val ldCertificateToUpdate = TestLdCertificateIn(
+    Exam.LD,
+    "Test Certificate FI updated",
+    "Test Certificate SV updated",
+    TestPublishState.PUBLISHED,
+    "2"
+)
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
-    val objectMapper = jacksonObjectMapper()
-    var idsOfCertificateDrafts = listOf<Int>()
-
+class CertificateControllerTest : CertificateRequests() {
     val fileKeyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
+    val exams = listOf(Exam.SUKO, Exam.PUHVI, Exam.LD)
+
     private fun validateFileKey(fileKey: String) =
         assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
 
@@ -43,296 +96,401 @@ class CertificateControllerTest(@Autowired val mockMvc: MockMvc) {
         )
     }
 
-    private fun createCertificateAndCheckIt(publishState: PublishState): TestCertificateOut {
-        val certificateToCreate = TestCertificateIn(
-            exam = Exam.SUKO,
-            name = "Test Certificate FI",
-            description = "Certificate content Fi",
-            publishState = publishState,
-        )
-        val attachmentFileName = "fixture1.pdf"
-
-        val certificateToCreateStr = objectMapper.writeValueAsString(certificateToCreate)
-
-        val attachmentPart = readAttachmentFixtureFile(attachmentFileName)
-        val createdCertificateStr =
-            mockMvc.perform(postCertificate(certificateToCreateStr, attachmentPart)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val createdCertificate = objectMapper.readValue(createdCertificateStr, TestCertificateOut::class.java)
-
-        assertNotNull(createdCertificate.id)
-        assertEquals(certificateToCreate.name, createdCertificate.name)
-        assertEquals(certificateToCreate.exam, createdCertificate.exam)
-        assertEquals(certificateToCreate.description, createdCertificate.description)
-        assertEquals(certificateToCreate.publishState, createdCertificate.publishState)
-        assertEquals(createdCertificate.attachment.fileName, attachmentFileName)
-        validateFileKey(createdCertificate.attachment.fileKey)
-        assertEquals(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo, createdCertificate.authorOid)
-        assertNotNull(createdCertificate.attachment.fileUploadDate)
-        assertNotNull(createdCertificate.createdAt)
-        assertNotNull(createdCertificate.updatedAt)
-
-        val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, createdCertificate.id)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val certificateById = objectMapper.readValue(getResult, TestCertificateOut::class.java)
-
-        assertEquals(createdCertificate.id, certificateById.id)
-        assertEquals(certificateToCreate.name, certificateById.name)
-        assertEquals(certificateToCreate.description, certificateById.description)
-        assertEquals(certificateToCreate.publishState, certificateById.publishState)
-        assertEquals(createdCertificate.attachment, certificateById.attachment)
-        assertEquals(createdCertificate.authorOid, certificateById.authorOid)
-        assertNotNull(certificateById.createdAt)
-        assertNotNull(certificateById.updatedAt)
+    private fun assertAttachment(
+        expectedAttachmentName: String,
+        updatedAttachmentDtoOut: CertificateAttachmentDtoOut,
+    ) {
+        assertEquals(expectedAttachmentName, updatedAttachmentDtoOut.fileName)
+        validateFileKey(updatedAttachmentDtoOut.fileKey)
+        assertNotNull(updatedAttachmentDtoOut.fileUploadDate)
 
         assertGetReturnsExpectedAttachment(
-            certificateById.attachment.fileKey, attachmentFileName, attachmentPart.bytes
+            updatedAttachmentDtoOut.fileKey,
+            expectedAttachmentName,
+            readAttachmentFixtureFile(expectedAttachmentName).bytes
         )
+    }
+
+    private fun assertPuhviDescription(dtoIn: TestPuhviCertificateIn, dtoOut: PuhviCertificateDtoOut) {
+        assertEquals(dtoIn.descriptionFi, dtoOut.descriptionFi)
+        assertEquals(dtoIn.descriptionSv, dtoOut.descriptionSv)
+    }
+
+    private fun assertCommonFields(
+        dtoIn: TestCertificate,
+        dtoOut: CertificateOut,
+        newAttachment: String,
+        newAttachmentSv: String
+    ) {
+        assertNotNull(dtoOut.id)
+        assertEquals(dtoIn.exam, dtoOut.exam)
+        assertEquals(dtoIn.publishState.toString(), dtoOut.publishState.toString())
+        assertEquals(dtoIn.nameFi, dtoOut.nameFi)
+        assertEquals(dtoIn.nameSv, dtoOut.nameSv)
+        assertEquals(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo, dtoOut.authorOid)
+        assertNotNull(dtoOut.createdAt)
+        assertNotNull(dtoOut.updatedAt)
+
+        assertAttachment(
+            newAttachment,
+            dtoOut.attachmentFi
+        )
+        if (dtoIn.exam != Exam.SUKO) {
+            assertAttachment(
+                newAttachmentSv,
+                dtoOut.attachmentSv
+            )
+        }
+
+        when (dtoOut) {
+            is SukoCertificateDtoOut -> {
+                dtoIn as TestSukoCertificateIn
+                assertEquals(dtoIn.descriptionFi, dtoOut.descriptionFi)
+            }
+
+            is LdCertificateDtoOut -> {
+                dtoIn as TestLdCertificateIn
+                assertEquals(dtoIn.aineKoodiArvo, dtoOut.aineKoodiArvo)
+            }
+
+            is PuhviCertificateDtoOut -> {
+                dtoIn as TestPuhviCertificateIn
+                assertPuhviDescription(dtoIn, dtoOut)
+            }
+        }
+    }
+
+    private inline fun <reified T : CertificateOut> createCertificateAndCheckIt(
+        certificateToCreate: TestCertificate,
+    ): T {
+        val attachmentFileName = attachmentFileNameToCreate
+        val attachmentFileNameSv = attachmentFileNameToCreateSv
+
+        val certificateToCreateStr = mapper.writeValueAsString(certificateToCreate)
+        val createdCertificateStr =
+            mockMvc.perform(postCertificate(certificateToCreateStr, attachmentFileName, attachmentFileNameSv))
+                .andExpect(status().isOk)
+                .andReturn().response.contentAsString
+
+        val createdCertificate = mapper.readValue<T>(createdCertificateStr)
+
+        assertCommonFields(certificateToCreate, createdCertificate, attachmentFileName, attachmentFileNameSv)
+
+        val getResult = mockMvc.perform(getCertificateById(certificateToCreate.exam, createdCertificate.id))
+            .andExpect(status().isOk)
+            .andReturn().response.contentAsString
+
+        val certificateById = mapper.readValue<T>(getResult)
+
+        assertCommonFields(certificateToCreate, certificateById, attachmentFileName, attachmentFileNameSv)
 
         return certificateById
     }
 
-    @Test
-    @WithYllapitajaRole
-    fun publishCertificate() {
-        createCertificateAndCheckIt(PublishState.PUBLISHED)
+
+    private fun assertReplacedAttachmentsHasBeenDeleted(createdCertificate: CertificateOut) {
+        fun req(attachmentFileKey: String) = mockMvc.perform(getAttachment(attachmentFileKey))
+            .andExpect(status().isNotFound)
+
+        req(createdCertificate.attachmentFi.fileKey)
+
+        when (createdCertificate) {
+            is LdCertificateDtoOut, is PuhviCertificateDtoOut -> {
+                req(createdCertificate.attachmentSv.fileKey)
+            }
+        }
     }
 
-    @Test
-    @WithYllapitajaRole
-    fun createDraftCertificateAndPublishCertificateWithoutUpdatingAttachment() {
-        val createdCertificate = createCertificateAndCheckIt(PublishState.DRAFT)
-
-        val editedCertificate = TestCertificateIn(
-            exam = Exam.SUKO,
-            name = "Suko Test Certificate FI updated",
-            description = "Suko Certificate content Fi updated",
-            publishState = PublishState.PUBLISHED,
-        )
-
-        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
-
-        mockMvc.perform(putCertificate(createdCertificate.id, editedCertificateStr, null)).andExpect(status().isOk)
-            .andReturn().response.contentAsString
-
-        val getUpdatedResult =
-            mockMvc.perform(getCertificateById(Exam.SUKO, createdCertificate.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val updatedCertificateById = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
-
-        assertEquals(editedCertificate.name, updatedCertificateById.name)
-        assertEquals(editedCertificate.description, updatedCertificateById.description)
-        assertEquals(PublishState.PUBLISHED, updatedCertificateById.publishState)
-        assertEquals(createdCertificate.attachment, updatedCertificateById.attachment)
-        assertEquals(createdCertificate.id, updatedCertificateById.id)
-        assertEquals(createdCertificate.authorOid, updatedCertificateById.authorOid)
-        assertNotEquals(createdCertificate.updatedAt, updatedCertificateById.updatedAt)
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun publishAndUpdateCertificateWithUpdatedAttachment() {
-        val createdCertificate = createCertificateAndCheckIt(PublishState.PUBLISHED)
-
-        val editedCertificate = TestCertificateIn(
-            exam = Exam.SUKO,
-            name = "Suko Test Certificate FI updated",
-            description = "Suko Certificate content Fi updated",
-            publishState = PublishState.PUBLISHED,
-        )
-
-        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
-
+    private fun updateCertificateAndAssert(
+        createdCertificate: CertificateOut,
+        editedCertificate: TestCertificate,
+    ): CertificateOut {
         Thread.sleep(1) // Wait a bit to ensure attachmentUploadDate is different
-        val newAttachmentFixtureFileName = "fixture2.pdf"
-        val newAttachment = readAttachmentFixtureFile(newAttachmentFixtureFileName)
-        mockMvc.perform(putCertificate(createdCertificate.id, editedCertificateStr, newAttachment))
-            .andExpect(status().isOk).andReturn()
+        val newAttachment = readAttachmentFixtureFile(attachmentFileNameToUpdate)
+        val newAttachmentSv = readAttachmentFixtureFile(attachmentFileNameToUpdateSv, "attachmentSv")
 
-        val getUpdatedResult =
-            mockMvc.perform(getCertificateById(Exam.SUKO, createdCertificate.id)).andExpect(status().isOk)
+        mockMvc.perform(
+            putCertificate(
+                createdCertificate.id,
+                mapper.writeValueAsString(editedCertificate),
+                newAttachment,
+                newAttachmentSv
+            )
+        ).andExpect(status().isOk)
+
+        val updatedCertificateById: CertificateOut = mapper.readValue(
+            mockMvc.perform(getCertificateById(createdCertificate.exam, createdCertificate.id))
+                .andExpect(status().isOk)
                 .andReturn().response.contentAsString
-
-        val updatedCertificateById = objectMapper.readValue(getUpdatedResult, TestCertificateOut::class.java)
-
-        assertEquals(editedCertificate.name, updatedCertificateById.name)
-        assertEquals(editedCertificate.description, updatedCertificateById.description)
-        assertEquals(editedCertificate.publishState, updatedCertificateById.publishState)
-        assertEquals(newAttachmentFixtureFileName, updatedCertificateById.attachment.fileName)
-        validateFileKey(updatedCertificateById.attachment.fileKey)
-        assertNotEquals(updatedCertificateById.attachment.fileKey, createdCertificate.attachment.fileKey)
-        assertNotNull(updatedCertificateById.attachment.fileUploadDate)
-        assertNotEquals(updatedCertificateById.attachment.fileUploadDate, createdCertificate.attachment.fileUploadDate)
-        assertEquals(createdCertificate.authorOid, updatedCertificateById.authorOid)
-        assertEquals(createdCertificate.id, updatedCertificateById.id)
-
-        assertGetReturnsExpectedAttachment(
-            updatedCertificateById.attachment.fileKey, newAttachmentFixtureFileName, newAttachment.bytes
         )
 
-        mockMvc.perform(getAttachment(createdCertificate.attachment.fileKey)).andExpect(status().isNotFound)
+        assertCommonFields(
+            editedCertificate,
+            updatedCertificateById,
+            attachmentFileNameToUpdate,
+            attachmentFileNameToUpdateSv
+        )
+        assertReplacedAttachmentsHasBeenDeleted(createdCertificate)
+
+        return updatedCertificateById
     }
+
+    @BeforeAll
+    fun setup() {
+        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+        mockMvc.perform(seedDbWithCertificates().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+    }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `get all certificates of each exam as yllapitaja`(): Stream<DynamicTest> = exams.stream().map { exam ->
+        DynamicTest.dynamicTest("Get all certificates for $exam") {
+            val certificates = getAllCertificates(exam)
+
+            assertEquals(4, certificates.size)
+
+            val expectedNumbersInPage = listOf(0, 1, 2, 3)
+            val actualNumbersInName = certificates.flatMap { cert ->
+                Regex("\\d+").findAll(cert.nameFi).map { it.value.toInt() }.toList()
+            }
+
+            assertEquals(expectedNumbersInPage, actualNumbersInName)
+        }
+    }
+
+    @TestFactory
+    @WithOpettajaRole
+    fun `get all certificates of each exam as opettaja`(): Stream<DynamicTest> = exams.stream().map { exam ->
+        DynamicTest.dynamicTest("$exam") {
+            assertOrderedCertificateList(exam, CertificateFilters(jarjesta = "asc"), listOf(0, 2))
+            assertOrderedCertificateList(exam, CertificateFilters(jarjesta = "desc"), listOf(2, 0))
+        }
+    }
+
+    private fun assertOrderedCertificateList(
+        exam: Exam,
+        filters: CertificateFilters,
+        expectedNumbersInList: List<Number>
+    ): List<CertificateOut> {
+        val certificates = getAllCertificates(exam, filters = filters)
+        // make sure that draft certificate is not returned
+        assertEquals(2, certificates.size)
+
+        val actualNumbersInName = certificates.flatMap { certificate ->
+            Regex("\\d+").findAll(certificate.nameFi).map { it.value.toInt() }.toList()
+        }
+
+        assertEquals(expectedNumbersInList, actualNumbersInName)
+        return certificates
+    }
+
+    @TestFactory
+    fun `opettaja cannot get draft certificates by id`(): Stream<DynamicTest> = exams.stream().map { exam ->
+        DynamicTest.dynamicTest("$exam") {
+            val certificates = getAllCertificates(exam, user = yllapitajaUser)
+            assertEquals(4, certificates.size)
+
+            val idsOfDrafts =
+                certificates.filter { it.publishState.toString() == TestPublishState.DRAFT.toString() }.map { it.id }
+            assertEquals(2, idsOfDrafts.size)
+
+            idsOfDrafts.forEach {
+                mockMvc.perform(getCertificateById(exam, it).with(opettajaUser)).andExpect(status().isNotFound)
+            }
+        }
+    }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `publish certificates`(): Stream<DynamicTest> = exams.stream().map { exam ->
+        DynamicTest.dynamicTest("$exam") {
+            when (exam) {
+                Exam.SUKO -> createCertificateAndCheckIt<SukoCertificateDtoOut>(sukoCertificateToCreate)
+                Exam.LD -> createCertificateAndCheckIt<LdCertificateDtoOut>(ldCertificateToCreate)
+                Exam.PUHVI -> createCertificateAndCheckIt<PuhviCertificateDtoOut>(puhviCertificateToCreate)
+                null -> fail("Exam should not be null")
+            }
+        }
+    }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `create draft and publish certificates and update attachments`(): Stream<DynamicTest> =
+        exams.stream().map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val (createdCertificate, editedCertificate) = when (exam) {
+                    Exam.SUKO -> Pair(
+                        createCertificateAndCheckIt<SukoCertificateDtoOut>(
+                            sukoCertificateToCreate.copy(publishState = TestPublishState.DRAFT),
+                        ),
+                        sukoCertificateToUpdate
+                    )
+
+                    Exam.LD -> Pair(
+                        createCertificateAndCheckIt<LdCertificateDtoOut>(
+                            ldCertificateToCreate.copy(publishState = TestPublishState.DRAFT),
+                        ),
+                        ldCertificateToUpdate
+                    )
+
+                    Exam.PUHVI -> Pair(
+                        createCertificateAndCheckIt<PuhviCertificateDtoOut>(
+                            puhviCertificateToCreate.copy(publishState = TestPublishState.DRAFT),
+                        ),
+                        puhviCertificateToUpdate
+                    )
+
+                    null -> fail("Exam should not be null")
+                }
+
+                when (val updatedCertificateById = updateCertificateAndAssert(createdCertificate, editedCertificate)) {
+                    // Voisko tän lambdan inlinettää helposti
+                    is SukoCertificateDtoOut -> assertEquals(
+                        (editedCertificate as TestSukoCertificateIn).descriptionFi,
+                        updatedCertificateById.descriptionFi
+                    )
+
+                    is LdCertificateDtoOut -> assertEquals(
+                        (editedCertificate as TestLdCertificateIn).aineKoodiArvo,
+                        updatedCertificateById.aineKoodiArvo
+                    )
+
+                    is PuhviCertificateDtoOut -> assertPuhviDescription(
+                        editedCertificate as TestPuhviCertificateIn,
+                        updatedCertificateById
+                    )
+                }
+            }
+        }
 
     @Test
     @WithYllapitajaRole
-    fun createDraftCertificate() {
-        createCertificateAndCheckIt(PublishState.DRAFT)
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun putNonExistentCertificate() {
-        val editedCertificate = TestCertificateIn(
-            exam = Exam.SUKO,
-            name = "Name",
-            description = "Description",
-            publishState = PublishState.PUBLISHED,
-        )
-        val editedCertificateStr = objectMapper.writeValueAsString(editedCertificate)
-
-        val result = mockMvc.perform(putCertificate(-1, editedCertificateStr, null)).andExpect(status().isNotFound)
+    fun putNonExistentCertificate() = assertEquals(
+        "Certificate -1 not found",
+        mockMvc.perform(putCertificate(-1, mapper.writeValueAsString(sukoCertificateToCreate)))
+            .andExpect(status().isNotFound)
             .andReturn().response.contentAsString
-
-        assertEquals("Certificate -1 not found", result)
-    }
+    )
 
     @Test
     @WithYllapitajaRole
     fun postCertificateWithInvalidExam() {
-        val body = """
-            {
-                "name": "Test Certificate",
-                "description": "Certificate content",
-                "publishState": "PUBLISHED",
-                "exam": "WRONG",
-            }
-        """
+        val body = mapper.writeValueAsString(sukoCertificateToCreate).replace("\"SUKO\"", "\"WRONG\"")
 
-        val attachmentPart = readAttachmentFixtureFile("fixture1.pdf")
-        val postResponseBody = mockMvc.perform(postCertificate(body, attachmentPart)).andExpect(status().isBadRequest)
-            .andReturn().response.contentAsString
+        val postResponseBody =
+            mockMvc.perform(postCertificate(body, attachmentFileNameToCreate)).andExpect(status().isBadRequest)
+                .andReturn().response.contentAsString
         assertThat(
             postResponseBody,
-            CoreMatchers.containsString("String \"WRONG\": not one of the values accepted for Enum class: [LD, SUKO, PUHVI]")
+            CoreMatchers.containsString("Invalid type: JSON parse error: Could not resolve type id 'WRONG' as a subtype of `fi.oph.ludos.certificate.Certificate`: known type ids = [LD, PUHVI, SUKO]")
         )
     }
 
     @Test
     @WithYllapitajaRole
-    fun postCertificateWithMissingAttachment() {
-        val certificateIn = TestCertificateIn(
-            exam = Exam.LD,
-            name = "Test Certificate FI",
-            description = "Certificate content Fi",
-            publishState = PublishState.PUBLISHED,
+    fun postCertificateWithMissingAttachment() =
+        assertThat(
+            mockMvc.perform(postCertificate(mapper.writeValueAsString(sukoCertificateToCreate), null))
+                .andExpect(status().isBadRequest)
+                .andReturn().response.contentAsString, emptyString()
         )
-        val certificateInStr = objectMapper.writeValueAsString(certificateIn)
-
-        val postResponseBody = mockMvc.perform(postCertificate(certificateInStr, null)).andExpect(status().isBadRequest)
-            .andReturn().response.contentAsString
-        assertThat(postResponseBody, emptyString())
-    }
 
     @Test
     @WithYllapitajaRole
     fun putCertificateWithInvalidPublishState() {
-        val createdCertificateOut = createCertificateAndCheckIt(PublishState.PUBLISHED)
+        val createdCertificateOut = createCertificateAndCheckIt<SukoCertificateDtoOut>(sukoCertificateToCreate)
 
-        val body = """
-            {
-                "name": "Test Certificate",
-                "description": "Certificate content",
-                "publishState": "NON_EXISTENT_PUBLISH_STATE",
-                "exam": "PUHVI",
-            }
-        """
+        val body = mapper.writeValueAsString(sukoCertificateToCreate.copy(publishState = TestPublishState.OLEMATON))
 
-        val putResponseBody =
-            mockMvc.perform(putCertificate(createdCertificateOut.id, body, null)).andExpect(status().isBadRequest)
-                .andReturn().response.contentAsString
+        val putResponseBody = mockMvc.perform(putCertificate(createdCertificateOut.id, body))
+            .andExpect(status().isBadRequest)
+            .andReturn().response.contentAsString
+
         assertThat(
             putResponseBody,
-            CoreMatchers.containsString("String \"NON_EXISTENT_PUBLISH_STATE\": not one of the values accepted for Enum class: [DRAFT, ARCHIVED, PUBLISHED, DELETED]")
+            CoreMatchers.containsString("String \"OLEMATON\": not one of the values accepted for Enum class: [DRAFT, ARCHIVED, PUBLISHED, DELETED]")
         )
     }
 
     @Test
     @WithYllapitajaRole
-    fun getCertificateByIdWhenExamDoesNotExist() {
-        val getResult = mockMvc.perform(getCertificateById(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
-        val responseContent = getResult.response.contentAsString
+    fun getCertificateByIdWhenExamDoesNotExist() = assertEquals(
+        mockMvc.perform(getCertificateById(Exam.SUKO, 999))
+            .andExpect(status().isNotFound())
+            .andReturn().response.contentAsString, "Certificate not found 999"
+    )
 
-        assertEquals(responseContent, "Certificate not found 999")
-    }
-
-
-    @BeforeAll
-    fun setup() {
-        authenticateAsYllapitaja()
-        mockMvc.perform(emptyDbRequest())
-        mockMvc.perform(seedDbWithCertificates())
-        val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
-            .andReturn().response.contentAsString
-        val allCertificates = objectMapper.readValue(res, TestCertificatesOut::class.java).content
-        assertEquals(4, allCertificates.size)
-        idsOfCertificateDrafts = allCertificates.filter { it.publishState == PublishState.DRAFT }.map { it.id }
-    }
-
-    @Test
-    @WithOpettajaRole
-    fun getCertificateDraftAsOpettaja() {
-        idsOfCertificateDrafts.forEach() {
-            mockMvc.perform(getCertificateById(Exam.SUKO, it)).andExpect(status().isNotFound())
-        }
-    }
-
-    @Test
-    @WithOpettajaRole
-    fun getCertificatesAsOpettaja() {
-        val res = mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
-            .andReturn().response.contentAsString
-
-        val certificates = objectMapper.readValue(res, TestCertificatesOut::class.java).content
-
-        // make sure that draft certificate is not returned
-        assertTrue(
-            certificates.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft certificates"
-        )
-
-        assertEquals(2, certificates.size)
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun `test deleting a certificate`() {
-        val createdCertificateOut = createCertificateAndCheckIt(PublishState.PUBLISHED)
+    private inline fun <reified T : TestCertificate, reified Y : CertificateOut> deleteCertificateTest(
+        exam: Exam,
+        certificateInInput: T,
+        updateCertificate: (Y) -> T
+    ) {
+        val createdCertificateOut = createCertificateAndCheckIt<Y>(certificateInInput)
 
         mockMvc.perform(
             putCertificate(
-                createdCertificateOut.id, objectMapper.writeValueAsString(
-                    TestCertificateIn(
-                        createdCertificateOut.exam,
-                        createdCertificateOut.name,
-                        createdCertificateOut.description,
-                        PublishState.DELETED
-                    )
-                ), null
+                createdCertificateOut.id,
+                mapper.writeValueAsString(updateCertificate(createdCertificateOut)),
+                null,
+                null
             )
-        ).andExpect(status().isOk)
-            .andReturn().response.contentAsString
+        ).andExpect(status().isOk).andReturn().response.contentAsString
 
-        mockMvc.perform(getCertificateById(Exam.SUKO, createdCertificateOut.id)).andExpect(status().isNotFound())
+        mockMvc.perform(getCertificateById(exam, createdCertificateOut.id))
+            .andExpect(status().isNotFound())
 
-        val certificates = objectMapper.readValue(
-            mockMvc.perform(getAllCertificates(Exam.SUKO)).andExpect(status().isOk())
-                .andReturn().response.contentAsString, TestCertificatesOut::class.java
-        ).content
+        val certificates = getAllCertificates(Exam.SUKO)
 
-        val noneHaveMatchingId = certificates.none { it.id == createdCertificateOut.id }
+        assertTrue(
+            certificates.none { it.id == createdCertificateOut.id },
+            "No certificate should have the ID of the deleted one"
+        )
+    }
 
-        assertTrue(noneHaveMatchingId, "No certificate should have the ID of the deleted one")
+    @Test
+    @WithYllapitajaRole
+    fun `test deleting SUKO certificate`() = deleteCertificateTest<TestSukoCertificateIn, SukoCertificateDtoOut>(
+        Exam.SUKO,
+        sukoCertificateToCreate
+    ) {
+        TestSukoCertificateIn(
+            it.exam,
+            it.nameFi,
+            it.nameSv,
+            it.descriptionFi,
+            it.descriptionSv,
+            TestPublishState.DELETED
+        )
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `test deleting PUHVI certificate`() = deleteCertificateTest<TestPuhviCertificateIn, PuhviCertificateDtoOut>(
+        Exam.PUHVI,
+        puhviCertificateToCreate
+    ) {
+        TestPuhviCertificateIn(
+            it.exam,
+            it.nameFi,
+            it.nameSv,
+            it.descriptionFi,
+            it.descriptionSv,
+            TestPublishState.DELETED
+        )
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `test deleting LD certificate`() = deleteCertificateTest<TestLdCertificateIn, LdCertificateDtoOut>(
+        Exam.LD,
+        ldCertificateToCreate
+    ) {
+        TestLdCertificateIn(
+            it.exam,
+            it.nameFi,
+            it.nameSv,
+            TestPublishState.DELETED,
+            it.aineKoodiArvo
+        )
     }
 }

@@ -6,8 +6,6 @@ import { useFilterValues } from '../../../hooks/useFilterValues'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { InstructionList } from './instruction/InstructionList'
 import { CertificateList } from './certificate/CertificateList'
-import { useContext } from 'react'
-import { LudosContext } from '../../../contexts/LudosContext'
 
 type ContentListPageProps = {
   exam: Exam
@@ -18,10 +16,8 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { contentType: contentTypeParam } = useParams<{ contentType: ContentType }>()
   const contentType = contentTypeParam || ContentType.koetehtavat
   const filterValues = useFilterValues(exam)
-  const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
 
-  const languageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? 'fi' : teachingLanguage
+  const commonProps = { exam, filterValues }
 
   return (
     <div className="pt-3">
@@ -35,18 +31,11 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
         {contentType && (
           <>
             {contentType === ContentType.koetehtavat ? (
-              <AssignmentList exam={exam} filterValues={filterValues} />
+              <AssignmentList {...commonProps} />
             ) : contentType === ContentType.ohjeet ? (
-              <InstructionList
-                exam={exam}
-                teachingLanguageSelectProps={{
-                  teachingLanguage: languageOverrideIfSukoAssignment,
-                  setTeachingLanguage
-                }}
-                filterValues={filterValues}
-              />
+              <InstructionList {...commonProps} />
             ) : (
-              <CertificateList exam={exam} />
+              <CertificateList {...commonProps} />
             )}
           </>
         )}
