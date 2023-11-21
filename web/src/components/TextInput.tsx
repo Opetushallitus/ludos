@@ -13,6 +13,7 @@ export const TextInput = ({ id, register, deps, error, required, children }: Tex
   <div className="mt-6">
     <label className="font-semibold" htmlFor={id}>
       {children}
+      {required && <span className="ml-1 text-green-primary">*</span>}
     </label>
     <input
       id={id}

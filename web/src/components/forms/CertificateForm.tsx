@@ -213,9 +213,13 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const contentErrorFi = errors.descriptionFi?.message
   const attachmentErrorFi = errors.attachmentFi?.message
 
+  const hasFiError = nameErrorFi || contentErrorFi || attachmentErrorFi
+
   const nameErrorSv = errors.nameSv?.message
   const contentErrorSv = errors.descriptionSv?.message
   const attachmentErrorSv = errors.attachmentSv?.message
+
+  const hasSvError = nameErrorSv || contentErrorSv || attachmentErrorSv
 
   return (
     <div className="ludos-form">
@@ -230,7 +234,12 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
           <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
           <div className={`${exam === Exam.SUKO && 'hidden'} mb-6`}>
-            <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <LanguageTabs
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              fiErrors={!!hasFiError}
+              svErrors={!!hasSvError}
+            />
           </div>
 
           <div className={`${activeTab === TeachingLanguage.fi ? '' : 'hidden'}`}>
@@ -248,7 +257,10 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
               </>
             )}
 
-            <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
+            <div className="mb-2 mt-6 font-semibold">
+              {t('form.todistus')}
+              <span className="ml-1 text-green-primary">*</span>
+            </div>
             <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
             <AttachmentSelector
@@ -276,7 +288,10 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
               </>
             )}
 
-            <div className="mb-2 mt-6 font-semibold">{t('form.todistus')}</div>
+            <div className="mb-2 mt-6 font-semibold">
+              {t('form.todistus')}
+              <span className="ml-1 text-green-primary">*</span>
+            </div>
             <p>{t('form.todistus-ala-otsikko-kuvaus')}</p>
 
             <AttachmentSelector

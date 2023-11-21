@@ -281,6 +281,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const nameFiError = errors.nameFi?.message as string
   const nameSvError = errors.nameSv?.message as string
 
+  const hasFiError = nameFiError
+  const hasSvError = nameSvError
+
   const handleContentChange = (newContent: string) => {
     if (activeTab === 'fi') {
       setValue('contentFi', newContent)
@@ -307,7 +310,12 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
 
           <div className="mb-6">
-            <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <LanguageTabs
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              fiErrors={!!hasFiError}
+              svErrors={!!hasSvError}
+            />
           </div>
 
           <div className={`${activeTab === TeachingLanguage.fi ? '' : 'hidden'}`}>
