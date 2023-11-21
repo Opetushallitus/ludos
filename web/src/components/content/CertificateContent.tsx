@@ -96,10 +96,21 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
         <CertificateContentAttachmentView name={certificate.attachmentFi.name} attachment={certificate.attachmentFi} />
       ) : (
         (isLdCertificate(certificate) || isPuhviCertificate(certificate)) && (
-          <CertificateContentAttachmentView
-            name={teachingLanguage === 'fi' ? certificate.attachmentFi.name : certificate.attachmentSv.name}
-            attachment={teachingLanguage === 'fi' ? certificate.attachmentFi : certificate.attachmentSv}
-          />
+          <>
+            {teachingLanguage === 'fi' ? (
+              <CertificateContentAttachmentView
+                name={certificate.attachmentFi.name}
+                attachment={certificate.attachmentFi}
+              />
+            ) : certificate.attachmentSv ? (
+              <CertificateContentAttachmentView
+                name={certificate.attachmentSv.name}
+                attachment={certificate.attachmentSv}
+              />
+            ) : (
+              <span aria-label="no attachment">&#8208;</span>
+            )}
+          </>
         )
       )}
     </div>

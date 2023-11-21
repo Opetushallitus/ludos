@@ -147,14 +147,14 @@ export type SukoCertificateDtoOut = CertificateDtoOut & {
 export type LdCertificateDtoOut = CertificateDtoOut & {
   aineKoodiArvo: string
   attachmentFi: AttachmentDtoOut
-  attachmentSv: AttachmentDtoOut
+  attachmentSv?: AttachmentDtoOut
 }
 
 export type PuhviCertificateDtoOut = CertificateDtoOut & {
   descriptionFi: string
   descriptionSv: string
   attachmentFi: AttachmentDtoOut
-  attachmentSv: AttachmentDtoOut
+  attachmentSv?: AttachmentDtoOut
 }
 
 export const ContentType = {

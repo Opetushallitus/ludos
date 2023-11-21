@@ -15,7 +15,6 @@ ALTER TABLE certificate
 ALTER TABLE certificate
     ADD COLUMN certificate_name_sv text NOT NULL default '';
 
-
 -- attachment
 ALTER TABLE certificate
     RENAME attachment_file_key TO attachment_file_key_fi;
@@ -27,12 +26,6 @@ ALTER TABLE puhvi_certificate RENAME CONSTRAINT puhvi_certificate_attachment_fk 
 
 ALTER TABLE certificate
     ADD COLUMN attachment_file_key_sv text;
-
-UPDATE suko_certificate SET attachment_file_key_sv = attachment_file_key_fi;
-UPDATE ld_certificate SET attachment_file_key_sv = attachment_file_key_fi;
-UPDATE puhvi_certificate SET attachment_file_key_sv = attachment_file_key_fi;
-
-ALTER TABLE certificate ALTER COLUMN attachment_file_key_sv SET NOT NULL;
 
 ALTER TABLE certificate ADD CONSTRAINT attachment_file_key_sv_fk
     FOREIGN KEY (attachment_file_key_sv)

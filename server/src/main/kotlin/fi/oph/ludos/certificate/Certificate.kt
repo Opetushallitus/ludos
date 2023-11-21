@@ -83,7 +83,7 @@ interface CertificateOut : Certificate {
     override val exam: Exam
     override val publishState: PublishState
     val attachmentFi: CertificateAttachmentDtoOut
-    val attachmentSv: CertificateAttachmentDtoOut
+    val attachmentSv: CertificateAttachmentDtoOut?
     val authorOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
@@ -96,7 +96,7 @@ data class SukoCertificateDtoOut(
     override val nameSv: String,
     override val publishState: PublishState,
     override val attachmentFi: CertificateAttachmentDtoOut,
-    override val attachmentSv: CertificateAttachmentDtoOut,
+    override val attachmentSv: CertificateAttachmentDtoOut?,
     override val authorOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
@@ -112,7 +112,7 @@ data class LdCertificateDtoOut(
     override val nameSv: String,
     override val publishState: PublishState,
     override val attachmentFi: CertificateAttachmentDtoOut,
-    override val attachmentSv: CertificateAttachmentDtoOut,
+    override val attachmentSv: CertificateAttachmentDtoOut?,
     override val authorOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
@@ -127,7 +127,7 @@ data class PuhviCertificateDtoOut(
     override val nameSv: String,
     override val publishState: PublishState,
     override val attachmentFi: CertificateAttachmentDtoOut,
-    override val attachmentSv: CertificateAttachmentDtoOut,
+    override val attachmentSv: CertificateAttachmentDtoOut?,
     override val authorOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,

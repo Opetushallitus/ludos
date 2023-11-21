@@ -135,10 +135,10 @@ class CertificateControllerTest : CertificateRequests() {
             newAttachment,
             dtoOut.attachmentFi
         )
-        if (dtoIn.exam != Exam.SUKO) {
+        if ((dtoIn.exam != Exam.SUKO)) {
             assertAttachment(
                 newAttachmentSv,
-                dtoOut.attachmentSv
+                dtoOut.attachmentSv!!
             )
         }
 
@@ -196,7 +196,7 @@ class CertificateControllerTest : CertificateRequests() {
 
         when (createdCertificate) {
             is LdCertificateDtoOut, is PuhviCertificateDtoOut -> {
-                req(createdCertificate.attachmentSv.fileKey)
+                req(createdCertificate.attachmentSv!!.fileKey)
             }
         }
     }

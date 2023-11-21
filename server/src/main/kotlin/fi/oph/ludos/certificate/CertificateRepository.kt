@@ -256,50 +256,65 @@ class CertificateRepository(
         )
     }
 
-    fun mapResultSetLd(rs: ResultSet, exam: Exam) = LdCertificateDtoOut(
-        id = rs.getInt("certificate_id"),
-        nameFi = rs.getString("certificate_name_fi"),
-        nameSv = rs.getString("certificate_name_sv"),
-        publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
-        attachmentFi = CertificateAttachmentDtoOut(
-            rs.getString("attachment_file_key_fi"),
-            rs.getString("attachment_file_name_fi"),
-            rs.getTimestamp("attachment_upload_date_fi")
-        ),
-        attachmentSv = CertificateAttachmentDtoOut(
-            rs.getString("attachment_file_key_sv"),
-            rs.getString("attachment_file_name_sv"),
-            rs.getTimestamp("attachment_upload_date_sv")
-        ),
-        authorOid = rs.getString("certificate_author_oid"),
-        createdAt = rs.getTimestamp("certificate_created_at"),
-        updatedAt = rs.getTimestamp("certificate_updated_at"),
-        aineKoodiArvo = rs.getString("ld_certificate_aine_koodi_arvo"),
-        exam = exam
-    )
+    fun mapResultSetLd(rs: ResultSet, exam: Exam): LdCertificateDtoOut {
+        val attachmentFileKeySv = rs.getString("attachment_file_key_sv")
+        val attachmentSv = if (attachmentFileKeySv != null) {
+            CertificateAttachmentDtoOut(
+                attachmentFileKeySv,
+                rs.getString("attachment_file_name_sv"),
+                rs.getTimestamp("attachment_upload_date_sv")
+            )
+        } else null
 
-    fun mapResultSetPuhvi(rs: ResultSet, exam: Exam) = PuhviCertificateDtoOut(
-        id = rs.getInt("certificate_id"),
-        nameFi = rs.getString("certificate_name_fi"),
-        nameSv = rs.getString("certificate_name_sv"),
-        publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
-        attachmentFi = CertificateAttachmentDtoOut(
-            rs.getString("attachment_file_key_fi"),
-            rs.getString("attachment_file_name_fi"),
-            rs.getTimestamp("attachment_upload_date_fi")
-        ),
-        attachmentSv = CertificateAttachmentDtoOut(
-            rs.getString("attachment_file_key_sv"),
-            rs.getString("attachment_file_name_sv"),
-            rs.getTimestamp("attachment_upload_date_sv")
-        ),
-        authorOid = rs.getString("certificate_author_oid"),
-        createdAt = rs.getTimestamp("certificate_created_at"),
-        updatedAt = rs.getTimestamp("certificate_updated_at"),
-        descriptionFi = rs.getString("puhvi_certificate_description_fi"),
-        descriptionSv = rs.getString("puhvi_certificate_description_sv"),
-        exam = exam
-    )
+        return LdCertificateDtoOut(
+            id = rs.getInt("certificate_id"),
+            nameFi = rs.getString("certificate_name_fi"),
+            nameSv = rs.getString("certificate_name_sv"),
+            publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
+            attachmentFi = CertificateAttachmentDtoOut(
+                rs.getString("attachment_file_key_fi"),
+                rs.getString("attachment_file_name_fi"),
+                rs.getTimestamp("attachment_upload_date_fi")
+            ),
+            attachmentSv = attachmentSv,
+            authorOid = rs.getString("certificate_author_oid"),
+            createdAt = rs.getTimestamp("certificate_created_at"),
+            updatedAt = rs.getTimestamp("certificate_updated_at"),
+            aineKoodiArvo = rs.getString("ld_certificate_aine_koodi_arvo"),
+            exam = exam
+        )
+    }
+
+
+    fun mapResultSetPuhvi(rs: ResultSet, exam: Exam): PuhviCertificateDtoOut {
+        val attachmentFileKeySv = rs.getString("attachment_file_key_sv")
+        val attachmentSv = if (attachmentFileKeySv != null) {
+            CertificateAttachmentDtoOut(
+                attachmentFileKeySv,
+                rs.getString("attachment_file_name_sv"),
+                rs.getTimestamp("attachment_upload_date_sv")
+            )
+        } else null
+
+        return PuhviCertificateDtoOut(
+            id = rs.getInt("certificate_id"),
+            nameFi = rs.getString("certificate_name_fi"),
+            nameSv = rs.getString("certificate_name_sv"),
+            publishState = PublishState.valueOf(rs.getString("certificate_publish_state")),
+            attachmentFi = CertificateAttachmentDtoOut(
+                rs.getString("attachment_file_key_fi"),
+                rs.getString("attachment_file_name_fi"),
+                rs.getTimestamp("attachment_upload_date_fi")
+            ),
+            attachmentSv = attachmentSv,
+            authorOid = rs.getString("certificate_author_oid"),
+            createdAt = rs.getTimestamp("certificate_created_at"),
+            updatedAt = rs.getTimestamp("certificate_updated_at"),
+            descriptionFi = rs.getString("puhvi_certificate_description_fi"),
+            descriptionSv = rs.getString("puhvi_certificate_description_sv"),
+            exam = exam
+        )
+    }
 
     fun getCertificateById(id: Int, exam: Exam): CertificateOut? {
         val role = Kayttajatiedot.fromSecurityContext().role
@@ -330,7 +345,7 @@ class CertificateRepository(
                 FROM ld_certificate AS c
                 JOIN
                     certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
-                JOIN
+                LEFT JOIN
                     certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
                 WHERE c.certificate_id = ? ${publishStateFilter(role)}
             """.trimIndent(), ::mapResultSetLd
@@ -349,7 +364,7 @@ class CertificateRepository(
                 FROM puhvi_certificate AS c
                 JOIN
                     certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
-                JOIN
+                LEFT JOIN
                     certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
                 WHERE c.certificate_id = ? ${publishStateFilter(role)}
             """.trimIndent(), ::mapResultSetPuhvi
@@ -409,7 +424,7 @@ class CertificateRepository(
                 FROM ld_certificate AS c
                 JOIN
                     certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
-                JOIN
+                LEFT JOIN
                     certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
                 WHERE true ${publishStateFilter(role)}
                 ORDER BY c.certificate_updated_at $orderDirection
@@ -429,7 +444,7 @@ class CertificateRepository(
                 FROM puhvi_certificate AS c
                 JOIN
                     certificate_attachment AS a_fi ON c.attachment_file_key_fi = a_fi.attachment_file_key
-                JOIN
+                LEFT JOIN
                     certificate_attachment AS a_sv ON c.attachment_file_key_sv = a_sv.attachment_file_key
                 WHERE true ${publishStateFilter(role)}
                 ORDER BY c.certificate_updated_at $orderDirection
@@ -538,38 +553,23 @@ class CertificateRepository(
             )
         }
 
+    private fun createNewAttachmentIfPresent(attachment: MultipartFile?): String? =
+        attachment?.let { createAttachment(it).fileKey }
 
-    private fun findCurrentAttachments(
+    private fun getCurrentOrNewAttachmentKeys(
         certificateOut: CertificateOut,
         vararg attachments: MultipartFile?
-    ): List<String> {
-        val attachmentKeys = when (certificateOut) {
-            is SukoCertificateDtoOut -> {
-                listOf(attachments.getOrNull(0)?.let { createAttachment(it).fileKey }
-                    ?: certificateOut.attachmentFi.fileKey)
-            }
+    ): List<String> = when (certificateOut) {
+        is SukoCertificateDtoOut -> listOf(
+            createNewAttachmentIfPresent(attachments.getOrNull(0)) ?: certificateOut.attachmentFi.fileKey
+        )
 
-            is LdCertificateDtoOut -> {
-                listOf(
-                    attachments.getOrNull(0)?.let { createAttachment(it).fileKey }
-                        ?: certificateOut.attachmentFi.fileKey,
-                    attachments.getOrNull(1)?.let { createAttachment(it).fileKey }
-                        ?: certificateOut.attachmentSv.fileKey
-                )
-            }
+        is LdCertificateDtoOut, is PuhviCertificateDtoOut -> listOfNotNull(
+            createNewAttachmentIfPresent(attachments.getOrNull(0)) ?: certificateOut.attachmentFi.fileKey,
+            createNewAttachmentIfPresent(attachments.getOrNull(1)) ?: certificateOut.attachmentSv?.fileKey
+        )
 
-            is PuhviCertificateDtoOut -> {
-                listOf(
-                    attachments.getOrNull(0)?.let { createAttachment(it).fileKey }
-                        ?: certificateOut.attachmentFi.fileKey,
-                    attachments.getOrNull(1)?.let { createAttachment(it).fileKey }
-                        ?: certificateOut.attachmentSv.fileKey
-                )
-            }
-
-            else -> throw IllegalArgumentException("Invalid certificate type")
-        }
-        return attachmentKeys
+        else -> throw IllegalArgumentException("Invalid certificate type")
     }
 
     fun updateCertificate(
@@ -581,7 +581,7 @@ class CertificateRepository(
         val certificateOut: CertificateOut = getCertificateById(id, certificateDtoIn.exam)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Certificate $id not found")
 
-        val attachmentKeys = findCurrentAttachments(certificateOut, *attachments)
+        val attachmentKeys = getCurrentOrNewAttachmentKeys(certificateOut, *attachments)
 
         val updatedRowCount = updateCertificateRow(attachmentKeys)
 
@@ -599,21 +599,12 @@ class CertificateRepository(
                     deleteAttachment(it.attachmentFi.fileKey)
                 }
 
-                is LdCertificateDtoOut -> {
+                is LdCertificateDtoOut, is PuhviCertificateDtoOut -> {
                     attachments.getOrNull(0)?.also { _ ->
                         deleteAttachment(it.attachmentFi.fileKey)
                     }
                     attachments.getOrNull(1)?.also { _ ->
-                        deleteAttachment(it.attachmentSv.fileKey)
-                    }
-                }
-
-                is PuhviCertificateDtoOut -> {
-                    attachments.getOrNull(0)?.also { _ ->
-                        deleteAttachment(it.attachmentFi.fileKey)
-                    }
-                    attachments.getOrNull(1)?.also { _ ->
-                        deleteAttachment(it.attachmentSv.fileKey)
+                        it.attachmentSv?.let { file -> deleteAttachment(file.fileKey) }
                     }
                 }
 
