@@ -10,3 +10,12 @@ export const IS_MOBILE_QUERY = `screen and (max-width: ${MOBILE_BREAKPOINT})`
 export const TIETOSUOJA_SELOSTE_URL = 'https://opintopolku.fi/konfo/fi/sivu/tietosuojaselosteet-ja-evasteet'
 export const DOWNLOAD_CERTIFICATE_ATTACHMENT_URL = `${CERTIFICATE_URL}/attachment`
 export const DOWNLOAD_INSTRUCTION_ATTACHMENT_URL = `${INSTRUCTION_URL}/attachment`
+
+export function virkailijanOpintopolkuUrl() {
+  if (window?.location?.hostname?.match(/^ludos\.[^.]*opintopolku\.fi$/)) {
+    const virkailijaHostname = window.location.hostname.replace(/^ludos\./, 'virkailija.')
+    return `https://${virkailijaHostname}/`
+  } else {
+    return 'https://virkailija.opintopolku.fi/'
+  }
+}

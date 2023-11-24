@@ -42,6 +42,8 @@ export type Icons =
   | 'suosikki'
   | 'chevronLeft'
   | 'chevronRight'
+  | 'logout'
+  | 'check'
 
 const icons: Record<Icons, string> = {
   ['koetehtavat']: 'assignment',
@@ -52,6 +54,7 @@ const icons: Record<Icons, string> = {
   ['poista']: 'delete',
   ['muokkaa']: 'edit',
   ['onnistunut']: 'check_circle',
+  ['check']: 'check',
   ['virheellinen']: 'error',
   ['ostoskori']: 'shopping_basket',
   ['lisää']: 'add',
@@ -74,7 +77,8 @@ const icons: Record<Icons, string> = {
   ['link']: 'link',
   ['suosikki']: 'favorite',
   ['chevronLeft']: 'chevron_left',
-  ['chevronRight']: 'chevron_right'
+  ['chevronRight']: 'chevron_right',
+  ['logout']: 'logout'
 }
 
 export const Icon = ({ name, color, disabled = false, isActive = false, size, dataTestId, customClass }: IconProps) => {
