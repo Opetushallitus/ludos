@@ -281,8 +281,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const nameFiError = errors.nameFi?.message as string
   const nameSvError = errors.nameSv?.message as string
 
-  const hasFiError = nameFiError
-  const hasSvError = nameSvError
+  const hasFiError = nameFiError || instructionNameError
+  const hasSvError = nameSvError || instructionNameError
 
   const handleContentChange = (newContent: string) => {
     if (activeTab === 'fi') {
