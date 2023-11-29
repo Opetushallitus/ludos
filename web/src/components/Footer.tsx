@@ -1,7 +1,7 @@
 import logo from 'web/assets/oph_fin_vaaka.png'
 import { ExternalLink } from './ExternalLink'
 import { InternalLink } from './InternalLink'
-import { OPH_URL, TIETOSUOJA_SELOSTE_URL } from '../constants'
+import { OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
 import { useTranslation } from 'react-i18next'
 import { feedbackPath } from './LudosRoutes'
 
@@ -23,12 +23,15 @@ export const Footer = ({ isPresentation }: FooterProps) => {
         </div>
         {!isPresentation && (
           <>
-            <span className="hidden md:flex md:w-2/12 md:flex-col" />
-            <div className="mt-3 flex w-1/2 flex-col text-center md:w-2/12 md:text-left">
+            <span className="hidden md:flex md:w-1/12 md:flex-col" />
+            <div className="mt-3 flex w-1/3 flex-col text-center md:w-2/12 md:text-left">
               <InternalLink to={feedbackPath()}>{t('footer.palaute')}</InternalLink>
             </div>
-            <div className="mt-3 flex w-1/2 flex-col text-center md:w-3/12 md:text-left">
+            <div className="mt-3 flex w-1/3 flex-col text-center md:w-2/12 md:text-left">
               <ExternalLink url={TIETOSUOJA_SELOSTE_URL}>{t('footer.tietosuoja')}</ExternalLink>
+            </div>
+            <div className="mt-3 flex w-1/3 flex-col text-center md:w-2/12 md:text-left">
+              <ExternalLink url={virkailijanOpintopolkuUrl()}>{t('common.virkailijan-opintopolku')}</ExternalLink>
             </div>
           </>
         )}

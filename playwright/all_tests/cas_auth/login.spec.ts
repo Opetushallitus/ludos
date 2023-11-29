@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '.env' })
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 const casLoginUrl =
   'https://virkailija.untuvaopintopolku.fi/cas/login?service=http%3A%2F%2Flocalhost%3A8080%2Fj_spring_cas_security_check'
@@ -19,7 +19,7 @@ test('yllapitaja can login and logout', async ({ page }) => {
   await page.locator('input[type=submit]').click()
   await expect(page.getByTestId('page-heading-etusivu')).toContainText('Hei Ludos, tervetuloa LUDOS-palveluun!')
 
-  await page.getByTestId('header-user-dropdown-expand').click()
+  await page.getByTestId('user-menu-expand').click()
   await page.getByTestId('logout-button').click()
   await page.waitForURL(casLoginUrl)
 })
