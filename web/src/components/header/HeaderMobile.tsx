@@ -7,6 +7,8 @@ import { HeaderFavorites } from './HeaderFavorites'
 import { LudosContext } from '../../contexts/LudosContext'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
+import { HeaderApplicationMenu } from './HeaderApplicationMenu'
+import { HeaderLogoutButton } from './HeaderLogoutButton'
 
 export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
   const { LANGUAGE_DROPDOWN, t } = useLudosTranslation()
@@ -69,6 +71,9 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                     </Button>
                   </div>
                 </div>
+
+                <HeaderApplicationMenu showBorder />
+                <HeaderLogoutButton />
               </nav>
             </div>
           </div>
