@@ -125,7 +125,6 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
               <InstructionCard
                 teachingLanguage={teachingLanguage}
                 instruction={instruction}
-                exam={exam}
                 key={`${exam}-${contentType}-${i}`}
               />
             ))}

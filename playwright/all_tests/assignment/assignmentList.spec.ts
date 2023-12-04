@@ -1,7 +1,8 @@
-import { expect, Page, test } from '@playwright/test'
-import { loginTestGroup, Role, setMultiSelectDropdownOptions, setSingleSelectDropdownOption } from '../../helpers'
-import { checkListAfterFiltering, filterTestAssignmentName } from './assignmentHelpers'
+import { expect, test } from '@playwright/test'
+import { loginTestGroup, Role, setMultiSelectDropdownOptions } from '../../helpers'
+import { filterTestAssignmentName } from './assignmentHelpers'
 import { Exam, TeachingLanguage } from 'web/src/types'
+import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
@@ -11,53 +12,51 @@ test.describe('Assignment filter tests', () => {
     await page.goto('/api/test/seedAssignmentsForFilterTest')
   })
 
-  const sukoUnfilteredStartPageCheck = async (page: Page, order: 'asc' | 'desc' = 'desc') => {
-    const arr =
-      order === 'desc'
-        ? Array.from({ length: 20 }, (_, i) => 24 - i) // from 25 to 5
-        : Array.from({ length: 20 }, (_, i) => i + 1) // from 1 to 20
+  const sukoUnfilteredStartPageCheck =
+    (contentList: AssignmentContentListModel) =>
+    async (order: 'asc' | 'desc' = 'desc') => {
+      const arr =
+        order === 'desc'
+          ? Array.from({ length: 20 }, (_, i) => 24 - i) // from 25 to 5
+          : Array.from({ length: 20 }, (_, i) => i + 1) // from 1 to 20
 
-    return await checkListAfterFiltering(page, Exam.SUKO, arr)
-  }
+      return await contentList.checkListAfterFiltering(arr)
+    }
 
   test('suko', async ({ page }) => {
-    await page.goto('/suko/koetehtavat')
+    const contentList = new AssignmentContentListModel(page, Exam.SUKO)
+    await contentList.goto()
 
-    await expect(page.getByTestId('page-button-1')).toBeVisible()
-    await expect(page.getByTestId('page-button-2')).toBeVisible()
+    await expect(contentList.pageButton1).toBeVisible()
+    await expect(contentList.pageButton2).toBeVisible()
+
+    const assertStartPage = sukoUnfilteredStartPageCheck(contentList)
 
     // assert ordering asc and desc works
-    await setSingleSelectDropdownOption(page, 'orderFilter', 'asc')
-    await sukoUnfilteredStartPageCheck(page, 'asc')
-    await setSingleSelectDropdownOption(page, 'orderFilter', 'desc')
-    await sukoUnfilteredStartPageCheck(page)
+    await contentList.setOrder('asc')
+    await assertStartPage('asc')
+    await contentList.setOrder('desc')
+    await assertStartPage()
     // assert pagination button states
-    await expect(page.getByTestId('previous-page')).toBeDisabled()
-    await page.getByTestId('next-page').click()
-    await expect(page.getByTestId('next-page')).toBeDisabled()
-    await expect(page.getByTestId('previous-page')).toBeEnabled()
+    await expect(contentList.previousPageButton).toBeDisabled()
+    await contentList.nextPageButton.click()
+    await expect(contentList.nextPageButton).toBeDisabled()
+    await expect(contentList.previousPageButton).toBeEnabled()
 
-    await checkListAfterFiltering(page, Exam.SUKO, [4, 3, 2, 1])
+    await contentList.checkListAfterFiltering([4, 3, 2, 1])
 
-    await page.getByTestId('page-button-1').click()
+    await contentList.pageButton1.click()
 
-    await sukoUnfilteredStartPageCheck(page)
+    await assertStartPage()
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1', 'VKA1.RA'])
     await setMultiSelectDropdownOptions(page, 'contentTypeFilter', ['003']) // keskustelu
     await setMultiSelectDropdownOptions(page, 'aiheFilter', ['013']) // pohjoismaat
-    await checkListAfterFiltering(page, Exam.SUKO, [20, 8])
 
-    // await page.locator('#tavoitetaitotaso-input').fill('b1')
-    // await page.getByTestId('tavoitetaitotaso').click()
-    // B1.1
-    // await page.getByTestId('tavoitetaitotaso-option-0007').click()
-    // // B1.2
-    // await page.getByTestId('tavoitetaitotaso-option-0008').click()
-
+    await contentList.checkListAfterFiltering([20, 8])
     // refresh page to make sure filters stay
     await page.reload()
-    await checkListAfterFiltering(page, Exam.SUKO, [20, 8])
+    await contentList.checkListAfterFiltering([20, 8])
 
     await page.getByRole('link', { name: filterTestAssignmentName(20, TeachingLanguage.fi, Exam.SUKO) }).click()
     await expect(page.getByTestId('assignment-header')).toHaveText(
@@ -66,46 +65,47 @@ test.describe('Assignment filter tests', () => {
     await page.getByTestId('return').click()
 
     // make sure filters stay when returning from an assignment
-    await checkListAfterFiltering(page, Exam.SUKO, [20, 8])
-
+    await contentList.checkListAfterFiltering([20, 8])
     // remove selections from assignmentType filter
     await page.getByTestId('contentTypeFilter-reset-selected-options').click()
-    await checkListAfterFiltering(page, Exam.SUKO, [20, 19, 8])
+    await contentList.checkListAfterFiltering([20, 19, 8])
   })
 
   test('suko oppimaaras', async ({ page }) => {
-    await page.goto('/suko/koetehtavat')
+    const contentList = new AssignmentContentListModel(page, Exam.SUKO)
+    await contentList.goto()
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1'])
-    await checkListAfterFiltering(page, Exam.SUKO, [20, 19, 9, 8])
+    await contentList.checkListAfterFiltering([20, 19, 9, 8])
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1.RA'])
-    await checkListAfterFiltering(page, Exam.SUKO, [19, 8])
+    await contentList.checkListAfterFiltering([19, 8])
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1.SA'])
-    await checkListAfterFiltering(page, Exam.SUKO, [20, 9])
+    await contentList.checkListAfterFiltering([20, 9])
   })
 
   test('ld', async ({ page }) => {
-    await page.goto('/ld/koetehtavat')
+    const contentList = new AssignmentContentListModel(page, Exam.LD)
+    await contentList.goto()
 
     await setMultiSelectDropdownOptions(page, 'lukuvuosiFilter', ['20202021'])
     await setMultiSelectDropdownOptions(page, 'aineFilter', ['6']) // musiikki
-    await checkListAfterFiltering(page, Exam.LD, [5])
+    await contentList.checkListAfterFiltering([5])
 
     await page.getByRole('link', { name: filterTestAssignmentName(5, TeachingLanguage.fi, Exam.LD) }).click()
     await expect(page.getByTestId('assignment-header')).toHaveText(
       filterTestAssignmentName(5, TeachingLanguage.fi, Exam.LD)
     )
-    await page.getByTestId('return').click()
   })
 
   test('puhvi', async ({ page }) => {
-    await page.goto('/puhvi/koetehtavat')
+    const contentList = new AssignmentContentListModel(page, Exam.PUHVI)
+    await contentList.goto()
 
     await setMultiSelectDropdownOptions(page, 'lukuvuosiFilter', ['20242025'])
     await setMultiSelectDropdownOptions(page, 'tehtavatyyppiPuhviFilter', ['002']) // esiintymistaidot
-    await checkListAfterFiltering(page, Exam.PUHVI, [18, 8])
+    await contentList.checkListAfterFiltering([18, 8])
 
     await page.getByRole('link', { name: filterTestAssignmentName(8, TeachingLanguage.fi, Exam.PUHVI) }).click()
     await expect(page.getByTestId('assignment-header')).toHaveText(

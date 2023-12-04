@@ -620,7 +620,6 @@ class AssignmentControllerTest : AssignmentRequests() {
         Assertions.assertTrue(noneHaveMatchingId, "No assignments should have the ID of the deleted one")
     }
 
-
     @Test
     @WithYllapitajaRole
     fun `test valid html`() {

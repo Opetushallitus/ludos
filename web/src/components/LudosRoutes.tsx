@@ -13,7 +13,6 @@ import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from './Spinner'
 import { Frontpage } from './frontpage/Frontpage'
-import ContentListPage from './content/list/ContentListPage'
 import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
 import { AssignmentFavorite } from './content/list/assignment/AssignmentFavorite'
@@ -49,6 +48,7 @@ const Content = lazy(() => import('./content/Content'))
 const AssignmentForm = lazy(() => import('./forms/AssignmentForm'))
 const InstructionForm = lazy(() => import('./forms/InstructionForm'))
 const CertificateForm = lazy(() => import('./forms/CertificateForm'))
+const ContentListPage = lazy(() => import('./content/list/ContentListPage'))
 
 const SpinnerSuspense = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<Spinner className="mt-32 text-center" />}>{children}</Suspense>
@@ -188,7 +188,9 @@ function examRoute(exam: Exam): RouteObject {
         path: ':contentType',
         element: (
           <Layout>
-            <ContentListPage exam={exam} />
+            <SpinnerSuspense>
+              <ContentListPage exam={exam} />
+            </SpinnerSuspense>
           </Layout>
         )
       },

@@ -1,20 +1,36 @@
 const { MOBILE_BREAKPOINT, LARGE_SCREEN_BREAKPOINT } = require('./src/constants.ts')
+const colors = require('./src/colors.ts')
+
 /** @type {import('tailwindcss').Config} */
 const tailwindConfig = {
-  content: ['./src/**/*.{ts,tsx}'], theme: {
+  content: ['./src/**/*.{ts,tsx}'],
+  theme: {
     colors: {
-      green: { primary: '#3A7A10', light: '#5BCA13' }, gray: {
-        primary: '#4B4B4B',
-        secondary: '#808080',
-        light: '#E8E9EC',
-        bg: '#F5F7F9',
-        separator: '#DBE2E9',
-        active: '#DADADA',
-        border: '#B2B2B2'
-      }, black: '#000000', white: '#FFFFFF', yellow: '#FFD900', red: { primary: '#CC3300', light: '#FF4D4D' }
-    }, screens: {
+      green: {
+        primary: colors.greenPrimary,
+        light: colors.greenLight
+      },
+      gray: {
+        primary: colors.grayPrimary,
+        secondary: colors.graySecondary,
+        light: colors.grayLight,
+        bg: colors.grayBg,
+        separator: colors.graySeparator,
+        active: colors.grayActive,
+        border: colors.grayBorder
+      },
+      black: colors.black,
+      white: colors.white,
+      yellow: colors.yellow,
+      red: {
+        primary: colors.redPrimary,
+        light: colors.redLight
+      }
+    },
+    screens: {
       'md': MOBILE_BREAKPOINT, 'lg': LARGE_SCREEN_BREAKPOINT
-    }, fontSize: {
+    },
+    fontSize: {
       xss: ['11px', '21px'],
       xs: ['13px', '18px'],
       sm: ['16px', '22px'],
@@ -24,13 +40,15 @@ const tailwindConfig = {
       h1: ['1.5rem', '1.875rem'],
       h2: ['1.375rem', '1.75rem'],
       h3: ['1.25rem', '1.625rem'],
-      h4: ['1rem', '1.375rem'],
-    }, extend: {
+      h4: ['1rem', '1.375rem']
+    },
+    extend: {
       borderWidth: {
-        '5': '5px', '6': '6px'
+        '5': '5px',
+        '6': '6px'
       }
     }
-  }, plugins: []
+  }
 }
 
 module.exports = tailwindConfig

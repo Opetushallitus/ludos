@@ -9,22 +9,16 @@ import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
 import { esitysnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
+import { lazy, Suspense } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: TeachingLanguage
-  setTeachingLanguage: (teachingLanguage: TeachingLanguage) => void
   data: BaseOut
   contentType: ContentType
   isPresentation: boolean
 }
 
-export function ContentHeader({
-  data,
-  teachingLanguage,
-  setTeachingLanguage,
-  contentType,
-  isPresentation
-}: ContentHeaderProps) {
+export function ContentHeader({ data, teachingLanguage, contentType, isPresentation }: ContentHeaderProps) {
   const { t, lt } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
@@ -42,7 +36,7 @@ export function ContentHeader({
         )}
         <div className="row">
           <h2 className="w-full md:w-1/2" data-testid="assignment-header">
-            {getContentName(data, contentType, teachingLanguage) || t('form.nimeton')}
+            {getContentName(data, teachingLanguage) || t('form.nimeton')}
           </h2>
         </div>
       </div>
@@ -65,7 +59,7 @@ function ContentActionButton({
   contentId: number
   contentAction: ContentAction
   isActive?: boolean
-  onClickHandler?: () => void
+  onClickHandler?: (actionName: string) => void
 }) {
   const className = 'flex gap-1 items-center'
   const testId = `assignment-action-${actionName}`
@@ -90,7 +84,7 @@ function ContentActionButton({
       <Button
         variant="buttonGhost"
         customClass="p-0 flex items-center pr-3"
-        onClick={onClickHandler}
+        onClick={() => onClickHandler?.(actionName)}
         data-testid={`assignment-${contentId.toString()}-${iconName}`}>
         {children}
       </Button>
@@ -98,16 +92,18 @@ function ContentActionButton({
   }
 }
 
-export function ContentActionRow({
-  contentId,
-  isFavorite,
-  onClickHandler
-}: {
+const PDFDownloadButton = lazy(() => import('./pdf/PdfDownloadButton'))
+
+type ContentActionRowProps = {
   contentId: number
   isFavorite?: boolean
-  onClickHandler?: () => void
-}) {
+  onFavoriteClick?: () => void
+  pdfData?: { baseOut: BaseOut; language: TeachingLanguage }
+}
+
+export function ContentActionRow({ contentId, isFavorite, onFavoriteClick, pdfData }: ContentActionRowProps) {
   const { t } = useTranslation()
+
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
       <ContentActionButton
@@ -120,15 +116,17 @@ export function ContentActionRow({
         }}
         key="uusi-valilehti"
       />
-      <ContentActionButton
-        contentId={contentId}
-        contentAction={{
-          actionName: 'lataa-pdf',
-          iconName: 'pdf',
-          text: t('assignment.lataapdf')
-        }}
-        key="pdf"
-      />
+      {pdfData && (
+        <Suspense
+          fallback={
+            <Button variant="buttonGhost" customClass="p-0 flex items-center pr-3" disabled>
+              <Icon name="pdf" color="text-green-primary" />
+              <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
+            </Button>
+          }>
+          <PDFDownloadButton baseOut={pdfData.baseOut} language={pdfData.language} />
+        </Suspense>
+      )}
       {isFavorite !== undefined && (
         <ContentActionButton
           contentId={contentId}
@@ -137,7 +135,7 @@ export function ContentActionRow({
             iconName: 'suosikki',
             text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
           }}
-          onClickHandler={onClickHandler}
+          onClickHandler={onFavoriteClick}
           isActive={isFavorite}
           key="suosikki"
         />

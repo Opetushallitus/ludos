@@ -141,12 +141,12 @@ export const mapPromiseAll =
   (args: T[]) =>
     Promise.all(args.map(fn))
 
-export function createFilePath(filename: string) {
+export function createFilePathToFixtures(filename: string) {
   return path.resolve(__dirname, `../server/src/main/resources/fixtures/${filename}`)
 }
 
 export async function selectAttachmentFile(page: Page, file: string, locator: Locator, canBeOpened: boolean = false) {
-  const filePath = createFilePath(file)
+  const filePath = createFilePathToFixtures(file)
 
   await locator.setInputFiles(filePath)
 

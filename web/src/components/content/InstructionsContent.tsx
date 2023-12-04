@@ -5,7 +5,7 @@ import {
   SukoOrPuhviInstructionDtoOut,
   TeachingLanguage
 } from '../../types'
-import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
+import { ContentActionRow, ContentContent } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
 import { Fragment } from 'react'
@@ -31,7 +31,7 @@ export const InstructionContent = ({ instruction, teachingLanguage, isPresentati
   return (
     <>
       {!isPresentation && (
-        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2">
+        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light">
           {isLdInstruction(instruction, Exam.LD) && (
             <ul>
               <li>
@@ -42,14 +42,15 @@ export const InstructionContent = ({ instruction, teachingLanguage, isPresentati
               </li>
             </ul>
           )}
-          <ContentActionRow contentId={instruction.id} />
+          <ContentActionRow
+            contentId={instruction.id}
+            pdfData={{
+              baseOut: instruction,
+              language: teachingLanguage
+            }}
+          />
         </div>
       )}
-      <ContentInstruction
-        teachingLanguage={teachingLanguage}
-        instructionFi={instruction.instructionFi}
-        instructionSv={instruction.instructionSv}
-      />
 
       {!isLdInstruction(instruction, Exam.LD) && (
         <>

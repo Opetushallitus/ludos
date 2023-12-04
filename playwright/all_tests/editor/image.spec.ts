@@ -2,7 +2,7 @@ import test, { expect, Page } from '@playwright/test'
 import {
   assertFailureNotification,
   assertSuccessNotification,
-  createFilePath,
+  createFilePathToFixtures,
   loginTestGroup,
   Role
 } from '../../helpers'
@@ -69,7 +69,7 @@ test.describe(`Test image embedding in rich text editor`, () => {
   })
 
   test('can create instruction with image embedded and update its attributes', async () => {
-    await createInstructionWithImage(form, createFilePath('test-image.png'))
+    await createInstructionWithImage(form, createFilePathToFixtures('test-image.png'))
     await updateImageAttributes(form)
   })
 
@@ -77,7 +77,7 @@ test.describe(`Test image embedding in rich text editor`, () => {
     await expect(form.heading).toBeVisible()
     await form.fillMinimalInstructionForm()
 
-    await form.contentFiEditor.imageFileInput.setInputFiles(createFilePath('this-will-fail.png'))
+    await form.contentFiEditor.imageFileInput.setInputFiles(createFilePathToFixtures('this-will-fail.png'))
     await assertFailureNotification(form.page, 'error.lataaminen-epaonnistui')
   })
 })
