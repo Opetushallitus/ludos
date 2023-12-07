@@ -1,5 +1,4 @@
 import { HeaderDropdown } from './HeaderDropdown'
-import { LOGOUT_URL, virkailijanOpintopolkuUrl } from '../../constants'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useContext, useState } from 'react'
@@ -10,7 +9,8 @@ import { HeaderPage } from './Header'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
 import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
-import { ExternalLink } from '../ExternalLink'
+import { HeaderApplicationMenu } from './HeaderApplicationMenu'
+import { HeaderLogoutButton } from './HeaderLogoutButton'
 
 type HeaderDesktopProps = {
   pages: HeaderPage[]
@@ -46,31 +46,8 @@ export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
               </Button>
               {showMenu && (
                 <div className="absolute right-0 mt-2 w-max pr-3 rounded border border-gray-border bg-white">
-                  <div className="pl-4 py-2" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                    <p className="font-semibold">{t('header.vaihda-sovellusta')}</p>
-                  </div>
-                  <div className="row gap-2 items-center pl-4" role="menuitem">
-                    <span className="flex items-center w-4">
-                      <Icon name="check" size="lg" color="text-black" />
-                    </span>
-                    <p>{t('title.ludos')}</p>
-                  </div>
-                  <div className="row gap-2 items-center pl-4" role="menuitem">
-                    <span className="w-4" />
-                    <ExternalLink
-                      url={virkailijanOpintopolkuUrl()}
-                      className="py-2"
-                      openInNewTab={false}
-                      data-testid="footer-virkailijan-opintopolku-link">
-                      {t('common.virkailijan-opintopolku')}
-                    </ExternalLink>
-                  </div>
-                  <div className="row gap-2 items-center border-t border-gray-separator mt-2 px-4">
-                    <Icon name="logout" color="text-green-primary" size="lg" />
-                    <ExternalLink url={LOGOUT_URL} className="py-2" openInNewTab={false} data-testid="logout-button">
-                      {t('common.kirjaudu-ulos')}
-                    </ExternalLink>
-                  </div>
+                  <HeaderApplicationMenu />
+                  <HeaderLogoutButton />
                 </div>
               )}
               <p className="text-xss" data-testid="header-user-role">
