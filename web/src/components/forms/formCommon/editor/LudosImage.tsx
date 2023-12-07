@@ -71,7 +71,7 @@ function ImageNode({ node, updateAttributes, editor, selected }: NodeViewProps) 
                   data-testid="image-alt-input"
                 />
               </div>
-              <legend className="font-semibold">{t('file.koko')}</legend>
+              <legend className="font-semibold">{t('file.label.koko')}</legend>
               <div className="row gap-3 w-full py-1">
                 {sizeOptions.map((sizeValue, i) => (
                   <fieldset key={i}>
@@ -90,7 +90,7 @@ function ImageNode({ node, updateAttributes, editor, selected }: NodeViewProps) 
                   </fieldset>
                 ))}
               </div>
-              <legend className="mb-2 font-semibold">{t('file.asemointi')}</legend>
+              <legend className="mb-2 font-semibold">{t('file.label.asemointi')}</legend>
               <div className="row gap-5 w-full">
                 {alignOptions.map((alignValue, i) => (
                   <fieldset key={i}>
