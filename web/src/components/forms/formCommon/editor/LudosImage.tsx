@@ -1,29 +1,22 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { NodeViewProps, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react'
-import { useTranslation } from 'react-i18next'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import './tiptapStyles.css'
 import { mergeAttributes, Node } from '@tiptap/core'
 import i18n from 'i18next'
 import { ImageAlignOption, ImageSizeOption } from '../../../../types'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
-const sizeOptions: { label: string; value: ImageSizeOption }[] = [
-  { label: 'file.koko.alkuperainen', value: 'original' },
-  { label: 'file.koko.suuri', value: 'large' },
-  { label: 'file.koko.pieni', value: 'small' }
-]
+const sizeOptions: ImageSizeOption[] = ['original', 'large', 'small']
 
-const alignOptions: { label: string; value: ImageAlignOption }[] = [
-  { label: 'file.asemointi.ei-mitaan', value: 'left' },
-  { label: 'file.asemointi.keskitetty', value: 'center' }
-]
+const alignOptions: ImageAlignOption[] = ['left', 'center']
 
 const t = i18n.t
 
 function ImageNode({ node, updateAttributes, editor, selected }: NodeViewProps) {
-  const { t } = useTranslation()
+  const { lt, t } = useLudosTranslation()
   const { src, alt, class: imgClass } = node.attrs
   const [align, setAlign] = useState<ImageAlignOption>(getAlign)
   const [size, setSize] = useState<ImageSizeOption>(getSize)
@@ -80,38 +73,38 @@ function ImageNode({ node, updateAttributes, editor, selected }: NodeViewProps) 
               </div>
               <legend className="font-semibold">{t('file.koko')}</legend>
               <div className="row gap-3 w-full py-1">
-                {sizeOptions.map(({ value, label }, i) => (
+                {sizeOptions.map((sizeValue, i) => (
                   <fieldset key={i}>
                     <input
                       type="radio"
-                      value={value}
-                      checked={value === size}
-                      onChange={() => setSizeClass(value)}
-                      id={`${value}-${src}`}
-                      data-testid={`image-size-radio-${value}`}
+                      value={sizeValue}
+                      checked={sizeValue === size}
+                      onChange={() => setSizeClass(sizeValue)}
+                      id={`${sizeValue}-${src}`}
+                      data-testid={`image-size-radio-${sizeValue}`}
                       className="mr-1 hover:cursor-pointer"
                     />
-                    <label className="hover:cursor-pointer" htmlFor={`${value}-${src}`}>
-                      {label}
+                    <label className="hover:cursor-pointer" htmlFor={`${sizeValue}-${src}`}>
+                      {lt.tiptapImageSizeOptions[sizeValue]}
                     </label>
                   </fieldset>
                 ))}
               </div>
               <legend className="mb-2 font-semibold">{t('file.asemointi')}</legend>
               <div className="row gap-5 w-full">
-                {alignOptions.map(({ value, label }, i) => (
+                {alignOptions.map((alignValue, i) => (
                   <fieldset key={i}>
                     <input
                       type="radio"
-                      value={value}
-                      checked={value === align}
-                      onChange={() => setAlignmentClass(value)}
-                      id={`${value}-${src}`}
-                      data-testid={`image-align-radio-${value}`}
+                      value={alignValue}
+                      checked={alignValue === align}
+                      onChange={() => setAlignmentClass(alignValue)}
+                      id={`${alignValue}-${src}`}
+                      data-testid={`image-align-radio-${alignValue}`}
                       className="mr-1 hover:cursor-pointer"
                     />
-                    <label className="hover:cursor-pointer" htmlFor={`${value}-${src}`}>
-                      {label}
+                    <label className="hover:cursor-pointer" htmlFor={`${alignValue}-${src}`}>
+                      {lt.tiptapImageAlignOptions[alignValue]}
                     </label>
                   </fieldset>
                 ))}
