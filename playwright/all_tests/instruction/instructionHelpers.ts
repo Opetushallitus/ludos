@@ -7,43 +7,69 @@ import {
   setTeachingLanguage
 } from '../../helpers'
 import { Exam, TeachingLanguage } from 'web/src/types'
+import { InstructionFormModel } from '../../models/InstructionFormModel'
+import { LayoutModel } from '../../models/LayoutModel'
+
+export async function initializeInstructionTest(page: Page, exam: Exam) {
+  await page.goto('/')
+  await new LayoutModel(page).showLocalizationKeys()
+  await new InstructionFormModel(page, exam).gotoNew()
+}
+
+export type InstructionFormData = {
+  nameFi: string
+  nameSv: string
+  contentFi: string
+  contentSv: string
+  aineKoodiArvo: string
+  shortDescriptionFi: string
+  shortDescriptionSv: string
+  attachmentNameFi: string
+  attachmentNameSv: string
+}
+
+export const instructionFormData: InstructionFormData = {
+  nameFi: 'Testi ohje',
+  nameSv: 'Testuppgifter',
+  contentFi: 'Testi sisältö',
+  contentSv: 'Testa innehåll',
+  aineKoodiArvo: '9',
+  shortDescriptionFi: 'Testi lyhyt kuvaus',
+  shortDescriptionSv: 'Testa kort beskrivning',
+  attachmentNameFi: 'Testi liite',
+  attachmentNameSv: 'Testa bilaga'
+}
 
 export async function fillInstructionForm({
-  page,
-  contentFi,
-  contentSv,
-  nameFi,
-  nameSv,
-  aineKoodiArvo,
-  shortDescriptionFi,
-  shortDescriptionSv,
-  attachmentNameFi,
-  attachmentNameSv
-}: {
-  page: Page
-  nameFi?: string
-  nameSv?: string
-  contentFi?: string
-  contentSv?: string
-  aineKoodiArvo?: string
-  shortDescriptionFi?: string
-  shortDescriptionSv?: string
-  attachmentNameFi?: string
-  attachmentNameSv?: string
-}) {
+  form,
+  ...formData
+}: { form: InstructionFormModel } & Partial<InstructionFormData>) {
+  const { page, exam } = form
+  const {
+    nameFi,
+    nameSv,
+    contentFi,
+    contentSv,
+    aineKoodiArvo,
+    shortDescriptionFi,
+    shortDescriptionSv,
+    attachmentNameFi,
+    attachmentNameSv
+  } = formData
+
   await expect(page.getByTestId('heading')).toBeVisible()
 
-  if (aineKoodiArvo) {
-    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', '9')
+  if (exam === Exam.LD && aineKoodiArvo) {
+    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', aineKoodiArvo)
   }
 
   if (nameFi) {
-    await page.getByTestId('nameFi').fill(nameFi)
+    await form.nameFi.fill(nameFi)
   }
   if (contentFi) {
     await page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentFi)
   }
-  if (shortDescriptionFi) {
+  if (exam !== Exam.LD && shortDescriptionFi) {
     await page.getByTestId('shortDescriptionFi').fill(shortDescriptionFi)
   }
 
@@ -65,12 +91,12 @@ export async function fillInstructionForm({
   if (hasSvFields) {
     await page.getByTestId('tab-sv').click()
     if (nameSv) {
-      await page.getByTestId('nameSv').fill(nameSv)
+      await form.nameSv.fill(nameSv)
     }
     if (contentSv) {
       await page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentSv)
     }
-    if (shortDescriptionSv) {
+    if (exam !== Exam.LD && shortDescriptionSv) {
       await page.getByTestId('shortDescriptionSv').fill(shortDescriptionSv)
     }
 
@@ -101,31 +127,39 @@ export async function updateAttachments(page: Page) {
   await expect(page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
 }
 
-export async function assertCreatedInstruction(page: Page, exam: Exam, action: FormAction) {
-  const header = page.getByTestId('assignment-header')
+export async function assertCreatedInstruction(form: InstructionFormModel, action: FormAction) {
+  const { page, exam, formHeader } = form
+  const {
+    nameFi,
+    contentFi,
+    shortDescriptionFi,
+    attachmentNameFi,
+    nameSv,
+    contentSv,
+    shortDescriptionSv,
+    attachmentNameSv
+  } = instructionFormData
 
-  if (action === 'submit') {
-    await expect(page.getByTestId('publish-state')).toHaveText('state.julkaistu')
-  } else {
-    await expect(page.getByTestId('publish-state')).toHaveText('state.luonnos')
-  }
+  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
 
-  await expect(header).toHaveText('Testi ohje')
+  // aineKoodiArvon tsekkaus puuttuu?
+
+  await expect(formHeader).toHaveText(nameFi)
   // check short description
-  exam !== Exam.LD && (await expect(page.getByText('Testi lyhyt kuvaus', { exact: true })).toBeVisible())
+  exam !== Exam.LD && (await expect(page.getByText(shortDescriptionFi, { exact: true })).toBeVisible())
   // check content
-  await expect(page.getByText('Testi sisältö', { exact: true })).toBeVisible()
+  await expect(page.getByText(contentFi, { exact: true })).toBeVisible()
   // check files
-  await expect(page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Testi liite 2 open_in_new' })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${attachmentNameFi} 1 open_in_new` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${attachmentNameFi} 2 open_in_new` })).toBeVisible()
 
   // change language and check that everything is correct
   await setTeachingLanguage(page, TeachingLanguage.sv)
-  await expect(header).toHaveText('Testuppgifter')
-  exam !== Exam.LD && (await expect(page.getByText('Testa kort beskrivning', { exact: true })).toBeVisible())
-  await expect(page.getByText('Testa innehåll', { exact: true })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Testa bilaga 1 open_in_new' })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Testa bilaga 2 open_in_new' })).toBeVisible()
+  await expect(formHeader).toHaveText(nameSv)
+  exam !== Exam.LD && (await expect(page.getByText(shortDescriptionSv, { exact: true })).toBeVisible())
+  await expect(page.getByText(contentSv, { exact: true })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${attachmentNameSv} 1 open_in_new` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${attachmentNameSv} 2 open_in_new` })).toBeVisible()
 }
 
 export async function assertUpdatedInstruction(page: Page) {

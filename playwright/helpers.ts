@@ -1,4 +1,4 @@
-import { BrowserContext, expect, Page, test as importedTest } from '@playwright/test'
+import { BrowserContext, expect, Locator, Page, test as importedTest } from '@playwright/test'
 import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
 import { promises as fsPromises } from 'fs'
 import path from 'path'
@@ -115,6 +115,12 @@ export async function assertSuccessNotification(page: Page, notificationLocalisa
   await expect(page.getByText(notificationLocalisationKey)).toBeVisible()
 }
 
+export async function assertFailureNotification(page: Page, notificationLocalisationKey: string) {
+  const errorNotification = page.getByTestId('notification-error')
+  await expect(errorNotification).toBeVisible()
+  await expect(errorNotification).toHaveText(`error${notificationLocalisationKey}close`)
+}
+
 export async function assertInputValues(page: Page, inputName: string, expectedValues: string[]): Promise<void> {
   const locators = await page.locator(`input[name="${inputName}"]`).all()
   const values = await Promise.all(locators.map((l) => l.inputValue()))
@@ -134,3 +140,22 @@ export const mapPromiseAll =
   <T, U>(fn: (arg: T) => Promise<U>) =>
   (args: T[]) =>
     Promise.all(args.map(fn))
+
+export function createFilePath(filename: string) {
+  return path.resolve(__dirname, `../server/src/main/resources/fixtures/${filename}`)
+}
+
+export async function selectAttachmentFile(page: Page, file: string, locator: Locator, canBeOpened: boolean = false) {
+  const filePath = createFilePath(file)
+
+  await locator.setInputFiles(filePath)
+
+  const currentDate = new Date()
+
+  const day = currentDate.getDate()
+  const month = currentDate.getMonth() + 1
+  const year = currentDate.getFullYear()
+  const formattedDate = `${day}.${month}.${year}`
+
+  await expect(page.getByTestId(file).first()).toHaveText(`${file}${canBeOpened ? 'open_in_new' : ''}${formattedDate}`)
+}

@@ -3,6 +3,7 @@ ludos:
   opintopolkuHostname: "virkailija.opintopolku.fi"
   instruction-bucket-name: ludos-application-instruction-bucket-prod
   certificate-bucket-name: ludos-application-certificate-bucket-prod
+  image-bucket-name: ludos-application-image-bucket-prod
 
 server:
   tomcat:

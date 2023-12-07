@@ -74,6 +74,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const [isLoaded, setIsLoaded] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
+  const [fileUploading, setFileUploading] = useState(false)
 
   const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
@@ -241,7 +242,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     let dataToSet: AttachmentData[]
 
     if (isUpdate) {
+      setFileUploading(true)
       dataToSet = await uploadNewAttachments(attachmentFiles, language)
+      setFileUploading(false)
     } else {
       dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'fi')
     }
@@ -279,10 +282,12 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const instructionNameError = errors.nameRequired?.message as string
   const nameFiError = errors.nameFi?.message as string
+  const contentFiError = errors.contentFi?.message as string
   const nameSvError = errors.nameSv?.message as string
+  const contentSvError = errors.contentSv?.message as string
 
-  const hasFiError = nameFiError || instructionNameError
-  const hasSvError = nameSvError || instructionNameError
+  const hasFiError = nameFiError || contentFiError || instructionNameError
+  const hasSvError = nameSvError || contentSvError || instructionNameError
 
   const handleContentChange = (newContent: string) => {
     if (activeTab === 'fi') {
@@ -335,7 +340,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               label={t('form.ohjeensisalto')}
               dataTestId="editor-content-fi"
               key={`content-fi-${isLoaded ? 'loaded' : 'not-loaded'}`}
+              fieldError={!!contentFiError}
             />
+
+            <FormError error={contentFiError} />
 
             {exam !== Exam.LD && (
               <div className="mb-3 mt-6">
@@ -354,6 +362,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               handleNewAttachmentName={handleAttachmentNameChange}
               deleteFileByIndex={deleteFileByIndex}
+              loading={fileUploading}
             />
           </div>
 
@@ -374,7 +383,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               label={t('form.ohjeensisalto')}
               dataTestId="editor-content-sv"
               key={`content-sv-${isLoaded ? 'loaded' : 'not-loaded'}`}
+              fieldError={!!contentSvError}
             />
+
+            <FormError error={contentSvError} />
 
             {exam !== Exam.LD && (
               <div className="mb-3 mt-6">
@@ -393,6 +405,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               handleNewAttachmentName={handleAttachmentNameChange}
               deleteFileByIndex={deleteFileByIndex}
+              loading={fileUploading}
             />
           </div>
 

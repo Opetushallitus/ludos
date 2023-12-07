@@ -142,6 +142,15 @@ export const useLudosTranslation = () => {
       [ContentType.koetehtavat]: t('filter.koetehtavat-kieli'),
       [ContentType.ohjeet]: t('filter.ohjeet-kieli'),
       [ContentType.todistukset]: t('filter.todistukset-kieli')
+    },
+    tiptapImageSizeOptions: {
+      original: t('file.koko.alkuperainen'),
+      large: t('file.koko.suuri'),
+      small: t('file.koko.pieni')
+    },
+    tiptapImageAlignOptions: {
+      left: t('file.asemointi.ei-mitaan'),
+      center: t('file.asemointi.keskitetty')
     }
   }
 

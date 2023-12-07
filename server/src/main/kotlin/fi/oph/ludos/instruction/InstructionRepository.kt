@@ -161,7 +161,6 @@ class InstructionRepository(
 
     private fun uploadInstructionAttachmentToS3(fileKey: String, attachment: MultipartFile) {
         try {
-            // todo: oma ämpäri ohjeille
             s3Helper.putObject(Bucket.INSTRUCTION, fileKey, attachment)
         } catch (ex: SdkException) {
             val errorMsg = "Failed to upload file '${attachment.originalFilename}' to S3"

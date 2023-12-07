@@ -17,7 +17,12 @@ interface Field {
 
 const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
   const { t } = useTranslation()
-  const { watch, control, setValue } = useFormContext()
+  const {
+    watch,
+    control,
+    setValue,
+    formState: { errors }
+  } = useFormContext()
   const { fields, append, remove } = useFieldArray({
     control,
     name: fieldName
@@ -25,6 +30,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
 
   const watchContent = watch(fieldName)
   const watchExam = watch('exam')
+  const contentError = errors[fieldName]?.message as string
 
   useEffect(() => {
     const initContent = (watchContent as string[]) || []
@@ -57,9 +63,12 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
                 label={t('form.tehtavansisalto')}
                 dataTestId={`${fieldName}-${index}`}
                 key={index}
+                fieldError={!!errors[fieldName]}
               />
             )}
           />
+
+          <FormError error={contentError} />
 
           {index === typedFields.length - 1 && typedFields.length > 1 && (
             <div className="row w-100 justify-end mt-1">
@@ -106,7 +115,6 @@ export const FormContentInput = () => {
 
   const currentExam = watch('exam')
 
-  const contentError = errors.contentFi?.message as string
   const assignmentNameError = errors.nameRequired?.message as string
   const nameFiError = errors.nameFi?.message as string
   const nameSvError = errors.nameSv?.message as string
@@ -137,8 +145,6 @@ export const FormContentInput = () => {
         </TextAreaInput>
 
         <ArrayContentField fieldName="contentFi" />
-
-        <FormError error={contentError} />
       </div>
 
       {currentExam !== Exam.SUKO && (

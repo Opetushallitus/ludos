@@ -1,7 +1,5 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchData } from '../request'
-import { Spinner } from '../components/Spinner'
-import { PageNotFound } from '../components/LudosRoutes'
 
 export function useFetch<T>(url: string, isNew: boolean = false) {
   const [data, setData] = useState<T>()
