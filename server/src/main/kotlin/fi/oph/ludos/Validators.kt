@@ -83,6 +83,7 @@ annotation class SafeHtml(
 
 val htmlSafelist: Safelist = Safelist.relaxed()
     .addAttributes(":all", "class")
+    .addAttributes("a", "href", "target", "rel")
     .removeProtocols("img", "src", "http", "https")
 
 class SafeHtmlValidator : ConstraintValidator<SafeHtml, String> {

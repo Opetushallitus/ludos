@@ -619,4 +619,26 @@ class AssignmentControllerTest : AssignmentRequests() {
 
         Assertions.assertTrue(noneHaveMatchingId, "No assignments should have the ID of the deleted one")
     }
+
+
+    @Test
+    @WithYllapitajaRole
+    fun `test valid html`() {
+        val validContentFi = """
+            <ol class="tiptap-numbered-list">
+            <li><p>1</p></li>
+            <li><p>2</p></li>
+            <li><p>3</p></li>
+            </ol>
+            <h1 class="tiptap-text-h1">heading</h1>
+            <ul class="tiptap-bullet-list">
+            <li><p>1</p></li>
+            </ul>
+            <blockquote class="tiptap-blockquote">
+            <p>this is a block quote</p>
+            </blockquote>
+            <p><a target="_blank" rel="noopener noreferrer nofollow" class="tiptap-link" href="https://oph.fi">oph</a></p>
+        """.trimIndent()
+        createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn.copy(contentFi = arrayOf(validContentFi)))
+    }
 }
