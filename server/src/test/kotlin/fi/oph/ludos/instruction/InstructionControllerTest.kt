@@ -10,9 +10,12 @@ import org.junit.jupiter.api.Assertions.*
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.web.servlet.request.RequestPostProcessor
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.ZonedDateTime
 import java.util.stream.Stream
+import kotlin.streams.asStream
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -145,14 +148,15 @@ class InstructionControllerTest : InstructionRequests() {
     private fun performInstructionUpdate(
         instructionId: Int,
         updatedInstructionDtoInStr: String,
-        updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
+        updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
+        updaterUser: RequestPostProcessor = yllapitajaUser
     ): Int = mockMvc.perform(
         updateInstruction(
             instructionId,
             updatedInstructionDtoInStr,
             updatedInstructionAttachmentsMetadata,
             mapper
-        )
+        ).with(updaterUser)
     ).andExpect(status().isOk).andReturn().response.contentAsString.toInt()
 
 
@@ -303,16 +307,6 @@ class InstructionControllerTest : InstructionRequests() {
             attachmentToAdd,
             addedAttachment.fileKey
         )
-    }
-
-    private fun assertInstructionDataClass(
-        updatedInstructionDtoIn: TestInstruction,
-        res: String
-    ) = when (updatedInstructionDtoIn) {
-        is TestSukoInstructionDtoIn -> mapper.readValue(res, SukoInstructionDtoOut::class.java)
-        is TestLdInstructionDtoIn -> mapper.readValue(res, LdInstructionDtoOut::class.java)
-        is TestPuhviInstructionDtoIn -> mapper.readValue(res, PuhviInstructionDtoOut::class.java)
-        else -> throw Exception("Unknown instruction type")
     }
 
     @BeforeAll
@@ -513,6 +507,27 @@ class InstructionControllerTest : InstructionRequests() {
         exam = Exam.SUKO,
     )
 
+    val minimalLdInstruction = TestLdInstructionDtoIn(
+        nameFi = "nameFi",
+        nameSv = "",
+        contentFi = "",
+        contentSv = "",
+        publishState = PublishState.PUBLISHED,
+        aineKoodiArvo = "1",
+        exam = Exam.LD,
+    )
+
+    val minimalPuhviInstruction = TestPuhviInstructionDtoIn(
+        nameFi = "nameFi",
+        nameSv = "",
+        contentFi = "",
+        contentSv = "",
+        shortDescriptionFi = "",
+        shortDescriptionSv = "",
+        publishState = PublishState.PUBLISHED,
+        exam = Exam.PUHVI,
+    )
+
     @Test
     @WithYllapitajaRole
     fun createMinimalInstruction() {
@@ -525,6 +540,45 @@ class InstructionControllerTest : InstructionRequests() {
         assertCommonFieldsBetweenInAndOutEqual(minimalSukoInstruction, createdInstruction)
         assertEquals(0, createdInstruction.attachments.size)
     }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `updating instruction saves updater oid`(): Stream<DynamicTest> =
+        Exam.entries.asSequence().asStream().map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val instructionIn = when (exam!!) {
+                    Exam.SUKO -> minimalSukoInstruction
+                    Exam.LD -> minimalLdInstruction
+                    Exam.PUHVI -> minimalPuhviInstruction
+                }
+                val responseContent = mockMvc.perform(
+                    postInstruction(mapper.writeValueAsString(instructionIn), emptyList(), mapper)
+                ).andDo(MockMvcResultHandlers.print())
+                    .andExpect(status().isOk).andReturn().response.contentAsString
+
+                val createdInstruction = mapper.readValue<InstructionOut>(responseContent)
+
+                assertThat(createdInstruction.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+                assertThat(createdInstruction.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+
+                val updatedInstructionIn = when (exam) {
+                    Exam.SUKO -> minimalSukoInstruction.copy(nameFi = instructionIn.nameFi + " updated")
+                    Exam.LD -> minimalLdInstruction.copy(nameFi = instructionIn.nameFi + " updated")
+                    Exam.PUHVI -> minimalPuhviInstruction.copy(nameFi = instructionIn.nameFi + " updated")
+                }
+                performInstructionUpdate(
+                    createdInstruction.id,
+                    mapper.writeValueAsString(updatedInstructionIn),
+                    emptyList(),
+                    yllapitaja2User
+                )
+
+                val updatedInstruction = performGetInstructionById(exam, createdInstruction.id)
+
+                assertThat(updatedInstruction.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+                assertThat(updatedInstruction.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
+            }
+        }
 
     @Test
     @WithYllapitajaRole

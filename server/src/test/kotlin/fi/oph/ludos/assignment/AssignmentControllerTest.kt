@@ -5,17 +5,16 @@ import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.util.stream.Stream
 import kotlin.reflect.full.memberProperties
+import kotlin.streams.asStream
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -94,6 +93,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         val timeAfterCreate = nowFromDb(mockMvc)
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(testAssignment, createdAssignment)
         assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+        assertThat(createdAssignment.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
         assertTimeIsRoughlyBetween(timeBeforeCreate, createdAssignment.createdAt, timeAfterCreate, "createdAt")
         assertEquals(createdAssignment.createdAt, createdAssignment.updatedAt)
 
@@ -129,6 +129,7 @@ class AssignmentControllerTest : AssignmentRequests() {
 
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(updatedAssignment, updatedAssignmentById)
         assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
+        assertEquals(createdAssignment.updaterOid, updatedAssignmentById.updaterOid)
         assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
         assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
     }
@@ -181,6 +182,41 @@ class AssignmentControllerTest : AssignmentRequests() {
         val createdAssignment: SukoAssignmentDtoOut = createAssignment(minimalSukoAssignmentIn)
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(minimalSukoAssignmentIn, createdAssignment)
     }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `updating an assignment saves updater oid`(): Stream<DynamicTest> =
+        Exam.entries.asSequence().asStream().map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = when (exam!!) {
+                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
+                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
+                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
+                }
+                assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+                assertThat(createdAssignment.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+
+                val updatedAssignmentIn = when (exam) {
+                    Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
+                    Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
+                    Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
+                }
+
+                mockMvc.perform(
+                    updateAssignmentReq(
+                        createdAssignment.id,
+                        mapper.writeValueAsString(updatedAssignmentIn)
+                    ).with(yllapitaja2User)
+                ).andExpect(status().isOk)
+                val updatedAssignment = when (exam) {
+                    Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id)
+                    Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id)
+                    Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(createdAssignment.id)
+                }
+                assertThat(updatedAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
+                assertThat(updatedAssignment.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
+            }
+        }
 
     @Test
     @WithYllapitajaRole

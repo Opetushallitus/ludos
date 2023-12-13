@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.util.stream.Stream
 
@@ -204,6 +205,7 @@ class CertificateControllerTest : CertificateRequests() {
     private fun updateCertificateAndAssert(
         createdCertificate: CertificateOut,
         editedCertificate: TestCertificate,
+        updaterUser: RequestPostProcessor = yllapitajaUser
     ): CertificateOut {
         Thread.sleep(1) // Wait a bit to ensure attachmentUploadDate is different
         val newAttachment = readAttachmentFixtureFile(attachmentFileNameToUpdate)
@@ -215,7 +217,7 @@ class CertificateControllerTest : CertificateRequests() {
                 mapper.writeValueAsString(editedCertificate),
                 newAttachment,
                 newAttachmentSv
-            )
+            ).with(updaterUser)
         ).andExpect(status().isOk)
 
         val updatedCertificateById: CertificateOut = mapper.readValue(
@@ -310,6 +312,29 @@ class CertificateControllerTest : CertificateRequests() {
                 Exam.PUHVI -> createCertificateAndCheckIt<PuhviCertificateDtoOut>(puhviCertificateToCreate)
                 null -> fail("Exam should not be null")
             }
+        }
+    }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `updating certificate saves updater oid`(): Stream<DynamicTest> = exams.stream().map { exam ->
+        DynamicTest.dynamicTest("$exam") {
+            val createdCert = when (exam) {
+                Exam.SUKO -> createCertificateAndCheckIt<SukoCertificateDtoOut>(sukoCertificateToCreate)
+                Exam.LD -> createCertificateAndCheckIt<LdCertificateDtoOut>(ldCertificateToCreate)
+                Exam.PUHVI -> createCertificateAndCheckIt<PuhviCertificateDtoOut>(puhviCertificateToCreate)
+                null -> fail("Exam should not be null")
+            }
+            val updatedCert = when (exam) {
+                Exam.SUKO -> updateCertificateAndAssert(createdCert, sukoCertificateToUpdate, yllapitaja2User)
+                Exam.LD -> updateCertificateAndAssert(createdCert, ldCertificateToCreate, yllapitaja2User)
+                Exam.PUHVI -> updateCertificateAndAssert(createdCert, puhviCertificateToCreate, yllapitaja2User)
+                null -> fail("Exam should not be null")
+            }
+            assertThat(
+                updatedCert.updaterOid,
+                CoreMatchers.equalTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
+            )
         }
     }
 

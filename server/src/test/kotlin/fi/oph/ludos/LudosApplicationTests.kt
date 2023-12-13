@@ -105,9 +105,21 @@ class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
     )
 }
 
-class OpettajaAndLaatijaSecurityContextFactory : LudosSecurityContextFactory() {
+class Yllapitaja2SecurityContextFactory : LudosSecurityContextFactory() {
     override fun kayttajatiedot() = Kayttajatiedot(
         "1.2.246.562.24.00000000005",
+        "YvonneYllapitaja",
+        "VIRKAILIJA",
+        listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(Role.YLLAPITAJA.oikeus)))),
+        "Yvonne",
+        "Ylläpitäjä",
+        null
+    )
+}
+
+class OpettajaAndLaatijaSecurityContextFactory : LudosSecurityContextFactory() {
+    override fun kayttajatiedot() = Kayttajatiedot(
+        "1.2.246.562.24.00000000006",
         "OpettajaLaatija",
         "VIRKAILIJA",
         listOf(
@@ -131,6 +143,7 @@ fun nowFromDb(mockMvc: MockMvc): ZonedDateTime {
 }
 
 val yllapitajaUser: RequestPostProcessor = user(YllapitajaSecurityContextFactory().kayttajatiedot())
+val yllapitaja2User: RequestPostProcessor = user(Yllapitaja2SecurityContextFactory().kayttajatiedot())
 val opettajaUser: RequestPostProcessor = user(OpettajaSecurityContextFactory().kayttajatiedot())
 
 enum class TestPublishState {

@@ -53,6 +53,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
+            rs.getString("assignment_updater_oid"),
             rs.getBoolean("is_favorite"),
             rs.getString("suko_assignment_assignment_type_koodi_arvo"),
             Oppimaara(
@@ -78,6 +79,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
+            rs.getString("assignment_updater_oid"),
             rs.getBoolean("is_favorite"),
             rs.getKotlinArray<String>("ld_assignment_lukuvuosi_koodi_arvos"),
             rs.getString("ld_assignment_aine_koodi_arvo")
@@ -98,6 +100,7 @@ class AssignmentRepository(
             rs.getTimestamp("assignment_updated_at"),
             rs.getKotlinArray<String>("assignment_laajaalainen_osaaminen_koodi_arvos"),
             rs.getString("assignment_author_oid"),
+            rs.getString("assignment_updater_oid"),
             rs.getBoolean("is_favorite"),
             rs.getString("puhvi_assignment_assignment_type_koodi_arvo"),
             rs.getKotlinArray<String>("puhvi_assignment_lukuvuosi_koodi_arvos"),
@@ -551,9 +554,10 @@ class AssignmentRepository(
                             suko_assignment_oppimaara_kielitarjonta_koodi_arvo, 
                             suko_assignment_tavoitetaso_koodi_arvo,
                             assignment_laajaalainen_osaaminen_koodi_arvos,
-                            assignment_author_oid) 
-                            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?) 
-                            RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""".trimIndent(),
+                            assignment_author_oid,
+                            assignment_updater_oid) 
+                            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?, ?) 
+                            RETURNING assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at""".trimIndent(),
                     arrayOf("assignment_id")
                 )
                 ps.setString(1, assignment.nameFi)
@@ -568,6 +572,7 @@ class AssignmentRepository(
                 ps.setString(10, assignment.tavoitetasoKoodiArvo)
                 ps.setArray(11, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
                 ps.setString(12, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setString(13, Kayttajatiedot.fromSecurityContext().oidHenkilo)
                 ps
             }, keyHolder)
 
@@ -588,6 +593,7 @@ class AssignmentRepository(
                 keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
                 assignment.laajaalainenOsaaminenKoodiArvos,
                 keyHolder.keys?.get("assignment_author_oid") as String,
+                keyHolder.keys?.get("assignment_updater_oid") as String,
                 false,
                 assignment.assignmentTypeKoodiArvo,
                 Oppimaara(assignment.oppimaara.oppimaaraKoodiArvo, assignment.oppimaara.kielitarjontaKoodiArvo),
@@ -609,10 +615,11 @@ class AssignmentRepository(
                             assignment_publish_state,
                             assignment_laajaalainen_osaaminen_koodi_arvos,
                             assignment_author_oid,
+                            assignment_updater_oid,
                             puhvi_assignment_assignment_type_koodi_arvo,
                             puhvi_assignment_lukuvuosi_koodi_arvos
-                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
-                        RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""",
+                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+                        RETURNING assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at""",
                     arrayOf("assignment_id")
                 )
                 ps.setString(1, assignment.nameFi)
@@ -622,8 +629,9 @@ class AssignmentRepository(
                 ps.setString(5, assignment.publishState.toString())
                 ps.setArray(6, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
                 ps.setString(7, Kayttajatiedot.fromSecurityContext().oidHenkilo)
-                ps.setString(8, assignment.assignmentTypeKoodiArvo)
-                ps.setArray(9, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos))
+                ps.setString(8, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setString(9, assignment.assignmentTypeKoodiArvo)
+                ps.setArray(10, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos))
                 ps
             }, keyHolder)
 
@@ -644,6 +652,7 @@ class AssignmentRepository(
                 keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
                 assignment.laajaalainenOsaaminenKoodiArvos,
                 keyHolder.keys?.get("assignment_author_oid") as String,
+                keyHolder.keys?.get("assignment_updater_oid") as String,
                 false,
                 assignment.assignmentTypeKoodiArvo,
                 assignment.lukuvuosiKoodiArvos
@@ -662,10 +671,11 @@ class AssignmentRepository(
                             assignment_publish_state,
                             assignment_laajaalainen_osaaminen_koodi_arvos,
                             assignment_author_oid,
+                            assignment_updater_oid,
                             ld_assignment_lukuvuosi_koodi_arvos,
                             ld_assignment_aine_koodi_arvo
-                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
-                        RETURNING assignment_id, assignment_author_oid, assignment_created_at, assignment_updated_at""",
+                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+                        RETURNING assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at""",
                 arrayOf("assignment_id")
             )
             ps.setString(1, assignment.nameFi)
@@ -675,8 +685,9 @@ class AssignmentRepository(
             ps.setString(5, assignment.publishState.toString())
             ps.setArray(6, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos))
             ps.setString(7, Kayttajatiedot.fromSecurityContext().oidHenkilo)
-            ps.setArray(8, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos))
-            ps.setString(9, assignment.aineKoodiArvo)
+            ps.setString(8, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+            ps.setArray(9, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos))
+            ps.setString(10, assignment.aineKoodiArvo)
             ps
         }, keyHolder)
 
@@ -697,6 +708,7 @@ class AssignmentRepository(
             keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
             assignment.laajaalainenOsaaminenKoodiArvos,
             keyHolder.keys?.get("assignment_author_oid") as String,
+            keyHolder.keys?.get("assignment_updater_oid") as String,
             false,
             assignment.lukuvuosiKoodiArvos,
             assignment.aineKoodiArvo
@@ -744,6 +756,7 @@ class AssignmentRepository(
                    suko_assignment_oppimaara_koodi_arvo = ?,
                    suko_assignment_oppimaara_kielitarjonta_koodi_arvo = ?,
                    suko_assignment_tavoitetaso_koodi_arvo = ?,
+                   assignment_updater_oid = ?,
                    assignment_updated_at = clock_timestamp()
                WHERE assignment_id = ?""".trimIndent(),
             assignment.nameFi,
@@ -757,6 +770,7 @@ class AssignmentRepository(
             assignment.oppimaara.oppimaaraKoodiArvo,
             assignment.oppimaara.kielitarjontaKoodiArvo,
             assignment.tavoitetasoKoodiArvo,
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             id
         )
 
@@ -780,6 +794,7 @@ class AssignmentRepository(
                    assignment_instruction_fi = ?,
                    assignment_instruction_sv = ?,
                    assignment_publish_state = ?::publish_state, 
+                   assignment_updater_oid = ?,
                    assignment_updated_at = clock_timestamp(),
                    assignment_laajaalainen_osaaminen_koodi_arvos = ?,
                    puhvi_assignment_assignment_type_koodi_arvo = ?,
@@ -790,6 +805,7 @@ class AssignmentRepository(
             assignment.instructionFi,
             assignment.instructionSv,
             assignment.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             assignment.laajaalainenOsaaminenKoodiArvos,
             assignment.assignmentTypeKoodiArvo,
             assignment.lukuvuosiKoodiArvos,
@@ -815,6 +831,7 @@ class AssignmentRepository(
                    assignment_instruction_fi = ?,
                    assignment_instruction_sv = ?,
                    assignment_publish_state = ?::publish_state, 
+                   assignment_updater_oid = ?,
                    assignment_updated_at = clock_timestamp(),
                    assignment_laajaalainen_osaaminen_koodi_arvos = ?,
                    ld_assignment_lukuvuosi_koodi_arvos = ?,
@@ -825,6 +842,7 @@ class AssignmentRepository(
             assignment.instructionFi,
             assignment.instructionSv,
             assignment.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             assignment.laajaalainenOsaaminenKoodiArvos,
             assignment.lukuvuosiKoodiArvos,
             assignment.aineKoodiArvo,

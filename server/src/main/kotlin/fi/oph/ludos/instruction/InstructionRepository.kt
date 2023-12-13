@@ -87,9 +87,10 @@ class InstructionRepository(
                 suko_instruction_short_description_fi,
                 suko_instruction_short_description_sv,
                 instruction_publish_state, 
-                instruction_author_oid
+                instruction_author_oid,
+                instruction_updater_oid
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?) 
+            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?) 
             RETURNING instruction_id""".trimIndent(),
             Long::class.java,
             instruction.nameFi,
@@ -99,7 +100,8 @@ class InstructionRepository(
             instruction.shortDescriptionFi,
             instruction.shortDescriptionSv,
             instruction.publishState.toString(),
-            Kayttajatiedot.fromSecurityContext().oidHenkilo
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
         )
     }
 
@@ -115,9 +117,10 @@ class InstructionRepository(
                 instruction_content_sv, 
                 instruction_publish_state, 
                 instruction_author_oid,
+                instruction_updater_oid,
                 ld_instruction_aine_koodi_arvo
             ) 
-            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?) 
+            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?) 
             RETURNING instruction_id""".trimIndent(),
             Long::class.java,
             instruction.nameFi,
@@ -125,6 +128,7 @@ class InstructionRepository(
             instruction.contentFi,
             instruction.contentSv,
             instruction.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
             instruction.aineKoodiArvo
         )
@@ -143,9 +147,10 @@ class InstructionRepository(
                 puhvi_instruction_short_description_fi,
                 puhvi_instruction_short_description_sv,
                 instruction_publish_state, 
-                instruction_author_oid
+                instruction_author_oid,
+                instruction_updater_oid
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?) 
+            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?) 
             RETURNING instruction_id""".trimIndent(),
             Long::class.java,
             instruction.nameFi,
@@ -155,6 +160,7 @@ class InstructionRepository(
             instruction.shortDescriptionFi,
             instruction.shortDescriptionSv,
             instruction.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
         )
     }
@@ -237,6 +243,7 @@ class InstructionRepository(
                 PublishState.valueOf(rs.getString("instruction_publish_state")),
                 attachments,
                 rs.getString("instruction_author_oid"),
+                rs.getString("instruction_updater_oid"),
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at"),
                 Exam.SUKO,
@@ -256,6 +263,7 @@ class InstructionRepository(
             rs.getString("ld_instruction_aine_koodi_arvo"),
             attachments,
             rs.getString("instruction_author_oid"),
+            rs.getString("instruction_updater_oid"),
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at"),
             Exam.LD,
@@ -277,6 +285,7 @@ class InstructionRepository(
                 PublishState.valueOf(rs.getString("instruction_publish_state")),
                 attachments,
                 rs.getString("instruction_author_oid"),
+                rs.getString("instruction_updater_oid"),
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at"),
                 Exam.PUHVI,
@@ -316,6 +325,7 @@ class InstructionRepository(
                     i.instruction_content_sv, 
                     i.instruction_publish_state, 
                     i.instruction_author_oid,
+                    i.instruction_updater_oid,
                     $additionalGroupBy;"""
 
         return jdbcTemplate.query(sql, mapper(), id).firstOrNull()
@@ -418,6 +428,7 @@ class InstructionRepository(
                     i.instruction_content_sv, 
                     i.instruction_publish_state, 
                     i.instruction_author_oid,
+                    i.instruction_updater_oid,
                     $additionalSelectFields
                 ORDER BY i.instruction_updated_at $orderDirection;"""
 
@@ -503,6 +514,7 @@ class InstructionRepository(
         instruction_content_fi = ?,
         instruction_content_sv = ?,
         instruction_publish_state = ?::publish_state,
+        instruction_updater_oid = ?,
         instruction_updated_at = clock_timestamp(),
         suko_instruction_short_description_fi = ?,
         suko_instruction_short_description_sv = ?
@@ -513,6 +525,7 @@ class InstructionRepository(
             instruction.contentFi,
             instruction.contentSv,
             instruction.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             instruction.shortDescriptionFi,
             instruction.shortDescriptionSv,
             id
@@ -531,6 +544,7 @@ class InstructionRepository(
         instruction_content_fi = ?,
         instruction_content_sv = ?,
         instruction_publish_state = ?::publish_state,
+        instruction_updater_oid = ?,
         instruction_updated_at = clock_timestamp(),
         ld_instruction_aine_koodi_arvo = ?
         WHERE instruction_id = ?
@@ -540,6 +554,7 @@ class InstructionRepository(
             instruction.contentFi,
             instruction.contentSv,
             instruction.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             instruction.aineKoodiArvo,
             id
         )
@@ -557,6 +572,7 @@ class InstructionRepository(
         instruction_content_fi = ?,
         instruction_content_sv = ?,
         instruction_publish_state = ?::publish_state,
+        instruction_updater_oid = ?,
         instruction_updated_at = clock_timestamp(),
         puhvi_instruction_short_description_fi = ?,
         puhvi_instruction_short_description_sv = ?
@@ -567,6 +583,7 @@ class InstructionRepository(
             instruction.contentFi,
             instruction.contentSv,
             instruction.publishState.toString(),
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             instruction.shortDescriptionFi,
             instruction.shortDescriptionSv,
             id

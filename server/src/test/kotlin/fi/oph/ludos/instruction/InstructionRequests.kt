@@ -27,9 +27,33 @@ abstract class InstructionRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
+    protected fun assertInstructionDataClass(
+        updatedInstructionDtoIn: TestInstruction,
+        res: String
+    ) = when (updatedInstructionDtoIn) {
+        is TestSukoInstructionDtoIn -> mapper.readValue(res, SukoInstructionDtoOut::class.java)
+        is TestLdInstructionDtoIn -> mapper.readValue(res, LdInstructionDtoOut::class.java)
+        is TestPuhviInstructionDtoIn -> mapper.readValue(res, PuhviInstructionDtoOut::class.java)
+        else -> throw Exception("Unknown instruction type")
+    }
+
     fun getInstructionById(exam: Exam, id: Int) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id")
             .contentType(MediaType.APPLICATION_JSON)
+
+    fun performGetInstructionById(exam: Exam, id: Int): InstructionOut {
+        val createdInstructionByIdStr =
+            mockMvc.perform(getInstructionById(exam, id)).andExpect(status().isOk)
+                .andReturn().response.contentAsString
+
+        val dtoClass = when (exam) {
+            Exam.SUKO -> SukoInstructionDtoOut::class.java
+            Exam.LD -> LdInstructionDtoOut::class.java
+            Exam.PUHVI -> PuhviInstructionDtoOut::class.java
+        }
+
+        return mapper.readValue(createdInstructionByIdStr, dtoClass)
+    }
 
     fun getAllInstructionsReq(
         exam: Exam,

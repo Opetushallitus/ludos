@@ -53,10 +53,11 @@ class CertificateRepository(
                     certificate_publish_state,
                     attachment_file_key_fi,
                     attachment_file_key_sv,
-                    certificate_author_oid
+                    certificate_author_oid,
+                    certificate_updater_oid
                 )
-                VALUES (?, ?, ?::publish_state, ?, ?, ?)
-                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
+                VALUES (?, ?, ?::publish_state, ?, ?, ?, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updater_oid, certificate_updated_at
             """.trimIndent(),
             { rs: ResultSet, _: Int ->
                 SukoCertificateDtoOut(
@@ -67,6 +68,7 @@ class CertificateRepository(
                     attachmentFi = createdAttachment,
                     attachmentSv = createdAttachment, // only attachmentFi field is actually used in SUKO
                     authorOid = rs.getString("certificate_author_oid"),
+                    updaterOid = rs.getString("certificate_updater_oid"),
                     createdAt = rs.getTimestamp("certificate_created_at"),
                     updatedAt = rs.getTimestamp("certificate_updated_at"),
                     descriptionFi = certificateDtoIn.descriptionFi,
@@ -79,6 +81,7 @@ class CertificateRepository(
             certificateDtoIn.publishState.toString(),
             createdAttachment.fileKey,
             createdAttachment.fileKey,
+            Kayttajatiedot.fromSecurityContext().oidHenkilo,
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
         )[0]
     }
@@ -110,10 +113,11 @@ class CertificateRepository(
                     certificate_publish_state,
                     attachment_file_key_fi,
                     attachment_file_key_sv,
-                    certificate_author_oid
+                    certificate_author_oid,
+                    certificate_updater_oid
                 )
-                VALUES (?, ?, ?, ?::publish_state, ?,?, ?)
-                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
+                VALUES (?, ?, ?, ?::publish_state, ?, ?, ?, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updater_oid, certificate_updated_at
             """.trimIndent(),
                 { rs: ResultSet, _: Int ->
                     LdCertificateDtoOut(
@@ -124,6 +128,7 @@ class CertificateRepository(
                         attachmentFi = createdAttachmentFi,
                         attachmentSv = createdAttachmentSv,
                         authorOid = rs.getString("certificate_author_oid"),
+                        updaterOid = rs.getString("certificate_updater_oid"),
                         createdAt = rs.getTimestamp("certificate_created_at"),
                         updatedAt = rs.getTimestamp("certificate_updated_at"),
                         certificateDtoIn.aineKoodiArvo,
@@ -136,6 +141,7 @@ class CertificateRepository(
                 certificateDtoIn.publishState.toString(),
                 createdAttachmentFi.fileKey,
                 createdAttachmentSv.fileKey,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
             )[0]
         }
@@ -156,10 +162,11 @@ class CertificateRepository(
                     certificate_publish_state,
                     attachment_file_key_fi,
                     attachment_file_key_sv,
-                    certificate_author_oid
+                    certificate_author_oid,
+                    certificate_updater_oid
                 )
-                VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?)
-                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updated_at
+                VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)
+                RETURNING certificate_id, certificate_created_at, certificate_author_oid, certificate_updater_oid, certificate_updated_at
             """.trimIndent(),
                 { rs: ResultSet, _: Int ->
                     PuhviCertificateDtoOut(
@@ -170,6 +177,7 @@ class CertificateRepository(
                         attachmentFi = createdAttachmentFi,
                         attachmentSv = createdAttachmentSv,
                         authorOid = rs.getString("certificate_author_oid"),
+                        updaterOid = rs.getString("certificate_updater_oid"),
                         createdAt = rs.getTimestamp("certificate_created_at"),
                         updatedAt = rs.getTimestamp("certificate_updated_at"),
                         descriptionFi = certificateDtoIn.descriptionFi,
@@ -184,6 +192,7 @@ class CertificateRepository(
                 certificateDtoIn.publishState.toString(),
                 createdAttachmentFi.fileKey,
                 createdAttachmentSv.fileKey,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
             )[0]
         }
@@ -248,6 +257,7 @@ class CertificateRepository(
             attachmentFi = attachment,
             attachmentSv = attachment, // only attachmentFi field is actually used in SUKO
             authorOid = rs.getString("certificate_author_oid"),
+            updaterOid = rs.getString("certificate_updater_oid"),
             createdAt = rs.getTimestamp("certificate_created_at"),
             updatedAt = rs.getTimestamp("certificate_updated_at"),
             descriptionFi = rs.getString("suko_certificate_description_fi"),
@@ -278,6 +288,7 @@ class CertificateRepository(
             ),
             attachmentSv = attachmentSv,
             authorOid = rs.getString("certificate_author_oid"),
+            updaterOid = rs.getString("certificate_updater_oid"),
             createdAt = rs.getTimestamp("certificate_created_at"),
             updatedAt = rs.getTimestamp("certificate_updated_at"),
             aineKoodiArvo = rs.getString("ld_certificate_aine_koodi_arvo"),
@@ -308,6 +319,7 @@ class CertificateRepository(
             ),
             attachmentSv = attachmentSv,
             authorOid = rs.getString("certificate_author_oid"),
+            updaterOid = rs.getString("certificate_updater_oid"),
             createdAt = rs.getTimestamp("certificate_created_at"),
             updatedAt = rs.getTimestamp("certificate_updated_at"),
             descriptionFi = rs.getString("puhvi_certificate_description_fi"),
@@ -464,6 +476,7 @@ class CertificateRepository(
                     certificate_name_fi = ?,
                     certificate_name_sv = '',
                     certificate_publish_state = ?::publish_state, 
+                    certificate_updater_oid = ?,
                     certificate_updated_at = clock_timestamp(),
                     attachment_file_key_fi = ?,
                     attachment_file_key_sv = ?,
@@ -473,6 +486,7 @@ class CertificateRepository(
                 """.trimIndent(),
                 certificateDtoIn.nameFi,
                 certificateDtoIn.publishState.toString(),
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 createdAttachmentFi[0],
                 createdAttachmentFi[0],
                 certificateDtoIn.descriptionFi,
@@ -499,6 +513,7 @@ class CertificateRepository(
                     certificate_name_fi = ?, 
                     certificate_name_sv = ?, 
                     certificate_publish_state = ?::publish_state, 
+                    certificate_updater_oid = ?,
                     certificate_updated_at = clock_timestamp(),
                     attachment_file_key_fi = ?,
                     attachment_file_key_sv = ?,
@@ -508,6 +523,7 @@ class CertificateRepository(
                 certificateDtoIn.nameFi,
                 certificateDtoIn.nameSv,
                 certificateDtoIn.publishState.toString(),
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 createdAttachments[0],
                 createdAttachments[1],
                 certificateDtoIn.aineKoodiArvo,
@@ -535,6 +551,7 @@ class CertificateRepository(
                     certificate_name_fi = ?, 
                     certificate_name_sv = ?, 
                     certificate_publish_state = ?::publish_state, 
+                    certificate_updater_oid = ?,
                     certificate_updated_at = clock_timestamp(),
                     attachment_file_key_fi = ?,
                     attachment_file_key_sv = ?,
@@ -545,6 +562,7 @@ class CertificateRepository(
                 certificateDtoIn.nameFi,
                 certificateDtoIn.nameSv,
                 certificateDtoIn.publishState.toString(),
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 createdAttachments[0],
                 createdAttachments[1],
                 certificateDtoIn.descriptionFi,

@@ -108,6 +108,7 @@ data class InstructionAttachmentIn(
 interface InstructionOut : Instruction {
     val id: Int
     val authorOid: String
+    val updaterOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
     val attachments: List<InstructionAttachmentDtoOut>
@@ -125,6 +126,7 @@ data class SukoInstructionDtoOut(
     override val publishState: PublishState,
     override val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
+    override val updaterOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
     override val exam: Exam = Exam.SUKO
@@ -141,6 +143,7 @@ data class LdInstructionDtoOut(
     val aineKoodiArvo: String,
     override val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
+    override val updaterOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
     override val exam: Exam = Exam.LD
@@ -158,6 +161,7 @@ data class PuhviInstructionDtoOut(
     override val publishState: PublishState,
     override val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
+    override val updaterOid: String,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
     override val exam: Exam = Exam.PUHVI
