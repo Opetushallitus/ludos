@@ -133,6 +133,7 @@ data class PuhviAssignmentDtoIn(
 interface AssignmentOut : Assignment {
     val id: Int
     val authorOid: String
+    val updaterOid: String
     val createdAt: Timestamp
     val updatedAt: Timestamp
     val isFavorite: Boolean
@@ -152,6 +153,7 @@ data class SukoAssignmentDtoOut(
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
+    override val updaterOid: String,
     override val isFavorite: Boolean,
     val assignmentTypeKoodiArvo: String,
     val oppimaara: Oppimaara,
@@ -174,6 +176,7 @@ data class PuhviAssignmentDtoOut(
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
+    override val updaterOid: String,
     override val isFavorite: Boolean,
     val assignmentTypeKoodiArvo: String,
     val lukuvuosiKoodiArvos: Array<String>,
@@ -194,6 +197,7 @@ data class LdAssignmentDtoOut(
     override val updatedAt: Timestamp,
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
+    override val updaterOid: String,
     override val isFavorite: Boolean,
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String,
