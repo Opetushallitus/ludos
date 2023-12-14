@@ -26,7 +26,7 @@ import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { certificateFormDefaultValues, CertificateFormType, certificateSchema } from './schemas/certificateSchema'
 import { LanguageTabs } from '../LanguageTabs'
 import { BlockNavigation } from '../BlockNavigation'
-import { useFormPrompt } from '../../hooks/useFormPrompt'
+import { useBlockFormCloseOrRefresh } from '../../hooks/useBlockFormCloseOrRefresh'
 import { useFormSubmission } from './useFormSubmission'
 
 type CertificateFormProps = {
@@ -74,7 +74,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     formState: { errors, isDirty, isSubmitting }
   } = methods
 
-  useFormPrompt(isDirty)
+  useBlockFormCloseOrRefresh(isDirty)
 
   const watchNameFi = watch('nameFi')
   const watchAttachmentFi = watch('attachmentFi')

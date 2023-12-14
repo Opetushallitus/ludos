@@ -13,6 +13,7 @@ export const TextAreaInput = ({ id, register, error, required, children }: TextA
   <div className="mt-6">
     <label className="mb-2 font-semibold" htmlFor={id}>
       {children}
+      {required && <span className="ml-1 text-green-primary">*</span>}
     </label>
     <textarea
       id={id}

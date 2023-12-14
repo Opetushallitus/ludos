@@ -1,7 +1,8 @@
 import { Page } from '@playwright/test'
 import { Exam } from 'web/src/types'
+import { BaseModel } from './BaseModel'
 
-export class FormModel {
+export class FormModel extends BaseModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
@@ -10,6 +11,9 @@ export class FormModel {
     readonly nameFi = page.getByTestId('nameFi'),
     readonly nameSv = page.getByTestId('nameSv'),
     readonly submitButton = page.getByTestId('form-submit'),
-    readonly draftButton = page.getByTestId('form-draft')
-  ) {}
+    readonly draftButton = page.getByTestId('form-draft'),
+    readonly editContentButton = page.getByTestId('edit-content-btn')
+  ) {
+    super(page, exam)
+  }
 }

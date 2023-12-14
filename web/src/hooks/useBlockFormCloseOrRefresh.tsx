@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-export function useFormPrompt(hasUnsavedChanges: boolean) {
+export function useBlockFormCloseOrRefresh(hasUnsavedChanges: boolean) {
   useEffect(() => {
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {

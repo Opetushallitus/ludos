@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchData, SessionExpiredFetchError } from '../request'
 
-export function useFetch<T>(url: string, isNew: boolean = false) {
+export function useFetch<T>(url: string, shouldNotFetch: boolean = false) {
   const [data, setData] = useState<T>()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -11,7 +11,7 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
     let isSubscribed = true
     setData(undefined)
     ;(async () => {
-      if (isNew) {
+      if (shouldNotFetch) {
         return
       }
       try {
@@ -43,7 +43,7 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
     return () => {
       isSubscribed = false
     }
-  }, [url, refresh, isNew])
+  }, [url, refresh, shouldNotFetch])
 
   return {
     data,

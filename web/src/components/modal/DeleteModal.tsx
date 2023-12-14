@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react'
 import styles from './modal.module.css'
-import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
 import { useModal } from './useModal'
+import { ModalHeader } from './ModalHeader'
 
 interface ModalProps {
   modalTitle: string
@@ -27,14 +27,7 @@ export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, childre
       onAnimationEnd={onAnimEnd}
       aria-modal="true">
       <div className={styles['modal__container']}>
-        <div className="row justify-between bg-green-primary p-2">
-          <h2 className="text-base text-white" id="modal-title">
-            {modalTitle}
-          </h2>
-          <button className="text-right" onClick={onClose} aria-label="modal-close">
-            <Icon name="sulje" color="text-white" />
-          </button>
-        </div>
+        <ModalHeader modalTitle={modalTitle} onClick={onClose} />
 
         {children}
 

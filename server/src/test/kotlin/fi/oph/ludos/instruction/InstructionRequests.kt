@@ -1,10 +1,10 @@
 package fi.oph.ludos.instruction
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
+import fi.oph.ludos.yllapitajaUser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.HttpMethod
@@ -13,13 +13,13 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.mock.web.MockPart
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
-import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.multipart.MultipartFile
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.reflect.KClass
 
 @AutoConfigureMockMvc
 abstract class InstructionRequests {
@@ -27,32 +27,27 @@ abstract class InstructionRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
-    protected fun assertInstructionDataClass(
-        updatedInstructionDtoIn: TestInstruction,
-        res: String
-    ) = when (updatedInstructionDtoIn) {
-        is TestSukoInstructionDtoIn -> mapper.readValue(res, SukoInstructionDtoOut::class.java)
-        is TestLdInstructionDtoIn -> mapper.readValue(res, LdInstructionDtoOut::class.java)
-        is TestPuhviInstructionDtoIn -> mapper.readValue(res, PuhviInstructionDtoOut::class.java)
-        else -> throw Exception("Unknown instruction type")
+    fun examByTestInstructionOutClass(testInstructionOutClass: KClass<out InstructionOut>): Exam =
+        when (testInstructionOutClass) {
+            SukoInstructionDtoOut::class -> Exam.SUKO
+            LdInstructionDtoOut::class -> Exam.LD
+            PuhviInstructionDtoOut::class -> Exam.PUHVI
+            else -> throw RuntimeException("unsupported InstructionOutClass '$testInstructionOutClass'")
+        }
+    
+    fun getInstructionByIdReq(exam: Exam, id: Int, version: Int? = null): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/instruction/$exam/$id" + if (version != null) "/$version" else ""
+        return MockMvcRequestBuilders.get(url).contentType(MediaType.APPLICATION_JSON)
     }
 
-    fun getInstructionById(exam: Exam, id: Int) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id")
-            .contentType(MediaType.APPLICATION_JSON)
+    inline fun <reified T : InstructionOut> performGetInstructionById(id: Int, version: Int? = null): T {
+        val exam = examByTestInstructionOutClass(T::class)
 
-    fun performGetInstructionById(exam: Exam, id: Int): InstructionOut {
         val createdInstructionByIdStr =
-            mockMvc.perform(getInstructionById(exam, id)).andExpect(status().isOk)
+            mockMvc.perform(getInstructionByIdReq(exam, id, version)).andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
-        val dtoClass = when (exam) {
-            Exam.SUKO -> SukoInstructionDtoOut::class.java
-            Exam.LD -> LdInstructionDtoOut::class.java
-            Exam.PUHVI -> PuhviInstructionDtoOut::class.java
-        }
-
-        return mapper.readValue(createdInstructionByIdStr, dtoClass)
+        return mapper.readValue(createdInstructionByIdStr)
     }
 
     fun getAllInstructionsReq(
@@ -79,11 +74,24 @@ abstract class InstructionRequests {
         return builder.contentType(MediaType.APPLICATION_JSON)
     }
 
+    fun getAllInstructionVersionsReq(exam: Exam, id: Int) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id/versions")
+            .contentType(MediaType.APPLICATION_JSON)
+
+    inline fun <reified T : InstructionOut> getAllInstructionVersions(id: Int): List<T> {
+        val exam = examByTestInstructionOutClass(T::class)
+
+        val responseContent =
+            mockMvc.perform(getAllInstructionVersionsReq(exam, id)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+        return mapper.readValue<List<T>>(responseContent)
+    }
+
     inline fun <reified F : InstructionBaseFilters, reified I : InstructionOut, reified O : InstructionFilterOptions> getAllInstructions(
-        exam: Exam,
         filters: F? = null,
         user: RequestPostProcessor? = null
     ): InstructionListDtoOut<I, O> {
+        val exam = examByTestInstructionOutClass(I::class)
         val res = mockMvc.perform(getAllInstructionsReq(exam, filters, user))
             .andExpect(status().isOk)
             .andReturn().response.contentAsString
@@ -91,41 +99,28 @@ abstract class InstructionRequests {
         return mapper.readValue<InstructionListDtoOut<I, O>>(res)
     }
 
-    fun updateInstruction(
+    fun updateInstructionReq(
         id: Int,
-        certificateIn: String,
-        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
-        objectMapper: ObjectMapper
+        instructionIn: String,
+        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
+        newAttachments: List<InstructionAttachmentIn> = emptyList()
     ): MockHttpServletRequestBuilder {
-        val instructionPart = MockPart("instruction", certificateIn.toByteArray())
+        val instructionPart = MockPart("instruction", instructionIn.toByteArray())
         instructionPart.headers.contentType = MediaType.APPLICATION_JSON
 
         val reqBuilder = MockMvcRequestBuilders.multipart(HttpMethod.PUT, "${Constants.API_PREFIX}/instruction/$id")
             .part(instructionPart)
 
+        // Lisää nykyiset liitteet ja niiden metadata
         attachmentsMetadata.forEach {
-            val metadataPart = MockPart(
-                "attachments-metadata", objectMapper.writeValueAsString(it).toByteArray()
-            )
+            val metadataPart = MockPart("attachments-metadata", mapper.writeValueAsString(it).toByteArray())
             metadataPart.headers.contentType = MediaType.APPLICATION_JSON
             reqBuilder.part(metadataPart)
         }
-
-        return reqBuilder
-    }
-
-
-    fun postInstruction(
-        certificate: String, attachmentParts: List<InstructionAttachmentIn>, objectMapper: ObjectMapper
-    ): MockHttpServletRequestBuilder {
-        val instructionPart = MockPart("instruction", certificate.toByteArray())
-        instructionPart.headers.contentType = MediaType.APPLICATION_JSON
-
-        val reqBuilder = MockMvcRequestBuilders.multipart(HttpMethod.POST, "${Constants.API_PREFIX}/instruction")
-            .part(instructionPart)
-        attachmentParts.forEach {
+        // Lisää uudet liitteet ja niiden metadata
+        newAttachments.forEach {
             val metadataPart = MockPart(
-                "attachments-metadata", objectMapper.writeValueAsString(it.metadata).toByteArray()
+                "new-attachments-metadata", mapper.writeValueAsString(it.metadata).toByteArray()
             )
             metadataPart.headers.contentType = MediaType.APPLICATION_JSON
             reqBuilder.file(mockMultipartFile(it.file))
@@ -135,9 +130,53 @@ abstract class InstructionRequests {
         return reqBuilder
     }
 
-    fun getInstruction(exam: Exam, id: Int) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id")
-            .contentType(MediaType.APPLICATION_JSON)
+    fun performInstructionUpdate(
+        instructionId: Int,
+        updatedInstructionDtoInStr: String,
+        updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
+        newAttachments: List<InstructionAttachmentIn> = emptyList(),
+        updaterUser: RequestPostProcessor = yllapitajaUser
+    ): Int = mockMvc.perform(
+        updateInstructionReq(
+            instructionId,
+            updatedInstructionDtoInStr,
+            updatedInstructionAttachmentsMetadata,
+            newAttachments
+        ).with(updaterUser)
+    ).andExpect(status().isOk).andReturn().response.contentAsString.toInt()
+
+
+    fun createInstructionReq(
+        certificate: String, attachmentParts: List<InstructionAttachmentIn>
+    ): MockHttpServletRequestBuilder {
+        val instructionPart = MockPart("instruction", certificate.toByteArray())
+        instructionPart.headers.contentType = MediaType.APPLICATION_JSON
+
+        val reqBuilder = MockMvcRequestBuilders.multipart(HttpMethod.POST, "${Constants.API_PREFIX}/instruction")
+            .part(instructionPart)
+        attachmentParts.forEach {
+            val metadataPart = MockPart(
+                "attachments-metadata", mapper.writeValueAsString(it.metadata).toByteArray()
+            )
+            metadataPart.headers.contentType = MediaType.APPLICATION_JSON
+            reqBuilder.file(mockMultipartFile(it.file))
+            reqBuilder.part(metadataPart)
+        }
+
+        return reqBuilder
+    }
+
+    inline fun <reified T : InstructionOut> createInstruction(
+        certificateIn: String,
+        attachmentParts: List<InstructionAttachmentIn> = emptyList(),
+        user: RequestPostProcessor = yllapitajaUser
+    ): T {
+        val responseBody =
+            mockMvc.perform(createInstructionReq(certificateIn, attachmentParts).with(user))
+                .andExpect(status().isOk).andReturn().response.contentAsString
+
+        return mapper.readValue(responseBody)
+    }
 
     fun readAttachmentFixtureFile(attachmentFixtureFileName: String, partName: String): MockMultipartFile {
         val file = Paths.get("src/main/resources/fixtures/$attachmentFixtureFileName")
@@ -148,33 +187,8 @@ abstract class InstructionRequests {
         )
     }
 
-    fun uploadInstructionAttachment(
-        exam: Exam,
-        instructionId: Int,
-        instructionAttachmentMetadata: InstructionAttachmentMetadataDtoIn,
-        file: MultipartFile,
-        objectMapper: ObjectMapper
-    ): MockMultipartHttpServletRequestBuilder {
-        val reqBuilder = MockMvcRequestBuilders.multipart(
-            HttpMethod.POST,
-            "${Constants.API_PREFIX}/instruction/attachment/$exam/$instructionId"
-        )
-
-        val metadataPart = MockPart(
-            "attachment-metadata", objectMapper.writeValueAsString(instructionAttachmentMetadata).toByteArray()
-        )
-        metadataPart.headers.contentType = MediaType.APPLICATION_JSON
-        reqBuilder.file(mockMultipartFile(file))
-        reqBuilder.part(metadataPart)
-
-        return reqBuilder
-    }
-
-    fun deleteInstructionAttachment(fileKey: String) =
-        MockMvcRequestBuilders.delete("${Constants.API_PREFIX}/instruction/attachment/$fileKey")
-
-    fun downloadInstructionAttachment(fileKey: String) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/attachment/$fileKey")
+    fun downloadInstructionAttachment(fileKey: String, version: Int) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/attachment/$fileKey/$version")
 
     private fun mockMultipartFile(file: MultipartFile): MockMultipartFile =
         when (file) {

@@ -3,8 +3,8 @@ import { Exam } from 'web/src/types'
 import { loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
 import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
-import { createAssignment, initializeAssignmentTest, testAssignmentIn } from './assignmentHelpers'
 import { assertPDFDownload } from '../../assertPdfDownload'
+import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 
 const fileTitle = (exam: Exam) => `Testitehtävä ${exam} PDF download`
 const expectedFileTitle = (exam: Exam, lang: 'fi' | 'sv') => `${fileTitle(exam)} nimi ${lang}`
@@ -51,11 +51,13 @@ loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} assignment pdf download tests`, () => {
     test.beforeEach(async ({ page, context, baseURL }) => {
-      await initializeAssignmentTest(page)
-      const assignmentIn = testAssignmentIn(exam, fileTitle(exam))
-      const assignment = await createAssignment(context, baseURL!, assignmentIn)
+      const form = new AssignmentFormModel(page, exam)
+      await form.showKeys()
 
-      await new AssignmentContentModel(page, exam).gotoAssignmentContentPage(assignment.id)
+      const assignmentIn = form.testAssignmentIn(fileTitle(exam))
+      const assignment = await form.assignmentApiCalls(context, baseURL!).create(assignmentIn)
+
+      await new AssignmentContentModel(page, exam).goToContentPage(assignment.id)
     })
 
     test(`${exam} assignment pdf download test`, async ({ page }) => {

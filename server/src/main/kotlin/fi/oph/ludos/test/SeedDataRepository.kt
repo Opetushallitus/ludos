@@ -197,15 +197,15 @@ class SeedDataRepository(
         val attachments: List<InstructionAttachmentIn> = listOf(
             InstructionAttachmentIn(
                 readAttachmentFixtureFile("fixture1.pdf"),
-                InstructionAttachmentMetadataDtoIn(null, "Fixture1 pdf", Language.FI)
+                InstructionAttachmentMetadataDtoIn(null, "Fixture1 pdf", Language.FI, 1)
             ),
             InstructionAttachmentIn(
                 readAttachmentFixtureFile("fixture2.pdf"),
-                InstructionAttachmentMetadataDtoIn(null, "Fixture2 pdf", Language.SV)
+                InstructionAttachmentMetadataDtoIn(null, "Fixture2 pdf", Language.SV, 1)
             ),
             InstructionAttachmentIn(
                 readAttachmentFixtureFile("fixture3.pdf"),
-                InstructionAttachmentMetadataDtoIn(null, "Fixture3 pdf", Language.FI)
+                InstructionAttachmentMetadataDtoIn(null, "Fixture3 pdf", Language.FI, 1)
             ),
         )
 

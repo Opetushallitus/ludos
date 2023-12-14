@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     developmentOnly(Spring.boot.devTools)
+    implementation("io.arrow-kt:arrow-core:_")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:_")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:_")
     implementation("fi.vm.sade.java-utils:java-http:_")

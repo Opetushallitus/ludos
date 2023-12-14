@@ -30,19 +30,30 @@ export function loginTestGroup(test: typeof importedTest, role: Role) {
   test.use({ storageState: authFileByRole[role] })
 }
 
-export async function postWithSession(context: BrowserContext, url: string, body: string) {
+export async function fetchWithSession(
+  context: BrowserContext,
+  url: string,
+  body: string | FormData,
+  method: 'POST' | 'PUT'
+) {
   const storageState = await context.storageState()
   const sessionCookie = storageState.cookies.find((cookie) => cookie.name === 'SESSION')
   if (!sessionCookie) {
     throw new Error('Session cookie not found from storagestate, did you authenticate?')
   }
+
+  const headers: { [key: string]: string } = {
+    Cookie: `SESSION=${sessionCookie.value}`
+  }
+
+  if (!(body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json'
+  }
+
   return await fetch(url, {
-    method: 'POST',
+    method,
     body,
-    headers: {
-      'Content-Type': 'application/json',
-      Cookie: `SESSION=${sessionCookie?.value}`
-    }
+    headers
   })
 }
 

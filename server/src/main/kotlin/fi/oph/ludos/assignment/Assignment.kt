@@ -123,6 +123,7 @@ data class PuhviAssignmentDtoIn(
 )
 interface AssignmentOut : ContentBaseOut, Assignment {
     val isFavorite: Boolean
+    val version: Int
 }
 
 @JsonTypeName("SUKO")
@@ -140,7 +141,9 @@ data class SukoAssignmentDtoOut(
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val isFavorite: Boolean,
+    override val version: Int,
     val assignmentTypeKoodiArvo: String,
     val oppimaara: Oppimaara,
     val tavoitetasoKoodiArvo: String?,
@@ -163,7 +166,9 @@ data class PuhviAssignmentDtoOut(
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val isFavorite: Boolean,
+    override val version: Int,
     val assignmentTypeKoodiArvo: String,
     val lukuvuosiKoodiArvos: Array<String>,
     override val exam: Exam = Exam.PUHVI
@@ -184,7 +189,9 @@ data class LdAssignmentDtoOut(
     override val laajaalainenOsaaminenKoodiArvos: Array<String>,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val isFavorite: Boolean,
+    override val version: Int,
     val lukuvuosiKoodiArvos: Array<String>,
     val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD

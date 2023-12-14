@@ -64,36 +64,51 @@ class CertificateController(val service: CertificateService) {
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole
     fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? =
-        service.getCertificateById(id, exam) ?: throw ResponseStatusException(
+        service.getCertificateById(id, exam, null) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            "Certificate not found $id"
+            "Certificate $id not found"
         )
+
+    @GetMapping("{exam}/{id}/{version}")
+    @RequireAtLeastYllapitajaRole
+    fun getCertificateVersion(
+        @PathVariable exam: Exam,
+        @PathVariable("id") id: Int,
+        @PathVariable("version") version: Int
+    ): CertificateOut = service.getCertificateById(id, exam, version) ?: throw ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "Certificate $id or its version $version not found"
+    )
+
+    @GetMapping("{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfCertificate(@PathVariable exam: Exam, @PathVariable id: Int): List<CertificateOut> =
+        service.getAllVersionsOfCertificate(exam, id)
 
     @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
-    fun updateCertificate(
+    fun createNewVersionOfCertificate(
         @PathVariable("id") id: Int,
         @Valid @RequestPart("certificate") certificate: Certificate,
         @RequestPart("attachmentFi") attachment: MultipartFile?,
         @RequestPart("attachmentSv") attachmentSv: MultipartFile?
-    ): Int? = when (certificate) {
-        is SukoCertificateDtoIn -> service.updateSukoCertificate(id, certificate, attachment)
-        is LdCertificateDtoIn -> service.updateLdCertificate(
-            id,
-            certificate,
-            attachment,
-            attachmentSv
+    ): Int = service.createNewVersionOfCertificate(id, certificate, attachment, attachmentSv)
+        ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Certificate $id not found"
         )
 
-        is PuhviCertificateDtoIn -> service.updatePuhviCertificate(
-            id,
-            certificate,
-            attachment,
-            attachmentSv
+    @PostMapping("{exam}/{id}/{version}/restore")
+    @RequireAtLeastYllapitajaRole
+    fun restoreOldVersionOfCertificate(
+        @PathVariable exam: Exam,
+        @PathVariable id: Int,
+        @PathVariable version: Int,
+    ): Int = service.restoreOldVersionOfCertificate(exam, id, version)
+        ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Certificate $id not found"
         )
-
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
-    }
 
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole

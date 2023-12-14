@@ -73,12 +73,14 @@ data class PuhviInstructionDtoIn(
 interface InstructionAttachmentMetadata {
     val name: String
     val language: Language
+    val instructionVersion: Int
 }
 
 data class InstructionAttachmentMetadataDtoIn(
     val fileKey: String?,
     override val name: String,
-    override val language: Language
+    override val language: Language,
+    override val instructionVersion: Int
 ) : InstructionAttachmentMetadata
 
 data class InstructionAttachmentIn(
@@ -94,6 +96,7 @@ data class InstructionAttachmentIn(
 )
 interface InstructionOut : ContentBaseOut, Instruction {
     val attachments: List<InstructionAttachmentDtoOut>
+    val version: Int
 }
 
 @JsonTypeName("SUKO")
@@ -109,8 +112,10 @@ data class SukoInstructionDtoOut(
     override val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
+    override val version: Int,
     override val exam: Exam = Exam.SUKO
 ) : InstructionOut
 
@@ -126,8 +131,10 @@ data class LdInstructionDtoOut(
     override val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
+    override val version: Int,
     override val exam: Exam = Exam.LD
 ) : InstructionOut
 
@@ -144,8 +151,10 @@ data class PuhviInstructionDtoOut(
     override val attachments: List<InstructionAttachmentDtoOut>,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
+    override val version: Int,
     override val exam: Exam = Exam.PUHVI
 ) : InstructionOut
 
@@ -173,7 +182,8 @@ data class InstructionAttachmentDtoOut(
     override val fileName: String,
     override val fileUploadDate: Timestamp,
     override val name: String,
-    override val language: Language
+    override val language: Language,
+    override val instructionVersion: Int
 ) : AttachmentOut, InstructionAttachmentMetadata
 
 sealed interface InstructionBaseFilters : BaseFilters {

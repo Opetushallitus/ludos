@@ -22,6 +22,7 @@ interface ContentBaseOut {
     val updatedAt: Timestamp
     val authorOid: String
     val updaterOid: String
+    val updaterName: String?
 }
 
 // NOTE: This enum must match the postgres enum type language
