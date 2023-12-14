@@ -35,8 +35,8 @@ export const examPath = (exam: Exam) => `/${exam.toLowerCase()}`
 
 export const feedbackPath = () => `/${palautteetKey}`
 
-export const contentPagePath = (exam: Exam, contentType: ContentType, id: number) =>
-  `${examPath(exam)}/${contentType}/${id}`
+export const contentPagePath = (exam: Exam, contentType: ContentType, id: number, version?: number) =>
+  `${examPath(exam)}/${contentType}/${id}${version ? `/${version}` : ''}`
 
 export const contentListPath = (exam: Exam, contentType: ContentType, search?: string) =>
   `${examPath(exam)}/${contentType}${search ?? ''}`
@@ -45,6 +45,8 @@ export const editingFormPath = (exam: Exam, contentType: ContentType, id: number
   `${examPath(exam)}/${contentType}/${muokkausKey}/${id}`
 
 export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`
+
+export const pageNotFoundPath = '/sivua-ei-loydy'
 
 const Content = lazy(() => import('./content/Content'))
 const AssignmentForm = lazy(() => import('./forms/AssignmentForm'))
@@ -227,6 +229,16 @@ function examRoute(exam: Exam): RouteObject {
       {
         element: <YllapitajaRoute />,
         children: [
+          {
+            path: ':contentType/:id/:version',
+            element: (
+              <Layout>
+                <SpinnerSuspense>
+                  <Content exam={exam} isPresentation={false} />
+                </SpinnerSuspense>
+              </Layout>
+            )
+          },
           ...contentFormRoutes(ContentType.koetehtavat, AssignmentForm),
           ...contentFormRoutes(ContentType.ohjeet, InstructionForm),
           ...contentFormRoutes(ContentType.todistukset, CertificateForm)

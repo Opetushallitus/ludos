@@ -1,0 +1,1 @@
+ALTER TABLE certificate ALTER COLUMN attachment_file_key_sv SET NOT NULL;

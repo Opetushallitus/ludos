@@ -16,7 +16,9 @@ class KayttooikeusClient : CasAuthenticationClient("kayttooikeus-service") {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     fun kayttooikeudet(username: String): List<KayttooikeusServiceKayttaja> {
-        val req = OphHttpRequest.Builder.get("https://$opintopolkuHostname/kayttooikeus-service/kayttooikeus/kayttaja?username=$username").build()
+        val req =
+            OphHttpRequest.Builder.get("https://$opintopolkuHostname/kayttooikeus-service/kayttooikeus/kayttaja?username=$username")
+                .build()
 
         return try {
             this.httpClient.execute<List<KayttooikeusServiceKayttaja>>(req).expectedStatus(HttpStatus.OK.value())
@@ -31,9 +33,22 @@ class KayttooikeusClient : CasAuthenticationClient("kayttooikeus-service") {
 
 data class OppijanumeroRekisteriHenkilo(
     val etunimet: String,
+    val kutsumanimi: String,
     val sukunimi: String,
     val asiointiKieli: Asiointikieli?
-)
+) {
+    constructor(kayttajatiedot: Kayttajatiedot) : this(
+        kayttajatiedot.etunimet ?: "-",
+        kayttajatiedot.etunimet ?: "",
+        kayttajatiedot.sukunimi ?: "-",
+        null
+    )
+
+    fun formatName(): String {
+        val etu = kutsumanimi.ifBlank { etunimet }
+        return "$etu $sukunimi"
+    }
+}
 
 data class KayttooikeusServiceKayttaja(
     val oidHenkilo: String,

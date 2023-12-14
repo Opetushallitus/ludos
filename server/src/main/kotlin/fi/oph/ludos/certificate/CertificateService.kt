@@ -1,6 +1,8 @@
 package fi.oph.ludos.certificate
 
+import arrow.core.Either
 import fi.oph.ludos.Exam
+import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
@@ -13,7 +15,11 @@ import software.amazon.awssdk.core.exception.SdkException
 import java.io.InputStream
 
 @Service
-class CertificateService(val repository: CertificateRepository, val s3Helper: S3Helper) {
+class CertificateService(
+    val repository: CertificateRepository,
+    val s3Helper: S3Helper,
+    val oppijanumerorekisteriClient: OppijanumerorekisteriClient
+) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun getCertificates(exam: Exam, filters: CertificateFilters): List<CertificateOut> =
@@ -36,28 +42,73 @@ class CertificateService(val repository: CertificateRepository, val s3Helper: S3
     ): CertificateOut =
         repository.createPuhviCertificate(attachmentFi, attachmentSv, certificate)
 
-    fun getCertificateById(id: Int, exam: Exam): CertificateOut? = repository.getCertificateById(id, exam)
+    fun getCertificateById(id: Int, exam: Exam, version: Int?): CertificateOut? =
+        repository.getCertificateById(id, exam, version)
 
-    fun updateSukoCertificate(
-        id: Int,
-        certificateDtoIn: SukoCertificateDtoIn,
-        attachmentFi: MultipartFile?
-    ) = repository.updateSukoCertificate(id, certificateDtoIn, attachmentFi)
+    fun getAllVersionsOfCertificate(exam: Exam, id: Int): List<CertificateOut> =
+        addUpdaterNames(repository.getAllVersionsOfCertificate(id, exam))
 
-    fun updateLdCertificate(
+    fun addUpdaterNames(assignments: List<CertificateOut>): List<CertificateOut> {
+        val uniqueOids = assignments.map { it.updaterOid }.toSet()
+        val oidToName = uniqueOids.associateWith { oppijanumerorekisteriClient.getUserDetailsByOid(it) }
+        return assignments.map {
+            val updaterName = oidToName.getOrDefault(it.updaterOid, null)?.formatName()
+            when (it) {
+                is SukoCertificateDtoOut -> it.copy(updaterName = updaterName)
+                is LdCertificateDtoOut -> it.copy(updaterName = updaterName)
+                is PuhviCertificateDtoOut -> it.copy(updaterName = updaterName)
+            }
+        }
+    }
+
+
+    fun createNewVersionOfCertificate(
         id: Int,
-        certificateDtoIn: LdCertificateDtoIn,
+        certificate: Certificate,
         attachmentFi: MultipartFile?,
         attachmentSv: MultipartFile?
-    ) = repository.updateLdCertificate(id, certificateDtoIn, attachmentFi, attachmentSv)
+    ) = when (certificate) {
+        is SukoCertificateDtoIn -> repository.createNewVersionOfSukoCertificate(
+            id,
+            certificate,
+            Either.Right(attachmentFi)
+        )
 
-    fun updatePuhviCertificate(
+        is LdCertificateDtoIn -> repository.createNewVersionOfLdCertificate(
+            id,
+            certificate,
+            Either.Right(Pair(attachmentFi, attachmentSv))
+        )
+
+        is PuhviCertificateDtoIn -> repository.createNewVersionOfPuhviCertificate(
+            id,
+            certificate,
+            Either.Right(Pair(attachmentFi, attachmentSv))
+        )
+
+        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+    }
+
+    fun restoreOldVersionOfCertificate(
+        exam: Exam,
         id: Int,
-        certificateDtoIn: PuhviCertificateDtoIn,
-        attachmentFi: MultipartFile?,
-        attachmentSv: MultipartFile?
-    ) = repository.updatePuhviCertificate(id, certificateDtoIn, attachmentFi, attachmentSv)
+        version: Int
+    ): Int? {
+        val certificateToRestore = repository.getCertificateById(id, exam, version) ?: return null
+        return when (certificateToRestore) {
+            is SukoCertificateDtoOut -> repository.createNewVersionOfSukoCertificate(
+                id, SukoCertificateDtoIn(certificateToRestore), Either.Left(version)
+            )
 
+            is LdCertificateDtoOut -> repository.createNewVersionOfLdCertificate(
+                id, LdCertificateDtoIn(certificateToRestore), Either.Left(version)
+            )
+
+            is PuhviCertificateDtoOut -> repository.createNewVersionOfPuhviCertificate(
+                id, PuhviCertificateDtoIn(certificateToRestore), Either.Left(version)
+            )
+        }
+    }
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {
         val fileUpload = repository.getCertificateAttachmentByFileKey(key) ?: throw ResponseStatusException(

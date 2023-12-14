@@ -3,55 +3,6 @@ import { Exam, KoodistoName } from 'web/src/types'
 import { FormAction, koodiLabel, selectAttachmentFile, setSingleSelectDropdownOption } from '../../helpers'
 import { AttachmentFormType, CertificateFormType } from 'web/src/components/forms/schemas/certificateSchema'
 
-function certificateNameByAction(action: FormAction): string {
-  switch (action) {
-    case 'submit':
-      return 'Testi todistus'
-    case 'draft':
-      return 'Testi todistus draft'
-    case 'cancel':
-      return 'Testi todistus cancel'
-    case 'delete':
-      return 'Testi todistus delete'
-  }
-}
-
-const attachment1: AttachmentFormType = {
-  name: 'fixture1.pdf',
-  size: 323,
-  fileName: 'fixture1.pdf',
-  fileKey: '123-123'
-}
-
-const attachment2: AttachmentFormType = {
-  name: 'fixture2.pdf',
-  size: 331,
-  fileName: 'fixture2.pdf',
-  fileKey: '123-123'
-}
-
-export const createCertificateInputs = (exam: Exam, action: FormAction): CertificateFormType => ({
-  exam: exam,
-  nameFi: certificateNameByAction(action),
-  nameSv: `${certificateNameByAction(action)} sv`,
-  descriptionFi: 'Todistuksen kuvaus FI',
-  descriptionSv: 'Todistuksen kuvaus SV',
-  attachmentFi: attachment1,
-  attachmentSv: attachment1,
-  aineKoodiArvo: '9'
-})
-
-export const updateCertificateInputs = (exam: Exam, action: FormAction): CertificateFormType => ({
-  exam: exam,
-  nameFi: `${certificateNameByAction(action)} updated`,
-  nameSv: `${certificateNameByAction(action)} sv updated`,
-  descriptionFi: 'Todistuksen kuvaus FI updated',
-  descriptionSv: 'Todistuksen kuvaus SV updated',
-  attachmentFi: attachment2,
-  attachmentSv: attachment2,
-  aineKoodiArvo: '9'
-})
-
 export async function fillCertificateForm(page: Page, exam: Exam, inputs: CertificateFormType) {
   const isSuko = exam === Exam.SUKO
   const isLd = exam === Exam.LD

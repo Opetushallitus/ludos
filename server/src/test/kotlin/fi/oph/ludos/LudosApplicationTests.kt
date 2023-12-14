@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import java.time.ZonedDateTime
 
+
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 @WithSecurityContext(factory = UnauthorizedSecurityContextFactory::class)
@@ -95,12 +96,12 @@ class LaatijaSecurityContextFactory : LudosSecurityContextFactory() {
 
 class YllapitajaSecurityContextFactory : LudosSecurityContextFactory() {
     override fun kayttajatiedot() = Kayttajatiedot(
-        "1.2.246.562.24.00000000004",
+        "1.2.246.562.24.71159575596", // ludos_mocklogin -käyttäjän OID untuvalla
         "YrjoYllapitaja",
         "VIRKAILIJA",
         listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(Role.YLLAPITAJA.oikeus)))),
-        "Yrjö",
-        "Ylläpitäjä",
+        "Yrjo",
+        "Yllapitaja",
         null
     )
 }

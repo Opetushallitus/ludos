@@ -1,8 +1,7 @@
-import { BrowserContext, expect, Page } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 import {
   FormAction,
   koodiLabel,
-  postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
@@ -19,7 +18,6 @@ import {
   SukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
-import { LayoutModel } from '../../models/LayoutModel'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
@@ -118,11 +116,6 @@ export function formDataForUpdate(exam: Exam, action: FormAction) {
   const updateFormData = updateAssignmentFormDataByExam[exam]
   updateFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
   return updateFormData
-}
-
-export async function initializeAssignmentTest(page: Page) {
-  await page.goto('/')
-  await new LayoutModel(page).showLocalizationKeys()
 }
 
 async function fillCommonAssignmentFields(page: Page, exam: Exam, formData: AnyAssignmentFormType) {
@@ -291,51 +284,6 @@ export async function assertPuhviAssignmentContentPage(page: Page, expectedFormD
   await expect(page.getByTestId('puhvi-tehtavatyyppi')).toHaveText(
     await koodiLabel(KoodistoName.TEHTAVATYYPPI_PUHVI, expectedFormData.assignmentTypeKoodiArvo)
   )
-}
-
-export function testAssignmentIn(exam: Exam, assignmentNameBase: string) {
-  const base = {
-    exam: exam,
-    nameFi: `${assignmentNameBase} nimi fi`,
-    nameSv: `${assignmentNameBase} nimi sv`,
-    contentFi: [`${assignmentNameBase} sisältö fi`],
-    contentSv: [`${assignmentNameBase} sisältö sv`],
-    instructionFi: `${assignmentNameBase} ohje fi`,
-    instructionSv: `${assignmentNameBase} ohje sv`,
-    publishState: 'PUBLISHED',
-    laajaalainenOsaaminenKoodiArvos: []
-  }
-
-  if (exam === Exam.SUKO) {
-    return {
-      ...base,
-      assignmentTypeKoodiArvo: '003',
-      oppimaara: {
-        oppimaaraKoodiArvo: 'TKRUA1'
-      },
-      oppimaaraKielitarjontaKoodiArvo: null,
-      tavoitetasoKoodiArvo: null,
-      aiheKoodiArvos: []
-    }
-  } else if (exam === Exam.LD) {
-    return {
-      ...base,
-      lukuvuosiKoodiArvos: ['20202021'],
-      aineKoodiArvo: '1'
-    }
-  } else if (exam === Exam.PUHVI) {
-    return {
-      ...base,
-      assignmentTypeKoodiArvo: '002',
-      lukuvuosiKoodiArvos: ['20202021']
-    }
-  } else {
-    throw new Error('Unknown exam')
-  }
-}
-
-export async function createAssignment(context: BrowserContext, baseURL: string, assignment: any) {
-  return (await postWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment))).json()
 }
 
 export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>

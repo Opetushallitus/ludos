@@ -2,7 +2,6 @@ import { expect, Page, test } from '@playwright/test'
 import { assertInputValues, assertSuccessNotification, FormAction, loginTestGroup, Role } from '../../helpers'
 import {
   assertAssignmentContentPage,
-  AssignmentTextContent,
   contentIdFromContentPage,
   fillAssignmentForm,
   formDataForCreate,
@@ -15,19 +14,7 @@ import {
   isPuhviAssignmentFormType,
   isSukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
-
-function appendMuokattuToTextFields(assignmentTextContent: AssignmentTextContent): AssignmentTextContent {
-  return {
-    nameFi: `${assignmentTextContent.nameFi} muokattu`,
-    nameSv: `${assignmentTextContent.nameSv} updaterad`,
-    instructionFi: `${assignmentTextContent.instructionFi} muokattu`,
-    instructionSv: `${assignmentTextContent.instructionSv} updaterad`,
-    contentFi: assignmentTextContent.contentFi.map((s) => `${s} muokattu`),
-    contentSv: assignmentTextContent.contentSv.map((s) => `${s} updaterad`)
-  }
-}
-
-loginTestGroup(test, Role.YLLAPITAJA)
+import { FormModel } from '../../models/FormModel'
 
 async function clickFormAction(page: Page, action: FormAction) {
   await page.getByTestId(`form-${action}`).click()
@@ -129,12 +116,11 @@ async function deleteAssignment(page: Page, exam: Exam, assignmentId: number) {
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 
+loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} assignment form tests`, () => {
     test.beforeEach(async ({ page }) => {
-      await page.goto('/')
-      await page.getByTestId('header-language-dropdown-expand').click()
-      await page.getByText('Näytä avaimet').click()
+      await new FormModel(page, exam).showKeys()
       await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
       await page.getByTestId('create-koetehtava-button').click()
     })

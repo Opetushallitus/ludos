@@ -1,4 +1,4 @@
-import test, { expect, Page } from '@playwright/test'
+import test, { expect } from '@playwright/test'
 import {
   assertFailureNotification,
   assertSuccessNotification,
@@ -19,8 +19,8 @@ const formData: MinimalInstructionDataWithAltText = {
   imageAltText: 'Kuvassa on punainen laatikko'
 }
 
-export async function assertCreatedInstruction(page: Page) {
-  const content = new InstructionContentModel(page)
+export async function assertCreatedInstruction(form: InstructionFormModel) {
+  const content = new InstructionContentModel(form.page, form.exam)
   await expect(content.publishState).toHaveText('state.julkaistu')
   await expect(content.header).toHaveText(formData.nameFi)
   const image = content.contentFi.getByRole('img', { name: formData.imageAltText })
@@ -39,13 +39,13 @@ async function createInstructionWithImage(form: InstructionFormModel, imageFileP
   await form.submitButton.click()
 
   await assertSuccessNotification(form.page, 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
-  await assertCreatedInstruction(form.page)
+  await assertCreatedInstruction(form)
 }
 
 async function updateImageAttributes(form: InstructionFormModel) {
   const editedAltText = `${formData.imageAltText} muokattu`
 
-  await new InstructionContentModel(form.page).editButton.click()
+  await new InstructionContentModel(form.page, form.exam).editButton.click()
   ;(await form.contentFiEditor.imageEditorByAltText(formData.imageAltText)).altInput.fill(editedAltText)
   const imageEditor = await form.contentFiEditor.imageEditorByAltText(editedAltText)
   await imageEditor.selectImageSize(ImageSizeOption.small)

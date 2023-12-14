@@ -38,6 +38,9 @@ export type BaseOut = {
   publishState: PublishState
   createdAt: string
   updatedAt: string
+  updaterOid: string
+  updaterName: string | null
+  version: number
 }
 
 export type AssignmentOut = BaseOut & {

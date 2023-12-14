@@ -78,7 +78,8 @@ export const InstructionContent = ({ instruction, teachingLanguage, isPresentati
             <Fragment key={index}>
               <ExternalLink
                 className="text-green-primary"
-                url={`${DOWNLOAD_INSTRUCTION_ATTACHMENT_URL}/${attachment.fileKey}`}>
+                url={`${DOWNLOAD_INSTRUCTION_ATTACHMENT_URL}/${attachment.fileKey}/${instruction.version}`}
+                data-testid="attachment-link">
                 {attachment.name}
               </ExternalLink>
               {index !== instruction.attachments.length - 1 && (

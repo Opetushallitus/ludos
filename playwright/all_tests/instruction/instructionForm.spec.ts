@@ -1,15 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
-import {
-  assertCreatedInstruction,
-  assertUpdatedInstruction,
-  fillInstructionForm,
-  initializeInstructionTest,
-  instructionFormData,
-  updateAttachments
-} from './instructionHelpers'
+import { assertUpdatedInstruction, initializeInstructionTest, updateAttachments } from './instructionHelpers'
 import {
   assertSuccessNotification,
-  createFilePathToFixtures,
   FormAction,
   koodiLabel,
   loginTestGroup,
@@ -18,30 +10,6 @@ import {
 } from '../../helpers'
 import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
-
-async function createInstruction(form: InstructionFormModel, action: FormAction, expectedNotification: string) {
-  await fillInstructionForm({
-    form,
-    ...instructionFormData
-  })
-
-  if (action === 'submit') {
-    void form.submitButton.click()
-  } else {
-    void form.draftButton.click()
-  }
-
-  const response = await form.page.waitForResponse(
-    (response) => response.url().includes('/api/instruction') && response.ok()
-  )
-  const responseData = await response.json()
-  const instructionToUpdate = responseData.id
-
-  await assertSuccessNotification(form.page, expectedNotification)
-  await assertCreatedInstruction(form, action)
-
-  return instructionToUpdate
-}
 
 async function updateInstruction(
   form: InstructionFormModel,
@@ -68,8 +36,7 @@ async function updateInstruction(
   }
 
   await page.getByTestId(`instruction-${instructionId}-edit`).click()
-  await fillInstructionForm({
-    form: form,
+  await form.fillInstructionForm({
     nameFi: 'Testi ohje muokattu',
     nameSv: 'Testuppgifter redigerade',
     contentFi: 'Testi sisältö muokattu',
@@ -95,7 +62,7 @@ async function navigateToInstructionExamPage(page: Page, exam: Exam) {
 async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
   const form = new InstructionFormModel(page, exam)
 
-  const instructionId = await createInstruction(form, 'submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
+  const instructionId = await form.createInstruction('submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
   await updateInstruction(form, instructionId, 'submit', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
   await updateAttachments(page)
   await updateInstruction(
@@ -112,7 +79,7 @@ async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
 async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
   const form = new InstructionFormModel(page, exam)
 
-  const instructionId = await createInstruction(form, 'draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
+  const instructionId = await form.createInstruction('draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
 
   await updateInstruction(form, instructionId, 'draft', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
   await updateInstruction(
@@ -162,8 +129,7 @@ Object.values(Exam).forEach((exam) => {
     test(`can cancel ${exam} updating instruction`, async ({ page }) => {
       const form = new InstructionFormModel(page, exam)
 
-      const instructionId = await createInstruction(
-        form,
+      const instructionId = await form.createInstruction(
         'submit',
         'form.notification.ohjeen-tallennus.julkaisu-onnistui'
       )
@@ -176,27 +142,6 @@ Object.values(Exam).forEach((exam) => {
       const btn = page.getByTestId('form-cancel')
       await expect(btn).toHaveText('button.peruuta')
       await btn.click()
-    })
-
-    test(`${exam} failing of attachment upload is handled correctly`, async ({ page }) => {
-      const form = new InstructionFormModel(page, exam)
-
-      await fillInstructionForm({
-        form,
-        nameFi: 'Liitteen poisto epäonnistumis testi',
-        aineKoodiArvo: exam === Exam.LD ? '9' : undefined
-      })
-
-      await page.getByTestId('form-submit').click()
-      await assertSuccessNotification(page, 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
-
-      await page.getByTestId('edit-content-btn').click()
-
-      const file = createFilePathToFixtures('this-will-fail.txt')
-      await page.getByTestId('file-input-fi').setInputFiles(file)
-
-      const errorMessage = await page.getByTestId('file-upload-error-message').innerText()
-      expect(errorMessage).toContain('form.tiedoston-lataus-epaonnistui')
     })
   })
 })

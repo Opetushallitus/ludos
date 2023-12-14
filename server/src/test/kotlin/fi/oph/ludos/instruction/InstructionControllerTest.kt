@@ -1,20 +1,54 @@
 package fi.oph.ludos.instruction
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
+import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
+import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.TestPropertySource
-import org.springframework.test.web.servlet.request.RequestPostProcessor
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.ZonedDateTime
 import java.util.stream.Stream
 import kotlin.streams.asStream
+
+val minimalSukoInstruction = TestSukoInstructionDtoIn(
+    nameFi = "nameFi",
+    nameSv = "",
+    contentFi = "",
+    contentSv = "",
+    shortDescriptionFi = "",
+    shortDescriptionSv = "",
+    publishState = PublishState.PUBLISHED,
+    exam = Exam.SUKO,
+)
+
+val minimalLdInstruction = TestLdInstructionDtoIn(
+    nameFi = "nameFi",
+    nameSv = "",
+    contentFi = "",
+    contentSv = "",
+    publishState = PublishState.PUBLISHED,
+    aineKoodiArvo = "1",
+    exam = Exam.LD,
+)
+
+val minimalPuhviInstruction = TestPuhviInstructionDtoIn(
+    nameFi = "nameFi",
+    nameSv = "",
+    contentFi = "",
+    contentSv = "",
+    shortDescriptionFi = "",
+    shortDescriptionSv = "",
+    publishState = PublishState.PUBLISHED,
+    exam = Exam.PUHVI,
+)
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -22,28 +56,46 @@ import kotlin.streams.asStream
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InstructionControllerTest : InstructionRequests() {
+    @MockBean
+    private lateinit var mockOppijanumerorekisteriClient: OppijanumerorekisteriClient
+
+    @BeforeAll
+    fun setup() {
+        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+        mockMvc.perform(seedDbWithInstructions().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+    }
+
+    @BeforeEach
+    fun setupMocks() {
+        Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString())) // when does not work in BeforeAll
+            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
+    }
+
+
     val attachments: List<InstructionAttachmentIn> = listOf(
         InstructionAttachmentIn(
             readAttachmentFixtureFile("fixture1.pdf", "attachments"),
-            InstructionAttachmentMetadataDtoIn(null, "Fixture1 pdf", Language.FI)
+            InstructionAttachmentMetadataDtoIn(null, "Fixture1 pdf", Language.FI, 1)
         ), InstructionAttachmentIn(
             readAttachmentFixtureFile("fixture2.pdf", "attachments"),
-            InstructionAttachmentMetadataDtoIn(null, "Fixture2 pdf", Language.SV)
+            InstructionAttachmentMetadataDtoIn(null, "Fixture2 pdf", Language.SV, 1)
         )
     )
-
-    fun assertCommonFieldsBetweenInAndOutEqual(instructionIn: TestInstruction, instructionOut: InstructionOut) {
-        assertEquals(instructionIn.nameFi, instructionOut.nameFi)
-        assertEquals(instructionIn.nameSv, instructionOut.nameSv)
-        assertEquals(instructionIn.contentFi, instructionOut.contentFi)
-        assertEquals(instructionIn.contentSv, instructionOut.contentSv)
-        assertEquals(instructionIn.publishState, instructionOut.publishState)
-    }
 
     fun assertFieldsInAndOutEqual(
         instructionIn: TestInstruction,
         instructionOut: InstructionOut
     ) {
+        assertEquals(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo, instructionOut.authorOid)
+        assertNotNull(instructionOut.id)
+        assertNotNull(instructionOut.createdAt)
+        assertNotNull(instructionOut.updatedAt)
+        assertEquals(instructionIn.nameFi, instructionOut.nameFi)
+        assertEquals(instructionIn.nameSv, instructionOut.nameSv)
+        assertEquals(instructionIn.contentFi, instructionOut.contentFi)
+        assertEquals(instructionIn.contentSv, instructionOut.contentSv)
+        assertEquals(instructionIn.publishState, instructionOut.publishState)
+
         when (instructionIn) {
             is TestLdInstructionDtoIn -> if (instructionOut is LdInstructionDtoOut) {
                 assertEquals(instructionIn.aineKoodiArvo, instructionOut.aineKoodiArvo)
@@ -59,7 +111,6 @@ class InstructionControllerTest : InstructionRequests() {
                 assertEquals(instructionIn.shortDescriptionSv, instructionOut.shortDescriptionSv)
             }
         }
-        assertCommonFieldsBetweenInAndOutEqual(instructionIn, instructionOut)
     }
 
     fun assertAttachments(
@@ -77,6 +128,7 @@ class InstructionControllerTest : InstructionRequests() {
             }
             assertEquals(expectedAttachmentData.file.originalFilename, actual[i].fileName)
             assertEquals(expectedAttachmentMetadata.name, actual[i].name)
+            assertEquals(expectedAttachmentMetadata.instructionVersion, actual[i].instructionVersion)
             assertEquals(expectedAttachmentMetadata.language, actual[i].language)
             assertNotNull(actual[i].fileUploadDate)
             if (uploadDateRange != null) {
@@ -90,28 +142,14 @@ class InstructionControllerTest : InstructionRequests() {
         }
     }
 
-    private fun assertInstructionDtoOut(
-        createdInstruction: InstructionOut,
-        timeBeforeCreate: ZonedDateTime,
-        timeAfterCreate: ZonedDateTime
-    ) {
-        assertEquals(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo, createdInstruction.authorOid)
-        assertNotNull(createdInstruction.id)
-        assertNotNull(createdInstruction.createdAt)
-        assertNotNull(createdInstruction.updatedAt)
-        assertAttachments(attachments, createdInstruction.attachments, Pair(timeBeforeCreate, timeAfterCreate))
-        assertTimeIsRoughlyBetween(timeBeforeCreate, createdInstruction.createdAt, timeAfterCreate, "createdAt")
-    }
-
     data class UpdatedInstructionAssertionData(
         val updatedInstructionDtoIn: TestInstruction,
         val updatedInstructionById: InstructionOut,
         val createdInstruction: InstructionOut,
         val timeBeforeUpdate: ZonedDateTime,
         val timeAfterUpdate: ZonedDateTime,
-        val updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
-        val attachmentToAdd: InstructionAttachmentIn,
-        val addedAttachmentFileKey: String
+        val expectedVersion: Int,
+        val expectedAttachment: List<InstructionAttachmentIn>
     )
 
     private fun assertUpdatedInstruction(assertionData: UpdatedInstructionAssertionData) {
@@ -120,74 +158,38 @@ class InstructionControllerTest : InstructionRequests() {
             assertEquals(createdInstruction.authorOid, updatedInstructionById.authorOid, "Author OIDs should be equal")
             assertEquals(createdInstruction.id, updatedInstructionById.id, "Instruction IDs should be equal")
             assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedInstructionById.updatedAt, timeAfterUpdate, "updatedAt")
+            assertEquals(expectedVersion, updatedInstructionById.version)
 
-            val expectedAttachmentDataAfterUpdate = listOf(
-                attachments[1].copy(metadata = updatedInstructionAttachmentsMetadata[0]),
-                attachmentToAdd.copy(
-                    metadata = attachmentToAdd.metadata.copy(fileKey = addedAttachmentFileKey)
-                )
-            )
-
-            assertAttachments(expectedAttachmentDataAfterUpdate, updatedInstructionById.attachments)
+            assertAttachments(expectedAttachment, updatedInstructionById.attachments)
         }
     }
-
-    private fun generateUpdatedInstructionAttachmentsMetadata(
-        createdInstructionFileKey: String,
-        attachmentToAdd: InstructionAttachmentIn,
-        addedAttachmentFileKey: String
-    ): List<InstructionAttachmentMetadataDtoIn> = listOf(
-        attachments[1].metadata.copy(
-            fileKey = createdInstructionFileKey,
-            name = "Fixture2 pdf updated"
-        ),
-        attachmentToAdd.metadata.copy(fileKey = addedAttachmentFileKey)
-    )
-
-    private fun performInstructionUpdate(
-        instructionId: Int,
-        updatedInstructionDtoInStr: String,
-        updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
-        updaterUser: RequestPostProcessor = yllapitajaUser
-    ): Int = mockMvc.perform(
-        updateInstruction(
-            instructionId,
-            updatedInstructionDtoInStr,
-            updatedInstructionAttachmentsMetadata,
-            mapper
-        ).with(updaterUser)
-    ).andExpect(status().isOk).andReturn().response.contentAsString.toInt()
-
 
     private fun updateInstructionTest(
         exam: Exam,
         createdInstruction: InstructionOut,
-        updatedInstructionDtoIn: TestInstruction,
-        attachmentToAdd: InstructionAttachmentIn,
-        addedAttachmentFileKey: String
-
+        updatedInstructionDtoIn: TestInstruction
     ) {
-        val updatedInstructionAttachmentsMetadata = generateUpdatedInstructionAttachmentsMetadata(
-            createdInstruction.attachments[1].fileKey,
-            attachmentToAdd,
-            addedAttachmentFileKey
+        val newAttachment = InstructionAttachmentIn(
+            readAttachmentFixtureFile("fixture2.pdf", "new-attachments"),
+            InstructionAttachmentMetadataDtoIn(null, "fixture2.pdf", Language.FI, 1)
         )
 
         val timeBeforeUpdate = nowFromDb(mockMvc)
         val updatedId = performInstructionUpdate(
             createdInstruction.id,
             mapper.writeValueAsString(updatedInstructionDtoIn),
-            updatedInstructionAttachmentsMetadata
+            listOf(),
+            listOf(newAttachment)
         )
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         assertEquals(createdInstruction.id, updatedId)
 
-        val updatedInstructionById: InstructionOut = assertInstructionDataClass(
-            updatedInstructionDtoIn,
-            mockMvc.perform(getInstruction(exam, createdInstruction.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-        )
+        val updatedInstructionById = when (exam) {
+            Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
+            Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id)
+            Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id)
+        }
 
         val assertionData = UpdatedInstructionAssertionData(
             updatedInstructionDtoIn,
@@ -195,123 +197,62 @@ class InstructionControllerTest : InstructionRequests() {
             createdInstruction,
             timeBeforeUpdate,
             timeAfterUpdate,
-            updatedInstructionAttachmentsMetadata,
-            attachmentToAdd,
-            addedAttachmentFileKey
+            2,
+            listOf(
+                newAttachment.copy(
+                    metadata = newAttachment.metadata.copy(
+                        instructionVersion = 2
+                    )
+                )
+            )
         )
+
         assertUpdatedInstruction(assertionData)
     }
 
-    fun testInstruction(
-        exam: Exam,
-        instructionDtoIn: TestInstruction,
-        updatedInstructionDtoIn: TestInstruction
-    ) {
+    fun testInstruction(exam: Exam, instructionDtoIn: TestInstruction, updatedInstructionDtoIn: TestInstruction) {
         val timeBeforeCreate = nowFromDb(mockMvc)
-        val createdInstructionStr = mockMvc.perform(
-            postInstruction(
-                mapper.writeValueAsString(instructionDtoIn), attachments, mapper
-            )
-        ).andExpect(status().isOk).andReturn().response.contentAsString
+        val dtoInStr = mapper.writeValueAsString(instructionDtoIn)
+        val createdInstruction = when (exam) {
+            Exam.SUKO -> createInstruction<SukoInstructionDtoOut>(dtoInStr, attachments)
+            Exam.LD -> createInstruction<LdInstructionDtoOut>(dtoInStr, attachments)
+            Exam.PUHVI -> createInstruction<PuhviInstructionDtoOut>(dtoInStr, attachments)
+        }
         val timeAfterCreate = nowFromDb(mockMvc)
 
-        val createdInstruction = assertInstructionDataClass(instructionDtoIn, createdInstructionStr)
-
         assertFieldsInAndOutEqual(instructionDtoIn, createdInstruction)
-        assertInstructionDtoOut(createdInstruction, timeBeforeCreate, timeAfterCreate)
+        assertTimeIsRoughlyBetween(timeBeforeCreate, createdInstruction.createdAt, timeAfterCreate, "createdAt")
+        assertAttachments(attachments, createdInstruction.attachments, Pair(timeBeforeCreate, timeAfterCreate))
 
-        val createdInstructionByIdStr =
-            mockMvc.perform(getInstructionById(exam, createdInstruction.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val createdInstructionById = assertInstructionDataClass(instructionDtoIn, createdInstructionByIdStr)
+        val createdInstructionById = when (exam) {
+            Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
+            Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id)
+            Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id)
+        }
 
         assertEquals(createdInstruction, createdInstructionById)
 
-        val firstAttachmentBytes =
-            mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey))
-                .andExpect(status().isOk).andReturn().response.contentAsByteArray
-        val firstAttachmentExpectedBytes = readAttachmentFixtureFile("fixture1.pdf", "file").bytes
-        assertThat(firstAttachmentBytes.size).isEqualTo(firstAttachmentExpectedBytes.size)
-        assertThat(firstAttachmentBytes).isEqualTo(firstAttachmentExpectedBytes)
-
-        // Delete fixture1.pdf attachment and assert it disappears
-        mockMvc.perform(deleteInstructionAttachment(createdInstruction.attachments[0].fileKey))
-            .andExpect(status().isOk)
-
-        val instructionByIdAfterDeletingAttachmentRes =
-            mockMvc.perform(getInstruction(exam, createdInstruction.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val instructionByIdAfterDeletingAttachment =
-            assertInstructionDataClass(instructionDtoIn, instructionByIdAfterDeletingAttachmentRes)
-
-        assertFieldsInAndOutEqual(instructionDtoIn, instructionByIdAfterDeletingAttachment)
-
-        assertAttachments(
-            listOf(attachments[1]),
-            instructionByIdAfterDeletingAttachment.attachments
-        )
-
-        mockMvc.perform(downloadInstructionAttachment(createdInstruction.attachments[0].fileKey))
-            .andExpect(status().isNotFound)
-
-        // Upload new attachment and assert it appears
-        val attachmentToAdd = InstructionAttachmentIn(
-            readAttachmentFixtureFile("fixture3.pdf", "file"),
-            InstructionAttachmentMetadataDtoIn(null, "Fixture3 pdf", Language.FI)
-        )
-
-        val timeBeforeUpload = nowFromDb(mockMvc)
-        val addedAttachmentStr = mockMvc.perform(
-            uploadInstructionAttachment(
-                exam,
-                createdInstruction.id,
-                attachmentToAdd.metadata,
-                attachmentToAdd.file,
-                mapper
-            )
-        ).andExpect(status().isOk).andReturn().response.contentAsString
-        val timeAfterUpload = nowFromDb(mockMvc)
-        val addedAttachment: InstructionAttachmentDtoOut = mapper.readValue(addedAttachmentStr)
-
-        val instructionByIdAfterAddingAttachmentStr =
-            mockMvc.perform(getInstruction(exam, createdInstruction.id)).andExpect(status().isOk)
-                .andReturn().response.contentAsString
-
-        val instructionByIdAfterAddingAttachment: InstructionOut =
-            assertInstructionDataClass(instructionDtoIn, instructionByIdAfterAddingAttachmentStr)
-
-        assertFieldsInAndOutEqual(instructionDtoIn, instructionByIdAfterAddingAttachment)
-        assertAttachments(listOf(attachments[1], attachmentToAdd), instructionByIdAfterAddingAttachment.attachments)
-        assertTimeIsRoughlyBetween(
-            timeBeforeUpload,
-            addedAttachment.fileUploadDate,
-            timeAfterUpload,
-            "separately uploaded attachment uploadDate"
-        )
-        assertEquals(createdInstruction.createdAt, createdInstruction.updatedAt)
-
-        val addedAttachmentBytes =
-            mockMvc.perform(downloadInstructionAttachment(addedAttachment.fileKey)).andExpect(status().isOk)
-                .andReturn().response.contentAsByteArray
-        val addedAttachmentExpectedBytes = readAttachmentFixtureFile("fixture3.pdf", "file").bytes
-        assertThat(addedAttachmentBytes.size).isEqualTo(addedAttachmentExpectedBytes.size)
-        assertThat(addedAttachmentBytes).isEqualTo(addedAttachmentExpectedBytes)
+        testDownloadingAttachment(createdInstruction)
 
         updateInstructionTest(
             exam,
             createdInstruction,
-            updatedInstructionDtoIn,
-            attachmentToAdd,
-            addedAttachment.fileKey
+            updatedInstructionDtoIn
         )
     }
 
-    @BeforeAll
-    fun setup() {
-        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
-        mockMvc.perform(seedDbWithInstructions().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+    private fun testDownloadingAttachment(createdInstruction: InstructionOut) {
+        val firstAttachmentBytes =
+            mockMvc.perform(
+                downloadInstructionAttachment(
+                    createdInstruction.attachments[0].fileKey,
+                    createdInstruction.version
+                )
+            ).andExpect(status().isOk).andReturn().response.contentAsByteArray
+
+        val firstAttachmentExpectedBytes = readAttachmentFixtureFile("fixture1.pdf", "file").bytes
+        assertThat(firstAttachmentBytes.size).isEqualTo(firstAttachmentExpectedBytes.size)
+        assertThat(firstAttachmentBytes).isEqualTo(firstAttachmentExpectedBytes)
     }
 
     @TestFactory
@@ -319,17 +260,9 @@ class InstructionControllerTest : InstructionRequests() {
     fun `get all instructions of each exam`(): Stream<DynamicTest> = Exam.entries.stream().map { exam ->
         DynamicTest.dynamicTest("Get all instructions for $exam") {
             val instructions = when (exam!!) {
-                Exam.SUKO -> getAllInstructions<SukoInstructionFilters, SukoInstructionDtoOut, SukoInstructionFilterOptionsDtoOut>(
-                    exam
-                ).content
-
-                Exam.LD -> getAllInstructions<LdInstructionFilters, LdInstructionDtoOut, LdInstructionFilterOptionsDtoOut>(
-                    exam
-                ).content
-
-                Exam.PUHVI -> getAllInstructions<PuhviInstructionFilters, PuhviInstructionDtoOut, PuhviInstructionFilterOptionsDtoOut>(
-                    exam
-                ).content
+                Exam.SUKO -> getAllInstructions<SukoInstructionFilters, SukoInstructionDtoOut, SukoInstructionFilterOptionsDtoOut>().content
+                Exam.LD -> getAllInstructions<LdInstructionFilters, LdInstructionDtoOut, LdInstructionFilterOptionsDtoOut>().content
+                Exam.PUHVI -> getAllInstructions<PuhviInstructionFilters, PuhviInstructionDtoOut, PuhviInstructionFilterOptionsDtoOut>().content
             }
 
             assertEquals(12, instructions.size)
@@ -429,7 +362,7 @@ class InstructionControllerTest : InstructionRequests() {
         expectedNumbersInList: List<Int>,
         expectedAineOptions: List<Int>
     ) {
-        val instructionsOut: LdInstructionListDtoOut = getAllInstructions(Exam.LD, filters)
+        val instructionsOut: LdInstructionListDtoOut = getAllInstructions(filters)
         assertEquals(expectedSize, instructionsOut.content.size)
         assertTrue(
             instructionsOut.content.all { it.exam == Exam.LD },
@@ -454,7 +387,7 @@ class InstructionControllerTest : InstructionRequests() {
         val filters = SukoInstructionFilters(
             jarjesta = "asc"
         )
-        val instructionsOut: SukoInstructionListDtoOut = getAllInstructions(Exam.SUKO, filters)
+        val instructionsOut: SukoInstructionListDtoOut = getAllInstructions(filters)
         assertTrue(
             instructionsOut.content.all { it.exam == Exam.SUKO },
             "Wrong exam in list, expected: ${Exam.SUKO}, got ${instructionsOut.content.map { it.exam }}"
@@ -486,7 +419,7 @@ class InstructionControllerTest : InstructionRequests() {
             jarjesta = "asc",
         )
 
-        val instructionsOut: PuhviInstructionListDtoOut = getAllInstructions(Exam.PUHVI, filters)
+        val instructionsOut: PuhviInstructionListDtoOut = getAllInstructions(filters)
         assertTrue(
             instructionsOut.content.all { it.exam == Exam.PUHVI },
             "Wrong exam in list, expected: ${Exam.PUHVI}, got ${instructionsOut.content.map { it.exam }}"
@@ -495,50 +428,47 @@ class InstructionControllerTest : InstructionRequests() {
         assertEquals(0, instructionsOut.instructionFilterOptions.dummy)
     }
 
-    val minimalSukoInstruction = TestSukoInstructionDtoIn(
-        nameFi = "nameFi",
-        nameSv = "",
-        contentFi = "",
-        contentSv = "",
-        shortDescriptionFi = "",
-        shortDescriptionSv = "",
-        publishState = PublishState.PUBLISHED,
-        exam = Exam.SUKO,
-    )
-
-    val minimalLdInstruction = TestLdInstructionDtoIn(
-        nameFi = "nameFi",
-        nameSv = "",
-        contentFi = "",
-        contentSv = "",
-        publishState = PublishState.PUBLISHED,
-        aineKoodiArvo = "1",
-        exam = Exam.LD,
-    )
-
-    val minimalPuhviInstruction = TestPuhviInstructionDtoIn(
-        nameFi = "nameFi",
-        nameSv = "",
-        contentFi = "",
-        contentSv = "",
-        shortDescriptionFi = "",
-        shortDescriptionSv = "",
-        publishState = PublishState.PUBLISHED,
-        exam = Exam.PUHVI,
-    )
-
-    @Test
+    @TestFactory
     @WithYllapitajaRole
-    fun createMinimalInstruction() {
-        val responseContent = mockMvc.perform(
-            postInstruction(mapper.writeValueAsString(minimalSukoInstruction), emptyList(), mapper)
-        ).andExpect(status().isOk).andReturn().response.contentAsString
+    fun `only latest versions of assignments in get all assignment data`(): Stream<DynamicTest> =
+        Exam.entries.asSequence().asStream().map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createInstruction = when (exam!!) {
+                    Exam.SUKO -> createInstruction<SukoInstructionDtoOut>(
+                        mapper.writeValueAsString(
+                            minimalSukoInstruction
+                        )
+                    )
 
-        val createdInstruction: SukoInstructionDtoOut = mapper.readValue(responseContent)
+                    Exam.LD -> createInstruction<LdInstructionDtoOut>(mapper.writeValueAsString(minimalLdInstruction))
+                    Exam.PUHVI -> createInstruction<PuhviInstructionDtoOut>(
+                        mapper.writeValueAsString(
+                            minimalPuhviInstruction
+                        )
+                    )
+                }
 
-        assertCommonFieldsBetweenInAndOutEqual(minimalSukoInstruction, createdInstruction)
-        assertEquals(0, createdInstruction.attachments.size)
-    }
+                val updateInstructionIn = when (exam) {
+                    Exam.SUKO -> minimalSukoInstruction.copy(nameFi = createInstruction.nameFi + " updated")
+                    Exam.LD -> minimalLdInstruction.copy(nameFi = createInstruction.nameFi + " updated")
+                    Exam.PUHVI -> minimalPuhviInstruction.copy(nameFi = createInstruction.nameFi + " updated")
+                }
+
+                performInstructionUpdate(
+                    createInstruction.id,
+                    mapper.writeValueAsString(updateInstructionIn),
+                )
+
+                val instructions = when (exam) {
+                    Exam.SUKO -> getAllInstructions<SukoInstructionFilters, SukoInstructionDtoOut, SukoInstructionFilterOptionsDtoOut>()
+                    Exam.LD -> getAllInstructions<LdInstructionFilters, LdInstructionDtoOut, LdInstructionFilterOptionsDtoOut>()
+                    Exam.PUHVI -> getAllInstructions<PuhviInstructionFilters, PuhviInstructionDtoOut, PuhviInstructionFilterOptionsDtoOut>()
+                }.content
+
+                assertEquals(instructions.size, instructions.distinctBy { it.id }.size)
+                assertEquals(2, instructions.find { it.id == createInstruction.id }!!.version)
+            }
+        }
 
     @TestFactory
     @WithYllapitajaRole
@@ -550,12 +480,8 @@ class InstructionControllerTest : InstructionRequests() {
                     Exam.LD -> minimalLdInstruction
                     Exam.PUHVI -> minimalPuhviInstruction
                 }
-                val responseContent = mockMvc.perform(
-                    postInstruction(mapper.writeValueAsString(instructionIn), emptyList(), mapper)
-                ).andDo(MockMvcResultHandlers.print())
-                    .andExpect(status().isOk).andReturn().response.contentAsString
 
-                val createdInstruction = mapper.readValue<InstructionOut>(responseContent)
+                val createdInstruction = createInstruction<InstructionOut>(mapper.writeValueAsString(instructionIn))
 
                 assertThat(createdInstruction.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(createdInstruction.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
@@ -569,24 +495,189 @@ class InstructionControllerTest : InstructionRequests() {
                     createdInstruction.id,
                     mapper.writeValueAsString(updatedInstructionIn),
                     emptyList(),
+                    emptyList(),
                     yllapitaja2User
                 )
 
-                val updatedInstruction = performGetInstructionById(exam, createdInstruction.id)
+                val updatedInstruction = when (exam) {
+                    Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
+                    Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id)
+                    Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id)
+                }
 
                 assertThat(updatedInstruction.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(updatedInstruction.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
             }
         }
 
+    private fun getMinimalInstructionInByExam(exam: Exam) = when (exam) {
+        Exam.SUKO -> minimalSukoInstruction
+        Exam.LD -> minimalLdInstruction
+        Exam.PUHVI -> minimalPuhviInstruction
+    }
+
+    private fun getAllInstructionVersionsByExam(exam: Exam, id: Int) = when (exam) {
+        Exam.SUKO -> getAllInstructionVersions<SukoInstructionDtoOut>(id)
+        Exam.LD -> getAllInstructionVersions<LdInstructionDtoOut>(id)
+        Exam.PUHVI -> getAllInstructionVersions<PuhviInstructionDtoOut>(id)
+    }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `get all versions and a certain version of instruction for different exams`(): Stream<DynamicTest> =
+        Exam.entries.asSequence().asStream().map { exam ->
+            DynamicTest.dynamicTest("$exam get all versions and a certain version of assignment") {
+                val createdInstruction = createInstructionByExam(exam)
+                val instructions = createFourCopiesOfInstruction(exam, createdInstruction)
+
+                updateInstructionWithVaryingAttachments(instructions, createdInstruction)
+                assertUpdatedInstruction(instructions, exam, createdInstruction)
+
+                val kayttajatiedot = YllapitajaSecurityContextFactory().kayttajatiedot()
+                val expectedUpdaterName = "${kayttajatiedot.etunimet} ${kayttajatiedot.sukunimi}"
+                getAllInstructionVersionsByExam(exam, createdInstruction.id).let { instructionVersions ->
+                    assertEquals(5, instructionVersions.size)
+                    instructionVersions.forEachIndexed { index, instruction ->
+                        assertThat(instruction.updaterName).isEqualTo(expectedUpdaterName)
+                        if (index == 0) {
+                            assertFieldsInAndOutEqual(getMinimalInstructionInByExam(exam), instruction)
+                            assertEquals(instruction.attachments[0].name, "fixture1.pdf")
+                            assertEquals(instruction.attachments[0].instructionVersion, 1)
+                        } else {
+                            assertFieldsInAndOutEqual(instructions[index - 1], instruction)
+                        }
+                    }
+                }
+            }
+        }
+
+    private fun createInstructionByExam(exam: Exam): InstructionOut {
+        val attachments = listOf(
+            InstructionAttachmentIn(
+                readAttachmentFixtureFile("fixture1.pdf", "attachments"),
+                InstructionAttachmentMetadataDtoIn(null, "fixture1.pdf", Language.FI, 1)
+            )
+        )
+
+        val createdInstruction = when (exam) {
+            Exam.SUKO -> createInstruction<SukoInstructionDtoOut>(
+                mapper.writeValueAsString(minimalSukoInstruction),
+                attachments
+            )
+
+            Exam.LD -> createInstruction<LdInstructionDtoOut>(
+                mapper.writeValueAsString(minimalLdInstruction),
+                attachments
+            )
+
+            Exam.PUHVI -> createInstruction<PuhviInstructionDtoOut>(
+                mapper.writeValueAsString(minimalPuhviInstruction),
+                attachments
+            )
+        }
+
+        return createdInstruction
+    }
+
+    private fun updateInstructionWithVaryingAttachments(
+        instructions: List<TestInstruction>,
+        createdInstruction: InstructionOut
+    ) = instructions.forEachIndexed { index, instruction ->
+        val newAttachments: List<InstructionAttachmentIn> = listOf(
+            InstructionAttachmentIn(
+                readAttachmentFixtureFile("fixture2.pdf", "new-attachments"),
+                InstructionAttachmentMetadataDtoIn(null, "fixture2.pdf", Language.FI, 1)
+            )
+        )
+
+        val currentAttachmentMetadata = createdInstruction.attachments.map {
+            InstructionAttachmentMetadataDtoIn(
+                it.fileKey,
+                it.name,
+                it.language,
+                it.instructionVersion
+            )
+        }
+
+        val (toUpdate, toAdd) = when (index) {
+            0 -> Pair(currentAttachmentMetadata, emptyList())
+            1, 2 -> Pair(currentAttachmentMetadata, newAttachments)
+            3 -> Pair(emptyList(), newAttachments)
+            else -> throw Exception("Invalid index")
+        }
+
+        performInstructionUpdate(
+            createdInstruction.id,
+            mapper.writeValueAsString(instruction),
+            toUpdate,
+            toAdd
+        )
+    }
+
+    private fun assertUpdatedInstruction(
+        instructions: List<TestInstruction>,
+        exam: Exam,
+        createdInstruction: InstructionOut
+    ) = instructions.forEachIndexed { index, instruction ->
+        val version = index + 2
+        val instructionById = getInstructionByIdAndExam(exam, createdInstruction, version)
+
+        assertFieldsInAndOutEqual(instruction, instructionById)
+
+        when (index) {
+            0 -> {
+                assertEquals(instructionById.attachments.size, 1)
+                assertEquals(instructionById.attachments[0].name, "fixture1.pdf")
+                assertEquals(instructionById.attachments[0].instructionVersion, version)
+            }
+
+            1, 2 -> {
+                assertEquals(instructionById.attachments.size, 2)
+                assertEquals(instructionById.attachments[0].name, "fixture2.pdf")
+                assertEquals(instructionById.attachments[0].instructionVersion, version)
+                assertEquals(instructionById.attachments[1].name, "fixture1.pdf")
+                assertEquals(instructionById.attachments[1].instructionVersion, version)
+            }
+
+            3 -> {
+                assertEquals(instructionById.attachments.size, 1)
+                assertEquals(instructionById.attachments[0].name, "fixture2.pdf")
+                assertEquals(instructionById.attachments[0].instructionVersion, version)
+            }
+
+            else -> throw Exception("Invalid index")
+        }
+    }
+
+    private fun getInstructionByIdAndExam(
+        exam: Exam?,
+        createdInstruction: InstructionOut,
+        version: Int
+    ): InstructionOut = when (exam!!) {
+        Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id, version)
+        Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id, version)
+        Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id, version)
+    }
+
+    private fun createFourCopiesOfInstruction(
+        exam: Exam,
+        createdInstruction: InstructionOut
+    ): List<TestInstruction> = (1..4).map { index ->
+        when (exam) {
+            Exam.SUKO -> minimalSukoInstruction.copy(nameFi = createdInstruction.nameFi + " updated$index")
+            Exam.LD -> minimalLdInstruction.copy(nameFi = createdInstruction.nameFi + " updated$index")
+            Exam.PUHVI -> minimalPuhviInstruction.copy(nameFi = createdInstruction.nameFi + " updated$index")
+        }
+    }
+
+
     @Test
     @WithYllapitajaRole
     fun createInstructionWithBothNamesBlank() {
         val responseContent = mockMvc.perform(
-            postInstruction(
+            createInstructionReq(
                 mapper.writeValueAsString(minimalSukoInstruction.copy(nameFi = "")),
-                emptyList(),
-                mapper
+                emptyList()
             )
         ).andExpect(status().isBadRequest).andReturn().response.contentAsString
         assertThat(responseContent).isEqualTo("Global error: At least one of the name fields must be non-empty")
@@ -596,16 +687,14 @@ class InstructionControllerTest : InstructionRequests() {
     @WithYllapitajaRole
     fun updateInstructionWithNonExistentId() {
         val nonExistentId = -1
-        val failUpdate =
-            mockMvc.perform(
-                updateInstruction(
-                    nonExistentId,
-                    mapper.writeValueAsString(minimalSukoInstruction),
-                    emptyList(),
-                    mapper
-                )
+        val failUpdate = mockMvc.perform(
+            updateInstructionReq(
+                nonExistentId,
+                mapper.writeValueAsString(minimalSukoInstruction),
+                emptyList(),
+                emptyList()
             )
-                .andReturn().response.contentAsString
+        ).andReturn().response.contentAsString
 
         assertEquals("Instruction $nonExistentId not found", failUpdate)
     }
@@ -615,7 +704,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun createWithInvalidExam() {
         val body = mapper.writeValueAsString(minimalSukoInstruction).replace("SUKO", "WRONG")
         val responseContent =
-            mockMvc.perform(postInstruction(body, emptyList(), mapper)).andExpect(status().isBadRequest())
+            mockMvc.perform(createInstructionReq(body, emptyList())).andExpect(status().isBadRequest())
                 .andReturn().response.contentAsString
 
         assertThat(responseContent).contains("Could not resolve type id 'WRONG' as a subtype")
@@ -626,7 +715,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun createWithInvalidPublishState() {
         val body = mapper.writeValueAsString(minimalSukoInstruction).replace("PUBLISHED", "WRONG")
         val responseContent =
-            mockMvc.perform(postInstruction(body, emptyList(), mapper)).andExpect(status().isBadRequest())
+            mockMvc.perform(createInstructionReq(body, emptyList())).andExpect(status().isBadRequest())
                 .andReturn().response.contentAsString
 
         assertThat(responseContent).contains("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"WRONG\": not one of the values accepted for Enum class")
@@ -635,91 +724,59 @@ class InstructionControllerTest : InstructionRequests() {
     @Test
     @WithYllapitajaRole
     fun getInstructionByNonExistentId() {
-        val getResult = mockMvc.perform(getInstructionById(Exam.SUKO, -1)).andExpect(status().isNotFound()).andReturn()
-        val responseContent = getResult.response.contentAsString
-
-        assertThat(responseContent).isEqualTo("Instruction not found -1")
+        val getResult = mockMvc.perform(getInstructionByIdReq(Exam.SUKO, -1)).andExpect(status().isNotFound())
+            .andReturn().response.contentAsString
+        assertThat(getResult).isEqualTo("Instruction -1 not found")
     }
 
     @Test
     @WithYllapitajaRole
     fun getInstructionsAsYllapitaja() {
-        val instructions: SukoInstructionListDtoOut = getAllInstructions(Exam.SUKO, SukoInstructionFilters())
+        val instructions: SukoInstructionListDtoOut = getAllInstructions(SukoInstructionFilters())
         assertThat(instructions.content.size).isEqualTo(12)
     }
 
     @Test
     @WithOpettajaRole
     fun getInstructionsAsOpettaja() {
-        val instructions: SukoInstructionListDtoOut = getAllInstructions(Exam.SUKO, SukoInstructionFilters())
+        val instructions: SukoInstructionListDtoOut = getAllInstructions(SukoInstructionFilters())
         assertThat(instructions.content.size).isEqualTo(8)
     }
 
     @Test
     @WithOpettajaRole
     fun getInstructionsDraftAsOpettaja() {
-        val instructions: SukoInstructionListDtoOut = getAllInstructions(Exam.SUKO, SukoInstructionFilters())
-
+        val instructions: SukoInstructionListDtoOut = getAllInstructions(SukoInstructionFilters())
         val idsOfDrafts = instructions.content.filter { it.publishState == PublishState.DRAFT }.map { it.id }
 
-        idsOfDrafts.forEach {
-            mockMvc.perform(getInstructionById(Exam.SUKO, it)).andExpect(status().isNotFound())
-        }
+        idsOfDrafts.forEach { mockMvc.perform(getInstructionByIdReq(Exam.SUKO, it)).andExpect(status().isNotFound()) }
     }
 
     @Test
     @WithOpettajaRole
     fun opettajaCannotCallYllapitajaRoutes() {
-        mockMvc.perform(postInstruction(mapper.writeValueAsString(minimalSukoInstruction), emptyList(), mapper))
+        val instructionInStr = mapper.writeValueAsString(minimalSukoInstruction)
+        mockMvc.perform(createInstructionReq(instructionInStr, emptyList())).andExpect(status().isUnauthorized())
+        mockMvc.perform(updateInstructionReq(1, instructionInStr, emptyList(), emptyList()))
             .andExpect(status().isUnauthorized())
-        mockMvc.perform(
-            updateInstruction(
-                1,
-                mapper.writeValueAsString(minimalSukoInstruction),
-                emptyList(),
-                mapper
-            )
-        )
-            .andExpect(status().isUnauthorized())
-        mockMvc.perform(
-            uploadInstructionAttachment(
-                Exam.SUKO,
-                0,
-                attachments[0].metadata,
-                readAttachmentFixtureFile("fixture1.pdf", "file"),
-                mapper
-            )
-        ).andExpect(status().isUnauthorized)
-        mockMvc.perform(deleteInstructionAttachment("does_not_matter")).andExpect(status().isUnauthorized)
     }
 
     @Test
     @WithYllapitajaRole
     fun `test deleting a instruction`() {
-        val instructionOut: SukoInstructionDtoOut = mapper.readValue(
-            mockMvc.perform(
-                postInstruction(
-                    mapper.writeValueAsString(minimalSukoInstruction),
-                    emptyList(),
-                    mapper
-                )
-            ).andExpect(status().isOk).andReturn().response.contentAsString
+        val (id) = createInstruction<SukoInstructionDtoOut>(
+            mapper.writeValueAsString(minimalSukoInstruction),
+            emptyList()
         )
 
-        mockMvc.perform(
-            updateInstruction(
-                instructionOut.id,
-                mapper.writeValueAsString(minimalSukoInstruction.copy(publishState = PublishState.DELETED)),
-                emptyList(),
-                mapper
-            )
-        ).andReturn().response.contentAsString
+        performInstructionUpdate(
+            id,
+            mapper.writeValueAsString(minimalSukoInstruction.copy(publishState = PublishState.DELETED)),
+        )
+        mockMvc.perform(getInstructionByIdReq(Exam.SUKO, (id))).andExpect(status().isNotFound)
 
-        mockMvc.perform(getInstructionById(Exam.SUKO, instructionOut.id)).andExpect(status().isNotFound)
-
-        val instructions: SukoInstructionListDtoOut = getAllInstructions(Exam.SUKO, SukoInstructionFilters())
-
-        val noneHaveMatchingId = instructions.content.none { it.id == instructionOut.id }
+        val instructions: SukoInstructionListDtoOut = getAllInstructions(SukoInstructionFilters())
+        val noneHaveMatchingId = instructions.content.none { it.id == (id) }
 
         assertTrue(noneHaveMatchingId, "No instructions should have the ID of the deleted one")
     }
@@ -727,16 +784,12 @@ class InstructionControllerTest : InstructionRequests() {
     @Test
     @WithYllapitajaRole
     fun `Test image html validator`() {
-        mockMvc.perform(
-            postInstruction(
-                mapper.writeValueAsString(
-                    minimalSukoInstruction.copy(
-                        contentFi = "<p>Text before image</p><img src=\"/api/image?fileKey=image_123\" alt=\"Alt text\" class=\"image-size-large image-align-left\" /><p>Text after</p>"
-                    )
-                ),
-                emptyList(),
-                mapper
+        createInstruction<SukoInstructionDtoOut>(
+            mapper.writeValueAsString(
+                minimalSukoInstruction.copy(
+                    contentFi = "<p>Text before image</p><img src=\"/api/image?fileKey=image_123\" alt=\"Alt text\" class=\"image-size-large image-align-left\" /><p>Text after</p>"
+                )
             )
-        ).andExpect(status().isOk)
+        )
     }
 }

@@ -11,8 +11,9 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MultiValue } from 'react-select'
 import { LudosSelectOption } from '../components/ludosSelect/LudosSelect'
-import { useFormPrompt } from './useFormPrompt'
 import { useFormSubmission } from '../components/forms/useFormSubmission'
+import { useLudosTranslation } from './useLudosTranslation'
+import { useBlockFormCloseOrRefresh } from './useBlockFormCloseOrRefresh'
 
 export function useAssignmentForm<T extends CommonAssignmentFormType>(
   exam: Exam,
@@ -49,7 +50,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
     formState: { isDirty }
   } = methods
 
-  useFormPrompt(isDirty)
+  useBlockFormCloseOrRefresh(isDirty)
 
   const handleMultiselectOptionChange = (fieldName: FieldPath<T>, selectedOptions: MultiValue<LudosSelectOption>) => {
     setValue(fieldName, selectedOptions.map((it) => it.value) as PathValue<T, FieldPath<T>>, { shouldDirty: true })

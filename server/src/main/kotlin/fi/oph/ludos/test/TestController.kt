@@ -134,12 +134,12 @@ class TestController(
         @RequestParam(required = false) asiointiKieli: String?,
     ): ResponseEntity<Unit> {
         val userDetails = Kayttajatiedot(
-            "1.2.246.562.24.10000000001",
-            "ValeKayttaja",
+            "1.2.246.562.24.71159575596", // ludos_mocklogin -käyttäjän OID untuvalla
+            "ludos_mocklogin",
             "VIRKAILIJA",
             listOf(Organisaatio("123", listOf(Kayttooikeus.ludosOikeus(role.oikeus)))),
-            "Vale",
-            "Käyttäjä",
+            "Ludos",
+            "Mocklogin-$role",
             asiointiKieli
         )
         val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)

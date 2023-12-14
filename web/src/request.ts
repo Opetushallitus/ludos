@@ -1,7 +1,7 @@
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
 import { CertificateFormType } from './components/forms/schemas/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentDtoOut, AttachmentLanguage, Exam, ImageDtoOut, MapWithFileKeyAndMetadata } from './types'
+import { AttachmentData, Exam, ImageDtoOut } from './types'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
@@ -79,10 +79,10 @@ export async function updateAssignment<T>(id: number, body: T): Promise<number> 
   return await result.json()
 }
 
-export async function createInstruction(
+export async function createInstruction<T>(
   instructionIn: InstructionFormType,
-  attachmentWithMetadata: { file: File; name: string; language: AttachmentLanguage }[]
-): Promise<{ id: number }> {
+  attachmentWithMetadata: AttachmentData[]
+): Promise<T> {
   const formData = new FormData()
 
   const instructionPart = new Blob([JSON.stringify(instructionIn)], { type: 'application/json' })
@@ -90,12 +90,12 @@ export async function createInstruction(
   formData.append('instruction', instructionPart)
 
   attachmentWithMetadata.forEach((it) => {
-    formData.append('attachments', it.file)
+    formData.append('attachments', it.file!)
     formData.append(
       'attachments-metadata',
       JSON.stringify({
         name: it.name,
-        language: it.language.toUpperCase()
+        language: it.language!.toUpperCase()
       })
     )
   })
@@ -109,54 +109,41 @@ export async function createInstruction(
   return await result.json()
 }
 
-export async function updateInstruction(
+export async function createNewVersionInstruction<T>(
   id: number,
-  body: InstructionFormType,
-  mapWithFileAndMetadata: MapWithFileKeyAndMetadata
-): Promise<number> {
+  instructionIn: InstructionFormType,
+  attachmentsToUpdate: AttachmentData[],
+  attachmentsToUpload: AttachmentData[]
+): Promise<T> {
   const formData = new FormData()
 
-  const instructionPart = new Blob([JSON.stringify(body)], { type: 'application/json' })
+  const instructionPart = new Blob([JSON.stringify(instructionIn)], { type: 'application/json' })
 
   formData.append('instruction', instructionPart)
 
-  mapWithFileAndMetadata.forEach((metadata, fileKey) => {
+  attachmentsToUpload.forEach((it) => {
+    formData.append('new-attachments', it.file!)
     formData.append(
-      'attachments-metadata',
+      'new-attachments-metadata',
       JSON.stringify({
-        name: metadata.name,
-        language: metadata.language.toUpperCase(),
-        fileKey
+        name: it.name,
+        language: it.language!.toUpperCase()
       })
     )
   })
 
-  const result = await doRequest(`${INSTRUCTION_URL}/${id}`, 'PUT', formData, { type: 'multipart/form-data' })
+  attachmentsToUpdate.forEach((it) => {
+    formData.append(
+      'attachments-metadata',
+      JSON.stringify({
+        name: it.name,
+        language: it.language!.toUpperCase(),
+        fileKey: it.attachment!.fileKey
+      })
+    )
+  })
 
-  if (!result.ok) {
-    throw new Error(await result.text())
-  }
-
-  return await result.json()
-}
-
-export async function uploadInstructionAttachment(
-  instructionId: number,
-  exam: Exam,
-  newAttachment: { file: File; name: string; lang: AttachmentLanguage }
-): Promise<AttachmentDtoOut> {
-  const formData = new FormData()
-
-  formData.append('file', newAttachment.file)
-  formData.append(
-    'attachment-metadata',
-    JSON.stringify({
-      name: newAttachment.name,
-      language: newAttachment.lang.toUpperCase()
-    })
-  )
-
-  const result = await doRequest(`${INSTRUCTION_URL}/attachment/${exam}/${instructionId}`, 'POST', formData, {
+  const result = await doRequest(`${INSTRUCTION_URL}/${id}`, 'PUT', formData, {
     type: 'multipart/form-data'
   })
 
@@ -165,10 +152,6 @@ export async function uploadInstructionAttachment(
   }
 
   return await result.json()
-}
-
-export function deleteInstructionAttachment(attachmentFileKey: string) {
-  void doRequest(`${INSTRUCTION_URL}/attachment/${attachmentFileKey}`, 'DELETE')
 }
 
 export async function createCertificate(
@@ -212,6 +195,16 @@ export async function updateCertificate(
   }
 
   const result = await doRequest(`${CERTIFICATE_URL}/${id}`, 'PUT', formData, { type: 'multipart/form-data' })
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return result.json()
+}
+
+export async function restoreOldCertificate(id: number, exam: Exam, version: number): Promise<number> {
+  const result = await doRequest(`${CERTIFICATE_URL}/${exam}/${id}/${version}/restore`, 'POST', '{}')
 
   if (!result.ok) {
     throw new Error(await result.text())

@@ -14,15 +14,24 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.reflect.KClass
 
 @AutoConfigureMockMvc
 abstract class CertificateRequests {
     @Autowired
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
+
+    fun examByTestCertificateOutClass(testCertificateOutClass: KClass<out CertificateOut>): Exam =
+        when (testCertificateOutClass) {
+            SukoCertificateDtoOut::class -> Exam.SUKO
+            LdCertificateDtoOut::class -> Exam.LD
+            PuhviCertificateDtoOut::class -> Exam.PUHVI
+            else -> throw RuntimeException("unsupported CertificateOutClass '$testCertificateOutClass'")
+        }
 
     fun readAttachmentFixtureFile(
         attachmentFixtureFileName: String,
@@ -57,14 +66,45 @@ abstract class CertificateRequests {
         return reqBuilder
     }
 
-    inline fun <reified T : CertificateOut> getAllCertificatesContent(res: String): List<T> {
+    private inline fun <reified T : CertificateOut> getAllCertificatesContent(res: String): List<T> {
         val content = mapper.readValue<TestCertificatesOut<T>>(res)
 
         return content.content
     }
 
-    fun getCertificateById(exam: Exam, id: Int) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/$id")
+    fun getCertificateByIdReq(exam: Exam, id: Int, version: Int? = null): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/certificate/$exam/$id" + (if (version != null) "/$version" else "")
+        return MockMvcRequestBuilders.get(url)
+    }
+
+    inline fun <reified T : CertificateOut> getCertificateById(
+        id: Int,
+        version: Int? = null,
+        user: RequestPostProcessor? = null
+    ): T {
+        val exam = examByTestCertificateOutClass(T::class)
+        val builder = getCertificateByIdReq(exam, id, version)
+
+        if (user != null) {
+            builder.with(user)
+        }
+
+        val getUpdatedByIdStr = mockMvc.perform(builder).andExpect(
+            status().isOk()
+        ).andReturn().response.contentAsString
+        return mapper.readValue(getUpdatedByIdStr)
+    }
+
+    fun getCertificateById(
+        exam: Exam,
+        id: Int,
+        version: Int? = null,
+        user: RequestPostProcessor? = null
+    ): CertificateOut = when (exam) {
+        Exam.SUKO -> getCertificateById<SukoCertificateDtoOut>(id, version, user)
+        Exam.LD -> getCertificateById<LdCertificateDtoOut>(id, version, user)
+        Exam.PUHVI -> getCertificateById<PuhviCertificateDtoOut>(id, version, user)
+    }
 
     fun putCertificate(
         id: Int,
@@ -81,6 +121,15 @@ abstract class CertificateRequests {
         attachmentPartSv?.let { reqBuilder.file(it) }
 
         return reqBuilder
+    }
+
+    fun restoreCertificateReq(
+        exam: Exam,
+        id: Int,
+        version: Int
+    ): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/certificate/$exam/$id/$version/restore"
+        return MockMvcRequestBuilders.post(url)
     }
 
     fun getAttachment(fileKey: String) =
@@ -110,9 +159,33 @@ abstract class CertificateRequests {
         user: RequestPostProcessor? = null
     ): List<CertificateOut> {
         val res = mockMvc.perform(getAllCertificatesReq(exam, filters, user))
-            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(status().isOk())
             .andReturn().response.contentAsString
 
         return getAllCertificatesContent<CertificateOut>(res)
     }
+
+    fun getAllCertificateVersionsReq(exam: Exam, id: Int) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/$id/versions")
+            .contentType(MediaType.APPLICATION_JSON)
+
+    inline fun <reified T : CertificateOut> getAllCertificateVersions(id: Int): List<T> {
+        val exam = examByTestCertificateOutClass(T::class)
+
+        val responseContent =
+            mockMvc.perform(getAllCertificateVersionsReq(exam, id)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+        return mapper.readValue<List<T>>(responseContent)
+    }
+
+    fun getAllCertificateVersions(
+        exam: Exam,
+        id: Int
+    ): List<CertificateOut> =
+        when (exam) {
+            Exam.SUKO -> getAllCertificateVersions<SukoCertificateDtoOut>(id)
+            Exam.LD -> getAllCertificateVersions<LdCertificateDtoOut>(id)
+            Exam.PUHVI -> getAllCertificateVersions<PuhviCertificateDtoOut>(id)
+        }
+
 }

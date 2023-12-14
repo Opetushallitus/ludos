@@ -2,10 +2,12 @@ package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.vm.sade.javautils.http.OphHttpRequest
+import fi.vm.sade.javautils.http.exceptions.UnhandledHttpStatusCodeException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClientException
+import java.util.*
 
 @Component
 class OppijanumerorekisteriClient : CasAuthenticationClient("oppijanumerorekisteri-service") {
@@ -15,10 +17,12 @@ class OppijanumerorekisteriClient : CasAuthenticationClient("oppijanumerorekiste
         val req = OphHttpRequest.Builder.get("https://$opintopolkuHostname/oppijanumerorekisteri-service/henkilo/$oid")
             .build()
         return try {
-            httpClient.execute<OppijanumeroRekisteriHenkilo>(req)
+            val response = httpClient.execute<OppijanumeroRekisteriHenkilo>(req)
+            response.handleErrorStatus(404).with { Optional.empty() }
+            response
                 .expectedStatus(HttpStatus.OK.value())
                 .mapWith { s -> mapper.readValue<OppijanumeroRekisteriHenkilo>(s) }
-                .orElseThrow { RestClientException("Got 204 or 404 code from oppijanumerorekisteri") }
+                .orElse(null)
         } catch (e: Exception) {
             logger.warn("Unexpected error getting oppijanumerorekisteri details for $oid", e)
             null

@@ -2,13 +2,18 @@ package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
+import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
+import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -22,11 +27,13 @@ import kotlin.streams.asStream
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class AssignmentControllerTest : AssignmentRequests() {
+    @MockBean
+    private lateinit var mockOppijanumerorekisteriClient: OppijanumerorekisteriClient
 
-    @BeforeAll
-    fun setup() {
-        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
-        mockMvc.perform(seedDbWithAssignments().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+    @BeforeEach
+    fun setupMocks() {
+        Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString())) // when does not work inside BeforeAll
+            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
     }
 
     fun assertCommonFieldsBetweenInAndOutEqual(assignmentIn: TestAssignmentIn, assignmentOut: AssignmentOut) {
@@ -72,7 +79,7 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @Test
     @WithYllapitajaRole
-    fun createAndGetByIdAndUpdateSukoAssignment() {
+    fun `create and update suko assignment`() {
         val testAssignment = TestSukoAssignmentDtoIn(
             "name fi",
             "name sv",
@@ -118,20 +125,126 @@ class AssignmentControllerTest : AssignmentRequests() {
         )
         val updatedAssignmentStr = mapper.writeValueAsString(updatedAssignment)
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        val updatedAssignmentId =
-            mockMvc.perform(updateAssignmentReq(assignmentById.id, updatedAssignmentStr)).andExpect(status().isOk())
-                .andReturn().response.contentAsString
+        val updatedAssignmentId = updateAssignment(assignmentById.id, updatedAssignmentStr)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         assertEquals(updatedAssignmentId, assignmentById.id.toString())
 
         val updatedAssignmentById = getAssignmentById<SukoAssignmentDtoOut>(assignmentById.id)
+        assertEquals(2, updatedAssignmentById.version)
 
         assertCommonFieldsBetweenSukoAssignmentInAndOutEqual(updatedAssignment, updatedAssignmentById)
         assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
         assertEquals(createdAssignment.updaterOid, updatedAssignmentById.updaterOid)
-        assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
+        // uusi versio luotu
+        assertNotEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
         assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun ldAssignmentTest() {
+        val ldAssignmentIn = TestLdAssignmentDtoIn(
+            nameFi = "Lukiodiplomi assignment FI",
+            nameSv = "Lukiodiplomi assignment SV",
+            instructionFi = "Lukiodiplomi assignment instruction FI",
+            instructionSv = "Lukiodiplomi assignment instruction SV",
+            contentFi = arrayOf("Lukiodiplomi assignment content FI 0", "Lukiodiplomi assignment content FI 1"),
+            contentSv = arrayOf("Lukiodiplomi assignment content SV 0", "Lukiodiplomi assignment content SV 1"),
+            publishState = TestPublishState.PUBLISHED,
+            laajaalainenOsaaminenKoodiArvos = arrayOf("06", "03"),
+            lukuvuosiKoodiArvos = arrayOf("20202021", "20222023"),
+            aineKoodiArvo = "1",
+        )
+
+        val createdAssignment: LdAssignmentDtoOut = createAssignment(ldAssignmentIn)
+        val ldAssignmentOut: LdAssignmentDtoOut = getAssignmentById(createdAssignment.id)
+
+        assertCommonFieldsBetweenLdAssignmentInAndOutEqual(ldAssignmentIn, ldAssignmentOut)
+
+        val editedLdAssignmentIn = mapper.writeValueAsString(
+            TestLdAssignmentDtoIn(
+                nameFi = "Updated Lukiodiplomi assignment FI",
+                nameSv = "Updated Lukiodiplomi assignment SV",
+                instructionFi = "Updated Lukiodiplomi assignment instruction FI",
+                instructionSv = "Updated Lukiodiplomi assignment instruction SV",
+                contentFi = arrayOf(
+                    "Updated Lukiodiplomi assignment content FI 0",
+                    "Updated Lukiodiplomi assignment content FI 1",
+                    "Updated Lukiodiplomi assignment content FI 2"
+                ),
+                contentSv = arrayOf(
+                    "Updated Lukiodiplomi assignment content SV 0",
+                    "Updated Lukiodiplomi assignment content SV 1"
+                ),
+                publishState = TestPublishState.PUBLISHED,
+                laajaalainenOsaaminenKoodiArvos = arrayOf("06", "02"),
+                lukuvuosiKoodiArvos = arrayOf("20212022", "20232024"),
+                aineKoodiArvo = "2",
+            )
+        )
+        val timeBeforeUpdate = nowFromDb(mockMvc)
+        updateAssignment(ldAssignmentOut.id, editedLdAssignmentIn)
+        val timeAfterUpdate = nowFromDb(mockMvc)
+
+        val updatedAssignmentById = getAssignmentById<LdAssignmentDtoOut>(ldAssignmentOut.id)
+        assertEquals(2, updatedAssignmentById.version)
+
+        assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
+        assertCommonFieldsBetweenLdAssignmentInAndOutEqual(
+            mapper.readValue(editedLdAssignmentIn),
+            updatedAssignmentById
+        )
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun puhviAssignmentTest() {
+        val puhviAssignmentIn = TestPuhviAssignmentDtoIn(
+            nameFi = "Puhvi assignment",
+            nameSv = "Puhvi assignment",
+            instructionFi = "Puhvi assignment instruction",
+            instructionSv = "Puhvi assignment instruction",
+            contentFi = arrayOf("Puhvi assignment content"),
+            contentSv = arrayOf("Puhvi assignment content"),
+            publishState = TestPublishState.PUBLISHED,
+            laajaalainenOsaaminenKoodiArvos = arrayOf("06", "03"),
+            assignmentTypeKoodiArvo = "001",
+            lukuvuosiKoodiArvos = arrayOf("20222023"),
+        )
+
+        val createdAssignment: PuhviAssignmentDtoOut = createAssignment(puhviAssignmentIn)
+        val puhviAssignmentOut: PuhviAssignmentDtoOut = getAssignmentById(createdAssignment.id)
+
+        assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(puhviAssignmentIn, puhviAssignmentOut)
+
+        val editedPuhviAssignmentIn = """{
+                "exam": "${Exam.PUHVI}",
+                "nameFi": "Puhvi assignment edited",
+                "nameSv": "Puhvi assignment edited",
+                "instructionFi": "Puhvi assignment instruction",
+                "instructionSv": "Puhvi assignment instruction",
+                "contentFi": ["Puhvi assignment content edited"],
+                "contentSv": ["Puhvi assignment content edited"],
+                "publishState": "PUBLISHED",
+                "exam": "PUHVI",
+                "assignmentTypeKoodiArvo": "002",
+                "laajaalainenOsaaminenKoodiArvos": ["06", "01"],
+                "lukuvuosiKoodiArvos": ["20202021"]
+            }""".trimIndent()
+
+        val timeBeforeUpdate = nowFromDb(mockMvc)
+        updateAssignment(puhviAssignmentOut.id, editedPuhviAssignmentIn)
+        val timeAfterUpdate = nowFromDb(mockMvc)
+
+        val updatedAssignmentById = getAssignmentById<PuhviAssignmentDtoOut>(puhviAssignmentOut.id)
+        assertEquals(2, updatedAssignmentById.version)
+
+        assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
+        assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(
+            mapper.readValue(editedPuhviAssignmentIn),
+            updatedAssignmentById
+        )
     }
 
     val minimalSukoAssignmentIn = TestSukoAssignmentDtoIn(
@@ -176,6 +289,35 @@ class AssignmentControllerTest : AssignmentRequests() {
         Exam.PUHVI.toString()
     )
 
+    @TestFactory
+    @WithYllapitajaRole
+    fun `only latest versions of assignments in get all assignment data`(): Stream<DynamicTest> =
+        Exam.entries.asSequence().asStream().map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = when (exam!!) {
+                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
+                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
+                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
+                }
+                val updatedAssignmentIn = when (exam) {
+                    Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
+                    Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
+                    Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
+                }
+
+                updateAssignment(createdAssignment.id, mapper.writeValueAsString(updatedAssignmentIn))
+
+                val assignments = when (exam) {
+                    Exam.SUKO -> getAllAssignmentsForExam<SukoAssignmentDtoOut>()
+                    Exam.LD -> getAllAssignmentsForExam<LdAssignmentDtoOut>()
+                    Exam.PUHVI -> getAllAssignmentsForExam<PuhviAssignmentDtoOut>()
+                }.content
+
+                assertEquals(assignments.size, assignments.distinctBy { it.id }.size)
+                assertEquals(2, assignments.find { it.id == createdAssignment.id }!!.version)
+            }
+        }
+
     @Test
     @WithYllapitajaRole
     fun createMinimalSukoAssignment() {
@@ -202,12 +344,12 @@ class AssignmentControllerTest : AssignmentRequests() {
                     Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
                 }
 
-                mockMvc.perform(
-                    updateAssignmentReq(
-                        createdAssignment.id,
-                        mapper.writeValueAsString(updatedAssignmentIn)
-                    ).with(yllapitaja2User)
-                ).andExpect(status().isOk)
+                updateAssignment(
+                    createdAssignment.id,
+                    mapper.writeValueAsString(updatedAssignmentIn),
+                    yllapitaja2User
+                )
+
                 val updatedAssignment = when (exam) {
                     Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id)
                     Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id)
@@ -215,6 +357,71 @@ class AssignmentControllerTest : AssignmentRequests() {
                 }
                 assertThat(updatedAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(updatedAssignment.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
+            }
+        }
+
+
+    private fun getMinimalAssignmentInByExam(exam: Exam) = when (exam) {
+        Exam.SUKO -> minimalSukoAssignmentIn
+        Exam.LD -> minimalLdAssignmentIn
+        Exam.PUHVI -> minimalPuhviAssignmentIn
+    }
+
+    private fun getAllAssignmentVersionsByExam(exam: Exam, id: Int) = when (exam) {
+        Exam.SUKO -> getAllAssignmentVersions<SukoAssignmentDtoOut>(id)
+        Exam.LD -> getAllAssignmentVersions<LdAssignmentDtoOut>(id)
+        Exam.PUHVI -> getAllAssignmentVersions<PuhviAssignmentDtoOut>(id)
+    }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `get all versions and a certain version of assignment for different exams`(): Stream<DynamicTest> =
+        Exam.entries.asSequence().asStream().map { exam ->
+            DynamicTest.dynamicTest("$exam get all versions and a certain version of assignment") {
+                val createdAssignment = when (exam!!) {
+                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
+                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
+                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
+                }
+
+                val assignments = (1..4).map { index ->
+                    when (exam) {
+                        Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
+                        Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
+                        Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
+                    }
+                }
+
+                assignments.forEach { assignment ->
+                    updateAssignment(
+                        createdAssignment.id,
+                        mapper.writeValueAsString(assignment)
+                    )
+                }
+
+                assignments.forEachIndexed { index, assignment ->
+                    val indexOfVersion = index + 2
+                    val assignmentById = when (exam) {
+                        Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
+                        Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
+                        Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
+                    }
+                    assertCommonFieldsBetweenInAndOutEqual(assignment, assignmentById)
+                }
+
+                val kayttajatiedot = YllapitajaSecurityContextFactory().kayttajatiedot()
+                val expectedUpdaterName = "${kayttajatiedot.etunimet} ${kayttajatiedot.sukunimi}"
+                getAllAssignmentVersionsByExam(exam, createdAssignment.id).let { assignmentVersions ->
+                    assertEquals(5, assignmentVersions.size)
+                    assignmentVersions.forEachIndexed { index, assignment ->
+                        assertThat(assignment.updaterName).isEqualTo(expectedUpdaterName)
+                        if (index == 0) {
+                            assertCommonFieldsBetweenInAndOutEqual(getMinimalAssignmentInByExam(exam), assignment)
+                        } else {
+                            assertCommonFieldsBetweenInAndOutEqual(assignments[index - 1], assignment)
+                        }
+                    }
+                }
             }
         }
 
@@ -329,7 +536,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         val errorMessage =
             mockMvc.perform(updateAssignmentReq(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
                 .andExpect(status().isNotFound).andReturn().response.contentAsString
-        assertThat(errorMessage).isEqualTo("Assignment not found $nonExistentId")
+        assertThat(errorMessage).isEqualTo("Assignment $nonExistentId not found")
     }
 
     @Test
@@ -392,118 +599,26 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @Test
     @WithYllapitajaRole
-    fun ldAssignmentTest() {
-        val ldAssignmentIn = TestLdAssignmentDtoIn(
-            nameFi = "Lukiodiplomi assignment FI",
-            nameSv = "Lukiodiplomi assignment SV",
-            instructionFi = "Lukiodiplomi assignment instruction FI",
-            instructionSv = "Lukiodiplomi assignment instruction SV",
-            contentFi = arrayOf("Lukiodiplomi assignment content FI 0", "Lukiodiplomi assignment content FI 1"),
-            contentSv = arrayOf("Lukiodiplomi assignment content SV 0", "Lukiodiplomi assignment content SV 1"),
-            publishState = TestPublishState.PUBLISHED,
-            laajaalainenOsaaminenKoodiArvos = arrayOf("06", "03"),
-            lukuvuosiKoodiArvos = arrayOf("20202021", "20222023"),
-            aineKoodiArvo = "1",
-        )
-
-        val createdAssignment: LdAssignmentDtoOut =
-            createAssignment(ldAssignmentIn)
-
-        // get assignment DTO OUT
-        val ldAssignmentOut: LdAssignmentDtoOut = getAssignmentById(createdAssignment.id)
-
-        assertCommonFieldsBetweenLdAssignmentInAndOutEqual(ldAssignmentIn, ldAssignmentOut)
-
-        // update assignment
-        val editedLdAssignmentIn = mapper.writeValueAsString(
-            TestLdAssignmentDtoIn(
-                nameFi = "Updated Lukiodiplomi assignment FI",
-                nameSv = "Updated Lukiodiplomi assignment SV",
-                instructionFi = "Updated Lukiodiplomi assignment instruction FI",
-                instructionSv = "Updated Lukiodiplomi assignment instruction SV",
-                contentFi = arrayOf(
-                    "Updated Lukiodiplomi assignment content FI 0",
-                    "Updated Lukiodiplomi assignment content FI 1",
-                    "Updated Lukiodiplomi assignment content FI 2"
-                ),
-                contentSv = arrayOf(
-                    "Updated Lukiodiplomi assignment content SV 0",
-                    "Updated Lukiodiplomi assignment content SV 1"
-                ),
-                publishState = TestPublishState.PUBLISHED,
-                laajaalainenOsaaminenKoodiArvos = arrayOf("06", "02"),
-                lukuvuosiKoodiArvos = arrayOf("20212022", "20232024"),
-                aineKoodiArvo = "2",
-            )
-        )
-
-        mockMvc.perform(updateAssignmentReq(ldAssignmentOut.id, editedLdAssignmentIn)).andExpect(status().isOk())
-            .andReturn().response.contentAsString
-
-        val editedLdAssignmentOut: LdAssignmentDtoOut = getAssignmentById(ldAssignmentOut.id)
-
-        assertCommonFieldsBetweenLdAssignmentInAndOutEqual(
-            mapper.readValue(editedLdAssignmentIn),
-            editedLdAssignmentOut
-        )
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun puhviAssignmentTest() {
-        val puhviAssignmentIn = TestPuhviAssignmentDtoIn(
-            nameFi = "Puhvi assignment",
-            nameSv = "Puhvi assignment",
-            instructionFi = "Puhvi assignment instruction",
-            instructionSv = "Puhvi assignment instruction",
-            contentFi = arrayOf("Puhvi assignment content"),
-            contentSv = arrayOf("Puhvi assignment content"),
-            publishState = TestPublishState.PUBLISHED,
-            laajaalainenOsaaminenKoodiArvos = arrayOf("06", "03"),
-            assignmentTypeKoodiArvo = "001",
-            lukuvuosiKoodiArvos = arrayOf("20222023"),
-        )
-
-        val createdAssignment: PuhviAssignmentDtoOut = createAssignment(puhviAssignmentIn)
-        val puhviAssignmentOut: PuhviAssignmentDtoOut = getAssignmentById(createdAssignment.id)
-
-        assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(puhviAssignmentIn, puhviAssignmentOut)
-
-        // update assignment
-        val editedPuhviAssignmentIn = """{
-                "exam": "${Exam.PUHVI}",
-                "nameFi": "Puhvi assignment edited",
-                "nameSv": "Puhvi assignment edited",
-                "instructionFi": "Puhvi assignment instruction",
-                "instructionSv": "Puhvi assignment instruction",
-                "contentFi": ["Puhvi assignment content edited"],
-                "contentSv": ["Puhvi assignment content edited"],
-                "publishState": "PUBLISHED",
-                "exam": "PUHVI",
-                "assignmentTypeKoodiArvo": "002",
-                "laajaalainenOsaaminenKoodiArvos": ["06", "01"],
-                "lukuvuosiKoodiArvos": ["20202021"]
-            }""".trimIndent()
-
-        mockMvc.perform(updateAssignmentReq(puhviAssignmentOut.id, editedPuhviAssignmentIn)).andExpect(status().isOk())
-            .andReturn().response.contentAsString
-
-        val editedPuhviAssignmentOut: PuhviAssignmentDtoOut = getAssignmentById(puhviAssignmentOut.id)
-
-        assertCommonFieldsBetweenPuhviAssignmentInAndOutEqual(
-            mapper.readValue(editedPuhviAssignmentIn),
-            editedPuhviAssignmentOut
-        )
-    }
-
-    @Test
-    @WithYllapitajaRole
-    fun assignmentNotFound() {
+    fun `assignment not found on GET`() {
         val getResult =
             mockMvc.perform(getAssignmentByIdReq(Exam.SUKO, 999)).andExpect(status().isNotFound()).andReturn()
         val responseContent = getResult.response.contentAsString
 
-        assertThat(responseContent).isEqualTo("Assignment not found 999")
+        assertThat(responseContent).isEqualTo("Assignment 999 not found")
+    }
+
+    @Test
+    @WithYllapitajaRole
+    fun `assignment not found on UPDATE`() {
+        val updateResult = mockMvc.perform(
+            updateAssignmentReq(
+                999,
+                mapper.writeValueAsString(minimalSukoAssignmentIn)
+            )
+        ).andExpect(status().isNotFound).andReturn()
+        val responseContent = updateResult.response.contentAsString
+
+        assertThat(responseContent).isEqualTo("Assignment 999 not found")
     }
 
     @Test
@@ -533,7 +648,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     ): T {
         val exam = examByTestAssignmentOutClass(T::class)
         setAssignmentIsFavorite(exam, id, isFavorite, user)
-        val assignmentById = getAssignmentById<T>(id, user)
+        val assignmentById = getAssignmentById<T>(id, null, user)
         assertThat(assignmentById.isFavorite).isEqualTo(isFavorite)
         return assignmentById
     }
@@ -563,11 +678,8 @@ class AssignmentControllerTest : AssignmentRequests() {
     @Test
     @WithOpettajaRole
     fun `as opettaja toggle assignment to be favorite and query it`() {
-        // get all assignments and choose one of them to favorite
-        val localAssignmentIdToFavoriteAsOpettaja =
-            getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.first().id
-
-        testMarkingAndQueryFavorites(localAssignmentIdToFavoriteAsOpettaja)
+        val createdAssignment: SukoAssignmentDtoOut = createAssignment(minimalSukoAssignmentIn)
+        testMarkingAndQueryFavorites(createdAssignment.id)
     }
 
     @Test
@@ -597,7 +709,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         val errorMessage =
             mockMvc.perform(setAssignmentIsFavoriteReq(Exam.SUKO, nonExistentId, true)).andExpect(status().isNotFound)
                 .andReturn().response.contentAsString
-        assertThat(errorMessage).isEqualTo("Assignment not found $nonExistentId")
+        assertThat(errorMessage).isEqualTo("Assignment $nonExistentId not found")
     }
 
     @Test
@@ -642,18 +754,16 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `test deleting a assignment`() {
         val assignmentId = createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn).id
 
-        mockMvc.perform(
-            updateAssignmentReq(
-                assignmentId,
-                mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = TestPublishState.DELETED))
-            )
-        ).andExpect(status().isOk())
+        updateAssignment(
+            assignmentId,
+            mapper.writeValueAsString(minimalSukoAssignmentIn.copy(publishState = TestPublishState.DELETED))
+        )
 
         mockMvc.perform(getAssignmentByIdReq(Exam.SUKO, assignmentId)).andExpect(status().isNotFound)
 
         val noneHaveMatchingId = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content.none { it.id == assignmentId }
 
-        Assertions.assertTrue(noneHaveMatchingId, "No assignments should have the ID of the deleted one")
+        assertTrue(noneHaveMatchingId, "No assignments should have the ID of the deleted one")
     }
 
     @Test

@@ -1,8 +1,11 @@
 import { Page } from '@playwright/test'
+import { ContentType, Exam } from 'web/src/types'
 
-export class ContentModel {
-  constructor(
+export abstract class ContentModel {
+  protected constructor(
     readonly page: Page,
+    readonly exam: Exam,
+    readonly contentType: ContentType,
     readonly header = page.getByTestId('assignment-header'),
     readonly editButton = page.getByTestId('edit-content-btn'),
     readonly publishState = page.getByTestId('publish-state'),
@@ -10,4 +13,10 @@ export class ContentModel {
     readonly contentSv = page.getByTestId('editor-content-fi-0'),
     readonly returnButton = page.getByTestId('return')
   ) {}
+
+  async goToContentPage(id: number) {
+    await this.page.goto(`/${this.exam.toLowerCase()}/${this.contentType}/${id}`)
+  }
+
+  abstract assertAttachments(attachmentNames: string[]): Promise<void>
 }

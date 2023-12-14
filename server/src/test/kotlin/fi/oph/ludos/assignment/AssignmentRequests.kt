@@ -50,7 +50,7 @@ abstract class AssignmentRequests {
     fun assertThatCreateInvalidAssignmentError(assignmentIn: TestAssignmentIn): AbstractStringAssert<*> {
         val errorMessage =
             mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentIn)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest).andReturn().response.contentAsString
+                .andExpect(status().isBadRequest).andReturn().response.contentAsString
         return assertThat(errorMessage)
     }
 
@@ -58,21 +58,25 @@ abstract class AssignmentRequests {
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam$str")
             .contentType(MediaType.APPLICATION_JSON)
 
-    fun getAssignmentByIdReq(exam: Exam, id: Int) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id")
-            .contentType(MediaType.APPLICATION_JSON)
+    fun getAssignmentByIdReq(exam: Exam, id: Int, version: Int? = null): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/assignment/$exam/$id" + if (version != null) "/$version" else ""
+        return MockMvcRequestBuilders.get(url).contentType(MediaType.APPLICATION_JSON)
+    }
 
-    inline fun <reified T : AssignmentOut> getAssignmentById(id: Int, user: RequestPostProcessor? = null): T {
+    inline fun <reified T : AssignmentOut> getAssignmentById(
+        id: Int,
+        version: Int? = null,
+        user: RequestPostProcessor? = null
+    ): T {
         val exam = examByTestAssignmentOutClass(T::class)
-        val builder = getAssignmentByIdReq(exam, id)
+        val builder = getAssignmentByIdReq(exam, id, version)
 
         if (user != null) {
             builder.with(user)
         }
 
-        val getUpdatedByIdStr = mockMvc.perform(builder).andExpect(
-            status().isOk()
-        ).andReturn().response.contentAsString
+        val getUpdatedByIdStr = mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
+
         return mapper.readValue(getUpdatedByIdStr)
     }
 
@@ -80,8 +84,19 @@ abstract class AssignmentRequests {
         MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
+    fun updateAssignment(id: Int, body: String, user: RequestPostProcessor? = null): String {
+        val builder = updateAssignmentReq(id, body)
+
+        if (user != null) {
+            builder.with(user)
+        }
+
+        return mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
+    }
+
     fun getAllAssignmentsReq(exam: Exam) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam").contentType(MediaType.APPLICATION_JSON)
+
 
     inline fun <reified T : AssignmentOut> getAllAssignmentsForExam(): TestAssignmentsOut<T> {
         val exam = examByTestAssignmentOutClass(T::class)
@@ -90,6 +105,19 @@ abstract class AssignmentRequests {
             mockMvc.perform(getAllAssignmentsReq(exam)).andExpect(status().isOk())
                 .andReturn().response.contentAsString
         return mapper.readValue<TestAssignmentsOut<T>>(responseContent)
+    }
+
+    fun getAllAssignmentVersionsReq(exam: Exam, id: Int) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id/versions")
+            .contentType(MediaType.APPLICATION_JSON)
+
+    inline fun <reified T : AssignmentOut> getAllAssignmentVersions(id: Int): List<T> {
+        val exam = examByTestAssignmentOutClass(T::class)
+
+        val responseContent =
+            mockMvc.perform(getAllAssignmentVersionsReq(exam, id)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+        return mapper.readValue<List<T>>(responseContent)
     }
 
     private fun getSukoAssignmentsReq(filter: SukoFilters): MockHttpServletRequestBuilder {

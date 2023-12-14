@@ -2,9 +2,10 @@ import { expect, Page, test } from '@playwright/test'
 import { loginTestGroup, Role } from '../helpers'
 import { ContentType, ContentTypeSingularEng, Exam } from 'web/src/types'
 import { fillAssignmentForm, formDataForCreate } from './assignment/assignmentHelpers'
-import { createCertificateInputs, fillCertificateForm } from './certificate/certificateHelpers'
-import { fillInstructionForm, instructionFormData } from './instruction/instructionHelpers'
+import { fillCertificateForm } from './certificate/certificateHelpers'
+import { instructionFormData } from './instruction/instructionHelpers'
 import { InstructionFormModel } from '../models/InstructionFormModel'
+import { CertificateFormModel } from '../models/CertificateFormModel'
 
 async function assertSessionExpiryFormErrorMessage(page: Page) {
   const formErrorMessageLocator = page.getByTestId('session-expired-error-message')
@@ -60,18 +61,17 @@ Object.values(Exam).forEach((exam) => {
     })
 
     test(`should show error notification and message on submit ${exam} instruction form`, async ({ page }) => {
+      const form = new InstructionFormModel(page, exam)
       await page.goto(`/${exam}/${ContentType.ohjeet}/uusi`)
-      await fillInstructionForm({
-        form: new InstructionFormModel(page, exam),
-        ...instructionFormData
-      })
+      await form.fillInstructionForm(instructionFormData)
       await clearCookiesAndSubmit(page, ContentTypeSingularEng.ohjeet)
       await assertSessionExpiryFormErrorMessage(page)
     })
 
     test(`should show error notification and message on submit ${exam} certificate form`, async ({ page }) => {
+      const form = new CertificateFormModel(page, exam)
       await page.goto(`/${exam}/${ContentType.todistukset}/uusi`)
-      const inputs = createCertificateInputs(exam, 'submit')
+      const inputs = form.createCertificateInputs('submit')
       await fillCertificateForm(page, exam, inputs)
       await clearCookiesAndSubmit(page, ContentTypeSingularEng.todistukset)
       await assertSessionExpiryFormErrorMessage(page)

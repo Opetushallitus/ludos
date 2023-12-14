@@ -32,7 +32,16 @@ data class SukoCertificateDtoIn(
     val descriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.SUKO
-) : Certificate
+) : Certificate {
+    constructor(out: SukoCertificateDtoOut) : this(
+        out.nameFi,
+        out.nameSv,
+        out.descriptionFi,
+        out.descriptionSv,
+        out.publishState,
+        out.exam
+    )
+}
 
 @JsonTypeName("LD")
 data class LdCertificateDtoIn(
@@ -46,7 +55,15 @@ data class LdCertificateDtoIn(
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
-) : Certificate
+) : Certificate {
+    constructor(out: LdCertificateDtoOut) : this(
+        out.nameFi,
+        out.nameSv,
+        out.publishState,
+        out.aineKoodiArvo,
+        out.exam
+    )
+}
 
 @JsonTypeName("PUHVI")
 data class PuhviCertificateDtoIn(
@@ -64,7 +81,16 @@ data class PuhviCertificateDtoIn(
     val descriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.PUHVI
-) : Certificate
+) : Certificate {
+    constructor(out: PuhviCertificateDtoOut) : this(
+        out.nameFi,
+        out.nameSv,
+        out.descriptionFi,
+        out.descriptionSv,
+        out.publishState,
+        out.exam
+    )
+}
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -72,9 +98,10 @@ data class PuhviCertificateDtoIn(
     JsonSubTypes.Type(value = PuhviCertificateDtoOut::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdCertificateDtoOut::class, name = "LD")
 )
-interface CertificateOut : ContentBaseOut, Certificate {
+sealed interface CertificateOut : ContentBaseOut, Certificate {
     val attachmentFi: CertificateAttachmentDtoOut
-    val attachmentSv: CertificateAttachmentDtoOut?
+    val attachmentSv: CertificateAttachmentDtoOut
+    val version: Int
 }
 
 @JsonTypeName("SUKO")
@@ -84,11 +111,13 @@ data class SukoCertificateDtoOut(
     override val nameSv: String,
     override val publishState: PublishState,
     override val attachmentFi: CertificateAttachmentDtoOut,
-    override val attachmentSv: CertificateAttachmentDtoOut?,
+    override val attachmentSv: CertificateAttachmentDtoOut,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
+    override val version: Int,
     val descriptionFi: String,
     val descriptionSv: String,
     override val exam: Exam = Exam.SUKO
@@ -101,11 +130,13 @@ data class LdCertificateDtoOut(
     override val nameSv: String,
     override val publishState: PublishState,
     override val attachmentFi: CertificateAttachmentDtoOut,
-    override val attachmentSv: CertificateAttachmentDtoOut?,
+    override val attachmentSv: CertificateAttachmentDtoOut,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
+    override val version: Int,
     val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
 ) : CertificateOut
@@ -117,11 +148,13 @@ data class PuhviCertificateDtoOut(
     override val nameSv: String,
     override val publishState: PublishState,
     override val attachmentFi: CertificateAttachmentDtoOut,
-    override val attachmentSv: CertificateAttachmentDtoOut?,
+    override val attachmentSv: CertificateAttachmentDtoOut,
     override val authorOid: String,
     override val updaterOid: String,
+    override val updaterName: String?,
     override val createdAt: Timestamp,
     override val updatedAt: Timestamp,
+    override val version: Int,
     val descriptionFi: String,
     val descriptionSv: String,
     override val exam: Exam = Exam.PUHVI

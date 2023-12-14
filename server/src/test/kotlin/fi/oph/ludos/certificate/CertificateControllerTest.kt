@@ -2,18 +2,23 @@ package fi.oph.ludos.certificate
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
+import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
+import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import jakarta.transaction.Transactional
+import org.assertj.core.api.Assertions
 import org.hamcrest.CoreMatchers
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.emptyString
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.stream.Stream
 
 const val attachmentFileNameToCreate = "fixture1.pdf"
 const val attachmentFileNameToCreateSv = "fixture2.pdf"
@@ -78,8 +83,16 @@ val ldCertificateToUpdate = TestLdCertificateIn(
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CertificateControllerTest : CertificateRequests() {
+    @MockBean
+    private lateinit var mockOppijanumerorekisteriClient: OppijanumerorekisteriClient
+
     val fileKeyRegex = "^todistuspohja_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
-    val exams = listOf(Exam.SUKO, Exam.PUHVI, Exam.LD)
+
+    @BeforeEach
+    fun setupMocks() {
+        Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString()))  // when does not work inside BeforeAll
+            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
+    }
 
     private fun validateFileKey(fileKey: String) =
         assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
@@ -121,13 +134,15 @@ class CertificateControllerTest : CertificateRequests() {
         dtoIn: TestCertificate,
         dtoOut: CertificateOut,
         newAttachment: String,
-        newAttachmentSv: String
+        newAttachmentSv: String,
+        expectedVersion: Int
     ) {
         assertNotNull(dtoOut.id)
         assertEquals(dtoIn.exam, dtoOut.exam)
         assertEquals(dtoIn.publishState.toString(), dtoOut.publishState.toString())
         assertEquals(dtoIn.nameFi, dtoOut.nameFi)
         assertEquals(dtoIn.nameSv, dtoOut.nameSv)
+        assertEquals(expectedVersion, dtoOut.version)
         assertEquals(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo, dtoOut.authorOid)
         assertNotNull(dtoOut.createdAt)
         assertNotNull(dtoOut.updatedAt)
@@ -139,7 +154,7 @@ class CertificateControllerTest : CertificateRequests() {
         if ((dtoIn.exam != Exam.SUKO)) {
             assertAttachment(
                 newAttachmentSv,
-                dtoOut.attachmentSv!!
+                dtoOut.attachmentSv
             )
         }
 
@@ -175,34 +190,16 @@ class CertificateControllerTest : CertificateRequests() {
 
         val createdCertificate = mapper.readValue<T>(createdCertificateStr)
 
-        assertCommonFields(certificateToCreate, createdCertificate, attachmentFileName, attachmentFileNameSv)
+        assertCommonFields(certificateToCreate, createdCertificate, attachmentFileName, attachmentFileNameSv, 1)
 
-        val getResult = mockMvc.perform(getCertificateById(certificateToCreate.exam, createdCertificate.id))
-            .andExpect(status().isOk)
-            .andReturn().response.contentAsString
+        val certificateById = getCertificateById<T>(createdCertificate.id)
 
-        val certificateById = mapper.readValue<T>(getResult)
-
-        assertCommonFields(certificateToCreate, certificateById, attachmentFileName, attachmentFileNameSv)
+        assertCommonFields(certificateToCreate, certificateById, attachmentFileName, attachmentFileNameSv, 1)
 
         return certificateById
     }
 
-
-    private fun assertReplacedAttachmentsHasBeenDeleted(createdCertificate: CertificateOut) {
-        fun req(attachmentFileKey: String) = mockMvc.perform(getAttachment(attachmentFileKey))
-            .andExpect(status().isNotFound)
-
-        req(createdCertificate.attachmentFi.fileKey)
-
-        when (createdCertificate) {
-            is LdCertificateDtoOut, is PuhviCertificateDtoOut -> {
-                req(createdCertificate.attachmentSv!!.fileKey)
-            }
-        }
-    }
-
-    private fun updateCertificateAndAssert(
+    private fun updateCertificateAndCheckIt(
         createdCertificate: CertificateOut,
         editedCertificate: TestCertificate,
         updaterUser: RequestPostProcessor = yllapitajaUser
@@ -221,7 +218,7 @@ class CertificateControllerTest : CertificateRequests() {
         ).andExpect(status().isOk)
 
         val updatedCertificateById: CertificateOut = mapper.readValue(
-            mockMvc.perform(getCertificateById(createdCertificate.exam, createdCertificate.id))
+            mockMvc.perform(getCertificateByIdReq(createdCertificate.exam, createdCertificate.id))
                 .andExpect(status().isOk)
                 .andReturn().response.contentAsString
         )
@@ -230,107 +227,44 @@ class CertificateControllerTest : CertificateRequests() {
             editedCertificate,
             updatedCertificateById,
             attachmentFileNameToUpdate,
-            attachmentFileNameToUpdateSv
+            attachmentFileNameToUpdateSv,
+            2
         )
-        assertReplacedAttachmentsHasBeenDeleted(createdCertificate)
 
         return updatedCertificateById
     }
 
-    @BeforeAll
-    fun setup() {
-        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
-        mockMvc.perform(seedDbWithCertificates().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
-    }
-
-    @TestFactory
-    @WithYllapitajaRole
-    fun `get all certificates of each exam as yllapitaja`(): Stream<DynamicTest> = exams.stream().map { exam ->
-        DynamicTest.dynamicTest("Get all certificates for $exam") {
-            val certificates = getAllCertificates(exam)
-
-            assertEquals(4, certificates.size)
-
-            val expectedNumbersInPage = listOf(0, 1, 2, 3)
-            val actualNumbersInName = certificates.flatMap { cert ->
-                Regex("\\d+").findAll(cert.nameFi).map { it.value.toInt() }.toList()
-            }
-
-            assertEquals(expectedNumbersInPage, actualNumbersInName)
+    private fun createCertificateByExamAndCheckIt(exam: Exam): CertificateOut =
+        when (exam) {
+            Exam.SUKO -> createCertificateAndCheckIt<SukoCertificateDtoOut>(sukoCertificateToCreate)
+            Exam.LD -> createCertificateAndCheckIt<LdCertificateDtoOut>(ldCertificateToCreate)
+            Exam.PUHVI -> createCertificateAndCheckIt<PuhviCertificateDtoOut>(puhviCertificateToCreate)
         }
-    }
 
-    @TestFactory
-    @WithOpettajaRole
-    fun `get all certificates of each exam as opettaja`(): Stream<DynamicTest> = exams.stream().map { exam ->
-        DynamicTest.dynamicTest("$exam") {
-            assertOrderedCertificateList(exam, CertificateFilters(jarjesta = "asc"), listOf(0, 2))
-            assertOrderedCertificateList(exam, CertificateFilters(jarjesta = "desc"), listOf(2, 0))
-        }
-    }
-
-    private fun assertOrderedCertificateList(
+    private fun updateCertificateByExamAndCheckIt(
         exam: Exam,
-        filters: CertificateFilters,
-        expectedNumbersInList: List<Number>
-    ): List<CertificateOut> {
-        val certificates = getAllCertificates(exam, filters = filters)
-        // make sure that draft certificate is not returned
-        assertEquals(2, certificates.size)
-
-        val actualNumbersInName = certificates.flatMap { certificate ->
-            Regex("\\d+").findAll(certificate.nameFi).map { it.value.toInt() }.toList()
+        createdCert: CertificateOut
+    ): CertificateOut =
+        when (exam) {
+            Exam.SUKO -> updateCertificateAndCheckIt(createdCert, sukoCertificateToUpdate, yllapitaja2User)
+            Exam.LD -> updateCertificateAndCheckIt(createdCert, ldCertificateToUpdate, yllapitaja2User)
+            Exam.PUHVI -> updateCertificateAndCheckIt(createdCert, puhviCertificateToUpdate, yllapitaja2User)
         }
 
-        assertEquals(expectedNumbersInList, actualNumbersInName)
-        return certificates
-    }
-
     @TestFactory
-    fun `opettaja cannot get draft certificates by id`(): Stream<DynamicTest> = exams.stream().map { exam ->
+    @WithYllapitajaRole
+    fun `publish certificates`(): Collection<DynamicTest> = Exam.entries.map { exam ->
         DynamicTest.dynamicTest("$exam") {
-            val certificates = getAllCertificates(exam, user = yllapitajaUser)
-            assertEquals(4, certificates.size)
-
-            val idsOfDrafts =
-                certificates.filter { it.publishState.toString() == TestPublishState.DRAFT.toString() }.map { it.id }
-            assertEquals(2, idsOfDrafts.size)
-
-            idsOfDrafts.forEach {
-                mockMvc.perform(getCertificateById(exam, it).with(opettajaUser)).andExpect(status().isNotFound)
-            }
+            createCertificateByExamAndCheckIt(exam)
         }
     }
 
     @TestFactory
     @WithYllapitajaRole
-    fun `publish certificates`(): Stream<DynamicTest> = exams.stream().map { exam ->
+    fun `updating certificate saves updater oid`(): Collection<DynamicTest> = Exam.entries.map { exam ->
         DynamicTest.dynamicTest("$exam") {
-            when (exam) {
-                Exam.SUKO -> createCertificateAndCheckIt<SukoCertificateDtoOut>(sukoCertificateToCreate)
-                Exam.LD -> createCertificateAndCheckIt<LdCertificateDtoOut>(ldCertificateToCreate)
-                Exam.PUHVI -> createCertificateAndCheckIt<PuhviCertificateDtoOut>(puhviCertificateToCreate)
-                null -> fail("Exam should not be null")
-            }
-        }
-    }
-
-    @TestFactory
-    @WithYllapitajaRole
-    fun `updating certificate saves updater oid`(): Stream<DynamicTest> = exams.stream().map { exam ->
-        DynamicTest.dynamicTest("$exam") {
-            val createdCert = when (exam) {
-                Exam.SUKO -> createCertificateAndCheckIt<SukoCertificateDtoOut>(sukoCertificateToCreate)
-                Exam.LD -> createCertificateAndCheckIt<LdCertificateDtoOut>(ldCertificateToCreate)
-                Exam.PUHVI -> createCertificateAndCheckIt<PuhviCertificateDtoOut>(puhviCertificateToCreate)
-                null -> fail("Exam should not be null")
-            }
-            val updatedCert = when (exam) {
-                Exam.SUKO -> updateCertificateAndAssert(createdCert, sukoCertificateToUpdate, yllapitaja2User)
-                Exam.LD -> updateCertificateAndAssert(createdCert, ldCertificateToCreate, yllapitaja2User)
-                Exam.PUHVI -> updateCertificateAndAssert(createdCert, puhviCertificateToCreate, yllapitaja2User)
-                null -> fail("Exam should not be null")
-            }
+            val createdCert = createCertificateByExamAndCheckIt(exam)
+            val updatedCert = updateCertificateByExamAndCheckIt(exam, createdCert)
             assertThat(
                 updatedCert.updaterOid,
                 CoreMatchers.equalTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
@@ -340,8 +274,8 @@ class CertificateControllerTest : CertificateRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `create draft and publish certificates and update attachments`(): Stream<DynamicTest> =
-        exams.stream().map { exam ->
+    fun `create draft and publish certificates and update attachments`(): Collection<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
                 val (createdCertificate, editedCertificate) = when (exam) {
                     Exam.SUKO -> Pair(
@@ -364,11 +298,9 @@ class CertificateControllerTest : CertificateRequests() {
                         ),
                         puhviCertificateToUpdate
                     )
-
-                    null -> fail("Exam should not be null")
                 }
 
-                when (val updatedCertificateById = updateCertificateAndAssert(createdCertificate, editedCertificate)) {
+                when (val updatedCertificateById = updateCertificateAndCheckIt(createdCertificate, editedCertificate)) {
                     is SukoCertificateDtoOut -> assertEquals(
                         (editedCertificate as TestSukoCertificateIn).descriptionFi,
                         updatedCertificateById.descriptionFi
@@ -386,6 +318,96 @@ class CertificateControllerTest : CertificateRequests() {
                 }
             }
         }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `get specific versions and all versions of a certificate`(): Collection<DynamicTest> =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdCertificate = createCertificateByExamAndCheckIt(exam)
+
+                // luo 4 uutta versiota
+                val certificateVersionsIn = (2..5).map { index ->
+                    when (exam) {
+                        Exam.SUKO -> sukoCertificateToCreate.copy(nameFi = createdCertificate.nameFi + " v" + index)
+                        Exam.LD -> ldCertificateToCreate.copy(nameFi = createdCertificate.nameFi + " v" + index)
+                        Exam.PUHVI -> puhviCertificateToCreate.copy(nameFi = createdCertificate.nameFi + " v" + index)
+                    }
+                }
+                certificateVersionsIn.forEachIndexed { index, certificateIn ->
+                    val newAttachment = if (index == certificateVersionsIn.lastIndex) {
+                        readAttachmentFixtureFile(attachmentFileNameToUpdate)
+                    } else null
+
+                    mockMvc.perform(
+                        putCertificate(
+                            createdCertificate.id,
+                            mapper.writeValueAsString(certificateIn),
+                            newAttachment,
+                            if (exam != Exam.SUKO) newAttachment else null
+                        )
+                    ).andExpect(status().isOk)
+                }
+
+                // gettaa ja asserttaa luodut versiot
+                certificateVersionsIn.forEachIndexed { index, certificateIn ->
+                    val version = index + 2
+                    val certificateVersionById = getCertificateById(exam, createdCertificate.id, version)
+
+                    assertEquals(certificateIn.nameFi, certificateVersionById.nameFi)
+                    assertEquals(version, certificateVersionById.version)
+
+                    if (index == certificateVersionsIn.lastIndex) {
+                        assertAttachment(attachmentFileNameToUpdate, certificateVersionById.attachmentFi)
+                    } else {
+                        assertAttachment(attachmentFileNameToCreate, certificateVersionById.attachmentFi)
+                    }
+
+                    if (certificateIn.exam != Exam.SUKO) {
+                        assertAttachment(attachmentFileNameToCreateSv, certificateVersionById.attachmentSv)
+                    }
+                }
+
+                testVersionsEndpoint(exam, createdCertificate, certificateVersionsIn)
+            }
+        }
+
+    private fun testVersionsEndpoint(
+        exam: Exam,
+        createdCertificate: CertificateOut,
+        certificates: List<TestCertificate>
+    ) {
+        val allCertificateVersionsByExam = getAllCertificateVersions(exam, createdCertificate.id)
+
+        val certificateInByExam = when (exam) {
+            Exam.SUKO -> sukoCertificateToCreate
+            Exam.LD -> ldCertificateToCreate
+            Exam.PUHVI -> puhviCertificateToCreate
+        }
+
+        val kayttajatiedot = YllapitajaSecurityContextFactory().kayttajatiedot()
+        val expectedUpdaterName = "${kayttajatiedot.etunimet} ${kayttajatiedot.sukunimi}"
+        allCertificateVersionsByExam.let { certificateVersions ->
+            assertEquals(5, certificateVersions.size)
+            certificateVersions.forEachIndexed { index, certificate ->
+                Assertions.assertThat(certificate.updaterName).isEqualTo(expectedUpdaterName)
+                val expectedCertificate = if (index == 0) certificateInByExam else certificates[index - 1]
+                val expectedAttachment =
+                    if (index == certificateVersions.lastIndex) attachmentFileNameToUpdate else attachmentFileNameToCreate
+                val expectedAttachmentSv =
+                    if (index == certificateVersions.lastIndex) attachmentFileNameToUpdate else attachmentFileNameToCreateSv
+
+                assertCommonFields(
+                    expectedCertificate,
+                    certificate,
+                    expectedAttachment,
+                    expectedAttachmentSv,
+                    index + 1
+                )
+            }
+        }
+    }
+
 
     @Test
     @WithYllapitajaRole
@@ -439,17 +461,31 @@ class CertificateControllerTest : CertificateRequests() {
     @Test
     @WithYllapitajaRole
     fun getCertificateByIdWhenExamDoesNotExist() = assertEquals(
-        mockMvc.perform(getCertificateById(Exam.SUKO, 999))
+        "Certificate 999 not found",
+        mockMvc.perform(getCertificateByIdReq(Exam.SUKO, 999))
             .andExpect(status().isNotFound())
-            .andReturn().response.contentAsString, "Certificate not found 999"
+            .andReturn().response.contentAsString
     )
 
     private inline fun <reified T : TestCertificate, reified Y : CertificateOut> deleteCertificateTest(
         exam: Exam,
         certificateInInput: T,
+        updates: List<(Y) -> T>,
         updateCertificate: (Y) -> T
     ) {
         val createdCertificateOut = createCertificateAndCheckIt<Y>(certificateInInput)
+
+        updates.forEach { updateFunction ->
+            val updatedCertificateIn = updateFunction(createdCertificateOut)
+            mockMvc.perform(
+                putCertificate(
+                    createdCertificateOut.id,
+                    mapper.writeValueAsString(updatedCertificateIn),
+                    null,
+                    null
+                )
+            ).andExpect(status().isOk)
+        }
 
         mockMvc.perform(
             putCertificate(
@@ -458,13 +494,12 @@ class CertificateControllerTest : CertificateRequests() {
                 null,
                 null
             )
-        ).andExpect(status().isOk).andReturn().response.contentAsString
+        ).andExpect(status().isOk)
 
-        mockMvc.perform(getCertificateById(exam, createdCertificateOut.id))
+        mockMvc.perform(getCertificateByIdReq(exam, createdCertificateOut.id))
             .andExpect(status().isNotFound())
 
-        val certificates = getAllCertificates(Exam.SUKO)
-
+        val certificates = getAllCertificates(exam)
         assertTrue(
             certificates.none { it.id == createdCertificateOut.id },
             "No certificate should have the ID of the deleted one"
@@ -475,7 +510,11 @@ class CertificateControllerTest : CertificateRequests() {
     @WithYllapitajaRole
     fun `test deleting SUKO certificate`() = deleteCertificateTest<TestSukoCertificateIn, SukoCertificateDtoOut>(
         Exam.SUKO,
-        sukoCertificateToCreate
+        sukoCertificateToCreate,
+        listOf(
+            { sukoCertificateToCreate.copy(nameFi = "updated") },
+            { sukoCertificateToCreate.copy(nameFi = "updated1") },
+        )
     ) {
         TestSukoCertificateIn(
             it.exam,
@@ -491,7 +530,11 @@ class CertificateControllerTest : CertificateRequests() {
     @WithYllapitajaRole
     fun `test deleting PUHVI certificate`() = deleteCertificateTest<TestPuhviCertificateIn, PuhviCertificateDtoOut>(
         Exam.PUHVI,
-        puhviCertificateToCreate
+        puhviCertificateToCreate,
+        listOf(
+            { puhviCertificateToCreate.copy(nameFi = "updated") },
+            { puhviCertificateToCreate.copy(nameFi = "updated1") },
+        )
     ) {
         TestPuhviCertificateIn(
             it.exam,
@@ -507,7 +550,11 @@ class CertificateControllerTest : CertificateRequests() {
     @WithYllapitajaRole
     fun `test deleting LD certificate`() = deleteCertificateTest<TestLdCertificateIn, LdCertificateDtoOut>(
         Exam.LD,
-        ldCertificateToCreate
+        ldCertificateToCreate,
+        listOf(
+            { ldCertificateToCreate.copy(nameFi = "updated") },
+            { ldCertificateToCreate.copy(nameFi = "updated1") },
+        )
     ) {
         TestLdCertificateIn(
             it.exam,
@@ -517,4 +564,64 @@ class CertificateControllerTest : CertificateRequests() {
             it.aineKoodiArvo
         )
     }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring current version yields 400`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdCertificate = createCertificateByExamAndCheckIt(exam)
+                val errorMessage =
+                    mockMvc.perform(restoreCertificateReq(exam, createdCertificate.id, createdCertificate.version))
+                        .andExpect(status().isBadRequest).andReturn().response.contentAsString
+                assertEquals("Cannot restore latest version", errorMessage)
+            }
+        }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring non-existent certificate id yields 404`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                mockMvc.perform(restoreCertificateReq(exam, -1, 1))
+                    .andExpect(status().isNotFound)
+            }
+        }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring non-existent version yields 404`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdCertificate = createCertificateByExamAndCheckIt(exam)
+                mockMvc.perform(restoreCertificateReq(exam, createdCertificate.id, -1))
+                    .andExpect(status().isNotFound)
+            }
+        }
+
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring an old version creates a new version`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdCertificate = createCertificateByExamAndCheckIt(exam)
+                updateCertificateByExamAndCheckIt(exam, createdCertificate)
+                val updatedCertificateById = getCertificateById(exam, createdCertificate.id)
+                assertNotEquals(createdCertificate.nameFi, updatedCertificateById.nameFi)
+
+                val versionsBeforeRestore = getAllCertificateVersions(exam, createdCertificate.id)
+                assertEquals(2, versionsBeforeRestore.size)
+
+                mockMvc.perform(restoreCertificateReq(exam, createdCertificate.id, createdCertificate.version))
+                    .andExpect(status().isOk)
+                val versionsAfterRestore = getAllCertificateVersions(exam, createdCertificate.id)
+                val latestVersionById = getCertificateById(exam, createdCertificate.id)
+                assertEquals(3, versionsAfterRestore.size)
+                assertEquals(versionsAfterRestore.last().version, latestVersionById.version)
+                assertEquals(3, latestVersionById.version)
+
+                assertEquals(createdCertificate.nameFi, latestVersionById.nameFi)
+            }
+        }
 }

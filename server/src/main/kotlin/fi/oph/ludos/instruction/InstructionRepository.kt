@@ -10,6 +10,7 @@ import fi.oph.ludos.s3.Bucket
 import fi.oph.ludos.s3.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -32,7 +33,7 @@ class InstructionRepository(
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
-    fun getTableNameByExam(exam: Exam) = when (exam) {
+    fun tableNameByExam(exam: Exam) = when (exam) {
         Exam.SUKO -> "suko_instruction"
         Exam.PUHVI -> "puhvi_instruction"
         Exam.LD -> "ld_instruction"
@@ -55,17 +56,22 @@ class InstructionRepository(
     fun createInstruction(
         instruction: Instruction,
         attachments: List<InstructionAttachmentIn>,
-        insertInstructionRow: () -> Long
+        insertInstructionRow: (version: Int) -> Long
     ) = transactionTemplate.execute { _ ->
-        val id = insertInstructionRow()
+        val instructionVersion = 1
+        val id = insertInstructionRow(instructionVersion)
+
+        val attachmentWithInstructionVersion = { metadata: InstructionAttachmentMetadataDtoIn ->
+            metadata.copy(instructionVersion = instructionVersion)
+        }
 
         for (attachment in attachments) {
             val fileKey = newInstructionAttachmentFileKey()
             uploadInstructionAttachmentToS3(fileKey, attachment.file)
             insertInstructionAttachment(
-                getTableNameByExam(instruction.exam),
+                tableNameByExam(instruction.exam),
                 id,
-                attachment.metadata,
+                attachmentWithInstructionVersion(attachment.metadata),
                 attachment.file.originalFilename!!,
                 fileKey
             )
@@ -77,7 +83,7 @@ class InstructionRepository(
     fun createSukoInstruction(
         instruction: SukoInstructionDtoIn,
         attachments: List<InstructionAttachmentIn>
-    ): InstructionOut = createInstruction(instruction, attachments) {
+    ): InstructionOut = createInstruction(instruction, attachments) { instructionVersion ->
         jdbcTemplate.queryForObject(
             """INSERT INTO suko_instruction (
                 instruction_name_fi, 
@@ -88,9 +94,10 @@ class InstructionRepository(
                 suko_instruction_short_description_sv,
                 instruction_publish_state, 
                 instruction_author_oid,
-                instruction_updater_oid
+                instruction_updater_oid,
+                instruction_version
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?) 
+            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?) 
             RETURNING instruction_id""".trimIndent(),
             Long::class.java,
             instruction.nameFi,
@@ -102,13 +109,14 @@ class InstructionRepository(
             instruction.publishState.toString(),
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
+            instructionVersion
         )
     }
 
     fun createLdInstruction(
         instruction: LdInstructionDtoIn,
         attachments: List<InstructionAttachmentIn>
-    ): InstructionOut = createInstruction(instruction, attachments) {
+    ): InstructionOut = createInstruction(instruction, attachments) { instructionVersion ->
         jdbcTemplate.queryForObject(
             """INSERT INTO ld_instruction (
                 instruction_name_fi, 
@@ -118,9 +126,10 @@ class InstructionRepository(
                 instruction_publish_state, 
                 instruction_author_oid,
                 instruction_updater_oid,
-                ld_instruction_aine_koodi_arvo
+                ld_instruction_aine_koodi_arvo,
+                instruction_version
             ) 
-            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?) 
+            VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) 
             RETURNING instruction_id""".trimIndent(),
             Long::class.java,
             instruction.nameFi,
@@ -130,14 +139,15 @@ class InstructionRepository(
             instruction.publishState.toString(),
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
-            instruction.aineKoodiArvo
+            instruction.aineKoodiArvo,
+            instructionVersion
         )
     }
 
     fun createPuhviInstruction(
         instruction: PuhviInstructionDtoIn,
         attachments: List<InstructionAttachmentIn>
-    ): InstructionOut = createInstruction(instruction, attachments) {
+    ): InstructionOut = createInstruction(instruction, attachments) { instructionVersion ->
         jdbcTemplate.queryForObject(
             """INSERT INTO puhvi_instruction (
                 instruction_name_fi, 
@@ -148,9 +158,10 @@ class InstructionRepository(
                 puhvi_instruction_short_description_sv,
                 instruction_publish_state, 
                 instruction_author_oid,
-                instruction_updater_oid
+                instruction_updater_oid,
+                instruction_version
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?) 
+            VALUES (?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?) 
             RETURNING instruction_id""".trimIndent(),
             Long::class.java,
             instruction.nameFi,
@@ -162,6 +173,7 @@ class InstructionRepository(
             instruction.publishState.toString(),
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
             Kayttajatiedot.fromSecurityContext().oidHenkilo,
+            instructionVersion
         )
     }
 
@@ -188,21 +200,23 @@ class InstructionRepository(
                         attachment_file_name, 
                         attachment_upload_date,
                         instruction_id, 
+                        instruction_version,
                         instruction_attachment_name,
                         instruction_attachment_language
                     )
-               VALUES (?, ?, clock_timestamp(), ?, ?, ?::language)
+               VALUES (?, ?, clock_timestamp(), ?, ?, ?, ?::language)
                RETURNING attachment_upload_date""".trimIndent(),
             { rs: ResultSet, _: Int -> rs.getTimestamp("attachment_upload_date") },
             fileKey,
             originalFilename,
             instructionId,
+            metadata.instructionVersion,
             metadata.name,
             metadata.language.toString()
         )
 
         return InstructionAttachmentDtoOut(
-            fileKey, originalFilename, uploadDates[0], metadata.name, metadata.language
+            fileKey, originalFilename, uploadDates[0], metadata.name, metadata.language, metadata.instructionVersion
         )
     }
 
@@ -220,7 +234,10 @@ class InstructionRepository(
                     attachmentFileNames[i],
                     attachmentUploadDates[i],
                     instructionAttachmentNames[i],
-                    Language.valueOf(instructionAttachmentLanguages[i])
+                    Language.valueOf(
+                        instructionAttachmentLanguages[i],
+                    ),
+                    rs.getInt("instruction_version")
                 )
             }.sortedBy { it.fileUploadDate }
         } else emptyList()
@@ -228,7 +245,7 @@ class InstructionRepository(
         return attachments
     }
 
-    fun mapResultSetSuko(): (ResultSet, Int) -> SukoInstructionDtoOut? =
+    val mapResultSetSuko: (ResultSet, Int) -> SukoInstructionDtoOut? =
         { rs: ResultSet, _: Int ->
             val attachments = mapResultSetInstructionAttachment(rs)
 
@@ -244,13 +261,15 @@ class InstructionRepository(
                 attachments,
                 rs.getString("instruction_author_oid"),
                 rs.getString("instruction_updater_oid"),
+                null,
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at"),
+                rs.getInt("instruction_version"),
                 Exam.SUKO,
             )
         }
 
-    fun mapResultSetLd(): (ResultSet, Int) -> LdInstructionDtoOut? = { rs: ResultSet, _: Int ->
+    val mapResultSetLd: (ResultSet, Int) -> LdInstructionDtoOut? = { rs: ResultSet, _: Int ->
         val attachments = mapResultSetInstructionAttachment(rs)
 
         LdInstructionDtoOut(
@@ -264,13 +283,15 @@ class InstructionRepository(
             attachments,
             rs.getString("instruction_author_oid"),
             rs.getString("instruction_updater_oid"),
+            null,
             rs.getTimestamp("instruction_created_at"),
             rs.getTimestamp("instruction_updated_at"),
+            rs.getInt("instruction_version"),
             Exam.LD,
         )
     }
 
-    fun mapResultSetPuhvi(): (ResultSet, Int) -> PuhviInstructionDtoOut? =
+    val mapResultSetPuhvi: (ResultSet, Int) -> PuhviInstructionDtoOut? =
         { rs: ResultSet, _: Int ->
             val attachments = mapResultSetInstructionAttachment(rs)
 
@@ -286,49 +307,96 @@ class InstructionRepository(
                 attachments,
                 rs.getString("instruction_author_oid"),
                 rs.getString("instruction_updater_oid"),
+                null,
                 rs.getTimestamp("instruction_created_at"),
                 rs.getTimestamp("instruction_updated_at"),
+                rs.getInt("instruction_version"),
                 Exam.PUHVI,
             )
         }
 
-    fun getInstructionById(exam: Exam, id: Int): InstructionOut? {
+    fun getInstructionById(exam: Exam, id: Int, version: Int? = null): InstructionOut? {
         val role = Kayttajatiedot.fromSecurityContext().role
-        val table = getTableNameByExam(exam)
+        val table = tableNameByExam(exam)
         val mapper = when (exam) {
-            Exam.SUKO -> ::mapResultSetSuko
-            Exam.LD -> ::mapResultSetLd
-            Exam.PUHVI -> ::mapResultSetPuhvi
+            Exam.SUKO -> mapResultSetSuko
+            Exam.LD -> mapResultSetLd
+            Exam.PUHVI -> mapResultSetPuhvi
         }
 
-        val additionalGroupBy = when (exam) {
+        val versionCondition = version?.let { "AND i.instruction_version = $version" }
+            ?: "AND i.instruction_version = (SELECT MAX(instruction_version) FROM $table WHERE instruction_id = i.instruction_id)"
+
+        val groupByConditionByExam = when (exam) {
             Exam.SUKO -> "i.suko_instruction_short_description_fi, i.suko_instruction_short_description_sv"
             Exam.LD -> "i.ld_instruction_aine_koodi_arvo"
             Exam.PUHVI -> "i.puhvi_instruction_short_description_fi, i.puhvi_instruction_short_description_sv"
         }
 
-        val sql = """SELECT
-                     i.*,
-                     ARRAY_AGG(ia.attachment_file_key) AS attachment_file_keys,
-                     ARRAY_AGG(ia.attachment_file_name) AS attachment_file_names,
-                     ARRAY_AGG(ia.attachment_upload_date) AS attachment_upload_dates,
-                     ARRAY_AGG(ia.instruction_attachment_name) AS instruction_attachment_names,
-                     ARRAY_AGG(ia.instruction_attachment_language) AS instruction_attachment_languages
-                FROM $table i
-                NATURAL LEFT JOIN ${table}_attachment ia
-                WHERE instruction_id = ? ${publishStateFilter(role)}
-                GROUP BY
-                    i.instruction_id, 
-                    i.instruction_name_fi, 
-                    i.instruction_name_sv, 
-                    i.instruction_content_fi, 
-                    i.instruction_content_sv, 
-                    i.instruction_publish_state, 
-                    i.instruction_author_oid,
-                    i.instruction_updater_oid,
-                    $additionalGroupBy;"""
+        val sql = """
+            SELECT
+                 i.*,
+                 ARRAY_AGG(ia.attachment_file_key) AS attachment_file_keys,
+                 ARRAY_AGG(ia.attachment_file_name) AS attachment_file_names,
+                 ARRAY_AGG(ia.attachment_upload_date) AS attachment_upload_dates,
+                 ARRAY_AGG(ia.instruction_attachment_name) AS instruction_attachment_names,
+                 ARRAY_AGG(ia.instruction_attachment_language) AS instruction_attachment_languages
+            FROM $table i
+            LEFT JOIN ${table}_attachment ia ON i.instruction_id = ia.instruction_id AND i.instruction_version = ia.instruction_version
+            WHERE i.instruction_id = ? $versionCondition ${publishStateFilter(role)}
+            GROUP BY
+                i.instruction_id, 
+                i.instruction_version, 
+                i.instruction_name_fi, 
+                i.instruction_name_sv, 
+                i.instruction_content_fi, 
+                i.instruction_content_sv, 
+                i.instruction_publish_state, 
+                i.instruction_author_oid,
+                i.instruction_updater_oid,
+                $groupByConditionByExam;"""
 
-        return jdbcTemplate.query(sql, mapper(), id).firstOrNull()
+        return jdbcTemplate.query(sql, mapper, id).firstOrNull()
+    }
+
+    fun getAllVersionsOfInstruction(id: Int, exam: Exam): List<InstructionOut> {
+        val (table, mapper) = when (exam) {
+            Exam.SUKO -> "suko_instruction" to mapResultSetSuko
+            Exam.LD -> "ld_instruction" to mapResultSetLd
+            Exam.PUHVI -> "puhvi_instruction" to mapResultSetPuhvi
+        }
+
+        val groupByConditionByExam = when (exam) {
+            Exam.SUKO -> "i.suko_instruction_short_description_fi, i.suko_instruction_short_description_sv"
+            Exam.LD -> "i.ld_instruction_aine_koodi_arvo"
+            Exam.PUHVI -> "i.puhvi_instruction_short_description_fi, i.puhvi_instruction_short_description_sv"
+        }
+
+        val sql = """
+            SELECT
+                 i.*,
+                 ARRAY_AGG(ia.attachment_file_key) AS attachment_file_keys,
+                 ARRAY_AGG(ia.attachment_file_name) AS attachment_file_names,
+                 ARRAY_AGG(ia.attachment_upload_date) AS attachment_upload_dates,
+                 ARRAY_AGG(ia.instruction_attachment_name) AS instruction_attachment_names,
+                 ARRAY_AGG(ia.instruction_attachment_language) AS instruction_attachment_languages
+            FROM $table i
+            LEFT JOIN ${table}_attachment ia ON i.instruction_id = ia.instruction_id AND i.instruction_version = ia.instruction_version
+            WHERE i.instruction_id = ?
+            GROUP BY
+                i.instruction_id, 
+                i.instruction_version, 
+                i.instruction_name_fi, 
+                i.instruction_name_sv, 
+                i.instruction_content_fi, 
+                i.instruction_content_sv, 
+                i.instruction_publish_state, 
+                i.instruction_author_oid,
+                i.instruction_updater_oid,
+                $groupByConditionByExam
+            ORDER BY i.instruction_version;"""
+
+        return jdbcTemplate.query(sql, mapper, id)
     }
 
     private val ldListMetadataResultSetExtractor: (ResultSet) -> LdInstructionFilterOptionsDtoOut = { rs: ResultSet ->
@@ -387,11 +455,11 @@ class InstructionRepository(
     }
 
     private fun listInstructions(filters: InstructionBaseFilters, exam: Exam, role: Role): List<InstructionOut> {
-        val table = getTableNameByExam(exam)
+        val table = tableNameByExam(exam)
         val mapper = when (exam) {
-            Exam.SUKO -> ::mapResultSetSuko
-            Exam.PUHVI -> ::mapResultSetPuhvi
-            Exam.LD -> ::mapResultSetLd
+            Exam.SUKO -> mapResultSetSuko
+            Exam.PUHVI -> mapResultSetPuhvi
+            Exam.LD -> mapResultSetLd
         }
 
         val parameters = MapSqlParameterSource()
@@ -418,10 +486,16 @@ class InstructionRepository(
                      ARRAY_AGG(ia.instruction_attachment_language) AS instruction_attachment_languages
                 FROM
                     $table i 
-                NATURAL LEFT JOIN ${table}_attachment ia
+                INNER JOIN (
+                    SELECT instruction_id, MAX(instruction_version) as latest_version
+                    FROM $table
+                    GROUP BY instruction_id
+                ) latest ON i.instruction_id = latest.instruction_id AND i.instruction_version = latest.latest_version
+                LEFT JOIN ${table}_attachment ia on i.instruction_id = ia.instruction_id AND i.instruction_version = ia.instruction_version
                 WHERE $filterBuilder
                 GROUP BY
                     i.instruction_id, 
+                    i.instruction_version,
                     i.instruction_name_fi, 
                     i.instruction_name_sv, 
                     i.instruction_content_fi, 
@@ -432,7 +506,7 @@ class InstructionRepository(
                     $additionalSelectFields
                 ORDER BY i.instruction_updated_at $orderDirection;"""
 
-        return namedJdbcTemplate.query(sql, parameters, mapper())
+        return namedJdbcTemplate.query(sql, parameters, mapper)
     }
 
     fun getInstructions(
@@ -453,172 +527,205 @@ class InstructionRepository(
         )
     }
 
-    fun uploadAttachmentToInstruction(
-        exam: Exam, instructionId: Int, metadata: InstructionAttachmentMetadataDtoIn, file: MultipartFile
-    ): InstructionAttachmentDtoOut {
-        val table = getTableNameByExam(exam)
-        val fileKey = newInstructionAttachmentFileKey()
-
-        uploadInstructionAttachmentToS3(fileKey, file)
-
-        return insertInstructionAttachment(
-            table,
-            instructionId.toLong(),
-            metadata,
-            file.originalFilename!!,
-            fileKey
+    private fun getLatestInstructionVersionAndAuthor(id: Int, exam: Exam): Pair<Int, String>? = try {
+        jdbcTemplate.queryForObject(
+            """
+            SELECT instruction_version, instruction_author_oid
+            FROM ${tableNameByExam(exam)}
+            WHERE instruction_id = ? AND instruction_version = (SELECT MAX(instruction_version) FROM ${
+                tableNameByExam(
+                    exam
+                )
+            } WHERE instruction_id = ?);""".trimIndent(),
+            { rs, _ -> Pair(rs.getInt("instruction_version"), rs.getString("instruction_author_oid")) },
+            id, id
         )
+    } catch (e: EmptyResultDataAccessException) {
+        null
     }
 
-    fun <T : Instruction> updateInstruction(
+    fun <T : Instruction> createNewVersionOfInstruction(
         id: Int,
         instructionDtoIn: T,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
-        updateInstructionRow: () -> Int?
+        newAttachments: List<InstructionAttachmentIn>,
+        updateInstructionRow: (version: Int, authorOid: String) -> Unit
     ): Int? = transactionTemplate.execute { _ ->
-        getInstructionById(instructionDtoIn.exam, id) ?: throw ResponseStatusException(
-            HttpStatus.NOT_FOUND, "Instruction $id not found"
-        )
-        val table = getTableNameByExam(instructionDtoIn.exam)
+        val (currentLatestVersion, authorOid) = getLatestInstructionVersionAndAuthor(id, instructionDtoIn.exam)
+            ?: return@execute null
 
-        val updatedRowCount = updateInstructionRow()
-        if (updatedRowCount != 1) {
-            throw ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Updated row count was $updatedRowCount but 1 was expected when updating Instruction $id"
+        val table = tableNameByExam(instructionDtoIn.exam)
+
+        val version = currentLatestVersion + 1
+
+        updateInstructionRow(version, authorOid)
+
+        val attachmentWithInstructionVersion = { metadata: InstructionAttachmentMetadataDtoIn ->
+            metadata.copy(instructionVersion = version)
+        }
+
+        for (attachment in newAttachments) {
+            val fileKey = newInstructionAttachmentFileKey()
+            uploadInstructionAttachmentToS3(fileKey, attachment.file)
+            insertInstructionAttachment(
+                tableNameByExam(instructionDtoIn.exam),
+                id.toLong(),
+                attachmentWithInstructionVersion(attachment.metadata),
+                attachment.file.originalFilename!!,
+                fileKey
             )
         }
 
         attachmentsMetadata.forEach {
             jdbcTemplate.update(
-                """UPDATE ${table}_attachment
-                   SET instruction_attachment_name = ?
-                   WHERE attachment_file_key = ?""".trimIndent(),
+                """
+                INSERT INTO ${table}_attachment (
+                        attachment_file_key, 
+                        attachment_file_name, 
+                        attachment_upload_date,
+                        instruction_id, 
+                        instruction_version,
+                        instruction_attachment_name,
+                        instruction_attachment_language
+                )
+                VALUES (?, ?, clock_timestamp(), ?, ?, ?, ?::language)
+                """.trimIndent(),
+                it.fileKey,
                 it.name,
-                it.fileKey
+                id,
+                version,
+                it.name,
+                it.language.toString()
             )
         }
 
         return@execute id
     }
 
-    fun updateSukoInstruction(
+    fun createNewVersionOfSukoInstruction(
         id: Int,
         instruction: SukoInstructionDtoIn,
-        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
-    ): Int? = updateInstruction(id, instruction, attachmentsMetadata) {
-        jdbcTemplate.update(
-            """UPDATE suko_instruction
-        SET instruction_name_fi = ?,
-        instruction_name_sv = ?,
-        instruction_content_fi = ?,
-        instruction_content_sv = ?,
-        instruction_publish_state = ?::publish_state,
-        instruction_updater_oid = ?,
-        instruction_updated_at = clock_timestamp(),
-        suko_instruction_short_description_fi = ?,
-        suko_instruction_short_description_sv = ?
-        WHERE instruction_id = ?
-        """.trimIndent(),
-            instruction.nameFi,
-            instruction.nameSv,
-            instruction.contentFi,
-            instruction.contentSv,
-            instruction.publishState.toString(),
-            Kayttajatiedot.fromSecurityContext().oidHenkilo,
-            instruction.shortDescriptionFi,
-            instruction.shortDescriptionSv,
-            id
-        )
-    }
+        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
+        newAttachments: List<InstructionAttachmentIn>
+    ): Int? =
+        createNewVersionOfInstruction(id, instruction, attachmentsMetadata, newAttachments) { version, authorOid ->
+            jdbcTemplate.update(
+                """
+            INSERT INTO suko_instruction (
+                instruction_id,
+                instruction_name_fi, 
+                instruction_name_sv, 
+                instruction_content_fi, 
+                instruction_content_sv, 
+                instruction_publish_state,
+                suko_instruction_short_description_fi,
+                suko_instruction_short_description_sv,
+                instruction_author_oid,
+                instruction_updater_oid,
+                instruction_version
+            ) VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+            """.trimIndent(),
+                id,
+                instruction.nameFi,
+                instruction.nameSv,
+                instruction.contentFi,
+                instruction.contentSv,
+                instruction.publishState.toString(),
+                instruction.shortDescriptionFi,
+                instruction.shortDescriptionSv,
+                authorOid,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
+                version
+            )
+        }
 
-    fun updateLdInstruction(
+    fun createNewVersionOfLdInstruction(
         id: Int,
         instruction: LdInstructionDtoIn,
-        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
-    ): Int? = updateInstruction(id, instruction, attachmentsMetadata) {
-        jdbcTemplate.update(
-            """UPDATE ld_instruction
-        SET instruction_name_fi = ?,
-        instruction_name_sv = ?,
-        instruction_content_fi = ?,
-        instruction_content_sv = ?,
-        instruction_publish_state = ?::publish_state,
-        instruction_updater_oid = ?,
-        instruction_updated_at = clock_timestamp(),
-        ld_instruction_aine_koodi_arvo = ?
-        WHERE instruction_id = ?
-        """.trimIndent(),
-            instruction.nameFi,
-            instruction.nameSv,
-            instruction.contentFi,
-            instruction.contentSv,
-            instruction.publishState.toString(),
-            Kayttajatiedot.fromSecurityContext().oidHenkilo,
-            instruction.aineKoodiArvo,
-            id
-        )
-    }
+        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
+        newAttachments: List<InstructionAttachmentIn>
+    ): Int? =
+        createNewVersionOfInstruction(id, instruction, attachmentsMetadata, newAttachments) { version, authorOid ->
+            jdbcTemplate.update(
+                """INSERT INTO ld_instruction (
+                instruction_id,
+                instruction_name_fi, 
+                instruction_name_sv, 
+                instruction_content_fi, 
+                instruction_content_sv, 
+                instruction_publish_state, 
+                instruction_author_oid,
+                instruction_updater_oid,
+                ld_instruction_aine_koodi_arvo,
+                instruction_version
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)""".trimIndent(),
+                id,
+                instruction.nameFi,
+                instruction.nameSv,
+                instruction.contentFi,
+                instruction.contentSv,
+                instruction.publishState.toString(),
+                authorOid,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
+                instruction.aineKoodiArvo,
+                version
+            )
+        }
 
-    fun updatePuhviInstruction(
+    fun createNewVersionOfPuhviInstruction(
         id: Int,
         instruction: PuhviInstructionDtoIn,
-        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>
-    ): Int? = updateInstruction(id, instruction, attachmentsMetadata) {
-        jdbcTemplate.update(
-            """UPDATE puhvi_instruction
-        SET instruction_name_fi = ?,
-        instruction_name_sv = ?,
-        instruction_content_fi = ?,
-        instruction_content_sv = ?,
-        instruction_publish_state = ?::publish_state,
-        instruction_updater_oid = ?,
-        instruction_updated_at = clock_timestamp(),
-        puhvi_instruction_short_description_fi = ?,
-        puhvi_instruction_short_description_sv = ?
-        WHERE instruction_id = ?
-        """.trimIndent(),
-            instruction.nameFi,
-            instruction.nameSv,
-            instruction.contentFi,
-            instruction.contentSv,
-            instruction.publishState.toString(),
-            Kayttajatiedot.fromSecurityContext().oidHenkilo,
-            instruction.shortDescriptionFi,
-            instruction.shortDescriptionSv,
-            id
-        )
-    }
-
-    fun deleteAttachment(fileKey: String) {
-        val sql = "DELETE FROM attachment WHERE attachment_file_key = ?"
-
-        val updatedRowCount = jdbcTemplate.update(sql, fileKey)
-
-        if (updatedRowCount != 1) {
-            logger.warn("Tried to delete non-existent certificate attachment '${fileKey}'. Ignoring error.")
+        attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
+        newAttachments: List<InstructionAttachmentIn>
+    ): Int? =
+        createNewVersionOfInstruction(id, instruction, attachmentsMetadata, newAttachments) { version, authorOid ->
+            jdbcTemplate.update(
+                """INSERT INTO puhvi_instruction (
+                instruction_id,
+                instruction_name_fi, 
+                instruction_name_sv, 
+                instruction_content_fi, 
+                instruction_content_sv, 
+                puhvi_instruction_short_description_fi,
+                puhvi_instruction_short_description_sv,
+                instruction_publish_state, 
+                instruction_author_oid,
+                instruction_updater_oid,
+                instruction_version
+            ) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?) """.trimIndent(),
+                id,
+                instruction.nameFi,
+                instruction.nameSv,
+                instruction.contentFi,
+                instruction.contentSv,
+                instruction.shortDescriptionFi,
+                instruction.shortDescriptionSv,
+                instruction.publishState.toString(),
+                authorOid,
+                Kayttajatiedot.fromSecurityContext().oidHenkilo,
+                version
+            )
         }
 
-        try {
-            s3Helper.deleteObject(Bucket.INSTRUCTION, fileKey)
-        } catch (ex: SdkException) {
-            logger.warn("Failed to delete certificate attachment '${fileKey}' from S3. Ignoring error.", ex)
-        }
-    }
+    fun getAttachmentByFileKey(fileKey: String, version: Int?): InstructionAttachmentDtoOut? {
+        val versionCondition = version?.let { "AND instruction_version = $version" }
+            ?: "AND instruction_version = (SELECT MAX(instruction_version) FROM instruction_attachment ia WHERE instruction_id = ia.instruction_id)"
 
-    fun getAttachmentByFileKey(fileKey: String): InstructionAttachmentDtoOut? {
         val results = jdbcTemplate.query(
             """
-            SELECT attachment_file_key, attachment_file_name, attachment_upload_date, instruction_attachment_name, instruction_attachment_language
+            SELECT attachment_file_key, attachment_file_name, attachment_upload_date, instruction_attachment_name, instruction_attachment_language, instruction_version
             FROM instruction_attachment
-            WHERE attachment_file_key = ?
+            WHERE attachment_file_key = ? $versionCondition
             """.trimIndent(), { rs, _ ->
                 InstructionAttachmentDtoOut(
                     rs.getString("attachment_file_key"),
                     rs.getString("attachment_file_name"),
                     rs.getTimestamp("attachment_upload_date"),
                     rs.getString("instruction_attachment_name"),
-                    Language.valueOf(rs.getString("instruction_attachment_language"))
+                    Language.valueOf(rs.getString("instruction_attachment_language")),
+                    rs.getInt("instruction_version")
                 )
             }, fileKey
         )

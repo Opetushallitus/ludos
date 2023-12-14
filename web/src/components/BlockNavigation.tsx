@@ -12,9 +12,7 @@ export const BlockNavigation = ({ shouldBlock }: BlockNavigationProps) => {
 
   return (
     <>
-      {blocker.state === 'blocked' && (
-        <BlockNavigationModal open={blocker.state === 'blocked'} onProceed={blocker.proceed} onClose={blocker.reset} />
-      )}
+      {blocker.state === 'blocked' && <BlockNavigationModal open onProceed={blocker.proceed} onClose={blocker.reset} />}
     </>
   )
 }

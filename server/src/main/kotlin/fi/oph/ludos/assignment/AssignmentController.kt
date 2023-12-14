@@ -44,11 +44,27 @@ class AssignmentController(val service: AssignmentService) {
 
     @GetMapping("{exam}/{id}")
     @RequireAtLeastOpettajaRole
-    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut {
-        val assignmentDtoOut = service.getAssignmentById(exam, id)
+    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
+        service.getAssignmentById(exam, id, null) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Assignment $id not found"
+        )
 
-        return assignmentDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
-    }
+    @GetMapping("{exam}/{id}/{version}")
+    @RequireAtLeastYllapitajaRole
+    fun getAssignmentVersion(
+        @PathVariable exam: Exam,
+        @PathVariable("id") id: Int,
+        @PathVariable("version") version: Int
+    ): AssignmentOut = service.getAssignmentById(exam, id, version) ?: throw ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "Assignment $id or its version $version not found"
+    )
+
+    @GetMapping("{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfAssignment(@PathVariable exam: Exam, @PathVariable id: Int): List<AssignmentOut> =
+        service.getAllVersionsOfAssignment(exam, id)
 
     @PutMapping("{exam}/{id}/favorite")
     @RequireAtLeastOpettajaRole
@@ -58,10 +74,9 @@ class AssignmentController(val service: AssignmentService) {
 
     @PutMapping("{id}")
     @RequireAtLeastYllapitajaRole
-    fun updateAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int {
-        val updatedAssignmentId = service.updateAssignment(id, assignment)
-
-        return updatedAssignmentId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Assignment not found $id")
-    }
-
+    fun createNewVersionOfAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int =
+        service.createNewVersionOfAssignment(id, assignment) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Assignment $id not found"
+        )
 }

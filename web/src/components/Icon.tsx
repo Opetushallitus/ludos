@@ -44,6 +44,9 @@ export type Icons =
   | 'chevronRight'
   | 'logout'
   | 'check'
+  | 'versiohistoria'
+  | 'palauta'
+  | 'katsele'
 
 const icons: Record<Icons, string> = {
   ['koetehtavat']: 'assignment',
@@ -78,7 +81,10 @@ const icons: Record<Icons, string> = {
   ['suosikki']: 'favorite',
   ['chevronLeft']: 'chevron_left',
   ['chevronRight']: 'chevron_right',
-  ['logout']: 'logout'
+  ['logout']: 'logout',
+  ['versiohistoria']: 'history',
+  ['palauta']: 'keyboard_return',
+  ['katsele']: 'visibility'
 }
 
 export const Icon = ({ name, color, disabled = false, isActive = false, size, dataTestId, customClass }: IconProps) => {

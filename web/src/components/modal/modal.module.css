@@ -30,7 +30,7 @@
 .modal .modal__container {
     box-sizing: border-box;
     min-height: 10vh;
-    min-width: 40vw;
+    min-width: 30vw;
 }
 
 @keyframes show {

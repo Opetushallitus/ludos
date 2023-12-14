@@ -40,7 +40,7 @@ export const AttachmentFileDetailView = ({
   const fileDetails: FileDetails[] | FileDetails = Array.isArray(attachments)
     ? (attachments.map((it) => ({
         fileName: it.file?.name || it.attachment?.fileName,
-        fileKey: it.file?.name || it.attachment?.fileKey,
+        fileKey: it.attachment?.fileKey,
         fileUploadDate: it.attachment?.fileUploadDate || Date.now(),
         name: it.name
       })) as FileDetails[])

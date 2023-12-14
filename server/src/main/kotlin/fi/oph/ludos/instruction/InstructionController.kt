@@ -30,47 +30,64 @@ class InstructionController(val service: InstructionService, private val objectM
     ): InstructionOut? {
         val nonNullAttachments = attachments ?: emptyList()
         val nonNullAttachmentsMetadata = attachmentsMetadata ?: emptyList()
+        validateNewAttachments(nonNullAttachments, nonNullAttachmentsMetadata)
 
-        if (nonNullAttachments.size != nonNullAttachmentsMetadata.size) {
-            throw ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Got ${nonNullAttachments.size} attachments, but ${nonNullAttachmentsMetadata.size} metadata"
-            )
-        }
-
-
-        val attachmentMetadataDeserialized: List<InstructionAttachmentMetadataDtoIn> =
-            nonNullAttachmentsMetadata.map { objectMapper.readValue(it.inputStream) }
-
-        val attachmentIns = nonNullAttachments.indices.map {
-            InstructionAttachmentIn(
-                nonNullAttachments[it], attachmentMetadataDeserialized[it]
-            )
-        }
-
+        val attachmentMetadataDeserialized = deserializeAttachmentsMetadata(nonNullAttachmentsMetadata)
+        val attachmentIns = createAttachmentIns(nonNullAttachments, attachmentMetadataDeserialized)
 
         return service.createInstruction(instruction, attachmentIns)
     }
 
     @PutMapping("/{id}")
     @RequireAtLeastYllapitajaRole
-    fun updateInstruction(
+    fun createNewVersionOfInstruction(
         @PathVariable("id") id: Int,
         @Valid @RequestPart("instruction") instruction: Instruction,
-        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?
+        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?,
+        @RequestPart("new-attachments", required = false) newAttachments: List<MultipartFile>?,
+        @RequestPart("new-attachments-metadata", required = false) newAttachmentsMetadata: List<Part>?
     ): Int? {
-        val attachmentsMetadataDeserialized: List<InstructionAttachmentMetadataDtoIn> =
-            attachmentsMetadata?.map { objectMapper.readValue(it.inputStream) } ?: emptyList()
+        val attachmentsMetadataDeserialized = deserializeAttachmentsMetadata(attachmentsMetadata)
+        validateExistingAttachmentsMetadata(attachmentsMetadataDeserialized)
 
-        attachmentsMetadataDeserialized.forEach {
-            if (it.fileKey == null) {
-                throw ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "missing attachment fileKey in instruction update"
-                )
-            }
+        val newNonNullAttachments = newAttachments ?: emptyList()
+        val newNonNullAttachmentsMetadata = newAttachmentsMetadata ?: emptyList()
+        validateNewAttachments(newNonNullAttachments, newNonNullAttachmentsMetadata)
+
+        val newAttachmentMetadataDeserialized = deserializeAttachmentsMetadata(newNonNullAttachmentsMetadata)
+
+        val newAttachmentIns = createAttachmentIns(newNonNullAttachments, newAttachmentMetadataDeserialized)
+
+        val updatedInstructionId =
+            service.createNewVersionOfInstruction(id, instruction, attachmentsMetadataDeserialized, newAttachmentIns)
+
+        return updatedInstructionId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction $id not found")
+    }
+
+    private fun createAttachmentIns(
+        nonNullAttachments: List<MultipartFile>,
+        attachmentMetadataDeserialized: List<InstructionAttachmentMetadataDtoIn>
+    ): List<InstructionAttachmentIn> = nonNullAttachments.indices.map {
+        InstructionAttachmentIn(
+            nonNullAttachments[it], attachmentMetadataDeserialized[it]
+        )
+    }
+
+    private fun deserializeAttachmentsMetadata(metadata: List<Part>?): List<InstructionAttachmentMetadataDtoIn> =
+        metadata?.map { objectMapper.readValue(it.inputStream) } ?: emptyList()
+
+    private fun validateExistingAttachmentsMetadata(metadata: List<InstructionAttachmentMetadataDtoIn>) {
+        metadata.forEach { if (it.fileKey == null) throwBadRequest("missing attachment fileKey in instruction update") }
+    }
+
+    private fun validateNewAttachments(attachments: List<MultipartFile>, metadata: List<Part>) {
+        if (attachments.size != metadata.size) {
+            throwBadRequest("Got ${attachments.size} attachments, but ${metadata.size} metadata")
         }
+    }
 
-        return service.updateInstruction(id, instruction, attachmentsMetadataDeserialized)
+    private fun throwBadRequest(message: String): Nothing {
+        throw ResponseStatusException(HttpStatus.BAD_REQUEST, message)
     }
 
     @GetMapping("/SUKO")
@@ -96,42 +113,49 @@ class InstructionController(val service: InstructionService, private val objectM
 
     @GetMapping("/{exam}/{id}")
     @RequireAtLeastOpettajaRole
-    fun getInstruction(@PathVariable exam: Exam, @PathVariable("id") id: Int): InstructionOut {
-        val instructionDtoOut = service.getInstructionById(exam, id)
-
-        return instructionDtoOut ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction not found $id")
-    }
-
-    @PostMapping("/attachment/{exam}/{instructionId}")
-    @RequireAtLeastYllapitajaRole
-    fun uploadAttachment(
-        @PathVariable exam: Exam,
-        @PathVariable("instructionId") instructionId: Int,
-        @RequestPart("file") file: MultipartFile,
-        @RequestPart("attachment-metadata") attachmentMetadata: Part
-    ): InstructionAttachmentDtoOut {
-        val attachmentMetadataDeserialized: InstructionAttachmentMetadataDtoIn =
-            objectMapper.readValue(attachmentMetadata.inputStream)
-
-        if (file.originalFilename == "this-will-fail.txt") {
-            throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "Failed successfully :)")
-        }
-
-        return service.uploadAttachmentToInstruction(
-            exam, instructionId, attachmentMetadataDeserialized, file
+    fun getInstruction(@PathVariable exam: Exam, @PathVariable("id") id: Int): InstructionOut =
+        service.getInstructionById(exam, id) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Instruction $id not found"
         )
-    }
 
-    @DeleteMapping("/attachment/{fileKey}")
+    @GetMapping("{exam}/{id}/{version}")
     @RequireAtLeastYllapitajaRole
-    fun deleteAttachment(
-        @PathVariable("fileKey") fileKey: String
-    ) = service.deleteAttachmentFromInstruction(fileKey)
+    fun getInstructionVersion(
+        @PathVariable exam: Exam,
+        @PathVariable("id") id: Int,
+        @PathVariable("version") version: Int
+    ): InstructionOut = service.getInstructionById(exam, id, version) ?: throw ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "Instruction $id or its version $version not found"
+    )
+
+    @GetMapping("{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfInstruction(@PathVariable exam: Exam, @PathVariable id: Int): List<InstructionOut> =
+        service.getAllVersionsOfInstruction(exam, id)
 
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole
-    fun previewFile(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
+    fun downloadAttachment(
+        @PathVariable("key") key: String,
+    ): ResponseEntity<InputStreamResource> {
         val (uploadFile, responseInputStream) = service.getAttachment(key)
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_PDF
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
+
+        return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
+    }
+
+    @GetMapping("/attachment/{key}/{version}")
+    @RequireAtLeastYllapitajaRole
+    fun previewAttachmentVersion(
+        @PathVariable("key") key: String,
+        @PathVariable("version") version: Int
+    ): ResponseEntity<InputStreamResource> {
+        val (uploadFile, responseInputStream) = service.getAttachment(key, version)
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_PDF
