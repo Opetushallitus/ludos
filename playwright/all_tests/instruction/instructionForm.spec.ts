@@ -9,13 +9,13 @@ import {
 } from './instructionHelpers'
 import {
   assertSuccessNotification,
+  createFilePathToFixtures,
   FormAction,
   koodiLabel,
   loginTestGroup,
   Role,
   setTeachingLanguage
 } from '../../helpers'
-import path from 'path'
 import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 
@@ -192,7 +192,7 @@ Object.values(Exam).forEach((exam) => {
 
       await page.getByTestId('edit-content-btn').click()
 
-      const file = path.resolve(__dirname, '../../../server/src/main/resources/fixtures/this-will-fail.txt')
+      const file = createFilePathToFixtures('this-will-fail.txt')
       await page.getByTestId('file-input-fi').setInputFiles(file)
 
       const errorMessage = await page.getByTestId('file-upload-error-message').innerText()

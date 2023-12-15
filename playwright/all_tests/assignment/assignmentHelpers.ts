@@ -1,12 +1,13 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import {
+  FormAction,
   koodiLabel,
   postWithSession,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../../helpers'
-import { Exam, KoodistoName, Oppimaara, oppimaaraId, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Oppimaara, oppimaaraId, PublishState, TeachingLanguage } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   CommonAssignmentFormType,
@@ -18,11 +19,111 @@ import {
   SukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
+import { LayoutModel } from '../../models/LayoutModel'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
   'nameFi' | 'nameSv' | 'instructionFi' | 'instructionSv' | 'contentFi' | 'contentSv'
 >
+
+const createAssignmentFormDataByExam = {
+  [Exam.SUKO]: {
+    exam: Exam.SUKO,
+    publishState: PublishState.Published,
+    nameFi: 'Testitehtävä SUKO',
+    nameSv: 'Testuppgift SUKO',
+    instructionFi: 'Testiohje SUKO',
+    instructionSv: 'Testinstruktioner SUKO',
+    contentFi: ['Testisisältö SUKO'],
+    contentSv: ['Testinnehåll SUKO'],
+    laajaalainenOsaaminenKoodiArvos: ['01', '06', '02'],
+    assignmentTypeKoodiArvo: '001',
+    oppimaara: {
+      oppimaaraKoodiArvo: 'VKA1',
+      kielitarjontaKoodiArvo: null
+    },
+    tavoitetasoKoodiArvo: '0002',
+    aiheKoodiArvos: ['001', '002']
+  } as SukoAssignmentFormType,
+  [Exam.LD]: {
+    exam: Exam.LD,
+    publishState: PublishState.Published,
+    nameFi: 'Testitehtävä LD',
+    nameSv: 'Testuppgift LD',
+    instructionFi: 'Testiohjeet LD',
+    instructionSv: 'Testinstruktioner LD',
+    contentFi: ['Testisisältö LD 1', 'Testisisältö LD 2'],
+    contentSv: ['Testinnehåll LD 1', 'Testinnehåll LD 2'],
+    laajaalainenOsaaminenKoodiArvos: ['05'],
+    lukuvuosiKoodiArvos: ['20202021'],
+    aineKoodiArvo: '1'
+  } as LdAssignmentFormType,
+  [Exam.PUHVI]: {
+    exam: Exam.PUHVI,
+    publishState: PublishState.Published,
+    nameFi: 'Testitehtävä PUHVI',
+    nameSv: 'Testuppgift PUHVI',
+    instructionFi: 'Testiohje PUHVI',
+    instructionSv: 'Testinstruktioner PUHVI',
+    contentFi: ['Testisisältö PUHVI'],
+    contentSv: ['Testinnehåll PUHVI'],
+    laajaalainenOsaaminenKoodiArvos: ['05'],
+    lukuvuosiKoodiArvos: ['20202021'],
+    assignmentTypeKoodiArvo: '002'
+  } as PuhviAssignmentFormType
+}
+
+const updateAssignmentFormDataByExam = {
+  [Exam.SUKO]: {
+    ...createAssignmentFormDataByExam[Exam.SUKO],
+    ...appendMuokattuToTextFields(createAssignmentFormDataByExam[Exam.SUKO]),
+    assignmentTypeKoodiArvo: '002',
+    oppimaara: {
+      oppimaaraKoodiArvo: 'VKA1',
+      kielitarjontaKoodiArvo: 'SA'
+    },
+    tavoitetasoKoodiArvo: '0003',
+    aiheKoodiArvos: ['003']
+  } as SukoAssignmentFormType,
+  [Exam.LD]: {
+    ...createAssignmentFormDataByExam[Exam.LD],
+    ...appendMuokattuToTextFields(createAssignmentFormDataByExam[Exam.LD]),
+    laajaalainenOsaaminenKoodiArvos: ['01', '02']
+  } as LdAssignmentFormType,
+  [Exam.PUHVI]: {
+    ...createAssignmentFormDataByExam[Exam.PUHVI],
+    ...appendMuokattuToTextFields(createAssignmentFormDataByExam[Exam.PUHVI]),
+    laajaalainenOsaaminenKoodiArvos: ['01', '02']
+  } as PuhviAssignmentFormType
+}
+
+function appendMuokattuToTextFields(assignmentTextContent: AssignmentTextContent): AssignmentTextContent {
+  return {
+    nameFi: `${assignmentTextContent.nameFi} muokattu`,
+    nameSv: `${assignmentTextContent.nameSv} updaterad`,
+    instructionFi: `${assignmentTextContent.instructionFi} muokattu`,
+    instructionSv: `${assignmentTextContent.instructionSv} updaterad`,
+    contentFi: assignmentTextContent.contentFi.map((s) => `${s} muokattu`),
+    contentSv: assignmentTextContent.contentSv.map((s) => `${s} updaterad`)
+  }
+}
+
+export function formDataForCreate(exam: Exam, action: FormAction): AnyAssignmentFormType {
+  const createFormData = createAssignmentFormDataByExam[exam]
+  createFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
+  return createFormData as AnyAssignmentFormType
+}
+
+export function formDataForUpdate(exam: Exam, action: FormAction) {
+  const updateFormData = updateAssignmentFormDataByExam[exam]
+  updateFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
+  return updateFormData
+}
+
+export async function initializeAssignmentTest(page: Page, exam: Exam) {
+  await page.goto('/')
+  await new LayoutModel(page).showLocalizationKeys()
+}
 
 async function fillCommonAssignmentFields(page: Page, exam: Exam, formData: AnyAssignmentFormType) {
   await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', formData.laajaalainenOsaaminenKoodiArvos)
@@ -192,15 +293,15 @@ export async function assertPuhviAssignmentContentPage(page: Page, expectedFormD
   )
 }
 
-export function testAssignmentIn(exam: Exam, assignmnentNameBase: string) {
+export function testAssignmentIn(exam: Exam, assignmentNameBase: string) {
   const base = {
     exam: exam,
-    nameFi: `${assignmnentNameBase} nimi fi`,
-    nameSv: `${assignmnentNameBase} nimi sv`,
-    contentFi: [`${assignmnentNameBase} sisältö fi`],
-    contentSv: [`${assignmnentNameBase} sisältö sv`],
-    instructionFi: `${assignmnentNameBase} ohje fi`,
-    instructionSv: `${assignmnentNameBase} ohje sv`,
+    nameFi: `${assignmentNameBase} nimi fi`,
+    nameSv: `${assignmentNameBase} nimi sv`,
+    contentFi: [`${assignmentNameBase} sisältö fi`],
+    contentSv: [`${assignmentNameBase} sisältö sv`],
+    instructionFi: `${assignmentNameBase} ohje fi`,
+    instructionSv: `${assignmentNameBase} ohje sv`,
     publishState: 'PUBLISHED',
     laajaalainenOsaaminenKoodiArvos: []
   }

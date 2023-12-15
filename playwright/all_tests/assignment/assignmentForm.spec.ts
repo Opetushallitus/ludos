@@ -4,101 +4,17 @@ import {
   assertAssignmentContentPage,
   AssignmentTextContent,
   contentIdFromContentPage,
-  fillAssignmentForm
+  fillAssignmentForm,
+  formDataForCreate,
+  formDataForUpdate
 } from './assignmentHelpers'
-import { Exam, oppimaaraId, PublishState } from 'web/src/types'
+import { Exam, oppimaaraId } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   isLdAssignmentFormType,
   isPuhviAssignmentFormType,
-  isSukoAssignmentFormType,
-  LdAssignmentFormType,
-  PuhviAssignmentFormType,
-  SukoAssignmentFormType
+  isSukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
-
-const createAssignmentFormDataByExam = {
-  [Exam.SUKO]: {
-    exam: Exam.SUKO,
-    publishState: PublishState.Published,
-    nameFi: 'Testitehtävä SUKO',
-    nameSv: 'Testuppgift SUKO',
-    instructionFi: 'Testiohje SUKO',
-    instructionSv: 'Testinstruktioner SUKO',
-    contentFi: ['Testisisältö SUKO'],
-    contentSv: ['Testinnehåll SUKO'],
-    laajaalainenOsaaminenKoodiArvos: ['01', '06', '02'],
-    assignmentTypeKoodiArvo: '001',
-    oppimaara: {
-      oppimaaraKoodiArvo: 'VKA1',
-      kielitarjontaKoodiArvo: null
-    },
-    tavoitetasoKoodiArvo: '0002',
-    aiheKoodiArvos: ['001', '002']
-  } as SukoAssignmentFormType,
-  [Exam.LD]: {
-    exam: Exam.LD,
-    publishState: PublishState.Published,
-    nameFi: 'Testitehtävä LD',
-    nameSv: 'Testuppgift LD',
-    instructionFi: 'Testiohjeet LD',
-    instructionSv: 'Testinstruktioner LD',
-    contentFi: ['Testisisältö LD 1', 'Testisisältö LD 2'],
-    contentSv: ['Testinnehåll LD 1', 'Testinnehåll LD 2'],
-    laajaalainenOsaaminenKoodiArvos: ['05'],
-    lukuvuosiKoodiArvos: ['20202021'],
-    aineKoodiArvo: '1'
-  } as LdAssignmentFormType,
-  [Exam.PUHVI]: {
-    exam: Exam.PUHVI,
-    publishState: PublishState.Published,
-    nameFi: 'Testitehtävä PUHVI',
-    nameSv: 'Testuppgift PUHVI',
-    instructionFi: 'Testiohje PUHVI',
-    instructionSv: 'Testinstruktioner PUHVI',
-    contentFi: ['Testisisältö PUHVI'],
-    contentSv: ['Testinnehåll PUHVI'],
-    laajaalainenOsaaminenKoodiArvos: ['05'],
-    lukuvuosiKoodiArvos: ['20202021'],
-    assignmentTypeKoodiArvo: '002'
-  } as PuhviAssignmentFormType
-}
-
-const updateAssignmentFormDataByExam = {
-  [Exam.SUKO]: {
-    ...createAssignmentFormDataByExam[Exam.SUKO],
-    ...appendMuokattuToTextFields(createAssignmentFormDataByExam[Exam.SUKO]),
-    assignmentTypeKoodiArvo: '002',
-    oppimaara: {
-      oppimaaraKoodiArvo: 'VKA1',
-      kielitarjontaKoodiArvo: 'SA'
-    },
-    tavoitetasoKoodiArvo: '0003',
-    aiheKoodiArvos: ['003']
-  } as SukoAssignmentFormType,
-  [Exam.LD]: {
-    ...createAssignmentFormDataByExam[Exam.LD],
-    ...appendMuokattuToTextFields(createAssignmentFormDataByExam[Exam.LD]),
-    laajaalainenOsaaminenKoodiArvos: ['01', '02']
-  } as LdAssignmentFormType,
-  [Exam.PUHVI]: {
-    ...createAssignmentFormDataByExam[Exam.PUHVI],
-    ...appendMuokattuToTextFields(createAssignmentFormDataByExam[Exam.PUHVI]),
-    laajaalainenOsaaminenKoodiArvos: ['01', '02']
-  } as PuhviAssignmentFormType
-}
-
-function formDataForCreate(exam: Exam, action: FormAction): AnyAssignmentFormType {
-  const createFormData = createAssignmentFormDataByExam[exam]
-  createFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
-  return createFormData as AnyAssignmentFormType
-}
-
-function formDataForUpdate(exam: Exam, action: FormAction) {
-  const updateFormData = updateAssignmentFormDataByExam[exam]
-  updateFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
-  return updateFormData
-}
 
 function appendMuokattuToTextFields(assignmentTextContent: AssignmentTextContent): AssignmentTextContent {
   return {

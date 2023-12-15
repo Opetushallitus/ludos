@@ -20,7 +20,7 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
   const commonProps = { exam, filterValues }
 
   return (
-    <div className="pt-3">
+    <div className="mt-10">
       <h2 className="mb-3" data-testid={`page-heading-${exam.toLowerCase()}`}>
         {lt.headingTextByExam[exam]}
       </h2>

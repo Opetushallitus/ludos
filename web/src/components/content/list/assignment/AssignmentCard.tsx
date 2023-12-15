@@ -8,9 +8,9 @@ import { toLocaleDate } from '../../../../utils/formatUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { useState } from 'react'
-import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { useToggleFavorite } from '../../../../hooks/useToggleFavorite'
 import { contentPagePath, editingFormPath } from '../../../LudosRoutes'
+import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 
 type AssignmentCardProps = {
   teachingLanguage: TeachingLanguage
@@ -130,7 +130,11 @@ export const AssignmentCard = ({
           contentId={assignment.id}
           exam={exam}
           isFavorite={isFavorite}
-          onClickHandler={toggleFavorite}
+          onFavoriteClick={toggleFavorite}
+          pdfData={{
+            assignment,
+            language: teachingLanguage
+          }}
         />
       </div>
     </li>

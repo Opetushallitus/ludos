@@ -1,14 +1,21 @@
-import { expect, Page } from '@playwright/test'
-import path from 'path'
+import { BrowserContext, expect, Page } from '@playwright/test'
 import {
   assertSuccessNotification,
+  createFilePathToFixtures,
   FormAction,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../../helpers'
-import { Exam, TeachingLanguage } from 'web/src/types'
+import { Exam, PublishState, TeachingLanguage } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 import { LayoutModel } from '../../models/LayoutModel'
+import * as fs from 'fs'
+
+function getFileBlob(filename: string) {
+  const filePath = createFilePathToFixtures(filename)
+  const fileContents = fs.readFileSync(filePath)
+  return new Blob([fileContents], { type: 'application/pdf' }) // Adjust the MIME type accordingly
+}
 
 export async function initializeInstructionTest(page: Page, exam: Exam) {
   await page.goto('/')
@@ -38,6 +45,55 @@ export const instructionFormData: InstructionFormData = {
   shortDescriptionSv: 'Testa kort beskrivning',
   attachmentNameFi: 'Testi liite',
   attachmentNameSv: 'Testa bilaga'
+}
+
+export async function createInstruction(exam: Exam, context: BrowserContext, baseURL: string) {
+  const formData = new FormData()
+
+  const instructionPart = new Blob(
+    [JSON.stringify({ ...instructionFormData, exam, publishState: PublishState.Published })],
+    {
+      type: 'application/json'
+    }
+  )
+  formData.append('instruction', instructionPart)
+
+  const attachments = ['fixture1.pdf'].map((filename, index) => {
+    const fileBlob = getFileBlob(filename)
+    const metadata = {
+      name: `Testi liite${index}`,
+      language: 'FI'
+    }
+
+    return { fileBlob, metadata }
+  })
+
+  attachments.forEach((attachment, index) => {
+    formData.append('attachments', attachment.fileBlob, `attachment${index}.pdf`)
+    formData.append(
+      'attachments-metadata',
+      new Blob([JSON.stringify(attachment.metadata)], { type: 'application/json' })
+    )
+  })
+
+  const storageState = await context.storageState()
+  const sessionCookie = storageState.cookies.find((cookie) => cookie.name === 'SESSION')
+  if (!sessionCookie) {
+    throw new Error('Session cookie not found from storagestate, did you authenticate?')
+  }
+  const result = await fetch(`${baseURL}/api/instruction`, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      Cookie: `SESSION=${sessionCookie?.value}`
+    }
+  })
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return await result.json()
 }
 
 export async function fillInstructionForm({
@@ -75,7 +131,7 @@ export async function fillInstructionForm({
 
   const files = ['fixture1.pdf', 'fixture2.pdf']
 
-  const filePaths = files.map((file) => path.resolve(__dirname, `../../../server/src/main/resources/fixtures/${file}`))
+  const filePaths = files.map((file) => createFilePathToFixtures(file))
 
   if (attachmentNameFi) {
     for (const filePath of filePaths) {

@@ -112,8 +112,6 @@ export type InstructionDtoOut = BaseOut & {
   nameSv: string
   contentFi: string
   contentSv: string
-  instructionFi: string
-  instructionSv: string
   attachments: AttachmentDtoOut[]
 }
 

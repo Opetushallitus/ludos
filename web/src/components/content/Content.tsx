@@ -30,7 +30,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { contentType, id } = useParams<{ contentType: ContentType; id: string }>()
   const { state } = useLocation()
   const { isYllapitaja } = useUserDetails()
-  const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
+  const { teachingLanguage } = useContext(LudosContext)
 
   const teachingLanguageOverrideIfSukoAssignment =
     exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
@@ -53,18 +53,18 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   }
 
   return (
-    <div className="min-h-[80vh]">
+    <div className="min-h-[80vh] mt-10">
       <div className="row">
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
               <ContentHeader
                 teachingLanguage={teachingLanguageOverrideIfSukoAssignment}
-                setTeachingLanguage={setTeachingLanguage}
                 data={data}
                 contentType={contentType}
                 isPresentation={isPresentation}
               />
+
               {!isPresentation && isYllapitaja && (
                 <div className="row">
                   <StateTag state={data.publishState} />
@@ -79,8 +79,6 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 </div>
               )}
 
-              <div className="mb-4 border-b border-gray-separator mt-2" />
-
               {contentType === ContentType.koetehtavat && isAssignment(data) && (
                 <AssignmentContent
                   assignment={data}
@@ -93,7 +91,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               {contentType === ContentType.todistukset && isCertificate(data) && (
                 <CertificateContent certificate={data} teachingLanguage={teachingLanguage} />
               )}
-              {contentType === ContentType.ohjeet && isInstruction(data, contentType) && (
+              {contentType === ContentType.ohjeet && isInstruction(data) && (
                 <InstructionContent
                   instruction={data}
                   teachingLanguage={teachingLanguage}

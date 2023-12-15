@@ -12,6 +12,7 @@ type AssignmentContentProps = {
   teachingLanguage: TeachingLanguage
   isPresentation: boolean
 }
+
 export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
@@ -24,6 +25,8 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
     setIsFavorite
   })
 
+  const handleToggleFavoriteClick = async () => await toggleFavorite()
+
   const suko = isSukoAssignment(assignment)
   const puhvi = isPuhviAssignment(assignment)
   const ld = isLdAssignment(assignment)
@@ -31,7 +34,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
   return (
     <>
       {!isPresentation && (
-        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2" data-testid="assignment-metadata">
+        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light" data-testid="assignment-metadata">
           <ul>
             {suko && (
               <>
@@ -88,7 +91,16 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
               </li>
             </>
           </ul>
-          <ContentActionRow contentId={assignment.id} isFavorite={isFavorite} onClickHandler={toggleFavorite} />
+
+          <ContentActionRow
+            contentId={assignment.id}
+            isFavorite={isFavorite}
+            onFavoriteClick={handleToggleFavoriteClick}
+            pdfData={{
+              baseOut: assignment,
+              language: teachingLanguage
+            }}
+          />
         </div>
       )}
 

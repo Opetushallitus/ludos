@@ -101,6 +101,13 @@ jobs:
           path: server/build/libs/ludos.jar
           retention-days: 30
           if-no-files-found: error
+  vitest:
+    runs-on: "ubuntu-22.04"
+    needs: [ "build-jar-and-test-api" ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Vitest
+        uses: ./.github/actions/vitest
   playwright:
     runs-on: "ubuntu-22.04"
     needs: [ "build-jar-and-test-api" ]

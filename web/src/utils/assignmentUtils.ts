@@ -1,7 +1,6 @@
 import {
   AssignmentOut,
   BaseOut,
-  ContentType,
   Exam,
   LdAssignmentDtoOut,
   PuhviAssignmentDtoOut,
@@ -42,8 +41,8 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
   )
 }
 
-export const getContentName = (data: BaseOut, contentType: ContentType, teachingLanguage: TeachingLanguage) => {
-  if (isAssignment(data) || isInstruction(data, contentType)) {
+export const getContentName = (data: BaseOut, teachingLanguage: TeachingLanguage) => {
+  if (isAssignment(data) || isInstruction(data)) {
     return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
   } else if (isSukoCertificate(data)) {
     return data.nameFi

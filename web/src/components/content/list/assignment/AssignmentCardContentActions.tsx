@@ -4,7 +4,8 @@ import { InternalLink } from '../../../InternalLink'
 import { ContentAction } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
 import { esitysnakymaKey } from '../../../LudosRoutes'
-import { ContentType, Exam } from '../../../../types'
+import { AssignmentOut, ContentType, Exam, TeachingLanguage } from '../../../../types'
+import { lazy, Suspense } from 'react'
 
 type AssignmentCardContentActionButtonProps = {
   contentId: number
@@ -53,18 +54,22 @@ function AssignmentCardContentActionButton({
   }
 }
 
+const PdfDownloadButton = lazy(() => import('../../pdf/PdfDownloadButton'))
+
 type AssignmentCardContentActionsProps = {
   contentId: number
   exam: Exam
   isFavorite?: boolean
-  onClickHandler?: () => void
+  onFavoriteClick?: () => void
+  pdfData: { assignment: AssignmentOut; language: TeachingLanguage }
 }
 
 export const AssignmentCardContentActions = ({
   contentId,
   exam,
   isFavorite,
-  onClickHandler
+  onFavoriteClick,
+  pdfData
 }: AssignmentCardContentActionsProps) => {
   const { t } = useTranslation()
 
@@ -81,16 +86,15 @@ export const AssignmentCardContentActions = ({
         exam={exam}
         key="uusi-valilehti"
       />
-      <AssignmentCardContentActionButton
-        contentId={contentId}
-        contentAction={{
-          actionName: 'lataa-pdf',
-          iconName: 'pdf',
-          text: t('assignment.lataapdf')
-        }}
-        exam={exam}
-        key="pdf"
-      />
+      <Suspense
+        fallback={
+          <Button variant="buttonGhost" customClass="p-0 flex items-center pr-3" disabled>
+            <Icon name="pdf" color="text-green-primary" />
+            <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
+          </Button>
+        }>
+        <PdfDownloadButton baseOut={pdfData.assignment} language={pdfData.language} />
+      </Suspense>
       <AssignmentCardContentActionButton
         contentId={contentId}
         contentAction={{
@@ -99,7 +103,7 @@ export const AssignmentCardContentActions = ({
           text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
         }}
         exam={exam}
-        onClickHandler={onClickHandler}
+        onClickHandler={onFavoriteClick}
         isActive={isFavorite}
         key="suosikki"
       />
