@@ -118,7 +118,9 @@ export async function assertSuccessNotification(page: Page, notificationLocalisa
 export async function assertFailureNotification(page: Page, notificationLocalisationKey: string) {
   const errorNotification = page.getByTestId('notification-error')
   await expect(errorNotification).toBeVisible()
-  await expect(errorNotification).toHaveText(`error${notificationLocalisationKey}close`)
+  await expect(errorNotification).toHaveText(
+    `error${notificationLocalisationKey}notification.error.link.laheta-palautetta-virheestaclose`
+  )
 }
 
 export async function assertInputValues(page: Page, inputName: string, expectedValues: string[]): Promise<void> {
