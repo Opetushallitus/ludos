@@ -132,7 +132,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
           </fieldset>
 
           <fieldset className="mb-6">
-            <FieldLabel id="laajaalainenOsaaminen" name={t('form.laaja-alainen_osaaminen')} />
+            <FieldLabel id="laajaalainenOsaaminenKoodiArvos" name={t('form.laaja-alainen_osaaminen')} />
             <LudosSelect
               name="laajaalainenOsaaminenKoodiArvos"
               options={koodistoSelectOptions(
