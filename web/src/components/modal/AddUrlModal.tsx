@@ -55,6 +55,13 @@ export const AddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTes
             className="block w-full border border-gray-secondary p-2.5"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => {
+              e.stopPropagation()
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleSubmitUrl()
+              }
+            }}
           />
         </div>
 
