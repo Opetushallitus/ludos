@@ -53,7 +53,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   }
 
   return (
-    <div className="min-h-[80vh]">
+    <div className="min-h-[80vh] mt-10">
       <div className="row">
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
