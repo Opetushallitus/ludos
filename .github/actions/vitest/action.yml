@@ -1,0 +1,15 @@
+name: Vitest Unit Tests
+description: Run frontend unit tests
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        cache: yarn
+    - name: yarn install
+      shell: bash
+      run: yarn install --frozen-lockfile
+    - name: run unit tests
+      shell: bash
+      run: yarn vitest:ci
