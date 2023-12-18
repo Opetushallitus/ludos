@@ -4,17 +4,18 @@
 
 Keskeiset entiteetit, ja järjestelmät, joihin nämä tallennetaan.
 
-| käsite   | selite                                       | tunniste        | tallennuspaikka |
-|----------|----------------------------------------------|-----------------|-----------------|
-| Koodisto | Kooditus objekteille, esim tutkintonimikkeet | id (tekstiä)    | Koodistopalvelu |
-| Koodi    | Yksittäisen objektin koodi koodistossa       | id (tekstiä)    | Koodistopalvelu |
-| Oppija   | Opiskelija, oppilas.                         | id (numeerinen) | -               |
+| käsite      | selite                                       | tunniste     | tallennuspaikka |
+|-------------|----------------------------------------------|--------------|-----------------|
+| Koodisto    | Kooditus objekteille, esim tutkintonimikkeet | id (tekstiä) | Koodistopalvelu |
+| Koodi       | Yksittäisen objektin koodi koodistossa       | id (tekstiä) | Koodistopalvelu |
+| Exam        | Koe tyyppi                                   | -            | -               |
+| ContentType | Sisältö tyyppi                               |              |                 |
+| Assignment  | Koetehtävä                                   |              |                 |
+| Instruction | Ohjeet ja tukimateriaalit                    |              |                 |
 
 ## Teknologiat
 
-Nämä ovat keskeiset Koski-järjestelmässä käytettävät teknologiat. Lista kuvaa järjestelmän nykytilaa ja muuttuu matkan
-varrella
-tarpeen mukaan.
+Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista kuvaa järjestelmän nykytilaa ja muuttuu matkan varrella tarpeen mukaan.
 
 - PostgreSQL xx.xx -tietokanta
 - Palvelinteknologiat
@@ -27,7 +28,11 @@ tarpeen mukaan.
     - Vite
     - TypeScript
     - React
-    - SCSS
+    - Tailwind
+    - Playwright e2e-testaukseen
+    - Vitest yksikkötestaukseen
+    - React-pdf pdf generointi
+    - Tiptap tekstieditori
 
 ## Kehitystyökalut
 
