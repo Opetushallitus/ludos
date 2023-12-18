@@ -15,6 +15,78 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.stereotype.Repository
 
+fun complexAssignmentContent(title: String) = """
+    <h1 class="tiptap-text-h1">$title</h1>
+    <h2 class="tiptap-text-h2">Vain hölmö ostaa lapselle älypuhelimen</h2>
+    <p>Yli puolella esikouluikäisistä on jo nykyisin oma 
+        <a target="_blank" rel="noopener noreferrer nofollow" class="tiptap-link" href="https://oph.fi">
+            <strong> kännykkä</strong>
+        </a>, koulunaloittajista lähes kaikilla.
+    </p>
+    <p></p>
+    <p>
+        <a target="_blank" rel="noopener noreferrer nofollow" class="tiptap-link" href="https://oph.fi">
+            Puhelinkauppiaat
+        </a> kertovat, että nykyään hankitaan pienemmillekin lapsille yhä monipuolisempia puhelimia, kuten älykännyköitä. 
+        Nämä älypuhelimet antavat lapsille nopean, helpon ja valvomattoman pääsyn <em>Internetiin</em>. 
+        Tämä onkin aiheuttanut paljon ongelmia, ja palvelulinjoille tulee yhä useammin soittoja lapsilta, jotka ovat järkyttyneet törmättyään netissä vaikeisiin, ahdistaviin tai pelottaviin asioihin.
+    </p>
+    <p></p>
+    <blockquote class="tiptap-blockquote">
+        <p>
+            Hyvä suositus on, että ostaa lapselle tai nuorelle älykännykän vasta siinä vaiheessa, kun pystyy luottamaan siihen, 
+            että hän osaa käsitellä verkosta löytämäänsä tietoa.
+        </p>
+    </blockquote>
+    <p></p>
+    <p>Kysymyksiä:</p>
+    <ul class="tiptap-bullet-list">
+        <li>
+            <p>Milloin sait ensimmäisen kännykkäsi? Minkälainen se oli?</p>
+        </li>
+        <li>
+            <p>Onko sinulla älypuhelinta? Jos on, <strong><em>miksi</em></strong> olet ostanut sellaisen?</p>
+        </li>
+        <li>
+            <p>Miten käytät puhelintasi?</p>
+            <ul class="tiptap-bullet-list">
+                <li><p>sormilla?</p></li>
+                <li><p>suulla?</p></li>
+                <li>
+                    <p>valitse yksi:</p>
+                    <ol class="tiptap-numbered-list">
+                        <li><p>etusormi</p></li>
+                        <li><p>keskisormi</p></li>
+                    </ol>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <p>Kuinka suuri on puhelinlaskusi ja kuka 
+                <a target="_blank" rel="noopener noreferrer nofollow" class="tiptap-link" href="https://oph.fi">
+                    <em>maksaa</em>
+                </a> sen?
+            </p>
+        </li>
+        <li>
+            <p>Milloin lapselle pitäisi sinun mielestäsi ostaa oma puhelin?</p>
+        </li>
+        <li>
+            <p>Mitä huonoja puolia on siinä, että pienellä lapsella on oma puhelin?</p>
+        </li>
+    </ul>
+    <p></p>
+""".replace("\\s*\\n\\s*".toRegex(), "")
+
+fun instructionContent(title: String) = """
+    <h1 class="tiptap-text-h1">$title</h1>
+    <h2 class="tiptap-text-h2">Ohjeet 2023</h2>
+    <p></p>
+    <p>Opetushallitus antaa erilliset ohjeet, jotka koskevat lukio-opintonsa aloittaneita opiskelijoita.</p>
+    <p></p>
+    <p>Lisätietoja ohjeesta saa tarvittaessa <a target="_blank" rel="noopener noreferrer nofollow" class="tiptap-link" href="https://oph.fi">Opetushallituksesta</a>.</p>
+""".replace("\\s*\\n\\s*".toRegex(), "")
+
 @Repository
 class SeedDataRepository(
     val assignmentRepository: AssignmentRepository,
@@ -68,8 +140,8 @@ class SeedDataRepository(
                 nameSv = "Test name $it SV SUKO",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
-                contentFi = arrayOf("Test content $it FI SUKO"),
-                contentSv = arrayOf("Test content $it SV SUKO"),
+                contentFi = arrayOf(complexAssignmentContent("Test content $it FI SUKO")),
+                contentSv = arrayOf(complexAssignmentContent("Test content $it SV SUKO")),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size],
@@ -84,8 +156,10 @@ class SeedDataRepository(
                 nameSv = "Test name $it SV LD",
                 instructionFi = "Test Instruction LD",
                 instructionSv = "Test Instruction LD",
-                contentFi = (1..5).map { i -> "Test content $it FI LD part $i" }.toTypedArray(),
-                contentSv = (1..5).map { i -> "Test content $it SV LD part $i" }.toTypedArray(),
+                contentFi = (1..5).map { i -> complexAssignmentContent("Test content $it FI LD part $i") }
+                    .toTypedArray(),
+                contentSv = (1..5).map { i -> complexAssignmentContent("Test content $it SV LD part $i") }
+                    .toTypedArray(),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 lukuvuosiKoodiArvos = lukuvuosiVarying,
@@ -98,8 +172,8 @@ class SeedDataRepository(
                 nameSv = "Test name $it SV PUHVI",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
-                contentFi = arrayOf("Test content $it FI PUHVI"),
-                contentSv = arrayOf("Test content $it SV PUHVI"),
+                contentFi = arrayOf(complexAssignmentContent("Test content $it FI PUHVI")),
+                contentSv = arrayOf(complexAssignmentContent("Test content $it SV PUHVI")),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 assignmentTypeKoodiArvo = puhviAssignmentTypeKoodiArvos[it % puhviAssignmentTypeKoodiArvos.size],
@@ -141,8 +215,8 @@ class SeedDataRepository(
             val sukoInstruction = SukoInstructionDtoIn(
                 nameFi = "Test name $it FI",
                 nameSv = "Test name $it SV",
-                contentFi = "Test content $it FI",
-                contentSv = "Test content $it SV",
+                contentFi = instructionContent("${Exam.SUKO} Test content $it FI"),
+                contentSv = instructionContent("${Exam.SUKO} Test content $it SV"),
                 shortDescriptionFi = "Test short description $it FI",
                 shortDescriptionSv = "Test short description $it SV",
                 publishState = publishState,
@@ -154,8 +228,8 @@ class SeedDataRepository(
             val ldInstruction = LdInstructionDtoIn(
                 nameFi = "LD Test name $it FI",
                 nameSv = "LD Test name $it SV",
-                contentFi = "LD Test content $it FI",
-                contentSv = "LD Test content $it SV",
+                contentFi = instructionContent("${Exam.LD} Test content $it FI"),
+                contentSv = instructionContent("${Exam.LD} Test content $it SV"),
                 publishState = publishState,
                 aineKoodiArvo = aineKoodiArvos[it % aineKoodiArvos.size]
             )
@@ -165,8 +239,8 @@ class SeedDataRepository(
             val puhviInstruction = PuhviInstructionDtoIn(
                 nameFi = "PUHVI Test name $it FI",
                 nameSv = "PUHVI Test name $it SV",
-                contentFi = "PUHVI Test content $it FI",
-                contentSv = "PUHVI Test content $it SV",
+                contentFi = instructionContent("${Exam.PUHVI} Test content $it FI"),
+                contentSv = instructionContent("${Exam.PUHVI} Test content $it SV"),
                 shortDescriptionFi = "PUHVI Test short description $it FI",
                 shortDescriptionSv = "PUHVI Test short description $it SV",
                 publishState = publishState
