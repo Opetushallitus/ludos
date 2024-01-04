@@ -61,7 +61,6 @@ export const AttachmentSelector = ({
   return (
     <div>
       <FileSelector
-        id={`fileInput-${language}`}
         acceptedMimeTypes="application/pdf"
         btnText={
           isMultiple
