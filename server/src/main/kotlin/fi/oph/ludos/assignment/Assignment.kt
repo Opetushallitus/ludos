@@ -1,6 +1,5 @@
 package fi.oph.ludos.assignment
 
-import BaseFilters
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

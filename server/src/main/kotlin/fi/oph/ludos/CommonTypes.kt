@@ -1,3 +1,5 @@
+package fi.oph.ludos
+
 import jakarta.validation.constraints.Pattern
 
 // NOTE: This enum must match the postgres enum type language

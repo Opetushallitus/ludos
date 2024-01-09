@@ -51,7 +51,7 @@ loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} assignment pdf download tests`, () => {
     test.beforeEach(async ({ page, context, baseURL }) => {
-      await initializeAssignmentTest(page, exam)
+      await initializeAssignmentTest(page)
       const assignmentIn = testAssignmentIn(exam, fileTitle(exam))
       const assignment = await createAssignment(context, baseURL!, assignmentIn)
 

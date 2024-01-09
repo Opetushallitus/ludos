@@ -1,7 +1,7 @@
 package fi.oph.ludos.instruction
 
-import Language
 import fi.oph.ludos.Exam
+import fi.oph.ludos.Language
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role

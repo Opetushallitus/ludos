@@ -1,7 +1,7 @@
 package fi.oph.ludos.test
 
-import Language
 import fi.oph.ludos.Exam
+import fi.oph.ludos.Language
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.assignment.*
 import fi.oph.ludos.certificate.CertificateRepository

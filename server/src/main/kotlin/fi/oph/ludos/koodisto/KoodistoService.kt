@@ -36,7 +36,7 @@ class KoodistoService(
 
     fun getKoodistosForlanguage(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, Map<String, KoodiDtoOut>> =
         getKoodistos()[koodistoLanguage]
-            ?: throw IllegalStateException("Language ${koodistoLanguage} not found in koodistoCache")
+            ?: throw IllegalStateException("Language $koodistoLanguage not found in koodistoCache")
 
     fun getKoodisto(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage): Map<String, KoodiDtoOut> {
         return getKoodistosForlanguage(koodistoLanguage)[koodistoName]
@@ -94,7 +94,7 @@ class KoodistoService(
                 KoodistoLanguage.entries.map { koodistoLanguage ->
                     val koodisto = getKoodisto(koodistoName, koodistoLanguage)
                     val koodiCount = koodisto.count()
-                    val tarkenneCount = koodisto.values.map { it.tarkenteet?.size ?: 0 }.sum()
+                    val tarkenneCount = koodisto.values.sumOf { it.tarkenteet?.size ?: 0 }
                     val tarkenneString = if (tarkenneCount > 0) "($tarkenneCount tarkennetta)" else ""
                     "$koodistoLanguage:$koodiCount$tarkenneString"
                 }

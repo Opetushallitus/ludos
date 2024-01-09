@@ -31,10 +31,9 @@ class CertificateRepository(
         else -> "AND c.certificate_publish_state in ('${PublishState.PUBLISHED}', '${PublishState.DRAFT}')"
     }
 
-    fun <T : Certificate, Y : CertificateOut> createSukoCertificate(
-        certificate: T,
+    fun <T : CertificateOut> createSukoCertificate(
         attachment: MultipartFile,
-        insertCertificateRow: (attachment: CertificateAttachmentDtoOut) -> Y
+        insertCertificateRow: (attachment: CertificateAttachmentDtoOut) -> T
     ) = transactionTemplate.execute { _ ->
         val certificateAttachment = createAttachment(attachment)
 
@@ -44,7 +43,7 @@ class CertificateRepository(
     fun createSukoCertificate(
         attachment: MultipartFile,
         certificateDtoIn: SukoCertificateDtoIn
-    ): SukoCertificateDtoOut = createSukoCertificate(certificateDtoIn, attachment) { createdAttachment ->
+    ): SukoCertificateDtoOut = createSukoCertificate(attachment) { createdAttachment ->
         jdbcTemplate.query(
             """
                 INSERT INTO suko_certificate (
@@ -86,11 +85,10 @@ class CertificateRepository(
         )[0]
     }
 
-    fun <T : Certificate, Y : CertificateOut> createCertificate(
-        certificate: T,
+    fun <T : CertificateOut> createCertificate(
         attachmentFi: MultipartFile,
         attachmentSv: MultipartFile,
-        insertCertificateRow: (attachmentFi: CertificateAttachmentDtoOut, attachmentSv: CertificateAttachmentDtoOut) -> Y
+        insertCertificateRow: (attachmentFi: CertificateAttachmentDtoOut, attachmentSv: CertificateAttachmentDtoOut) -> T
     ) = transactionTemplate.execute { _ ->
         val certificateAttachmentFi = createAttachment(attachmentFi)
         val certificateAttachmentSv = createAttachment(attachmentSv)
@@ -103,7 +101,7 @@ class CertificateRepository(
         attachmentSv: MultipartFile,
         certificateDtoIn: LdCertificateDtoIn
     ): LdCertificateDtoOut =
-        createCertificate(certificateDtoIn, attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
+        createCertificate(attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(
                 """
                 INSERT INTO ld_certificate (
@@ -151,7 +149,7 @@ class CertificateRepository(
         attachmentSv: MultipartFile,
         certificateDtoIn: PuhviCertificateDtoIn
     ): PuhviCertificateDtoOut =
-        createCertificate(certificateDtoIn, attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
+        createCertificate(attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(
                 """
                 INSERT INTO puhvi_certificate (

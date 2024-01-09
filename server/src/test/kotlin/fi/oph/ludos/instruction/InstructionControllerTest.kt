@@ -1,6 +1,5 @@
 package fi.oph.ludos.instruction
 
-import Language
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
 import jakarta.transaction.Transactional

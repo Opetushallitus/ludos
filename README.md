@@ -56,23 +56,23 @@ Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
 
 Vaihtoehtoja backendin ajamiseen:
 1) Repon juuressa `.env`, jossa tarvittavat salaisuudet: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
-1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
-1) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
-1) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
+2) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
+3) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
+4) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
   * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta spring
     bootin kautta kuten tuotannossa.
   * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev` ois päällä
     `web`-kansiossa, vaan siellä on ajettava `yarn build` erikseen joka kerta.
   * Fronttia devatessa onkin suositeltavaa ajaa `web`-kansiossa `yarn dev` ja
     käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
-1) `build:docker` + `run:docker` (profiili kovakoodattu `local`)
+5) `build:docker` + `run:docker` (profiili kovakoodattu `local`)
 
 ### Frontend
 
 Vaihtoehtoja:
 1) `yarn dev:web` käynnistää viten porttiin 8000
    * **HUOM!** CAS-autentikaatio ei toimi vite-portin 8000 kautta. Kirjaudu portissa 8080 tai mocklogin-endpointilla: http://localhost:8000/api/test/mocklogin/YLLAPITAJA
-1) `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
+2) `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
 
 ### Playwright e2e
 - Ympäristö

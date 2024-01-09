@@ -39,14 +39,14 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
         try {
             val localizations = localizationGetter()
             val localizedTexts = mutableMapOf<String, Map<String, Any>>()
-            for (locale in Locale.values().map { it.locale }) {
+            for (locale in Locale.entries.map { it.locale }) {
                 val localeTexts = localizations.filter { it.locale == locale }
                 localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
             }
 
             cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
 
-            val localeStats = Locale.values()
+            val localeStats = Locale.entries
                 .map { locale -> "${locale.locale}: ${localizations.count { it.locale == locale.locale }}" }
             logger.info("Updated localization cache from $sourceName: $localeStats")
         } catch (e: Exception) {

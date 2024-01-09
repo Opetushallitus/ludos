@@ -37,10 +37,13 @@ class HttpKoodistoRepository(
     }
 
     override fun getKoodisto(koodisto: KoodistoName): List<KoodistoPalveluKoodi> =
-        getKoodiListFromKoodistoPalvelu("/${koodisto.koodistoUri}/koodi?onlyValidKoodis=true", "koodisto ${koodisto}")
+        getKoodiListFromKoodistoPalvelu("/${koodisto.koodistoUri}/koodi?onlyValidKoodis=true", "koodisto $koodisto")
 
     override fun getAlakoodit(koodistoPalveluKoodi: KoodistoPalveluKoodi): List<KoodistoPalveluKoodi> =
-        getKoodiListFromKoodistoPalvelu("/relaatio/sisaltyy-alakoodit/${koodistoPalveluKoodi.koodiUri}", "alakoodit for ${koodistoPalveluKoodi.koodiUri}")
+        getKoodiListFromKoodistoPalvelu(
+            "/relaatio/sisaltyy-alakoodit/${koodistoPalveluKoodi.koodiUri}",
+            "alakoodit for ${koodistoPalveluKoodi.koodiUri}"
+        )
 }
 
 @Repository
@@ -49,8 +52,9 @@ class ResourceKoodistoRepository(
 ) : KoodistoRepository {
     fun koodiListFromResourceFile(resourceFileName: String): List<KoodistoPalveluKoodi> {
         val resourceFilePath = Paths.get("backup_data", resourceFileName)
-        val resourceStream: InputStream = Thread.currentThread().contextClassLoader.getResourceAsStream(resourceFilePath.toString())
-            ?: throw RuntimeException("Could not read $resourceFilePath")
+        val resourceStream: InputStream =
+            Thread.currentThread().contextClassLoader.getResourceAsStream(resourceFilePath.toString())
+                ?: throw RuntimeException("Could not read $resourceFilePath")
         return objectMapper.readValue<List<KoodistoPalveluKoodi>>(resourceStream)
     }
 
