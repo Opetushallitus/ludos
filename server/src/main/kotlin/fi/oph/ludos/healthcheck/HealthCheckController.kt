@@ -1,8 +1,6 @@
 package fi.oph.ludos.healthcheck
 
 import fi.oph.ludos.Constants
-import fi.oph.ludos.assignment.*
-import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping

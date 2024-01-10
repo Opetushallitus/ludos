@@ -4,14 +4,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.vm.sade.javautils.http.OphHttpClient
 import fi.vm.sade.javautils.http.auth.CasAuthenticator
-import org.slf4j.LoggerFactory
-import org.slf4j.Logger
-import org.springframework.beans.factory.annotation.Value
 import jakarta.annotation.PostConstruct
+import org.springframework.beans.factory.annotation.Value
 
 abstract class CasAuthenticationClient(val service: String) {
-    private val logger: Logger = LoggerFactory.getLogger(javaClass)
-
     @Value("\${ludos.opintopolkuHostname}")
     lateinit var opintopolkuHostname: String
 
@@ -36,6 +32,7 @@ abstract class CasAuthenticationClient(val service: String) {
             .casServiceUrl("https://$opintopolkuHostname/$service")
             .build()
 
-        this.httpClient = OphHttpClient.Builder("1.2.246.562.10.00000000001.ludos-service").authenticator(authenticator).build()
+        this.httpClient =
+            OphHttpClient.Builder("1.2.246.562.10.00000000001.ludos-service").authenticator(authenticator).build()
     }
 }

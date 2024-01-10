@@ -1,6 +1,5 @@
 package fi.oph.ludos.certificate
 
-import BaseFilters
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName

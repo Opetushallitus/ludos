@@ -120,7 +120,7 @@ export function formDataForUpdate(exam: Exam, action: FormAction) {
   return updateFormData
 }
 
-export async function initializeAssignmentTest(page: Page, exam: Exam) {
+export async function initializeAssignmentTest(page: Page) {
   await page.goto('/')
   await new LayoutModel(page).showLocalizationKeys()
 }
@@ -340,20 +340,6 @@ export async function createAssignment(context: BrowserContext, baseURL: string,
 
 export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
-
-export async function checkListAfterFiltering(page: Page, exam: Exam, expectedAssignmentTitleNumbers: number[]) {
-  await expect(
-    page.getByRole('link', {
-      name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, exam)
-    })
-  ).toBeVisible()
-  const assignments = await page.getByTestId('card-list').locator('li').all()
-  const namePromises = assignments.map((listItem) => listItem.getByTestId('card-title').innerText())
-  const names = await Promise.all(namePromises)
-  expect(names).toEqual(
-    expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, exam))
-  )
-}
 
 export async function testEsitysNakyma(page: Page, linkTestId: string, assignmentIn: any) {
   const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')

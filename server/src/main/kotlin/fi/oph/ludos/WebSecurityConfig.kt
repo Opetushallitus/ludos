@@ -18,7 +18,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity()
+@EnableMethodSecurity
 class WebSecurityConfiguration {
     val logger: Logger = LoggerFactory.getLogger(WebSecurityConfiguration::class.java)
 
@@ -39,7 +39,7 @@ class WebSecurityConfiguration {
         http.csrf { it.disable() }
 
         val requestCache = HttpSessionRequestCache()
-        requestCache.setMatchingRequestParameterName("j");
+        requestCache.setMatchingRequestParameterName("j")
         http.requestCache { it.requestCache(requestCache) }
 
         http.logout {

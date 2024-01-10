@@ -16,17 +16,19 @@ enum class Role(val oikeus: String) : GrantedAuthority {
 
     override fun getAuthority(): String = this.name
 
-    fun getAuthorities(): Collection<GrantedAuthority> = values().filter { this.isAtLeastAsMightyAs(it) }
+    fun getAuthorities(): Collection<GrantedAuthority> = entries.filter { this.isAtLeastAsMightyAs(it) }
 
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(Role.Companion::class.java)
-        private val roleByOikeus = values().associateBy { it.oikeus }
+        private val roleByOikeus = entries.associateBy { it.oikeus }
         private fun fromOikeus(oikeus: String): Role? = roleByOikeus[oikeus]
 
-        private fun mightiestRole(roles: Iterable<Role>) = roles.max() // Return the role that is defined latest in the Role enum
+        private fun mightiestRole(roles: Iterable<Role>) =
+            roles.max() // Return the role that is defined latest in the Role enum
 
         fun fromKayttajatiedot(kayttajatiedot: Kayttajatiedot): Role {
-            val userRights = kayttajatiedot.organisaatiot.flatMap { it.kayttooikeudet }.filter { it.palvelu == Kayttooikeus.LUDOS_PALVELU }
+            val userRights = kayttajatiedot.organisaatiot.flatMap { it.kayttooikeudet }
+                .filter { it.palvelu == Kayttooikeus.LUDOS_PALVELU }
 
             val userRoles = userRights.mapNotNull { Role.fromOikeus(it.oikeus) }
 

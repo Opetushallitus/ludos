@@ -67,8 +67,8 @@ export const AttachmentSelector = ({
           isMultiple
             ? t('button.lisaa-liitetiedostot')
             : !attachmentData
-            ? t('button.lisaa-liitetiedosto')
-            : t('button.vaihda-liitetiedosto')
+              ? t('button.lisaa-liitetiedosto')
+              : t('button.vaihda-liitetiedosto')
         }
         onFileSelected={handleAttachmentSelected}
         loading={loading}
