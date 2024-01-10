@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { createAssignment, testAssignmentIn, testEsitysNakyma } from './assignmentHelpers'
-import { ContentType, loginTestGroup, Role } from '../../helpers'
-import { Exam } from 'web/src/types'
+import { loginTestGroup, Role } from '../../helpers'
+import { ContentType, Exam } from 'web/src/types'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 

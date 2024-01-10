@@ -14,12 +14,6 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 export const examsLowerCase = Object.values(Exam).map((e) => e.toLocaleLowerCase())
 
-export const ContentType = {
-  koetehtavat: 'koetehtavat',
-  ohjeet: 'ohjeet',
-  todistukset: 'todistukset'
-} as const
-
 export const authFileByRole: Record<Role, string> = Object.fromEntries(
   Object.values(Role).map((role) => [role, `.auth/${role}.json`])
 ) as Record<Role, string>

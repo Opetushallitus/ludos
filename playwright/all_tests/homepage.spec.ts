@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { ContentType, examsLowerCase, loginTestGroup, Role } from '../helpers'
+import { examsLowerCase, loginTestGroup, Role } from '../helpers'
+import { ContentType } from 'web/src/types'
 
 const contentTypes = Object.values(ContentType)
 
