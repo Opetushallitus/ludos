@@ -48,6 +48,12 @@ jobs:
         uses: ./.github/actions/localization_check
         with:
           ludos-environment: prod
+  vitest:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Vitest
+        uses: ./.github/actions/vitest
   build-jar-and-test-api:
     runs-on: "ubuntu-22.04"
     permissions:
@@ -101,13 +107,6 @@ jobs:
           path: server/build/libs/ludos.jar
           retention-days: 30
           if-no-files-found: error
-  vitest:
-    runs-on: "ubuntu-22.04"
-    needs: [ "build-jar-and-test-api" ]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Vitest
-        uses: ./.github/actions/vitest
   playwright:
     runs-on: "ubuntu-22.04"
     needs: [ "build-jar-and-test-api" ]
