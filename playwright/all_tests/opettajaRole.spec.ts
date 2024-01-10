@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { ContentType, loginTestGroup, Role } from '../helpers'
+import { loginTestGroup, Role } from '../helpers'
+import { ContentType } from 'web/src/types'
 
 const pages = ['suko', 'puhvi', 'ld']
 

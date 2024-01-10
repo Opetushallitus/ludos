@@ -1,7 +1,7 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
 import { createAssignment, testAssignmentIn, testEsitysNakyma } from './assignmentHelpers'
-import { assertSuccessNotification, ContentType, loginTestGroup, Role } from '../../helpers'
-import { Exam } from 'web/src/types'
+import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
+import { ContentType, Exam } from 'web/src/types'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 

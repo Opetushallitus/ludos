@@ -1,9 +1,8 @@
 import { Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import { Exam } from 'web/src/types'
+import { ContentType, Exam } from 'web/src/types'
 import { instructionFormData } from '../all_tests/instruction/instructionHelpers'
 import { EditorModel } from './EditorModel'
-import { ContentType } from '../helpers'
 import { ContentListModel } from './ContentListModel'
 
 export class InstructionFormModel extends FormModel {

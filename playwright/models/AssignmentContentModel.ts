@@ -1,7 +1,6 @@
 import { Page } from '@playwright/test'
 import { ContentModel } from './ContentModel'
-import { Exam } from 'web/src/types'
-import { ContentType } from '../helpers'
+import { ContentType, Exam } from 'web/src/types'
 
 export class AssignmentContentModel extends ContentModel {
   constructor(
