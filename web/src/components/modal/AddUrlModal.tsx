@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../Icon'
 import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +17,7 @@ export const AddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTes
   const { t } = useTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef, onClick } = useModal({ open, onClose })
   const [url, setUrl] = useState('')
+  const urlInputRef = useInputAutoFocus(open)
 
   const handleSubmitUrl = () => {
     onAddUrlAction(url)
@@ -48,11 +49,19 @@ export const AddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTes
           </label>
           <input
             id={`${dataTestId}-url-input`}
+            ref={urlInputRef}
             data-testid={`${dataTestId}-url-input`}
             type="text"
             className="block w-full border border-gray-secondary p-2.5"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => {
+              e.stopPropagation()
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleSubmitUrl()
+              }
+            }}
           />
         </div>
 
@@ -69,4 +78,16 @@ export const AddUrlModal = ({ modalTitle, open, onClose, onAddUrlAction, dataTes
       </div>
     </dialog>
   )
+}
+
+function useInputAutoFocus(open: boolean) {
+  const focusRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (open) {
+      focusRef.current?.focus()
+    }
+  }, [open])
+
+  return focusRef
 }
