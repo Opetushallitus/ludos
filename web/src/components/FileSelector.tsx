@@ -9,21 +9,13 @@ const maxSizeInBytes = maxSizeInMiB * 1024 * 1024
 const validateFileSize = (file: File) => file.size <= maxSizeInBytes
 
 interface FileSelectorProps extends HTMLAttributes<HTMLInputElement> {
-  id: string
   acceptedMimeTypes: string
   btnText: string
   onFileSelected: (file: File[]) => void
   loading?: boolean
 }
 
-export const FileSelector = ({
-  id,
-  acceptedMimeTypes,
-  btnText,
-  onFileSelected,
-  loading,
-  ...props
-}: FileSelectorProps) => {
+export const FileSelector = ({ acceptedMimeTypes, btnText, onFileSelected, loading, ...props }: FileSelectorProps) => {
   const { t } = useTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
@@ -53,16 +45,15 @@ export const FileSelector = ({
 
   return (
     <div className="my-6">
-      <input
-        type="file"
-        id={id}
-        ref={hiddenFileInputRef}
-        style={{ display: 'none' }}
-        accept={acceptedMimeTypes}
-        onChange={handleFileSelected}
-        {...props}
-      />
-      <label htmlFor={id}>
+      <label>
+        <input
+          type="file"
+          ref={hiddenFileInputRef}
+          style={{ display: 'none' }}
+          accept={acceptedMimeTypes}
+          onChange={handleFileSelected}
+          {...props}
+        />
         <Button variant="buttonSecondary" onClick={() => hiddenFileInputRef.current?.click()} disabled={loading}>
           <span className="row items-center gap-5">
             {btnText}

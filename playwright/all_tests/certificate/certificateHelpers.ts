@@ -61,13 +61,13 @@ export async function fillCertificateForm(page: Page, exam: Exam, inputs: Certif
   isLd && (await setSingleSelectDropdownOption(page, 'aineKoodiArvo', inputs.aineKoodiArvo!))
   await page.getByTestId('nameFi').fill(inputs.nameFi)
   isSukoOrLd && (await page.getByTestId('descriptionFi').fill(inputs.descriptionFi!))
-  await selectAttachmentFile(page, inputs.attachmentFi.name!, page.locator('#fileInput-fi'))
+  await selectAttachmentFile(page, inputs.attachmentFi.name!, page.getByTestId('file-input-fi'))
 
   if (!isSuko) {
     await page.getByTestId('tab-sv').click()
 
     await page.getByTestId('nameSv').fill(inputs.nameSv!)
-    await selectAttachmentFile(page, inputs.attachmentSv!.name!, page.locator('#fileInput-sv'))
+    await selectAttachmentFile(page, inputs.attachmentSv!.name!, page.getByTestId('file-input-sv'))
 
     isPuhvi && (await page.getByTestId('descriptionSv').fill(inputs.descriptionSv!))
   }
