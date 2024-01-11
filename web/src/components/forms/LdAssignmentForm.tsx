@@ -11,6 +11,7 @@ import { useAssignmentForm } from '../../hooks/useAssignmentForm'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
 import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
+import { BlockNavigation } from '../BlockNavigation'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -21,10 +22,8 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow } = useAssignmentForm<LdAssignmentFormType>(
-    Exam.LD,
-    id
-  )
+  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting } =
+    useAssignmentForm<LdAssignmentFormType>(Exam.LD, id)
   const {
     watch,
     formState: { errors }
@@ -41,6 +40,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')}
       />
+      <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">

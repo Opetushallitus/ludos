@@ -63,3 +63,11 @@ export const certificateSchema = z
   })
 
 export type CertificateFormType = z.infer<typeof certificateSchema>
+
+export const certificateFormDefaultValues: Partial<CertificateFormType> = {
+  nameFi: '',
+  nameSv: '',
+  descriptionFi: '',
+  descriptionSv: '',
+  aineKoodiArvo: ''
+}

@@ -4,8 +4,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { createAssignment, fetchData, updateAssignment } from '../request'
 import { contentListPath, contentPagePath } from '../components/LudosRoutes'
-import { DefaultValues, FieldPath, PathValue, useForm } from 'react-hook-form'
-import { assignmentSchemaByExam, CommonAssignmentFormType } from '../components/forms/schemas/assignmentSchema'
+import { FieldPath, PathValue, useForm } from 'react-hook-form'
+import {
+  assignmentDefaultValuesByExam,
+  assignmentSchemaByExam,
+  CommonAssignmentFormType
+} from '../components/forms/schemas/assignmentSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormButtonRow } from '../components/forms/formCommon/FormButtonRow'
 import { MultiValue } from 'react-select'
@@ -13,6 +17,7 @@ import { LudosSelectOption } from '../components/ludosSelect/LudosSelect'
 import { DeleteModal } from '../components/modal/DeleteModal'
 import { useLudosTranslation } from './useLudosTranslation'
 import { LudosContext } from '../contexts/LudosContext'
+import { useFormPrompt } from './useFormPrompt'
 
 export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam, id: string | undefined) {
   const { lt, t } = useLudosTranslation()
@@ -28,18 +33,32 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
   const action = id ? ContentFormAction.muokkaus : ContentFormAction.uusi
   const isUpdate = action === ContentFormAction.muokkaus
 
+  async function defaultValues<T>(): Promise<T> {
+    if (isUpdate && id) {
+      return await fetchData(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
+    } else {
+      return assignmentDefaultValuesByExam[exam] as T
+    }
+  }
+
   const methods = useForm<T>({
-    defaultValues: isUpdate
-      ? async () => fetchData(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
-      : ({ exam } as DefaultValues<T>),
+    defaultValues,
     mode: 'onBlur',
     resolver: zodResolver(assignmentSchemaByExam[exam])
   })
 
-  const { getValues, setValue, clearErrors, handleSubmit } = methods
+  const {
+    getValues,
+    setValue,
+    clearErrors,
+    handleSubmit,
+    formState: { isDirty }
+  } = methods
+
+  useFormPrompt(isDirty)
 
   const handleMultiselectOptionChange = (fieldName: FieldPath<T>, selectedOptions: MultiValue<LudosSelectOption>) => {
-    setValue(fieldName, selectedOptions.map((it) => it.value) as PathValue<T, FieldPath<T>>)
+    setValue(fieldName, selectedOptions.map((it) => it.value) as PathValue<T, FieldPath<T>>, { shouldDirty: true })
     clearErrors(fieldName)
   }
 
@@ -106,13 +125,16 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
     })()
   }
 
+  const handleCancelClick = () => navigate(-1)
+
   const AssignmentFormButtonRow = ({ publishState }: { publishState?: PublishState }) => (
     <>
       <FormButtonRow
         actions={{
           onSubmitClick: () => submitAssignment(PublishState.Published),
           onSaveDraftClick: () => submitAssignment(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true)
+          onDeleteClick: () => setOpenDeleteModal(true),
+          onCancelClick: handleCancelClick
         }}
         state={{
           isUpdate,
@@ -138,5 +160,5 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
     </>
   )
 
-  return { methods, handleMultiselectOptionChange, AssignmentFormButtonRow }
+  return { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting }
 }

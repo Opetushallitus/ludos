@@ -103,3 +103,36 @@ export const assignmentSchemaByExam = {
   [Exam.LD]: ldAssignmentSchema,
   [Exam.PUHVI]: puhviAssignmentSchema
 }
+
+const commonSchemaDefaultValues: Partial<CommonAssignmentFormType> = {
+  nameFi: '',
+  nameSv: '',
+  instructionFi: '',
+  instructionSv: '',
+  contentFi: [''],
+  contentSv: [''],
+  laajaalainenOsaaminenKoodiArvos: []
+}
+
+export const assignmentDefaultValuesByExam = {
+  [Exam.SUKO]: {
+    ...commonSchemaDefaultValues,
+    exam: Exam.SUKO,
+    assignmentTypeKoodiArvo: '',
+    oppimaara: null,
+    tavoitetasoKoodiArvo: null,
+    aiheKoodiArvos: []
+  },
+  [Exam.LD]: {
+    ...commonSchemaDefaultValues,
+    exam: Exam.LD,
+    aineKoodiArvo: '',
+    lukuvuosiKoodiArvos: []
+  },
+  [Exam.PUHVI]: {
+    ...commonSchemaDefaultValues,
+    exam: Exam.PUHVI,
+    assignmentTypeKoodiArvo: '',
+    lukuvuosiKoodiArvos: []
+  }
+}

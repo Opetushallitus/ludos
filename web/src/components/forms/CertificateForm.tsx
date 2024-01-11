@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMatch, useNavigate } from 'react-router-dom'
@@ -12,7 +13,6 @@ import {
   TeachingLanguage
 } from '../../types'
 import { createCertificate, fetchData, updateCertificate } from '../../request'
-import { useState } from 'react'
 import { TextInput } from '../TextInput'
 import { TextAreaInput } from '../TextAreaInput'
 import { FormHeader } from './formCommon/FormHeader'
@@ -24,8 +24,10 @@ import { contentListPath, contentPagePath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
-import { CertificateFormType, certificateSchema } from './schemas/certificateSchema'
+import { certificateFormDefaultValues, CertificateFormType, certificateSchema } from './schemas/certificateSchema'
 import { LanguageTabs } from '../LanguageTabs'
+import { BlockNavigation } from '../BlockNavigation'
+import { useFormPrompt } from '../../hooks/useFormPrompt'
 
 type CertificateFormProps = {
   action: ContentFormAction
@@ -50,12 +52,16 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
+  async function defaultValues<T>(): Promise<T> {
+    if (isUpdate && id) {
+      return await fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
+    } else {
+      return { exam, ...certificateFormDefaultValues } as T
+    }
+  }
+
   const methods = useForm<CertificateFormType>({
-    defaultValues: isUpdate
-      ? async () => fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
-      : {
-          exam
-        },
+    defaultValues,
     mode: 'onBlur',
     resolver: zodResolver(certificateSchema)
   })
@@ -65,8 +71,10 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors, isDirty }
   } = methods
+
+  useFormPrompt(isDirty)
 
   const watchNameFi = watch('nameFi')
   const watchAttachmentFi = watch('attachmentFi')
@@ -209,6 +217,8 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     }
   }
 
+  const handleCancelClick = () => navigate(-1)
+
   const nameErrorFi = errors.nameFi?.message
   const contentErrorFi = errors.descriptionFi?.message
   const attachmentErrorFi = errors.attachmentFi?.message
@@ -223,6 +233,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
   return (
     <div className="ludos-form">
+      <BlockNavigation shouldBlock={isDirty && !isSubmitting} />
       <FormHeader
         heading={action === ContentFormAction.uusi ? t('form.otsikkotodistus') : watchNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvaustodistus') : t('form.muokkauskuvaus')}
@@ -310,7 +321,8 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         actions={{
           onSubmitClick: () => submitCertificate(PublishState.Published),
           onSaveDraftClick: () => submitCertificate(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true)
+          onDeleteClick: () => setOpenDeleteModal(true),
+          onCancelClick: handleCancelClick
         }}
         state={{
           isUpdate,
