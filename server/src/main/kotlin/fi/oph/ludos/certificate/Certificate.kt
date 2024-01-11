@@ -16,12 +16,7 @@ import java.sql.Timestamp
     JsonSubTypes.Type(value = PuhviCertificateDtoIn::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdCertificateDtoIn::class, name = "LD")
 )
-interface Certificate {
-    val exam: Exam
-    val nameFi: String
-    val nameSv: String
-    val publishState: PublishState
-}
+interface Certificate : ContentBase
 
 @JsonTypeName("SUKO")
 data class SukoCertificateDtoIn(
@@ -77,16 +72,9 @@ data class PuhviCertificateDtoIn(
     JsonSubTypes.Type(value = PuhviCertificateDtoOut::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdCertificateDtoOut::class, name = "LD")
 )
-interface CertificateOut : Certificate {
-    val id: Int
-    override val exam: Exam
-    override val publishState: PublishState
+interface CertificateOut : ContentBaseOut, Certificate {
     val attachmentFi: CertificateAttachmentDtoOut
     val attachmentSv: CertificateAttachmentDtoOut?
-    val authorOid: String
-    val updaterOid: String
-    val createdAt: Timestamp
-    val updatedAt: Timestamp
 }
 
 @JsonTypeName("SUKO")

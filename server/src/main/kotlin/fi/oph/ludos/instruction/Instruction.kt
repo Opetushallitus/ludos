@@ -22,23 +22,12 @@ import kotlin.reflect.KClass
     JsonSubTypes.Type(value = PuhviInstructionDtoIn::class, name = "PUHVI")
 )
 @AtLeastOneInstructionNameIsNotBlank
-interface Instruction {
-    val exam: Exam
-
-    @get:ValidContentName
-    val nameFi: String
-
+interface Instruction : ContentBase {
     @get:ValidHtmlContent
     val contentFi: String
 
-    @get:ValidContentName
-    val nameSv: String
-
     @get:ValidHtmlContent
     val contentSv: String
-
-    val publishState: PublishState
-
 }
 
 @JsonTypeName("SUKO")
@@ -103,12 +92,7 @@ data class InstructionAttachmentIn(
     JsonSubTypes.Type(value = LdInstructionDtoOut::class, name = "LD"),
     JsonSubTypes.Type(value = PuhviInstructionDtoOut::class, name = "PUHVI")
 )
-interface InstructionOut : Instruction {
-    val id: Int
-    val authorOid: String
-    val updaterOid: String
-    val createdAt: Timestamp
-    val updatedAt: Timestamp
+interface InstructionOut : ContentBaseOut, Instruction {
     val attachments: List<InstructionAttachmentDtoOut>
 }
 
