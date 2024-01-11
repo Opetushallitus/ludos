@@ -42,13 +42,7 @@ data class Oppimaara(
     JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
 )
 @AtLeastOneAssignmentNameIsNotBlank
-interface Assignment {
-    @get:ValidContentName
-    val nameFi: String
-
-    @get:ValidContentName
-    val nameSv: String
-
+interface Assignment : ContentBase {
     @get:ValidContentDescription
     val instructionFi: String
 
@@ -60,11 +54,9 @@ interface Assignment {
 
     @get:ValidHtmlContentArray
     val contentSv: Array<String>
-    val publishState: PublishState
 
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
     val laajaalainenOsaaminenKoodiArvos: Array<String>
-    val exam: Exam
 }
 
 @JsonTypeName("SUKO")
@@ -129,12 +121,7 @@ data class PuhviAssignmentDtoIn(
     JsonSubTypes.Type(value = PuhviAssignmentDtoOut::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdAssignmentDtoOut::class, name = "LD")
 )
-interface AssignmentOut : Assignment {
-    val id: Int
-    val authorOid: String
-    val updaterOid: String
-    val createdAt: Timestamp
-    val updatedAt: Timestamp
+interface AssignmentOut : ContentBaseOut, Assignment {
     val isFavorite: Boolean
 }
 
