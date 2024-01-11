@@ -30,7 +30,7 @@ export const FormAineDropdown = () => {
           if (!opt) {
             return
           }
-          setValue('aineKoodiArvo', opt.value)
+          setValue('aineKoodiArvo', opt.value, { shouldDirty: true })
           clearErrors('aineKoodiArvo')
         }}
         isSearchable

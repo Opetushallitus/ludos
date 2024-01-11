@@ -23,7 +23,7 @@ import {
 } from '../../request'
 import { useContext, useState } from 'react'
 import { LanguageTabs } from '../LanguageTabs'
-import { InstructionFormType, instructionSchema } from './schemas/instructionSchema'
+import { instructionDefaultValues, InstructionFormType, instructionSchema } from './schemas/instructionSchema'
 import { TextInput } from '../TextInput'
 import { FormHeader } from './formCommon/FormHeader'
 import { FormButtonRow } from './formCommon/FormButtonRow'
@@ -36,6 +36,8 @@ import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { LudosContext } from '../../contexts/LudosContext'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
+import { BlockNavigation } from '../BlockNavigation'
+import { useFormPrompt } from '../../hooks/useFormPrompt'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -82,7 +84,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const methods = useForm<InstructionFormType>({
     defaultValues: isUpdate
-      ? async (): Promise<InstructionFormType> => {
+      ? async () => {
           const instruction = await fetchData<InstructionDtoOut>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
           const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
           const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
@@ -92,7 +94,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           setIsLoaded(true)
           return instruction
         }
-      : { exam },
+      : async () => ({ exam, ...instructionDefaultValues }) as InstructionFormType,
     mode: 'onBlur',
     resolver: zodResolver(instructionSchema)
   })
@@ -102,8 +104,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors, isDirty }
   } = methods
+
+  useFormPrompt(isDirty)
 
   const watchNameFi = watch('nameFi')
   const watchNameSv = watch('nameSv')
@@ -297,12 +301,15 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     }
   }
 
+  const handleCancelClick = () => navigate(-1)
+
   return (
     <div className="ludos-form">
       <FormHeader
         heading={action === ContentFormAction.uusi ? t('form.otsikkoohje') : watchNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvausohje') : t('form.muokkauskuvaus')}
       />
+      <BlockNavigation shouldBlock={isDirty && !isSubmitting} />
       <FormProvider {...methods}>
         <form
           className="min-h-[50vh] border-y-2 border-gray-light py-5"
@@ -421,7 +428,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         actions={{
           onSubmitClick: () => submitInstruction(PublishState.Published),
           onSaveDraftClick: () => submitInstruction(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true)
+          onDeleteClick: () => setOpenDeleteModal(true),
+          onCancelClick: handleCancelClick
         }}
         state={{
           isUpdate,

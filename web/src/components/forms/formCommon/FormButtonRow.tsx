@@ -9,6 +9,7 @@ type FormButtonRowProps = {
     onSubmitClick: () => void
     onSaveDraftClick: () => void
     onDeleteClick: () => void
+    onCancelClick: () => void
   }
   state: {
     isUpdate: boolean
@@ -65,8 +66,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
       <div className="flex justify-center flex-wrap-reverse gap-4 py-2 md:py-0 md:w-2/3 md:justify-end">
         <Button
           variant="buttonGhost"
-          // fixme: voiko tästä tulla ongelmia jos joku navigoi /uusi sivulle suoraan eri sivustolta?
-          onClick={() => navigate(-1)}
+          onClick={actions.onCancelClick}
           customClass="w-full md:w-auto"
           disabled={isSubmitting}
           data-testid="form-cancel">

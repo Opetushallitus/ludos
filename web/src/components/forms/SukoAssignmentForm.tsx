@@ -18,6 +18,7 @@ import {
   oppimaaraSelectOptions
 } from '../ludosSelect/helpers'
 import { useCallback } from 'react'
+import { BlockNavigation } from '../BlockNavigation'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -28,10 +29,8 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow } = useAssignmentForm<SukoAssignmentFormType>(
-    Exam.SUKO,
-    id
-  )
+  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting } =
+    useAssignmentForm<SukoAssignmentFormType>(Exam.SUKO, id)
 
   const {
     watch,
@@ -70,6 +69,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
         heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')}
       />
+      <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
@@ -83,8 +83,8 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                   return
                 }
                 const oppimaaraParts = opt.value.split('.')
-                setValue('oppimaara.oppimaaraKoodiArvo', oppimaaraParts[0])
-                setValue('oppimaara.kielitarjontaKoodiArvo', oppimaaraParts[1])
+                setValue('oppimaara.oppimaaraKoodiArvo', oppimaaraParts[0], { shouldDirty: true })
+                setValue('oppimaara.kielitarjontaKoodiArvo', oppimaaraParts[1], { shouldDirty: true })
                 clearErrors('oppimaara')
               }}
               isSearchable
@@ -111,7 +111,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 if (!opt) {
                   return
                 }
-                setValue('tavoitetasoKoodiArvo', opt.value)
+                setValue('tavoitetasoKoodiArvo', opt.value, { shouldDirty: true })
               }}
               isSearchable
               error={!!errors.tavoitetasoKoodiArvo}

@@ -33,3 +33,13 @@ export const instructionSchema = z
   .superRefine(commonSuperRefine)
 
 export type InstructionFormType = z.infer<typeof instructionSchema>
+
+export const instructionDefaultValues: Partial<InstructionFormType> = {
+  nameFi: '',
+  nameSv: '',
+  contentFi: '',
+  contentSv: '',
+  shortDescriptionFi: '',
+  shortDescriptionSv: '',
+  aineKoodiArvo: ''
+}

@@ -11,6 +11,7 @@ import { useAssignmentForm } from '../../hooks/useAssignmentForm'
 import { FormContentInput } from './formCommon/FormContentInput'
 import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
+import { BlockNavigation } from '../BlockNavigation'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -21,7 +22,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow } =
+  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting } =
     useAssignmentForm<PuhviAssignmentFormType>(Exam.PUHVI, id)
 
   const {
@@ -41,6 +42,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
         description={action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')}
       />
+      <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
         <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
