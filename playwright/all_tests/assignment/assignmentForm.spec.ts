@@ -7,14 +7,14 @@ import {
   formDataForCreate,
   formDataForUpdate
 } from './assignmentHelpers'
-import { Exam, oppimaaraId } from 'web/src/types'
+import { ContentType, Exam, oppimaaraId } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   isLdAssignmentFormType,
   isPuhviAssignmentFormType,
   isSukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
-import { FormModel } from '../../models/FormModel'
+import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 
 async function clickFormAction(page: Page, action: FormAction) {
   await page.getByTestId(`form-${action}`).click()
@@ -26,7 +26,6 @@ async function changeAssignmentPublishState(page: Page, action: FormAction) {
 }
 
 async function navigateToAssignmentUpdateFormAndAssertDataLoaded(page: Page, expectedFormData: AnyAssignmentFormType) {
-  await page.getByTestId('edit-content-btn').click()
   await expect(page.getByTestId('heading')).toHaveText(expectedFormData.nameFi)
 
   if (isSukoAssignmentFormType(expectedFormData)) {
@@ -64,10 +63,13 @@ async function navigateToAssignmentUpdateFormAndAssertDataLoaded(page: Page, exp
   }
 }
 
-async function createAndUpdateAndDeleteAssignment(page: Page, exam: Exam, createAction: 'submit' | 'draft') {
+async function createAndUpdateAndDeleteAssignment(form: AssignmentFormModel, createAction: 'submit' | 'draft') {
+  const { page, exam } = form
   // Create
   const createFormData = formDataForCreate(exam, createAction)
+  await form.assertNavigationNoBlockOnCleanForm()
   await fillAssignmentForm(page, createFormData)
+  await form.assertNavigationBlockOnDirtyForm()
   await clickFormAction(page, createAction)
   await assertSuccessNotification(
     page,
@@ -80,8 +82,12 @@ async function createAndUpdateAndDeleteAssignment(page: Page, exam: Exam, create
 
   // Update
   const updateFormData = formDataForUpdate(exam, createAction)
+  await form.editContentButton.click()
+  await navigateToAssignmentUpdateFormAndAssertDataLoaded(page, createFormData)
+  await form.assertNavigationNoBlockOnCleanForm()
   await navigateToAssignmentUpdateFormAndAssertDataLoaded(page, createFormData)
   await fillAssignmentForm(page, updateFormData)
+  await form.assertNavigationBlockOnDirtyForm()
   await clickFormAction(page, createAction)
   await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.onnistui')
   await assertAssignmentContentPage(page, updateFormData)
@@ -99,36 +105,32 @@ async function createAndUpdateAndDeleteAssignment(page: Page, exam: Exam, create
     await assertSuccessNotification(page, 'form.notification.tehtavan-tallennus.palautettu-luonnostilaan')
   }
 
-  await deleteAssignment(page, exam, assignmentId)
+  await deleteAssignment(form, assignmentId)
 }
 
-async function deleteAssignment(page: Page, exam: Exam, assignmentId: number) {
-  await page.getByTestId('edit-content-btn').click()
+async function deleteAssignment(form: AssignmentFormModel, assignmentId: number) {
+  const page = form.page
 
-  await page.getByTestId('form-delete').click()
-  await page.getByTestId('modal-button-delete').click()
+  await form.editContentButton.click()
+  await form.deleteButton.click()
+  await form.modalDeleteButton.click()
   await assertSuccessNotification(page, 'form.notification.tehtavan-poisto.onnistui')
-
   // expect not to find the deleted assignment from list
   await expect(page.getByTestId(`assignment-${assignmentId}`)).toBeHidden()
 
-  await page.goto(`/${exam.toLowerCase()}/koetehtavat/${assignmentId}`)
+  await form.goToContentPage(ContentType.koetehtavat, assignmentId)
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 
 loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} assignment form tests`, () => {
-    test.beforeEach(async ({ page }) => {
-      await new FormModel(page, exam).showKeys()
-      await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
-      await page.getByTestId('create-koetehtava-button').click()
-    })
+    test.beforeEach(async ({ page }) => await new AssignmentFormModel(page, exam).initializeTest())
 
     test('can create published, update and delete', async ({ page }) =>
-      await createAndUpdateAndDeleteAssignment(page, exam, 'submit'))
+      await createAndUpdateAndDeleteAssignment(new AssignmentFormModel(page, exam), 'submit'))
 
     test('can create draft, update and delete', async ({ page }) =>
-      await createAndUpdateAndDeleteAssignment(page, exam, 'draft'))
+      await createAndUpdateAndDeleteAssignment(new AssignmentFormModel(page, exam), 'draft'))
   })
 })

@@ -6,10 +6,18 @@ import { fetchWithSession } from '../helpers'
 export class AssignmentFormModel extends FormModel {
   constructor(
     readonly page: Page,
-    readonly exam: Exam
+    readonly exam: Exam,
+    readonly createAssignmentButton = page.getByTestId('create-koetehtava-button')
   ) {
     super(page, exam)
   }
+
+  async initializeTest() {
+    await this.showKeys()
+    await this.page.getByTestId(`nav-link-${this.exam.toLowerCase()}`).click()
+    await this.createAssignmentButton.click()
+  }
+
   testAssignmentIn(assignmentNameBase: string) {
     const base = {
       exam: this.exam,
@@ -50,7 +58,6 @@ export class AssignmentFormModel extends FormModel {
       throw new Error('Unknown exam')
     }
   }
-
   assignmentApiCalls(context: BrowserContext, baseURL: string) {
     return {
       create: (assignment: any) => this.createAssignmentApiCall(context, baseURL, assignment),

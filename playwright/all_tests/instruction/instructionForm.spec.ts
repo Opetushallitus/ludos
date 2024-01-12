@@ -1,72 +1,16 @@
 import { expect, Page, test } from '@playwright/test'
-import { assertUpdatedInstruction, initializeInstructionTest, updateAttachments } from './instructionHelpers'
-import {
-  assertSuccessNotification,
-  FormAction,
-  koodiLabel,
-  loginTestGroup,
-  Role,
-  setTeachingLanguage
-} from '../../helpers'
-import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
+import { initializeInstructionTest, updateAttachments } from './instructionHelpers'
+import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
+import { Exam } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
-
-async function updateInstruction(
-  form: InstructionFormModel,
-  instructionId: number,
-  action: FormAction,
-  previousName: string,
-  expectedNotification: string
-) {
-  const { page, exam } = form
-
-  await navigateToInstructionExamPage(page, exam)
-
-  await setTeachingLanguage(page, TeachingLanguage.sv)
-  const instructionCard = page.getByTestId(`instruction-${instructionId}`)
-
-  await expect(instructionCard).toBeVisible()
-
-  if (exam === Exam.LD) {
-    await expect(instructionCard.getByTestId('card-title')).toHaveText(
-      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9')
-    )
-  } else {
-    await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)
-  }
-
-  await page.getByTestId(`instruction-${instructionId}-edit`).click()
-  await form.fillInstructionForm({
-    nameFi: 'Testi ohje muokattu',
-    nameSv: 'Testuppgifter redigerade',
-    contentFi: 'Testi sisältö muokattu',
-    contentSv: 'Testinstruktioner redigerade'
-  })
-
-  if (action === 'submit') {
-    await page.getByTestId('form-submit').click()
-  } else {
-    await page.getByTestId('form-draft').click()
-  }
-
-  await assertSuccessNotification(page, expectedNotification)
-
-  await assertUpdatedInstruction(page)
-}
-
-async function navigateToInstructionExamPage(page: Page, exam: Exam) {
-  await page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
-  await page.getByTestId('tab-ohjeet').click()
-}
 
 async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
   const form = new InstructionFormModel(page, exam)
 
   const instructionId = await form.createInstruction('submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
-  await updateInstruction(form, instructionId, 'submit', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.updateInstruction(instructionId, 'submit', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
   await updateAttachments(page)
-  await updateInstruction(
-    form,
+  await form.updateInstruction(
     instructionId,
     'draft',
     'Testuppgifter redigerade',
@@ -81,9 +25,8 @@ async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
 
   const instructionId = await form.createInstruction('draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
 
-  await updateInstruction(form, instructionId, 'draft', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
-  await updateInstruction(
-    form,
+  await form.updateInstruction(instructionId, 'draft', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.updateInstruction(
     instructionId,
     'submit',
     'Testuppgifter redigerade',
@@ -133,7 +76,7 @@ Object.values(Exam).forEach((exam) => {
         'submit',
         'form.notification.ohjeen-tallennus.julkaisu-onnistui'
       )
-      await navigateToInstructionExamPage(page, exam)
+      await form.navigateToInstructionExamPage()
       const instructionCard = page.getByTestId(`instruction-${instructionId}`)
 
       await expect(instructionCard).toBeVisible()

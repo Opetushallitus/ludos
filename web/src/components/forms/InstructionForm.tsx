@@ -192,9 +192,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const handleContentChange = (newContent: string) => {
     if (activeTab === 'fi') {
-      setValue('contentFi', newContent)
+      setValue('contentFi', newContent, { shouldDirty: true })
     } else if (activeTab === 'sv') {
-      setValue('contentSv', newContent)
+      setValue('contentSv', newContent, { shouldDirty: true })
     }
   }
 
