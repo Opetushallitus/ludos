@@ -1,17 +1,8 @@
-import { expect, Page } from '@playwright/test'
+import { Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import {
-  ContentType,
-  Exam,
-  LdCertificateDtoOut,
-  PublishState,
-  PuhviCertificateDtoOut,
-  SukoCertificateDtoOut
-} from 'web/src/types'
-import { EditorModel } from './EditorModel'
+import { ContentType, Exam, PublishState } from 'web/src/types'
 import { fetchWithSession, FormAction } from '../helpers'
 import { ContentListModel } from './ContentListModel'
-import { fillCertificateForm } from '../all_tests/certificate/certificateHelpers'
 import { AttachmentFormType, CertificateFormType } from 'web/src/components/forms/schemas/certificateSchema'
 import { getFileBlob } from '../all_tests/instruction/instructionHelpers'
 
@@ -19,7 +10,6 @@ export class CertificateFormModel extends FormModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
-    readonly contentFiEditor = new EditorModel(page, page.getByTestId('editor-content-fi')),
     readonly createNewCertificateButton = page.getByTestId('create-todistus-button'),
     readonly attachment1: AttachmentFormType = {
       name: 'fixture1.pdf',
@@ -40,6 +30,14 @@ export class CertificateFormModel extends FormModel {
   async gotoNew() {
     await new ContentListModel(this.page, this.exam, ContentType.todistukset).goto()
     await this.createNewCertificateButton.click()
+  }
+
+  async submitCertificate(action: FormAction) {
+    if (action === 'submit') {
+      void this.submitButton.click()
+    } else {
+      void this.draftButton.click()
+    }
   }
 
   private certificateNameByAction(action: FormAction): string {
@@ -76,30 +74,6 @@ export class CertificateFormModel extends FormModel {
     attachmentSv: this.attachment2,
     aineKoodiArvo: '9'
   })
-
-  async createCertificate(
-    action: FormAction
-  ): Promise<SukoCertificateDtoOut | LdCertificateDtoOut | PuhviCertificateDtoOut> {
-    const certificateIn = this.createCertificateInputs(action)
-    await fillCertificateForm(this.page, this.exam, certificateIn)
-    void this.submitButton.click()
-
-    const response = await this.page.waitForResponse(
-      (response) => response.url().includes('/api/certificate') && response.ok()
-    )
-
-    return response.json()
-  }
-
-  async updateCertificate(input: CertificateFormType) {
-    await this.editContentButton.click()
-
-    await expect(this.heading).toBeVisible()
-
-    await fillCertificateForm(this.page, this.exam, input)
-
-    await this.submitButton.click()
-  }
 
   private prepareCertificateFormData(certificateIn: CertificateFormType, fileBlobName: string) {
     const formData = new FormData()

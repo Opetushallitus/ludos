@@ -1,6 +1,6 @@
-import { BrowserContext, expect, Page, test } from '@playwright/test'
+import { BrowserContext, expect, test } from '@playwright/test'
 import { assertSuccessNotification, FormAction, loginTestGroup, Role } from '../../helpers'
-import { Exam } from 'web/src/types'
+import { ContentType, Exam } from 'web/src/types'
 import { assertContentPage, fillCertificateForm } from './certificateHelpers'
 import { CertificateFormModel } from '../../models/CertificateFormModel'
 
@@ -13,13 +13,11 @@ async function createCertificate(
   const { page, exam } = form
   const inputs = form.createCertificateInputs(action)
 
+  await form.assertNavigationNoBlockOnCleanForm()
   await fillCertificateForm(page, exam, inputs)
+  await form.assertNavigationBlockOnDirtyForm()
 
-  if (action === 'submit') {
-    void page.getByTestId('form-submit').click()
-  } else {
-    void page.getByTestId('form-draft').click()
-  }
+  await form.submitCertificate(action)
 
   const responseFromClick = await page.waitForResponse(
     (response) => response.url().includes('/api/certificate') && response.ok()
@@ -41,20 +39,23 @@ async function updateCertificate(
   expectedNotification: string
 ) {
   const { page, exam } = form
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
+  await expect(form.formHeader).toBeVisible()
 
-  await page.getByTestId('edit-content-btn').click()
+  await form.editContentButton.click()
 
-  const formHeader = page.getByTestId('heading')
-  await expect(formHeader).toHaveText(expectedCurrentName)
+  await expect(form.heading).toHaveText(expectedCurrentName)
+  await form.assertNavigationNoBlockOnCleanForm()
+  await expect(form.heading).toHaveText(expectedCurrentName)
 
-  const inputs = form.updateCertificateInputs(action)
+  const inputs = { ...form.updateCertificateInputs(action), nameFi: `${expectedCurrentName} updated` }
+
   await fillCertificateForm(page, exam, inputs)
 
   if (action === 'submit') {
-    await page.getByTestId('form-submit').click()
+    await form.assertNavigationBlockOnDirtyForm()
+    await form.submitButton.click()
   } else if (action === 'draft') {
-    await page.getByTestId('form-draft').click()
+    await form.draftButton.click()
   }
   await assertSuccessNotification(page, expectedNotification)
   await assertContentPage(page, context, exam, inputs, action)
@@ -62,20 +63,20 @@ async function updateCertificate(
   return inputs.nameFi
 }
 
-async function deleteCertificate(form: CertificateFormModel, certificateId: string) {
+async function deleteCertificate(form: CertificateFormModel, certificateId: number) {
   const { page, exam } = form
 
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
+  await expect(form.formHeader).toBeVisible()
 
-  await page.getByTestId('edit-content-btn').click()
-  await page.getByTestId('form-delete').click()
-  await page.getByTestId('modal-button-delete').click()
+  await form.editContentButton.click()
+  await form.deleteButton.click()
+  await form.modalDeleteButton.click()
 
   await assertSuccessNotification(page, 'todistuksen-poisto.onnistui')
   // expect not to find the deleted certificate from a list
   await expect(page.getByTestId(`certificate-${certificateId}`)).toBeHidden()
 
-  await page.goto(`/${exam.toLowerCase()}/todistukset/${certificateId}`)
+  await form.goToContentPage(ContentType.todistukset, certificateId)
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 
@@ -83,7 +84,6 @@ async function createPublishedAndUpdateAndDelete(form: CertificateFormModel, con
   const { id, nameFromCreate } = await createCertificate(
     form,
     context,
-
     'submit',
     'form.notification.todistuksen-tallennus.julkaisu-onnistui'
   )
@@ -150,15 +150,14 @@ async function createDraftAndUpdateAndDelete(form: CertificateFormModel, context
   await deleteCertificate(form, id)
 }
 
-async function cancelCreatingCertificate(page: Page) {
-  const btn = page.getByTestId('form-cancel')
+async function cancelCreatingCertificate(form: CertificateFormModel) {
+  const btn = form.cancelButton
   await expect(btn).toHaveText('button.peruuta')
   await btn.click()
-  await expect(page.getByTestId('create-todistus-button')).toBeVisible()
+  await expect(form.createNewCertificateButton).toBeVisible()
 }
 
 async function cancelUpdatingCertificate(form: CertificateFormModel, context: BrowserContext) {
-  const { page } = form
   const { nameFromCreate } = await createCertificate(
     form,
     context,
@@ -166,15 +165,12 @@ async function cancelUpdatingCertificate(form: CertificateFormModel, context: Br
     'form.notification.todistuksen-tallennus.julkaisu-onnistui'
   )
 
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
+  await expect(form.formHeader).toBeVisible()
+  await form.editContentButton.click()
+  await expect(form.heading).toHaveText(nameFromCreate)
 
-  await page.getByTestId('edit-content-btn').click()
-
-  const formHeader = page.getByTestId('heading')
-  await expect(formHeader).toHaveText(nameFromCreate)
-
-  await page.getByTestId('form-cancel').click()
-  await expect(page.getByTestId('assignment-header')).toBeVisible()
+  await form.cancelButton.click()
+  await expect(form.formHeader).toBeVisible()
 }
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -193,7 +189,8 @@ Object.values(Exam).forEach((exam) => {
     test(`can create, update and delete a new draft ${exam} certificate`, async ({ page, context }) =>
       await createDraftAndUpdateAndDelete(new CertificateFormModel(page, exam), context))
 
-    test(`can cancel ${exam} certificate creation`, async ({ page }) => await cancelCreatingCertificate(page))
+    test(`can cancel ${exam} certificate creation`, async ({ page }) =>
+      await cancelCreatingCertificate(new CertificateFormModel(page, exam)))
 
     test(`can cancel ${exam} certificate update`, async ({ page, context }) =>
       await cancelUpdatingCertificate(new CertificateFormModel(page, exam), context))

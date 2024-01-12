@@ -1,8 +1,9 @@
 import { expect, Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import { AttachmentDtoOut, ContentType, Exam, PublishState } from 'web/src/types'
+import { AttachmentDtoOut, ContentType, Exam, KoodistoName, PublishState, TeachingLanguage } from 'web/src/types'
 import {
   assertCreatedInstruction,
+  assertUpdatedInstruction,
   getFileBlob,
   InstructionFormData,
   instructionFormData
@@ -13,7 +14,9 @@ import {
   createFilePathToFixtures,
   fetchWithSession,
   FormAction,
-  setSingleSelectDropdownOption
+  koodiLabel,
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
 } from '../helpers'
 import { ContentListModel } from './ContentListModel'
 
@@ -27,8 +30,12 @@ export class InstructionFormModel extends FormModel {
     super(page, exam)
   }
 
-  async gotoNew() {
+  async navigateToInstructionExamPage() {
     await new ContentListModel(this.page, this.exam, ContentType.ohjeet).goto()
+  }
+
+  async gotoNew() {
+    await this.navigateToInstructionExamPage()
     await this.createNewInstructionButton.click()
   }
 
@@ -37,7 +44,10 @@ export class InstructionFormModel extends FormModel {
   }
 
   async createInstruction(action: FormAction, expectedNotification: string) {
+    await this.assertNavigationNoBlockOnCleanForm()
     await this.fillInstructionForm(instructionFormData)
+
+    await this.assertNavigationBlockOnDirtyForm()
 
     if (action === 'submit') {
       void this.submitButton.click()
@@ -57,7 +67,7 @@ export class InstructionFormModel extends FormModel {
     return instructionToUpdate
   }
 
-  async fillInstructionForm({ ...formData }: Partial<InstructionFormData>) {
+  async fillInstructionForm(formData: Partial<InstructionFormData>) {
     const {
       nameFi,
       nameSv,
@@ -122,6 +132,51 @@ export class InstructionFormModel extends FormModel {
         }
       }
     }
+  }
+
+  async updateInstruction(
+    instructionId: number,
+    action: FormAction,
+    previousName: string,
+    expectedNotification: string
+  ) {
+    await this.navigateToInstructionExamPage()
+
+    await setTeachingLanguage(this.page, TeachingLanguage.sv)
+    const instructionCard = this.page.getByTestId(`instruction-${instructionId}`)
+
+    await expect(instructionCard).toBeVisible()
+
+    if (this.exam === Exam.LD) {
+      await expect(instructionCard.getByTestId('card-title')).toHaveText(
+        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9')
+      )
+    } else {
+      await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)
+    }
+
+    await this.page.getByTestId(`instruction-${instructionId}-edit`).click()
+    await expect(this.heading).toBeVisible()
+
+    await this.assertNavigationNoBlockOnCleanForm()
+
+    await this.fillInstructionForm({
+      nameFi: 'Testi ohje muokattu',
+      nameSv: `${previousName} redigerade`,
+      contentFi: 'Testi sisältö muokattu',
+      contentSv: 'Testinstruktioner redigerade'
+    })
+
+    if (action === 'submit') {
+      await this.assertNavigationBlockOnDirtyForm()
+      await this.page.getByTestId('form-submit').click()
+    } else {
+      await this.page.getByTestId('form-draft').click()
+    }
+
+    await assertSuccessNotification(this.page, expectedNotification)
+
+    await assertUpdatedInstruction(this.page, 'Testi ohje muokattu', `${previousName} redigerade`)
   }
 
   private addAttachmentPartToFormData(form: FormData, partName: string, attachmentName: string) {

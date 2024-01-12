@@ -21,7 +21,8 @@ export const BlockNavigationModal = ({ open, onProceed, onClose }: BlockNavigati
       onClose={onClose}
       onCancel={onCancel}
       onAnimationEnd={onAnimEnd}
-      aria-modal="true">
+      aria-modal="true"
+      data-testid="block-navigation-modal">
       <div className={styles['modal__container']}>
         <div className="row justify-between bg-green-primary p-2">
           <h2 className="text-base text-white" id="modal-title">
@@ -39,10 +40,10 @@ export const BlockNavigationModal = ({ open, onProceed, onClose }: BlockNavigati
         <div className="flex-grow" />
 
         <div className="m-8 flex justify-end gap-5">
-          <Button variant="buttonGhost" onClick={onClose} data-testid="modal-button-cancel">
+          <Button variant="buttonGhost" onClick={onClose} data-testid="cancel">
             {t('common.peruuta')}
           </Button>
-          <Button variant="buttonPrimary" onClick={onProceed} data-testid="modal-button-delete">
+          <Button variant="buttonPrimary" onClick={onProceed} data-testid="proceed">
             {t('common.poistu-tallentamatta')}
           </Button>
         </div>

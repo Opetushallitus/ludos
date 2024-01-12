@@ -92,11 +92,11 @@ export async function assertCreatedInstruction(form: InstructionFormModel, actio
   await expect(page.getByRole('link', { name: `${attachmentNameSv} 2 open_in_new` })).toBeVisible()
 }
 
-export async function assertUpdatedInstruction(page: Page) {
+export async function assertUpdatedInstruction(page: Page, newNameFi: string, newNameSv: string) {
   await setTeachingLanguage(page, TeachingLanguage.fi)
   const updatedInstructionHeader = page.getByTestId('assignment-header')
-  await expect(updatedInstructionHeader).toHaveText('Testi ohje muokattu')
+  await expect(updatedInstructionHeader).toHaveText(newNameFi)
   await setTeachingLanguage(page, TeachingLanguage.sv)
   const updatedInstructionHeaderSv = page.getByTestId('assignment-header')
-  await expect(updatedInstructionHeaderSv).toHaveText('Testuppgifter redigerade')
+  await expect(updatedInstructionHeaderSv).toHaveText(newNameSv)
 }
