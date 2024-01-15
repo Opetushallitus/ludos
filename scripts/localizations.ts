@@ -838,7 +838,11 @@ const app = subcommands({
   
      Write operations to an environment require your virkailija credentials
      in ~/.oph-credentials.json format:
-     {"qa": {"username": "foo", "password: "bar"}}`.replace(/  +/g, ''),
+     {"qa": {"username": "foo", "password: "bar"}}
+     
+     For prod (and other accounts with MFA enabled), use the ludos_localizations service
+     user, password can be found in utility Secrets Manager:
+     /prod/scripts/localizations_service_user`.replace(/  +/g, ''),
   version: '1.0.0',
   cmds: {
     get: getCommand,
