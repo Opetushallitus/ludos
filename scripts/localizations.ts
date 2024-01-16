@@ -80,14 +80,38 @@ interface SessionCookies {
   JSESSIONID: string
 }
 
+async function readSessionCacheFile(): Promise<Map<Environment, SessionCookies> | undefined> {
+  try {
+    const cacheObject = JSON.parse(await fsPromises.readFile(LOKALISAATIOPALVELU_SESSION_CACHE_FILE, 'utf-8'))
+    return new Map<Environment, SessionCookies>(Object.entries(cacheObject) as any)
+  } catch (e) {
+    if (fs.existsSync(LOKALISAATIOPALVELU_SESSION_CACHE_FILE)) {
+      console.log(`Error reading existing session cache file ${LOKALISAATIOPALVELU_SESSION_CACHE_FILE}, deleting it`, e)
+      fs.unlinkSync(LOKALISAATIOPALVELU_SESSION_CACHE_FILE)
+    }
+    return undefined
+  }
+}
+
+async function addSessionToSessionCacheFile(env: Environment, sessionCookies: SessionCookies) {
+  const updatedSessionCache: Map<Environment, SessionCookies> =
+    (await readSessionCacheFile())?.set(env, sessionCookies) ??
+    new Map<Environment, SessionCookies>([[env, sessionCookies]])
+  try {
+    await fsPromises.writeFile(
+      LOKALISAATIOPALVELU_SESSION_CACHE_FILE,
+      JSON.stringify(Object.fromEntries(updatedSessionCache), null, 2)
+    )
+  } catch (e) {
+    console.log(`Error writing '${LOKALISAATIOPALVELU_SESSION_CACHE_FILE}', continuing anyway`, e)
+  }
+}
+
 async function loginToLokalisointi(env: Environment, useSessionCache: boolean): Promise<SessionCookies> {
   if (useSessionCache) {
-    try {
-      return JSON.parse(await fsPromises.readFile(LOKALISAATIOPALVELU_SESSION_CACHE_FILE, 'utf-8'))
-    } catch (e) {
-      if (fs.existsSync(LOKALISAATIOPALVELU_SESSION_CACHE_FILE)) {
-        console.log(`Error reading session cache file ${LOKALISAATIOPALVELU_SESSION_CACHE_FILE}`, e)
-      }
+    const cachedSession = (await readSessionCacheFile())?.get(env)
+    if (cachedSession) {
+      return cachedSession
     }
   }
   const credentials = await credentialsForEnv(env)
@@ -141,11 +165,7 @@ async function loginToLokalisointi(env: Environment, useSessionCache: boolean): 
     JSESSIONID: extractCookieValue('JSESSIONID', cookiesString)
   }
 
-  try {
-    await fsPromises.writeFile(LOKALISAATIOPALVELU_SESSION_CACHE_FILE, JSON.stringify(sessionCookies, null, 2))
-  } catch (e) {
-    console.log(`Error writing '${LOKALISAATIOPALVELU_SESSION_CACHE_FILE}'`, e)
-  }
+  await addSessionToSessionCacheFile(env, sessionCookies)
 
   return sessionCookies
 }
@@ -818,7 +838,11 @@ const app = subcommands({
   
      Write operations to an environment require your virkailija credentials
      in ~/.oph-credentials.json format:
-     {"qa": {"username": "foo", "password: "bar"}}`.replace(/  +/g, ''),
+     {"qa": {"username": "foo", "password: "bar"}}
+     
+     For prod (and other accounts with MFA enabled), use the ludos_localizations service
+     user, password can be found in utility Secrets Manager:
+     /prod/scripts/localizations_service_user`.replace(/  +/g, ''),
   version: '1.0.0',
   cmds: {
     get: getCommand,

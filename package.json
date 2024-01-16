@@ -12,6 +12,7 @@
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
     "lint:playwright": "yarn workspace playwright lint",
+    "localizations": "yarn workspace scripts localizations",
     "vitest:ci": "yarn workspace web vitest --run",
     "postinstall": "git config core.hooksPath .githooks",
     "build:web": "yarn workspace web build",
