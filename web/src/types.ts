@@ -23,6 +23,14 @@ export const PublishState = {
 } as const
 export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
+export type NonDeletedPublishState = Exclude<PublishState, typeof PublishState.Deleted>
+
+export const FetchErrorMessages = {
+  SessionExpired: 'session_expired',
+  UnknownError: 'unknown_error'
+}
+export type FetchErrorMessages = (typeof FetchErrorMessages)[keyof typeof FetchErrorMessages]
+
 export const Exam = {
   SUKO: 'SUKO',
   LD: 'LD',

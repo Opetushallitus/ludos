@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchData } from '../request'
+import { FetchErrorMessages } from '../types'
 
 export function useFetch<T>(url: string, isNew: boolean = false) {
   const [data, setData] = useState<T>()
@@ -27,7 +28,10 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
           setData(undefined)
           if (e instanceof Error) {
             const match = e.message.match(/status=(\d+)/)
-            const status = match ? match[1] : 'unknown_error'
+            const status = match ? match[1] : FetchErrorMessages.UnknownError
+            if (e.message === FetchErrorMessages.SessionExpired) {
+              location.reload()
+            }
             setError(status)
           } else {
             setError('unknown_exception')

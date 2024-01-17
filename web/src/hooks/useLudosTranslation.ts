@@ -151,6 +151,16 @@ export const useLudosTranslation = () => {
     tiptapImageAlignOptions: {
       left: t('file.asemointi.ei-mitaan'),
       center: t('file.asemointi.keskitetty')
+    },
+    formSubmitErrorNotificationMessage: {
+      [ContentType.koetehtavat]: t('form.notification.tehtavan-tallennus.epaonnistui'),
+      [ContentType.ohjeet]: t('form.notification.ohjeen-tallennus.epaonnistui'),
+      [ContentType.todistukset]: t('form.notification.todistuksen-tallennus.epaonnistui')
+    },
+    formDeleteErrorNotificationMessage: {
+      [ContentType.koetehtavat]: t('form.notification.tehtavan-poisto.epaonnistui'),
+      [ContentType.ohjeet]: t('form.notification.ohjeen-poisto.epaonnistui'),
+      [ContentType.todistukset]: t('form.notification.todistuksen-poisto.epaonnistui')
     }
   }
 

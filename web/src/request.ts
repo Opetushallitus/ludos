@@ -1,7 +1,14 @@
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
 import { CertificateFormType } from './components/forms/schemas/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentDtoOut, AttachmentLanguage, Exam, ImageDtoOut, MapWithFileKeyAndMetadata } from './types'
+import {
+  AttachmentDtoOut,
+  AttachmentLanguage,
+  Exam,
+  FetchErrorMessages,
+  ImageDtoOut,
+  MapWithFileKeyAndMetadata
+} from './types'
 
 const doRequest = async (
   url: string,
@@ -10,23 +17,29 @@ const doRequest = async (
   headers: HeadersInit = {
     'Content-Type': 'application/json'
   }
-) =>
-  await fetch(url, {
+) => {
+  const response = await fetch(url, {
     method,
     body,
     headers,
-    redirect: 'error'
+    redirect: 'manual'
   })
+
+  if (response.type === 'opaqueredirect') {
+    throw new Error(FetchErrorMessages.SessionExpired)
+  }
+
+  return response
+}
 
 export async function fetchData<T>(url: string): Promise<T> {
   const fullUrl = `/api/${url}`
-  const response = await fetch(fullUrl, {
-    method: 'GET',
-    redirect: 'error'
-  })
+  const response = await doRequest(fullUrl, 'GET')
+
   if (!response.ok) {
-    throw new Error(`Error fetching data from ${fullUrl}}, status=${response.status}`)
+    throw new Error(`Error fetching data from ${fullUrl}, status=${response.status}`)
   }
+
   return (await response.json()) as T
 }
 

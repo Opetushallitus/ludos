@@ -1,7 +1,9 @@
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { PublishState } from '../../../types'
+import { FetchErrorMessages, PublishState } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ExternalLink } from '../../ExternalLink'
+import { uudelleenkirjautuminenOnnistuiPath } from '../../LudosRoutes'
 
 type FormButtonRowProps = {
   actions: {
@@ -46,6 +48,25 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
     } else {
       return t('button.tallenna')
     }
+  }
+
+  const showErrorMessage = (e: string) => {
+    if (e === FetchErrorMessages.SessionExpired) {
+      return (
+        <div data-testid="session-expired-error-message">
+          {t('notification.error.istunto-vanhentunut')}
+          <ExternalLink
+            className="underline"
+            textColor="text-red-primary"
+            url={uudelleenkirjautuminenOnnistuiPath}
+            data-testid="link">
+            {t('notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki')}
+          </ExternalLink>
+        </div>
+      )
+    }
+
+    return e
   }
 
   return (
@@ -94,11 +115,11 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
         </div>
       )}
       {errorMessage && (
-        <div className="flex justify-end">
+        <div className="flex justify-end mb-5">
           <ul className="min-w-36 mt-4 max-w-2xl text-red-primary">
             {errorMessage.split('\n').map((e, i) => (
               <li className="list-disc" key={i}>
-                {e}
+                {showErrorMessage(e)}
               </li>
             ))}
           </ul>

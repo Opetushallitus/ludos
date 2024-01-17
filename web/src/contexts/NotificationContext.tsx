@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react'
+import { createContext, Dispatch, ReactElement, ReactNode, SetStateAction, useContext, useState } from 'react'
 
 export const NotificationEnum = {
   success: 'success',
@@ -10,6 +10,7 @@ export type NotificationType = (typeof NotificationEnum)[keyof typeof Notificati
 export type ContextNotification = {
   message: string
   type: NotificationType
+  linkComponent?: ReactElement
 }
 
 type NotificationContextProps = {

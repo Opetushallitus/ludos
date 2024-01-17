@@ -37,9 +37,13 @@ export const Notification = () => {
           )}
           {notification.message}
           {notification.type === NotificationEnum.error && (
-            <InternalLink className="text-white underline" to={`/${palautteetKey}`}>
-              {t('notification.error.link.laheta-palautetta-virheesta')}
-            </InternalLink>
+            <>
+              {notification.linkComponent || (
+                <InternalLink className="text-white underline" to={`/${palautteetKey}`}>
+                  {t('notification.error.link.laheta-palautetta-virheesta')}
+                </InternalLink>
+              )}
+            </>
           )}
           {notification.type === NotificationEnum.error && (
             <Button variant="buttonGhost" className="absolute top-0 right-0 pr-1" onClick={hideNotification}>
