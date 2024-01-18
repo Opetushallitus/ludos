@@ -12,6 +12,7 @@ import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSel
 import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { BlockNavigation } from '../BlockNavigation'
+import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -22,11 +23,11 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting } =
-    useAssignmentForm<LdAssignmentFormType>(Exam.LD, id)
+  const { methods, handleMultiselectOptionChange, submitAssignment, submitError, openDeleteModal, setOpenDeleteModal } =
+    useAssignmentForm<LdAssignmentFormType>(Exam.LD, id, action)
   const {
     watch,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = methods
 
   const currentNameFi = watch('nameFi')
@@ -42,7 +43,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
       />
       <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
-        <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+        <form className="border-y-2 border-gray-light py-5" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
             <LudosSelect
@@ -80,7 +81,17 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         </form>
       </FormProvider>
 
-      <AssignmentFormButtonRow publishState={watchPublishState} />
+      <AssignmentFormButtonRow
+        methods={methods}
+        submitAssignment={submitAssignment}
+        isUpdate={action === ContentFormAction.muokkaus}
+        deleteModalState={{
+          openDeleteModal,
+          setOpenDeleteModal
+        }}
+        publishState={watchPublishState}
+        submitError={submitError}
+      />
     </>
   )
 }

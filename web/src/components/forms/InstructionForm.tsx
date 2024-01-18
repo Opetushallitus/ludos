@@ -311,10 +311,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       />
       <BlockNavigation shouldBlock={isDirty && !isSubmitting} />
       <FormProvider {...methods}>
-        <form
-          className="min-h-[50vh] border-y-2 border-gray-light py-5"
-          id="newAssignment"
-          onSubmit={(e) => e.preventDefault()}>
+        <form className="min-h-[50vh] border-y-2 border-gray-light py-5" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
 
           {exam === Exam.LD && <FormAineDropdown />}
@@ -433,7 +430,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         }}
         state={{
           isUpdate,
-          isSubmitting,
+          disableSubmit: isSubmitting,
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}

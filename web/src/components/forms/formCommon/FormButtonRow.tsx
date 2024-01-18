@@ -1,6 +1,5 @@
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { useNavigate } from 'react-router-dom'
 import { PublishState } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
@@ -13,7 +12,7 @@ type FormButtonRowProps = {
   }
   state: {
     isUpdate: boolean
-    isSubmitting: boolean
+    disableSubmit: boolean
     publishState?: PublishState
   }
   formHasValidationErrors: boolean
@@ -22,8 +21,7 @@ type FormButtonRowProps = {
 
 export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMessage }: FormButtonRowProps) => {
   const { t } = useLudosTranslation()
-  const navigate = useNavigate()
-  const { isUpdate, isSubmitting } = state
+  const { isUpdate, disableSubmit } = state
   const isDraft = state.publishState === PublishState.Draft
 
   const draftButtonText = () => {
@@ -57,7 +55,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           <Button
             variant="buttonDanger"
             onClick={actions.onDeleteClick}
-            disabled={isSubmitting}
+            disabled={disableSubmit}
             data-testid="form-delete">
             {t('form.button.poista')}
           </Button>
@@ -68,14 +66,14 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           variant="buttonGhost"
           onClick={actions.onCancelClick}
           customClass="w-full md:w-auto"
-          disabled={isSubmitting}
+          disabled={disableSubmit}
           data-testid="form-cancel">
           {t('button.peruuta')}
         </Button>
         <Button
           variant="buttonSecondary"
           customClass="w-full md:w-auto"
-          disabled={isSubmitting}
+          disabled={disableSubmit}
           onClick={actions.onSaveDraftClick}
           data-testid="form-draft">
           {draftButtonText()}
@@ -84,7 +82,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           variant="buttonPrimary"
           onClick={actions.onSubmitClick}
           customClass="w-full md:w-auto"
-          disabled={isSubmitting}
+          disabled={disableSubmit}
           data-testid="form-submit">
           {submitButtonText()}
         </Button>

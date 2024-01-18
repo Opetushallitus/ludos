@@ -239,7 +239,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         description={action === ContentFormAction.uusi ? t('form.kuvaustodistus') : t('form.muokkauskuvaus')}
       />
       <FormProvider {...methods}>
-        <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+        <form className="border-y-2 border-gray-light py-5" onSubmit={(e) => e.preventDefault()}>
           {exam === Exam.LD && <FormAineDropdown />}
 
           <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
@@ -326,7 +326,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         }}
         state={{
           isUpdate,
-          isSubmitting,
+          disableSubmit: isSubmitting,
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
