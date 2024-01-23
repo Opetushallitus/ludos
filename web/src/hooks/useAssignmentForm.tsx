@@ -1,5 +1,5 @@
 import { ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../types'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { createAssignment, fetchData, updateAssignment } from '../request'
@@ -11,26 +11,24 @@ import {
   CommonAssignmentFormType
 } from '../components/forms/schemas/assignmentSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FormButtonRow } from '../components/forms/formCommon/FormButtonRow'
 import { MultiValue } from 'react-select'
 import { LudosSelectOption } from '../components/ludosSelect/LudosSelect'
-import { DeleteModal } from '../components/modal/DeleteModal'
 import { useLudosTranslation } from './useLudosTranslation'
-import { LudosContext } from '../contexts/LudosContext'
 import { useFormPrompt } from './useFormPrompt'
 
-export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam, id: string | undefined) {
+export function useAssignmentForm<T extends CommonAssignmentFormType>(
+  exam: Exam,
+  id: string | undefined,
+  action: ContentFormAction
+) {
   const { lt, t } = useLudosTranslation()
-  const { uiLanguage } = useContext(LudosContext)
   const { state } = useLocation()
   const navigate = useNavigate()
   const { setNotification } = useNotification()
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-  const action = id ? ContentFormAction.muokkaus : ContentFormAction.uusi
   const isUpdate = action === ContentFormAction.muokkaus
 
   async function defaultValues<T>(): Promise<T> {
@@ -112,7 +110,6 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
       const assignment = { ...data, publishState }
 
       try {
-        setIsSubmitting(true)
         const resultId = await submitAssignmentData(assignment)
         setSubmitError('')
         handleSuccess(publishState, resultId)
@@ -120,45 +117,16 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(exam: Exam
         setSubmitError(e instanceof Error ? e.message || 'Unexpected error' : 'Unexpected error')
         setErrorNotification(publishState)
       } finally {
-        setIsSubmitting(false)
       }
     })()
   }
 
-  const handleCancelClick = () => navigate(-1)
-
-  const AssignmentFormButtonRow = ({ publishState }: { publishState?: PublishState }) => (
-    <>
-      <FormButtonRow
-        actions={{
-          onSubmitClick: () => submitAssignment(PublishState.Published),
-          onSaveDraftClick: () => submitAssignment(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true),
-          onCancelClick: handleCancelClick
-        }}
-        state={{
-          isUpdate,
-          isSubmitting,
-          publishState
-        }}
-        formHasValidationErrors={Object.keys(methods.formState.errors).length > 0}
-        errorMessage={submitError}
-      />
-      <DeleteModal
-        modalTitle={lt.contentDeleteModalTitle[ContentType.koetehtavat]}
-        open={openDeleteModal}
-        onDeleteAction={() => submitAssignment(PublishState.Deleted)}
-        onClose={() => setOpenDeleteModal(false)}>
-        <div className="h-[15vh] p-6">
-          <p>
-            {lt.contentDeleteModalText[ContentType.koetehtavat](
-              uiLanguage === 'fi' ? getValues().nameFi : getValues().nameSv
-            )}
-          </p>
-        </div>
-      </DeleteModal>
-    </>
-  )
-
-  return { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting }
+  return {
+    methods,
+    handleMultiselectOptionChange,
+    submitAssignment,
+    submitError,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen
+  }
 }

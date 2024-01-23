@@ -12,6 +12,7 @@ import { FormContentInput } from './formCommon/FormContentInput'
 import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
 import { BlockNavigation } from '../BlockNavigation'
+import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -22,13 +23,19 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, AssignmentFormButtonRow, isSubmitting } =
-    useAssignmentForm<PuhviAssignmentFormType>(Exam.PUHVI, id)
+  const {
+    methods,
+    handleMultiselectOptionChange,
+    submitAssignment,
+    submitError,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen
+  } = useAssignmentForm<PuhviAssignmentFormType>(Exam.PUHVI, id, action)
 
   const {
     watch,
     control,
-    formState: { errors }
+    formState: { errors, isSubmitting }
   } = methods
 
   const currentNameFi = watch('nameFi')
@@ -44,7 +51,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
       />
       <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
-        <form className="border-y-2 border-gray-light py-5" id="newAssignment" onSubmit={(e) => e.preventDefault()}>
+        <form className="border-y-2 border-gray-light py-5" onSubmit={(e) => e.preventDefault()}>
           <fieldset className="mb-6">
             <FieldLabel id="lukuvuosiKoodiArvos" name={t('form.lukuvuosi')} required />
             <LudosSelect
@@ -88,7 +95,17 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         </form>
       </FormProvider>
 
-      <AssignmentFormButtonRow publishState={watchPublishState} />
+      <AssignmentFormButtonRow
+        methods={methods}
+        submitAssignment={submitAssignment}
+        isUpdate={action === ContentFormAction.muokkaus}
+        deleteModalState={{
+          isDeleteModalOpen,
+          setIsDeleteModalOpen
+        }}
+        publishState={watchPublishState}
+        submitError={submitError}
+      />
     </>
   )
 }

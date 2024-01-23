@@ -72,7 +72,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string>('')
@@ -311,10 +311,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       />
       <BlockNavigation shouldBlock={isDirty && !isSubmitting} />
       <FormProvider {...methods}>
-        <form
-          className="min-h-[50vh] border-y-2 border-gray-light py-5"
-          id="newAssignment"
-          onSubmit={(e) => e.preventDefault()}>
+        <form className="min-h-[50vh] border-y-2 border-gray-light py-5" onSubmit={(e) => e.preventDefault()}>
           <input type="hidden" {...register('exam')} />
 
           {exam === Exam.LD && <FormAineDropdown />}
@@ -428,12 +425,12 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         actions={{
           onSubmitClick: () => submitInstruction(PublishState.Published),
           onSaveDraftClick: () => submitInstruction(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true),
+          onDeleteClick: () => setIsDeleteModalOpen(true),
           onCancelClick: handleCancelClick
         }}
         state={{
           isUpdate,
-          isSubmitting,
+          disableSubmit: isSubmitting,
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
@@ -442,9 +439,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
       <DeleteModal
         modalTitle={lt.contentDeleteModalTitle[ContentType.ohjeet]}
-        open={openDeleteModal}
+        open={isDeleteModalOpen}
         onDeleteAction={() => submitInstruction(PublishState.Deleted)}
-        onClose={() => setOpenDeleteModal(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
           <p>{lt.contentDeleteModalText[ContentType.ohjeet](uiLanguage === 'fi' ? watchNameFi : watchNameSv)}</p>
         </div>
