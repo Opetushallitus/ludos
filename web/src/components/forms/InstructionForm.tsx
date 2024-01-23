@@ -95,10 +95,15 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               setIsLoaded(true)
               return instruction
             } catch (e) {
-              if (e === FetchErrorMessages.SessionExpired) {
-                location.reload()
+              if (e instanceof Error) {
+                if (e.message === FetchErrorMessages.SessionExpired) {
+                  location.reload()
+                }
+
+                throw Error(e.message)
+              } else {
+                throw Error(FetchErrorMessages.UnknownError)
               }
-              throw Error(`Something went wrong: ${e}`)
             }
           }
         : async () => ({ exam, ...instructionDefaultValues }) as InstructionFormType,

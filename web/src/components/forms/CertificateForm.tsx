@@ -57,10 +57,15 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
       try {
         return await fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
       } catch (e) {
-        if (e === FetchErrorMessages.SessionExpired) {
-          location.reload()
+        if (e instanceof Error) {
+          if (e.message === FetchErrorMessages.SessionExpired) {
+            location.reload()
+          }
+
+          throw Error(e.message)
+        } else {
+          throw Error(FetchErrorMessages.UnknownError)
         }
-        throw Error(`Something went wrong: ${e}`)
       }
     } else {
       return { exam, ...certificateFormDefaultValues } as T

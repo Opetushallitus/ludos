@@ -39,10 +39,15 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
       try {
         return await fetchData(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
       } catch (e) {
-        if (e === FetchErrorMessages.SessionExpired) {
-          location.reload()
+        if (e instanceof Error) {
+          if (e.message === FetchErrorMessages.SessionExpired) {
+            location.reload()
+          }
+
+          throw Error(e.message)
+        } else {
+          throw Error(FetchErrorMessages.UnknownError)
         }
-        throw Error(`Something went wrong: ${e}`)
       }
     } else {
       return assignmentDefaultValuesByExam[exam] as T

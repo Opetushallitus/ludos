@@ -34,7 +34,7 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
             }
             setError(status)
           } else {
-            setError('unknown_exception')
+            setError(FetchErrorMessages.UnknownError)
           }
         }
       } finally {
