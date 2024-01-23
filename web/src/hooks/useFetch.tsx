@@ -20,14 +20,18 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
         const data = await fetchData<T>(url)
         if (isSubscribed) {
           setData(data)
+          setError(null)
         }
       } catch (e) {
-        if (e instanceof Error) {
-          const match = e.message.match(/status=(\d+)/)
-          const status = match ? match[1] : 'unknown_error'
-          setError(status)
-        } else {
-          setError('unknown_exception')
+        if (isSubscribed) {
+          setData(undefined)
+          if (e instanceof Error) {
+            const match = e.message.match(/status=(\d+)/)
+            const status = match ? match[1] : 'unknown_error'
+            setError(status)
+          } else {
+            setError('unknown_exception')
+          }
         }
       } finally {
         setLoading(false)
