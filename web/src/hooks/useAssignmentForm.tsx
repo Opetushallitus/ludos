@@ -27,7 +27,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
   const { setNotification } = useNotification()
 
   const [submitError, setSubmitError] = useState<string>('')
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const isUpdate = action === ContentFormAction.muokkaus
 
@@ -126,7 +126,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
     handleMultiselectOptionChange,
     submitAssignment,
     submitError,
-    openDeleteModal,
-    setOpenDeleteModal
+    isDeleteModalOpen,
+    setIsDeleteModalOpen
   }
 }

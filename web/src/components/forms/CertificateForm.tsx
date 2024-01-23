@@ -46,7 +46,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const [submitError, setSubmitError] = useState<string>('')
   const [newAttachmentFi, setNewAttachmentFi] = useState<File | null>(null)
   const [newAttachmentSv, setNewAttachmentSv] = useState<File | null>(null)
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
@@ -321,7 +321,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
         actions={{
           onSubmitClick: () => submitCertificate(PublishState.Published),
           onSaveDraftClick: () => submitCertificate(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true),
+          onDeleteClick: () => setIsDeleteModalOpen(true),
           onCancelClick: handleCancelClick
         }}
         state={{
@@ -335,9 +335,9 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
       <DeleteModal
         modalTitle={lt.contentDeleteModalTitle[ContentType.todistukset]}
-        open={openDeleteModal}
+        open={isDeleteModalOpen}
         onDeleteAction={() => submitCertificate(PublishState.Deleted)}
-        onClose={() => setOpenDeleteModal(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
           <p>{lt.contentDeleteModalText[ContentType.todistukset](watchNameFi)}</p>
         </div>

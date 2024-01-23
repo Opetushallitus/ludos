@@ -30,8 +30,14 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, submitAssignment, submitError, openDeleteModal, setOpenDeleteModal } =
-    useAssignmentForm<SukoAssignmentFormType>(Exam.SUKO, id, action)
+  const {
+    methods,
+    handleMultiselectOptionChange,
+    submitAssignment,
+    submitError,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen
+  } = useAssignmentForm<SukoAssignmentFormType>(Exam.SUKO, id, action)
 
   const {
     watch,
@@ -159,8 +165,8 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
         submitAssignment={submitAssignment}
         isUpdate={action === ContentFormAction.muokkaus}
         deleteModalState={{
-          openDeleteModal,
-          setOpenDeleteModal
+          isDeleteModalOpen,
+          setIsDeleteModalOpen
         }}
         publishState={watchPublishState}
         submitError={submitError}

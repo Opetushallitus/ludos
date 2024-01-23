@@ -14,8 +14,8 @@ type AssignmentFormButtonRowProps<T extends AnyAssignmentFormType> = {
   isUpdate: boolean
   methods: UseFormReturn<T>
   deleteModalState: {
-    openDeleteModal: boolean
-    setOpenDeleteModal: (value: boolean) => void
+    isDeleteModalOpen: boolean
+    setIsDeleteModalOpen: (value: boolean) => void
   }
   publishState?: PublishState
 }
@@ -28,7 +28,7 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
     getValues,
     formState: { errors, isValid, isSubmitting }
   },
-  deleteModalState: { openDeleteModal, setOpenDeleteModal },
+  deleteModalState: { isDeleteModalOpen, setIsDeleteModalOpen },
   publishState
 }: AssignmentFormButtonRowProps<T>) => {
   const { lt } = useLudosTranslation()
@@ -41,7 +41,7 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
         actions={{
           onSubmitClick: () => submitAssignment(PublishState.Published),
           onSaveDraftClick: () => submitAssignment(PublishState.Draft),
-          onDeleteClick: () => setOpenDeleteModal(true),
+          onDeleteClick: () => setIsDeleteModalOpen(true),
           onCancelClick: () => navigate(-1)
         }}
         state={{
@@ -54,9 +54,9 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
       />
       <DeleteModal
         modalTitle={lt.contentDeleteModalTitle[ContentType.koetehtavat]}
-        open={openDeleteModal}
+        open={isDeleteModalOpen}
         onDeleteAction={() => submitAssignment(PublishState.Deleted)}
-        onClose={() => setOpenDeleteModal(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
           <p>
             {lt.contentDeleteModalText[ContentType.koetehtavat](

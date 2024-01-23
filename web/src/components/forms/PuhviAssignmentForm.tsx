@@ -23,8 +23,14 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, submitAssignment, submitError, openDeleteModal, setOpenDeleteModal } =
-    useAssignmentForm<PuhviAssignmentFormType>(Exam.PUHVI, id, action)
+  const {
+    methods,
+    handleMultiselectOptionChange,
+    submitAssignment,
+    submitError,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen
+  } = useAssignmentForm<PuhviAssignmentFormType>(Exam.PUHVI, id, action)
 
   const {
     watch,
@@ -94,8 +100,8 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
         submitAssignment={submitAssignment}
         isUpdate={action === ContentFormAction.muokkaus}
         deleteModalState={{
-          openDeleteModal,
-          setOpenDeleteModal
+          isDeleteModalOpen,
+          setIsDeleteModalOpen
         }}
         publishState={watchPublishState}
         submitError={submitError}

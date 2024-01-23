@@ -23,8 +23,14 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const { t } = useTranslation()
   const { koodistos } = useKoodisto()
 
-  const { methods, handleMultiselectOptionChange, submitAssignment, submitError, openDeleteModal, setOpenDeleteModal } =
-    useAssignmentForm<LdAssignmentFormType>(Exam.LD, id, action)
+  const {
+    methods,
+    handleMultiselectOptionChange,
+    submitAssignment,
+    submitError,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen
+  } = useAssignmentForm<LdAssignmentFormType>(Exam.LD, id, action)
   const {
     watch,
     formState: { errors, isSubmitting }
@@ -86,8 +92,8 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
         submitAssignment={submitAssignment}
         isUpdate={action === ContentFormAction.muokkaus}
         deleteModalState={{
-          openDeleteModal,
-          setOpenDeleteModal
+          isDeleteModalOpen,
+          setIsDeleteModalOpen
         }}
         publishState={watchPublishState}
         submitError={submitError}
