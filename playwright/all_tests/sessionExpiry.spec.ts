@@ -50,23 +50,23 @@ Object.values(Exam).forEach((exam) => {
       await clearCookiesAndSubmit(page, ContentTypeSingularEng.koetehtavat)
       await assertSessionExpiryFormErrorMessage(page)
     })
-  })
 
-  test(`should show error notification and message on submit ${exam} instruction form`, async ({ page }) => {
-    await page.goto(`/${exam}/${ContentType.ohjeet}/uusi`)
-    await fillInstructionForm({
-      form: new InstructionFormModel(page, exam),
-      ...instructionFormData
+    test(`should show error notification and message on submit ${exam} instruction form`, async ({ page }) => {
+      await page.goto(`/${exam}/${ContentType.ohjeet}/uusi`)
+      await fillInstructionForm({
+        form: new InstructionFormModel(page, exam),
+        ...instructionFormData
+      })
+      await clearCookiesAndSubmit(page, ContentTypeSingularEng.ohjeet)
+      await assertSessionExpiryFormErrorMessage(page)
     })
-    await clearCookiesAndSubmit(page, ContentTypeSingularEng.ohjeet)
-    await assertSessionExpiryFormErrorMessage(page)
-  })
 
-  test(`should show error notification and message on submit ${exam} certificate form`, async ({ page }) => {
-    await page.goto(`/${exam}/${ContentType.todistukset}/uusi`)
-    const inputs = createCertificateInputs(exam, 'submit')
-    await fillCertificateForm(page, exam, inputs)
-    await clearCookiesAndSubmit(page, ContentTypeSingularEng.todistukset)
-    await assertSessionExpiryFormErrorMessage(page)
+    test(`should show error notification and message on submit ${exam} certificate form`, async ({ page }) => {
+      await page.goto(`/${exam}/${ContentType.todistukset}/uusi`)
+      const inputs = createCertificateInputs(exam, 'submit')
+      await fillCertificateForm(page, exam, inputs)
+      await clearCookiesAndSubmit(page, ContentTypeSingularEng.todistukset)
+      await assertSessionExpiryFormErrorMessage(page)
+    })
   })
 })
