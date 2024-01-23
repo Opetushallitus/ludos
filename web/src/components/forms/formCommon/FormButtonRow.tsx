@@ -64,9 +64,9 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           </ExternalLink>
         </div>
       )
+    } else {
+      return e
     }
-
-    return e
   }
 
   return (
