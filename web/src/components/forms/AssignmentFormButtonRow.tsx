@@ -10,7 +10,7 @@ import { AnyAssignmentFormType } from './schemas/assignmentSchema'
 
 type AssignmentFormButtonRowProps<T extends AnyAssignmentFormType> = {
   submitAssignment: (publishState: PublishState) => void
-  submitError: string
+  submitError?: Error
   isUpdate: boolean
   methods: UseFormReturn<T>
   deleteModalState: {
@@ -50,7 +50,7 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
           publishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
-        errorMessage={submitError}
+        submitError={submitError}
       />
       <DeleteModal
         modalTitle={lt.contentDeleteModalTitle[ContentType.koetehtavat]}

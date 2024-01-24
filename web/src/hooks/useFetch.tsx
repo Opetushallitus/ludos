@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchData } from '../request'
-import { FetchErrorMessages } from '../types'
+import { fetchData, SessionExpiredFetchError } from '../request'
 
 export function useFetch<T>(url: string, isNew: boolean = false) {
   const [data, setData] = useState<T>()
@@ -26,15 +25,15 @@ export function useFetch<T>(url: string, isNew: boolean = false) {
       } catch (e) {
         if (isSubscribed) {
           setData(undefined)
-          if (e instanceof Error) {
+          if (e instanceof SessionExpiredFetchError) {
+            location.reload()
+            throw SessionExpiredFetchError
+          } else if (e instanceof Error) {
             const match = e.message.match(/status=(\d+)/)
-            const status = match ? match[1] : FetchErrorMessages.UnknownError
-            if (e.message === FetchErrorMessages.SessionExpired) {
-              location.reload()
-            }
+            const status = match ? match[1] : ''
             setError(status)
           } else {
-            setError(FetchErrorMessages.UnknownError)
+            setError('')
           }
         }
       } finally {

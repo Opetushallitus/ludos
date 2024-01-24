@@ -1,14 +1,17 @@
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
 import { CertificateFormType } from './components/forms/schemas/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import {
-  AttachmentDtoOut,
-  AttachmentLanguage,
-  Exam,
-  FetchErrorMessages,
-  ImageDtoOut,
-  MapWithFileKeyAndMetadata
-} from './types'
+import { AttachmentDtoOut, AttachmentLanguage, Exam, ImageDtoOut, MapWithFileKeyAndMetadata } from './types'
+
+export class SessionExpiredFetchError extends Error {
+  constructor() {
+    super('')
+    this.name = 'SessionExpiredFetchError'
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, SessionExpiredFetchError)
+    }
+  }
+}
 
 const doRequest = async (
   url: string,
@@ -26,7 +29,7 @@ const doRequest = async (
   })
 
   if (response.type === 'opaqueredirect') {
-    throw new Error(FetchErrorMessages.SessionExpired)
+    throw new SessionExpiredFetchError()
   }
 
   return response

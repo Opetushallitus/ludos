@@ -1,23 +1,24 @@
 import { useState } from 'react'
 import { NavigateOptions, useNavigate } from 'react-router-dom'
-import { ContentType, Exam, FetchErrorMessages, NonDeletedPublishState, PublishState } from '../../types'
+import { ContentType, Exam, NonDeletedPublishState, PublishState } from '../../types'
 import { NotificationEnum, useNotification } from '../../contexts/NotificationContext'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { contentListPath, contentPagePath, uudelleenkirjautuminenOnnistuiPath } from '../LudosRoutes'
 import { ExternalLink } from '../ExternalLink'
+import { SessionExpiredFetchError } from '../../request'
 
 export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate: boolean) => {
   const { t, lt } = useLudosTranslation()
   const navigate = useNavigate()
   const { setNotification } = useNotification()
 
-  const [submitError, setSubmitError] = useState<string>('')
+  const [submitError, setSubmitError] = useState<Error>()
 
-  const notificationMessage = (errorMessage: string, publishState: PublishState) => {
+  const notificationMessage = (error: Error, publishState: PublishState) => {
     if (publishState === PublishState.Deleted) {
       return lt.formDeleteErrorNotificationMessage[contentType]
     } else {
-      if (errorMessage === FetchErrorMessages.SessionExpired) {
+      if (error instanceof SessionExpiredFetchError) {
         return t('notification.error.istunto-vanhentunut')
       } else {
         return lt.formSubmitErrorNotificationMessage[contentType]
@@ -42,12 +43,12 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
     })
   }
 
-  function setErrorNotification(errorMessage: string, publishState: PublishState) {
+  function setErrorNotification(error: Error, publishState: PublishState) {
     setNotification({
-      message: notificationMessage(errorMessage, publishState),
+      message: notificationMessage(error, publishState),
       type: NotificationEnum.error,
       linkComponent:
-        errorMessage === FetchErrorMessages.SessionExpired ? (
+        error instanceof SessionExpiredFetchError ? (
           <ExternalLink
             className="underline"
             textColor="text-white"
@@ -65,7 +66,7 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
     resultId: number,
     state: NavigateOptions['state']
   ) {
-    setSubmitError('')
+    setSubmitError(undefined)
     // Jos ollaan muokkaamassa tai luomassa uutta, tiedetään että publishState on joko julkaistu tai luonnos
     const currentPublishState = publishState as typeof PublishState.Published | typeof PublishState.Draft
 
@@ -81,9 +82,14 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
   }
 
   function handleError(e: unknown, publishState: PublishState) {
-    const errorMessage = e instanceof Error ? e.message || 'Unexpected error' : 'Unexpected error'
-    setSubmitError(errorMessage)
-    setErrorNotification(errorMessage, publishState)
+    if (e instanceof SessionExpiredFetchError) {
+      setSubmitError(e)
+      setErrorNotification(e, publishState)
+    } else if (e instanceof Error) {
+      setErrorNotification(e, publishState)
+    } else {
+      throw Error('')
+    }
   }
 
   async function submitFormData<T>(

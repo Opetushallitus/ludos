@@ -9,7 +9,6 @@ import {
   ContentType,
   ContentTypeSingularEng,
   Exam,
-  FetchErrorMessages,
   InstructionDtoOut,
   MapWithFileKeyAndMetadata,
   PublishState,
@@ -19,6 +18,7 @@ import {
   createInstruction,
   deleteInstructionAttachment,
   fetchData,
+  SessionExpiredFetchError,
   updateInstruction,
   uploadInstructionAttachment
 } from '../../request'
@@ -95,14 +95,13 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               setIsLoaded(true)
               return instruction
             } catch (e) {
-              if (e instanceof Error) {
-                if (e.message === FetchErrorMessages.SessionExpired) {
-                  location.reload()
-                }
-
+              if (e instanceof SessionExpiredFetchError) {
+                location.reload()
+                throw SessionExpiredFetchError
+              } else if (e instanceof Error) {
                 throw Error(e.message)
               } else {
-                throw Error(FetchErrorMessages.UnknownError)
+                throw Error('')
               }
             }
           }
@@ -397,7 +396,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
-        errorMessage={submitError}
+        submitError={submitError}
       />
 
       <DeleteModal

@@ -1,14 +1,7 @@
-import {
-  ContentFormAction,
-  ContentType,
-  ContentTypeSingularEng,
-  Exam,
-  FetchErrorMessages,
-  PublishState
-} from '../types'
+import { ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../types'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { createAssignment, fetchData, updateAssignment } from '../request'
+import { createAssignment, fetchData, SessionExpiredFetchError, updateAssignment } from '../request'
 import { FieldPath, PathValue, useForm } from 'react-hook-form'
 import {
   assignmentDefaultValuesByExam,
@@ -39,14 +32,13 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
       try {
         return await fetchData(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
       } catch (e) {
-        if (e instanceof Error) {
-          if (e.message === FetchErrorMessages.SessionExpired) {
-            location.reload()
-          }
-
+        if (e instanceof SessionExpiredFetchError) {
+          location.reload()
+          throw SessionExpiredFetchError
+        } else if (e instanceof Error) {
           throw Error(e.message)
         } else {
-          throw Error(FetchErrorMessages.UnknownError)
+          throw Error('')
         }
       }
     } else {

@@ -9,11 +9,10 @@ import {
   ContentType,
   ContentTypeSingularEng,
   Exam,
-  FetchErrorMessages,
   PublishState,
   TeachingLanguage
 } from '../../types'
-import { createCertificate, fetchData, updateCertificate } from '../../request'
+import { createCertificate, fetchData, SessionExpiredFetchError, updateCertificate } from '../../request'
 import { TextInput } from '../TextInput'
 import { TextAreaInput } from '../TextAreaInput'
 import { FormHeader } from './formCommon/FormHeader'
@@ -57,14 +56,13 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
       try {
         return await fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
       } catch (e) {
-        if (e instanceof Error) {
-          if (e.message === FetchErrorMessages.SessionExpired) {
-            location.reload()
-          }
-
+        if (e instanceof SessionExpiredFetchError) {
+          location.reload()
+          throw SessionExpiredFetchError
+        } else if (e instanceof Error) {
           throw Error(e.message)
         } else {
-          throw Error(FetchErrorMessages.UnknownError)
+          throw Error('')
         }
       }
     } else {
@@ -294,7 +292,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
-        errorMessage={submitError}
+        submitError={submitError}
       />
 
       <DeleteModal

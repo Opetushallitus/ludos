@@ -1,9 +1,10 @@
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { FetchErrorMessages, PublishState } from '../../../types'
+import { PublishState } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { ExternalLink } from '../../ExternalLink'
 import { uudelleenkirjautuminenOnnistuiPath } from '../../LudosRoutes'
+import { SessionExpiredFetchError } from '../../../request'
 
 type FormButtonRowProps = {
   actions: {
@@ -18,10 +19,10 @@ type FormButtonRowProps = {
     publishState?: PublishState
   }
   formHasValidationErrors: boolean
-  errorMessage?: string
+  submitError?: Error
 }
 
-export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMessage }: FormButtonRowProps) => {
+export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitError }: FormButtonRowProps) => {
   const { t } = useLudosTranslation()
   const { isUpdate, disableSubmit } = state
   const isDraft = state.publishState === PublishState.Draft
@@ -50,8 +51,8 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
     }
   }
 
-  const showErrorMessage = (e: string) => {
-    if (e === FetchErrorMessages.SessionExpired) {
+  const showErrorMessage = (submitError: Error) => {
+    if (submitError instanceof SessionExpiredFetchError) {
       return (
         <div data-testid="session-expired-error-message">
           {t('notification.error.istunto-vanhentunut')}
@@ -65,7 +66,15 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
         </div>
       )
     } else {
-      return e
+      return (
+        <ul className="min-w-36 mt-4 max-w-2xl text-red-primary">
+          {submitError.message.split('\n').map((e, i) => (
+            <li className="list-disc" key={i}>
+              {e}
+            </li>
+          ))}
+        </ul>
+      )
     }
   }
 
@@ -114,17 +123,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           {t('form.error.validaatiovirhe')}
         </div>
       )}
-      {errorMessage && (
-        <div className="flex justify-end mb-5">
-          <ul className="min-w-36 mt-4 max-w-2xl text-red-primary">
-            {errorMessage.split('\n').map((e, i) => (
-              <li className="list-disc" key={i}>
-                {showErrorMessage(e)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {submitError && <div className="flex justify-end mb-5">{showErrorMessage(submitError)}</div>}
     </div>
   )
 }
