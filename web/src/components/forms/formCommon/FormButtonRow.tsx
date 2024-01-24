@@ -2,6 +2,9 @@ import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { PublishState } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ExternalLink } from '../../ExternalLink'
+import { uudelleenkirjautuminenOnnistuiPath } from '../../LudosRoutes'
+import { SessionExpiredFetchError } from '../../../request'
 
 type FormButtonRowProps = {
   actions: {
@@ -16,10 +19,10 @@ type FormButtonRowProps = {
     publishState?: PublishState
   }
   formHasValidationErrors: boolean
-  errorMessage?: string
+  submitError?: Error
 }
 
-export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMessage }: FormButtonRowProps) => {
+export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitError }: FormButtonRowProps) => {
   const { t } = useLudosTranslation()
   const { isUpdate, disableSubmit } = state
   const isDraft = state.publishState === PublishState.Draft
@@ -45,6 +48,33 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
       return t('button.tallennajulkaise')
     } else {
       return t('button.tallenna')
+    }
+  }
+
+  const showErrorMessage = (submitError: Error) => {
+    if (submitError instanceof SessionExpiredFetchError) {
+      return (
+        <div data-testid="session-expired-error-message">
+          {t('notification.error.istunto-vanhentunut')}
+          <ExternalLink
+            className="underline"
+            textColor="text-red-primary"
+            url={uudelleenkirjautuminenOnnistuiPath}
+            data-testid="link">
+            {t('notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki')}
+          </ExternalLink>
+        </div>
+      )
+    } else {
+      return (
+        <ul className="min-w-36 mt-4 max-w-2xl text-red-primary">
+          {submitError.message.split('\n').map((e, i) => (
+            <li className="list-disc" key={i}>
+              {e}
+            </li>
+          ))}
+        </ul>
+      )
     }
   }
 
@@ -93,17 +123,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, errorMe
           {t('form.error.validaatiovirhe')}
         </div>
       )}
-      {errorMessage && (
-        <div className="flex justify-end">
-          <ul className="min-w-36 mt-4 max-w-2xl text-red-primary">
-            {errorMessage.split('\n').map((e, i) => (
-              <li className="list-disc" key={i}>
-                {e}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {submitError && <div className="flex justify-end mb-5">{showErrorMessage(submitError)}</div>}
     </div>
   )
 }

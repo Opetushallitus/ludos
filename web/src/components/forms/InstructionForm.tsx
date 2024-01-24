@@ -17,7 +17,7 @@ import {
 import {
   createInstruction,
   deleteInstructionAttachment,
-  fetchData,
+  fetchDataOrReload,
   updateInstruction,
   uploadInstructionAttachment
 } from '../../request'
@@ -30,14 +30,13 @@ import { FormButtonRow } from './formCommon/FormButtonRow'
 import { AttachmentSelector } from './formCommon/attachment/AttachmentSelector'
 import { FormError } from './formCommon/FormErrors'
 import { TipTap } from './formCommon/editor/TipTap'
-import { NotificationEnum, useNotification } from '../../contexts/NotificationContext'
-import { contentListPath, contentPagePath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { LudosContext } from '../../contexts/LudosContext'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { BlockNavigation } from '../BlockNavigation'
 import { useFormPrompt } from '../../hooks/useFormPrompt'
+import { useFormSubmission } from './useFormSubmission'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -66,45 +65,48 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
-  const { setNotification } = useNotification()
-
   const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
+
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
   const [fileUploadErrorMessage, setFileUploadErrorMessage] = useState<string | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string>('')
   const [fileUploading, setFileUploading] = useState(false)
 
   const exam = match!.params.exam!.toUpperCase() as Exam
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const methods = useForm<InstructionFormType>({
-    defaultValues: isUpdate
-      ? async () => {
-          const instruction = await fetchData<InstructionDtoOut>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
-          const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
-          const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
+  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.ohjeet, isUpdate)
 
-          setAttachmentDataFi(attachmentDataFi)
-          setAttachmentDataSv(attachmentDataSv)
-          setIsLoaded(true)
-          return instruction
-        }
-      : async () => ({ exam, ...instructionDefaultValues }) as InstructionFormType,
+  const methods = useForm<InstructionFormType>({
+    defaultValues:
+      isUpdate && id
+        ? async () => {
+            const instruction = await fetchDataOrReload<InstructionDtoOut>(
+              `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`
+            )
+            const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
+            const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
+
+            setAttachmentDataFi(attachmentDataFi)
+            setAttachmentDataSv(attachmentDataSv)
+            setIsLoaded(true)
+            return instruction
+          }
+        : async () => ({ exam, ...instructionDefaultValues }) as InstructionFormType,
     mode: 'onBlur',
     resolver: zodResolver(instructionSchema)
   })
 
   const {
+    getValues,
     watch,
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty, isSubmitting }
   } = methods
 
   useFormPrompt(isDirty)
@@ -139,61 +141,11 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     }
   }
 
-  function setSuccessNotification(newPublishState: PublishState) {
-    const currentState = watchPublishState as typeof PublishState.Published | typeof PublishState.Draft
-
-    setNotification({
-      message: isUpdate
-        ? lt.contentUpdateSuccessNotification[ContentType.ohjeet][currentState][newPublishState]
-        : lt.contentCreateSuccessNotification[ContentType.ohjeet][
-            newPublishState as typeof PublishState.Published | typeof PublishState.Draft
-          ],
-      type: NotificationEnum.success
-    })
-  }
-
-  function handleSuccess(newPublishState: PublishState, resultId: number) {
-    setSubmitError('')
-    setSuccessNotification(newPublishState)
-
-    if (newPublishState === PublishState.Deleted) {
-      return navigate(contentListPath(exam, ContentType.ohjeet), {
-        replace: true // so that user cannot back navigate to edit deleted instruction
-      })
-    }
-
-    navigate(contentPagePath(exam, ContentType.ohjeet, resultId), { state })
-  }
-
-  function setErrorNotification(publishState: PublishState) {
-    setNotification({
-      message:
-        publishState === PublishState.Deleted
-          ? t('form.notification.ohjeen-poisto.epaonnistui')
-          : t('form.notification.ohjeen-tallennus.epaonnistui'),
-      type: NotificationEnum.error
-    })
-  }
-
-  async function submitInstruction(publishState: PublishState) {
-    await handleSubmit(async (data: InstructionFormType) => {
-      const instruction = { ...data, publishState }
-
-      try {
-        setIsSubmitting(true)
-        const resultId = await submitInstructionData(instruction)
-        setSubmitError('')
-        handleSuccess(publishState, resultId)
-      } catch (e) {
-        if (e instanceof Error) {
-          setSubmitError(e.message || 'Unexpected error')
-        }
-        setErrorNotification(publishState)
-        console.error(e)
-      } finally {
-        setIsSubmitting(false)
-      }
-    })()
+  async function submitInstruction(newPublishState: PublishState) {
+    await handleSubmit(
+      async (data: InstructionFormType) =>
+        await submitFormData(getValues().publishState!, submitInstructionData, data, newPublishState, state)
+    )()
   }
 
   const createPromises = async (attachmentFiles: AttachmentData[], lang: AttachmentLanguage) =>
@@ -434,7 +386,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
-        errorMessage={submitError}
+        submitError={submitError}
       />
 
       <DeleteModal

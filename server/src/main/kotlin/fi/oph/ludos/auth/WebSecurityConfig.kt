@@ -1,6 +1,5 @@
-package fi.oph.ludos
+package fi.oph.ludos.auth
 
-import fi.oph.ludos.auth.CasConfig
 import fi.oph.ludos.test.TestController
 import org.apereo.cas.client.session.SingleSignOutFilter
 import org.slf4j.Logger

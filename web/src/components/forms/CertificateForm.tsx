@@ -12,15 +12,14 @@ import {
   PublishState,
   TeachingLanguage
 } from '../../types'
-import { createCertificate, fetchData, updateCertificate } from '../../request'
+import { createCertificate, fetchDataOrReload, updateCertificate } from '../../request'
 import { TextInput } from '../TextInput'
 import { TextAreaInput } from '../TextAreaInput'
 import { FormHeader } from './formCommon/FormHeader'
 import { FormButtonRow } from './formCommon/FormButtonRow'
 import { AttachmentSelector } from './formCommon/attachment/AttachmentSelector'
 import { FormError } from './formCommon/FormErrors'
-import { NotificationEnum, useNotification } from '../../contexts/NotificationContext'
-import { contentListPath, contentPagePath } from '../LudosRoutes'
+import { contentListPath } from '../LudosRoutes'
 import { DeleteModal } from '../modal/DeleteModal'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
@@ -28,6 +27,7 @@ import { certificateFormDefaultValues, CertificateFormType, certificateSchema } 
 import { LanguageTabs } from '../LanguageTabs'
 import { BlockNavigation } from '../BlockNavigation'
 import { useFormPrompt } from '../../hooks/useFormPrompt'
+import { useFormSubmission } from './useFormSubmission'
 
 type CertificateFormProps = {
   action: ContentFormAction
@@ -39,11 +39,8 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
-  const { setNotification } = useNotification()
 
   const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string>('')
   const [newAttachmentFi, setNewAttachmentFi] = useState<File | null>(null)
   const [newAttachmentSv, setNewAttachmentSv] = useState<File | null>(null)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
@@ -52,9 +49,11 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
+  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.todistukset, isUpdate)
+
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
-      return await fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
+      return await fetchDataOrReload(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
     } else {
       return { exam, ...certificateFormDefaultValues } as T
     }
@@ -67,11 +66,12 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   })
 
   const {
+    getValues,
     watch,
     register,
     handleSubmit,
     setValue,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty, isSubmitting }
   } = methods
 
   useFormPrompt(isDirty)
@@ -89,62 +89,13 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
     }
   }
 
-  function setSuccessNotification(newPublishState: PublishState) {
-    const currentState = watchPublishState as typeof PublishState.Published | typeof PublishState.Draft
-
-    setNotification({
-      message: isUpdate
-        ? lt.contentUpdateSuccessNotification[ContentType.todistukset][currentState][newPublishState]
-        : lt.contentCreateSuccessNotification[ContentType.todistukset][
-            newPublishState as typeof PublishState.Published | typeof PublishState.Draft
-          ],
-      type: NotificationEnum.success
-    })
-  }
-
-  function handleSuccess(newPublishState: PublishState, resultId: number) {
-    setSubmitError('')
-    setSuccessNotification(newPublishState)
-
-    if (newPublishState === PublishState.Deleted) {
-      return navigate(contentListPath(exam, ContentType.todistukset), {
-        replace: true // so that user cannot back navigate to edit deleted certificate
-      })
-    }
-
-    navigate(contentPagePath(exam, ContentType.todistukset, resultId), {
-      state: { returnLocation: contentListPath(exam, ContentType.todistukset) }
-    })
-  }
-
-  function setErrorNotification(publishState: PublishState) {
-    setNotification({
-      message:
-        publishState === PublishState.Deleted
-          ? t('form.notification.todistuksen-poisto.epaonnistui')
-          : t('form.notification.todistuksen-tallennus.epaonnistui'),
-      type: NotificationEnum.error
-    })
-  }
-
   async function submitCertificate(publishState: PublishState) {
-    await handleSubmit(async (data: CertificateFormType) => {
-      const certificate = { ...data, publishState }
-
-      try {
-        setIsSubmitting(true)
-        const resultId = await submitCertificateData(certificate)
-        setSubmitError('')
-        handleSuccess(publishState, resultId)
-      } catch (e) {
-        if (e instanceof Error) {
-          setSubmitError(e.message || 'Unexpected error')
-        }
-        setErrorNotification(publishState)
-      } finally {
-        setIsSubmitting(false)
-      }
-    })()
+    await handleSubmit(
+      async (data: CertificateFormType) =>
+        await submitFormData(getValues().publishState!, submitCertificateData, data, publishState, {
+          returnLocation: contentListPath(exam, ContentType.todistukset)
+        })
+    )()
   }
 
   function handleNewAttachmentSelected(newAttachment: AttachmentData[], language?: AttachmentLanguage) {
@@ -330,7 +281,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
           publishState: watchPublishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}
-        errorMessage={submitError}
+        submitError={submitError}
       />
 
       <DeleteModal

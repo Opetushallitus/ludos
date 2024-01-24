@@ -3,6 +3,16 @@ import { CertificateFormType } from './components/forms/schemas/certificateSchem
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
 import { AttachmentDtoOut, AttachmentLanguage, Exam, ImageDtoOut, MapWithFileKeyAndMetadata } from './types'
 
+export class SessionExpiredFetchError extends Error {
+  constructor() {
+    super('')
+    this.name = 'SessionExpiredFetchError'
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, SessionExpiredFetchError)
+    }
+  }
+}
+
 const doRequest = async (
   url: string,
   method: string,
@@ -10,24 +20,43 @@ const doRequest = async (
   headers: HeadersInit = {
     'Content-Type': 'application/json'
   }
-) =>
-  await fetch(url, {
+) => {
+  const response = await fetch(url, {
     method,
     body,
     headers,
-    redirect: 'error'
+    redirect: 'manual'
   })
+
+  if (response.type === 'opaqueredirect') {
+    throw new SessionExpiredFetchError()
+  }
+
+  return response
+}
 
 export async function fetchData<T>(url: string): Promise<T> {
   const fullUrl = `/api/${url}`
-  const response = await fetch(fullUrl, {
-    method: 'GET',
-    redirect: 'error'
-  })
+  const response = await doRequest(fullUrl, 'GET')
+
   if (!response.ok) {
-    throw new Error(`Error fetching data from ${fullUrl}}, status=${response.status}`)
+    throw new Error(`Error fetching data from ${fullUrl}, status=${response.status}`)
   }
+
   return (await response.json()) as T
+}
+
+export async function fetchDataOrReload<T>(url: string): Promise<T> {
+  try {
+    return await fetchData(url)
+  } catch (e) {
+    if (e instanceof SessionExpiredFetchError) {
+      location.reload()
+      throw SessionExpiredFetchError
+    } else {
+      throw Error('Unexpected error', { cause: e })
+    }
+  }
 }
 
 export async function createAssignment<T>(body: T): Promise<{ id: number }> {

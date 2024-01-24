@@ -23,6 +23,8 @@ export const PublishState = {
 } as const
 export type PublishState = (typeof PublishState)[keyof typeof PublishState]
 
+export type NonDeletedPublishState = Exclude<PublishState, typeof PublishState.Deleted>
+
 export const Exam = {
   SUKO: 'SUKO',
   LD: 'LD',

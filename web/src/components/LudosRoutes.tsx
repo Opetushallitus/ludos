@@ -16,6 +16,7 @@ import { Frontpage } from './frontpage/Frontpage'
 import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
 import { AssignmentFavorite } from './content/list/assignment/AssignmentFavorite'
+import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi
@@ -26,6 +27,7 @@ export const puhviKey = Exam.PUHVI.toLowerCase()
 export const ldKey = Exam.LD.toLowerCase()
 export const suosikitKey = 'suosikit'
 export const esitysnakymaKey = 'esitysnakyma'
+export const uudelleenkirjautuminenOnnistuiPath = '/uudelleenkirjautuminen-onnistui'
 
 export const frontpagePath = () => '/'
 
@@ -139,6 +141,14 @@ export const ludosRouter = createBrowserRouter([
             )
           }
         ]
+      },
+      {
+        path: uudelleenkirjautuminenOnnistuiPath,
+        element: (
+          <Layout>
+            <ReauthorizeSuccessful />
+          </Layout>
+        )
       },
       {
         path: '/vitelogin',

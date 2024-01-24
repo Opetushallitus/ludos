@@ -1,23 +1,32 @@
 import { HTMLAttributes, ReactNode } from 'react'
 import { Icon } from './Icon'
+import { twMerge } from 'tailwind-merge'
 
 interface ExternalLinkProps extends HTMLAttributes<HTMLAnchorElement> {
   url: string
   className?: string
+  textColor?: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary' | 'text-gray-secondary'
   openInNewTab?: boolean
   children: ReactNode
 }
 
-export const ExternalLink = ({ url, className, openInNewTab = true, children, ...props }: ExternalLinkProps) => (
+export const ExternalLink = ({
+  url,
+  className,
+  textColor = 'text-green-primary',
+  openInNewTab = true,
+  children,
+  ...props
+}: ExternalLinkProps) => (
   <a
-    className={`text-green-primary hover:underline ${className ? className : ''}`}
+    className={twMerge('hover:underline', className, textColor)}
     href={url}
     target={openInNewTab ? '_blank' : '_self'}
     rel="noopener noreferrer"
     {...props}>
     <span className="row items-center gap-1">
       {children}
-      {openInNewTab && <Icon name="uusi-valilehti" color="text-green-primary" size="base" />}
+      {openInNewTab && <Icon name="uusi-valilehti" color={textColor} size="base" />}
     </span>
   </a>
 )
