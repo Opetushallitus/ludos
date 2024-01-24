@@ -68,7 +68,7 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
   ) {
     setSubmitError(undefined)
     // Jos ollaan muokkaamassa tai luomassa uutta, tiedetään että publishState on joko julkaistu tai luonnos
-    const currentPublishState = publishState as typeof PublishState.Published | typeof PublishState.Draft
+    const currentPublishState = publishState as NonDeletedPublishState
 
     setSuccessNotification(currentPublishState, newPublishState)
 
