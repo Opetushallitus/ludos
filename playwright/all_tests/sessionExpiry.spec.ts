@@ -39,8 +39,16 @@ Object.values(Exam).forEach((exam) => {
       await page.waitForResponse(
         (response) => response.url().includes(`/api/${ContentTypeSingularEng.koetehtavat}`) && response.status() === 302
       )
-      // detect that browser has reloaded which locally means white screen
-      await expect(page.getByTestId(`page-heading-etusivu`)).toBeHidden()
+
+      await page.waitForResponse(
+        (resp) => {
+          const url = new URL(resp.url())
+          return url.pathname === `/${exam.toLowerCase()}/${ContentType.koetehtavat}`
+        },
+        {
+          timeout: 5000
+        }
+      )
     })
 
     test(`should show error notification and message on submit ${exam} assignment form`, async ({ page }) => {
