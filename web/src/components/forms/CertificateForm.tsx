@@ -12,7 +12,7 @@ import {
   PublishState,
   TeachingLanguage
 } from '../../types'
-import { createCertificate, fetchData, SessionExpiredFetchError, updateCertificate } from '../../request'
+import { createCertificate, fetchDataOrReload, updateCertificate } from '../../request'
 import { TextInput } from '../TextInput'
 import { TextAreaInput } from '../TextAreaInput'
 import { FormHeader } from './formCommon/FormHeader'
@@ -53,18 +53,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
-      try {
-        return await fetchData(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
-      } catch (e) {
-        if (e instanceof SessionExpiredFetchError) {
-          location.reload()
-          throw SessionExpiredFetchError
-        } else if (e instanceof Error) {
-          throw Error(e.message)
-        } else {
-          throw Error('')
-        }
-      }
+      return await fetchDataOrReload(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
     } else {
       return { exam, ...certificateFormDefaultValues } as T
     }

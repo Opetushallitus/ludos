@@ -17,8 +17,7 @@ import {
 import {
   createInstruction,
   deleteInstructionAttachment,
-  fetchData,
-  SessionExpiredFetchError,
+  fetchDataOrReload,
   updateInstruction,
   uploadInstructionAttachment
 } from '../../request'
@@ -85,25 +84,16 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     defaultValues:
       isUpdate && id
         ? async () => {
-            try {
-              const instruction = await fetchData<InstructionDtoOut>(`${ContentTypeSingularEng.ohjeet}/${exam}/${id}`)
-              const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
-              const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
+            const instruction = await fetchDataOrReload<InstructionDtoOut>(
+              `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`
+            )
+            const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
+            const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
 
-              setAttachmentDataFi(attachmentDataFi)
-              setAttachmentDataSv(attachmentDataSv)
-              setIsLoaded(true)
-              return instruction
-            } catch (e) {
-              if (e instanceof SessionExpiredFetchError) {
-                location.reload()
-                throw SessionExpiredFetchError
-              } else if (e instanceof Error) {
-                throw Error(e.message)
-              } else {
-                throw Error('')
-              }
-            }
+            setAttachmentDataFi(attachmentDataFi)
+            setAttachmentDataSv(attachmentDataSv)
+            setIsLoaded(true)
+            return instruction
           }
         : async () => ({ exam, ...instructionDefaultValues }) as InstructionFormType,
     mode: 'onBlur',

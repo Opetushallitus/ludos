@@ -46,6 +46,19 @@ export async function fetchData<T>(url: string): Promise<T> {
   return (await response.json()) as T
 }
 
+export async function fetchDataOrReload<T>(url: string): Promise<T> {
+  try {
+    return await fetchData(url)
+  } catch (e) {
+    if (e instanceof SessionExpiredFetchError) {
+      location.reload()
+      throw SessionExpiredFetchError
+    } else {
+      throw Error('Unexpected error', { cause: e })
+    }
+  }
+}
+
 export async function createAssignment<T>(body: T): Promise<{ id: number }> {
   const result = await doRequest(ASSIGNMENT_URL, 'POST', JSON.stringify(body))
 

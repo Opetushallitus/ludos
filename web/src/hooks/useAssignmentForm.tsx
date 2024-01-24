@@ -1,7 +1,7 @@
 import { ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../types'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { createAssignment, fetchData, SessionExpiredFetchError, updateAssignment } from '../request'
+import { createAssignment, fetchDataOrReload, updateAssignment } from '../request'
 import { FieldPath, PathValue, useForm } from 'react-hook-form'
 import {
   assignmentDefaultValuesByExam,
@@ -29,18 +29,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
 
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
-      try {
-        return await fetchData(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
-      } catch (e) {
-        if (e instanceof SessionExpiredFetchError) {
-          location.reload()
-          throw SessionExpiredFetchError
-        } else if (e instanceof Error) {
-          throw Error(e.message)
-        } else {
-          throw Error('')
-        }
-      }
+      return await fetchDataOrReload(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
     } else {
       return assignmentDefaultValuesByExam[exam] as T
     }
