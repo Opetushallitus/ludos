@@ -27,6 +27,7 @@ import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../
 import { useCallback, useContext } from 'react'
 import { MultiValue } from 'react-select'
 import { LudosContext } from '../../../../contexts/LudosContext'
+import { Spinner } from '../../../Spinner'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -53,7 +54,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
   const contentType = ContentType.ohjeet
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
-  const { data, error } = useFetch<InstructionsOut>(
+  const { data, loading, error } = useFetch<InstructionsOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -117,19 +118,24 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
       )}
 
       {error && <ListError contentType={ContentType.ohjeet} />}
-      {!error && data && (
-        <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
-          {data.content
-            .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
-            .map((instruction, i) => (
-              <InstructionCard
-                teachingLanguage={teachingLanguage}
-                instruction={instruction}
-                key={`${exam}-${contentType}-${i}`}
-              />
-            ))}
-        </ul>
+
+      {loading && (
+        <div className="flex justify-center mt-10">
+          <Spinner />
+        </div>
       )}
+
+      <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
+        {data?.content
+          .filter((val) => filterByTeachingLanguage(val, teachingLanguage))
+          .map((instruction, i) => (
+            <InstructionCard
+              teachingLanguage={teachingLanguage}
+              instruction={instruction}
+              key={`${exam}-${contentType}-${i}`}
+            />
+          ))}
+      </ul>
     </div>
   )
 }

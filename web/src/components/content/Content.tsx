@@ -26,6 +26,7 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
 import { isCertificate } from '../../utils/certificateUtils'
+import { Spinner } from '../Spinner'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
 import { createNewVersionInstruction, restoreOldCertificate, updateAssignment } from '../../request'
@@ -49,7 +50,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const teachingLanguageOverrideIfSukoAssignment =
     exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
 
-  const { data, error, refresh } = useFetch<BaseOut>(
+  const { data, loading, error, refresh } = useFetch<BaseOut>(
     `${ContentTypeSingularEng[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
 
@@ -82,9 +83,18 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex justify-center mt-10">
+        <Spinner />
+      </div>
+    )
+  }
+
   if (error) {
     return <ContentError contentType={contentType!} error={error} />
   }
+
   if (!data || !contentType) {
     return null
   }

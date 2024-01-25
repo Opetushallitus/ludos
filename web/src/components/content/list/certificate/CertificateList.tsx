@@ -14,6 +14,7 @@ import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
+import { Spinner } from '../../../Spinner'
 
 type CertificateListProps = {
   exam: Exam
@@ -30,7 +31,7 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
   const singularActiveTab = ContentTypeSingular[contentType]
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
-  const { data, error } = useFetch<ContentOut>(
+  const { data, loading, error } = useFetch<ContentOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -65,17 +66,22 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
       </div>
 
       {error && <ListError contentType={ContentType.koetehtavat} />}
-      {!error && data && (
-        <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
-          {data.content.map((certificate, i) => (
-            <CertificateCard
-              certificate={certificate}
-              teachingLanguage={teachingLanguage}
-              key={`${exam}-${contentType}-${i}`}
-            />
-          ))}
-        </ul>
+
+      {loading && (
+        <div className="flex justify-center mt-10">
+          <Spinner />
+        </div>
       )}
+
+      <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
+        {data?.content.map((certificate, i) => (
+          <CertificateCard
+            certificate={certificate}
+            teachingLanguage={teachingLanguage}
+            key={`${exam}-${contentType}-${i}`}
+          />
+        ))}
+      </ul>
     </div>
   )
 }
