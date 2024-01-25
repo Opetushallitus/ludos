@@ -25,6 +25,9 @@ import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { ListError } from '../ListError'
+import { Icon } from '../../../Icon'
+import { Trans } from 'react-i18next'
+import { Spinner } from '../../../Spinner'
 
 const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -35,29 +38,50 @@ const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: Teachin
   return true
 }
 
-type ContentListProps = {
+type AssignmentListProps = {
   exam: Exam
   filterValues: FilterValues
   isFavoritePage?: boolean
 }
 
-export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentListProps) => {
+export const AssignmentList = ({ exam, filterValues, isFavoritePage }: AssignmentListProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t } = useLudosTranslation()
+  const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
   const singularActiveTab = ContentTypeSingular[ContentType.koetehtavat]
 
-  const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
   const contentType = ContentType.koetehtavat
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { data, error, refresh } = useFetch<AssignmentsOut>(
+  const { data, loading, error, refresh } = useFetch<AssignmentsOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
   )
 
+  const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
   const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
+
+  if (error) {
+    return <ListError contentType={ContentType.koetehtavat} />
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center mt-10">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (isFavoritePage && !data?.content.length) {
+    return (
+      <div className="p-5 mt-10 rounded bg-gray-bg">
+        <Icon customClass="pr-3" name="info" size="lg" color="text-black" />
+        <Trans i18nKey={lt.favoritePageNoContentMessage[exam]} />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -79,7 +103,6 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
               <TeachingLanguageSelect />
             </div>
           )}
-
           <ContentOrderFilter
             contentOrder={filterValues.filterValues.jarjesta}
             setContentOrder={(contentOrder) => filterValues.setFilterValue('jarjesta', contentOrder, true)}
@@ -92,8 +115,8 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: ContentLi
         filterValues={filterValues}
         assignmentFilterOptions={data?.assignmentFilterOptions ?? emptyAssignmentFilterOptions}
       />
-      {error && <ListError contentType={ContentType.koetehtavat} />}
-      {!error && data && (
+
+      {data && (
         <>
           <ul data-testid="card-list">
             {data.content
