@@ -1,7 +1,7 @@
 import { BrowserContext, expect, test } from '@playwright/test'
 import { assertSuccessNotification, FormAction, loginTestGroup, Role } from '../../helpers'
 import { ContentType, Exam } from 'web/src/types'
-import { assertContentPage, fillCertificateForm } from './certificateHelpers'
+import { assertContentPage, fillCertificateForm } from '../../examHelpers/certificateHelpers'
 import { CertificateFormModel } from '../../models/CertificateFormModel'
 
 async function createCertificate(

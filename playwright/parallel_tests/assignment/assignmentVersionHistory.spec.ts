@@ -1,6 +1,6 @@
 import { loginTestGroup, Role } from '../../helpers'
 import { test } from '@playwright/test'
-import { ContentType, Exam } from 'web/src/types'
+import { Exam } from 'web/src/types'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
 import { VersionHistoryModel } from '../../models/VersionHistoryModel'
 import { FormModel } from '../../models/FormModel'

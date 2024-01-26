@@ -15,20 +15,22 @@ export async function assertPDFDownload(
   const filename = download.suggestedFilename()
   expect(filename).toBe(`${expectedFileTitle}.pdf`)
 
-  const path = await download.path()
-  const stats = fs.statSync(path)
-  const fileSizeInBytes = stats.size
+  const tempPath = `temp_folder_for_tests/${filename}`
+  await download.saveAs(tempPath)
+
+  const fileSizeInBytes = fs.statSync(tempPath).size
 
   expect(fileSizeInBytes).toBeGreaterThan(100)
   expect(fileSizeInBytes).toBeLessThan(200000)
 
-  const dataBuffer = fs.readFileSync(path)
-
-  const data = await pdf(dataBuffer)
+  const data = await pdf(fs.readFileSync(tempPath))
 
   expect(data.numpages).toBe(1)
   expect(data.info.Title).toBe(expectedFileTitle)
 
   const cleanedText = data.text.replaceAll('\n', ' ')
   expect(cleanedText).toContain(expectedText)
+
+  // poista tiedosto
+  fs.unlinkSync(tempPath)
 }

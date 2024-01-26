@@ -3,7 +3,7 @@ import { Exam } from 'web/src/types'
 import { loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
 import { InstructionContentModel } from '../../models/InstructionContentModel'
 import { assertPDFDownload } from '../../assertPdfDownload'
-import { initializeInstructionTest } from './instructionHelpers'
+import { initializeInstructionTest } from '../../examHelpers/instructionHelpers'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)

@@ -5,7 +5,7 @@ import {
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage
-} from '../../helpers'
+} from '../helpers'
 import { Exam, KoodistoName, Oppimaara, oppimaaraId, PublishState, TeachingLanguage } from 'web/src/types'
 import {
   AnyAssignmentFormType,

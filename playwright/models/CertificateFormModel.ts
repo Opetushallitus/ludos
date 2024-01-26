@@ -4,7 +4,7 @@ import { ContentType, Exam, PublishState } from 'web/src/types'
 import { fetchWithSession, FormAction } from '../helpers'
 import { ContentListModel } from './ContentListModel'
 import { AttachmentFormType, CertificateFormType } from 'web/src/components/forms/schemas/certificateSchema'
-import { getFileBlob } from '../all_tests/instruction/instructionHelpers'
+import { getFileBlob } from '../examHelpers/instructionHelpers'
 
 export class CertificateFormModel extends FormModel {
   constructor(

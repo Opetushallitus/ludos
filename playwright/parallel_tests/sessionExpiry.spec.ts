@@ -1,9 +1,9 @@
 import { expect, Page, test } from '@playwright/test'
 import { loginTestGroup, Role } from '../helpers'
 import { ContentType, ContentTypeSingularEng, Exam } from 'web/src/types'
-import { fillAssignmentForm, formDataForCreate } from './assignment/assignmentHelpers'
-import { fillCertificateForm } from './certificate/certificateHelpers'
-import { instructionFormData } from './instruction/instructionHelpers'
+import { fillAssignmentForm, formDataForCreate } from '../examHelpers/assignmentHelpers'
+import { fillCertificateForm } from '../examHelpers/certificateHelpers'
+import { instructionFormData } from '../examHelpers/instructionHelpers'
 import { InstructionFormModel } from '../models/InstructionFormModel'
 import { CertificateFormModel } from '../models/CertificateFormModel'
 

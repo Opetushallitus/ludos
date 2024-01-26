@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
-import { testEsitysNakyma } from './assignmentHelpers'
+import { testEsitysNakyma } from '../../examHelpers/assignmentHelpers'
 import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
 import { ContentType, Exam } from 'web/src/types'
 import { FormModel } from '../../models/FormModel'
