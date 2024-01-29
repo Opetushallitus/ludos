@@ -72,6 +72,7 @@ async function testSettingAndUnsettingAsFavorite(
   await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
 }
 
+test.describe.configure({ mode: 'serial' })
 Object.values(Exam).forEach(async (exam) => {
   test.describe('Assignment favorites', () => {
     test.beforeEach(async ({ page }) => await new FormModel(page, exam).showKeys())
