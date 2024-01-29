@@ -8,12 +8,12 @@ async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
   const form = new InstructionFormModel(page, exam)
 
   const instructionId = await form.createInstruction('submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
-  await form.updateInstruction(instructionId, 'submit', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.updateInstruction(instructionId, 'submit', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
   await updateAttachments(page)
   await form.updateInstruction(
     instructionId,
     'draft',
-    'Testuppgifter redigerade',
+    'Testuppgift redigerade',
     'form.notification.ohjeen-tallennus.palautettu-luonnostilaan'
   )
 
@@ -25,11 +25,11 @@ async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
 
   const instructionId = await form.createInstruction('draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
 
-  await form.updateInstruction(instructionId, 'draft', 'Testuppgifter', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.updateInstruction(instructionId, 'draft', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
   await form.updateInstruction(
     instructionId,
     'submit',
-    'Testuppgifter redigerade',
+    'Testuppgift redigerade',
     'form.notification.ohjeen-tallennus.julkaisu-onnistui'
   )
 
