@@ -8,8 +8,7 @@
   "scripts": {
     "dev:server": "server/up.sh",
     "dev:web": "yarn workspace web dev",
-    "playwright": "yarn workspace playwright test --project parallel_tests --workers 8 && yarn workspace playwright test --project non_parallel_tests --workers 1",
-    "playwright:ci": "yarn workspace playwright test",
+    "playwright": "yarn workspace playwright test",
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
     "lint:playwright": "yarn workspace playwright lint",
