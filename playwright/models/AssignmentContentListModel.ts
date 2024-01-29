@@ -8,8 +8,6 @@ export class AssignmentContentListModel extends ContentListModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
-    readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-fi'),
-    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-sv'),
     readonly pageButton1 = page.getByTestId('page-button-1'),
     readonly pageButton2 = page.getByTestId('page-button-2'),
     readonly previousPageButton = page.getByTestId('previous-page'),
