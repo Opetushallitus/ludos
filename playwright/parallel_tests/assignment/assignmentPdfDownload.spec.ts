@@ -50,28 +50,21 @@ async function assertContentListPdfDownload(assignmentId: number, contentList: A
 loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} assignment pdf download tests`, () => {
-    let content: AssignmentContentModel
-    let assignmentId: number
-
-    test.beforeEach(async ({ page, context, baseURL }) => {
+    test(`${exam} assignment pdf download test`, async ({ page, baseURL }) => {
       const form = new AssignmentFormModel(page, exam)
-      content = new AssignmentContentModel(page, exam)
+      const content = new AssignmentContentModel(page, exam)
+      const contentList = new AssignmentContentListModel(page, exam)
+
       await form.showKeys()
 
       const assignmentIn = form.testAssignmentIn(fileTitle(exam))
-      const assignment = await form.assignmentApiCalls(context, baseURL!).create(assignmentIn)
-
-      assignmentId = assignment.id
+      const assignment = await form.assignmentApiCalls(page.context(), baseURL!).create(assignmentIn)
 
       await content.goToContentPage(assignment.id)
-    })
-
-    test(`${exam} assignment pdf download test`, async ({ page }) => {
       await assertContentPagePdfDownload(content)
       await content.returnButton.click()
 
-      const contentList = new AssignmentContentListModel(page, exam)
-      await assertContentListPdfDownload(assignmentId, contentList)
+      await assertContentListPdfDownload(assignment.id, contentList)
     })
   })
 })
