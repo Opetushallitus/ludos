@@ -161,6 +161,11 @@ export const useLudosTranslation = () => {
       [ContentType.koetehtavat]: t('form.notification.tehtavan-poisto.epaonnistui'),
       [ContentType.ohjeet]: t('form.notification.ohjeen-poisto.epaonnistui'),
       [ContentType.todistukset]: t('form.notification.todistuksen-poisto.epaonnistui')
+    },
+    favoritePageNoContentMessage: {
+      [Exam.SUKO]: t('favorite.suko.ei-suosikkitehtavia'),
+      [Exam.LD]: t('favorite.ld.ei-suosikkitehtavia'),
+      [Exam.PUHVI]: t('favorite.puhvi.ei-suosikkitehtavia')
     }
   }
 

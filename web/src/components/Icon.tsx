@@ -47,6 +47,7 @@ export type Icons =
   | 'versiohistoria'
   | 'palauta'
   | 'katsele'
+  | 'info'
 
 const icons: Record<Icons, string> = {
   ['koetehtavat']: 'assignment',
@@ -84,7 +85,8 @@ const icons: Record<Icons, string> = {
   ['logout']: 'logout',
   ['versiohistoria']: 'history',
   ['palauta']: 'keyboard_return',
-  ['katsele']: 'visibility'
+  ['katsele']: 'visibility',
+  ['info']: 'info'
 }
 
 export const Icon = ({ name, color, disabled = false, isActive = false, size, dataTestId, customClass }: IconProps) => {
