@@ -25,19 +25,19 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
         cache: yarn
     - name: Set up Java 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         java-version: 17
         distribution: zulu
     - name: 'Start database'
       shell: bash
       run: docker compose up -d
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: jar
         path: server/build/libs
@@ -59,7 +59,7 @@ runs:
       shell: bash
       run: echo playwright-ubuntu-deps=$(npx playwright install-deps --dry-run ${{ inputs.browsers }} 2>&1 | grep -Po '(?<=no-install-recommends ).*(?=")') >> $GITHUB_OUTPUT
     - name: Cache Playwright browser
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/ms-playwright
         key: ${{ runner.os }}-playwright-${{ steps.playwright_version.outputs.playwright_version }}
@@ -77,7 +77,7 @@ runs:
         TESTIKAYTTAJA_YLLAPITAJA_USERNAME: ${{ inputs.testikayttaja-yllapitaja-username }}
         TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
       run: yarn playwright
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-debug-artifacts

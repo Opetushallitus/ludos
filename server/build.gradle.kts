@@ -32,6 +32,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:_")
     implementation("jakarta.servlet:jakarta.servlet-api:_")
     implementation("org.flywaydb:flyway-core:_")
+    implementation("org.flywaydb:flyway-database-postgresql:_")
     implementation("org.jetbrains.kotlin:kotlin-reflect:_")
     implementation("org.jsoup:jsoup:_")
     implementation("org.springframework.security:spring-security-cas:_")

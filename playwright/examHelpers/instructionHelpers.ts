@@ -31,14 +31,14 @@ export type InstructionFormData = {
 
 export const instructionFormData: InstructionFormData = {
   nameFi: 'Testi ohje',
-  nameSv: 'Testuppgifter',
+  nameSv: 'Testuppgift',
   contentFi: 'Testi sisältö',
-  contentSv: 'Testa innehåll',
+  contentSv: 'Test innehåll',
   aineKoodiArvo: '9',
   shortDescriptionFi: 'Testi lyhyt kuvaus',
-  shortDescriptionSv: 'Testa kort beskrivning',
+  shortDescriptionSv: 'Test kort beskrivning',
   attachmentNameFi: 'Testi liite',
-  attachmentNameSv: 'Testa bilaga'
+  attachmentNameSv: 'Test bilaga'
 }
 
 export async function updateAttachments(page: Page) {

@@ -21,7 +21,7 @@ Object.values(Exam).forEach((exam) => {
       const content = new InstructionContentModel(page, exam)
       await assertPDFDownload(page, content.downloadPdfButtonFi, 'Testi ohje', 'Testi sisältö')
       await setTeachingLanguage(page, 'sv')
-      await assertPDFDownload(page, content.downloadPdfButtonSv, 'Testuppgifter', 'Testa innehåll')
+      await assertPDFDownload(page, content.downloadPdfButtonSv, 'Testuppgift', 'Test innehåll')
     })
   })
 })
