@@ -1,6 +1,6 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
 import { Exam, KoodistoName } from 'web/src/types'
-import { FormAction, koodiLabel, selectAttachmentFile, setSingleSelectDropdownOption } from '../../helpers'
+import { FormAction, koodiLabel, selectAttachmentFile, setSingleSelectDropdownOption } from '../helpers'
 import { AttachmentFormType, CertificateFormType } from 'web/src/components/forms/schemas/certificateSchema'
 
 export async function fillCertificateForm(page: Page, exam: Exam, inputs: CertificateFormType) {

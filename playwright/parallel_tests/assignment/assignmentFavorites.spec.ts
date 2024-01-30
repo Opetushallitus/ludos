@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test'
-import { testEsitysNakyma } from './assignmentHelpers'
+import { testEsitysNakyma } from '../../examHelpers/assignmentHelpers'
 import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
 import { ContentType, Exam } from 'web/src/types'
 import { FormModel } from '../../models/FormModel'
@@ -72,6 +72,7 @@ async function testSettingAndUnsettingAsFavorite(
   await assertFavoritesPage(page, exam, assignment, favoriteCountBefore)
 }
 
+test.describe.configure({ mode: 'serial' })
 Object.values(Exam).forEach(async (exam) => {
   test.describe('Assignment favorites', () => {
     test.beforeEach(async ({ page }) => await new FormModel(page, exam).showKeys())

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { testEsitysNakyma } from './assignmentHelpers'
+import { testEsitysNakyma } from '../../examHelpers/assignmentHelpers'
 import { loginTestGroup, Role } from '../../helpers'
 import { ContentType, Exam } from 'web/src/types'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'

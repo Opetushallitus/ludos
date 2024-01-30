@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test'
-import { assertSuccessNotification, createFilePathToFixtures, FormAction, setTeachingLanguage } from '../../helpers'
+import { assertSuccessNotification, createFilePathToFixtures, FormAction, setTeachingLanguage } from '../helpers'
 import { Exam, TeachingLanguage } from 'web/src/types'
-import { InstructionFormModel } from '../../models/InstructionFormModel'
-import { LayoutModel } from '../../models/LayoutModel'
+import { InstructionFormModel } from '../models/InstructionFormModel'
+import { LayoutModel } from '../models/LayoutModel'
 import * as fs from 'fs'
 
 export function getFileBlob(filename: string) {

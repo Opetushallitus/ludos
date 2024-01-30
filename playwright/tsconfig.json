@@ -1,4 +1,5 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["all_tests", "*.ts"]
+  "include": [
+    "non_parallel_tests", "parallel_tests", "*.ts"]
 }

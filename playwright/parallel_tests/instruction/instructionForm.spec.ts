@@ -1,5 +1,5 @@
 import { expect, Page, test } from '@playwright/test'
-import { initializeInstructionTest, updateAttachments } from './instructionHelpers'
+import { initializeInstructionTest, updateAttachments } from '../../examHelpers/instructionHelpers'
 import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
 import { Exam } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'

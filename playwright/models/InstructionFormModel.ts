@@ -7,7 +7,7 @@ import {
   getFileBlob,
   InstructionFormData,
   instructionFormData
-} from '../all_tests/instruction/instructionHelpers'
+} from '../examHelpers/instructionHelpers'
 import { EditorModel } from './EditorModel'
 import {
   assertSuccessNotification,

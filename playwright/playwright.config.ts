@@ -39,23 +39,22 @@ export default defineConfig({
   /* Folder for test artifacts such as screenshots, videos, traces, etc. */
   outputDir: 'test-results',
 
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'setup',
       testMatch: /.*\.setup\.ts/
     },
     {
-      name: 'all_tests',
-      testDir: 'all_tests',
+      name: 'parallel_tests',
+      testDir: 'parallel_tests',
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup']
+    },
+    {
+      name: 'non_parallel_tests',
+      testDir: 'non_parallel_tests',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup']
     }
   ]
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   port: 3000,
-  // },
 })

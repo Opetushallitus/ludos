@@ -7,7 +7,7 @@ import {
   Role
 } from '../../helpers'
 import { Exam, ImageAlignOption, ImageSizeOption } from 'web/src/types'
-import { InstructionFormData, instructionFormData } from '../instruction/instructionHelpers'
+import { InstructionFormData, instructionFormData } from '../../examHelpers/instructionHelpers'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 import { LayoutModel } from '../../models/LayoutModel'
 import { InstructionContentModel } from '../../models/InstructionContentModel'

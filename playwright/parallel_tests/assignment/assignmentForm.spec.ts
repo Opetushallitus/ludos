@@ -6,7 +6,7 @@ import {
   fillAssignmentForm,
   formDataForCreate,
   formDataForUpdate
-} from './assignmentHelpers'
+} from '../../examHelpers/assignmentHelpers'
 import { ContentType, Exam, oppimaaraId } from 'web/src/types'
 import {
   AnyAssignmentFormType,

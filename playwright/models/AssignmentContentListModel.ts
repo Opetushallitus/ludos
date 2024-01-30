@@ -2,14 +2,12 @@ import { expect, Page } from '@playwright/test'
 import { ContentType, Exam, TeachingLanguage } from 'web/src/types'
 import { ContentListModel } from './ContentListModel'
 import { setSingleSelectDropdownOption } from '../helpers'
-import { filterTestAssignmentName } from '../all_tests/assignment/assignmentHelpers'
+import { filterTestAssignmentName } from '../examHelpers/assignmentHelpers'
 
 export class AssignmentContentListModel extends ContentListModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
-    readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-fi'),
-    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-sv'),
     readonly pageButton1 = page.getByTestId('page-button-1'),
     readonly pageButton2 = page.getByTestId('page-button-2'),
     readonly previousPageButton = page.getByTestId('previous-page'),

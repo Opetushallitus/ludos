@@ -29,10 +29,10 @@ async function assertContentPagePdfDownload(content: AssignmentContentModel) {
   }
 }
 
-async function assertContentListPdfDownload(contentList: AssignmentContentListModel) {
+async function assertContentListPdfDownload(assignmentId: number, contentList: AssignmentContentListModel) {
   await assertPDFDownload(
     contentList.page,
-    contentList.downloadPdfButtonFi.first(),
+    contentList.page.getByTestId(`assignment-list-item-${assignmentId}`).getByTestId('pdf-download-button-fi'),
     expectedFileTitle(contentList.exam, 'fi'),
     expectedPdfContent(contentList.exam)
   )
@@ -40,7 +40,7 @@ async function assertContentListPdfDownload(contentList: AssignmentContentListMo
     await setTeachingLanguage(contentList.page, 'sv')
     await assertPDFDownload(
       contentList.page,
-      contentList.downloadPdfButtonSv.first(),
+      contentList.page.getByTestId(`assignment-list-item-${assignmentId}`).getByTestId('pdf-download-button-sv'),
       expectedFileTitle(contentList.exam, 'sv'),
       expectedPdfContent(contentList.exam)
     )
@@ -50,23 +50,21 @@ async function assertContentListPdfDownload(contentList: AssignmentContentListMo
 loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} assignment pdf download tests`, () => {
-    test.beforeEach(async ({ page, context, baseURL }) => {
+    test(`${exam} assignment pdf download test`, async ({ page, baseURL }) => {
       const form = new AssignmentFormModel(page, exam)
+      const content = new AssignmentContentModel(page, exam)
+      const contentList = new AssignmentContentListModel(page, exam)
+
       await form.showKeys()
 
       const assignmentIn = form.testAssignmentIn(fileTitle(exam))
-      const assignment = await form.assignmentApiCalls(context, baseURL!).create(assignmentIn)
+      const assignment = await form.assignmentApiCalls(page.context(), baseURL!).create(assignmentIn)
 
-      await new AssignmentContentModel(page, exam).goToContentPage(assignment.id)
-    })
-
-    test(`${exam} assignment pdf download test`, async ({ page }) => {
-      const content = new AssignmentContentModel(page, exam)
+      await content.goToContentPage(assignment.id)
       await assertContentPagePdfDownload(content)
       await content.returnButton.click()
 
-      const contentList = new AssignmentContentListModel(page, exam)
-      await assertContentListPdfDownload(contentList)
+      await assertContentListPdfDownload(assignment.id, contentList)
     })
   })
 })
