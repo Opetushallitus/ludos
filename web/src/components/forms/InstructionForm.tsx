@@ -29,7 +29,8 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { BlockNavigation } from '../BlockNavigation'
 import { useBlockFormCloseOrRefresh } from '../../hooks/useBlockFormCloseOrRefresh'
-import { useFormSubmission } from './useFormSubmission'
+import { useFormSubmission } from '../../hooks/useFormSubmission'
+import { InfoBox } from '../InfoBox'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -62,6 +63,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
+  const [defaultValueError, setDefaultValueError] = useState<boolean>(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -75,16 +77,21 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     defaultValues:
       isUpdate && id
         ? async () => {
-            const instruction = await fetchDataOrReload<InstructionDtoOut>(
-              `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`
-            )
-            const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
-            const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
+            try {
+              const instruction = await fetchDataOrReload<InstructionDtoOut>(
+                `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`
+              )
+              const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
+              const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
 
-            setAttachmentDataFi(attachmentDataFi)
-            setAttachmentDataSv(attachmentDataSv)
-            setIsLoaded(true)
-            return instruction
+              setAttachmentDataFi(attachmentDataFi)
+              setAttachmentDataSv(attachmentDataSv)
+              setIsLoaded(true)
+              return instruction
+            } catch (e) {
+              setDefaultValueError(true)
+              return { exam, ...instructionDefaultValues } as InstructionFormType
+            }
           }
         : async () => ({ exam, ...instructionDefaultValues }) as InstructionFormType,
     mode: 'onBlur',
@@ -199,6 +206,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   }
 
   const handleCancelClick = () => navigate(-1)
+
+  if (defaultValueError) {
+    return <InfoBox type="error" i18nKey={t('error.sisallon-lataaminen-epaonnistui')} />
+  }
 
   return (
     <div className="ludos-form">

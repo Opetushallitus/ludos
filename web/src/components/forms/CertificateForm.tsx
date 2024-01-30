@@ -27,7 +27,8 @@ import { certificateFormDefaultValues, CertificateFormType, certificateSchema } 
 import { LanguageTabs } from '../LanguageTabs'
 import { BlockNavigation } from '../BlockNavigation'
 import { useBlockFormCloseOrRefresh } from '../../hooks/useBlockFormCloseOrRefresh'
-import { useFormSubmission } from './useFormSubmission'
+import { useFormSubmission } from '../../hooks/useFormSubmission'
+import { InfoBox } from '../InfoBox'
 
 type CertificateFormProps = {
   action: ContentFormAction
@@ -43,6 +44,7 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
   const [newAttachmentFi, setNewAttachmentFi] = useState<File | null>(null)
   const [newAttachmentSv, setNewAttachmentSv] = useState<File | null>(null)
+  const [defaultValueError, setDefaultValueError] = useState<boolean>(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const exam = match!.params.exam!.toUpperCase() as Exam
@@ -53,7 +55,12 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
 
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
-      return await fetchDataOrReload(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
+      try {
+        return await fetchDataOrReload(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
+      } catch (e) {
+        setDefaultValueError(true)
+        return { exam, ...certificateFormDefaultValues } as T
+      }
     } else {
       return { exam, ...certificateFormDefaultValues } as T
     }
@@ -181,6 +188,10 @@ const CertificateForm = ({ action }: CertificateFormProps) => {
   const attachmentErrorSv = errors.attachmentSv?.message
 
   const hasSvError = nameErrorSv || contentErrorSv || attachmentErrorSv
+
+  if (defaultValueError) {
+    return <InfoBox type="error" i18nKey={t('error.sisallon-lataaminen-epaonnistui')} />
+  }
 
   return (
     <div className="ludos-form">

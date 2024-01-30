@@ -11,8 +11,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MultiValue } from 'react-select'
 import { LudosSelectOption } from '../components/ludosSelect/LudosSelect'
-import { useFormSubmission } from '../components/forms/useFormSubmission'
-import { useLudosTranslation } from './useLudosTranslation'
+import { useFormSubmission } from './useFormSubmission'
 import { useBlockFormCloseOrRefresh } from './useBlockFormCloseOrRefresh'
 
 export function useAssignmentForm<T extends CommonAssignmentFormType>(
@@ -21,7 +20,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
   action: ContentFormAction
 ) {
   const { state } = useLocation()
-
+  const [defaultValueError, setDefaultValueError] = useState<boolean>(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const isUpdate = action === ContentFormAction.muokkaus
@@ -30,7 +29,13 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
 
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
-      return await fetchDataOrReload(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
+      try {
+        return await fetchDataOrReload(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
+      } catch (e) {
+        console.error('Error loading default values', e)
+        setDefaultValueError(true)
+        return assignmentDefaultValuesByExam[exam] as T
+      }
     } else {
       return assignmentDefaultValuesByExam[exam] as T
     }
@@ -77,6 +82,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
     handleMultiselectOptionChange,
     submitAssignment,
     submitError,
+    defaultValueError,
     isDeleteModalOpen,
     setIsDeleteModalOpen
   }

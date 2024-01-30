@@ -18,7 +18,7 @@ export const ContentError = ({ contentType, error }: ContentErrorProps) => {
 
   return (
     <div className="flex justify-center w-full gap-2 text-red-primary mt-10">
-      <Icon name="virheellinen" color="text-red-primary" />
+      <Icon name="virhe" color="text-red-primary" />
       {lt.contentErrorMessage[contentType]}
     </div>
   )
