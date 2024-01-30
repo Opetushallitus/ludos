@@ -2,16 +2,17 @@ import { ContentType } from '../../types'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { Icon } from '../Icon'
 import { PageNotFound } from '../LudosRoutes'
+import { NonOkResponseFetchError } from '../../request'
 
-type ListErrorProps = {
+type ContentErrorProps = {
   contentType: ContentType
-  error: string
+  error: Error
 }
 
-export const ContentError = ({ contentType, error }: ListErrorProps) => {
+export const ContentError = ({ contentType, error }: ContentErrorProps) => {
   const { lt } = useLudosTranslation()
 
-  if (error === '404') {
+  if (error instanceof NonOkResponseFetchError && error.code === 404) {
     return <PageNotFound />
   }
 
