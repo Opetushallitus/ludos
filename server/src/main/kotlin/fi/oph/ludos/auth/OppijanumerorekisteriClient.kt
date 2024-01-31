@@ -2,11 +2,9 @@ package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.vm.sade.javautils.http.OphHttpRequest
-import fi.vm.sade.javautils.http.exceptions.UnhandledHttpStatusCodeException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestClientException
 import java.util.*
 
 @Component

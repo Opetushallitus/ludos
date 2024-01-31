@@ -2,10 +2,12 @@ package fi.oph.ludos.assignment
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
+import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
@@ -38,10 +40,6 @@ class AssignmentController(val service: AssignmentService) {
         @Valid filters: LdFilters
     ): AssignmentListDtoOut = service.getAssignments(filters)
 
-    @GetMapping("favoriteCount")
-    @RequireAtLeastOpettajaRole
-    fun getFavoriteAssignmentsCount(): Int = service.getFavoriteAssignmentsCount()
-
     @GetMapping("{exam}/{id}")
     @RequireAtLeastOpettajaRole
     fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
@@ -66,12 +64,6 @@ class AssignmentController(val service: AssignmentService) {
     fun getAllVersionsOfAssignment(@PathVariable exam: Exam, @PathVariable id: Int): List<AssignmentOut> =
         service.getAllVersionsOfAssignment(exam, id)
 
-    @PutMapping("{exam}/{id}/favorite")
-    @RequireAtLeastOpettajaRole
-    fun setAssignmentFavorite(
-        @PathVariable exam: Exam, @PathVariable("id") id: Int, @Valid @RequestBody favoriteRequest: SetFavoriteRequest
-    ): Int? = service.setAssignmentFavorite(exam, id, favoriteRequest.suosikki)
-
     @PutMapping("{id}")
     @RequireAtLeastYllapitajaRole
     fun createNewVersionOfAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int =
@@ -79,4 +71,73 @@ class AssignmentController(val service: AssignmentService) {
             HttpStatus.NOT_FOUND,
             "Assignment $id not found"
         )
+
+    @PostMapping("favorites/{exam}/folder")
+    @RequireAtLeastOpettajaRole
+    fun createNewFavoriteFolder(
+        @PathVariable exam: Exam,
+        @Valid @RequestBody folder: FavoriteFolderDtoIn
+    ): Int = service.createNewFavoriteFolder(exam, folder)
+
+    @PutMapping("favorites/{exam}/folder/{folderId}")
+    @RequireAtLeastOpettajaRole
+    fun updateFavoriteFolder(
+        @PathVariable exam: Exam,
+        @PathVariable folderId: Int,
+        @Valid @RequestBody folder: FavoriteFolderDtoIn
+    ): ResponseEntity<Nothing> {
+        service.updateFavoriteFolder(exam, folderId, folder)
+        return ResponseEntity.ok().build()
+    }
+
+    @DeleteMapping("favorites/{exam}/folder/{folderId}")
+    @RequireAtLeastOpettajaRole
+    fun deleteFavoriteFolder(@PathVariable exam: Exam, @PathVariable folderId: Int): ResponseEntity<Nothing> {
+        val deletedCount = service.deleteFavoriteFolder(exam, folderId)
+        when (deletedCount) {
+            0 -> {
+                throw ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Favorite folder $folderId not found for user ${Kayttajatiedot.fromSecurityContext().oidHenkilo}"
+                )
+            }
+
+            1 -> {
+                return ResponseEntity.ok().build()
+            }
+
+            else -> {
+                throw ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unexpected delete count $deletedCount"
+                )
+            }
+        }
+    }
+
+    @GetMapping("favorites/{exam}")
+    @RequireAtLeastOpettajaRole
+    fun getFavoriteIds(@PathVariable exam: Exam): FavoriteIdsDtoOut = service.getFavorites(exam, null)
+
+    @GetMapping("favorites/{exam}/cardFolders")
+    @RequireAtLeastOpettajaRole
+    fun getFavoriteCardFolders(@PathVariable exam: Exam): FavoriteCardFolderDtoOut =
+        service.getFavoriteCardFolders(exam)
+
+    @GetMapping("favorites/{exam}/{assignmentId}")
+    @RequireAtLeastOpettajaRole
+    fun getFavoriteIdsForAssignment(@PathVariable exam: Exam, @PathVariable assignmentId: Int): FavoriteIdsDtoOut =
+        service.getFavorites(exam, assignmentId)
+
+    @PutMapping("favorites/{exam}/{assignmentId}")
+    @RequireAtLeastOpettajaRole
+    fun setAssignmentFavoriteFolders(
+        @PathVariable exam: Exam,
+        @PathVariable("assignmentId") assignmentId: Int,
+        @Valid @RequestBody folderIds: List<Int>
+    ): Int? = service.setAssignmentFavoriteFolders(exam, assignmentId, folderIds)
+
+    @GetMapping("favorites/count")
+    @RequireAtLeastOpettajaRole
+    fun getFavoriteAssignmentsCount(): Int = service.getFavoriteAssignmentsCount()
 }

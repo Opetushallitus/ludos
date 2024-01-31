@@ -11,7 +11,6 @@ export type FiltersType = {
   lukuvuosi: string[] | null
   aine: string[] | null
   tehtavatyyppipuhvi: string[] | null
-  suosikki: boolean | null
   sivu: number
 }
 
@@ -25,7 +24,7 @@ export type FilterValues = {
   searchStringForNewFilterValue: (key: keyof FiltersType, value: ParamsValue) => string
 }
 
-export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
+export function useFilterValues(exam: Exam) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -47,15 +46,12 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
       lukuvuosi: null,
       aine: null,
       tehtavatyyppipuhvi: null,
-      suosikki: showOnlyFavorites ? true : null,
       sivu: 1
     }
 
     urlParams.forEach((value, stringKey) => {
       const key: keyof FiltersType = stringKey as keyof FiltersType
-      if (key === 'suosikki') {
-        currentParams[key] = value === 'true'
-      } else if (key === 'jarjesta') {
+      if (key === 'jarjesta') {
         currentParams[key] = value === 'asc' ? 'asc' : 'desc'
       } else if (key === 'sivu') {
         currentParams[key] = Number(value)
@@ -65,7 +61,7 @@ export function useFilterValues(exam: Exam, showOnlyFavorites?: boolean) {
     })
 
     return currentParams
-  }, [exam, location.search, showOnlyFavorites])
+  }, [exam, location.search])
 
   const searchStringForNewFilterValue = (key: keyof FiltersType, value: ParamsValue) => {
     const urlParams = new URLSearchParams(location.search)

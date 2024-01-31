@@ -1,4 +1,5 @@
 import {
+  ContentType,
   Exam,
   InstructionDtoOut,
   LdInstructionDtoOut,
@@ -46,7 +47,8 @@ export const InstructionContent = ({ instruction, teachingLanguage, isPresentati
             contentId={instruction.id}
             pdfData={{
               baseOut: instruction,
-              language: teachingLanguage
+              language: teachingLanguage,
+              contentType: ContentType.ohjeet
             }}
           />
         </div>

@@ -15,14 +15,14 @@ annotation class ValidKoodiArvos(
 )
 
 class KoodiArvosValidator(private val koodistoService: KoodistoService) :
-    jakarta.validation.ConstraintValidator<ValidKoodiArvos, Array<String>> {
+    jakarta.validation.ConstraintValidator<ValidKoodiArvos, List<String>> {
     private lateinit var koodistoName: KoodistoName
 
     override fun initialize(constraintAnnotation: ValidKoodiArvos) {
         koodistoName = constraintAnnotation.koodisto
     }
 
-    override fun isValid(value: Array<String>, context: jakarta.validation.ConstraintValidatorContext?): Boolean {
+    override fun isValid(value: List<String>, context: jakarta.validation.ConstraintValidatorContext?): Boolean {
         return koodistoService.isKoodiArvosInKoodisto(koodistoName, value)
     }
 }
@@ -73,18 +73,21 @@ class OppimaaraValidator(private val koodistoService: KoodistoService) :
         )
         if (oppimaaraKoodi == null) {
             context?.disableDefaultConstraintViolation()
-            context?.buildConstraintViolationWithTemplate("oppimaaraKoodiArvo '${value.oppimaaraKoodiArvo}' not found in ${KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021}")?.addConstraintViolation()
+            context?.buildConstraintViolationWithTemplate("oppimaaraKoodiArvo '${value.oppimaaraKoodiArvo}' not found in ${KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021}")
+                ?.addConstraintViolation()
             return false
         }
         if (value.kielitarjontaKoodiArvo != null) {
             if (oppimaaraKoodi.tarkenteet == null) {
                 context?.disableDefaultConstraintViolation()
-                context?.buildConstraintViolationWithTemplate("kielitarjontaKoodiArvo '${value.kielitarjontaKoodiArvo}' given but '${value.oppimaaraKoodiArvo}' does not contain tarkenteet")?.addConstraintViolation()
+                context?.buildConstraintViolationWithTemplate("kielitarjontaKoodiArvo '${value.kielitarjontaKoodiArvo}' given but '${value.oppimaaraKoodiArvo}' does not contain tarkenteet")
+                    ?.addConstraintViolation()
                 return false
             }
             if (!oppimaaraKoodi.tarkenteet.contains(value.kielitarjontaKoodiArvo)) {
                 context?.disableDefaultConstraintViolation()
-                context?.buildConstraintViolationWithTemplate("kielitarjontaKoodiArvo '${value.kielitarjontaKoodiArvo}' not valid for '${value.oppimaaraKoodiArvo}'. Valid options: ${oppimaaraKoodi.tarkenteet}")?.addConstraintViolation()
+                context?.buildConstraintViolationWithTemplate("kielitarjontaKoodiArvo '${value.kielitarjontaKoodiArvo}' not valid for '${value.oppimaaraKoodiArvo}'. Valid options: ${oppimaaraKoodi.tarkenteet}")
+                    ?.addConstraintViolation()
                 return false
             }
         }

@@ -8,21 +8,19 @@ import {
   TeachingLanguage
 } from '../types'
 import { isInstruction } from './instructionUtils'
-import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from './certificateUtils'
+import { isCertificate, isSukoCertificate } from './certificateUtils'
 
 export const isSukoAssignment = (assignment: BaseOut): assignment is SukoAssignmentDtoOut =>
   assignment.exam === Exam.SUKO &&
   'aiheKoodiArvos' in assignment &&
   'assignmentTypeKoodiArvo' in assignment &&
-  'laajaalainenOsaaminenKoodiArvos' in assignment &&
-  'oppimaara' in assignment &&
-  'tavoitetasoKoodiArvo' in assignment
-export const isPuhviAssignment = (assignment: BaseOut): assignment is PuhviAssignmentDtoOut =>
-  assignment.exam === Exam.PUHVI && 'lukuvuosiKoodiArvos' in assignment
+  'oppimaara' in assignment
 
 export const isLdAssignment = (assignment: BaseOut): assignment is LdAssignmentDtoOut =>
   assignment.exam === Exam.LD && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
-// content type checkers
+export const isPuhviAssignment = (assignment: BaseOut): assignment is PuhviAssignmentDtoOut =>
+  assignment.exam === Exam.PUHVI && 'lukuvuosiKoodiArvos' in assignment
+
 export const isAssignment = (data: BaseOut): data is AssignmentOut =>
   isSukoAssignment(data) || isLdAssignment(data) || isPuhviAssignment(data)
 
@@ -42,13 +40,11 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
 }
 
 export const getContentName = (data: BaseOut, teachingLanguage: TeachingLanguage) => {
-  if (isAssignment(data) || isInstruction(data)) {
-    return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
-  } else if (isSukoCertificate(data)) {
+  if (isSukoAssignment(data) || isSukoCertificate(data)) {
     return data.nameFi
-  } else if (isLdCertificate(data)) {
+  } else if (isAssignment(data) || isInstruction(data) || isCertificate(data)) {
     return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
-  } else if (isPuhviCertificate(data)) {
-    return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
+  } else {
+    throw Error(`Data has unknown type: ${typeof data}`)
   }
 }

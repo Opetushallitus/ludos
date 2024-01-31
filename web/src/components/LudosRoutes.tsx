@@ -15,7 +15,7 @@ import { Spinner } from './Spinner'
 import { Frontpage } from './frontpage/Frontpage'
 import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
-import { AssignmentFavorite } from './content/list/assignment/AssignmentFavorite'
+import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 
 export const etusivuKey = 'etusivu'
@@ -112,7 +112,7 @@ export const ludosRouter = createBrowserRouter([
         element: <Navigate replace to={favoritesPagePath(Exam.SUKO)} />
       },
       {
-        path: `/${suosikitKey}/:exam`,
+        path: `/${suosikitKey}/:exam/:folderId?`,
         element: (
           <Layout>
             <AssignmentFavorite />

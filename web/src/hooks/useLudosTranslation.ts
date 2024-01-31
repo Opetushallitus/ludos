@@ -1,9 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
-import { ContentOrder, ContentType, Exam, PublishState, TeachingLanguage } from '../types'
+import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, PublishState, TeachingLanguage } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
-
-export type LocaleDropdownOptions = Record<string, { name: string; testId?: string }>
 
 export type ContentAction = {
   actionName: string
@@ -166,6 +164,11 @@ export const useLudosTranslation = () => {
       [Exam.SUKO]: t('favorite.suko.ei-suosikkitehtavia'),
       [Exam.LD]: t('favorite.ld.ei-suosikkitehtavia'),
       [Exam.PUHVI]: t('favorite.puhvi.ei-suosikkitehtavia')
+    },
+    checkboxOptionTexts: {
+      [AddToFavoriteOptions.FAVORITES]: t('favorite.lisaa-suosikiksi-paatasolle'),
+      [AddToFavoriteOptions.FOLDER]: t('favorite.lisaa-kansioon'),
+      [AddToFavoriteOptions.NEW_FOLDER]: t('favorite.lisaa-uuteen-kansioon-paatasolle')
     }
   }
 

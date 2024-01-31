@@ -17,9 +17,13 @@ test.describe('Presentation view', () => {
     await expect(page.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
     await expect(page.getByTestId('assignment-metadata')).toBeVisible()
 
-    await testEsitysNakyma(page, 'assignment-action-esitysnakyma', assignmentIn)
+    const esitysnakymaContentLocator = page.getByTestId('assignment-metadata').getByTestId('esitysnakyma')
+    await testEsitysNakyma(page, esitysnakymaContentLocator, assignmentIn)
 
+    const esitysnakymaCardLocator = page
+      .getByTestId(`assignment-list-item-${assignment.id}`)
+      .getByTestId('esitysnakyma')
     await page.goto(`/suko/${ContentType.koetehtavat}`)
-    await testEsitysNakyma(page, `assignment-${assignment.id}-action-esitysnakyma`, assignmentIn)
+    await testEsitysNakyma(page, esitysnakymaCardLocator, assignmentIn)
   })
 })

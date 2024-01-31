@@ -3,9 +3,9 @@ package fi.oph.ludos.koodisto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class KoodistoLanguage(val code: String) {
-    FI("FI"),
-    SV("SV")
+enum class KoodistoLanguage {
+    FI,
+    SV
 }
 
 enum class KoodistoName(@JsonValue val koodistoUri: String) {

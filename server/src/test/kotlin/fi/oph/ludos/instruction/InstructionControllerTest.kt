@@ -61,8 +61,8 @@ class InstructionControllerTest : InstructionRequests() {
 
     @BeforeAll
     fun setup() {
-        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
-        mockMvc.perform(seedDbWithInstructions().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+        emptyDb(mockMvc)
+        seedDbWithInstructions(mockMvc)
     }
 
     @BeforeEach

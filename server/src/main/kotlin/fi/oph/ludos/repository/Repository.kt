@@ -7,3 +7,7 @@ inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
 
     @Suppress("UNCHECKED_CAST") return array as Array<T>
 }
+
+inline fun <reified T> ResultSet.getKotlinList(columnLabel: String): List<T> {
+    return this.getKotlinArray<T>(columnLabel).toList()
+}

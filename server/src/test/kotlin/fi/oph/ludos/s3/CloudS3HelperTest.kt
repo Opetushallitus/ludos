@@ -19,7 +19,7 @@ class CloudS3HelperTest {
     private val filesToCleanUp = mutableListOf<String>()
 
     @AfterAll
-    fun cleanup(): Unit {
+    fun cleanup() {
         filesToCleanUp.forEach {
             rawDeleteIfExists(it)
         }

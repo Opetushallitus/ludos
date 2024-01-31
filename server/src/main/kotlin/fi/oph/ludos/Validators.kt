@@ -47,10 +47,10 @@ annotation class ValidHtmlContent(
 @MustBeDocumented
 @Constraint(validatedBy = [])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER)
-@SafeHtmlArray
+@SafeHtmlList
 @ValidStringLengths(min = 0, max = 1000000)
 @Size(min = 0, max = 100)
-annotation class ValidHtmlContentArray(
+annotation class ValidHtmlContentList(
     val message: String = "",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
@@ -96,23 +96,37 @@ class SafeHtmlValidator : ConstraintValidator<SafeHtml, String> {
 }
 
 @MustBeDocumented
-@Constraint(validatedBy = [SafeHtmlArrayValidator::class])
+@Constraint(validatedBy = [SafeHtmlListValidator::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
-annotation class SafeHtmlArray(
+annotation class SafeHtmlList(
     val message: String = "Unsafe HTML content found",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
 
-class SafeHtmlArrayValidator : ConstraintValidator<SafeHtmlArray, Array<String>> {
-    override fun isValid(input: Array<String>?, context: ConstraintValidatorContext?): Boolean {
+class SafeHtmlListValidator : ConstraintValidator<SafeHtmlList, List<String>> {
+    override fun isValid(input: List<String>?, context: ConstraintValidatorContext?): Boolean {
         if (input == null) return true
         return input.all { Jsoup.isValid(it, htmlSafelist) }
     }
 }
 
+const val MAX_FAVORITE_FOLDER_NAME_LENGTH = 200
+
 @MustBeDocumented
-@Constraint(validatedBy = [ArrayStringLengthValidator::class])
+@Constraint(validatedBy = [])
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER)
+@PlainText
+@Size(min = 1, max = MAX_FAVORITE_FOLDER_NAME_LENGTH)
+annotation class ValidFavoriteFolderName(
+    val message: String = "",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+
+
+@MustBeDocumented
+@Constraint(validatedBy = [ListStringLengthValidator::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ValidStringLengths(
@@ -123,7 +137,7 @@ annotation class ValidStringLengths(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class ArrayStringLengthValidator : ConstraintValidator<ValidStringLengths, Array<String>> {
+class ListStringLengthValidator : ConstraintValidator<ValidStringLengths, List<String>> {
 
     private var min: Int = 0
     private var max: Int = Int.MAX_VALUE
@@ -133,7 +147,7 @@ class ArrayStringLengthValidator : ConstraintValidator<ValidStringLengths, Array
         max = constraintAnnotation.max
     }
 
-    override fun isValid(values: Array<String>?, context: ConstraintValidatorContext?): Boolean {
+    override fun isValid(values: List<String>?, context: ConstraintValidatorContext?): Boolean {
         if (values == null) return true
 
         for (value in values) {

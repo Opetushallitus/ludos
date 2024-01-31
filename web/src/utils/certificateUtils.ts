@@ -1,7 +1,7 @@
 import { BaseOut, Exam, LdCertificateDtoOut, PuhviCertificateDtoOut, SukoCertificateDtoOut } from '../types'
 
 export const isSukoCertificate = (data: BaseOut): data is SukoCertificateDtoOut =>
-  data.exam === Exam.SUKO && !('aineKoodiArvo' in data)
+  data.exam === Exam.SUKO && !('aineKoodiArvo' in data) && 'descriptionFi' in data && 'attachmentFi' in data
 
 export const isLdCertificate = (data: BaseOut): data is LdCertificateDtoOut =>
   data.exam === Exam.LD && 'aineKoodiArvo' in data

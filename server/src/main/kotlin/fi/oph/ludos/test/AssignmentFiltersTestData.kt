@@ -32,13 +32,13 @@ object AssignmentFiltersTestData {
     private val aineKoodiArvos = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
 
     private fun laajaalainenOsaaminenVarying(i: Int) =
-        Array(if (i % 2 == 0) 2 else if (i % 5 == 0) 3 else 0) { index -> laajaalainenOsaaminenKoodiArvos[(index + i) % laajaalainenOsaaminenKoodiArvos.size] }
+        List(if (i % 2 == 0) 2 else if (i % 5 == 0) 3 else 0) { index -> laajaalainenOsaaminenKoodiArvos[(index + i) % laajaalainenOsaaminenKoodiArvos.size] }
 
     private fun aiheKoodiArvosArr(i: Int) =
-        Array(if (i % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + i) % aiheKoodiArvos.size] }
+        List(if (i % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + i) % aiheKoodiArvos.size] }
 
     private fun lukuvuosiVarying(i: Int) =
-        Array(if (i % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + i) % lukuvuosiKoodiArvos.size] }
+        List(if (i % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + i) % lukuvuosiKoodiArvos.size] }
 
 
     fun sukoAssignments(n: Int): List<SukoAssignmentDtoIn> =
@@ -48,8 +48,8 @@ object AssignmentFiltersTestData {
                 nameSv = "Filter test name $i SV SUKO",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
-                contentFi = arrayOf("Test content $i FI"),
-                contentSv = arrayOf("Test content $i SV"),
+                contentFi = listOf("Test content $i FI"),
+                contentSv = listOf("Test content $i SV"),
                 publishState = PublishState.PUBLISHED,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying(i),
                 assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[i % sukoAssignmentTypeKoodiArvos.size],
@@ -64,8 +64,8 @@ object AssignmentFiltersTestData {
             LdAssignmentDtoIn(
                 nameFi = "Filter test name $i FI LD",
                 nameSv = "Filter test name $i SV LD",
-                contentFi = arrayOf("Test Content $i FI"),
-                contentSv = arrayOf("Test Content $i SV"),
+                contentFi = listOf("Test Content $i FI"),
+                contentSv = listOf("Test Content $i SV"),
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = PublishState.PUBLISHED,
@@ -80,8 +80,8 @@ object AssignmentFiltersTestData {
             PuhviAssignmentDtoIn(
                 nameFi = "Filter test name $i FI PUHVI",
                 nameSv = "Filter test name $i SV PUHVI",
-                contentFi = arrayOf("Test Content $i FI"),
-                contentSv = arrayOf("Test Content $i SV"),
+                contentFi = listOf("Test Content $i FI"),
+                contentSv = listOf("Test Content $i SV"),
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
                 publishState = PublishState.PUBLISHED,

@@ -26,10 +26,10 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
 import { isCertificate } from '../../utils/certificateUtils'
-import { Spinner } from '../Spinner'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
 import { createNewVersionInstruction, restoreOldCertificate, updateAssignment } from '../../request'
+import { PageLoadingIndicator } from '../PageLoadingIndicator'
 
 type ContentProps = {
   exam: Exam
@@ -84,11 +84,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   }
 
   if (loading) {
-    return (
-      <div className="flex justify-center mt-10">
-        <Spinner />
-      </div>
-    )
+    return <PageLoadingIndicator />
   }
 
   if (error) {

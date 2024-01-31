@@ -51,18 +51,18 @@ export function ContentHeader({ data, teachingLanguage, contentType, isPresentat
 }
 
 function ContentActionButton({
-  contentId,
   contentAction: { actionName, iconName, text, link },
   isActive,
+  disabled,
   onClickHandler
 }: {
-  contentId: number
   contentAction: ContentAction
   isActive?: boolean
+  disabled?: boolean
   onClickHandler?: (actionName: string) => void
 }) {
   const className = 'flex gap-1 items-center'
-  const testId = `assignment-action-${actionName}`
+
   const children = (
     <>
       <Icon name={iconName} color="text-green-primary" filled={isActive} />
@@ -76,7 +76,8 @@ function ContentActionButton({
         target="_blank"
         className={`${className} hover:bg-gray-active`}
         children={children}
-        data-testid={testId}
+        disabled={disabled}
+        data-testid={actionName}
       />
     )
   } else {
@@ -85,7 +86,8 @@ function ContentActionButton({
         variant="buttonGhost"
         customClass="p-0 flex items-center pr-3"
         onClick={() => onClickHandler?.(actionName)}
-        data-testid={`assignment-${contentId.toString()}-${iconName}`}>
+        disabled={disabled}
+        data-testid={actionName}>
         {children}
       </Button>
     )
@@ -97,23 +99,24 @@ const PDFDownloadButton = lazy(() => import('./pdf/PdfDownloadButton'))
 type ContentActionRowProps = {
   contentId: number
   isFavorite?: boolean
+  disabled?: boolean
   onFavoriteClick?: () => void
-  pdfData?: { baseOut: BaseOut; language: TeachingLanguage }
+  pdfData?: { baseOut: BaseOut; language: TeachingLanguage; contentType: ContentType }
 }
 
-export function ContentActionRow({ contentId, isFavorite, onFavoriteClick, pdfData }: ContentActionRowProps) {
+export function ContentActionRow({ contentId, isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
   const { t } = useTranslation()
 
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">
       <ContentActionButton
-        contentId={contentId}
         contentAction={{
           actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
           text: t('assignment.katselunakyma'),
           link: esitysnakymaKey
         }}
+        disabled={disabled}
         key="uusi-valilehti"
       />
       {pdfData && (
@@ -124,19 +127,24 @@ export function ContentActionRow({ contentId, isFavorite, onFavoriteClick, pdfDa
               <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
             </Button>
           }>
-          <PDFDownloadButton baseOut={pdfData.baseOut} language={pdfData.language} />
+          <PDFDownloadButton
+            exam={pdfData.baseOut.exam}
+            contentType={pdfData.contentType}
+            contentId={pdfData.baseOut.id}
+            language={pdfData.language}
+          />
         </Suspense>
       )}
       {isFavorite !== undefined && (
         <ContentActionButton
-          contentId={contentId}
           contentAction={{
             actionName: 'suosikki',
             iconName: 'suosikki',
-            text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
+            text: isFavorite ? t('favorite.muokkaa-suosikkeja') : t('favorite.lisaa-suosikiksi')
           }}
           onClickHandler={onFavoriteClick}
           isActive={isFavorite}
+          disabled={disabled}
           key="suosikki"
         />
       )}

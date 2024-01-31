@@ -13,3 +13,5 @@ enum class PublishState {
 enum class Exam {
     SUKO, PUHVI, LD
 }
+
+const val INITIAL_VERSION_NUMBER = 1

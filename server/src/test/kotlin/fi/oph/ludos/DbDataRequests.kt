@@ -6,6 +6,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 val mapper = jacksonObjectMapper()
 
@@ -25,17 +26,22 @@ fun seedDbWithCustomAssignments(mockMvc: MockMvc, assignments: List<Assignment>)
     }
 }
 
-fun seedDb(): MockHttpServletRequestBuilder =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seed").contentType(MediaType.APPLICATION_JSON)
+fun seedDbWithAssignments(mockMvc: MockMvc) {
+    val req = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedAssignments").with(yllapitajaUser)
+    mockMvc.perform(req).andExpect(status().isFound)
+}
 
-fun seedDbWithAssignments(): MockHttpServletRequestBuilder =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedAssignments").contentType(MediaType.APPLICATION_JSON)
+fun seedDbWithInstructions(mockMvc: MockMvc) {
+    val req = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedInstructions").with(yllapitajaUser)
+    mockMvc.perform(req).andExpect(status().isFound)
+}
 
-fun seedDbWithInstructions(): MockHttpServletRequestBuilder =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedInstructions").contentType(MediaType.APPLICATION_JSON)
+fun seedDbWithCertificates(mockMvc: MockMvc) {
+    val req = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedCertificates").with(yllapitajaUser)
+    mockMvc.perform(req).andExpect(status().isFound)
+}
 
-fun seedDbWithCertificates(): MockHttpServletRequestBuilder =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/seedCertificates").contentType(MediaType.APPLICATION_JSON)
-
-fun emptyDbRequest() =
-    MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/empty").contentType(MediaType.APPLICATION_JSON)
+fun emptyDb(mockMvc: MockMvc) {
+    val req = MockMvcRequestBuilders.get("${Constants.API_PREFIX}/test/empty").with(yllapitajaUser)
+    mockMvc.perform(req).andExpect(status().isFound)
+}

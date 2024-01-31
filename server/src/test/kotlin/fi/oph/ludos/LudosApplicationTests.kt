@@ -148,6 +148,15 @@ val yllapitaja2User: RequestPostProcessor = user(Yllapitaja2SecurityContextFacto
 val opettajaUser: RequestPostProcessor = user(OpettajaSecurityContextFactory().kayttajatiedot())
 
 enum class TestPublishState {
-    DRAFT, PUBLISHED, ARCHIVED, DELETED, OLEMATON
+    DRAFT, PUBLISHED, ARCHIVED, DELETED, OLEMATON;
+
+    companion object {
+        fun fromPublishState(publishState: PublishState) = when (publishState) {
+            PublishState.DRAFT -> DRAFT
+            PublishState.PUBLISHED -> PUBLISHED
+            PublishState.ARCHIVED -> ARCHIVED
+            PublishState.DELETED -> DELETED
+        }
+    }
 }
 

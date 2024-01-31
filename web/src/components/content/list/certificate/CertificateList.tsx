@@ -12,9 +12,9 @@ import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
-import { Spinner } from '../../../Spinner'
 import { InfoBox } from '../../../InfoBox'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
 type CertificateListProps = {
   exam: Exam
@@ -67,11 +67,7 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
 
       {error && <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />}
 
-      {loading && (
-        <div className="flex justify-center mt-10">
-          <Spinner />
-        </div>
-      )}
+      {loading && <PageLoadingIndicator />}
 
       <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
         {data?.content.map((certificate, i) => (

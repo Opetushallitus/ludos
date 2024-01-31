@@ -1,6 +1,7 @@
 package fi.oph.ludos.instruction
 
 import fi.oph.ludos.Exam
+import fi.oph.ludos.INITIAL_VERSION_NUMBER
 import fi.oph.ludos.Language
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
@@ -58,7 +59,7 @@ class InstructionRepository(
         attachments: List<InstructionAttachmentIn>,
         insertInstructionRow: (version: Int) -> Long
     ) = transactionTemplate.execute { _ ->
-        val instructionVersion = 1
+        val instructionVersion = INITIAL_VERSION_NUMBER
         val id = insertInstructionRow(instructionVersion)
 
         val attachmentWithInstructionVersion = { metadata: InstructionAttachmentMetadataDtoIn ->

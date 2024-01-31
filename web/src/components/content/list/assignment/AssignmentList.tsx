@@ -1,12 +1,13 @@
 import { useFetch } from '../../../../hooks/useFetch'
 import {
-  AssignmentOut,
+  AssignmentCardOut,
   AssignmentsOut,
   ContentType,
   ContentTypeSingular,
   ContentTypeSingularEng,
   emptyAssignmentFilterOptions,
   Exam,
+  FavoriteIdsDtoOut,
   TeachingLanguage
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
@@ -24,10 +25,10 @@ import { AssignmentFilters } from './AssignmentFilters'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
-import { Spinner } from '../../../Spinner'
 import { InfoBox } from '../../../InfoBox'
+import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
-const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
+export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
     return data.nameFi !== ''
   } else if (teachingLanguage === TeachingLanguage.sv) {
@@ -39,10 +40,9 @@ const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: Teachin
 type AssignmentListProps = {
   exam: Exam
   filterValues: FilterValues
-  isFavoritePage?: boolean
 }
 
-export const AssignmentList = ({ exam, filterValues, isFavoritePage }: AssignmentListProps) => {
+export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
   const { isYllapitaja } = useUserDetails()
   const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
@@ -51,36 +51,38 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: Assignmen
   const contentType = ContentType.koetehtavat
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { data, loading, error, refresh } = useFetch<AssignmentsOut>(
+  const { data, loading, error } = useFetch<AssignmentsOut>(
     `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
   )
 
+  const {
+    data: favoriteIds,
+    error: favoriteIdsError,
+    refresh: favoriteIdsRefresh
+  } = useFetch<FavoriteIdsDtoOut>(
+    `${ContentTypeSingularEng[ContentType.koetehtavat]}/favorites/${exam.toLocaleUpperCase()}`
+  )
+
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
   const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
 
-  if (error) {
+  const hasError = error || favoriteIdsError
+
+  if (hasError) {
     return <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />
   }
 
   if (loading) {
-    return (
-      <div className="flex justify-center mt-10">
-        <Spinner />
-      </div>
-    )
-  }
-
-  if (isFavoritePage && !data?.content.length) {
-    return <InfoBox type="info" i18nKey={lt.favoritePageNoContentMessage[exam]} />
+    return <PageLoadingIndicator />
   }
 
   return (
     <div>
       <div className="row my-5 flex-wrap justify-between">
         <div className="w-full md:w-[20%]">
-          {isYllapitaja && !isFavoritePage && (
+          {isYllapitaja && (
             <InternalLink
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
@@ -117,11 +119,10 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: Assignmen
               .map((assignment, i) => (
                 <AssignmentCard
                   teachingLanguage={languageOverrideIfSukoAssignment}
-                  assignment={assignment}
-                  exam={exam}
+                  assignmentCard={assignment}
+                  favoriteIds={favoriteIds}
                   key={`${exam}-${contentType}-${i}`}
-                  isFavoritePage={isFavoritePage}
-                  refreshData={refresh}
+                  favoriteIdsRefresh={favoriteIdsRefresh}
                 />
               ))}
           </ul>

@@ -1,10 +1,19 @@
-import { AssignmentOut, Exam, TeachingLanguage } from '../../types'
+import {
+  AssignmentOut,
+  ContentType,
+  ContentTypeSingularEng,
+  Exam,
+  FavoriteIdsDtoOut,
+  TeachingLanguage
+} from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../utils/assignmentUtils'
 import { useState } from 'react'
-import { useToggleFavorite } from '../../hooks/useToggleFavorite'
+import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
+import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
+import { useFetch } from '../../hooks/useFetch'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -16,27 +25,22 @@ type AssignmentContentProps = {
 export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
-  const [isFavorite, setIsFavorite] = useState(assignment.isFavorite)
+  const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
-  const { toggleFavorite } = useToggleFavorite({
-    exam,
-    assignmentId: assignment.id,
-    isFavorite,
-    setIsFavorite
-  })
+  const { data: favoriteIds, refresh: refreshFavoriteIds } = useFetch<FavoriteIdsDtoOut>(
+    `${ContentTypeSingularEng[ContentType.koetehtavat]}/favorites/${exam.toLocaleUpperCase()}/${assignment.id}`
+  )
 
-  const handleToggleFavoriteClick = async () => await toggleFavorite()
+  const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
 
-  const suko = isSukoAssignment(assignment)
-  const puhvi = isPuhviAssignment(assignment)
-  const ld = isLdAssignment(assignment)
+  const { setFavoriteFolders } = useSetFavoriteFolders({})
 
   return (
     <>
       {!isPresentation && (
         <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light" data-testid="assignment-metadata">
           <ul>
-            {suko && (
+            {isSukoAssignment(assignment) && (
               <>
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.oppimaara')}:</span>
@@ -61,7 +65,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
               </>
             )}
             <>
-              {puhvi && (
+              {isPuhviAssignment(assignment) && (
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>
                   <span data-testid="puhvi-tehtavatyyppi">
@@ -69,7 +73,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
                   </span>
                 </li>
               )}
-              {(ld || puhvi) && (
+              {(isLdAssignment(assignment) || isPuhviAssignment(assignment)) && (
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.lukuvuosi')}:</span>
                   <span data-testid="ld-puhvi-lukuvuosi">
@@ -77,7 +81,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
                   </span>
                 </li>
               )}
-              {ld && (
+              {isLdAssignment(assignment) && (
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.aine')}:</span>
                   <span data-testid="ld-aine">{getKoodiLabel(assignment.aineKoodiArvo, 'ludoslukiodiplomiaine')}</span>
@@ -95,11 +99,13 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
           <ContentActionRow
             contentId={assignment.id}
             isFavorite={isFavorite}
-            onFavoriteClick={handleToggleFavoriteClick}
+            onFavoriteClick={() => setIsFavoriteModalOpen(true)}
             pdfData={{
               baseOut: assignment,
-              language: teachingLanguage
+              language: teachingLanguage,
+              contentType: ContentType.koetehtavat
             }}
+            disabled={!favoriteIds}
           />
         </div>
       )}
@@ -117,6 +123,23 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
         contentFi={assignment.contentFi}
         contentSv={assignment.contentSv}
       />
+
+      {isFavoriteModalOpen && favoriteIds && (
+        <SetFavoriteFoldersModal
+          isFavorite={isFavorite}
+          assignmentCard={assignment}
+          favoriteIds={favoriteIds}
+          assignmentName={
+            (teachingLanguage === TeachingLanguage.fi ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')
+          }
+          onClose={() => setIsFavoriteModalOpen(false)}
+          onSetFavoriteFoldersAction={async (favoriteCards) => {
+            await setFavoriteFolders(favoriteCards)
+            refreshFavoriteIds()
+            setIsFavoriteModalOpen(false)
+          }}
+        />
+      )}
     </>
   )
 }
