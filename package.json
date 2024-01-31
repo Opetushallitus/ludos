@@ -9,6 +9,7 @@
     "dev:server": "server/up.sh",
     "dev:web": "yarn workspace web dev",
     "playwright": "yarn workspace playwright test",
+    "playwright:ci": "yarn workspace playwright test:ci",
     "lint": "yarn lint:web && yarn lint:playwright",
     "lint:web": "yarn workspace web lint",
     "lint:playwright": "yarn workspace playwright lint",
