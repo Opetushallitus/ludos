@@ -10,7 +10,7 @@
   },
   "scripts": {
     "lint": "eslint **/*.ts",
-    "test": "bash -c 'yarn test:parallel_tests \"$@\"; yarn test:non_parallel_tests \"$@\"' --",
+    "test": "bash -c 'yarn test:parallel_tests \"$@\" && yarn test:non_parallel_tests \"$@\"' --",
     "test:parallel_tests": "npx playwright test --project parallel_tests --workers 8",
     "test:non_parallel_tests": "npx playwright test --project non_parallel_tests --workers 1"
   },
