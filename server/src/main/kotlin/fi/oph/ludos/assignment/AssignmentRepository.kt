@@ -939,10 +939,14 @@ class AssignmentRepository(
 
         val sql = """
             SELECT count(1)
-            FROM assignment
+            FROM assignment a
+            INNER JOIN (SELECT assignment_id, MAX(assignment_version) AS max_version
+                     FROM assignment
+                     GROUP BY assignment_id) latest_version ON a.assignment_id = latest_version.assignment_id AND
+                                                               a.assignment_version = latest_version.max_version
             LEFT JOIN assignment_favorite fav
-                   ON assignment.assignment_id = fav.assignment_id AND fav.user_oid = ?
-            WHERE fav.assignment_id IS NOT NULL $andIsPublishedIfOpettaja;
+                   ON a.assignment_id = fav.assignment_id AND fav.user_oid = ?
+            WHERE a.assignment_publish_state <> 'DELETED' AND fav.assignment_id IS NOT NULL $andIsPublishedIfOpettaja;
         """.trimIndent()
 
         return jdbcTemplate.queryForObject(sql, Int::class.java, userOid)
