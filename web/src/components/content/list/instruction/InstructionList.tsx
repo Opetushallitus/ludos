@@ -19,8 +19,6 @@ import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { ListError } from '../ListError'
-import { useTranslation } from 'react-i18next'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../../ludosSelect/helpers'
 import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
@@ -28,6 +26,8 @@ import { useCallback, useContext } from 'react'
 import { MultiValue } from 'react-select'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { Spinner } from '../../../Spinner'
+import { InfoBox } from '../../../InfoBox'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -45,7 +45,7 @@ type InstructionListProps = {
 
 export const InstructionList = ({ exam, filterValues: { filterValues, setFilterValue } }: InstructionListProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t } = useTranslation()
+  const { t, lt } = useLudosTranslation()
   const { koodistos } = useKoodisto()
   const { teachingLanguage } = useContext(LudosContext)
 
@@ -117,7 +117,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
         </div>
       )}
 
-      {error && <ListError contentType={ContentType.ohjeet} />}
+      {error && <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />}
 
       {loading && (
         <div className="flex justify-center mt-10">

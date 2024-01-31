@@ -13,6 +13,7 @@ import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { BlockNavigation } from '../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
+import { InfoBox } from '../InfoBox'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -28,6 +29,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
     handleMultiselectOptionChange,
     submitAssignment,
     submitError,
+    defaultValueError,
     isDeleteModalOpen,
     setIsDeleteModalOpen
   } = useAssignmentForm<LdAssignmentFormType>(Exam.LD, id, action)
@@ -40,6 +42,10 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
   const watchPublishState = watch('publishState')
+
+  if (defaultValueError) {
+    return <InfoBox type="error" i18nKey="error.sisallon-lataaminen-epaonnistui" />
+  }
 
   return (
     <>

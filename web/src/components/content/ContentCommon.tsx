@@ -65,7 +65,7 @@ function ContentActionButton({
   const testId = `assignment-action-${actionName}`
   const children = (
     <>
-      <Icon name={iconName} color="text-green-primary" isActive={isActive} />
+      <Icon name={iconName} color="text-green-primary" filled={isActive} />
       <span className="ml-1 text-xs text-green-primary">{text}</span>
     </>
   )

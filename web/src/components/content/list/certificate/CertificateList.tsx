@@ -6,8 +6,6 @@ import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { ListError } from '../ListError'
-import { useTranslation } from 'react-i18next'
 import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
@@ -15,6 +13,8 @@ import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { Spinner } from '../../../Spinner'
+import { InfoBox } from '../../../InfoBox'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 type CertificateListProps = {
   exam: Exam
@@ -24,7 +24,7 @@ type CertificateListProps = {
 export const CertificateList = ({ exam, filterValues: { filterValues, setFilterValue } }: CertificateListProps) => {
   const contentType = ContentType.todistukset
   const { isYllapitaja } = useUserDetails()
-  const { t } = useTranslation()
+  const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
@@ -65,7 +65,7 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
         </div>
       </div>
 
-      {error && <ListError contentType={ContentType.koetehtavat} />}
+      {error && <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />}
 
       {loading && (
         <div className="flex justify-center mt-10">

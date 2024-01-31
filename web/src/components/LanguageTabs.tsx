@@ -32,7 +32,7 @@ export const LanguageTabs = ({ activeTab, setActiveTab, fiErrors, svErrors }: La
             aria-expanded={activeTab === option}
             data-testid={`tab-${option}`}>
             {(option === 'fi' && fiErrors) || (option === 'sv' && svErrors) ? (
-              <Icon name="virheellinen" color="text-red-primary" isActive customClass="mr-2" />
+              <Icon name="virhe" color="text-red-primary" filled customClass="mr-2" />
             ) : null}
             <span className={(option === 'fi' && fiErrors) || (option === 'sv' && svErrors) ? 'text-red-primary' : ''}>
               {option === 'fi' ? t('tab.fi') : t('tab.sv')}

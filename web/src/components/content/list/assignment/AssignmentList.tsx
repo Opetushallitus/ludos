@@ -24,10 +24,8 @@ import { AssignmentFilters } from './AssignmentFilters'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
-import { ListError } from '../ListError'
-import { Icon } from '../../../Icon'
-import { Trans } from 'react-i18next'
 import { Spinner } from '../../../Spinner'
+import { InfoBox } from '../../../InfoBox'
 
 const filterByTeachingLanguage = (data: AssignmentOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -63,7 +61,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: Assignmen
   const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
 
   if (error) {
-    return <ListError contentType={ContentType.koetehtavat} />
+    return <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />
   }
 
   if (loading) {
@@ -75,12 +73,7 @@ export const AssignmentList = ({ exam, filterValues, isFavoritePage }: Assignmen
   }
 
   if (isFavoritePage && !data?.content.length) {
-    return (
-      <div className="p-5 mt-10 rounded bg-gray-bg">
-        <Icon customClass="pr-3" name="info" size="lg" color="text-black" />
-        <Trans i18nKey={lt.favoritePageNoContentMessage[exam]} />
-      </div>
-    )
+    return <InfoBox type="info" i18nKey={lt.favoritePageNoContentMessage[exam]} />
   }
 
   return (

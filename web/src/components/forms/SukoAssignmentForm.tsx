@@ -20,6 +20,7 @@ import {
 import { useCallback } from 'react'
 import { BlockNavigation } from '../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
+import { InfoBox } from '../InfoBox'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -35,6 +36,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     handleMultiselectOptionChange,
     submitAssignment,
     submitError,
+    defaultValueError,
     isDeleteModalOpen,
     setIsDeleteModalOpen
   } = useAssignmentForm<SukoAssignmentFormType>(Exam.SUKO, id, action)
@@ -70,6 +72,10 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
       ]
     })
   }, [koodistos.oppiaineetjaoppimaaratlops2021])
+
+  if (defaultValueError) {
+    return <InfoBox type="error" i18nKey={t('error.sisallon-lataaminen-epaonnistui')} />
+  }
 
   return (
     <>

@@ -4,7 +4,7 @@ type IconProps = {
   name: Icons
   color: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary' | 'text-gray-secondary'
   disabled?: boolean
-  isActive?: boolean
+  filled?: boolean
   size?: 'sm' | 'base' | 'lg'
   dataTestId?: string
   customClass?: string
@@ -19,7 +19,7 @@ export type Icons =
   | 'poista'
   | 'muokkaa'
   | 'onnistunut'
-  | 'virheellinen'
+  | 'virhe'
   | 'ostoskori'
   | 'lisää'
   | 'uusi-valilehti'
@@ -59,7 +59,7 @@ const icons: Record<Icons, string> = {
   ['muokkaa']: 'edit',
   ['onnistunut']: 'check_circle',
   ['check']: 'check',
-  ['virheellinen']: 'error',
+  ['virhe']: 'error',
   ['ostoskori']: 'shopping_basket',
   ['lisää']: 'add',
   ['uusi-valilehti']: 'open_in_new',
@@ -89,13 +89,13 @@ const icons: Record<Icons, string> = {
   ['info']: 'info'
 }
 
-export const Icon = ({ name, color, disabled = false, isActive = false, size, dataTestId, customClass }: IconProps) => {
+export const Icon = ({ name, color, disabled = false, filled = false, size, dataTestId, customClass }: IconProps) => {
   const className = twMerge(
     `material-symbols-outlined ${color}`,
     size ? `text-${size}` : 'text-base',
     customClass,
     disabled && 'opacity-50',
-    isActive && 'material-symbols-outlined-filled'
+    filled && 'material-symbols-outlined-filled'
   )
 
   return (

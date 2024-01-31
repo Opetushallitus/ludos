@@ -13,6 +13,7 @@ import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
 import { BlockNavigation } from '../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
+import { InfoBox } from '../InfoBox'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -28,6 +29,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
     handleMultiselectOptionChange,
     submitAssignment,
     submitError,
+    defaultValueError,
     isDeleteModalOpen,
     setIsDeleteModalOpen
   } = useAssignmentForm<PuhviAssignmentFormType>(Exam.PUHVI, id, action)
@@ -42,6 +44,10 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
   const watchPublishState = watch('publishState')
+
+  if (defaultValueError) {
+    return <InfoBox type="error" i18nKey="error.sisallon-lataaminen-epaonnistui" />
+  }
 
   return (
     <>

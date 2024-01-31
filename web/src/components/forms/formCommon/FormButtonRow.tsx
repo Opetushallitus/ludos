@@ -119,7 +119,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
       </div>
       {formHasValidationErrors && (
         <div className="flex justify-end text-red-primary gap-1 mb-2">
-          <Icon name="virheellinen" color="text-red-primary" />
+          <Icon name="virhe" color="text-red-primary" />
           {t('form.error.validaatiovirhe')}
         </div>
       )}

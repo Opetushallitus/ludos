@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { NavigateOptions, useNavigate } from 'react-router-dom'
-import { ContentType, Exam, NonDeletedPublishState, PublishState } from '../../types'
-import { NotificationEnum, useNotification } from '../../contexts/NotificationContext'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { contentListPath, contentPagePath, uudelleenkirjautuminenOnnistuiPath } from '../LudosRoutes'
-import { ExternalLink } from '../ExternalLink'
-import { SessionExpiredFetchError } from '../../request'
+import { ContentType, Exam, NonDeletedPublishState, PublishState } from '../types'
+import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
+import { useLudosTranslation } from './useLudosTranslation'
+import { contentListPath, contentPagePath, uudelleenkirjautuminenOnnistuiPath } from '../components/LudosRoutes'
+import { ExternalLink } from '../components/ExternalLink'
+import { SessionExpiredFetchError } from '../request'
 
 export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate: boolean) => {
   const { t, lt } = useLudosTranslation()

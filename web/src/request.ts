@@ -5,10 +5,24 @@ import { AttachmentData, Exam, ImageDtoOut } from './types'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
-    super('')
+    super('Session expired')
     this.name = 'SessionExpiredFetchError'
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, SessionExpiredFetchError)
+    }
+  }
+}
+
+export class NonOkResponseFetchError extends Error {
+  fullUrl: string
+  code: number
+  constructor(fullUrl: string, code: number) {
+    super(`Response status from '${fullUrl}' was ${code}, expected 200 OK`)
+    this.name = 'SessionExpiredFetchError'
+    this.fullUrl = fullUrl
+    this.code = code
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, NonOkResponseFetchError)
     }
   }
 }
@@ -40,7 +54,7 @@ export async function fetchData<T>(url: string): Promise<T> {
   const response = await doRequest(fullUrl, 'GET')
 
   if (!response.ok) {
-    throw new Error(`Error fetching data from ${fullUrl}, status=${response.status}`)
+    throw new NonOkResponseFetchError(fullUrl, response.status)
   }
 
   return (await response.json()) as T

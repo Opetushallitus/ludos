@@ -4,7 +4,7 @@ import { fetchData, SessionExpiredFetchError } from '../request'
 export function useFetch<T>(url: string, shouldNotFetch: boolean = false) {
   const [data, setData] = useState<T>()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<Error | null>(null)
   const [refresh, setRefresh] = useState(false)
 
   useEffect(() => {
@@ -29,11 +29,9 @@ export function useFetch<T>(url: string, shouldNotFetch: boolean = false) {
             location.reload()
             throw SessionExpiredFetchError
           } else if (e instanceof Error) {
-            const match = e.message.match(/status=(\d+)/)
-            const status = match ? match[1] : ''
-            setError(status)
+            setError(e)
           } else {
-            setError('')
+            setError(new Error(`Unexpected error type ${typeof e}: ${e}}`))
           }
         }
       } finally {
