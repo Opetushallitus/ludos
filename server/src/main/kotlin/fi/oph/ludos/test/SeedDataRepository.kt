@@ -115,7 +115,7 @@ class SeedDataRepository(
         Oppimaara("TKRUB1"),
         Oppimaara("TKRUB3"),
         Oppimaara("TKRUAI"),
-        Oppimaara("VKB1", "IA"),
+        Oppimaara("VKENA1"),
         Oppimaara("VKA1", "RA"),
         Oppimaara("VKA1", "SA"),
         Oppimaara("VKA1")
