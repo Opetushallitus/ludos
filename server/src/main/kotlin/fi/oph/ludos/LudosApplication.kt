@@ -12,17 +12,20 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
+import org.springframework.http.CacheControl
 import org.springframework.web.filter.ForwardedHeaderFilter
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
+import java.time.Duration
 import kotlin.system.exitProcess
 
 @SpringBootApplication
 class LudosApplication {
     companion object {
         fun activeProfiles(): List<String> {
-            val activeProfilesString = System.getProperty("spring.profiles.active") ?: System.getenv("SPRING_PROFILES_ACTIVE")
+            val activeProfilesString =
+                System.getProperty("spring.profiles.active") ?: System.getenv("SPRING_PROFILES_ACTIVE")
             return activeProfilesString?.split(",") ?: emptyList()
         }
     }
@@ -63,17 +66,32 @@ class Config : WebMvcConfigurer {
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/**").resourceChain(true)
-            // resolving ALL files. Meaning nothing gets resolves automatically by pointing out "static" above.
+        registry
+            .addResourceHandler("/assets/**")
+            .addResourceLocations("classpath:/static/**")
+            .setCacheControl(
+                // Kaikki /assetit sisältävät hashin, joka hoitaa cache-bustauksen: voi siis kakuttaa loputtomiin
+                CacheControl.maxAge(Duration.ofDays(365)).sMaxAge(Duration.ofDays(365)).cachePublic().immutable()
+            )
+            .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
-                override fun getResource(resourcePath: String, location: Resource): Resource {
-                    val requestedResource: Resource = location.createRelative(resourcePath)
+                override fun getResource(resourcePath: String, location: Resource): Resource? {
+                    val requestedResource: Resource = location.createRelative("assets/${resourcePath}")
                     return if (requestedResource.exists() && requestedResource.isReadable) {
                         requestedResource
                     } else {
-                        indexHtml
+                        null
                     }
                 }
+            })
+
+        // Palauta index.html kaikista tuntemattomista poluista, frontin SPA-router näyttää oikean sivun tai 404
+        registry
+            .addResourceHandler("/**")
+            .addResourceLocations("classpath:/static/**")
+            .resourceChain(true)
+            .addResolver(object : PathResourceResolver() {
+                override fun getResource(resourcePath: String, location: Resource) = indexHtml
             })
 
     }
