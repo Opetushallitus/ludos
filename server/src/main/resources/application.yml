@@ -25,6 +25,8 @@ logging:
         session: INFO
 
 server:
+  compression:
+    enabled: true
   servlet:
     session:
       timeout: 7200s # Session timeout. If a duration suffix is not specified, seconds are used.
