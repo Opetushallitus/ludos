@@ -4,12 +4,14 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import org.springframework.core.io.InputStreamResource
+import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
+import java.time.Duration
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/image")
@@ -39,6 +41,7 @@ class ImageController(val service: ImageService) {
 
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType(contentType))
+            .cacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePrivate().immutable())
             .body(InputStreamResource(response))
     }
 }

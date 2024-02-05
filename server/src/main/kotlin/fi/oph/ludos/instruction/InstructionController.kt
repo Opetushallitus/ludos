@@ -9,13 +9,13 @@ import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import jakarta.servlet.http.Part
 import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
+import software.amazon.awssdk.core.ResponseInputStream
+import java.io.InputStream
+import java.time.Duration
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/instruction")
@@ -135,32 +135,26 @@ class InstructionController(val service: InstructionService, private val objectM
     fun getAllVersionsOfInstruction(@PathVariable exam: Exam, @PathVariable id: Int): List<InstructionOut> =
         service.getAllVersionsOfInstruction(exam, id)
 
+    fun attachmentResponse(attachmentKey: String, version: Int?): ResponseEntity<InputStreamResource> {
+        val (uploadFile, attachmentInputStream) = service.getAttachment(attachmentKey, version)
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
+            .cacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePrivate().immutable())
+            .body(InputStreamResource(attachmentInputStream))
+    }
+
     @GetMapping("/attachment/{key}")
     @RequireAtLeastOpettajaRole
     fun downloadAttachment(
         @PathVariable("key") key: String,
-    ): ResponseEntity<InputStreamResource> {
-        val (uploadFile, responseInputStream) = service.getAttachment(key)
-
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_PDF
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
-
-        return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
-    }
+    ): ResponseEntity<InputStreamResource> = attachmentResponse(key, null)
 
     @GetMapping("/attachment/{key}/{version}")
     @RequireAtLeastYllapitajaRole
     fun previewAttachmentVersion(
         @PathVariable("key") key: String,
         @PathVariable("version") version: Int
-    ): ResponseEntity<InputStreamResource> {
-        val (uploadFile, responseInputStream) = service.getAttachment(key, version)
-
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_PDF
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
-
-        return ResponseEntity(InputStreamResource(responseInputStream), headers, HttpStatus.OK)
-    }
+    ): ResponseEntity<InputStreamResource> = attachmentResponse(key, version)
 }
