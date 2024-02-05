@@ -6,6 +6,12 @@ ludos:
   image-bucket-name: ludos-application-image-bucket-untuva
   local-dev-aws-profile: oph-ludos-dev
 
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false
+
 # logging:
 #   level:
 #     org:

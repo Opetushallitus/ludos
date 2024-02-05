@@ -29,6 +29,8 @@ server:
     enabled: true
   servlet:
     session:
+      cookie:
+        secure: true
       timeout: 7200s # Session timeout. If a duration suffix is not specified, seconds are used.
   tomcat:
     accesslog:
