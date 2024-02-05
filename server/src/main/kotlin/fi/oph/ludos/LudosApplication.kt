@@ -14,6 +14,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.http.CacheControl
 import org.springframework.web.filter.ForwardedHeaderFilter
+import org.springframework.web.filter.ShallowEtagHeaderFilter
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 import org.springframework.web.servlet.resource.PathResourceResolver
@@ -94,6 +95,11 @@ class Config : WebMvcConfigurer {
                 override fun getResource(resourcePath: String, location: Resource) = indexHtml
             })
 
+    }
+
+    @Bean
+    fun shallowEtagHeaderFilter(): ShallowEtagHeaderFilter {
+        return ShallowEtagHeaderFilter()
     }
 
     @Bean
