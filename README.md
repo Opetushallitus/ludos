@@ -101,4 +101,4 @@ ehditään. Tehdään uusi pull request jokaista depsupäivityskierrosta varten.
 1) `cd web`
 2) `yarn upgrade --latest`
    * Jos major-päivitys rikkoi softan etkä ehdi/jaksa korjata, niin reverttaa ja aja ilman `--latest`
-3) `cd .. && yarn build:web && yarn playwright`
+3) `cd .. && yarn playwright`
