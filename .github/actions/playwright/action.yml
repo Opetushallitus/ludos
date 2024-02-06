@@ -1,6 +1,9 @@
 name: Playwright Tests
 description: Run playwright tests
 inputs:
+  yarn-script:
+    description: The yarn script to run in playwright workspace
+    required: true
   ludos-profiles:
     description: Ludos profiles as comma separated list
     required: true
@@ -76,11 +79,15 @@ runs:
       env:
         TESTIKAYTTAJA_YLLAPITAJA_USERNAME: ${{ inputs.testikayttaja-yllapitaja-username }}
         TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
-      run: yarn playwright:ci
+      run: yarn workspace playwright ${{ inputs.yarn-script }}
+    - name: Calculate artifact name suffix
+      id: artifact-name-suffix
+      shell: bash
+      run: echo artifact-name-suffix=$(echo ${{ inputs.yarn-script }} | sed 's/:/-/g') >> $GITHUB_OUTPUT
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: playwright-debug-artifacts
+        name: playwright-debug-artifacts-${{ steps.artifact-name-suffix.outputs.artifact-name-suffix }}
         path: |
           playwright/test-results/
           service.log

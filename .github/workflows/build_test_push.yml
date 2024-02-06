@@ -107,7 +107,7 @@ jobs:
           path: server/build/libs/ludos.jar
           retention-days: 30
           if-no-files-found: error
-  playwright:
+  playwright-parallel:
     runs-on: "ubuntu-22.04"
     needs: [ "build-jar-and-test-api" ]
     permissions:
@@ -118,6 +118,24 @@ jobs:
       - name: Playwright
         uses: ./.github/actions/playwright
         with:
+          yarn-script: test:parallel_tests
+          ludos-profiles: local
+          testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
+          testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
+          ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+  playwright-non-parallel:
+    runs-on: "ubuntu-22.04"
+    needs: [ "build-jar-and-test-api" ]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Playwright
+        uses: ./.github/actions/playwright
+        with:
+          yarn-script: test:non_parallel_tests
           ludos-profiles: local
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
@@ -125,7 +143,7 @@ jobs:
           ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   build-docker-image-and-push:
     runs-on: "ubuntu-22.04"
-    needs: [ "build-jar-and-test-api", "playwright" ]
+    needs: [ "build-jar-and-test-api", "playwright-parallel", "playwright-non-parallel" ]
     if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' || github.run_attempt >= 2
     permissions:
       id-token: write
