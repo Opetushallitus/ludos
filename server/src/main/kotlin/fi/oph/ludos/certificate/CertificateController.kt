@@ -6,14 +6,12 @@ import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
+import java.time.Duration
 
 @RestController
 @Validated
@@ -115,10 +113,10 @@ class CertificateController(val service: CertificateService) {
     fun getAttachment(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
         val (uploadFile, attachmentInputStream) = service.getAttachment(key)
 
-        val headers = HttpHeaders()
-        headers.contentType = MediaType.APPLICATION_PDF
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
-
-        return ResponseEntity(InputStreamResource(attachmentInputStream), headers, HttpStatus.OK)
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"${uploadFile.fileName}\"")
+            .cacheControl(CacheControl.maxAge(Duration.ofDays(365)).cachePrivate().immutable())
+            .body(InputStreamResource(attachmentInputStream))
     }
 }
