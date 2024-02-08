@@ -17,7 +17,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ääneen lukeminen",
+        "nimi": "Tehtävä 1: Teksti",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -28,7 +28,7 @@
         "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": null,
-        "nimi": "Ääneen lukeminen",
+        "nimi": "Tehtävä 1: Teksti",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -39,17 +39,17 @@
         "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": null,
-        "nimi": "Läsa text",
+        "nimi": "Uppgift 1: Text",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       }
     ],
     "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2023-09-07",
+    "paivitysPvm": "2024-02-08",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_001",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 3,
     "voimassaAlkuPvm": "2023-05-10",
     "voimassaLoppuPvm": null
   },
@@ -71,7 +71,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Tekstin tiivistäminen",
+        "nimi": "Tehtävä 2: Kertominen",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -82,7 +82,7 @@
         "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": null,
-        "nimi": "Tekstin tiivistäminen",
+        "nimi": "Tehtävä 2: Kertominen",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -93,17 +93,17 @@
         "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": null,
-        "nimi": "Sammanfatta text",
+        "nimi": "Uppgift 2: Berätta med egna ord",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       }
     ],
     "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2023-09-07",
+    "paivitysPvm": "2024-02-08",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_002",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 3,
     "voimassaAlkuPvm": "2023-05-10",
     "voimassaLoppuPvm": null
   },
@@ -125,7 +125,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Keskustelu",
+        "nimi": "Tehtävä 3: Keskustelu",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -136,7 +136,7 @@
         "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": null,
-        "nimi": "Keskustelu",
+        "nimi": "Tehtävä 3: Keskustelu",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -147,17 +147,17 @@
         "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": null,
-        "nimi": "Diskussion",
+        "nimi": "Uppgift 3: Diskussion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       }
     ],
     "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2023-09-07",
+    "paivitysPvm": "2024-02-08",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/tehtavatyyppisuko_003",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2023-05-10",
     "voimassaLoppuPvm": null
   }
