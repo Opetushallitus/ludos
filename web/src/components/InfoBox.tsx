@@ -1,8 +1,8 @@
 import { Icon } from './Icon'
 import { Trans, useTranslation } from 'react-i18next'
 import { twMerge } from 'tailwind-merge'
-import { InternalLink } from './InternalLink'
-import { palautteetKey } from './LudosRoutes'
+import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
+import { ExternalLink } from './ExternalLink'
 
 type InfoBoxProps = {
   type: 'info' | 'error'
@@ -11,6 +11,7 @@ type InfoBoxProps = {
 
 export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
   const { t } = useTranslation()
+  const feedbackUrl = useFeedbackUrl()
   const isError = type === 'error'
 
   return (
@@ -29,9 +30,9 @@ export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
       <p className="flex-grow">
         <Trans i18nKey={i18nKey} />
         {isError && (
-          <InternalLink className="ml-1 text-white underline" to={`/${palautteetKey}`}>
+          <ExternalLink className="ml-1 underline" textColor="text-white" url={feedbackUrl}>
             {t('notification.error.link.laheta-palautetta-virheesta')}
-          </InternalLink>
+          </ExternalLink>
         )}
       </p>
     </div>

@@ -4,7 +4,7 @@ import { ContentType } from 'web/src/types'
 
 const contentTypes = Object.values(ContentType)
 
-const pageIds = ['etusivu', 'suko', 'ld', 'puhvi', 'palautteet']
+const pageIds = ['etusivu', 'suko', 'ld', 'puhvi']
 
 loginTestGroup(test, Role.YLLAPITAJA)
 

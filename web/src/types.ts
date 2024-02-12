@@ -200,15 +200,15 @@ export const BusinessLanguage = {
   fi: 'fi',
   sv: 'sv',
   en: 'en'
-}
+} as const
 
-export type BusinessLanguageType = keyof typeof BusinessLanguage
+export type BusinessLanguage = keyof typeof BusinessLanguage
 
 export type UserDetails = {
   firstNames: string | null
   lastName: string | null
   role: RolesType | null
-  businessLanguage: BusinessLanguageType | null
+  businessLanguage: BusinessLanguage | null
 }
 
 export const ErrorMessages = {

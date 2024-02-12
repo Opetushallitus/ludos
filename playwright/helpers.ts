@@ -124,7 +124,7 @@ export async function assertFailureNotification(page: Page, notificationLocalisa
   const errorNotification = page.getByTestId('notification-error')
   await expect(errorNotification).toBeVisible()
   await expect(errorNotification).toHaveText(
-    `error${notificationLocalisationKey}notification.error.link.laheta-palautetta-virheestaclose`
+    `error${notificationLocalisationKey}notification.error.link.laheta-palautetta-virheestaopen_in_newclose`
   )
 }
 
