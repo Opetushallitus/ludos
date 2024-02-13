@@ -230,8 +230,6 @@ type Metadata = {
   language: AttachmentLanguage
 }
 
-export type MapWithFileKeyAndMetadata = Map<string, Metadata>
-
 export type AttachmentLanguage = 'fi' | 'sv'
 
 export type AttachmentData = {

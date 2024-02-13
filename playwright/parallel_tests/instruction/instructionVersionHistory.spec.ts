@@ -21,7 +21,7 @@ Object.values(Exam).forEach((exam) => {
 
       await versionHistory.createTestVersions(async (version) => {
         // In version 3, remove fixture1.pdf and add fixture2.pdf and fixture3.pdf
-        let currentAttachments: AttachmentDtoOut[] = []
+        let currentAttachments: AttachmentDtoOut[]
         if (version < 3) {
           currentAttachments = instruction.attachments
         } else if (version === 3) {
