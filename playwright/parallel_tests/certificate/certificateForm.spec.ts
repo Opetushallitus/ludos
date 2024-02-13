@@ -64,7 +64,7 @@ async function updateCertificate(
 }
 
 async function deleteCertificate(form: CertificateFormModel, certificateId: number) {
-  const { page, exam } = form
+  const { page } = form
 
   await expect(form.formHeader).toBeVisible()
 

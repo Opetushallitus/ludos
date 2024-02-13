@@ -118,7 +118,7 @@ jobs:
       - name: Playwright
         uses: ./.github/actions/playwright
         with:
-          yarn-script: test:parallel_tests
+          yarn-script: 'test:parallel_tests'
           ludos-profiles: local
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
@@ -135,7 +135,7 @@ jobs:
       - name: Playwright
         uses: ./.github/actions/playwright
         with:
-          yarn-script: test:non_parallel_tests
+          yarn-script: 'test:non_parallel_tests'
           ludos-profiles: local
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}

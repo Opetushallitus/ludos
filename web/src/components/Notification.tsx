@@ -3,14 +3,15 @@ import { twMerge } from 'tailwind-merge'
 import { Icon } from './Icon'
 import { Button } from './Button'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
-import { InternalLink } from './InternalLink'
 import { useTranslation } from 'react-i18next'
-import { palautteetKey } from './LudosRoutes'
+import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
+import { ExternalLink } from './ExternalLink'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
 export const Notification = () => {
   const { t } = useTranslation()
+  const feedbackUrl = useFeedbackUrl()
   const { notification, setNotification } = useNotification()
   const hideNotification = useCallback(() => setNotification(null), [setNotification])
 
@@ -39,9 +40,9 @@ export const Notification = () => {
           {notification.type === NotificationEnum.error && (
             <>
               {notification.linkComponent || (
-                <InternalLink className="text-white underline" to={`/${palautteetKey}`}>
+                <ExternalLink className="underline" textColor="text-white" url={feedbackUrl}>
                   {t('notification.error.link.laheta-palautetta-virheesta')}
-                </InternalLink>
+                </ExternalLink>
               )}
             </>
           )}

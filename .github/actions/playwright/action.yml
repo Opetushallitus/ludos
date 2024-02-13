@@ -81,9 +81,10 @@ runs:
         TESTIKAYTTAJA_YLLAPITAJA_PASSWORD: ${{ inputs.testikayttaja-yllapitaja-password }}
       run: yarn workspace playwright ${{ inputs.yarn-script }}
     - name: Calculate artifact name suffix
+      if: always()
       id: artifact-name-suffix
       shell: bash
-      run: echo artifact-name-suffix=$(echo ${{ inputs.yarn-script }} | sed 's/:/-/g') >> $GITHUB_OUTPUT
+      run: echo artifact-name-suffix=$(echo '${{ inputs.yarn-script }}' | sed 's/:/-/g') >> $GITHUB_OUTPUT
     - uses: actions/upload-artifact@v4
       if: always()
       with:

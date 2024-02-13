@@ -9,7 +9,7 @@ import { InstructionFormModel } from '../../models/InstructionFormModel'
 loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} instruction pdf download test`, () => {
-    test.beforeEach(async ({ page, context, baseURL }) => {
+    test.beforeEach(async ({ page, baseURL }) => {
       const form = new InstructionFormModel(page, exam)
       await initializeInstructionTest(page, exam)
       const instruction = await form.createInstructionApiCall(baseURL!, ['fixture1.pdf'])

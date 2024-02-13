@@ -21,7 +21,6 @@ import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi
 export const muokkausKey: ContentFormAction = ContentFormAction.muokkaus
-export const palautteetKey = 'palautteet'
 export const sukoKey = Exam.SUKO.toLowerCase()
 export const puhviKey = Exam.PUHVI.toLowerCase()
 export const ldKey = Exam.LD.toLowerCase()
@@ -32,8 +31,6 @@ export const uudelleenkirjautuminenOnnistuiPath = '/uudelleenkirjautuminen-onnis
 export const frontpagePath = () => '/'
 
 export const examPath = (exam: Exam) => `/${exam.toLowerCase()}`
-
-export const feedbackPath = () => `/${palautteetKey}`
 
 export const contentPagePath = (exam: Exam, contentType: ContentType, id: number, version?: number) =>
   `${examPath(exam)}/${contentType}/${id}${version ? `/${version}` : ''}`
@@ -82,15 +79,6 @@ const YllapitajaRoute = (): ReactElement => {
   return <Outlet />
 }
 
-const Palautteet = () => {
-  const { t } = useTranslation()
-  return (
-    <div>
-      <h2 data-testid={`page-heading-${palautteetKey}`}>{t('title.palautteet')}</h2>
-    </div>
-  )
-}
-
 const DefaultError = () => {
   const { t } = useTranslation()
   let error = useRouteError()
@@ -130,19 +118,6 @@ export const ludosRouter = createBrowserRouter([
             <AssignmentFavorite />
           </Layout>
         )
-      },
-      {
-        element: <YllapitajaRoute />,
-        children: [
-          {
-            path: `/${palautteetKey}`,
-            element: (
-              <Layout>
-                <Palautteet />
-              </Layout>
-            )
-          }
-        ]
       },
       {
         path: uudelleenkirjautuminenOnnistuiPath,

@@ -2,18 +2,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { HeaderMobile } from './HeaderMobile'
 import { HeaderDesktop } from './HeaderDesktop'
-import { useUserDetails } from '../../hooks/useUserDetails'
-import {
-  contentListPath,
-  etusivuKey,
-  examPath,
-  feedbackPath,
-  frontpagePath,
-  ldKey,
-  palautteetKey,
-  puhviKey,
-  sukoKey
-} from '../LudosRoutes'
+import { contentListPath, etusivuKey, examPath, frontpagePath, ldKey, puhviKey, sukoKey } from '../LudosRoutes'
 import { ContentType, Exam } from '../../types'
 import { useTranslation } from 'react-i18next'
 
@@ -27,7 +16,6 @@ export interface HeaderPage {
 export const Header = () => {
   const { t } = useTranslation()
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
-  const { isYllapitaja } = useUserDetails()
 
   const pages: HeaderPage[] = [
     {
@@ -52,18 +40,11 @@ export const Header = () => {
       localizationText: t('header.puhvi'),
       path: examPath(Exam.PUHVI),
       navigateTo: contentListPath(Exam.PUHVI, ContentType.koetehtavat)
-    },
-    {
-      key: `${palautteetKey}`,
-      localizationText: t('header.palautteet'),
-      path: feedbackPath()
     }
   ]
-  const filteredPages = isYllapitaja ? pages : pages.filter((page) => page.path !== `/${palautteetKey}`)
-
   if (isMobile) {
-    return <HeaderMobile pages={filteredPages} />
+    return <HeaderMobile pages={pages} />
   }
 
-  return <HeaderDesktop pages={filteredPages} />
+  return <HeaderDesktop pages={pages} />
 }
