@@ -32,7 +32,6 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
       try {
         return await fetchDataOrReload(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
       } catch (e) {
-        console.error('Error loading default values', e)
         setDefaultValueError(true)
         return assignmentDefaultValuesByExam[exam] as T
       }

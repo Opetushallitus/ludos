@@ -46,9 +46,9 @@ export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${e
 export const pageNotFoundPath = '/sivua-ei-loydy'
 
 const Content = lazy(() => import('./content/Content'))
-const AssignmentForm = lazy(() => import('./forms/AssignmentForm'))
+const AssignmentForm = lazy(() => import('./forms/assignment/AssignmentFormPage'))
 const InstructionForm = lazy(() => import('./forms/InstructionForm'))
-const CertificateForm = lazy(() => import('./forms/CertificateForm'))
+const CertificateForm = lazy(() => import('./forms/certificate/CertificateFormPage'))
 const ContentListPage = lazy(() => import('./content/list/ContentListPage'))
 
 const SpinnerSuspense = ({ children }: { children: ReactNode }) => (

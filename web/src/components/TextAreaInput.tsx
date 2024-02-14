@@ -1,10 +1,11 @@
 import { ReactNode } from 'react'
 import { UseFormRegister } from 'react-hook-form'
+import { FormError } from './forms/formCommon/FormErrors'
 
 type TextAreaInputProps = {
   id: string
   register: UseFormRegister<any>
-  error?: boolean
+  error?: string
   required?: boolean
   children: ReactNode
 }
@@ -21,5 +22,7 @@ export const TextAreaInput = ({ id, register, error, required, children }: TextA
       className={`block h-40 w-full border ${error ? 'border-red-primary' : 'border-gray-border'} p-2.5`}
       {...register(id, { required })}
     />
+
+    <FormError error={error} name={id} />
   </div>
 )

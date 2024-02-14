@@ -1,19 +1,18 @@
-import { FieldLabel } from '../FieldLabel'
+import { FieldLabel } from '../../FieldLabel'
 import { FormProvider } from 'react-hook-form'
-import { LdAssignmentFormType } from './schemas/assignmentSchema'
+import { LdAssignmentFormType } from '../schemas/assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, Exam } from '../../types'
-import { sortKooditAlphabetically, useKoodisto } from '../../hooks/useKoodisto'
-import { FormError } from './formCommon/FormErrors'
-import { FormContentInput } from './formCommon/FormContentInput'
-import { FormHeader } from './formCommon/FormHeader'
-import { useAssignmentForm } from '../../hooks/useAssignmentForm'
-import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
-import { LudosSelect } from '../ludosSelect/LudosSelect'
-import { FormAineDropdown } from './formCommon/FormAineDropdown'
-import { BlockNavigation } from '../BlockNavigation'
+import { ContentFormAction, Exam } from '../../../types'
+import { sortKooditAlphabetically, useKoodisto } from '../../../hooks/useKoodisto'
+import { FormContentInput } from '../formCommon/FormContentInput'
+import { FormHeader } from '../formCommon/FormHeader'
+import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
+import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../ludosSelect/helpers'
+import { LudosSelect } from '../../ludosSelect/LudosSelect'
+import { FormAineDropdown } from '../formCommon/FormAineDropdown'
+import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
-import { InfoBox } from '../InfoBox'
+import { InfoBox } from '../../InfoBox'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -65,9 +64,8 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
               onChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
               isMulti
               isSearchable
-              error={!!errors.lukuvuosiKoodiArvos}
+              error={errors.lukuvuosiKoodiArvos?.message}
             />
-            <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>
 
           <FormAineDropdown />

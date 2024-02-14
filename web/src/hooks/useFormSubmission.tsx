@@ -82,25 +82,31 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
   }
 
   function handleError(e: unknown, publishState: PublishState) {
-    if (e instanceof SessionExpiredFetchError) {
+    if (e instanceof Error) {
       setSubmitError(e)
       setErrorNotification(e, publishState)
-    } else if (e instanceof Error) {
-      setErrorNotification(e, publishState)
     } else {
-      throw Error('')
+      const unknownError = Error(t('error.odottamaton-virhe'))
+      setSubmitError(unknownError)
+      setErrorNotification(unknownError, publishState)
     }
   }
 
   async function submitFormData<T>(
     currentPublishState: PublishState,
-    submitFunction: (data: T) => Promise<number>,
+    submitFunction: (data: T, newAttachmentFi: File | null, newAttachmentSv: File | null) => Promise<number>,
     data: T,
     newPublishState: PublishState,
-    state: NavigateOptions['state']
+    state: NavigateOptions['state'],
+    newAttachmentFi: File | null = null,
+    newAttachmentSv: File | null = null
   ) {
     try {
-      const resultId = await submitFunction({ ...data, publishState: newPublishState })
+      const resultId = await submitFunction(
+        { ...data, publishState: newPublishState },
+        newAttachmentFi,
+        newAttachmentSv
+      )
 
       handleSuccess(currentPublishState, newPublishState, resultId, state)
     } catch (e) {

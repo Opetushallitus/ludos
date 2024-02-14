@@ -1,7 +1,6 @@
-import { Control, Controller } from 'react-hook-form'
+import { Control, Controller, FieldError } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { FormError } from './FormErrors'
-import { ErrorMessages } from '../../../types'
 import { KoodiDtoOut } from '../../../hooks/useKoodisto'
 
 interface AssignmentTypeFieldProps {
@@ -9,12 +8,11 @@ interface AssignmentTypeFieldProps {
   name: string
   required: boolean
   options: KoodiDtoOut[]
-  requiredError: boolean
+  errorMessage?: FieldError
 }
 
-export const AssignmentTypeField = ({ control, name, required, options, requiredError }: AssignmentTypeFieldProps) => {
+export const AssignmentTypeField = ({ control, name, required, options, errorMessage }: AssignmentTypeFieldProps) => {
   const { t } = useTranslation()
-
   return (
     <div className="mb-6">
       <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')} *</legend>
@@ -35,7 +33,7 @@ export const AssignmentTypeField = ({ control, name, required, options, required
                   data-testid={`assignmentTypeRadio-${type.koodiArvo.toLowerCase()}`}
                   className="mr-2 border-2 border-green-primary"
                 />
-                <label htmlFor={type.koodiArvo} className={`${requiredError ? 'text-red-primary' : ''}`}>
+                <label htmlFor={type.koodiArvo} className={`${errorMessage ? 'text-red-primary' : ''}`}>
                   {type.nimi}
                 </label>
               </fieldset>
@@ -43,7 +41,7 @@ export const AssignmentTypeField = ({ control, name, required, options, required
           </>
         )}
       />
-      <FormError error={requiredError ? ErrorMessages.REQUIRED : undefined} />
+      <FormError error={errorMessage?.message} name="assignmentTypeKoodiArvo" />
     </div>
   )
 }

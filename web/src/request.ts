@@ -1,7 +1,7 @@
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
-import { CertificateFormType } from './components/forms/schemas/certificateSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
 import { AttachmentData, Exam, ImageDtoOut } from './types'
+import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
@@ -169,7 +169,7 @@ export async function createNewVersionInstruction<T>(
 }
 
 export async function createCertificate(
-  certificateIn: CertificateFormType,
+  certificateIn: CommonCertificateFormType,
   newAttachmentFi: File,
   newAttachmentSv: File | null
 ): Promise<{ id: number }> {
@@ -193,7 +193,7 @@ export async function createCertificate(
 
 export async function updateCertificate(
   id: number,
-  certificateIn: CertificateFormType,
+  certificateIn: CommonCertificateFormType,
   newAttachmentFi: File | null,
   newAttachmentSv: File | null
 ): Promise<number> {

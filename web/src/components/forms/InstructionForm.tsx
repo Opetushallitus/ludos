@@ -240,11 +240,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               id="nameFi"
               register={register}
               deps={['nameRequired']}
-              error={!!nameFiError || !!instructionNameError}
+              error={nameFiError || instructionNameError}
               required>
               {t('form.ohjeennimi')}
             </TextInput>
-            <FormError error={nameFiError || instructionNameError} />
 
             <TipTap
               onContentChange={handleContentChange}
@@ -255,7 +254,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               fieldError={!!contentFiError}
             />
 
-            <FormError error={contentFiError} />
+            <FormError error={contentFiError} name="contentFi" />
 
             {exam !== Exam.LD && (
               <div className="mb-3 mt-6">
@@ -268,6 +267,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <label className="font-semibold">{t('form.tiedostot')}</label>
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
+              name="attachmentFi"
               contentType={ContentType.ohjeet}
               language="fi"
               attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
@@ -282,11 +282,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               id="nameSv"
               register={register}
               deps={['nameRequired']}
-              error={!!nameSvError || !!instructionNameError}
+              error={nameSvError || instructionNameError}
               required>
               {t('form.ohjeennimi')}
             </TextInput>
-            <FormError error={nameSvError || instructionNameError} />
 
             <TipTap
               onContentChange={handleContentChange}
@@ -297,7 +296,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               fieldError={!!contentSvError}
             />
 
-            <FormError error={contentSvError} />
+            <FormError error={contentSvError} name="contentSv" />
 
             {exam !== Exam.LD && (
               <div className="mb-3 mt-6">
@@ -310,6 +309,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <label className="font-semibold">{t('form.tiedostot')}</label>
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
+              name="attachmentSv"
               contentType={ContentType.ohjeet}
               language="sv"
               attachmentData={attachmentDataSv}

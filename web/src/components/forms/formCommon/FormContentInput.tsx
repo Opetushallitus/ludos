@@ -68,7 +68,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
             )}
           />
 
-          <FormError error={contentError} />
+          <FormError error={contentError} name={`${fieldName}[${index}]`} />
 
           {index === typedFields.length - 1 && typedFields.length > 1 && (
             <div className="row w-100 justify-end mt-1">
@@ -134,11 +134,10 @@ export const FormContentInput = () => {
           id="nameFi"
           register={register}
           deps={['nameRequired']}
-          error={!!nameFiError || !!assignmentNameError}
+          error={nameFiError || assignmentNameError}
           required>
           {t('form.tehtavannimi')}
         </TextInput>
-        <FormError error={nameFiError || assignmentNameError} />
 
         <TextAreaInput id="instructionFi" register={register}>
           {t('form.tehtavan_ohje')}
@@ -153,11 +152,10 @@ export const FormContentInput = () => {
             id="nameSv"
             register={register}
             deps={['nameRequired']}
-            error={!!nameSvError || !!assignmentNameError}
+            error={nameSvError || assignmentNameError}
             required>
             {t('form.tehtavannimi')}
           </TextInput>
-          <FormError error={nameSvError || assignmentNameError} />
 
           <TextAreaInput id="instructionSv" register={register}>
             {t('form.tehtavan_ohje')}

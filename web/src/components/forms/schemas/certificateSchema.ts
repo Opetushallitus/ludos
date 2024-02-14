@@ -1,73 +1,106 @@
-import { ErrorMessages, Exam } from '../../../types'
+import { ErrorMessages, Exam, PublishState } from '../../../types'
 import { z } from 'zod'
-import { examEnumZodType, MIN_NAME_LENGTH, publishStateEnumZodType } from './schemaCommon'
+import { examEnumZodType, inputNotEmptyValidation, nameValidation, publishStateEnumZodType } from './schemaCommon'
 
-const attachmentSchema = z.object({
-  fileName: z.string(),
-  fileKey: z.string(),
-  fileUploadDate: z.string().optional(),
-  name: z.string().optional(),
-  language: z.enum(['FI', 'SV']).optional(),
-  size: z.number().optional()
-})
+export const isSukoCertificateValues = (values: AnyCertificateFormType): values is SukoCertificateFormType =>
+  values.exam === Exam.SUKO
+
+export const isLdCertificateValues = (values: AnyCertificateFormType): values is LdCertificateFormType =>
+  values.exam === Exam.LD
+
+export const isPuhviCertificateValues = (values: AnyCertificateFormType): values is PuhviCertificateFormType =>
+  values.exam === Exam.PUHVI
+
+const attachmentSchema = z.object(
+  {
+    fileName: z.string(),
+    fileKey: z.string(),
+    fileUploadDate: z.string().optional(),
+    name: z.string().optional(),
+    language: z.enum(['FI', 'SV']).optional(),
+    size: z.number().optional()
+  },
+  { required_error: ErrorMessages.REQUIRED, invalid_type_error: ErrorMessages.REQUIRED }
+)
 
 export type AttachmentFormType = z.infer<typeof attachmentSchema>
 
-export const certificateSchema = z
-  .object({
-    exam: examEnumZodType,
-    publishState: publishStateEnumZodType,
-    nameFi: z
-      .string()
-      .refine((val) => val !== '', { message: ErrorMessages.REQUIRED })
-      .refine((val) => val.length >= MIN_NAME_LENGTH, { message: ErrorMessages.SHORT }),
-    nameSv: z.string().optional(),
-    descriptionFi: z.string().optional(),
-    descriptionSv: z.string().optional(),
-    attachmentFi: attachmentSchema,
-    attachmentSv: attachmentSchema.optional(),
-    aineKoodiArvo: z.string().optional()
+const commonCertificateSchema = z.object({
+  exam: examEnumZodType,
+  publishState: publishStateEnumZodType,
+  nameFi: nameValidation,
+  attachmentFi: attachmentSchema
+})
+
+export type CommonCertificateFormType = z.infer<typeof commonCertificateSchema>
+
+const sukoCertificateSchema = commonCertificateSchema.merge(
+  z.object({
+    nameSv: z.string().min(0).max(0),
+    descriptionFi: inputNotEmptyValidation,
+    descriptionSv: z.string().min(0).max(0)
   })
-  .superRefine((data, ctx) => {
-    if (data.exam !== Exam.SUKO) {
-      if (!data.nameSv) {
-        ctx.addIssue({
-          path: ['nameSv'],
-          message: ErrorMessages.REQUIRED,
-          code: z.ZodIssueCode.custom
-        })
-      } else if (data.nameSv.length <= MIN_NAME_LENGTH) {
-        ctx.addIssue({
-          path: ['nameSv'],
-          message: ErrorMessages.SHORT,
-          code: z.ZodIssueCode.custom
-        })
-      }
+)
 
-      if (!data.attachmentSv) {
-        ctx.addIssue({
-          path: ['attachmentSv'],
-          message: ErrorMessages.REQUIRED,
-          code: z.ZodIssueCode.custom
-        })
-      }
-    }
+export type SukoCertificateFormType = z.infer<typeof sukoCertificateSchema>
 
-    if (data.exam === Exam.LD && !data.aineKoodiArvo) {
-      ctx.addIssue({
-        path: ['aineKoodiArvo'],
-        message: ErrorMessages.REQUIRED,
-        code: z.ZodIssueCode.custom
-      })
-    }
+const ldCertificateSchema = commonCertificateSchema.merge(
+  z.object({
+    nameSv: nameValidation,
+    descriptionFi: z.string().min(0).max(0).default(''),
+    descriptionSv: z.string().min(0).max(0).default(''),
+    aineKoodiArvo: inputNotEmptyValidation,
+    attachmentSv: attachmentSchema
   })
+)
 
-export type CertificateFormType = z.infer<typeof certificateSchema>
+export type LdCertificateFormType = z.infer<typeof ldCertificateSchema>
 
-export const certificateFormDefaultValues: Partial<CertificateFormType> = {
+const puhviCertificateSchema = commonCertificateSchema.merge(
+  z.object({
+    nameSv: inputNotEmptyValidation,
+    descriptionFi: inputNotEmptyValidation,
+    descriptionSv: inputNotEmptyValidation,
+    attachmentSv: attachmentSchema
+  })
+)
+
+export type PuhviCertificateFormType = z.infer<typeof puhviCertificateSchema>
+
+export type AnyCertificateFormType = SukoCertificateFormType | LdCertificateFormType | PuhviCertificateFormType
+
+export const certificateSchemaByExam = {
+  [Exam.SUKO]: sukoCertificateSchema,
+  [Exam.LD]: ldCertificateSchema,
+  [Exam.PUHVI]: puhviCertificateSchema
+}
+
+const commonDefaultValues = {
+  publishState: PublishState.Published,
   nameFi: '',
   nameSv: '',
   descriptionFi: '',
-  descriptionSv: '',
+  descriptionSv: ''
+}
+
+const sukoDefaultValues: Partial<SukoCertificateFormType> = {
+  ...commonDefaultValues,
+  exam: Exam.SUKO
+}
+
+const ldDefaultValues: Partial<LdCertificateFormType> = {
+  ...commonDefaultValues,
+  exam: Exam.LD,
   aineKoodiArvo: ''
+}
+
+const puhviDefaultValues: Partial<PuhviCertificateFormType> = {
+  ...commonDefaultValues,
+  exam: Exam.PUHVI
+}
+
+export const defaultValuesByExam = {
+  [Exam.SUKO]: sukoDefaultValues,
+  [Exam.LD]: ldDefaultValues,
+  [Exam.PUHVI]: puhviDefaultValues
 }

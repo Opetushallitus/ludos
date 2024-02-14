@@ -1,26 +1,25 @@
-import { FieldLabel } from '../FieldLabel'
+import { FieldLabel } from '../../FieldLabel'
 import { FormProvider } from 'react-hook-form'
-import { SukoAssignmentFormType } from './schemas/assignmentSchema'
+import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, Exam, Oppimaara } from '../../types'
-import { sortKooditAlphabetically, sortKooditByArvo, useKoodisto } from '../../hooks/useKoodisto'
-import { AssignmentTypeField } from './formCommon/AssignmentFileTypeRadio'
-import { FormError } from './formCommon/FormErrors'
-import { FormContentInput } from './formCommon/FormContentInput'
-import { FormHeader } from './formCommon/FormHeader'
-import { useAssignmentForm } from '../../hooks/useAssignmentForm'
-import { LudosSelect } from '../ludosSelect/LudosSelect'
+import { ContentFormAction, Exam, Oppimaara } from '../../../types'
+import { sortKooditAlphabetically, sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
+import { AssignmentTypeField } from '../formCommon/AssignmentFileTypeRadio'
+import { FormContentInput } from '../formCommon/FormContentInput'
+import { FormHeader } from '../formCommon/FormHeader'
+import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
+import { LudosSelect } from '../../ludosSelect/LudosSelect'
 import {
   currentKoodistoSelectOption,
   currentKoodistoSelectOptions,
   currentOppimaaraSelectOption,
   koodistoSelectOptions,
   oppimaaraSelectOptions
-} from '../ludosSelect/helpers'
+} from '../../ludosSelect/helpers'
 import { useCallback } from 'react'
-import { BlockNavigation } from '../BlockNavigation'
+import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
-import { InfoBox } from '../InfoBox'
+import { InfoBox } from '../../InfoBox'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -102,9 +101,8 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 clearErrors('oppimaara')
               }}
               isSearchable
-              error={!!errors.oppimaara}
+              error={errors.oppimaara?.message}
             />
-            <FormError error={errors.oppimaara?.message} />
           </fieldset>
 
           <AssignmentTypeField
@@ -112,7 +110,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
             name="assignmentTypeKoodiArvo"
             required
             options={sortKooditAlphabetically(Object.values(koodistos.tehtavatyyppisuko))}
-            requiredError={!!errors.assignmentTypeKoodiArvo}
+            errorMessage={errors?.assignmentTypeKoodiArvo}
           />
 
           <fieldset className="mb-6">
@@ -128,9 +126,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
                 setValue('tavoitetasoKoodiArvo', opt.value, { shouldDirty: true })
               }}
               isSearchable
-              error={!!errors.tavoitetasoKoodiArvo}
             />
-            <FormError error={errors.tavoitetasoKoodiArvo?.message} />
           </fieldset>
 
           <fieldset className="mb-6">

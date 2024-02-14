@@ -1,12 +1,12 @@
-import { ContentType, PublishState } from '../../types'
-import { FormButtonRow } from './formCommon/FormButtonRow'
-import { DeleteModal } from '../modal/DeleteModal'
+import { ContentType, PublishState } from '../../../types'
+import { FormButtonRow } from '../formCommon/FormButtonRow'
+import { DeleteModal } from '../../modal/DeleteModal'
 import { useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { LudosContext } from '../../../contexts/LudosContext'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { UseFormReturn } from 'react-hook-form'
-import { AnyAssignmentFormType } from './schemas/assignmentSchema'
+import { AnyAssignmentFormType } from '../schemas/assignmentSchema'
 
 type AssignmentFormButtonRowProps<T extends AnyAssignmentFormType> = {
   submitAssignment: (publishState: PublishState) => void
@@ -26,7 +26,7 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
   isUpdate,
   methods: {
     getValues,
-    formState: { errors, isValid, isSubmitting }
+    formState: { errors, isSubmitting }
   },
   deleteModalState: { isDeleteModalOpen, setIsDeleteModalOpen },
   publishState
@@ -46,7 +46,7 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
         }}
         state={{
           isUpdate,
-          disableSubmit: isSubmitting || !isValid,
+          disableSubmit: isSubmitting,
           publishState
         }}
         formHasValidationErrors={Object.keys(errors).length > 0}

@@ -225,11 +225,6 @@ export type FileDetails = Partial<AttachmentDtoOut> & {
   fileName: string
 }
 
-type Metadata = {
-  name: string
-  language: AttachmentLanguage
-}
-
 export type AttachmentLanguage = 'fi' | 'sv'
 
 export type AttachmentData = {

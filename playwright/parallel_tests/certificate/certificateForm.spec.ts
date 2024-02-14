@@ -1,8 +1,16 @@
 import { BrowserContext, expect, test } from '@playwright/test'
-import { assertSuccessNotification, FormAction, loginTestGroup, Role } from '../../helpers'
+import {
+  assertSuccessNotification,
+  FormAction,
+  loginTestGroup,
+  Role,
+  selectAttachmentFile,
+  setSingleSelectDropdownOption
+} from '../../helpers'
 import { ContentType, Exam } from 'web/src/types'
 import { assertContentPage, fillCertificateForm } from '../../examHelpers/certificateHelpers'
 import { CertificateFormModel } from '../../models/CertificateFormModel'
+import { isLdCertificateValues, isPuhviCertificateValues } from 'web/src/components/forms/schemas/certificateSchema'
 
 async function createCertificate(
   form: CertificateFormModel,
@@ -10,11 +18,11 @@ async function createCertificate(
   action: FormAction,
   expectedNotification: string
 ) {
-  const { page, exam } = form
-  const inputs = form.createCertificateInputs(action)
+  const { page } = form
+  const formData = form.createFormData(action)
 
   await form.assertNavigationNoBlockOnCleanForm()
-  await fillCertificateForm(page, exam, inputs)
+  await fillCertificateForm(form, formData)
   await form.assertNavigationBlockOnDirtyForm()
 
   await form.submitCertificate(action)
@@ -26,9 +34,9 @@ async function createCertificate(
   const responseData = await responseFromClick.json()
 
   await assertSuccessNotification(page, expectedNotification)
-  await assertContentPage(page, context, exam, inputs, action)
+  await assertContentPage(page, context, formData, action)
 
-  return { id: responseData.id, nameFromCreate: inputs.nameFi }
+  return { id: responseData.id, nameFromCreate: formData.nameFi }
 }
 
 async function updateCertificate(
@@ -38,7 +46,7 @@ async function updateCertificate(
   action: FormAction,
   expectedNotification: string
 ) {
-  const { page, exam } = form
+  const { page } = form
   await expect(form.formHeader).toBeVisible()
 
   await form.editContentButton.click()
@@ -49,7 +57,7 @@ async function updateCertificate(
 
   const inputs = { ...form.updateCertificateInputs(action), nameFi: `${expectedCurrentName} updated` }
 
-  await fillCertificateForm(page, exam, inputs)
+  await fillCertificateForm(form, inputs)
 
   if (action === 'submit') {
     await form.assertNavigationBlockOnDirtyForm()
@@ -58,26 +66,24 @@ async function updateCertificate(
     await form.draftButton.click()
   }
   await assertSuccessNotification(page, expectedNotification)
-  await assertContentPage(page, context, exam, inputs, action)
+  await assertContentPage(page, context, inputs, action)
 
   return inputs.nameFi
 }
 
 async function deleteCertificate(form: CertificateFormModel, certificateId: number) {
-  const { page } = form
-
   await expect(form.formHeader).toBeVisible()
 
   await form.editContentButton.click()
   await form.deleteButton.click()
   await form.modalDeleteButton.click()
 
-  await assertSuccessNotification(page, 'todistuksen-poisto.onnistui')
+  await assertSuccessNotification(form.page, 'todistuksen-poisto.onnistui')
   // expect not to find the deleted certificate from a list
-  await expect(page.getByTestId(`certificate-${certificateId}`)).toBeHidden()
+  await expect(form.page.getByTestId(`certificate-${certificateId}`)).toBeHidden()
 
   await form.goToContentPage(ContentType.todistukset, certificateId)
-  await expect(page.getByText('404', { exact: true })).toBeVisible()
+  await expect(form.page.getByText('404', { exact: true })).toBeVisible()
 }
 
 async function createPublishedAndUpdateAndDelete(form: CertificateFormModel, context: BrowserContext) {
@@ -174,7 +180,6 @@ async function cancelUpdatingCertificate(form: CertificateFormModel, context: Br
 }
 
 loginTestGroup(test, Role.YLLAPITAJA)
-
 Object.values(Exam).forEach((exam) => {
   test.describe(`${exam} certificate form tests`, () => {
     test.beforeEach(async ({ page }) => {
@@ -194,5 +199,46 @@ Object.values(Exam).forEach((exam) => {
 
     test(`can cancel ${exam} certificate update`, async ({ page, context }) =>
       await cancelUpdatingCertificate(new CertificateFormModel(page, exam), context))
+
+    test('form validations work', async ({ page }) => {
+      const form = new CertificateFormModel(page, exam)
+      const formData = form.createFormData('submit')
+
+      await form.submitButton.click()
+      await expect(form.formErrorMsgList).toBeVisible()
+
+      if (isLdCertificateValues(formData)) {
+        await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgAineKoodiArvo, () =>
+          setSingleSelectDropdownOption(page, 'aineKoodiArvo', formData.aineKoodiArvo)
+        )
+      }
+
+      await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgNameFi, () => form.nameFi.fill(formData.nameFi))
+
+      await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgAttachmentFi, () =>
+        selectAttachmentFile(page, formData.attachmentFi.name!, form.attachmentInputFi)
+      )
+
+      if (!isLdCertificateValues(formData)) {
+        await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgDescriptionFi, () =>
+          form.descriptionFi.fill(formData.descriptionFi)
+        )
+      }
+
+      if (isPuhviCertificateValues(formData) || isLdCertificateValues(formData)) {
+        await form.tabSv.click()
+        await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgNameSv, () => form.nameSv.fill(formData.nameSv))
+
+        if (isPuhviCertificateValues(formData)) {
+          await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgDescriptionSv, () =>
+            form.descriptionSv.fill(formData.descriptionSv)
+          )
+        }
+
+        await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgAttachmentSv, () =>
+          selectAttachmentFile(page, formData.attachmentSv.name!, form.attachmentInputSv)
+        )
+      }
+    })
   })
 })

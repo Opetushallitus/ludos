@@ -1,5 +1,5 @@
 import { useMatch } from 'react-router-dom'
-import { ContentFormAction, Exam } from '../../types'
+import { ContentFormAction, Exam } from '../../../types'
 import { SukoAssignmentForm } from './SukoAssignmentForm'
 import { PuhviAssignmentForm } from './PuhviAssignmentForm'
 import { LdAssignmentForm } from './LdAssignmentForm'
@@ -8,7 +8,7 @@ type AssignmentFormProps = {
   action: ContentFormAction
 }
 
-const AssignmentForm = ({ action }: AssignmentFormProps) => {
+const AssignmentFormPage = ({ action }: AssignmentFormProps) => {
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
@@ -29,4 +29,4 @@ const AssignmentForm = ({ action }: AssignmentFormProps) => {
   )
 }
 
-export default AssignmentForm
+export default AssignmentFormPage
