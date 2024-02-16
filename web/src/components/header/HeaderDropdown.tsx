@@ -1,48 +1,27 @@
-import { useState } from 'react'
-import { Button } from '../Button'
-import { Icon } from '../Icon'
-import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
-import { LocaleDropdownOptions } from '../../hooks/useLudosTranslation'
+import { useContext } from 'react'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../hooks/useUserDetails'
+import { LudosContext } from '../../contexts/LudosContext'
+import { LudosSelect } from '../ludosSelect/LudosSelect'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from '../ludosSelect/helpers'
 
-interface LocaleDropdownProps {
-  currentOption: string
-  options: LocaleDropdownOptions
-  onOptionClick: (lang: string) => void
-  testId: string
-}
+export const HeaderDropdown = () => {
+  const { uiLanguage, setUiLanguage } = useContext(LudosContext)
+  const { LANGUAGE_DROPDOWN } = useLudosTranslation()
+  const { isYllapitaja } = useUserDetails()
 
-export const HeaderDropdown = ({ currentOption, options, onOptionClick, testId }: LocaleDropdownProps) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useDropdownCloseOnBlur<boolean>(false, setIsOpen)
+  // filter out keys option if not YLLAPITAJA
+  const { keys, ...languageDropdownOptionsWithoutShowKeys } = LANGUAGE_DROPDOWN
+  const languageDropdownOptions = isYllapitaja ? LANGUAGE_DROPDOWN : languageDropdownOptionsWithoutShowKeys
 
   return (
-    <div ref={dropdownRef} data-testid={testId}>
-      <Button
-        className="flex items-center text-green-primary"
-        data-testid={`${testId}-expand`}
-        onClick={() => setIsOpen(!isOpen)}
-        variant="buttonGhost">
-        {currentOption}
-        <Icon name="laajenna" color="text-black" />
-      </Button>
-      {isOpen && (
-        <ul className="absolute -left-1 mt-2 w-36 border border-gray-secondary bg-white px-2 py-1">
-          {Object.keys(options).map((option, i) => (
-            <li
-              className={`cursor-pointer px-2 hover:bg-gray-secondary hover:text-white ${
-                options[option].name === currentOption ? 'text-green-primary' : ''
-              }`}
-              data-testid={options[option].testId ?? undefined}
-              key={i}
-              onClick={() => {
-                onOptionClick(option)
-                setIsOpen(false)
-              }}>
-              {options[option].name}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <LudosSelect
+      name="languageDropdown"
+      options={koodistoSelectOptions(Object.values(languageDropdownOptions))}
+      value={currentKoodistoSelectOption(uiLanguage, languageDropdownOptions)}
+      onChange={(opt) => setUiLanguage(opt!.value)}
+      className="w-auto h-[2.5rem]"
+      transparentSelect
+    />
   )
 }

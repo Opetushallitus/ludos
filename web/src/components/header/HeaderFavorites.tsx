@@ -18,7 +18,7 @@ export const HeaderFavorites = ({ userFavoriteAssignmentCount, isMobile }: Heade
     <InternalLink
       className={twMerge(
         buttonClasses('buttonGhost'),
-        'flex justify-center gap-1 border-l border-green-primary py-0 pr-2'
+        'flex justify-center gap-1 border-l border-green-primary pt-1 pb-0 pr-2'
       )}
       to={favoritesPagePath()}
       data-testid="header-favorites">

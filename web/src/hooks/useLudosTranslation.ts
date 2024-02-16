@@ -21,10 +21,10 @@ export const useLudosTranslation = () => {
     sv: { nimi: t('language.ruotsi'), koodiArvo: 'sv' }
   }
 
-  const LANGUAGE_DROPDOWN: LocaleDropdownOptions = {
-    fi: { name: t('language.suomi'), testId: 'fi' },
-    sv: { name: t('language.ruotsi'), testId: 'sv' },
-    keys: { name: 'Näytä avaimet', testId: 'keys' }
+  const LANGUAGE_DROPDOWN: Record<string, KoodiDtoOut> = {
+    fi: { nimi: t('language.suomi'), koodiArvo: 'fi' },
+    sv: { nimi: t('language.ruotsi'), koodiArvo: 'sv' },
+    keys: { nimi: 'Näytä avaimet', koodiArvo: 'keys' }
   }
 
   const ORDER_OPTIONS: Record<ContentOrder, KoodiDtoOut> = {
