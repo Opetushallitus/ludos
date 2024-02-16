@@ -1,16 +1,11 @@
 import { HeaderDropdown } from './HeaderDropdown'
-import { useUserDetails } from '../../hooks/useUserDetails'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
 import { HeaderFavorites } from './HeaderFavorites'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
-import { Button } from '../Button'
-import { Icon } from '../Icon'
-import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
-import { HeaderApplicationMenu } from './HeaderApplicationMenu'
-import { HeaderLogoutButton } from './HeaderLogoutButton'
 import { useTranslation } from 'react-i18next'
+import { HeaderUserInfoSelect } from './HeaderUserInfoSelect'
 
 type HeaderDesktopProps = {
   pages: HeaderPage[]
@@ -19,10 +14,6 @@ type HeaderDesktopProps = {
 export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
   const { t } = useTranslation()
   const { userFavoriteAssignmentCount } = useContext(LudosContext)
-  const [showMenu, setShowMenu] = useState(false)
-  const showMenuRef = useDropdownCloseOnBlur<boolean>(false, setShowMenu)
-
-  const { firstNames, lastName, role } = useUserDetails()
 
   return (
     <div className="flex justify-center bg-gray-bg pt-3">
@@ -30,25 +21,7 @@ export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
         <div className="row justify-between items-center">
           <h1>{t('title.ludos')}</h1>
           <div className="flex flex-row items-center h-10 gap-4">
-            <div className="relative" ref={showMenuRef}>
-              <Button
-                className="flex items-center text-green-primary"
-                data-testid="user-menu-expand"
-                onClick={() => setShowMenu(!showMenu)}
-                variant="buttonGhost">
-                {`${firstNames} ${lastName}`}
-                <Icon name="laajenna" color="text-black" size="lg" />
-              </Button>
-              <p className="text-xss absolute" data-testid="header-user-role">
-                {role}
-              </p>
-              {showMenu && (
-                <div className="absolute right-0 mt-2 w-max pr-3 rounded border border-gray-border bg-white">
-                  <HeaderApplicationMenu />
-                  <HeaderLogoutButton />
-                </div>
-              )}
-            </div>
+            <HeaderUserInfoSelect />
 
             <HeaderFavorites userFavoriteAssignmentCount={userFavoriteAssignmentCount} />
 

@@ -50,6 +50,10 @@ div.ludos-transparent-select__control {
     @apply border-none bg-gray-bg;
 }
 
+div.ludos-transparent-select__single-value {
+    @apply text-green-primary;
+}
+
 div.ludos-transparent-select__value-container {
     @apply pr-0;
 }

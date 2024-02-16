@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test'
 import { BusinessLanguage } from 'web/src/types'
+import { setSingleSelectDropdownOption } from '../helpers'
 
 export class LayoutModel {
   constructor(
@@ -11,12 +12,10 @@ export class LayoutModel {
   ) {}
 
   async setUiLanguage(language: BusinessLanguage) {
-    await this.languageDropdownExpandButton.click()
-    await this.languageDropdown.getByTestId(language).click()
+    await setSingleSelectDropdownOption(this.page, 'languageDropdown', language)
   }
 
   async showLocalizationKeys() {
-    await this.languageDropdownExpandButton.click()
-    await this.languageDropdown.getByTestId('keys').click()
+    await setSingleSelectDropdownOption(this.page, 'languageDropdown', 'keys')
   }
 }

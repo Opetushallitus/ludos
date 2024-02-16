@@ -1,5 +1,5 @@
 import { expect, Page, test } from '@playwright/test'
-import { login, Role, setTeachingLanguage } from '../helpers'
+import { login, Role, setSingleSelectDropdownOption, setTeachingLanguage } from '../helpers'
 
 async function assertUiLanguage(page: Page, language: string) {
   await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === 'fi' ? 'Etusivu' : 'Hem')
@@ -43,8 +43,7 @@ test('Explicit UI language choice is honored over reloads', async ({ page }) => 
   await assertUiLanguage(page, 'sv')
   await assertTeachingLanguageSelect(page, 'sv')
 
-  await page.getByTestId('header-language-dropdown-expand').click()
-  await page.getByTestId('header-language-dropdown').getByTestId('fi').click()
+  await setSingleSelectDropdownOption(page, 'languageDropdown', 'fi')
   await assertUiLanguage(page, 'fi')
   await assertTeachingLanguageSelect(page, 'sv')
   await assertKoodistoLanguageInPuhviKoetehtavaForm(page, 'fi')
