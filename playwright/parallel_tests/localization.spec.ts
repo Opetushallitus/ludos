@@ -1,5 +1,6 @@
 import { expect, Page, test } from '@playwright/test'
-import { login, Role, setSingleSelectDropdownOption, setTeachingLanguage } from '../helpers'
+import { login, Role, setTeachingLanguage } from '../helpers'
+import { LayoutModel } from '../models/LayoutModel'
 
 async function assertUiLanguage(page: Page, language: string) {
   await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === 'fi' ? 'Etusivu' : 'Hem')
@@ -38,12 +39,14 @@ test('Business language is the default for UI, teaching language and koodisto la
 })
 
 test('Explicit UI language choice is honored over reloads', async ({ page }) => {
+  const layout = new LayoutModel(page)
+
   await navigateToPuhviInstructionList(page)
 
   await assertUiLanguage(page, 'sv')
   await assertTeachingLanguageSelect(page, 'sv')
 
-  await setSingleSelectDropdownOption(page, 'languageDropdown', 'fi')
+  await layout.setUiLanguage('fi')
   await assertUiLanguage(page, 'fi')
   await assertTeachingLanguageSelect(page, 'sv')
   await assertKoodistoLanguageInPuhviKoetehtavaForm(page, 'fi')
