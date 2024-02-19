@@ -1,4 +1,4 @@
-import { HeaderDropdown } from './HeaderDropdown'
+import { HeaderUiLanguageDropdown } from './HeaderUiLanguageDropdown'
 import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
 import { HeaderFavorites } from './HeaderFavorites'
@@ -26,7 +26,7 @@ export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
             <HeaderFavorites userFavoriteAssignmentCount={userFavoriteAssignmentCount} />
 
             <div className="border-l border-green-primary pl-2">
-              <HeaderDropdown />
+              <HeaderUiLanguageDropdown />
             </div>
           </div>
         </div>

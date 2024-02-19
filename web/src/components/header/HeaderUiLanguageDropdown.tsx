@@ -5,7 +5,7 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from '../ludosSelect/helpers'
 
-export const HeaderDropdown = () => {
+export const HeaderUiLanguageDropdown = () => {
   const { uiLanguage, setUiLanguage } = useContext(LudosContext)
   const { LANGUAGE_DROPDOWN } = useLudosTranslation()
   const { isYllapitaja } = useUserDetails()
