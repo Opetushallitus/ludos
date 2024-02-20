@@ -74,5 +74,5 @@ export const sortKooditAlphabetically = (koodit: KoodiDtoOut[]) => {
     })
   )
 }
-export const sortKooditByArvo = (koodit: Record<string, KoodiDtoOut>) =>
+export const sortKooditByArvo = (koodit: Record<string, KoodiDtoOut>): KoodiDtoOut[] =>
   Object.values(koodit).sort((a, b) => a.koodiArvo.localeCompare(b.koodiArvo))

@@ -36,6 +36,7 @@ export type LudosSelectProps<
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>
 > = Props<Option, IsMulti, Group> & {
+  transparentSelect?: boolean
   menuSize?: MenuSize
   error?: boolean
 }
@@ -97,7 +98,7 @@ export function LudosSelect<
       id={props.name}
       instanceId={props.name}
       inputId={`${props.name}-input`}
-      classNamePrefix="ludos-select"
+      classNamePrefix={props.transparentSelect ? 'ludos-transparent-select' : 'ludos-select'}
       classNames={{
         control: () => (error ? 'ludos-select-error' : '')
       }}

@@ -59,7 +59,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                       }`}
                       variant="buttonGhost"
                       onClick={() => setUiLanguage('fi')}>
-                      {LANGUAGE_DROPDOWN.fi.name}
+                      {LANGUAGE_DROPDOWN.fi.nimi}
                     </Button>
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
@@ -67,7 +67,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                       }`}
                       variant="buttonGhost"
                       onClick={() => setUiLanguage('sv')}>
-                      {LANGUAGE_DROPDOWN.sv.name}
+                      {LANGUAGE_DROPDOWN.sv.nimi}
                     </Button>
                   </div>
                 </div>

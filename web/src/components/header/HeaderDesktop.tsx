@@ -1,69 +1,32 @@
-import { HeaderDropdown } from './HeaderDropdown'
-import { useUserDetails } from '../../hooks/useUserDetails'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { useContext, useState } from 'react'
+import { HeaderUiLanguageDropdown } from './HeaderUiLanguageDropdown'
+import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
 import { HeaderFavorites } from './HeaderFavorites'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
-import { Button } from '../Button'
-import { Icon } from '../Icon'
-import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
-import { HeaderApplicationMenu } from './HeaderApplicationMenu'
-import { HeaderLogoutButton } from './HeaderLogoutButton'
+import { useTranslation } from 'react-i18next'
+import { HeaderUserInfoSelect } from './HeaderUserInfoSelect'
 
 type HeaderDesktopProps = {
   pages: HeaderPage[]
 }
 
 export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
-  const { LANGUAGE_DROPDOWN, t } = useLudosTranslation()
-  const { isYllapitaja } = useUserDetails()
-  const { userFavoriteAssignmentCount, uiLanguage, setUiLanguage } = useContext(LudosContext)
-  const [showMenu, setShowMenu] = useState(false)
-  const showMenuRef = useDropdownCloseOnBlur<boolean>(false, setShowMenu)
-
-  const { firstNames, lastName, role } = useUserDetails()
-
-  // filter out keys option if not YLLAPITAJA
-  const { keys, ...languageDropdownOptionsWithoutShowKeys } = LANGUAGE_DROPDOWN
-  const languageDropdownOptions = isYllapitaja ? LANGUAGE_DROPDOWN : languageDropdownOptionsWithoutShowKeys
+  const { t } = useTranslation()
+  const { userFavoriteAssignmentCount } = useContext(LudosContext)
 
   return (
-    <div className="flex justify-center bg-gray-bg">
+    <div className="flex justify-center bg-gray-bg pt-3">
       <div className="w-[80vw]">
-        <div className="row justify-between pt-3">
+        <div className="row justify-between items-center">
           <h1>{t('title.ludos')}</h1>
-          <div className="flex h-6 flex-row gap-4">
-            <div className="relative" ref={showMenuRef}>
-              <Button
-                className="flex items-center text-green-primary"
-                data-testid="user-menu-expand"
-                onClick={() => setShowMenu(!showMenu)}
-                variant="buttonGhost">
-                {`${firstNames} ${lastName}`}
-                <Icon name="laajenna" color="text-black" size="lg" />
-              </Button>
-              {showMenu && (
-                <div className="absolute right-0 mt-2 w-max pr-3 rounded border border-gray-border bg-white">
-                  <HeaderApplicationMenu />
-                  <HeaderLogoutButton />
-                </div>
-              )}
-              <p className="text-xss" data-testid="header-user-role">
-                {role}
-              </p>
-            </div>
+          <div className="flex flex-row items-center h-10 gap-4">
+            <HeaderUserInfoSelect />
 
             <HeaderFavorites userFavoriteAssignmentCount={userFavoriteAssignmentCount} />
 
-            <div className="relative border-l border-green-primary pl-5">
-              <HeaderDropdown
-                currentOption={languageDropdownOptions[uiLanguage].name}
-                options={languageDropdownOptions}
-                onOptionClick={setUiLanguage}
-                testId="header-language-dropdown"
-              />
+            <div className="border-l border-green-primary pl-2">
+              <HeaderUiLanguageDropdown />
             </div>
           </div>
         </div>
