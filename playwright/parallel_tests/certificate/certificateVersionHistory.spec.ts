@@ -18,14 +18,14 @@ Object.values(Exam).forEach((exam) => {
       const attachmentNameBeforeVersion3 = 'fixture1.pdf'
       const attachmentNameStartingFromVersion3 = 'fixture2.pdf'
 
-      const certificateIn = form.createCertificateInputs('submit')
+      const certificateIn = form.createFormData('submit')
       const certificate = await form.createCertificateApiCall(baseURL!, certificateIn, attachmentNameBeforeVersion3)
 
       await content.goToContentPage(certificate.id)
       await expect(content.header).toHaveText(certificate.nameFi)
 
       await versionHistory.createTestVersions(async (version) => {
-        const updateCertificateIn = form.createCertificateInputs('submit')
+        const updateCertificateIn = form.createFormData('submit')
         const newNameFi = `${updateCertificateIn.nameFi} v${version}`
         await form.updateCertificateApiCall(
           baseURL!,

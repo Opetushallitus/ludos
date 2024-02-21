@@ -1,11 +1,12 @@
 import { expect, Page, test } from '@playwright/test'
 import { loginTestGroup, Role } from '../helpers'
 import { ContentType, ContentTypeSingularEng, Exam } from 'web/src/types'
-import { fillAssignmentForm, formDataForCreate } from '../examHelpers/assignmentHelpers'
+import { createFormData, fillAssignmentForm } from '../examHelpers/assignmentHelpers'
 import { fillCertificateForm } from '../examHelpers/certificateHelpers'
 import { instructionFormData } from '../examHelpers/instructionHelpers'
 import { InstructionFormModel } from '../models/InstructionFormModel'
 import { CertificateFormModel } from '../models/CertificateFormModel'
+import { AssignmentFormModel } from '../models/AssignmentFormModel'
 
 async function assertSessionExpiryFormErrorMessage(page: Page) {
   const formErrorMessageLocator = page.getByTestId('session-expired-error-message')
@@ -54,8 +55,8 @@ Object.values(Exam).forEach((exam) => {
 
     test(`should show error notification and message on submit ${exam} assignment form`, async ({ page }) => {
       await page.goto(`/${exam}/${ContentType.koetehtavat}/uusi`)
-      const createFormData = formDataForCreate(exam, 'submit')
-      await fillAssignmentForm(page, createFormData)
+      const formData = createFormData(exam, 'submit')
+      await fillAssignmentForm(new AssignmentFormModel(page, exam), formData)
       await clearCookiesAndSubmit(page, ContentTypeSingularEng.koetehtavat)
       await assertSessionExpiryFormErrorMessage(page)
     })
@@ -70,9 +71,9 @@ Object.values(Exam).forEach((exam) => {
 
     test(`should show error notification and message on submit ${exam} certificate form`, async ({ page }) => {
       const form = new CertificateFormModel(page, exam)
-      await page.goto(`/${exam}/${ContentType.todistukset}/uusi`)
-      const inputs = form.createCertificateInputs('submit')
-      await fillCertificateForm(page, exam, inputs)
+      await form.gotoNew()
+      const inputs = form.createFormData('submit')
+      await fillCertificateForm(form, inputs)
       await clearCookiesAndSubmit(page, ContentTypeSingularEng.todistukset)
       await assertSessionExpiryFormErrorMessage(page)
     })

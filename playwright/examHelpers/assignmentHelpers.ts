@@ -18,6 +18,7 @@ import {
   SukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
+import { AssignmentFormModel } from '../models/AssignmentFormModel'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
@@ -101,90 +102,132 @@ function appendMuokattuToTextFields(assignmentTextContent: AssignmentTextContent
     nameSv: `${assignmentTextContent.nameSv} updaterad`,
     instructionFi: `${assignmentTextContent.instructionFi} muokattu`,
     instructionSv: `${assignmentTextContent.instructionSv} updaterad`,
-    contentFi: assignmentTextContent.contentFi.map((s) => `${s} muokattu`),
-    contentSv: assignmentTextContent.contentSv.map((s) => `${s} updaterad`)
+    contentFi: assignmentTextContent.contentFi?.map((s) => `${s} muokattu`),
+    contentSv: assignmentTextContent.contentSv?.map((s) => `${s} updaterad`)
   }
 }
 
-export function formDataForCreate(exam: Exam, action: FormAction): AnyAssignmentFormType {
-  const createFormData = createAssignmentFormDataByExam[exam]
-  createFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
-  return createFormData as AnyAssignmentFormType
+export function createFormData(exam: Exam, action: FormAction, isUpdate: boolean = false): AnyAssignmentFormType {
+  const data = isUpdate ? updateAssignmentFormDataByExam[exam] : createAssignmentFormDataByExam[exam]
+  return { ...data, publishState: action === 'submit' ? PublishState.Published : PublishState.Draft }
 }
 
-export function formDataForUpdate(exam: Exam, action: FormAction) {
-  const updateFormData = updateAssignmentFormDataByExam[exam]
-  updateFormData.publishState = action === 'submit' ? PublishState.Published : PublishState.Draft
-  return updateFormData
-}
+async function fillCommonAssignmentFields(form: AssignmentFormModel, formData: Partial<AnyAssignmentFormType>) {
+  if (formData.laajaalainenOsaaminenKoodiArvos) {
+    await setMultiSelectDropdownOptions(
+      form.page,
+      'laajaalainenOsaaminenKoodiArvos',
+      formData.laajaalainenOsaaminenKoodiArvos
+    )
+  }
 
-async function fillCommonAssignmentFields(page: Page, exam: Exam, formData: AnyAssignmentFormType) {
-  await setMultiSelectDropdownOptions(page, 'laajaalainenOsaaminenKoodiArvos', formData.laajaalainenOsaaminenKoodiArvos)
+  if (formData.nameFi) {
+    await form.nameFi.fill(formData.nameFi)
+  }
 
-  await page.getByTestId('nameFi').fill(formData.nameFi)
-  await page.getByTestId('instructionFi').fill(formData.instructionFi)
+  if (formData.instructionFi) {
+    await form.instructionFi.fill(formData.instructionFi)
+  }
 
-  for (const [index, content] of formData.contentFi.entries()) {
-    await page.getByTestId(`contentFi-${index}`).locator('div[contenteditable="true"]').fill(content)
+  if (formData.contentFi) {
+    for (const [index, content] of formData.contentFi.entries()) {
+      await form.page.getByTestId(`contentFi-${index}`).locator('div[contenteditable="true"]').fill(content)
 
-    // if not last content press add content field button
-    if (index !== formData.contentFi.length - 1) {
-      await page.getByTestId('contentFi-add-content-field').click()
+      // if not last content press add content field button
+      if (index !== formData.contentFi.length - 1) {
+        await form.page.getByTestId('contentFi-add-content-field').click()
+      }
     }
   }
 
-  if (exam === Exam.SUKO) {
-    await expect(page.getByTestId('tab-sv')).toBeHidden()
-    return
-  }
+  if (form.exam === Exam.SUKO) {
+    await expect(form.tabSv).toBeHidden()
+  } else {
+    if (formData.nameSv) {
+      await form.tabSv.click()
+      await form.nameSv.fill(formData.nameSv)
+    }
 
-  await page.getByTestId('tab-sv').click()
+    if (formData.instructionSv) {
+      await form.instructionSv.fill(formData.instructionSv)
+    }
 
-  await page.getByTestId('nameSv').fill(formData.nameSv)
-  await page.getByTestId('instructionSv').fill(formData.instructionSv)
-
-  for (const [index, content] of formData.contentSv.entries()) {
-    await page.getByTestId(`contentSv-${index}`).locator('div[contenteditable="true"]').fill(content)
-    // if not last content press add content field button
-    if (index !== formData.contentSv.length - 1) {
-      await page.getByTestId('contentSv-add-content-field').click()
+    if (formData.contentSv) {
+      for (const [index, content] of formData.contentSv.entries()) {
+        await form.page.getByTestId(`contentSv-${index}`).locator('div[contenteditable="true"]').fill(content)
+        // if not last content press add content field button
+        if (index !== formData.contentSv.length - 1) {
+          await form.page.getByTestId('contentSv-add-content-field').click()
+        }
+      }
     }
   }
 }
 
-export async function fillAssignmentForm(page: Page, formData: AnyAssignmentFormType) {
+export async function fillAssignmentForm(form: AssignmentFormModel, formData: AnyAssignmentFormType) {
   if (isSukoAssignmentFormType(formData)) {
-    await fillSukoAssignmentForm(page, formData)
+    await fillSukoAssignmentForm(form, formData)
   } else if (isLdAssignmentFormType(formData)) {
-    await fillLdAssignmentForm(page, formData)
+    await fillLdAssignmentForm(form, formData)
   } else if (isPuhviAssignmentFormType(formData)) {
-    await fillPuhviAssignmentForm(page, formData)
+    await fillPuhviAssignmentForm(form, formData)
   } else {
     throw new Error(`Unknown form type: ${formData}`)
   }
 }
 
-export async function fillSukoAssignmentForm(page: Page, formData: SukoAssignmentFormType) {
-  await setSingleSelectDropdownOption(page, 'oppimaara', oppimaaraId(formData.oppimaara))
-  await page.getByTestId(`assignmentTypeRadio-${formData.assignmentTypeKoodiArvo}`).click()
+export async function fillAssignmentType(
+  page: Page,
+  formData: Partial<SukoAssignmentFormType | PuhviAssignmentFormType>
+) {
+  if (formData.assignmentTypeKoodiArvo) {
+    await page.getByTestId(`assignmentTypeRadio-${formData.assignmentTypeKoodiArvo}`).click()
+  }
+}
+
+export async function fillSukoAssignmentForm(form: AssignmentFormModel, formData: Partial<SukoAssignmentFormType>) {
+  const page = form.page
+
+  if (formData.oppimaara) {
+    await setSingleSelectDropdownOption(page, 'oppimaara', oppimaaraId(formData.oppimaara))
+  }
+
+  await fillAssignmentType(page, formData)
+
   if (formData.tavoitetasoKoodiArvo) {
     await setSingleSelectDropdownOption(page, 'tavoitetaso', formData.tavoitetasoKoodiArvo)
   }
-  await setMultiSelectDropdownOptions(page, 'aihe', formData.aiheKoodiArvos)
 
-  await fillCommonAssignmentFields(page, Exam.SUKO, formData)
+  if (formData.aiheKoodiArvos) {
+    await setMultiSelectDropdownOptions(page, 'aihe', formData.aiheKoodiArvos)
+  }
+
+  await fillCommonAssignmentFields(form, formData)
 }
 
-export async function fillLdAssignmentForm(page: Page, formData: LdAssignmentFormType) {
-  await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
-  await setSingleSelectDropdownOption(page, 'aineKoodiArvo', formData.aineKoodiArvo)
-  await fillCommonAssignmentFields(page, Exam.LD, formData)
+export async function fillLdAssignmentForm(form: AssignmentFormModel, formData: Partial<LdAssignmentFormType>) {
+  const page = form.page
+
+  if (formData.lukuvuosiKoodiArvos) {
+    await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
+  }
+
+  if (formData.aineKoodiArvo) {
+    await setSingleSelectDropdownOption(page, 'aineKoodiArvo', formData.aineKoodiArvo)
+  }
+
+  await fillCommonAssignmentFields(form, formData)
 }
 
-export async function fillPuhviAssignmentForm(page: Page, formData: PuhviAssignmentFormType) {
-  await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
-  await page.getByTestId(`assignmentTypeRadio-${formData.assignmentTypeKoodiArvo}`).click()
-  await fillCommonAssignmentFields(page, Exam.PUHVI, formData)
+export async function fillPuhviAssignmentForm(form: AssignmentFormModel, formData: Partial<PuhviAssignmentFormType>) {
+  const page = form.page
+
+  if (formData.lukuvuosiKoodiArvos) {
+    await setMultiSelectDropdownOptions(page, 'lukuvuosiKoodiArvos', formData.lukuvuosiKoodiArvos)
+  }
+
+  await fillAssignmentType(page, formData)
+  await fillCommonAssignmentFields(form, formData)
 }
 
 async function oppimaaraLabel(oppimaara: Oppimaara) {
@@ -235,8 +278,10 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
   await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
   await expect(page.getByTestId('instruction-fi')).toHaveText(expectedFormData.instructionFi)
 
-  for (const [i, content] of expectedFormData.contentFi.entries()) {
-    await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+  if (expectedFormData.contentFi) {
+    for (const [i, content] of expectedFormData.contentFi.entries()) {
+      await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+    }
   }
 
   if (expectedFormData.exam !== Exam.SUKO) {
@@ -244,8 +289,11 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
 
     await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
     await expect(page.getByTestId('instruction-sv')).toHaveText(expectedFormData.instructionSv)
-    for (const [i, content] of expectedFormData.contentSv.entries()) {
-      await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+
+    if (expectedFormData.contentSv) {
+      for (const [i, content] of expectedFormData.contentSv.entries()) {
+        await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+      }
     }
 
     await setTeachingLanguage(page, TeachingLanguage.fi)

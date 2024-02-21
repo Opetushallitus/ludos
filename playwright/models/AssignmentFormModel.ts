@@ -1,13 +1,15 @@
 import { BrowserContext, Page } from '@playwright/test'
 import { FormModel } from './FormModel'
 import { Exam } from 'web/src/types'
-import { fetchWithSession } from '../helpers'
+import { fetchWithSession, FormAction } from '../helpers'
 
 export class AssignmentFormModel extends FormModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
-    readonly createAssignmentButton = page.getByTestId('create-koetehtava-button')
+    readonly createAssignmentButton = page.getByTestId('create-koetehtava-button'),
+    readonly formErrorMsgOppimaara = page.getByTestId('error-message-oppimaara'),
+    readonly formErrorMsgLukuvuosi = page.getByTestId('error-message-lukuvuosiKoodiArvos')
   ) {
     super(page, exam)
   }
@@ -71,5 +73,14 @@ export class AssignmentFormModel extends FormModel {
 
   private async updateAssignmentApiCall(context: BrowserContext, baseURL: string, id: string, body: string) {
     return await fetchWithSession(context, `${baseURL}/api/assignment/${id}`, body, 'PUT')
+  }
+
+  async clickFormAction(action: FormAction) {
+    await this.page.getByTestId(`form-${action}`).click()
+  }
+
+  async changeAssignmentPublishState(action: FormAction) {
+    await this.page.getByTestId(`edit-content-btn`).click()
+    await this.clickFormAction(action)
   }
 }

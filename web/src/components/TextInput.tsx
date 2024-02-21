@@ -1,11 +1,12 @@
 import { UseFormRegister } from 'react-hook-form'
 import { ReactNode } from 'react'
+import { FormError } from './forms/formCommon/FormErrors'
 
 type TextInputProps = {
   id: string
   register: UseFormRegister<any>
   deps?: string[]
-  error?: boolean
+  error?: string
   required?: boolean
   children: ReactNode
 }
@@ -19,8 +20,10 @@ export const TextInput = ({ id, register, deps, error, required, children }: Tex
       id={id}
       data-testid={id}
       type="text"
-      className={`block w-full border ${error ? 'border-red-primary' : 'border-gray-border'} p-2.5`}
+      className={`block w-full border ${!!error ? 'border-red-primary' : 'border-gray-border'} p-2.5`}
       {...register(id, { required, deps })}
     />
+
+    <FormError error={error} name={id} />
   </div>
 )

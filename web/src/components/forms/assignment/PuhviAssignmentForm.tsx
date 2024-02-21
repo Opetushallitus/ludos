@@ -1,19 +1,18 @@
-import { FieldLabel } from '../FieldLabel'
+import { FieldLabel } from '../../FieldLabel'
 import { FormProvider } from 'react-hook-form'
-import { PuhviAssignmentFormType } from './schemas/assignmentSchema'
+import { PuhviAssignmentFormType } from '../schemas/assignmentSchema'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, Exam } from '../../types'
-import { sortKooditAlphabetically, useKoodisto } from '../../hooks/useKoodisto'
-import { AssignmentTypeField } from './formCommon/AssignmentFileTypeRadio'
-import { FormError } from './formCommon/FormErrors'
-import { FormHeader } from './formCommon/FormHeader'
-import { useAssignmentForm } from '../../hooks/useAssignmentForm'
-import { FormContentInput } from './formCommon/FormContentInput'
-import { LudosSelect } from '../ludosSelect/LudosSelect'
-import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../ludosSelect/helpers'
-import { BlockNavigation } from '../BlockNavigation'
+import { ContentFormAction, Exam } from '../../../types'
+import { sortKooditAlphabetically, useKoodisto } from '../../../hooks/useKoodisto'
+import { AssignmentTypeField } from '../formCommon/AssignmentFileTypeRadio'
+import { FormHeader } from '../formCommon/FormHeader'
+import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
+import { FormContentInput } from '../formCommon/FormContentInput'
+import { LudosSelect } from '../../ludosSelect/LudosSelect'
+import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../ludosSelect/helpers'
+import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
-import { InfoBox } from '../InfoBox'
+import { InfoBox } from '../../InfoBox'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -44,6 +43,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
   const currentLukuvuosi = watch('lukuvuosiKoodiArvos')
   const watchPublishState = watch('publishState')
+  const lukuvuosiKoodiArvosErrorMsg = errors.lukuvuosiKoodiArvos?.message as string
 
   if (defaultValueError) {
     return <InfoBox type="error" i18nKey="error.sisallon-lataaminen-epaonnistui" />
@@ -67,9 +67,8 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
               onChange={(opt) => handleMultiselectOptionChange('lukuvuosiKoodiArvos', opt)}
               isMulti
               isSearchable
-              error={!!errors.lukuvuosiKoodiArvos}
+              error={lukuvuosiKoodiArvosErrorMsg}
             />
-            <FormError error={errors.lukuvuosiKoodiArvos?.message} />
           </fieldset>
 
           <AssignmentTypeField
@@ -77,7 +76,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
             name="assignmentTypeKoodiArvo"
             required
             options={sortKooditAlphabetically(Object.values(koodistos.tehtavatyyppipuhvi))}
-            requiredError={!!errors.assignmentTypeKoodiArvo}
+            errorMessage={errors?.assignmentTypeKoodiArvo}
           />
 
           <fieldset className="mb-6">

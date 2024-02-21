@@ -2,11 +2,14 @@ import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 import { AttachmentData, AttachmentLanguage, ContentType } from '../../../../types'
 import { FileSelector } from '../../../FileSelector'
+import { FormError } from '../FormErrors'
 
 interface AttachmentSelectorProps {
+  name: string
   contentType: ContentType
   handleNewAttachmentSelected: (attachments: AttachmentData[], language?: AttachmentLanguage) => void
-  language: AttachmentLanguage // used mostly for data-testid tagginf
+  language: AttachmentLanguage // used mostly for data-testid tagging
+  error?: string
   attachmentData?: AttachmentData[] | AttachmentData
   handleNewAttachmentName?: (newName: string, index: number, language: AttachmentLanguage) => void
   deleteFileByIndex?: (index: number, lang: AttachmentLanguage) => void
@@ -14,13 +17,15 @@ interface AttachmentSelectorProps {
 }
 
 export const AttachmentSelector = ({
+  name,
   contentType,
   attachmentData,
   handleNewAttachmentSelected,
   handleNewAttachmentName,
   deleteFileByIndex,
   language,
-  loading
+  loading,
+  error
 }: AttachmentSelectorProps) => {
   const { t } = useTranslation()
   const isMultiple = Array.isArray(attachmentData)
@@ -82,6 +87,8 @@ export const AttachmentSelector = ({
           language={language}
         />
       )}
+
+      <FormError error={error} name={name} />
     </div>
   )
 }

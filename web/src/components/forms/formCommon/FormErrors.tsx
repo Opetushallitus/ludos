@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { ErrorMessages, ErrorMessagesType } from '../../../types'
-
 import { MIN_NAME_LENGTH } from '../schemas/schemaCommon'
 
-export const FormError = ({ error }: { error?: string }) => {
+export const FormError = ({ error, name }: { error?: string; name: string }) => {
   const { t } = useTranslation()
 
   function getErrorMessage(errorMsg: ErrorMessagesType) {
@@ -23,5 +22,13 @@ export const FormError = ({ error }: { error?: string }) => {
     }
   }
 
-  return <>{error && <p className="text-red-primary">{getErrorMessage(error as ErrorMessagesType)}</p>}</>
+  if (error) {
+    return (
+      <p className="text-red-primary" data-testid={`error-message-${name}`}>
+        {getErrorMessage(error as ErrorMessagesType)}
+      </p>
+    )
+  } else {
+    return null
+  }
 }

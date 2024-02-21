@@ -3,7 +3,7 @@ import { FormModel } from './FormModel'
 import { ContentType, Exam, PublishState } from 'web/src/types'
 import { fetchWithSession, FormAction } from '../helpers'
 import { ContentListModel } from './ContentListModel'
-import { AttachmentFormType, CertificateFormType } from 'web/src/components/forms/schemas/certificateSchema'
+import { AnyCertificateFormType, AttachmentFormType } from 'web/src/components/forms/schemas/certificateSchema'
 import { getFileBlob } from '../examHelpers/instructionHelpers'
 
 export class CertificateFormModel extends FormModel {
@@ -22,7 +22,9 @@ export class CertificateFormModel extends FormModel {
       size: 331,
       fileName: 'fixture2.pdf',
       fileKey: '123-123'
-    }
+    },
+    readonly descriptionFi = page.getByTestId('descriptionFi'),
+    readonly descriptionSv = page.getByTestId('descriptionSv')
   ) {
     super(page, exam)
   }
@@ -53,8 +55,9 @@ export class CertificateFormModel extends FormModel {
     }
   }
 
-  createCertificateInputs = (action: FormAction): CertificateFormType => ({
+  createFormData = (action: FormAction): AnyCertificateFormType => ({
     exam: this.exam,
+    publishState: PublishState.Published,
     nameFi: this.certificateNameByAction(action),
     nameSv: `${this.certificateNameByAction(action)} sv`,
     descriptionFi: 'Todistuksen kuvaus FI',
@@ -64,8 +67,9 @@ export class CertificateFormModel extends FormModel {
     aineKoodiArvo: '9'
   })
 
-  updateCertificateInputs = (action: FormAction): CertificateFormType => ({
+  updateCertificateInputs = (action: FormAction): AnyCertificateFormType => ({
     exam: this.exam,
+    publishState: PublishState.Published,
     nameFi: `${this.certificateNameByAction(action)} updated`,
     nameSv: `${this.certificateNameByAction(action)} sv updated`,
     descriptionFi: 'Todistuksen kuvaus FI updated',
@@ -75,12 +79,8 @@ export class CertificateFormModel extends FormModel {
     aineKoodiArvo: '9'
   })
 
-  private prepareCertificateFormData(certificateIn: CertificateFormType, fileBlobName: string) {
+  private prepareCertificateFormData(certificateIn: AnyCertificateFormType, fileBlobName: string) {
     const formData = new FormData()
-
-    if (this.exam !== Exam.LD) {
-      delete certificateIn.aineKoodiArvo
-    }
 
     if (this.exam === Exam.SUKO) {
       certificateIn.nameSv = ''
@@ -101,7 +101,7 @@ export class CertificateFormModel extends FormModel {
   }
   async createCertificateApiCall(
     baseURL: string,
-    certificateIn: CertificateFormType,
+    certificateIn: AnyCertificateFormType,
     attachmentFixtureFilename: string
   ) {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)
@@ -111,7 +111,7 @@ export class CertificateFormModel extends FormModel {
   async updateCertificateApiCall(
     baseURL: string,
     id: number,
-    certificateIn: CertificateFormType,
+    certificateIn: AnyCertificateFormType,
     attachmentFixtureFilename: string
   ) {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)

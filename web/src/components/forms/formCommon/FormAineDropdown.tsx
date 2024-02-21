@@ -2,7 +2,6 @@ import { FieldLabel } from '../../FieldLabel'
 import { LudosSelect } from '../../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
 import { sortKooditAlphabetically, useKoodisto } from '../../../hooks/useKoodisto'
-import { FormError } from './FormErrors'
 import { useFormContext } from 'react-hook-form'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
@@ -34,9 +33,8 @@ export const FormAineDropdown = () => {
           clearErrors('aineKoodiArvo')
         }}
         isSearchable
-        error={!!errors.aineKoodiArvo}
+        error={aineKoodiArvoError}
       />
-      <FormError error={aineKoodiArvoError} />
     </fieldset>
   )
 }

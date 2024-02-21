@@ -1,15 +1,13 @@
-import { expect, Page, test } from '@playwright/test'
-import { initializeInstructionTest, updateAttachments } from '../../examHelpers/instructionHelpers'
+import { expect, test } from '@playwright/test'
+import { initializeInstructionTest, instructionFormData, updateAttachments } from '../../examHelpers/instructionHelpers'
 import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
-import { Exam } from 'web/src/types'
+import { ContentType, Exam } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 
-async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
-  const form = new InstructionFormModel(page, exam)
-
+async function createAndUpdatePublishedInstruction(form: InstructionFormModel) {
   const instructionId = await form.createInstruction('submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
   await form.updateInstruction(instructionId, 'submit', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
-  await updateAttachments(page)
+  await updateAttachments(form.page)
   await form.updateInstruction(
     instructionId,
     'draft',
@@ -17,12 +15,10 @@ async function createAndUpdatePublishedInstruction(page: Page, exam: Exam) {
     'form.notification.ohjeen-tallennus.palautettu-luonnostilaan'
   )
 
-  await deleteInstruction(page, instructionId, exam)
+  await deleteInstruction(form, instructionId)
 }
 
-async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
-  const form = new InstructionFormModel(page, exam)
-
+async function createAndUpdateDraftInstruction(form: InstructionFormModel) {
   const instructionId = await form.createInstruction('draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
 
   await form.updateInstruction(instructionId, 'draft', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
@@ -33,20 +29,20 @@ async function createAndUpdateDraftInstruction(page: Page, exam: Exam) {
     'form.notification.ohjeen-tallennus.julkaisu-onnistui'
   )
 
-  await deleteInstruction(page, instructionId, exam)
+  await deleteInstruction(form, instructionId)
 }
-async function deleteInstruction(page: Page, instructionId: number, exam: Exam) {
-  await page.getByTestId('edit-content-btn').click()
+async function deleteInstruction(form: InstructionFormModel, instructionId: number) {
+  await form.editContentButton.click()
 
-  await page.getByTestId('form-delete').click()
-  await page.getByTestId('modal-button-delete').last().click()
+  await form.deleteButton.click()
+  await form.modalDeleteButton.last().click()
 
-  await assertSuccessNotification(page, 'ohjeen-poisto.onnistui')
+  await assertSuccessNotification(form.page, 'ohjeen-poisto.onnistui')
   // expect not to find the deleted certificate from a list
-  await expect(page.getByTestId(`instruction-${instructionId}`)).toBeHidden()
+  await expect(form.page.getByTestId(`instruction-${instructionId}`)).toBeHidden()
 
-  await page.goto(`/${exam.toLowerCase()}/ohjeet/${instructionId}`)
-  await expect(page.getByText('404', { exact: true })).toBeVisible()
+  await form.goToContentPage(ContentType.ohjeet, instructionId)
+  await expect(form.page.getByText('404', { exact: true })).toBeVisible()
 }
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -56,17 +52,18 @@ Object.values(Exam).forEach((exam) => {
     test.beforeEach(async ({ page }) => await initializeInstructionTest(page, exam))
 
     test(`can create, update and delete a new published ${exam} instruction`, async ({ page }) =>
-      await createAndUpdatePublishedInstruction(page, exam))
+      await createAndUpdatePublishedInstruction(new InstructionFormModel(page, exam)))
 
     test(`can create, update and delete a new draft ${exam} instruction`, async ({ page }) =>
-      await createAndUpdateDraftInstruction(page, exam))
+      await createAndUpdateDraftInstruction(new InstructionFormModel(page, exam)))
 
     test(`can cancel ${exam} creating instruction`, async ({ page }) => {
-      const btn = page.getByTestId('form-cancel')
-      await expect(btn).toHaveText('button.peruuta')
-      await btn.click()
+      const form = new InstructionFormModel(page, exam)
+
+      await form.cancelButton.click()
+
       // expect to be back in instruction list view
-      await expect(page.getByTestId('create-ohje-button')).toBeVisible()
+      await expect(form.createNewInstructionButton).toBeVisible()
     })
 
     test(`can cancel ${exam} updating instruction`, async ({ page }) => {
@@ -82,9 +79,25 @@ Object.values(Exam).forEach((exam) => {
       await expect(instructionCard).toBeVisible()
       await page.getByTestId(`instruction-${instructionId}-edit`).click()
 
-      const btn = page.getByTestId('form-cancel')
-      await expect(btn).toHaveText('button.peruuta')
-      await btn.click()
+      await form.cancelButton.click()
+    })
+
+    test('form validations work', async ({ page }) => {
+      const form = new InstructionFormModel(page, exam)
+
+      await form.submitButton.click()
+      await expect(form.formErrorMsgList).toBeVisible()
+
+      await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgNameFi, () =>
+        form.nameFi.fill(instructionFormData.nameFi)
+      )
+      await form.nameFi.clear()
+
+      await form.tabSv.click()
+
+      await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgNameSv, () =>
+        form.nameSv.fill(instructionFormData.nameSv)
+      )
     })
   })
 })

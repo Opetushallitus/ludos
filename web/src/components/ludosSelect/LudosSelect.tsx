@@ -13,6 +13,7 @@ import './ludosSelect.css'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../Button'
 import { useState } from 'react'
+import { FormError } from '../forms/formCommon/FormErrors'
 
 export type LudosSelectOption = {
   value: string
@@ -38,14 +39,14 @@ export type LudosSelectProps<
 > = Props<Option, IsMulti, Group> & {
   transparentSelect?: boolean
   menuSize?: MenuSize
-  error?: boolean
+  error?: string
 }
 
 export function LudosSelect<
   Option = LudosSelectOption,
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>
->({ menuSize = 'full', error = false, ...props }: LudosSelectProps<Option, IsMulti, Group>) {
+>({ menuSize = 'full', ...props }: LudosSelectProps<Option, IsMulti, Group>) {
   const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
@@ -94,24 +95,27 @@ export function LudosSelect<
   )
 
   return (
-    <Select
-      id={props.name}
-      instanceId={props.name}
-      inputId={`${props.name}-input`}
-      classNamePrefix={props.transparentSelect ? 'ludos-transparent-select' : 'ludos-select'}
-      classNames={{
-        control: () => (error ? 'ludos-select-error' : '')
-      }}
-      closeMenuOnSelect={true}
-      hideSelectedOptions={false}
-      components={{ DropdownIndicator, Option, Menu, MultiValueRemove, ClearIndicator }}
-      placeholder={t('filter.valitse')}
-      menuIsOpen={isOpen}
-      onMenuOpen={() => setIsOpen(true)}
-      onMenuClose={() => setIsOpen(false)}
-      isSearchable={false}
-      noOptionsMessage={() => t('filter.ei-tuloksia')}
-      {...props}
-    />
+    <>
+      <Select
+        id={props.name}
+        instanceId={props.name}
+        inputId={`${props.name}-input`}
+        classNamePrefix={props.transparentSelect ? 'ludos-transparent-select' : 'ludos-select'}
+        classNames={{
+          control: () => (props.error ? 'ludos-select-error' : '')
+        }}
+        closeMenuOnSelect={true}
+        hideSelectedOptions={false}
+        components={{ DropdownIndicator, Option, Menu, MultiValueRemove, ClearIndicator }}
+        placeholder={t('filter.valitse')}
+        menuIsOpen={isOpen}
+        onMenuOpen={() => setIsOpen(true)}
+        onMenuClose={() => setIsOpen(false)}
+        isSearchable={false}
+        noOptionsMessage={() => t('filter.ei-tuloksia')}
+        {...props}
+      />
+      <FormError error={props.error} name={props.name || ''} />
+    </>
   )
 }
