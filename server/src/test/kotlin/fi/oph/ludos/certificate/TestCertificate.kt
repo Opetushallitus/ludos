@@ -1,7 +1,6 @@
 package fi.oph.ludos.certificate
 
 import fi.oph.ludos.Exam
-import fi.oph.ludos.PublishState
 import fi.oph.ludos.TestPublishState
 
 sealed interface TestCertificate {

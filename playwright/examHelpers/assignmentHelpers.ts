@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 import {
   FormAction,
   koodiLabel,
@@ -337,9 +337,9 @@ export async function assertPuhviAssignmentContentPage(page: Page, expectedFormD
 export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
-export async function testEsitysNakyma(page: Page, linkTestId: string, assignmentIn: any) {
+export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignmentIn: any) {
   const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
-  await page.getByTestId(linkTestId).click()
+  await linkTestId.click()
   const newTabPage = await newTabPagePromise
 
   await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)

@@ -101,7 +101,6 @@ data class PuhviCertificateDtoIn(
 sealed interface CertificateOut : ContentBaseOut, Certificate {
     val attachmentFi: CertificateAttachmentDtoOut
     val attachmentSv: CertificateAttachmentDtoOut
-    val version: Int
 }
 
 @JsonTypeName("SUKO")

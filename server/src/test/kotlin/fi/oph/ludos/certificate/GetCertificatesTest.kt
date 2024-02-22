@@ -18,10 +18,8 @@ class GetCertificatesTest : CertificateRequests() {
 
     @BeforeAll
     fun setup() {
-        mockMvc.perform(emptyDbRequest().with(yllapitajaUser))
-            .andExpect(MockMvcResultMatchers.status().is3xxRedirection)
-        mockMvc.perform(seedDbWithCertificates().with(yllapitajaUser))
-            .andExpect(MockMvcResultMatchers.status().is3xxRedirection)
+        emptyDb(mockMvc)
+        seedDbWithCertificates(mockMvc)
     }
 
     @TestFactory

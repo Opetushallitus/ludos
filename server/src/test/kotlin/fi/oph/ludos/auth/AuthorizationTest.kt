@@ -2,13 +2,11 @@ package fi.oph.ludos.auth
 
 import fi.oph.ludos.*
 import fi.oph.ludos.test.TestController
-import org.hamcrest.MatcherAssert.assertThat
+import jakarta.transaction.Transactional
 import org.hamcrest.CoreMatchers.*
-import org.hamcrest.Description
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThan
 import org.hamcrest.Matchers.hasSize
-import org.hamcrest.TypeSafeMatcher
-import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -25,7 +23,6 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.web.bind.annotation.RestController
-import jakarta.transaction.Transactional
 import kotlin.reflect.full.functions
 
 @TestPropertySource(locations = ["classpath:application.properties"])
@@ -39,7 +36,11 @@ class AuthorizationTest(@Autowired val mockMvc: MockMvc) {
         val reflections = Reflections("fi.oph.ludos", Scanners.SubTypes.filterResultsBy { _ -> true })
 
         val controllers = reflections.getSubTypesOf(Any::class.java)
-            .filter { clazz -> clazz.isAnnotationPresent(Controller::class.java) || clazz.isAnnotationPresent(RestController::class.java) }
+            .filter { clazz ->
+                clazz.isAnnotationPresent(Controller::class.java) || clazz.isAnnotationPresent(
+                    RestController::class.java
+                )
+            }
 
         assertThat("Suspiciously low number of controllers found", controllers, hasSize(greaterThan(6)))
 
@@ -178,14 +179,21 @@ class AuthorizationTest(@Autowired val mockMvc: MockMvc) {
 
         @Test
         fun `assert that yllapitaja by default test endpoint does not have annotation @RequireAtLeastYllapitajaRole`() {
-            val userEndpointFunction = TestController::class.functions.find { it.name == "testYllapitajaRequiredByDefault" }
+            val userEndpointFunction =
+                TestController::class.functions.find { it.name == "testYllapitajaRequiredByDefault" }
             assertThat(userEndpointFunction, notNullValue())
-            assertThat(userEndpointFunction?.annotations, not(hasItem(instanceOf<RequireAtLeastYllapitajaRole>(RequireAtLeastYllapitajaRole::class.java))))
+            assertThat(
+                userEndpointFunction?.annotations,
+                not(hasItem(instanceOf<RequireAtLeastYllapitajaRole>(RequireAtLeastYllapitajaRole::class.java)))
+            )
         }
 
         @Test
         fun `assert that TestController has annotation @RequireAtLeastYllapitajaRole`() {
-            assertThat(TestController::class.annotations, hasItem(instanceOf<RequireAtLeastYllapitajaRole>(RequireAtLeastYllapitajaRole::class.java)))
+            assertThat(
+                TestController::class.annotations,
+                hasItem(instanceOf<RequireAtLeastYllapitajaRole>(RequireAtLeastYllapitajaRole::class.java))
+            )
         }
 
         @Test

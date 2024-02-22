@@ -8,10 +8,10 @@ interface TestAssignment {
     val nameSv: String
     val instructionFi: String
     val instructionSv: String
-    val contentFi: Array<String>
-    val contentSv: Array<String>
+    val contentFi: List<String>
+    val contentSv: List<String>
     val publishState: TestPublishState
-    val laajaalainenOsaaminenKoodiArvos: Array<String>
+    val laajaalainenOsaaminenKoodiArvos: List<String>
 }
 
 interface TestAssignmentIn : TestAssignment {
@@ -20,10 +20,10 @@ interface TestAssignmentIn : TestAssignment {
     override val nameSv: String
     override val instructionFi: String
     override val instructionSv: String
-    override val contentFi: Array<String>
-    override val contentSv: Array<String>
+    override val contentFi: List<String>
+    override val contentSv: List<String>
     override val publishState: TestPublishState
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>
+    override val laajaalainenOsaaminenKoodiArvos: List<String>
 }
 
 data class TestSukoAssignmentDtoIn(
@@ -31,27 +31,42 @@ data class TestSukoAssignmentDtoIn(
     override val nameSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
-    override val contentFi: Array<String>,
-    override val contentSv: Array<String>,
+    override val contentFi: List<String>,
+    override val contentSv: List<String>,
     override val publishState: TestPublishState,
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    override val laajaalainenOsaaminenKoodiArvos: List<String>,
     val assignmentTypeKoodiArvo: String,
     val oppimaara: Oppimaara,
     val tavoitetasoKoodiArvo: String?,
-    val aiheKoodiArvos: Array<String>,
+    val aiheKoodiArvos: List<String>,
     override val exam: String = Exam.SUKO.toString(),
-) : TestAssignmentIn
+) : TestAssignmentIn {
+    constructor(dtoIn: SukoAssignmentDtoIn) : this(
+        dtoIn.nameFi,
+        dtoIn.nameSv,
+        dtoIn.instructionFi,
+        dtoIn.instructionSv,
+        dtoIn.contentFi,
+        dtoIn.contentSv,
+        TestPublishState.fromPublishState(dtoIn.publishState),
+        dtoIn.laajaalainenOsaaminenKoodiArvos,
+        dtoIn.assignmentTypeKoodiArvo,
+        dtoIn.oppimaara,
+        dtoIn.tavoitetasoKoodiArvo,
+        dtoIn.aiheKoodiArvos
+    )
+}
 
 data class TestLdAssignmentDtoIn(
     override val nameFi: String,
     override val nameSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
-    override val contentFi: Array<String>,
-    override val contentSv: Array<String>,
+    override val contentFi: List<String>,
+    override val contentSv: List<String>,
     override val publishState: TestPublishState,
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
-    val lukuvuosiKoodiArvos: Array<String>,
+    override val laajaalainenOsaaminenKoodiArvos: List<String>,
+    val lukuvuosiKoodiArvos: List<String>,
     val aineKoodiArvo: String,
     override val exam: String = Exam.LD.toString()
 ) : TestAssignmentIn
@@ -61,16 +76,16 @@ data class TestPuhviAssignmentDtoIn(
     override val nameSv: String,
     override val instructionFi: String,
     override val instructionSv: String,
-    override val contentFi: Array<String>,
-    override val contentSv: Array<String>,
+    override val contentFi: List<String>,
+    override val contentSv: List<String>,
     override val publishState: TestPublishState,
-    override val laajaalainenOsaaminenKoodiArvos: Array<String>,
+    override val laajaalainenOsaaminenKoodiArvos: List<String>,
     val assignmentTypeKoodiArvo: String,
-    val lukuvuosiKoodiArvos: Array<String>,
+    val lukuvuosiKoodiArvos: List<String>,
     override val exam: String = Exam.PUHVI.toString()
 ) : TestAssignmentIn
 
-data class TestAssignmentsOut<T : AssignmentOut>(
+data class TestAssignmentsOut<T : AssignmentCardOut>(
     val content: List<T>,
     val totalPages: Int,
     val currentPage: Int,

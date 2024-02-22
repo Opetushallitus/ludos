@@ -19,12 +19,14 @@ fun assertTimeIsRoughlyBetween(
     val (beforeMinusTolerance, afterPlusTolerance) = Pair(before.minus(tolerance), after.plus(tolerance))
     assertTrue(
         time >= beforeMinusTolerance && time <= afterPlusTolerance,
-        "Time ${timeName} ${time} is not between ${beforeMinusTolerance} and ${afterPlusTolerance}"
+        "Time $timeName $time is not between $beforeMinusTolerance and $afterPlusTolerance"
     )
 }
 
-fun assertTimeIsRoughlyBetween(before: ZonedDateTime, isotime: String, after: ZonedDateTime, timeName: String) =
-    assertTimeIsRoughlyBetween(before, ZonedDateTime.parse(isotime), after, timeName)
-
 fun assertTimeIsRoughlyBetween(before: ZonedDateTime, timestamp: Timestamp, after: ZonedDateTime, timeName: String) =
-    assertTimeIsRoughlyBetween(before, ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault()), after, timeName)
+    assertTimeIsRoughlyBetween(
+        before,
+        ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault()),
+        after,
+        timeName
+    )

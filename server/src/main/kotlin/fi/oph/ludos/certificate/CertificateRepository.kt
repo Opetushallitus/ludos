@@ -2,6 +2,7 @@ package fi.oph.ludos.certificate
 
 import arrow.core.Either
 import fi.oph.ludos.Exam
+import fi.oph.ludos.INITIAL_VERSION_NUMBER
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
@@ -74,7 +75,7 @@ class CertificateRepository(
                     updaterName = null,
                     createdAt = rs.getTimestamp("certificate_created_at"),
                     updatedAt = rs.getTimestamp("certificate_updated_at"),
-                    version = 1,
+                    version = INITIAL_VERSION_NUMBER,
                     descriptionFi = certificateDtoIn.descriptionFi,
                     descriptionSv = "",
                     exam = certificateDtoIn.exam
@@ -137,7 +138,7 @@ class CertificateRepository(
                         updaterName = null,
                         createdAt = rs.getTimestamp("certificate_created_at"),
                         updatedAt = rs.getTimestamp("certificate_updated_at"),
-                        version = 1,
+                        version = INITIAL_VERSION_NUMBER,
                         aineKoodiArvo = certificateDtoIn.aineKoodiArvo,
                         exam = certificateDtoIn.exam
                     )
@@ -190,7 +191,7 @@ class CertificateRepository(
                         updaterName = null,
                         createdAt = rs.getTimestamp("certificate_created_at"),
                         updatedAt = rs.getTimestamp("certificate_updated_at"),
-                        version = 1,
+                        version = INITIAL_VERSION_NUMBER,
                         descriptionFi = certificateDtoIn.descriptionFi,
                         descriptionSv = certificateDtoIn.descriptionSv,
                         exam = certificateDtoIn.exam

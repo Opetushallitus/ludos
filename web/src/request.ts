@@ -2,6 +2,7 @@ import { InstructionFormType } from './components/forms/schemas/instructionSchem
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
 import { AttachmentData, Exam, ImageDtoOut } from './types'
 import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
+import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
@@ -234,23 +235,6 @@ export async function getUserDetails(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
 
-export async function getUserFavoriteCount(): Promise<Response> {
-  return await doRequest(`${BASE_API_URL}/assignment/favoriteCount`, 'GET')
-}
-
-export async function setAssignmentFavorite(exam: Exam, assignmentId: number, isFavorite: boolean): Promise<number> {
-  const result = await doRequest(
-    `${BASE_API_URL}/assignment/${exam}/${assignmentId}/favorite`,
-    'PUT',
-    JSON.stringify({ suosikki: isFavorite })
-  )
-  if (!result.ok) {
-    throw new Error(await result.text())
-  }
-
-  return result.json()
-}
-
 export async function uploadImage(file: File): Promise<ImageDtoOut> {
   const formData = new FormData()
 
@@ -265,4 +249,60 @@ export async function uploadImage(file: File): Promise<ImageDtoOut> {
   }
 
   return await result.json()
+}
+
+export async function getUserFavoriteCount(): Promise<Response> {
+  return await doRequest(`${ASSIGNMENT_URL}/favorites/count`, 'GET')
+}
+
+export async function setAssignmentFavorite(data: FavoriteToggleModalFormType): Promise<number> {
+  const result = await doRequest(
+    `${ASSIGNMENT_URL}/favorites/${data.exam}/${data.assignmentId}`,
+    'PUT',
+    JSON.stringify(data.favoriteFolderIds)
+  )
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return result.json()
+}
+
+export async function createFavoriteFolder(exam: Exam, name: string, parentId: number | null): Promise<number> {
+  const result = await doRequest(
+    `${ASSIGNMENT_URL}/favorites/${exam}/folder`,
+    'POST',
+    JSON.stringify({ name, parentId })
+  )
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return result.json()
+}
+
+export async function updateFavoriteFolder(
+  exam: Exam,
+  folderId: number,
+  name: string,
+  parentId: number
+): Promise<void> {
+  const result = await doRequest(
+    `${ASSIGNMENT_URL}/favorites/${exam}/folder/${folderId}`,
+    'PUT',
+    JSON.stringify({ name, parentId })
+  )
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+}
+
+export async function deleteFavoriteFolder(exam: Exam, folderId: number): Promise<void> {
+  const result = await doRequest(`${ASSIGNMENT_URL}/favorites/${exam}/folder/${folderId}`, 'DELETE')
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
 }

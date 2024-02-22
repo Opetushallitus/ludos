@@ -14,15 +14,14 @@ interface ContentBase {
     val publishState: PublishState
 }
 
-interface ContentBaseOut {
+interface ContentBaseOut : ContentBase {
     val id: Int
-    val exam: Exam
-    val publishState: PublishState
     val createdAt: Timestamp
     val updatedAt: Timestamp
     val authorOid: String
     val updaterOid: String
     val updaterName: String?
+    val version: Int
 }
 
 // NOTE: This enum must match the postgres enum type language

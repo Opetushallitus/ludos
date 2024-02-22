@@ -46,7 +46,7 @@ async function updateImageAttributes(form: InstructionFormModel) {
   const editedAltText = `${formData.imageAltText} muokattu`
 
   await new InstructionContentModel(form.page, form.exam).editButton.click()
-  ;(await form.contentFiEditor.imageEditorByAltText(formData.imageAltText)).altInput.fill(editedAltText)
+  await (await form.contentFiEditor.imageEditorByAltText(formData.imageAltText)).altInput.fill(editedAltText)
   const imageEditor = await form.contentFiEditor.imageEditorByAltText(editedAltText)
   await imageEditor.selectImageSize(ImageSizeOption.small)
   await imageEditor.selectImageAlign(ImageAlignOption.center)

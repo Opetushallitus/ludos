@@ -125,61 +125,104 @@ class SeedDataRepository(
         "20202021", "20222023", "20212022", "20242025", "20232024"
     )
     val aineKoodiArvos = arrayOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
+    val favoriteFolderIdIndices = arrayOf(
+        // Viittaa createFavoriteFoldersin palauttaman folderId-arrayn indekseihin
+        listOf(3),
+        listOf(),
+        listOf(),
+        listOf(),
+        listOf(2, 4),
+        listOf(),
+        listOf(),
+        listOf(),
+        listOf(0, 1, 2, 3, 4, 5),
+        listOf(),
+        listOf(),
+        listOf(),
+    )
+
+    fun createFavoriteFolders(exam: Exam): IntArray {
+        fun createFolder(name: String, parentId: Int) =
+            assignmentRepository.createNewFavoriteFolder(exam, FavoriteFolderDtoIn(name, parentId))
+
+        val kansio1 = createFolder("Kansio 1", ROOT_FOLDER_ID)
+        val kansion1Alikansio1 = createFolder("Kansion 1 alikansio 1", kansio1)
+        val kansion1Alikansio2 = createFolder("Kansion 1 alikansio 2", kansio1)
+        val kansion1Alikansion2Alikansio1 = createFolder("Kansion 1 alikansion 2 alikansio 1", kansion1Alikansio2)
+        val kansio2 = createFolder("Kansio 2", ROOT_FOLDER_ID)
+
+        return intArrayOf(
+            ROOT_FOLDER_ID,
+            kansio1,
+            kansion1Alikansio1,
+            kansion1Alikansio2,
+            kansion1Alikansion2Alikansio1,
+            kansio2
+        )
+    }
 
     fun seedAssignments() {
+        val folderIdsByExam = Exam.entries.associateWith { createFavoriteFolders(it) }
+        fun addAssignmentToFavoriteFolders(exam: Exam, assignmentId: Int, index: Int) {
+            val favoriteFolderIds = folderIdsByExam[exam]!!
+                .slice(favoriteFolderIdIndices[index % favoriteFolderIdIndices.size])
+            assignmentRepository.setAssignmentFavoriteFolders(exam, assignmentId, favoriteFolderIds)
+        }
+
         repeat(24) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
 
             val laajaalainenOsaaminenVarying =
-                Array(if (it % 2 == 0) 2 else if (it % 5 == 0) 3 else 0) { index -> laajaalainenOsaaminenKoodiArvos[(index + it) % laajaalainenOsaaminenKoodiArvos.size] }
+                List(if (it % 2 == 0) 2 else if (it % 5 == 0) 3 else 0) { index -> laajaalainenOsaaminenKoodiArvos[(index + it) % laajaalainenOsaaminenKoodiArvos.size] }
             val lukuvuosiVarying =
-                Array(if (it % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + it) % lukuvuosiKoodiArvos.size] }
+                List(if (it % 2 == 0) 1 else 2) { index -> lukuvuosiKoodiArvos[(index + it) % lukuvuosiKoodiArvos.size] }
 
-            val sukoAssignment = SukoAssignmentDtoIn(
+            val sukoAssignmentIn = SukoAssignmentDtoIn(
                 nameFi = "Test name $it FI SUKO",
                 nameSv = "Test name $it SV SUKO",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
-                contentFi = arrayOf(complexAssignmentContent("Test content $it FI SUKO")),
-                contentSv = arrayOf(complexAssignmentContent("Test content $it SV SUKO")),
+                contentFi = listOf(complexAssignmentContent("Test content $it FI SUKO")),
+                contentSv = listOf(complexAssignmentContent("Test content $it SV SUKO")),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size],
                 oppimaara = oppimaaras[it % oppimaaras.size],
                 tavoitetasoKoodiArvo = taitotasoKoodiArvos[it % taitotasoKoodiArvos.size],
-                aiheKoodiArvos = Array(if (it % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + it) % aiheKoodiArvos.size] },
+                aiheKoodiArvos = List(if (it % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + it) % aiheKoodiArvos.size] },
             )
-            assignmentRepository.saveSukoAssignment(sukoAssignment)
+            val sukoAssignmentOut = assignmentRepository.saveSukoAssignment(sukoAssignmentIn)
+            addAssignmentToFavoriteFolders(Exam.SUKO, sukoAssignmentOut.id, it)
 
-            val ldAssignment = LdAssignmentDtoIn(
+            val ldAssignmentIn = LdAssignmentDtoIn(
                 nameFi = "Test name $it FI LD",
                 nameSv = "Test name $it SV LD",
                 instructionFi = "Test Instruction LD",
                 instructionSv = "Test Instruction LD",
-                contentFi = (1..5).map { i -> complexAssignmentContent("Test content $it FI LD part $i") }
-                    .toTypedArray(),
-                contentSv = (1..5).map { i -> complexAssignmentContent("Test content $it SV LD part $i") }
-                    .toTypedArray(),
+                contentFi = (1..5).map { i -> complexAssignmentContent("Test content $it FI LD part $i") },
+                contentSv = (1..5).map { i -> complexAssignmentContent("Test content $it SV LD part $i") },
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 lukuvuosiKoodiArvos = lukuvuosiVarying,
                 aineKoodiArvo = aineKoodiArvos[it % aineKoodiArvos.size]
             )
-            assignmentRepository.saveLdAssignment(ldAssignment)
+            val ldAssignmentOut = assignmentRepository.saveLdAssignment(ldAssignmentIn)
+            addAssignmentToFavoriteFolders(Exam.LD, ldAssignmentOut.id, it)
 
-            val puhviAssignment = PuhviAssignmentDtoIn(
+            val puhviAssignmentIn = PuhviAssignmentDtoIn(
                 nameFi = "Test name $it FI PUHVI",
                 nameSv = "Test name $it SV PUHVI",
                 instructionFi = "Test Instruction",
                 instructionSv = "Test Instruction",
-                contentFi = arrayOf(complexAssignmentContent("Test content $it FI PUHVI")),
-                contentSv = arrayOf(complexAssignmentContent("Test content $it SV PUHVI")),
+                contentFi = listOf(complexAssignmentContent("Test content $it FI PUHVI")),
+                contentSv = listOf(complexAssignmentContent("Test content $it SV PUHVI")),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 assignmentTypeKoodiArvo = puhviAssignmentTypeKoodiArvos[it % puhviAssignmentTypeKoodiArvos.size],
                 lukuvuosiKoodiArvos = lukuvuosiVarying,
             )
-            assignmentRepository.savePuhviAssignment(puhviAssignment)
+            val puhviAssignmentOut = assignmentRepository.savePuhviAssignment(puhviAssignmentIn)
+            addAssignmentToFavoriteFolders(Exam.PUHVI, puhviAssignmentOut.id, it)
         }
     }
 
@@ -291,6 +334,7 @@ class SeedDataRepository(
 
     fun nukeAssignments() {
         jdbcTemplate.execute("TRUNCATE TABLE assignment CASCADE")
+        jdbcTemplate.execute("TRUNCATE TABLE assignment_favorite_folder CASCADE")
     }
 
     fun nukeInstructions() {

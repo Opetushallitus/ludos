@@ -20,3 +20,5 @@ export function virkailijanOpintopolkuUrl() {
     return 'https://virkailija.opintopolku.fi/'
   }
 }
+
+export const FAVORITE_ROOT_FOLDER_ID = 0

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { Icon } from '../../../Icon'
 import { Button } from '../../../Button'
 import { useTranslation } from 'react-i18next'
-import { AddUrlModal } from '../../../modal/AddUrlModal'
+import { TextInputModal } from '../../../modal/TextInputModal'
 import { ImageSelector } from './ImageSelector'
 import { ImageDtoOut } from '../../../../types'
 
@@ -152,10 +152,10 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         <Icon name="link" color="text-black" />
       </Button>
       {isUrlModalOpen && (
-        <AddUrlModal
+        <TextInputModal
           modalTitle={t('tiptap.modal.lisaa-url')}
-          open={isUrlModalOpen}
-          onAddUrlAction={handleAddUrlAction}
+          inputLabel={t('form.lisaa-url')}
+          onAddText={handleAddUrlAction}
           onClose={() => setIsUrlModalOpen(false)}
           dataTestId="add-url-modal"
           aria-label="add url modal"

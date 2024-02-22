@@ -3,7 +3,6 @@ package fi.oph.ludos.assignment
 import fi.oph.ludos.*
 import fi.oph.ludos.test.AssignmentFiltersTestData
 import jakarta.transaction.Transactional
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -21,7 +20,7 @@ class GetAssignmentsTest : AssignmentRequests() {
 
     @BeforeAll
     fun setup() {
-        mockMvc.perform(emptyDbRequest().with(yllapitajaUser)).andExpect(status().is3xxRedirection)
+        emptyDb(mockMvc)
         val testData = AssignmentFiltersTestData.assignmentsForFilterTest()
         seedDbWithCustomAssignments(mockMvc, testData)
     }
@@ -34,7 +33,7 @@ class GetAssignmentsTest : AssignmentRequests() {
     @Test
     @WithOpettajaRole
     fun getAssignmentsAsOpettaja() {
-        val assignments = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
+        val assignments = getAllAssignmentsForExam<SukoAssignmentCardDtoOut>().content
         assertTrue(
             assignments.none { it.publishState == PublishState.DRAFT }, "Opettaja should not see draft assignments"
         )
@@ -42,7 +41,7 @@ class GetAssignmentsTest : AssignmentRequests() {
     }
 
     private fun emptyAndSeedNSukoAssignments(n: Int) {
-        mockMvc.perform(emptyDbRequest())
+        emptyDb(mockMvc)
         seedDbWithCustomAssignments(mockMvc, AssignmentFiltersTestData.sukoAssignments(n))
     }
 
@@ -202,7 +201,7 @@ class GetAssignmentsTest : AssignmentRequests() {
         testPuhviFilterOptions(null, "99999999", "asc", emptyList())
     }
 
-    private fun <T : AssignmentOut> testPageNumber(
+    private fun <T : AssignmentCardOut> testPageNumber(
         content: TestAssignmentsOut<T>,
         expectedPageNumber: Int,
         expectedTotalPages: Int = 1
@@ -223,7 +222,12 @@ class GetAssignmentsTest : AssignmentRequests() {
         expectedNumbersInPages.mapIndexed { i, expectedNumbersInPage ->
             val page = i + 1
             val sukoFilters = SukoFilters(
-                orderDirection, null, oppimaara, tehtavatyyppisuko, aihe, tavoitetaitotaso, page
+                jarjesta = orderDirection,
+                oppimaara = oppimaara,
+                tehtavatyyppisuko = tehtavatyyppisuko,
+                aihe = aihe,
+                tavoitetaitotaso = tavoitetaitotaso,
+                sivu = page
             )
 
             val content = getSukoAssignments(sukoFilters)
@@ -248,7 +252,7 @@ class GetAssignmentsTest : AssignmentRequests() {
         expectedNumbersInPages.mapIndexed { i, expectedNumbersInPage ->
             val page = i + 1
             val puhviFilters = PuhviFilters(
-                orderDirection, null, tehtavatyyppipuhvi, lukuvuosi, page
+                jarjesta = orderDirection, tehtavatyyppipuhvi = tehtavatyyppipuhvi, lukuvuosi = lukuvuosi, sivu = page
             )
 
             val content = getPuhviAssignments(puhviFilters)
@@ -273,7 +277,7 @@ class GetAssignmentsTest : AssignmentRequests() {
     ) {
         expectedNumbersInPages.mapIndexed { i, expectedNumbersInPage ->
             val page = i + 1
-            val ldFilters = LdFilters(orderDirection, null, lukuvuosi, aine, page)
+            val ldFilters = LdFilters(jarjesta = orderDirection, lukuvuosi = lukuvuosi, aine = aine, sivu = page)
             val content = getLdAssignments(ldFilters)
             testPageNumber(content, page, expectedTotalPages)
 
@@ -331,51 +335,5 @@ class GetAssignmentsTest : AssignmentRequests() {
             .andExpect(status().isBadRequest).andReturn().response.contentAsString
 
         assertEquals(expectedErrorString, errorStr)
-    }
-
-    val emptySukoFilters = SukoFilters(
-        jarjesta = "desc",
-        suosikki = null,
-        oppimaara = null,
-        tehtavatyyppisuko = null,
-        aihe = null,
-        tavoitetaitotaso = null,
-        sivu = 1
-    )
-
-    @Test
-    @WithOpettajaRole
-    fun `test filtering for favorite assignments`() {
-        val allAssignments: List<SukoAssignmentDtoOut> = getAllAssignmentsForExam<SukoAssignmentDtoOut>().content
-        val favoriteAssignments = allAssignments.slice(1..3)
-        favoriteAssignments.forEach {
-            setAssignmentIsFavorite(Exam.SUKO, it.id, true, opettajaUser)
-        }
-
-        val filteredFavoriteAssignments =
-            getSukoAssignments(emptySukoFilters.copy(suosikki = true)).content
-        // check that we get only assignments that were favored
-        assertThat(filteredFavoriteAssignments.map { it.id })
-            .containsExactlyInAnyOrder(*(favoriteAssignments.map { it.id }.toTypedArray()))
-        filteredFavoriteAssignments.forEach {
-            assertTrue(it.isFavorite, "Assignment ${it.id} should be favorite")
-        }
-
-        val filteredNonFavoriteAssignments =
-            getSukoAssignments(emptySukoFilters.copy(suosikki = false)).content
-        // check that we get only assignments that were not favored
-        val expectedNonFavoriteIds = allAssignments.map { it.id } - favoriteAssignments.map { it.id }.toSet()
-
-        // remove last three items from the list, as they aren't on the first page
-        assertThat(filteredNonFavoriteAssignments.map { it.id }
-            .dropLast(3)).containsExactlyInAnyOrder(*expectedNonFavoriteIds.toTypedArray())
-
-        filteredNonFavoriteAssignments.forEach {
-            assertTrue(!it.isFavorite, "Assignment ${it.id} should not be favorite")
-        }
-
-        val assignmentsWithEmptyFilter = getSukoAssignments(emptySukoFilters).content
-        assertThat(allAssignments.map { it.id })
-            .containsExactlyInAnyOrder(*(assignmentsWithEmptyFilter.map { it.id }.toTypedArray()))
     }
 }

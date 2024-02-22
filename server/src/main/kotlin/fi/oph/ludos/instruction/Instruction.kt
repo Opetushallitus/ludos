@@ -96,7 +96,6 @@ data class InstructionAttachmentIn(
 )
 interface InstructionOut : ContentBaseOut, Instruction {
     val attachments: List<InstructionAttachmentDtoOut>
-    val version: Int
 }
 
 @JsonTypeName("SUKO")

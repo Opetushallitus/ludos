@@ -4,29 +4,28 @@ import { InternalLink } from '../../../InternalLink'
 import { ContentAction } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
 import { esitysnakymaKey } from '../../../LudosRoutes'
-import { AssignmentOut, ContentType, Exam, TeachingLanguage } from '../../../../types'
+import { AssignmentCardOut, ContentType, TeachingLanguage } from '../../../../types'
 import { lazy, Suspense } from 'react'
 
 type AssignmentCardContentActionButtonProps = {
-  contentId: number
+  assignment: AssignmentCardOut
   contentAction: ContentAction
-  exam: Exam
-  isActive?: boolean
+  isIconFilled?: boolean
   onClickHandler?: () => void
+  isDisabled?: boolean
 }
 
 function AssignmentCardContentActionButton({
-  contentId,
+  assignment: { id: contentId, exam },
   contentAction: { actionName, iconName, text, link },
-  exam,
-  isActive,
-  onClickHandler
+  isIconFilled,
+  onClickHandler,
+  isDisabled
 }: AssignmentCardContentActionButtonProps) {
   const className = 'flex items-center pr-3'
-  const testId = `assignment-${contentId}-action-${actionName}`
   const children = (
     <>
-      <Icon name={iconName} color="text-green-primary" filled={isActive} />
+      <Icon name={iconName} color="text-green-primary" filled={isIconFilled} />
       <span className="ml-1 text-xs text-green-primary">{text}</span>
     </>
   )
@@ -38,7 +37,8 @@ function AssignmentCardContentActionButton({
         target="_blank"
         className={className}
         children={children}
-        data-testid={testId}
+        disabled={isDisabled}
+        data-testid={actionName}
       />
     )
   } else {
@@ -47,7 +47,8 @@ function AssignmentCardContentActionButton({
         variant="buttonGhost"
         customClass="p-0 flex items-center pr-3"
         onClick={onClickHandler}
-        data-testid={`assignment-${contentId.toString()}-${iconName}`}>
+        disabled={isDisabled}
+        data-testid={actionName}>
         {children}
       </Button>
     )
@@ -57,33 +58,32 @@ function AssignmentCardContentActionButton({
 const PdfDownloadButton = lazy(() => import('../../pdf/PdfDownloadButton'))
 
 type AssignmentCardContentActionsProps = {
-  contentId: number
-  exam: Exam
+  assignment: AssignmentCardOut
   isFavorite?: boolean
   onFavoriteClick?: () => void
-  pdfData: { assignment: AssignmentOut; language: TeachingLanguage }
+  isFavoriteButtonDisabled: boolean
+  language: TeachingLanguage
 }
 
 export const AssignmentCardContentActions = ({
-  contentId,
-  exam,
+  assignment,
   isFavorite,
   onFavoriteClick,
-  pdfData
+  isFavoriteButtonDisabled,
+  language
 }: AssignmentCardContentActionsProps) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex w-full flex-wrap items-center justify-evenly md:w-4/12 md:justify-end">
       <AssignmentCardContentActionButton
-        contentId={contentId}
+        assignment={assignment}
         contentAction={{
           actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
           text: t('assignment.katselunakyma'),
           link: esitysnakymaKey
         }}
-        exam={exam}
         key="uusi-valilehti"
       />
       <Suspense
@@ -93,18 +93,23 @@ export const AssignmentCardContentActions = ({
             <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
           </Button>
         }>
-        <PdfDownloadButton baseOut={pdfData.assignment} language={pdfData.language} />
+        <PdfDownloadButton
+          exam={assignment.exam}
+          contentType={ContentType.koetehtavat}
+          contentId={assignment.id}
+          language={language}
+        />
       </Suspense>
       <AssignmentCardContentActionButton
-        contentId={contentId}
+        assignment={assignment}
         contentAction={{
           actionName: 'suosikki',
           iconName: 'suosikki',
-          text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
+          text: isFavorite ? t('favorite.muokkaa-suosikkeja') : t('favorite.lisaa-suosikiksi')
         }}
-        exam={exam}
         onClickHandler={onFavoriteClick}
-        isActive={isFavorite}
+        isIconFilled={isFavorite}
+        isDisabled={isFavoriteButtonDisabled}
         key="suosikki"
       />
     </div>

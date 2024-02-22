@@ -6,7 +6,6 @@ export class LayoutModel {
   constructor(
     readonly page: Page,
     readonly languageDropdown = page.getByTestId('header-language-dropdown'),
-    readonly languageDropdownExpandButton = languageDropdown.getByTestId('header-language-dropdown-expand'),
     readonly footer = page.getByTestId('footer'),
     readonly footerFeedbackLink = footer.getByTestId('feedback-link')
   ) {}
@@ -17,5 +16,9 @@ export class LayoutModel {
 
   async showLocalizationKeys() {
     await setSingleSelectDropdownOption(this.page, 'languageDropdown', 'keys')
+  }
+
+  async navHeaderGoToPageByExam(exam: string) {
+    await this.page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
   }
 }

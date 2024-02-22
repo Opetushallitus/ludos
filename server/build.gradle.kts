@@ -46,7 +46,7 @@ dependencies {
     implementation(Spring.boot.validation)
     implementation(Spring.boot.web)
     implementation(Spring.session.jdbc)
-    runtimeOnly("org.postgresql:postgresql:_")
+    implementation("org.postgresql:postgresql:_")
     testImplementation("org.reflections:reflections:_")
     testImplementation(Spring.boot.test)
     testImplementation(Spring.security.spring_security_test)

@@ -50,8 +50,16 @@ export type AssignmentOut = BaseOut & {
   contentSv: string[]
   instructionFi: string
   instructionSv: string
-  isFavorite: boolean
   laajaalainenOsaaminenKoodiArvos: string[]
+}
+
+export type AssignmentCardOut = BaseOut & {
+  id: number
+  exam: Exam
+  publishState: PublishState
+  createdAt: string
+  nameFi: string
+  nameSv: string
 }
 
 export type Oppimaara = {
@@ -89,25 +97,25 @@ export type InstructionsOut = {
 }
 
 export type AssignmentsOut = {
-  content: AssignmentOut[]
+  content: AssignmentCardOut[]
   totalPages: number
   currentPage: number
   assignmentFilterOptions: AssignmentFilterOptions
 }
 
-export type SukoAssignmentDtoOut = AssignmentOut & {
+export type SukoAssignmentDtoOut = AssignmentCardOut & {
   assignmentTypeKoodiArvo: string
   oppimaara: Oppimaara
   tavoitetasoKoodiArvo: string
   aiheKoodiArvos: string[]
 }
 
-export type LdAssignmentDtoOut = AssignmentOut & {
+export type LdAssignmentDtoOut = AssignmentCardOut & {
   aineKoodiArvo: string
   lukuvuosiKoodiArvos: string[]
 }
 
-export type PuhviAssignmentDtoOut = AssignmentOut & {
+export type PuhviAssignmentDtoOut = AssignmentCardOut & {
   assignmentTypeKoodiArvo: string
   lukuvuosiKoodiArvos: string[]
 }
@@ -270,3 +278,31 @@ export const ImageAlignOption = {
   center: 'center'
 } as const
 export type ImageAlignOption = (typeof ImageAlignOption)[keyof typeof ImageAlignOption]
+
+export const AddToFavoriteOptions = {
+  FAVORITES: 'FAVORITES',
+  FOLDER: 'FOLDER',
+  NEW_FOLDER: 'NEW_FOLDER'
+} as const
+
+export type AddToFavoriteOptions = (typeof AddToFavoriteOptions)[keyof typeof AddToFavoriteOptions]
+
+export interface FavoriteFolder {
+  id: number
+  name: string
+  subfolders: FavoriteFolder[]
+}
+
+export interface FavoriteFolderDtoOut extends FavoriteFolder {
+  subfolders: FavoriteFolderDtoOut[]
+}
+
+export interface FavoriteCardFolderDtoOut extends FavoriteFolder {
+  assignmentCards: AssignmentCardOut[]
+  subfolders: FavoriteCardFolderDtoOut[]
+}
+
+export interface FavoriteIdsDtoOut {
+  rootFolder: FavoriteFolderDtoOut
+  folderIdsByAssignmentId: { [key: number]: number[] }
+}

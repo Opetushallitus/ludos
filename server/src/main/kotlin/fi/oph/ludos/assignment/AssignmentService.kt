@@ -19,7 +19,7 @@ class AssignmentService(
     }
 
     fun getAssignmentById(exam: Exam, id: Int, version: Int?): AssignmentOut? =
-        repository.getAssignmentById(id, exam, version)
+        repository.getAssignmentsByIds(listOf(id), exam, version).firstOrNull()
 
     fun getAllVersionsOfAssignment(exam: Exam, id: Int): List<AssignmentOut> =
         addUpdaterNames(repository.getAllVersionsOfAssignment(id, exam))
@@ -33,12 +33,9 @@ class AssignmentService(
                 is SukoAssignmentDtoOut -> it.copy(updaterName = updaterName)
                 is LdAssignmentDtoOut -> it.copy(updaterName = updaterName)
                 is PuhviAssignmentDtoOut -> it.copy(updaterName = updaterName)
-                else -> throw RuntimeException("unreachable")
             }
         }
     }
-
-    fun getFavoriteAssignmentsCount(): Int = repository.getFavoriteAssignmentsCount()
 
     fun createNewVersionOfAssignment(id: Int, assignment: Assignment): Int? = when (assignment) {
         is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(assignment, id)
@@ -47,6 +44,20 @@ class AssignmentService(
         else -> throw UnknownError("Unreachable")
     }
 
-    fun setAssignmentFavorite(exam: Exam, id: Int, isFavorite: Boolean): Int? =
-        repository.setAssignmentFavorite(exam, id, isFavorite)
+    fun getFavoriteAssignmentsCount(): Int = repository.getFavoriteAssignmentsCount()
+
+    fun setAssignmentFavoriteFolders(exam: Exam, id: Int, folderIds: List<Int>): Int? =
+        repository.setAssignmentFavoriteFolders(exam, id, folderIds)
+
+    fun getFavoriteCardFolders(exam: Exam): FavoriteCardFolderDtoOut = repository.getFavoritesCardFolders(exam)
+
+    fun createNewFavoriteFolder(exam: Exam, folder: FavoriteFolderDtoIn): Int =
+        repository.createNewFavoriteFolder(exam, folder)
+
+    fun updateFavoriteFolder(exam: Exam, folderId: Int, folder: FavoriteFolderDtoIn): Unit =
+        repository.updateFavoriteFolder(exam, folderId, folder)
+
+    fun deleteFavoriteFolder(exam: Exam, folderId: Int): Int = repository.deleteFavoriteFolder(exam, folderId)
+
+    fun getFavorites(exam: Exam, assignmentId: Int?): FavoriteIdsDtoOut = repository.getFavorites(exam, assignmentId)
 }

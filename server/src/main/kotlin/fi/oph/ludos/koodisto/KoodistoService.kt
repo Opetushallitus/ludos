@@ -51,7 +51,7 @@ class KoodistoService(
         return getKoodi(koodistoName, KoodistoLanguage.FI, koodiArvo) != null
     }
 
-    fun isKoodiArvosInKoodisto(koodistoName: KoodistoName, koodiArvos: Array<String>): Boolean {
+    fun isKoodiArvosInKoodisto(koodistoName: KoodistoName, koodiArvos: List<String>): Boolean {
         return koodiArvos.all { isKoodiArvoInKoodisto(koodistoName, it) }
     }
 

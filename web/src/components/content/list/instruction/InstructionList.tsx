@@ -25,9 +25,9 @@ import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../
 import { useCallback, useContext } from 'react'
 import { MultiValue } from 'react-select'
 import { LudosContext } from '../../../../contexts/LudosContext'
-import { Spinner } from '../../../Spinner'
 import { InfoBox } from '../../../InfoBox'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
   if (teachingLanguage === TeachingLanguage.fi) {
@@ -119,11 +119,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
 
       {error && <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />}
 
-      {loading && (
-        <div className="flex justify-center mt-10">
-          <Spinner />
-        </div>
-      )}
+      {loading && <PageLoadingIndicator />}
 
       <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
         {data?.content

@@ -1,5 +1,6 @@
 import { UseFormRegister } from 'react-hook-form'
 import { ReactNode } from 'react'
+import { twMerge } from 'tailwind-merge'
 import { FormError } from './forms/formCommon/FormErrors'
 
 type TextInputProps = {
@@ -8,10 +9,11 @@ type TextInputProps = {
   deps?: string[]
   error?: string
   required?: boolean
+  className?: string
   children: ReactNode
 }
-export const TextInput = ({ id, register, deps, error, required, children }: TextInputProps) => (
-  <div className="mt-6">
+export const TextInput = ({ id, register, deps, error, required, className, children }: TextInputProps) => (
+  <div className={twMerge('mt-6', className)}>
     <label className="font-semibold" htmlFor={id}>
       {children}
       {required && <span className="ml-1 text-green-primary">*</span>}

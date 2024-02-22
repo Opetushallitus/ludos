@@ -112,11 +112,19 @@ class TestController(
 
     @GetMapping("/empty")
     @RequireAtLeastYllapitajaRole
-    fun emptyDatabase(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
+    fun emptyDatabase(): ResponseEntity<Unit> {
         seedDataRepository.nukeAssignments()
         seedDataRepository.nukeCertificates()
         seedDataRepository.nukeInstructions()
 
+        return redirectToRoot
+    }
+
+    @GetMapping("/emptyAndSeed")
+    @RequireAtLeastYllapitajaRole
+    fun emptyAndSeedDatabase(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
+        emptyDatabase()
+        seedDataRepository.seedDatabase()
         return redirectToRoot
     }
 

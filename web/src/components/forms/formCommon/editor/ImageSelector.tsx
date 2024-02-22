@@ -25,7 +25,6 @@ export const ImageSelector = ({ imageFileInputRef, onImageUploaded }: FileSelect
     } catch (e) {
       setNotification({ message: t('error.lataaminen-epaonnistui'), type: 'error' })
       console.error(e)
-    } finally {
     }
   }
 
