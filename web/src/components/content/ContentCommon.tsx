@@ -126,12 +126,7 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
               <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
             </Button>
           }>
-          <PDFDownloadButton
-            exam={pdfData.baseOut.exam}
-            contentType={pdfData.contentType}
-            contentId={pdfData.baseOut.id}
-            language={pdfData.language}
-          />
+          <PDFDownloadButton exam={pdfData.baseOut.exam} contentId={pdfData.baseOut.id} language={pdfData.language} />
         </Suspense>
       )}
       {isFavorite !== undefined && (
