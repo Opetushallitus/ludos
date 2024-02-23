@@ -179,11 +179,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 <CertificateContent certificate={data} teachingLanguage={teachingLanguage} />
               )}
               {contentType === ContentType.ohjeet && isInstruction(data) && (
-                <InstructionContent
-                  instruction={data}
-                  teachingLanguage={teachingLanguage}
-                  isPresentation={isPresentation}
-                />
+                <InstructionContent instruction={data} teachingLanguage={teachingLanguage} />
               )}
             </div>
           </div>
