@@ -8,6 +8,17 @@ import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
 import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../../../utils/certificateUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { ExternalLink } from '../../../ExternalLink'
+import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL } from '../../../../constants'
+
+const getFileKey = (certificate: BaseOut, language: TeachingLanguage) => {
+  if (isSukoCertificate(certificate)) {
+    return certificate.attachmentFi.fileKey
+  } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {
+    return language === 'fi' ? certificate.attachmentFi.fileKey : certificate.attachmentSv?.fileKey
+  }
+  return ''
+}
 
 type CertificateCardProps = {
   certificate: BaseOut
@@ -40,6 +51,8 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
     return null
   }
 
+  const filekey = getFileKey(certificate, teachingLanguage)
+
   return (
     <li
       className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary flex flex-col"
@@ -65,7 +78,13 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
       <div className="row mt-3 justify-between">
         <div className="w-20">{isYllapitaja && <StateTag state={certificate.publishState} />}</div>
         <p className="text-center text-xs">{toLocaleDate(certificate.createdAt)}</p>
-        <PdfTag />
+        <ExternalLink
+          className="col-span-5 break-all text-green-primary"
+          url={`${DOWNLOAD_CERTIFICATE_ATTACHMENT_URL}/${filekey}`}
+          hideIcon
+          data-testid="download-pdf">
+          <PdfTag />
+        </ExternalLink>
       </div>
     </li>
   )
