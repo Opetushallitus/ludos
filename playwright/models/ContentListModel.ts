@@ -2,14 +2,18 @@ import { expect, Page } from '@playwright/test'
 import { ContentType, Exam } from 'web/src/types'
 import { setSingleSelectDropdownOption } from '../helpers'
 import { ContentTypeTabModel } from './ContentTypeTabModel'
+import { BaseModel } from './BaseModel'
 
-export class ContentListModel {
+export class ContentListModel extends BaseModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
     readonly contentType: ContentType, // Maybe we should extend this by ContentType instead?
-    readonly contentTypeTabs = new ContentTypeTabModel(page)
-  ) {}
+    readonly contentTypeTabs = new ContentTypeTabModel(page),
+    readonly cardList = page.getByTestId('card-list')
+  ) {
+    super(page, exam)
+  }
 
   async goto() {
     await this.page.getByTestId(`nav-link-${this.exam.toLowerCase()}`).click()
