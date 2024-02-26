@@ -109,7 +109,7 @@ export const FavoriteForm = ({
                           value={type}
                           checked={field.value === type}
                           id={type}
-                          className="mr-2 border-2 border-green-primary"
+                          className="mr-2"
                           data-testid={`radio-${i}`}
                           onChange={(e) => {
                             field.onChange(e)

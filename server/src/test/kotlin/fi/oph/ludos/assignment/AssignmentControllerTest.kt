@@ -532,7 +532,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `oppimaara than can have tarkenne but tarkenne is invalid`() {
         assertThatCreateInvalidAssignmentError(
             minimalSukoAssignmentIn.copy(oppimaara = Oppimaara("VKA1", "epavalidi")),
-        ).isEqualTo("oppimaara: kielitarjontaKoodiArvo 'epavalidi' not valid for 'VKA1'. Valid options: [RA, IA, JP, VE, KI, SA, PO, EA]")
+        ).isEqualTo("oppimaara: kielitarjontaKoodiArvo 'epavalidi' not valid for 'VKA1'. Valid options: [EA, IA, JP, KI, PO, RA, SA, VE]")
     }
 
     @Test
