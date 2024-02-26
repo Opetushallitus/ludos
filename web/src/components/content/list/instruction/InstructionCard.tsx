@@ -17,7 +17,7 @@ type InstructionCardProps = {
 export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCardProps) => {
   const { t } = useTranslation()
   const { isYllapitaja } = useUserDetails()
-  const { getKoodiLabel } = useKoodisto()
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
   const nameText =
     (teachingLanguage === TeachingLanguage.fi ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')

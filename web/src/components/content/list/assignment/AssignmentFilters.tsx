@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
-import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
+import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId, TeachingLanguage } from '../../../../types'
 import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
@@ -16,6 +16,7 @@ type AssignmentFiltersProps = {
   exam: Exam
   filterValues: FilterValues
   assignmentFilterOptions: AssignmentFilterOptions
+  teachingLanguage: TeachingLanguage
 }
 
 function ensureTarkentamattomatPaaoppimaarasAreIncluded(oppimaaras: Oppimaara[]): Oppimaara[] {
@@ -39,10 +40,11 @@ function ensureTarkentamattomatPaaoppimaarasAreIncluded(oppimaaras: Oppimaara[])
 export const AssignmentFilters = ({
   exam,
   filterValues: { filterValues, setFilterValue },
-  assignmentFilterOptions
+  assignmentFilterOptions,
+  teachingLanguage
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
-  const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
+  const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto(teachingLanguage)
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {

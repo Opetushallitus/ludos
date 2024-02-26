@@ -30,7 +30,7 @@ type CertificateCardProps = {
 
 export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCardProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { getKoodiLabel } = useKoodisto()
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
   const getCertificateName = () => {
     if (isSukoCertificate(certificate)) {

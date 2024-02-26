@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   defaultEmptyKoodistoMap,
   defaultLanguage,
-  KoodistoMap,
+  LanguageKoodistoMap,
   LudosContext,
   ludosTeachingLanguageKey,
   ludosUILanguageKey
@@ -24,7 +24,10 @@ type LudosContextProviderProps = {
 
 export const LudosContextProvider = ({ children }: LudosContextProviderProps) => {
   const { i18n } = useTranslation()
-  const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
+  const [koodistos, setKoodistos] = useState<LanguageKoodistoMap>({
+    fi: defaultEmptyKoodistoMap,
+    sv: defaultEmptyKoodistoMap
+  })
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
   const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(-1)
   const [teachingLanguage, setTeachingLanguageState] = useState<TeachingLanguage>(
@@ -97,14 +100,13 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   useEffect(() => {
     const fetchKoodistos = async () => {
       try {
-        if (i18n.language !== 'keys') {
-          const koodistosResponse = await getKoodistos(i18n.language.toUpperCase())
+        const koodistosResponse = await getKoodistos()
 
-          if (koodistosResponse.ok) {
-            setKoodistos(await koodistosResponse.json())
-          } else {
-            console.error('Could not fetch koodistos')
-          }
+        if (koodistosResponse.ok) {
+          const { FI: fi, SV: sv } = await koodistosResponse.json()
+          setKoodistos({ fi, sv })
+        } else {
+          console.error('Could not fetch koodistos')
         }
       } catch (e) {
         console.error('Error occurred while fetching koodistos:', e)

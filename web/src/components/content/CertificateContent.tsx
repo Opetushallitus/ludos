@@ -34,8 +34,16 @@ const SukoCertificateTitle = ({
   </>
 )
 
-const LdCertificateTitle = ({ certificate, labelText }: { certificate: LdCertificateDtoOut; labelText: string }) => {
-  const { getKoodiLabel } = useKoodisto()
+const LdCertificateTitle = ({
+  certificate,
+  labelText,
+  teachingLanguage
+}: {
+  certificate: LdCertificateDtoOut
+  labelText: string
+  teachingLanguage: TeachingLanguage
+}) => {
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
   return (
     <>
@@ -84,7 +92,13 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
     if (isSukoCertificate(certificate)) {
       return <SukoCertificateTitle certificate={certificate} labelText={t('certificate.kuvaus')} />
     } else if (isLdCertificate(certificate)) {
-      return <LdCertificateTitle certificate={certificate} labelText={t('assignment.aine')} />
+      return (
+        <LdCertificateTitle
+          certificate={certificate}
+          labelText={t('assignment.aine')}
+          teachingLanguage={teachingLanguage}
+        />
+      )
     } else if (isPuhviCertificate(certificate)) {
       return <PuhviCertificateTitle certificate={certificate} labelText={t('certificate.kuvaus')} />
     }

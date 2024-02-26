@@ -106,6 +106,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
         exam={exam}
         filterValues={filterValues}
         assignmentFilterOptions={data?.assignmentFilterOptions ?? emptyAssignmentFilterOptions}
+        teachingLanguage={languageOverrideIfSukoAssignment}
       />
 
       {data && (

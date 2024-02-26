@@ -46,8 +46,8 @@ type InstructionListProps = {
 export const InstructionList = ({ exam, filterValues: { filterValues, setFilterValue } }: InstructionListProps) => {
   const { isYllapitaja } = useUserDetails()
   const { t, lt } = useLudosTranslation()
-  const { koodistos } = useKoodisto()
   const { teachingLanguage } = useContext(LudosContext)
+  const { koodistos } = useKoodisto(teachingLanguage)
 
   const contentType = ContentType.INSTRUCTION
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)

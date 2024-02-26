@@ -1,6 +1,6 @@
 import { LudosContext } from '../contexts/LudosContext'
 import { useContext } from 'react'
-import { BusinessLanguage, KoodistoName, Oppimaara } from '../types'
+import { BusinessLanguage, KoodistoName, Oppimaara, TeachingLanguage } from '../types'
 import { preventLineBreaksFromHyphen } from '../utils/formatUtils'
 
 export type KoodiDtoOut = {
@@ -11,11 +11,21 @@ export type KoodiDtoOut = {
 
 const defaultLabel = '*'
 
-export function useKoodisto() {
-  const { koodistos } = useContext(LudosContext)
+function getTeachingLanguage(uiLanguage: string, teachingLanguageProvided?: TeachingLanguage): TeachingLanguage {
+  if (teachingLanguageProvided) {
+    return teachingLanguageProvided
+  } else {
+    return uiLanguage === BusinessLanguage.sv ? 'sv' : 'fi'
+  }
+}
+
+export function useKoodisto(teachingLanguageProvided?: TeachingLanguage) {
+  const { koodistos, uiLanguage } = useContext(LudosContext)
+
+  const teachingLanguage = getTeachingLanguage(uiLanguage, teachingLanguageProvided)
 
   function getKoodiLabel(koodiArvo: string, koodistoName: KoodistoName) {
-    return koodi(koodiArvo, koodistos[koodistoName])?.nimi ?? defaultLabel
+    return koodi(koodiArvo, koodistos[teachingLanguage][koodistoName])?.nimi ?? defaultLabel
   }
 
   function getKoodisLabel(koodiArvo: string[], koodistoName: KoodistoName) {
@@ -33,7 +43,7 @@ export function useKoodisto() {
   }
 
   return {
-    koodistos,
+    koodistos: koodistos[teachingLanguage],
     getKoodiLabel,
     getKoodisLabel,
     getOppimaaraLabel

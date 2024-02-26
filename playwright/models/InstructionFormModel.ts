@@ -149,7 +149,7 @@ export class InstructionFormModel extends FormModel {
 
     if (this.exam === Exam.LD) {
       await expect(instructionCard.getByTestId('card-title')).toHaveText(
-        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9')
+        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', TeachingLanguage.sv)
       )
     } else {
       await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)

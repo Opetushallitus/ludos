@@ -19,7 +19,7 @@ type InstructionContentProps = {
 
 export const InstructionContent = ({ instruction, teachingLanguage }: InstructionContentProps) => {
   const { t } = useTranslation()
-  const { getKoodiLabel } = useKoodisto()
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
   const attachmentsFilteredWithLanguage = instruction.attachments
     .filter((it) => it.language.toLowerCase() === teachingLanguage)
     .map((it) => it)

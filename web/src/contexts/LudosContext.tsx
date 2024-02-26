@@ -6,11 +6,11 @@ export const defaultLanguage = 'fi'
 export const ludosUILanguageKey = 'ludosUILanguage'
 export const ludosTeachingLanguageKey = 'ludosTeachingLanguage'
 
+export type LanguageKoodistoMap = Record<TeachingLanguage, Record<KoodistoName, Record<string, KoodiDtoOut>>>
 export type KoodistoMap = Record<KoodistoName, Record<string, KoodiDtoOut>>
-
 interface LudosContextValue {
-  koodistos: KoodistoMap
-  setKoodistos: (koodistos: KoodistoMap) => void
+  koodistos: LanguageKoodistoMap
+  setKoodistos: (koodistos: LanguageKoodistoMap) => void
   userDetails?: UserDetails
   setUserDetails: (userDetails: UserDetails) => void
   userFavoriteAssignmentCount: number
@@ -26,7 +26,10 @@ export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
 ) as unknown as KoodistoMap
 
 const placeholderValuesNotInUse: LudosContextValue = {
-  koodistos: defaultEmptyKoodistoMap,
+  koodistos: {
+    [TeachingLanguage.fi]: defaultEmptyKoodistoMap,
+    [TeachingLanguage.sv]: defaultEmptyKoodistoMap
+  },
   setKoodistos: () => {},
   userDetails: undefined,
   setUserDetails: () => {},

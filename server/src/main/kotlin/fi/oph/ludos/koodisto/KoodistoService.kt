@@ -34,11 +34,11 @@ class KoodistoService(
         return koodistoCache
     }
 
-    fun getKoodistosForlanguage(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, Map<String, KoodiDtoOut>> =
+    private fun getKoodistosForlanguage(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, Map<String, KoodiDtoOut>> =
         getKoodistos()[koodistoLanguage]
             ?: throw IllegalStateException("Language $koodistoLanguage not found in koodistoCache")
 
-    fun getKoodisto(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage): Map<String, KoodiDtoOut> {
+    private fun getKoodisto(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage): Map<String, KoodiDtoOut> {
         return getKoodistosForlanguage(koodistoLanguage)[koodistoName]
             ?: throw Exception("Koodisto ${koodistoName.koodistoUri} not found in $koodistoLanguage cache")
     }
