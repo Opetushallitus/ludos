@@ -1,6 +1,6 @@
-import { BaseOut, Exam, InstructionDtoOut, LdInstructionDtoOut, SukoOrPuhviInstructionDtoOut } from '../types'
+import { ContentBaseOut, Exam, InstructionDtoOut, LdInstructionDtoOut, SukoOrPuhviInstructionDtoOut } from '../types'
 
-export const isInstruction = (data: BaseOut): data is SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut =>
+export const isInstruction = (data: ContentBaseOut): data is SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut =>
   'attachments' in data
 
 export const isLdInstruction = (instruction: InstructionDtoOut): instruction is LdInstructionDtoOut =>

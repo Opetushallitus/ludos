@@ -1,6 +1,13 @@
 import { Button } from '../../Button'
 import React, { Suspense, useState } from 'react'
-import { AssignmentOut, BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../../types'
+import {
+  AssignmentOut,
+  ContentBaseOut,
+  ContentType,
+  ContentTypeSingularEng,
+  Exam,
+  TeachingLanguage
+} from '../../../types'
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../../Icon'
 import { getContentName } from '../../../utils/assignmentUtils'
@@ -37,7 +44,7 @@ export default function PdfDownloadButton({ exam, contentId, language }: PdfDown
     document.body.removeChild(a)
   }
 
-  const handleGenerated = (generatedBlob: Blob, data: BaseOut) => {
+  const handleGenerated = (generatedBlob: Blob, data: ContentBaseOut) => {
     initiateDownload(generatedBlob, getContentName(data, language))
     setAssignmentShouldBeGenerated(undefined)
   }

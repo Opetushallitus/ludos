@@ -32,7 +32,7 @@ export const Exam = {
 } as const
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
-export type BaseOut = {
+export type ContentBaseOut = {
   id: number
   exam: Exam
   publishState: PublishState
@@ -43,7 +43,7 @@ export type BaseOut = {
   version: number
 }
 
-export type AssignmentOut = BaseOut & {
+export type AssignmentOut = ContentBaseOut & {
   nameFi: string
   nameSv: string
   contentFi: string[]
@@ -53,7 +53,7 @@ export type AssignmentOut = BaseOut & {
   laajaalainenOsaaminenKoodiArvos: string[]
 }
 
-export type AssignmentCardOut = BaseOut & {
+export type AssignmentCardOut = ContentBaseOut & {
   id: number
   exam: Exam
   publishState: PublishState
@@ -83,7 +83,7 @@ export const emptyAssignmentFilterOptions: AssignmentFilterOptions = {
   aine: null
 }
 
-export type ContentOut<T = BaseOut> = {
+export type ContentOut<T = ContentBaseOut> = {
   content: T[]
 }
 
@@ -120,7 +120,7 @@ export type PuhviAssignmentDtoOut = AssignmentCardOut & {
   lukuvuosiKoodiArvos: string[]
 }
 
-export type InstructionDtoOut = BaseOut & {
+export type InstructionDtoOut = ContentBaseOut & {
   nameFi: string
   nameSv: string
   contentFi: string
@@ -150,7 +150,7 @@ export type ImageDtoOut = {
   fileName: string
 }
 
-export type CertificateDtoOut = BaseOut & {
+export type CertificateDtoOut = ContentBaseOut & {
   nameFi: string
   nameSv: string
 }

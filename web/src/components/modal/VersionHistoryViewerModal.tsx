@@ -1,7 +1,7 @@
 import { useModal } from './useModal'
 import styles from './modal.module.css'
 import { ModalHeader } from './ModalHeader'
-import { BaseOut, ContentType } from '../../types'
+import { ContentBaseOut, ContentType } from '../../types'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
@@ -12,9 +12,9 @@ import { InternalLink } from '../InternalLink'
 type ModalProps = {
   open: boolean
   onClose: (refresh?: boolean) => void
-  versionList: BaseOut[]
+  versionList: ContentBaseOut[]
   contentType: ContentType
-  restoreOldVersion: (data: BaseOut) => Promise<void>
+  restoreOldVersion: (data: ContentBaseOut) => Promise<void>
 }
 export const VersionHistoryViewerModal = ({
   open,
@@ -28,7 +28,7 @@ export const VersionHistoryViewerModal = ({
 
   const latestVersion = versionList.at(-1)?.version
 
-  const update = async (data: BaseOut) => {
+  const update = async (data: ContentBaseOut) => {
     await restoreOldVersion(data)
     onClose(true)
   }

@@ -1,4 +1,4 @@
-import { BaseOut, ContentType } from '../../types'
+import { ContentBaseOut, ContentType } from '../../types'
 import { useParams } from 'react-router-dom'
 import { contentPagePath, pageNotFoundPath } from '../LudosRoutes'
 import { Button } from '../Button'
@@ -7,11 +7,11 @@ import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
 
 type VersionBrowserBarProps = {
-  data: BaseOut
-  dataList: BaseOut[]
+  data: ContentBaseOut
+  dataList: ContentBaseOut[]
   openVersionBrowserClick: () => void
   stopVersionBrowsing: () => void
-  restoreOldVersion: (data: BaseOut) => Promise<void>
+  restoreOldVersion: (data: ContentBaseOut) => Promise<void>
 }
 
 export const VersionBrowserBar = ({

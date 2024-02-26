@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../Icon'
-import { BaseOut, ContentType, Exam, TeachingLanguage } from '../../types'
+import { ContentBaseOut, ContentType, Exam, TeachingLanguage } from '../../types'
 import { getContentName } from '../../utils/assignmentUtils'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -13,7 +13,7 @@ import { lazy, Suspense } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: TeachingLanguage
-  data: BaseOut
+  data: ContentBaseOut
   contentType: ContentType
   isPresentation: boolean
 }
@@ -100,7 +100,7 @@ type ContentActionRowProps = {
   isFavorite?: boolean
   disabled?: boolean
   onFavoriteClick?: () => void
-  pdfData?: { baseOut: BaseOut; language: TeachingLanguage; contentType: ContentType }
+  pdfData?: { baseOut: ContentBaseOut; language: TeachingLanguage; contentType: ContentType }
 }
 
 export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {

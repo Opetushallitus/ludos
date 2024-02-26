@@ -1,6 +1,6 @@
 import {
   AttachmentDtoOut,
-  BaseOut,
+  ContentBaseOut,
   ContentType,
   LdCertificateDtoOut,
   PuhviCertificateDtoOut,
@@ -15,7 +15,7 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { useContext } from 'react'
 
 type CertificateContentProps = {
-  certificate: BaseOut
+  certificate: ContentBaseOut
   teachingLanguage: TeachingLanguage
 }
 

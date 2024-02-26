@@ -1,4 +1,4 @@
-import { BaseOut, TeachingLanguage } from '../../../../types'
+import { ContentBaseOut, TeachingLanguage } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -19,7 +19,7 @@ const getFileKey = (certificate: BaseOut, language: TeachingLanguage) => {
 }
 
 type CertificateCardProps = {
-  certificate: BaseOut
+  certificate: ContentBaseOut
   teachingLanguage: TeachingLanguage
 }
 

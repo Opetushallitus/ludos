@@ -3,7 +3,7 @@ import { Button } from '../Button'
 import {
   AttachmentData,
   AttachmentLanguage,
-  BaseOut,
+  ContentBaseOut,
   ContentType,
   ContentTypeSingularEng,
   Exam,
@@ -50,7 +50,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const teachingLanguageOverrideIfSukoAssignment =
     exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
 
-  const { data, loading, error, refresh } = useFetch<BaseOut>(
+  const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
     `${ContentTypeSingularEng[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
 
@@ -58,7 +58,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
     data: versionList,
     error: versionListError,
     refresh: versionListRefresh
-  } = useFetch<BaseOut[]>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
+  } = useFetch<ContentBaseOut[]>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
 
   const handleNavigation = useCallback(() => {
     if (state?.returnLocation) {
@@ -68,7 +68,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
     }
   }, [contentType, exam, navigate, state?.returnLocation])
 
-  const restoreOldVersion = async (data: BaseOut) => {
+  const restoreOldVersion = async (data: ContentBaseOut) => {
     if (isAssignment(data)) {
       await updateAssignment(data.id, data)
     } else if (isInstruction(data)) {

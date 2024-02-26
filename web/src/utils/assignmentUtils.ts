@@ -1,6 +1,6 @@
 import {
   AssignmentOut,
-  BaseOut,
+  ContentBaseOut,
   Exam,
   LdAssignmentDtoOut,
   PuhviAssignmentDtoOut,
@@ -10,18 +10,18 @@ import {
 import { isInstruction } from './instructionUtils'
 import { isCertificate, isSukoCertificate } from './certificateUtils'
 
-export const isSukoAssignment = (assignment: BaseOut): assignment is SukoAssignmentDtoOut =>
+export const isSukoAssignment = (assignment: ContentBaseOut): assignment is SukoAssignmentDtoOut =>
   assignment.exam === Exam.SUKO &&
   'aiheKoodiArvos' in assignment &&
   'assignmentTypeKoodiArvo' in assignment &&
   'oppimaara' in assignment
 
-export const isLdAssignment = (assignment: BaseOut): assignment is LdAssignmentDtoOut =>
+export const isLdAssignment = (assignment: ContentBaseOut): assignment is LdAssignmentDtoOut =>
   assignment.exam === Exam.LD && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
-export const isPuhviAssignment = (assignment: BaseOut): assignment is PuhviAssignmentDtoOut =>
+export const isPuhviAssignment = (assignment: ContentBaseOut): assignment is PuhviAssignmentDtoOut =>
   assignment.exam === Exam.PUHVI && 'lukuvuosiKoodiArvos' in assignment
 
-export const isAssignment = (data: BaseOut): data is AssignmentOut =>
+export const isAssignment = (data: ContentBaseOut): data is AssignmentOut =>
   isSukoAssignment(data) || isLdAssignment(data) || isPuhviAssignment(data)
 
 // Removes key-value pairs with null or undefined values from an object
@@ -39,7 +39,7 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
   )
 }
 
-export const getContentName = (data: BaseOut, teachingLanguage: TeachingLanguage) => {
+export const getContentName = (data: ContentBaseOut, teachingLanguage: TeachingLanguage) => {
   if (isSukoAssignment(data) || isSukoCertificate(data)) {
     return data.nameFi
   } else if (isAssignment(data) || isInstruction(data) || isCertificate(data)) {
