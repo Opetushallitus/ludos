@@ -58,6 +58,10 @@
     .ludos-form {
         @apply w-full pt-3 md:w-10/12
     }
+
+    input[type='radio'], input[type='checkbox'] {
+        @apply accent-green-primary
+    }
 }
 
 :root {
