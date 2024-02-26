@@ -59,6 +59,13 @@ interface Assignment : ContentBase {
     val laajaalainenOsaaminenKoodiArvos: List<String>
 }
 
+interface SukoAssignmentMetadata {
+    val assignmentTypeKoodiArvo: String
+    val oppimaara: Oppimaara
+    val tavoitetasoKoodiArvo: String?
+    val aiheKoodiArvos: List<String>
+}
+
 @JsonTypeName("SUKO")
 data class SukoAssignmentDtoIn(
     override val nameFi: String,
@@ -70,16 +77,16 @@ data class SukoAssignmentDtoIn(
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: List<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_SUKO)
-    val assignmentTypeKoodiArvo: String,
+    override val assignmentTypeKoodiArvo: String,
     @field:Valid
-    val oppimaara: Oppimaara,
+    override val oppimaara: Oppimaara,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TAITOTASO)
     @JsonProperty(required = true)
-    val tavoitetasoKoodiArvo: String?,
+    override val tavoitetasoKoodiArvo: String?,
     @field:ValidKoodiArvos(koodisto = KoodistoName.AIHE_SUKO)
-    val aiheKoodiArvos: List<String>,
+    override val aiheKoodiArvos: List<String>,
     override val exam: Exam = Exam.SUKO,
-) : Assignment {
+) : Assignment, SukoAssignmentMetadata {
     constructor(dtoOut: SukoAssignmentDtoOut) : this(
         nameFi = dtoOut.nameFi,
         nameSv = dtoOut.nameSv,
@@ -96,6 +103,11 @@ data class SukoAssignmentDtoIn(
     )
 }
 
+interface LdAssignmentMetadata {
+    val lukuvuosiKoodiArvos: List<String>
+    val aineKoodiArvo: String
+}
+
 @JsonTypeName("LD")
 data class LdAssignmentDtoIn(
     override val nameFi: String,
@@ -107,11 +119,16 @@ data class LdAssignmentDtoIn(
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: List<String>,
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
-    val lukuvuosiKoodiArvos: List<String>,
+    override val lukuvuosiKoodiArvos: List<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
-    val aineKoodiArvo: String,
+    override val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD,
-) : Assignment
+) : Assignment, LdAssignmentMetadata
+
+interface PuhviAssignmentMetadata {
+    val assignmentTypeKoodiArvo: String
+    val lukuvuosiKoodiArvos: List<String>
+}
 
 @JsonTypeName("PUHVI")
 data class PuhviAssignmentDtoIn(
@@ -124,11 +141,11 @@ data class PuhviAssignmentDtoIn(
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: List<String>,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TEHTAVATYYPPI_PUHVI)
-    val assignmentTypeKoodiArvo: String,
+    override val assignmentTypeKoodiArvo: String,
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
-    val lukuvuosiKoodiArvos: List<String>,
+    override val lukuvuosiKoodiArvos: List<String>,
     override val exam: Exam = Exam.PUHVI,
-) : Assignment
+) : Assignment, PuhviAssignmentMetadata
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -155,12 +172,12 @@ data class SukoAssignmentDtoOut(
     override val updaterOid: String,
     override val updaterName: String?,
     override val version: Int,
-    val assignmentTypeKoodiArvo: String,
-    val oppimaara: Oppimaara,
-    val tavoitetasoKoodiArvo: String?,
-    val aiheKoodiArvos: List<String>,
+    override val assignmentTypeKoodiArvo: String,
+    override val oppimaara: Oppimaara,
+    override val tavoitetasoKoodiArvo: String?,
+    override val aiheKoodiArvos: List<String>,
     override val exam: Exam = Exam.SUKO
-) : AssignmentOut
+) : AssignmentOut, SukoAssignmentMetadata
 
 @JsonTypeName("PUHVI")
 data class PuhviAssignmentDtoOut(
@@ -179,10 +196,10 @@ data class PuhviAssignmentDtoOut(
     override val updaterOid: String,
     override val updaterName: String?,
     override val version: Int,
-    val assignmentTypeKoodiArvo: String,
-    val lukuvuosiKoodiArvos: List<String>,
+    override val assignmentTypeKoodiArvo: String,
+    override val lukuvuosiKoodiArvos: List<String>,
     override val exam: Exam = Exam.PUHVI
-) : AssignmentOut
+) : AssignmentOut, PuhviAssignmentMetadata
 
 @JsonTypeName("LD")
 data class LdAssignmentDtoOut(
@@ -201,10 +218,10 @@ data class LdAssignmentDtoOut(
     override val updaterOid: String,
     override val updaterName: String?,
     override val version: Int,
-    val lukuvuosiKoodiArvos: List<String>,
-    val aineKoodiArvo: String,
+    override val lukuvuosiKoodiArvos: List<String>,
+    override val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
-) : AssignmentOut
+) : AssignmentOut, LdAssignmentMetadata
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
@@ -234,11 +251,12 @@ data class SukoAssignmentCardDtoOut(
     override val updaterName: String?,
     override val authorOid: String,
     override val version: Int,
-    val assignmentTypeKoodiArvo: String,
-    val oppimaara: Oppimaara,
-    val aiheKoodiArvos: List<String>,
+    override val assignmentTypeKoodiArvo: String,
+    override val oppimaara: Oppimaara,
+    override val tavoitetasoKoodiArvo: String?,
+    override val aiheKoodiArvos: List<String>,
     override val exam: Exam = Exam.SUKO
-) : AssignmentCardOut {
+) : AssignmentCardOut, SukoAssignmentMetadata {
     constructor(sukoAssignmentDtoOut: SukoAssignmentDtoOut) : this(
         id = sukoAssignmentDtoOut.id,
         publishState = sukoAssignmentDtoOut.publishState,
@@ -252,6 +270,7 @@ data class SukoAssignmentCardDtoOut(
         version = sukoAssignmentDtoOut.version,
         assignmentTypeKoodiArvo = sukoAssignmentDtoOut.assignmentTypeKoodiArvo,
         oppimaara = sukoAssignmentDtoOut.oppimaara,
+        tavoitetasoKoodiArvo = sukoAssignmentDtoOut.tavoitetasoKoodiArvo,
         aiheKoodiArvos = sukoAssignmentDtoOut.aiheKoodiArvos,
         exam = sukoAssignmentDtoOut.exam
     )
@@ -269,10 +288,10 @@ data class LdAssignmentCardDtoOut(
     override val updaterName: String?,
     override val authorOid: String,
     override val version: Int,
-    val lukuvuosiKoodiArvos: List<String>,
-    val aineKoodiArvo: String,
+    override val lukuvuosiKoodiArvos: List<String>,
+    override val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
-) : AssignmentCardOut {
+) : AssignmentCardOut, LdAssignmentMetadata {
     constructor(ldAssignmentDtoOut: LdAssignmentDtoOut) : this(
         id = ldAssignmentDtoOut.id,
         publishState = ldAssignmentDtoOut.publishState,
@@ -302,10 +321,10 @@ data class PuhviAssignmentCardDtoOut(
     override val updaterName: String?,
     override val authorOid: String,
     override val version: Int,
-    val assignmentTypeKoodiArvo: String,
-    val lukuvuosiKoodiArvos: List<String>,
+    override val assignmentTypeKoodiArvo: String,
+    override val lukuvuosiKoodiArvos: List<String>,
     override val exam: Exam = Exam.PUHVI
-) : AssignmentCardOut {
+) : AssignmentCardOut, PuhviAssignmentMetadata {
     constructor(puhviAssignmentDtoOut: PuhviAssignmentDtoOut) : this(
         id = puhviAssignmentDtoOut.id,
         publishState = puhviAssignmentDtoOut.publishState,

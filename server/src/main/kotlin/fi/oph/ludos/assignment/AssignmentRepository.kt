@@ -89,6 +89,7 @@ class AssignmentRepository(
                 rs.getString("suko_assignment_oppimaara_koodi_arvo"),
                 rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
             ),
+            tavoitetasoKoodiArvo = rs.getString("suko_assignment_tavoitetaso_koodi_arvo"),
             aiheKoodiArvos = rs.getKotlinList<String>("suko_assignment_aihe_koodi_arvos")
         )
     }
