@@ -45,28 +45,21 @@ test.describe('Certificate filter tests', () => {
         .waitForResponse((response) => response.url().includes(`/api/certificate/${exam}`) && response.ok())
         .then((response) => response.json())
 
-      const checkSukoList = checkListAfterFilteringWithProvidedExam(page, list.exam)
+      const checkList = checkListAfterFilteringWithProvidedExam(page, list.exam)
 
       await expect(list.createButton).toBeVisible()
       await list.setOrder('asc')
 
-      await checkSukoList(
-        expectedNumbersInBodyTexts.slice().reverse(),
+      const checkPdfDownload = () =>
         checkPdfDownloadIconWorks(
           page,
           content.content.map((c: any) => c.id),
           headless
         )
-      )
+
+      await checkList(expectedNumbersInBodyTexts.slice().reverse(), checkPdfDownload)
       await list.setOrder('desc')
-      await checkSukoList(
-        expectedNumbersInBodyTexts,
-        checkPdfDownloadIconWorks(
-          page,
-          content.content.map((c: any) => c.id),
-          headless
-        )
-      )
+      await checkList(expectedNumbersInBodyTexts, checkPdfDownload)
     })
   })
 })
