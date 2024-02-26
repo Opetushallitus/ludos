@@ -22,19 +22,18 @@ test.describe('Certificate filter tests', () => {
 
   async function checkPdfDownloadIconWorks(page: Page, ids: number[], headless: boolean) {
     for (const id of ids) {
-      const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
-      await page.getByTestId(`certificate-${id}`).getByTestId('download-pdf').click()
+      const downloadBtn = page.getByTestId(`certificate-${id}`).getByTestId('download-pdf')
 
-      const newTabPage = await newTabPagePromise
-      const url = newTabPage.url()
-
-      // todo: vois varmaa keksii workaroundin tähän (https://github.com/microsoft/playwright/issues/6342)
-      if (!headless) {
+      // PDF reader headed/headless moodit toimii erilailla chromessa https://github.com/microsoft/playwright/issues/6342
+      if (headless) {
+        const [download] = await Promise.all([page.waitForEvent('download'), downloadBtn.click()])
+        expect(download.suggestedFilename()).toBe('fixture1.pdf')
+      } else {
+        const [newTabPage] = await Promise.all([page.waitForEvent('popup'), downloadBtn.click()])
         await newTabPage.waitForLoadState('domcontentloaded')
-        expect(url).toContain(`todistuspohja`)
+        expect(newTabPage.url()).toContain('todistuspohja')
+        await newTabPage.close()
       }
-
-      await newTabPage.close()
     }
   }
 
