@@ -54,7 +54,7 @@ async function navigateToAssignmentUpdateFormAndAssertDataLoaded(
   await assertInputValues(page, 'laajaalainenOsaaminenKoodiArvos', expectedFormData.laajaalainenOsaaminenKoodiArvos)
 
   await expect(form.nameFi).toHaveValue(expectedFormData.nameFi)
-  await expect(form.instructionFi).toHaveValue(expectedFormData.instructionFi)
+  await expect(form.instructionFi).toContainText(expectedFormData.instructionFi)
 
   if (expectedFormData.contentFi) {
     for (const i of expectedFormData.contentFi.keys()) {
@@ -65,7 +65,7 @@ async function navigateToAssignmentUpdateFormAndAssertDataLoaded(
   if (expectedFormData.exam !== Exam.SUKO) {
     await form.tabSv.click()
     await expect(form.nameSv).toHaveValue(expectedFormData.nameSv)
-    await expect(form.instructionSv).toHaveValue(expectedFormData.instructionSv)
+    await expect(form.instructionSv).toContainText(expectedFormData.instructionSv)
     if (expectedFormData.contentSv) {
       for (const i of expectedFormData.contentSv.keys()) {
         await expect(page.getByTestId(`contentSv-${i}`)).toContainText(expectedFormData.contentSv[i])

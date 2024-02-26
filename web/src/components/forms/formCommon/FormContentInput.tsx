@@ -1,6 +1,5 @@
 import { TextInput } from '../../TextInput'
 import { FormError } from './FormErrors'
-import { TextAreaInput } from '../../TextAreaInput'
 import { useTranslation } from 'react-i18next'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { LanguageTabs } from '../../LanguageTabs'
@@ -103,21 +102,33 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
   )
 }
 
-export const FormContentInput = () => {
+export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boolean }) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
 
   const {
     watch,
     register,
+    setValue,
     formState: { errors }
   } = useFormContext()
 
   const currentExam = watch('exam')
 
+  const handleContentChange = (newContent: string) => {
+    if (activeTab === 'fi') {
+      setValue('instructionFi', newContent, { shouldDirty: true })
+    } else if (activeTab === 'sv') {
+      setValue('instructionSv', newContent, { shouldDirty: true })
+    }
+  }
+
   const assignmentNameError = errors.nameRequired?.message as string
   const nameFiError = errors.nameFi?.message as string
   const nameSvError = errors.nameSv?.message as string
+
+  const watchInstructionFi = watch('instructionFi')
+  const watchInstructionSv = watch('instructionSv')
 
   return (
     <>
@@ -139,9 +150,13 @@ export const FormContentInput = () => {
           {t('form.tehtavannimi')}
         </TextInput>
 
-        <TextAreaInput id="instructionFi" register={register}>
-          {t('form.tehtavan_ohje')}
-        </TextAreaInput>
+        <TipTap
+          onContentChange={handleContentChange}
+          content={watchInstructionFi}
+          label={t('form.tehtavan_ohje')}
+          dataTestId="editor-instruction-fi"
+          key={`instruction-fi-${formDataIsLoaded ? 'loaded' : 'not-loaded'}`}
+        />
 
         <ArrayContentField fieldName="contentFi" />
       </div>
@@ -157,9 +172,13 @@ export const FormContentInput = () => {
             {t('form.tehtavannimi')}
           </TextInput>
 
-          <TextAreaInput id="instructionSv" register={register}>
-            {t('form.tehtavan_ohje')}
-          </TextAreaInput>
+          <TipTap
+            onContentChange={handleContentChange}
+            content={watchInstructionSv}
+            label={t('form.tehtavan_ohje')}
+            dataTestId="editor-instruction-sv"
+            key={`instruction-fi-${formDataIsLoaded ? 'loaded' : 'not-loaded'}`}
+          />
 
           <ArrayContentField fieldName="contentSv" />
         </div>

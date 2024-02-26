@@ -22,6 +22,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
   const { state } = useLocation()
   const [defaultValueError, setDefaultValueError] = useState<boolean>(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   const isUpdate = action === ContentFormAction.muokkaus
 
@@ -30,7 +31,9 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
       try {
-        return await fetchDataOrReload(`${ContentTypeSingularEn.ASSIGNMENT}/${exam}/${id}`)
+        const assignment = await fetchDataOrReload(`${ContentTypeSingularEn.ASSIGNMENT}/${exam}/${id}`)
+        setIsLoaded(true)
+        return assignment as T
       } catch (e) {
         setDefaultValueError(true)
         return assignmentDefaultValuesByExam[exam] as T
@@ -80,6 +83,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
     methods,
     handleMultiselectOptionChange,
     submitAssignment,
+    isLoaded,
     submitError,
     defaultValueError,
     isDeleteModalOpen,

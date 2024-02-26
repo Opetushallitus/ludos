@@ -27,6 +27,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
     methods,
     handleMultiselectOptionChange,
     submitAssignment,
+    isLoaded,
     submitError,
     defaultValueError,
     isDeleteModalOpen,
@@ -87,7 +88,7 @@ export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput />
+          <FormContentInput formDataIsLoaded={isLoaded} />
         </form>
       </FormProvider>
 

@@ -43,10 +43,10 @@ data class Oppimaara(
 )
 @AtLeastOneAssignmentNameIsNotBlank
 interface Assignment : ContentBase {
-    @get:ValidContentDescription
+    @get:ValidHtmlContent
     val instructionFi: String
 
-    @get:ValidContentDescription
+    @get:ValidHtmlContent
     val instructionSv: String
 
     @get:ValidHtmlContentList

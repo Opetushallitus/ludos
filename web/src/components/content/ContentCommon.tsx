@@ -147,54 +147,34 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
   )
 }
 
-export function ContentInstruction({
-  teachingLanguage,
-  instructionFi,
-  instructionSv
-}: {
+type ContentInstructionProps = {
   teachingLanguage: Language
-  instructionFi: string
-  instructionSv: string
-}) {
-  return (
-    <div className="mb-4 mt-3">
-      <p className="text-sm font-semibold" key={teachingLanguage} data-testid={`instruction-${teachingLanguage}`}>
-        {teachingLanguage === 'FI' ? instructionFi : instructionSv}
-      </p>
-    </div>
-  )
+  content: string
 }
 
-const RenderContent = ({ content, teachingLanguage }: { content: string | string[]; teachingLanguage: Language }) =>
+export const ContentInstruction = ({ teachingLanguage, content }: ContentInstructionProps) => (
+  <RenderContent content={content} customKey={`editor-instruction-${teachingLanguage}`} />
+)
+
+type RenderContentProps = {
+  content: string | string[]
+  customKey: string
+}
+
+const RenderContent = ({ content, customKey }: RenderContentProps) =>
   Array.isArray(content) ? (
     content.map((it, i) => (
-      <TipTap
-        key={`${teachingLanguage}-${i}`}
-        content={it}
-        editable={false}
-        dataTestId={`editor-content-${teachingLanguage}-${i}`}
-      />
+      <TipTap key={`${customKey}-${i}`} content={it} editable={false} dataTestId={`${customKey}-${i}`} />
     ))
   ) : (
-    <TipTap
-      key={teachingLanguage}
-      content={content}
-      editable={false}
-      dataTestId={`editor-content-${teachingLanguage}-0`}
-    />
+    <TipTap key={customKey} content={content} editable={false} dataTestId={`${customKey}-0`} />
   )
 
-// instructions content is not in array while assignments are always
-export function ContentContent({
-  teachingLanguage,
-  contentFi,
-  contentSv
-}: {
+type ContentContentProps = {
   teachingLanguage: Language
-  contentFi: string | string[]
-  contentSv: string | string[]
-}) {
-  const content = teachingLanguage === 'FI' ? contentFi : contentSv
-
-  return <RenderContent content={content} teachingLanguage={teachingLanguage} />
+  content: string | string[]
 }
+
+export const ContentContent = ({ teachingLanguage, content }: ContentContentProps) => (
+  <RenderContent content={content} customKey={`editor-content-${teachingLanguage}`} />
+)
