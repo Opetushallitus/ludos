@@ -93,12 +93,7 @@ export const AssignmentCardContentActions = ({
             <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
           </Button>
         }>
-        <PdfDownloadButton
-          exam={assignment.exam}
-          contentType={ContentType.koetehtavat}
-          contentId={assignment.id}
-          language={language}
-        />
+        <PdfDownloadButton exam={assignment.exam} contentId={assignment.id} language={language} />
       </Suspense>
       <AssignmentCardContentActionButton
         assignment={assignment}

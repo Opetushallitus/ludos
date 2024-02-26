@@ -97,14 +97,13 @@ function ContentActionButton({
 const PDFDownloadButton = lazy(() => import('./pdf/PdfDownloadButton'))
 
 type ContentActionRowProps = {
-  contentId: number
   isFavorite?: boolean
   disabled?: boolean
   onFavoriteClick?: () => void
   pdfData?: { baseOut: BaseOut; language: TeachingLanguage; contentType: ContentType }
 }
 
-export function ContentActionRow({ contentId, isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
+export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
   const { t } = useTranslation()
 
   return (
@@ -127,12 +126,7 @@ export function ContentActionRow({ contentId, isFavorite, disabled, onFavoriteCl
               <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
             </Button>
           }>
-          <PDFDownloadButton
-            exam={pdfData.baseOut.exam}
-            contentType={pdfData.contentType}
-            contentId={pdfData.baseOut.id}
-            language={pdfData.language}
-          />
+          <PDFDownloadButton exam={pdfData.baseOut.exam} contentId={pdfData.baseOut.id} language={pdfData.language} />
         </Suspense>
       )}
       {isFavorite !== undefined && (

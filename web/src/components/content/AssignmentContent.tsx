@@ -97,7 +97,6 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
           </ul>
 
           <ContentActionRow
-            contentId={assignment.id}
             isFavorite={isFavorite}
             onFavoriteClick={() => setIsFavoriteModalOpen(true)}
             pdfData={{

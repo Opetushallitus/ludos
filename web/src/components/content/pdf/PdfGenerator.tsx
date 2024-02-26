@@ -1,42 +1,28 @@
 import { useEffect, useRef } from 'react'
 import { usePDF } from '@react-pdf/renderer'
 import AssignmentPdf from './AssignmentPdf'
-import { BaseOut, TeachingLanguage } from '../../../types'
-import { getContentName, isAssignment } from '../../../utils/assignmentUtils'
+import { AssignmentOut, TeachingLanguage } from '../../../types'
+import { getContentName } from '../../../utils/assignmentUtils'
 import { useTranslation } from 'react-i18next'
-import InstructionPdf from './InstructionPdf'
-import { isInstruction } from '../../../utils/instructionUtils'
 import { useNotification } from '../../../contexts/NotificationContext'
 
 type LazyPdfGeneratorProps = {
-  baseOut: BaseOut
+  assignmentOut: AssignmentOut
   language: TeachingLanguage
   onGenerated: (blob: Blob) => void
 }
 
-const PdfGenerator = ({ baseOut, language, onGenerated }: LazyPdfGeneratorProps) => {
+const PdfGenerator = ({ assignmentOut, language, onGenerated }: LazyPdfGeneratorProps) => {
   const { t } = useTranslation()
   const { setNotification } = useNotification()
 
   const [instance] = usePDF({
     document: (
-      <>
-        {isAssignment(baseOut) ? (
-          <AssignmentPdf
-            title={getContentName(baseOut, language) || t('form.nimeton')}
-            assignment={baseOut}
-            teachingLanguage={language}
-          />
-        ) : (
-          isInstruction(baseOut) && (
-            <InstructionPdf
-              title={getContentName(baseOut, language) || t('form.nimeton')}
-              instruction={baseOut}
-              teachingLanguage={language}
-            />
-          )
-        )}
-      </>
+      <AssignmentPdf
+        title={getContentName(assignmentOut, language) || t('form.nimeton')}
+        assignment={assignmentOut}
+        teachingLanguage={language}
+      />
     )
   })
   // varmistetaan et useEffect ajetaan vain kerran per instanssi

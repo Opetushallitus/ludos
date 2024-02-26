@@ -1,12 +1,11 @@
 import {
-  ContentType,
   Exam,
   InstructionDtoOut,
   LdInstructionDtoOut,
   SukoOrPuhviInstructionDtoOut,
   TeachingLanguage
 } from '../../types'
-import { ContentActionRow, ContentContent } from './ContentCommon'
+import { ContentContent } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
 import { Fragment } from 'react'
@@ -16,10 +15,9 @@ import { useKoodisto } from '../../hooks/useKoodisto'
 type InstructionContentProps = {
   instruction: SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut
   teachingLanguage: TeachingLanguage
-  isPresentation: boolean
 }
 
-export const InstructionContent = ({ instruction, teachingLanguage, isPresentation }: InstructionContentProps) => {
+export const InstructionContent = ({ instruction, teachingLanguage }: InstructionContentProps) => {
   const { t } = useTranslation()
   const { getKoodiLabel } = useKoodisto()
   const attachmentsFilteredWithLanguage = instruction.attachments
@@ -31,28 +29,18 @@ export const InstructionContent = ({ instruction, teachingLanguage, isPresentati
 
   return (
     <>
-      {!isPresentation && (
-        <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light">
-          {isLdInstruction(instruction, Exam.LD) && (
-            <ul>
-              <li>
-                <span className="pr-1 font-semibold">{t('assignment.aine')}:</span>
-                <span data-testid="instruction-aine">
-                  {getKoodiLabel(instruction.aineKoodiArvo, 'ludoslukiodiplomiaine')}
-                </span>
-              </li>
-            </ul>
-          )}
-          <ContentActionRow
-            contentId={instruction.id}
-            pdfData={{
-              baseOut: instruction,
-              language: teachingLanguage,
-              contentType: ContentType.ohjeet
-            }}
-          />
-        </div>
-      )}
+      <div className="my-3">
+        {isLdInstruction(instruction, Exam.LD) && (
+          <ul className="px-3 pb-3 pt-2 bg-gray-bg border border-gray-light">
+            <li>
+              <span className="pr-1 font-semibold">{t('assignment.aine')}:</span>
+              <span data-testid="instruction-aine">
+                {getKoodiLabel(instruction.aineKoodiArvo, 'ludoslukiodiplomiaine')}
+              </span>
+            </li>
+          </ul>
+        )}
+      </div>
 
       {!isLdInstruction(instruction, Exam.LD) && (
         <>

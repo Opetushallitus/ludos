@@ -1,6 +1,6 @@
 import { Button } from '../../Button'
 import React, { Suspense, useState } from 'react'
-import { BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../../types'
+import { AssignmentOut, BaseOut, ContentType, ContentTypeSingularEng, Exam, TeachingLanguage } from '../../../types'
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../../Icon'
 import { getContentName } from '../../../utils/assignmentUtils'
@@ -11,18 +11,19 @@ const PdfGenerator = React.lazy(() => import('./PdfGenerator'))
 
 type PdfDownloadButtonProps = {
   exam: Exam
-  contentType: ContentType
   contentId: number
   language: TeachingLanguage
 }
 
-export default function PdfDownloadButton({ exam, contentType, contentId, language }: PdfDownloadButtonProps) {
+export default function PdfDownloadButton({ exam, contentId, language }: PdfDownloadButtonProps) {
   const { t } = useTranslation()
-  const [shouldGenerate, setShouldGenerate] = useState<BaseOut>()
+  const [assignmentShouldBeGenerated, setAssignmentShouldBeGenerated] = useState<AssignmentOut>()
 
   const handleDownloadClick = async () => {
-    const data = await fetchData<BaseOut>(`${ContentTypeSingularEng[contentType!]}/${exam}/${contentId}`)
-    setShouldGenerate(data)
+    const data = await fetchData<AssignmentOut>(
+      `${ContentTypeSingularEng[ContentType.koetehtavat]}/${exam}/${contentId}`
+    )
+    setAssignmentShouldBeGenerated(data)
   }
 
   const initiateDownload = (blob: Blob, documentName: string) => {
@@ -38,7 +39,7 @@ export default function PdfDownloadButton({ exam, contentType, contentId, langua
 
   const handleGenerated = (generatedBlob: Blob, data: BaseOut) => {
     initiateDownload(generatedBlob, getContentName(data, language))
-    setShouldGenerate(undefined)
+    setAssignmentShouldBeGenerated(undefined)
   }
 
   return (
@@ -47,17 +48,17 @@ export default function PdfDownloadButton({ exam, contentType, contentId, langua
         variant="buttonGhost"
         customClass="p-0 flex items-center pr-3"
         onClick={handleDownloadClick}
-        disabled={!!shouldGenerate}
+        disabled={!!assignmentShouldBeGenerated}
         data-testid={`pdf-download-button-${language}`}>
         <Icon name="pdf" color="text-green-primary" />
         <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
       </Button>
-      {shouldGenerate && (
+      {assignmentShouldBeGenerated && (
         <Suspense fallback={<Spinner />}>
           <PdfGenerator
-            baseOut={shouldGenerate}
+            assignmentOut={assignmentShouldBeGenerated}
             language={language}
-            onGenerated={(blob) => handleGenerated(blob, shouldGenerate)}
+            onGenerated={(blob) => handleGenerated(blob, assignmentShouldBeGenerated)}
           />
         </Suspense>
       )}
