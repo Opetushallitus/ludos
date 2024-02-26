@@ -71,7 +71,7 @@ class KoodistoService(
                 koodistoPalveluKoodi.koodiArvo,
                 metadatum.nimi,
                 if (shouldGetTarkenteet(koodistoPalveluKoodi))
-                    koodistoRepository.getAlakoodit(koodistoPalveluKoodi).map { it.koodiArvo }
+                    koodistoRepository.getAlakoodit(koodistoPalveluKoodi).map { it.koodiArvo }.sorted()
                 else
                     null
             )
