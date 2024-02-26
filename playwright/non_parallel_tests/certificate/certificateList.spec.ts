@@ -50,8 +50,8 @@ test.describe('Certificate filter tests', () => {
       await expect(list.createButton).toBeVisible()
       await list.setOrder('asc')
 
-      const checkPdfDownload = () =>
-        checkPdfDownloadIconWorks(
+      const checkPdfDownload = async () =>
+        await checkPdfDownloadIconWorks(
           page,
           content.content.map((c: any) => c.id),
           headless

@@ -14,13 +14,15 @@ const getExpectedBodyTexts = (
 export const checkListAfterFilteringWithProvidedContent =
   (bodyTextMapping: { [key in Exam]: (number: number) => string }) =>
   (page: Page, exam: Exam) =>
-  async (expectedNumbersInCards: number[], contentSpecificAssert: () => Promise<void>): Promise<void> => {
+  async (expectedNumbersInCards: number[], contentSpecificAssert?: () => Promise<void>): Promise<void> => {
     await expect(page.getByTestId('card-list')).toBeVisible()
 
     const cards = await page.getByTestId('card-list').locator('li').all()
     const texts = await getTextBasedOnExam(cards)
 
-    await contentSpecificAssert()
+    if (contentSpecificAssert) {
+      await contentSpecificAssert()
+    }
 
     const expectedTexts = getExpectedBodyTexts(bodyTextMapping, exam, expectedNumbersInCards)
     expect(texts).toEqual(expectedTexts)
