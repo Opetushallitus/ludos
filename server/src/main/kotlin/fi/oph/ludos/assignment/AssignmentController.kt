@@ -93,8 +93,7 @@ class AssignmentController(val service: AssignmentService) {
     @DeleteMapping("favorites/{exam}/folder/{folderId}")
     @RequireAtLeastOpettajaRole
     fun deleteFavoriteFolder(@PathVariable exam: Exam, @PathVariable folderId: Int): ResponseEntity<Nothing> {
-        val deletedCount = service.deleteFavoriteFolder(exam, folderId)
-        when (deletedCount) {
+        when (val deletedCount = service.deleteFavoriteFolder(exam, folderId)) {
             0 -> {
                 throw ResponseStatusException(
                     HttpStatus.NOT_FOUND,

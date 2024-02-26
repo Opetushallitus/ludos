@@ -388,13 +388,14 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @Test
     @WithYllapitajaRole
-    fun anyMissingSukoFieldYields400() {
-        SukoAssignmentDtoIn::class.memberProperties.forEach { field ->
+    fun `any missing suko field yields 400`() {
+        val ignoredFields = listOf("contentType")
+        SukoAssignmentDtoIn::class.memberProperties.filter { !ignoredFields.contains(it.name) }.forEach { field ->
             val dtoInMap: Map<*, *> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
             val jsonWithFieldRemoved = mapper.writeValueAsString(dtoInMap - field.name)
             val response = mockMvc.perform(createAssignmentReq(jsonWithFieldRemoved)).andReturn().response
-            assertThat(response.status).isEqualTo(HttpStatus.SC_BAD_REQUEST)
-                .`as`("missing ${field.name} yields bad request")
+            assertThat(response.status).`as`("missing ${field.name} yields bad request")
+                .isEqualTo(HttpStatus.SC_BAD_REQUEST)
             if (field.name == "exam") {
                 assertThat(response.contentAsString).contains("Invalid type: JSON parse error: Could not resolve subtype of [simple type, class fi.oph.ludos.assignment.Assignment]: missing type id property 'exam'")
                     .`as`("missing ${field.name} yields proper error message")

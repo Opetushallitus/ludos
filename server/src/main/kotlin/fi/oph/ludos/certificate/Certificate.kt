@@ -1,5 +1,6 @@
 package fi.oph.ludos.certificate
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -16,7 +17,11 @@ import java.sql.Timestamp
     JsonSubTypes.Type(value = PuhviCertificateDtoIn::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdCertificateDtoIn::class, name = "LD")
 )
-interface Certificate : ContentBase
+interface Certificate : ContentBase {
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    override val contentType: ContentType
+        get() = ContentType.CERTIFICATE
+}
 
 @JsonTypeName("SUKO")
 data class SukoCertificateDtoIn(

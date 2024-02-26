@@ -6,12 +6,4 @@ interface Constants {
     }
 }
 
-enum class PublishState {
-    DRAFT, PUBLISHED, ARCHIVED, DELETED
-}
-
-enum class Exam {
-    SUKO, PUHVI, LD
-}
-
 const val INITIAL_VERSION_NUMBER = 1

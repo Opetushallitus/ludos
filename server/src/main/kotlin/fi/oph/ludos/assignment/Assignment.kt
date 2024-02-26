@@ -57,6 +57,10 @@ interface Assignment : ContentBase {
 
     @get:ValidKoodiArvos(koodisto = KoodistoName.LAAJA_ALAINEN_OSAAMINEN_LOPS2021)
     val laajaalainenOsaaminenKoodiArvos: List<String>
+
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    override val contentType: ContentType
+        get() = ContentType.ASSIGNMENT
 }
 
 interface SukoAssignmentMetadata {
@@ -237,6 +241,10 @@ sealed interface AssignmentCardOut : ContentBaseOut {
             is PuhviAssignmentDtoOut -> PuhviAssignmentCardDtoOut(dto)
         }
     }
+
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    override val contentType: ContentType
+        get() = ContentType.ASSIGNMENT
 }
 
 @JsonTypeName("SUKO")

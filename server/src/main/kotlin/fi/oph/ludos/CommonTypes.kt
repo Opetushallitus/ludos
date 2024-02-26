@@ -3,6 +3,18 @@ package fi.oph.ludos
 import jakarta.validation.constraints.Pattern
 import java.sql.Timestamp
 
+enum class PublishState {
+    DRAFT, PUBLISHED, ARCHIVED, DELETED
+}
+
+enum class Exam {
+    SUKO, PUHVI, LD
+}
+
+enum class ContentType {
+    ASSIGNMENT, INSTRUCTION, CERTIFICATE
+}
+
 interface ContentBase {
     @get:ValidContentName
     val nameFi: String
@@ -11,6 +23,7 @@ interface ContentBase {
     val nameSv: String
 
     val exam: Exam
+    val contentType: ContentType
     val publishState: PublishState
 }
 
