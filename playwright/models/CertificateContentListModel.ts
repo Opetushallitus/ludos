@@ -8,6 +8,6 @@ export class CertificateContentListModel extends ContentListModel {
     readonly exam: Exam,
     readonly createButton = page.getByTestId('create-todistus-button')
   ) {
-    super(page, exam, ContentType.todistukset)
+    super(page, exam, ContentType.CERTIFICATE)
   }
 }

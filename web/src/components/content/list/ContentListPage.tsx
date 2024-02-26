@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { ContentType, Exam } from '../../../types'
+import { ContentType, ContentTypeByContentTypePluralFi, ContentTypePluralFi, Exam } from '../../../types'
 import { AssignmentList } from './assignment/AssignmentList'
 import { ContentTypeMenu } from '../../ContentTypeMenu'
 import { useFilterValues } from '../../../hooks/useFilterValues'
@@ -13,8 +13,8 @@ type ContentListPageProps = {
 
 const ContentListPage = ({ exam }: ContentListPageProps) => {
   const { lt } = useLudosTranslation()
-  const { contentType: contentTypeParam } = useParams<{ contentType: ContentType }>()
-  const contentType = contentTypeParam || ContentType.koetehtavat
+  const { contentTypePluralFi } = useParams<{ contentTypePluralFi: ContentTypePluralFi }>()
+  const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
   const filterValues = useFilterValues(exam)
 
   const commonProps = { exam, filterValues }
@@ -28,17 +28,17 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
       <ContentTypeMenu exam={exam} />
 
       <div role="tabpanel">
-        {contentType && (
+        {
           <>
-            {contentType === ContentType.koetehtavat ? (
+            {contentType === ContentType.ASSIGNMENT ? (
               <AssignmentList {...commonProps} />
-            ) : contentType === ContentType.ohjeet ? (
+            ) : contentType === ContentType.INSTRUCTION ? (
               <InstructionList {...commonProps} />
             ) : (
               <CertificateList {...commonProps} />
             )}
           </>
-        )}
+        }
       </div>
     </div>
   )

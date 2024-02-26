@@ -19,12 +19,13 @@ type ContentHeaderProps = {
 }
 
 export function ContentHeader({ data, teachingLanguage, contentType, isPresentation }: ContentHeaderProps) {
+  // TODO: korvaa contentType data.contentType:llä
   const { t, lt } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
-    contentType === ContentType.ohjeet ||
-    (contentType === ContentType.todistukset && data.exam !== Exam.SUKO) ||
-    (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
+    contentType === ContentType.INSTRUCTION ||
+    (contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
+    (contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">

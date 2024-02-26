@@ -1,4 +1,4 @@
-import { ContentBaseOut, ContentType } from '../../types'
+import { ContentBaseOut, ContentTypeByContentTypePluralFi, ContentTypePluralFi } from '../../types'
 import { useParams } from 'react-router-dom'
 import { contentPagePath, pageNotFoundPath } from '../LudosRoutes'
 import { Button } from '../Button'
@@ -22,7 +22,8 @@ export const VersionBrowserBar = ({
   restoreOldVersion
 }: VersionBrowserBarProps) => {
   const { t } = useTranslation()
-  const { contentType } = useParams<{ contentType: ContentType; id: string; version: string }>()
+  const { contentTypePluralFi } = useParams<{ contentTypePluralFi: ContentTypePluralFi; id: string; version: string }>()
+  const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
 
   const currentIndex = dataList.findIndex((item) => item.version === data.version)
   const hasNextVersion = currentIndex < dataList.length - 1

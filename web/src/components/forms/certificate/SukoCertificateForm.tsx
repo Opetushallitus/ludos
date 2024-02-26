@@ -76,7 +76,7 @@ export const SukoCertificateForm = ({
             <AttachmentSelector
               error={attachmentErrorFi}
               name="attachmentFi"
-              contentType={ContentType.todistukset}
+              contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(TeachingLanguage.fi)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               language="fi"
@@ -102,12 +102,12 @@ export const SukoCertificateForm = ({
       />
 
       <DeleteModal
-        modalTitle={lt.contentDeleteModalTitle[ContentType.todistukset]}
+        modalTitle={lt.contentDeleteModalTitle.CERTIFICATE}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitCertificate(PublishState.Deleted, newAttachmentFi, null)}
         onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText[ContentType.todistukset](watchNameFi)}</p>
+          <p>{lt.contentDeleteModalText.CERTIFICATE(watchNameFi)}</p>
         </div>
       </DeleteModal>
     </div>

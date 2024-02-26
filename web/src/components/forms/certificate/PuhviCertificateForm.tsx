@@ -96,7 +96,7 @@ export const PuhviCertificateForm = ({
             <AttachmentSelector
               name="attachmentFi"
               error={attachmentErrorFi}
-              contentType={ContentType.todistukset}
+              contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(TeachingLanguage.fi)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               language="fi"
@@ -121,7 +121,7 @@ export const PuhviCertificateForm = ({
             <AttachmentSelector
               name="attachmentSv"
               error={attachmentErrorSv}
-              contentType={ContentType.todistukset}
+              contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(TeachingLanguage.sv)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               language="sv"
@@ -147,12 +147,12 @@ export const PuhviCertificateForm = ({
       />
 
       <DeleteModal
-        modalTitle={lt.contentDeleteModalTitle[ContentType.todistukset]}
+        modalTitle={lt.contentDeleteModalTitle.CERTIFICATE}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitCertificate(PublishState.Deleted, newAttachmentFi, newAttachmentSv)}
         onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText[ContentType.todistukset](watchNameFi)}</p>
+          <p>{lt.contentDeleteModalText.CERTIFICATE(watchNameFi)}</p>
         </div>
       </DeleteModal>
     </div>

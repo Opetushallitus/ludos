@@ -65,7 +65,7 @@ const PuhviCertificateTitle = ({
 const CertificateContentAttachmentView = ({ name, attachment }: { name: string; attachment: AttachmentDtoOut }) => {
   return (
     <AttachmentFileDetailView
-      contentType={ContentType.todistukset}
+      contentType={ContentType.CERTIFICATE}
       attachments={{
         name,
         attachment

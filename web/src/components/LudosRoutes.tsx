@@ -8,7 +8,7 @@ import {
   useRouteError
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, ContentType, Exam, Roles } from '../types'
+import { ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
 import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from './Spinner'
@@ -33,13 +33,13 @@ export const frontpagePath = () => '/'
 export const examPath = (exam: Exam) => `/${exam.toLowerCase()}`
 
 export const contentPagePath = (exam: Exam, contentType: ContentType, id: number, version?: number) =>
-  `${examPath(exam)}/${contentType}/${id}${version ? `/${version}` : ''}`
+  `${examPath(exam)}/${ContentTypePluralFi[contentType]}/${id}${version ? `/${version}` : ''}`
 
 export const contentListPath = (exam: Exam, contentType: ContentType, search?: string) =>
-  `${examPath(exam)}/${contentType}${search ?? ''}`
+  `${examPath(exam)}/${ContentTypePluralFi[contentType]}${search ?? ''}`
 
 export const editingFormPath = (exam: Exam, contentType: ContentType, id: number) =>
-  `${examPath(exam)}/${contentType}/${muokkausKey}/${id}`
+  `${examPath(exam)}/${ContentTypePluralFi[contentType]}/${muokkausKey}/${id}`
 
 export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`
 
@@ -141,7 +141,7 @@ function contentFormRoutes(
 ): RouteObject[] {
   return [
     {
-      path: `${contentType}/${ContentFormAction.uusi}`,
+      path: `${ContentTypePluralFi[contentType]}/${ContentFormAction.uusi}`,
       element: (
         <Layout>
           <SpinnerSuspense>
@@ -151,7 +151,7 @@ function contentFormRoutes(
       )
     },
     {
-      path: `${contentType}/${ContentFormAction.muokkaus}/:id`,
+      path: `${ContentTypePluralFi[contentType]}/${ContentFormAction.muokkaus}/:id`,
       element: (
         <Layout>
           <SpinnerSuspense>
@@ -169,10 +169,10 @@ function examRoute(exam: Exam): RouteObject {
     children: [
       {
         index: true,
-        element: <Navigate replace to={contentListPath(exam, ContentType.koetehtavat)} />
+        element: <Navigate replace to={contentListPath(exam, ContentType.ASSIGNMENT)} />
       },
       {
-        path: ':contentType',
+        path: ':contentTypePluralFi',
         element: (
           <Layout>
             <SpinnerSuspense>
@@ -182,7 +182,7 @@ function examRoute(exam: Exam): RouteObject {
         )
       },
       {
-        path: ':contentType/:id',
+        path: ':contentTypePluralFi/:id',
         element: (
           <Layout>
             <SpinnerSuspense>
@@ -192,7 +192,7 @@ function examRoute(exam: Exam): RouteObject {
         )
       },
       {
-        path: `:contentType/:id/${esitysnakymaKey}`,
+        path: `:contentTypePluralFi/:id/${esitysnakymaKey}`,
         element: (
           <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
             <SpinnerSuspense>
@@ -205,7 +205,7 @@ function examRoute(exam: Exam): RouteObject {
         element: <YllapitajaRoute />,
         children: [
           {
-            path: ':contentType/:id/:version',
+            path: ':contentTypePluralFi/:id/:version',
             element: (
               <Layout>
                 <SpinnerSuspense>
@@ -214,9 +214,9 @@ function examRoute(exam: Exam): RouteObject {
               </Layout>
             )
           },
-          ...contentFormRoutes(ContentType.koetehtavat, AssignmentForm),
-          ...contentFormRoutes(ContentType.ohjeet, InstructionForm),
-          ...contentFormRoutes(ContentType.todistukset, CertificateForm)
+          ...contentFormRoutes(ContentType.ASSIGNMENT, AssignmentForm),
+          ...contentFormRoutes(ContentType.INSTRUCTION, InstructionForm),
+          ...contentFormRoutes(ContentType.CERTIFICATE, CertificateForm)
         ]
       }
     ]

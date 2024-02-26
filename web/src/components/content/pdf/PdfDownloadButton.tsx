@@ -4,7 +4,7 @@ import {
   AssignmentOut,
   ContentBaseOut,
   ContentType,
-  ContentTypeSingularEng,
+  ContentTypeSingularEn,
   Exam,
   TeachingLanguage
 } from '../../../types'
@@ -27,9 +27,7 @@ export default function PdfDownloadButton({ exam, contentId, language }: PdfDown
   const [assignmentShouldBeGenerated, setAssignmentShouldBeGenerated] = useState<AssignmentOut>()
 
   const handleDownloadClick = async () => {
-    const data = await fetchData<AssignmentOut>(
-      `${ContentTypeSingularEng[ContentType.koetehtavat]}/${exam}/${contentId}`
-    )
+    const data = await fetchData<AssignmentOut>(`${ContentTypeSingularEn[ContentType.ASSIGNMENT]}/${exam}/${contentId}`)
     setAssignmentShouldBeGenerated(data)
   }
 

@@ -4,7 +4,7 @@ import { InternalLink } from '../../../InternalLink'
 import { ContentAction } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
 import { esitysnakymaKey } from '../../../LudosRoutes'
-import { AssignmentCardOut, ContentType, TeachingLanguage } from '../../../../types'
+import { AssignmentCardOut, ContentTypePluralFi, TeachingLanguage } from '../../../../types'
 import { lazy, Suspense } from 'react'
 
 type AssignmentCardContentActionButtonProps = {
@@ -33,7 +33,7 @@ function AssignmentCardContentActionButton({
   if (link) {
     return (
       <InternalLink
-        to={`/${exam}/${ContentType.koetehtavat}/${contentId}/${link}`}
+        to={`/${exam}/${ContentTypePluralFi.ASSIGNMENT}/${contentId}/${link}`}
         target="_blank"
         className={className}
         children={children}

@@ -3,8 +3,8 @@ import {
   AssignmentCardOut,
   AssignmentsOut,
   ContentType,
-  ContentTypeSingular,
-  ContentTypeSingularEng,
+  ContentTypeSingularFi,
+  ContentTypeSingularEn,
   emptyAssignmentFilterOptions,
   Exam,
   FavoriteIdsDtoOut,
@@ -46,13 +46,12 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
   const { isYllapitaja } = useUserDetails()
   const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
-  const singularActiveTab = ContentTypeSingular[ContentType.koetehtavat]
 
-  const contentType = ContentType.koetehtavat
+  const contentType = ContentType.ASSIGNMENT
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
   const { data, loading, error } = useFetch<AssignmentsOut>(
-    `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
+    `${ContentTypeSingularEn[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
   )
@@ -61,9 +60,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
     data: favoriteIds,
     error: favoriteIdsError,
     refresh: favoriteIdsRefresh
-  } = useFetch<FavoriteIdsDtoOut>(
-    `${ContentTypeSingularEng[ContentType.koetehtavat]}/favorites/${exam.toLocaleUpperCase()}`
-  )
+  } = useFetch<FavoriteIdsDtoOut>(`${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}`)
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
   const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
@@ -86,7 +83,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
             <InternalLink
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
-              data-testid={`create-${singularActiveTab}-button`}>
+              data-testid={`create-${ContentTypeSingularFi.ASSIGNMENT}-button`}>
               {preventLineBreaksFromSpace(t('button.lisaakoetehtava'))}
             </InternalLink>
           )}

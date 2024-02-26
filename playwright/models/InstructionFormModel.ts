@@ -31,7 +31,7 @@ export class InstructionFormModel extends FormModel {
   }
 
   async navigateToInstructionExamPage() {
-    await new ContentListModel(this.page, this.exam, ContentType.ohjeet).goto()
+    await new ContentListModel(this.page, this.exam, ContentType.INSTRUCTION).goto()
   }
 
   async gotoNew() {

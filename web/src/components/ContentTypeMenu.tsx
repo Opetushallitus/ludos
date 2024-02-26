@@ -1,4 +1,4 @@
-import { ContentType, Exam } from '../types'
+import { ContentType, ContentTypePluralFi, Exam } from '../types'
 import { NavLink } from 'react-router-dom'
 import { contentListPath } from './LudosRoutes'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
@@ -22,7 +22,7 @@ export const ContentTypeMenu = ({ exam }: ContentTypeMenuProps) => {
               }`
             }
             key={i}
-            data-testid={`tab-${contentType}`}>
+            data-testid={`tab-${ContentTypePluralFi[contentType]}`}>
             {lt.tabTextByContentType[contentType]}
           </NavLink>
         ))}

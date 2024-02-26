@@ -92,7 +92,7 @@ export const LdCertificateForm = ({
 
             <AttachmentSelector
               name="attachmentFi"
-              contentType={ContentType.todistukset}
+              contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(TeachingLanguage.fi)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               language="fi"
@@ -114,7 +114,7 @@ export const LdCertificateForm = ({
             <AttachmentSelector
               error={attachmentErrorSv}
               name="attachmentSv"
-              contentType={ContentType.todistukset}
+              contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(TeachingLanguage.sv)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               language="sv"
@@ -140,12 +140,12 @@ export const LdCertificateForm = ({
       />
 
       <DeleteModal
-        modalTitle={lt.contentDeleteModalTitle[ContentType.todistukset]}
+        modalTitle={lt.contentDeleteModalTitle.CERTIFICATE}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitCertificate(PublishState.Deleted, newAttachmentFi, newAttachmentSv)}
         onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText[ContentType.todistukset](watchNameFi)}</p>
+          <p>{lt.contentDeleteModalText.CERTIFICATE(watchNameFi)}</p>
         </div>
       </DeleteModal>
     </div>

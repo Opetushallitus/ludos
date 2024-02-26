@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import { ContentType, Exam } from 'web/src/types'
+import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 
 export abstract class ContentModel {
   protected constructor(
@@ -15,7 +15,7 @@ export abstract class ContentModel {
   ) {}
 
   async goToContentPage(id: number) {
-    await this.page.goto(`/${this.exam.toLowerCase()}/${this.contentType}/${id}`)
+    await this.page.goto(`/${this.exam.toLowerCase()}/${ContentTypePluralFi[this.contentType]}/${id}`)
   }
 
   abstract assertAttachments(attachmentNames: string[]): Promise<void>

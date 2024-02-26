@@ -1,4 +1,4 @@
-import { ContentType, PublishState } from '../../../types'
+import { PublishState } from '../../../types'
 import { FormButtonRow } from '../formCommon/FormButtonRow'
 import { DeleteModal } from '../../modal/DeleteModal'
 import { useNavigate } from 'react-router-dom'
@@ -53,16 +53,12 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
         submitError={submitError}
       />
       <DeleteModal
-        modalTitle={lt.contentDeleteModalTitle[ContentType.koetehtavat]}
+        modalTitle={lt.contentDeleteModalTitle.ASSIGNMENT}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitAssignment(PublishState.Deleted)}
         onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
-          <p>
-            {lt.contentDeleteModalText[ContentType.koetehtavat](
-              uiLanguage === 'fi' ? getValues().nameFi : getValues().nameSv
-            )}
-          </p>
+          <p>{lt.contentDeleteModalText.ASSIGNMENT(uiLanguage === 'fi' ? getValues().nameFi : getValues().nameSv)}</p>
         </div>
       </DeleteModal>
     </>

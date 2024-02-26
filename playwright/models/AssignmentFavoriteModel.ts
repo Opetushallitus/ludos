@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test'
 import { BaseModel } from './BaseModel'
-import { ContentType, Exam } from 'web/src/types'
+import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { AssignmentFormModel } from './AssignmentFormModel'
 import { assertSuccessNotification } from '../helpers'
 import { LayoutModel } from './LayoutModel'
@@ -40,7 +40,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     const assignmentIn = this.form.testAssignmentIn('Suosikkitesti')
     const assignment = await this.form.assignmentApiCalls(this.page.context(), baseURL).create(assignmentIn)
 
-    await this.page.goto(`/${this.exam.toLowerCase()}/${ContentType.koetehtavat}`)
+    await this.page.goto(`/${this.exam.toLowerCase()}/${ContentTypePluralFi[ContentType.ASSIGNMENT]}`)
     await this.page.getByTestId('card-list').locator('li').isVisible()
 
     const favoriteCountBefore = await this.favoritesCount()

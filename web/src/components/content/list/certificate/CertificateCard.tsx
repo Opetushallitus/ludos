@@ -9,7 +9,7 @@ import { muokkausKey } from '../../../LudosRoutes'
 import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../../../utils/certificateUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
-const getFileKey = (certificate: BaseOut, language: TeachingLanguage) => {
+const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => {
   if (isSukoCertificate(certificate)) {
     return certificate.attachmentFi.fileKey
   } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {

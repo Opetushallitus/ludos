@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException
 @RestController
 @Validated
 @RequireAtLeastYllapitajaRole
-@RequestMapping("${Constants.API_PREFIX}/assignment")
+@RequestMapping("${Constants.API_PREFIX}/assignment") // TODO: "assignment" -> ContentType.ASSIGNMENT
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
     @RequireAtLeastYllapitajaRole

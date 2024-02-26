@@ -174,26 +174,41 @@ export type PuhviCertificateDtoOut = CertificateDtoOut & {
 }
 
 export const ContentType = {
-  koetehtavat: 'koetehtavat',
-  ohjeet: 'ohjeet',
-  todistukset: 'todistukset'
+  ASSIGNMENT: 'ASSIGNMENT',
+  INSTRUCTION: 'INSTRUCTION',
+  CERTIFICATE: 'CERTIFICATE'
 } as const
 export type ContentType = (typeof ContentType)[keyof typeof ContentType]
 type ContentTypeMapping = {
-  [key in keyof typeof ContentType]: string
+  readonly [key in keyof typeof ContentType]: string
 }
 
-export const ContentTypeSingular: ContentTypeMapping = {
-  koetehtavat: 'koetehtava',
-  ohjeet: 'ohje',
-  todistukset: 'todistus'
-}
+export const ContentTypePluralFi: {
+  readonly [key in keyof typeof ContentType]: 'koetehtavat' | 'ohjeet' | 'todistukset'
+} = {
+  ASSIGNMENT: 'koetehtavat',
+  INSTRUCTION: 'ohjeet',
+  CERTIFICATE: 'todistukset'
+} as const
+export type ContentTypePluralFi = (typeof ContentTypePluralFi)[keyof typeof ContentTypePluralFi]
 
-export const ContentTypeSingularEng: ContentTypeMapping = {
-  koetehtavat: 'assignment',
-  ohjeet: 'instruction',
-  todistukset: 'certificate'
-}
+export const ContentTypeByContentTypePluralFi = {
+  [ContentTypePluralFi.ASSIGNMENT]: ContentType.ASSIGNMENT,
+  [ContentTypePluralFi.INSTRUCTION]: ContentType.INSTRUCTION,
+  [ContentTypePluralFi.CERTIFICATE]: ContentType.CERTIFICATE
+} as const
+
+export const ContentTypeSingularFi: ContentTypeMapping = {
+  ASSIGNMENT: 'koetehtava',
+  INSTRUCTION: 'ohje',
+  CERTIFICATE: 'todistus'
+} as const
+
+export const ContentTypeSingularEn: ContentTypeMapping = {
+  ASSIGNMENT: 'assignment',
+  INSTRUCTION: 'instruction',
+  CERTIFICATE: 'certificate'
+} as const
 
 export const Roles = {
   YLLAPITAJA: 'YLLAPITAJA',

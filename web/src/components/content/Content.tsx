@@ -5,7 +5,9 @@ import {
   AttachmentLanguage,
   ContentBaseOut,
   ContentType,
-  ContentTypeSingularEng,
+  ContentTypeByContentTypePluralFi,
+  ContentTypePluralFi,
+  ContentTypeSingularEn,
   Exam,
   TeachingLanguage
 } from '../../types'
@@ -39,26 +41,32 @@ type ContentProps = {
 const Content = ({ exam, isPresentation }: ContentProps) => {
   const { lt, t } = useLudosTranslation()
   const navigate = useNavigate()
-  const { contentType, id, version } = useParams<{ contentType: ContentType; id: string; version: string }>()
+  const { contentTypePluralFi, id, version } = useParams<{
+    contentTypePluralFi: ContentTypePluralFi
+    id: string
+    version: string
+  }>()
   const { state } = useLocation()
   const { isYllapitaja } = useUserDetails()
   const { teachingLanguage } = useContext(LudosContext)
   const [openVersionViewerModal, setOpenVersionViewerModal] = useState(false)
 
+  const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
+
   const isVersionBrowser = !!version
 
   const teachingLanguageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? TeachingLanguage.fi : teachingLanguage
 
   const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
-    `${ContentTypeSingularEng[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
+    `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
 
   const {
     data: versionList,
     error: versionListError,
     refresh: versionListRefresh
-  } = useFetch<ContentBaseOut[]>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
+  } = useFetch<ContentBaseOut[]>(`${ContentTypeSingularEn[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
 
   const handleNavigation = useCallback(() => {
     if (state?.returnLocation) {
@@ -166,7 +174,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 </div>
               )}
 
-              {contentType === ContentType.koetehtavat && isAssignment(data) && (
+              {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
                 <AssignmentContent
                   assignment={data}
                   exam={exam}
@@ -175,10 +183,10 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 />
               )}
 
-              {contentType === ContentType.todistukset && isCertificate(data) && (
+              {contentType === ContentType.CERTIFICATE && isCertificate(data) && (
                 <CertificateContent certificate={data} teachingLanguage={teachingLanguage} />
               )}
-              {contentType === ContentType.ohjeet && isInstruction(data) && (
+              {contentType === ContentType.INSTRUCTION && isInstruction(data) && (
                 <InstructionContent instruction={data} teachingLanguage={teachingLanguage} />
               )}
             </div>

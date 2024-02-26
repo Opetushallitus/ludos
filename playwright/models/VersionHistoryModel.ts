@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test'
-import { Exam } from 'web/src/types'
+import { ContentTypePluralFi, Exam } from 'web/src/types'
 import { ContentModel } from './ContentModel'
 
 export class VersionHistoryModel {
@@ -18,7 +18,9 @@ export class VersionHistoryModel {
   ) {}
 
   async gotoContentVersionPage(id: number, version: number) {
-    await this.page.goto(`/${this.exam.toLowerCase()}/${this.content.contentType}/${id}/${version}`)
+    await this.page.goto(
+      `/${this.exam.toLowerCase()}/${ContentTypePluralFi[this.content.contentType]}/${id}/${version}`
+    )
   }
 
   private versionHistoryItemLocator(version: number) {

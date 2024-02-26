@@ -1,4 +1,4 @@
-import { ContentType, ContentTypeSingularEng, Exam, FavoriteCardFolderDtoOut } from '../../../types'
+import { ContentType, ContentTypeSingularEn, Exam, FavoriteCardFolderDtoOut } from '../../../types'
 import { useParams } from 'react-router-dom'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { useFetch } from '../../../hooks/useFetch'
@@ -14,7 +14,7 @@ export const AssignmentFavorite = () => {
   const { exam: examParamLowerCase, folderId } = useParams<{ exam?: string; folderId?: string }>()
 
   const exam = Exam[examParamLowerCase?.toUpperCase() as Exam]
-  const contentType = ContentType.koetehtavat
+  const contentType = ContentType.ASSIGNMENT
 
   const {
     data: favoriteCardFolders,
@@ -22,7 +22,7 @@ export const AssignmentFavorite = () => {
     error: favoriteCardFoldersError,
     refresh
   } = useFetch<FavoriteCardFolderDtoOut>(
-    `${ContentTypeSingularEng[contentType]}/favorites/${exam.toLocaleUpperCase()}/cardFolders`
+    `${ContentTypeSingularEn[contentType]}/favorites/${exam.toLocaleUpperCase()}/cardFolders`
   )
 
   if (favoriteCardFoldersError) {

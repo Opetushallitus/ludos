@@ -1,5 +1,5 @@
 import { useFetch } from '../../../../hooks/useFetch'
-import { ContentOut, ContentType, ContentTypeSingular, ContentTypeSingularEng, Exam } from '../../../../types'
+import { ContentOut, ContentType, ContentTypeSingularFi, ContentTypeSingularEn, Exam } from '../../../../types'
 import { CertificateCard } from './CertificateCard'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
@@ -22,17 +22,17 @@ type CertificateListProps = {
 }
 
 export const CertificateList = ({ exam, filterValues: { filterValues, setFilterValue } }: CertificateListProps) => {
-  const contentType = ContentType.todistukset
+  const contentType = ContentType.CERTIFICATE
   const { isYllapitaja } = useUserDetails()
   const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
-  const singularActiveTab = ContentTypeSingular[contentType]
+  const singularActiveTab = ContentTypeSingularFi[contentType]
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
   const { data, loading, error } = useFetch<ContentOut>(
-    `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
+    `${ContentTypeSingularEn[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
   )

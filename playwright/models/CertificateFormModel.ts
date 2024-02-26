@@ -30,7 +30,7 @@ export class CertificateFormModel extends FormModel {
   }
 
   async gotoNew() {
-    await new ContentListModel(this.page, this.exam, ContentType.todistukset).goto()
+    await new ContentListModel(this.page, this.exam, ContentType.CERTIFICATE).goto()
     await this.createNewCertificateButton.click()
   }
 

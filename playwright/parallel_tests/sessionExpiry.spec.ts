@@ -1,6 +1,6 @@
 import { expect, Page, test } from '@playwright/test'
 import { loginTestGroup, Role } from '../helpers'
-import { ContentType, ContentTypeSingularEng, Exam } from 'web/src/types'
+import { ContentTypePluralFi, ContentTypeSingularEn, Exam } from 'web/src/types'
 import { createFormData, fillAssignmentForm } from '../examHelpers/assignmentHelpers'
 import { fillCertificateForm } from '../examHelpers/certificateHelpers'
 import { instructionFormData } from '../examHelpers/instructionHelpers'
@@ -39,13 +39,13 @@ Object.values(Exam).forEach((exam) => {
 
       void page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
       await page.waitForResponse(
-        (response) => response.url().includes(`/api/${ContentTypeSingularEng.koetehtavat}`) && response.status() === 302
+        (response) => response.url().includes(`/api/${ContentTypeSingularEn.ASSIGNMENT}`) && response.status() === 302
       )
 
       await page.waitForResponse(
         (resp) => {
           const url = new URL(resp.url())
-          return url.pathname === `/${exam.toLowerCase()}/${ContentType.koetehtavat}`
+          return url.pathname === `/${exam.toLowerCase()}/${ContentTypePluralFi.ASSIGNMENT}`
         },
         {
           timeout: 5000
@@ -54,18 +54,18 @@ Object.values(Exam).forEach((exam) => {
     })
 
     test(`should show error notification and message on submit ${exam} assignment form`, async ({ page }) => {
-      await page.goto(`/${exam}/${ContentType.koetehtavat}/uusi`)
+      await page.goto(`/${exam}/${ContentTypePluralFi.ASSIGNMENT}/uusi`)
       const formData = createFormData(exam, 'submit')
       await fillAssignmentForm(new AssignmentFormModel(page, exam), formData)
-      await clearCookiesAndSubmit(page, ContentTypeSingularEng.koetehtavat)
+      await clearCookiesAndSubmit(page, ContentTypeSingularEn.ASSIGNMENT)
       await assertSessionExpiryFormErrorMessage(page)
     })
 
     test(`should show error notification and message on submit ${exam} instruction form`, async ({ page }) => {
       const form = new InstructionFormModel(page, exam)
-      await page.goto(`/${exam}/${ContentType.ohjeet}/uusi`)
+      await page.goto(`/${exam}/${ContentTypePluralFi.INSTRUCTION}/uusi`)
       await form.fillInstructionForm(instructionFormData)
-      await clearCookiesAndSubmit(page, ContentTypeSingularEng.ohjeet)
+      await clearCookiesAndSubmit(page, ContentTypeSingularEn.INSTRUCTION)
       await assertSessionExpiryFormErrorMessage(page)
     })
 
@@ -74,7 +74,7 @@ Object.values(Exam).forEach((exam) => {
       await form.gotoNew()
       const inputs = form.createFormData('submit')
       await fillCertificateForm(form, inputs)
-      await clearCookiesAndSubmit(page, ContentTypeSingularEng.todistukset)
+      await clearCookiesAndSubmit(page, ContentTypeSingularEn.CERTIFICATE)
       await assertSessionExpiryFormErrorMessage(page)
     })
   })

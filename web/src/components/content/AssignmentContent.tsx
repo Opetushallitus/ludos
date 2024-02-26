@@ -1,7 +1,7 @@
 import {
   AssignmentOut,
   ContentType,
-  ContentTypeSingularEng,
+  ContentTypeSingularEn,
   Exam,
   FavoriteIdsDtoOut,
   TeachingLanguage
@@ -28,7 +28,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
   const { data: favoriteIds, refresh: refreshFavoriteIds } = useFetch<FavoriteIdsDtoOut>(
-    `${ContentTypeSingularEng[ContentType.koetehtavat]}/favorites/${exam.toLocaleUpperCase()}/${assignment.id}`
+    `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}/${assignment.id}`
   )
 
   const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
@@ -102,7 +102,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
             pdfData={{
               baseOut: assignment,
               language: teachingLanguage,
-              contentType: ContentType.koetehtavat
+              contentType: ContentType.ASSIGNMENT
             }}
             disabled={!favoriteIds}
           />
