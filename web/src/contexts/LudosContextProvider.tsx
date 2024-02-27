@@ -31,7 +31,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
   const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(-1)
   const [teachingLanguage, setTeachingLanguageState] = useState<Language>(
-    (localStorage.getItem(ludosTeachingLanguageKey) as Language | null) || Language.FI
+    (localStorage.getItem(ludosTeachingLanguageKey)?.toUpperCase() as Language) || Language.FI
   )
 
   const setTeachingLanguage = (lang: Language) => {
