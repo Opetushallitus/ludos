@@ -1,6 +1,7 @@
 package fi.oph.ludos.koodisto
 
 import fi.oph.ludos.Constants
+import fi.oph.ludos.Language
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import fi.oph.ludos.localization.LOCALIZATION_CACHE_CONTROL
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class KoodistoController(val koodistoService: KoodistoService) {
     @GetMapping("")
     @RequireAtLeastOpettajaRole
-    fun getKoodistot(): ResponseEntity<Map<KoodistoLanguage, Map<KoodistoName, Map<String, KoodiDtoOut>>>> =
+    fun getKoodistot(): ResponseEntity<Map<Language, Map<KoodistoName, Map<String, KoodiDtoOut>>>> =
         ResponseEntity.ok()
             .cacheControl(LOCALIZATION_CACHE_CONTROL)
             .body(koodistoService.getKoodistos())

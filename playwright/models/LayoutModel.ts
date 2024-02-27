@@ -1,5 +1,5 @@
 import { Page } from '@playwright/test'
-import { BusinessLanguage } from 'web/src/types'
+import { Language } from 'web/src/types'
 import { setSingleSelectDropdownOption } from '../helpers'
 
 export class LayoutModel {
@@ -10,7 +10,7 @@ export class LayoutModel {
     readonly footerFeedbackLink = footer.getByTestId('feedback-link')
   ) {}
 
-  async setUiLanguage(language: BusinessLanguage) {
+  async setUiLanguage(language: Language) {
     await setSingleSelectDropdownOption(this.page, 'languageDropdown', language)
   }
 

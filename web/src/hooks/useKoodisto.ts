@@ -1,6 +1,6 @@
 import { LudosContext } from '../contexts/LudosContext'
 import { useContext } from 'react'
-import { BusinessLanguage, KoodistoName, Language, Oppimaara } from '../types'
+import { KoodistoName, Language, Oppimaara } from '../types'
 import { preventLineBreaksFromHyphen } from '../utils/formatUtils'
 
 export type KoodiDtoOut = {
@@ -11,11 +11,11 @@ export type KoodiDtoOut = {
 
 const defaultLabel = '*'
 
-function getTeachingLanguage(uiLanguage: string, teachingLanguageProvided?: Language): Language {
+function getTeachingLanguage(uiLanguage: Language, teachingLanguageProvided?: Language): Language {
   if (teachingLanguageProvided) {
     return teachingLanguageProvided
   } else {
-    return uiLanguage === BusinessLanguage.sv ? Language.SV : Language.FI
+    return uiLanguage
   }
 }
 

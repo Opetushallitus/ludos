@@ -1,5 +1,6 @@
 package fi.oph.ludos.koodisto
 
+import fi.oph.ludos.Language
 import fi.oph.ludos.assignment.Oppimaara
 import jakarta.validation.Constraint
 import kotlin.reflect.KClass
@@ -68,7 +69,7 @@ class OppimaaraValidator(private val koodistoService: KoodistoService) :
         }
         val oppimaaraKoodi = koodistoService.getKoodi(
             KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021,
-            KoodistoLanguage.FI,
+            Language.FI,
             value.oppimaaraKoodiArvo
         )
         if (oppimaaraKoodi == null) {

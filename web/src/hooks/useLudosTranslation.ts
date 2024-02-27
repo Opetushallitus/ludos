@@ -20,8 +20,8 @@ export const useLudosTranslation = () => {
   }
 
   const LANGUAGE_DROPDOWN: Record<string, KoodiDtoOut> = {
-    fi: { nimi: t('language.suomi'), koodiArvo: 'fi' },
-    sv: { nimi: t('language.ruotsi'), koodiArvo: 'sv' },
+    FI: { nimi: t('language.suomi'), koodiArvo: 'FI' },
+    SV: { nimi: t('language.ruotsi'), koodiArvo: 'SV' },
     keys: { nimi: 'Näytä avaimet', koodiArvo: 'keys' }
   }
 

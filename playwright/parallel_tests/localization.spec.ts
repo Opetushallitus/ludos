@@ -3,8 +3,8 @@ import { login, Role, setTeachingLanguage } from '../helpers'
 import { LayoutModel } from '../models/LayoutModel'
 import { Language } from 'web/src/types'
 
-async function assertUiLanguage(page: Page, language: string) {
-  await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === 'fi' ? 'Etusivu' : 'Hem')
+async function assertUiLanguage(page: Page, language: Language) {
+  await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === Language.FI ? 'Etusivu' : 'Hem')
 }
 
 async function navigateToPuhviInstructionList(page: Page) {
@@ -16,12 +16,12 @@ async function assertTeachingLanguageSelect(page: Page, language: Language) {
   await expect(page.locator('input[name="teachingLanguageDropdown"]')).toHaveValue(language)
 }
 
-async function assertKoodistoLanguageInPuhviKoetehtavaForm(page: Page, language: string) {
+async function assertKoodistoLanguageInPuhviKoetehtavaForm(page: Page, language: Language) {
   await page.getByTestId('nav-link-etusivu').click()
   await page.getByTestId('/puhvi').getByTestId('nav-box-koetehtavat').click()
   await page.getByTestId('create-koetehtava-button').click()
   await expect(page.locator('label[for="001"]')).toHaveText(
-    language === 'fi' ? 'Ryhmäviestintätaidot' : 'Gruppdiskussion'
+    language === Language.FI ? 'Ryhmäviestintätaidot' : 'Gruppdiskussion'
   )
 }
 
@@ -33,10 +33,10 @@ test.beforeEach(async ({ page }) => {
 test('Business language is the default for UI, teaching language and koodisto language', async ({ page }) => {
   await navigateToPuhviInstructionList(page)
 
-  await assertUiLanguage(page, 'sv')
-  await assertTeachingLanguageSelect(page, 'SV')
+  await assertUiLanguage(page, Language.SV)
+  await assertTeachingLanguageSelect(page, Language.SV)
 
-  await assertKoodistoLanguageInPuhviKoetehtavaForm(page, 'sv')
+  await assertKoodistoLanguageInPuhviKoetehtavaForm(page, Language.SV)
 })
 
 test('Explicit UI language choice is honored over reloads', async ({ page }) => {
@@ -44,33 +44,33 @@ test('Explicit UI language choice is honored over reloads', async ({ page }) => 
 
   await navigateToPuhviInstructionList(page)
 
-  await assertUiLanguage(page, 'sv')
-  await assertTeachingLanguageSelect(page, 'SV')
+  await assertUiLanguage(page, Language.SV)
+  await assertTeachingLanguageSelect(page, Language.SV)
 
-  await layout.setUiLanguage('fi')
-  await assertUiLanguage(page, 'fi')
-  await assertTeachingLanguageSelect(page, 'SV')
-  await assertKoodistoLanguageInPuhviKoetehtavaForm(page, 'fi')
+  await layout.setUiLanguage(Language.FI)
+  await assertUiLanguage(page, Language.FI)
+  await assertTeachingLanguageSelect(page, Language.SV)
+  await assertKoodistoLanguageInPuhviKoetehtavaForm(page, Language.FI)
 
   await page.reload({ waitUntil: 'domcontentloaded' })
   await navigateToPuhviInstructionList(page)
-  await assertUiLanguage(page, 'fi')
-  await assertTeachingLanguageSelect(page, 'SV')
+  await assertUiLanguage(page, Language.FI)
+  await assertTeachingLanguageSelect(page, Language.SV)
 })
 
 test('Explicit teaching language choice is honored over reloads', async ({ page }) => {
   await navigateToPuhviInstructionList(page)
 
-  await assertUiLanguage(page, 'sv')
-  await assertTeachingLanguageSelect(page, 'SV')
+  await assertUiLanguage(page, Language.SV)
+  await assertTeachingLanguageSelect(page, Language.SV)
 
-  await setTeachingLanguage(page, 'FI')
-  await assertUiLanguage(page, 'sv')
-  await assertTeachingLanguageSelect(page, 'FI')
-  await assertKoodistoLanguageInPuhviKoetehtavaForm(page, 'sv')
+  await setTeachingLanguage(page, Language.FI)
+  await assertUiLanguage(page, Language.SV)
+  await assertTeachingLanguageSelect(page, Language.FI)
+  await assertKoodistoLanguageInPuhviKoetehtavaForm(page, Language.SV)
 
   await page.reload({ waitUntil: 'domcontentloaded' })
   await navigateToPuhviInstructionList(page)
-  await assertUiLanguage(page, 'sv')
-  await assertTeachingLanguageSelect(page, 'FI')
+  await assertUiLanguage(page, Language.SV)
+  await assertTeachingLanguageSelect(page, Language.FI)
 })

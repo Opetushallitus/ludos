@@ -9,7 +9,7 @@ export const useFeedbackUrl = () => {
 
   const feedbackParams = new URLSearchParams({
     ref: `${window.location.origin}${pathname}${search}${hash}`,
-    language: uiLanguage
+    language: uiLanguage.toLowerCase()
   })
 
   return `${FEEDBACK_BASE_URL}?${feedbackParams.toString()}`

@@ -1,5 +1,6 @@
 package fi.oph.ludos.koodisto
 
+import fi.oph.ludos.Language
 import org.slf4j.LoggerFactory
 import org.springframework.aop.framework.AopProxyUtils
 import org.springframework.stereotype.Service
@@ -12,7 +13,7 @@ class KoodistoService(
     resourceKoodistoRepository: ResourceKoodistoRepository,
 ) {
     private final val logger: org.slf4j.Logger = LoggerFactory.getLogger(javaClass)
-    private var koodistoCache: Map<KoodistoLanguage, Map<KoodistoName, Map<String, KoodiDtoOut>>> = emptyMap()
+    private var koodistoCache: Map<Language, Map<KoodistoName, Map<String, KoodiDtoOut>>> = emptyMap()
 
     init {
         try {
@@ -26,7 +27,7 @@ class KoodistoService(
         scheduler.scheduleAtFixedRate({ updateKoodistoCache(httpKoodistoRepository) }, 0, 600, TimeUnit.SECONDS)
     }
 
-    fun getKoodistos(): Map<KoodistoLanguage, Map<KoodistoName, Map<String, KoodiDtoOut>>> {
+    fun getKoodistos(): Map<Language, Map<KoodistoName, Map<String, KoodiDtoOut>>> {
         if (koodistoCache.isEmpty()) {
             throw IllegalStateException("Koodistos accessed before initialization")
         }
@@ -34,21 +35,21 @@ class KoodistoService(
         return koodistoCache
     }
 
-    private fun getKoodistosForlanguage(koodistoLanguage: KoodistoLanguage): Map<KoodistoName, Map<String, KoodiDtoOut>> =
+    private fun getKoodistosForlanguage(koodistoLanguage: Language): Map<KoodistoName, Map<String, KoodiDtoOut>> =
         getKoodistos()[koodistoLanguage]
             ?: throw IllegalStateException("Language $koodistoLanguage not found in koodistoCache")
 
-    private fun getKoodisto(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage): Map<String, KoodiDtoOut> {
+    private fun getKoodisto(koodistoName: KoodistoName, koodistoLanguage: Language): Map<String, KoodiDtoOut> {
         return getKoodistosForlanguage(koodistoLanguage)[koodistoName]
             ?: throw Exception("Koodisto ${koodistoName.koodistoUri} not found in $koodistoLanguage cache")
     }
 
-    fun getKoodi(koodistoName: KoodistoName, koodistoLanguage: KoodistoLanguage, koodiArvo: String): KoodiDtoOut? {
+    fun getKoodi(koodistoName: KoodistoName, koodistoLanguage: Language, koodiArvo: String): KoodiDtoOut? {
         return getKoodisto(koodistoName, koodistoLanguage)[koodiArvo]
     }
 
     fun isKoodiArvoInKoodisto(koodistoName: KoodistoName, koodiArvo: String): Boolean {
-        return getKoodi(koodistoName, KoodistoLanguage.FI, koodiArvo) != null
+        return getKoodi(koodistoName, Language.FI, koodiArvo) != null
     }
 
     fun isKoodiArvosInKoodisto(koodistoName: KoodistoName, koodiArvos: List<String>): Boolean {
@@ -63,7 +64,7 @@ class KoodistoService(
 
     private fun koodiToKoodiDtoOut(
         koodistoPalveluKoodi: KoodistoPalveluKoodi,
-        language: KoodistoLanguage,
+        language: Language,
         koodistoRepository: KoodistoRepository
     ): KoodiDtoOut? =
         koodistoPalveluKoodi.metadata.find { it.kieli == language.toString() }?.let { metadatum ->
@@ -82,7 +83,7 @@ class KoodistoService(
     private fun updateKoodistoCache(koodistoRepository: KoodistoRepository) {
         try {
             val koodistos = KoodistoName.entries.associateWith { koodistoRepository.getKoodisto(it) }
-            koodistoCache = KoodistoLanguage.entries.associateWith { language ->
+            koodistoCache = Language.entries.associateWith { language ->
                 KoodistoName.entries.associateWith { koodistoName ->
                     koodistos[koodistoName]!!.mapNotNull { koodi ->
                         koodiToKoodiDtoOut(koodi, language, koodistoRepository)
@@ -91,7 +92,7 @@ class KoodistoService(
             }
 
             val koodistoStats = KoodistoName.entries.associateWith { koodistoName ->
-                KoodistoLanguage.entries.map { koodistoLanguage ->
+                Language.entries.map { koodistoLanguage ->
                     val koodisto = getKoodisto(koodistoName, koodistoLanguage)
                     val koodiCount = koodisto.count()
                     val tarkenneCount = koodisto.values.sumOf { it.tarkenteet?.size ?: 0 }
