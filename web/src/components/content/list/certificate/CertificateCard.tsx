@@ -3,11 +3,20 @@ import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
 import { toLocaleDate } from '../../../../utils/formatUtils'
-import { PdfTag } from '../../../PdfTag'
+import { PdfViewerLinkTag } from '../../../PdfViewerLinkTag'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
 import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../../../utils/certificateUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
+
+const getFileKey = (certificate: BaseOut, language: TeachingLanguage) => {
+  if (isSukoCertificate(certificate)) {
+    return certificate.attachmentFi.fileKey
+  } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {
+    return language === 'fi' ? certificate.attachmentFi.fileKey : certificate.attachmentSv?.fileKey
+  }
+  return ''
+}
 
 type CertificateCardProps = {
   certificate: BaseOut
@@ -40,6 +49,8 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
     return null
   }
 
+  const fileKey = getFileKey(certificate, teachingLanguage)
+
   return (
     <li
       className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary flex flex-col"
@@ -63,9 +74,9 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
       </p>
 
       <div className="row mt-3 justify-between">
-        <div className="w-20">{isYllapitaja && <StateTag state={certificate.publishState} />}</div>
+        {isYllapitaja && <StateTag state={certificate.publishState} />}
         <p className="text-center text-xs">{toLocaleDate(certificate.createdAt)}</p>
-        <PdfTag />
+        {fileKey && <PdfViewerLinkTag fileKey={fileKey} />}
       </div>
     </li>
   )

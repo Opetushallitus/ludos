@@ -7,6 +7,7 @@ interface ExternalLinkProps extends HTMLAttributes<HTMLAnchorElement> {
   className?: string
   textColor?: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary' | 'text-gray-secondary'
   openInNewTab?: boolean
+  hideIcon?: boolean
   children: ReactNode
 }
 
@@ -15,6 +16,7 @@ export const ExternalLink = ({
   className,
   textColor = 'text-green-primary',
   openInNewTab = true,
+  hideIcon = false,
   children,
   ...props
 }: ExternalLinkProps) => (
@@ -26,7 +28,7 @@ export const ExternalLink = ({
     {...props}>
     <span className="row items-center gap-1">
       {children}
-      {openInNewTab && <Icon name="uusi-valilehti" color={textColor} size="base" />}
+      {openInNewTab && !hideIcon && <Icon name="uusi-valilehti" color={textColor} size="base" />}
     </span>
   </a>
 )
