@@ -2,6 +2,9 @@ import {
   AttachmentDtoOut,
   ContentBaseOut,
   ContentType,
+  isLdCertificate,
+  isPuhviCertificate,
+  isSukoCertificate,
   LdCertificateDtoOut,
   PuhviCertificateDtoOut,
   SukoCertificateDtoOut,
@@ -10,7 +13,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../forms/formCommon/attachment/AttachmentFileDetailView'
 import { useKoodisto } from '../../hooks/useKoodisto'
-import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../utils/certificateUtils'
 import { LudosContext } from '../../contexts/LudosContext'
 import { useContext } from 'react'
 

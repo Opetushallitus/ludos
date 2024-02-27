@@ -1,9 +1,16 @@
 import { Icon } from '../../../Icon'
-import { AssignmentCardOut, ContentType, FavoriteIdsDtoOut, TeachingLanguage } from '../../../../types'
+import {
+  AssignmentCardOut,
+  ContentType,
+  FavoriteIdsDtoOut,
+  isLdAssignment,
+  isPuhviAssignment,
+  isSukoAssignment,
+  TeachingLanguage
+} from '../../../../types'
 import { StateTag } from '../../../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../../InternalLink'
-import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../../../utils/assignmentUtils'
 import { toLocaleDate } from '../../../../utils/formatUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../../hooks/useUserDetails'

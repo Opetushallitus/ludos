@@ -4,12 +4,14 @@ import {
   ContentTypeSingularEn,
   Exam,
   FavoriteIdsDtoOut,
+  isLdAssignment,
+  isPuhviAssignment,
+  isSukoAssignment,
   TeachingLanguage
 } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../utils/assignmentUtils'
 import { useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'

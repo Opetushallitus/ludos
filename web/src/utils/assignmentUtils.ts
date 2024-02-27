@@ -1,28 +1,12 @@
 import {
-  AssignmentOut,
   ContentBaseOut,
-  Exam,
-  LdAssignmentDtoOut,
-  PuhviAssignmentDtoOut,
-  SukoAssignmentDtoOut,
+  isAssignment,
+  isCertificate,
+  isInstruction,
+  isSukoAssignment,
+  isSukoCertificate,
   TeachingLanguage
 } from '../types'
-import { isInstruction } from './instructionUtils'
-import { isCertificate, isSukoCertificate } from './certificateUtils'
-
-export const isSukoAssignment = (assignment: ContentBaseOut): assignment is SukoAssignmentDtoOut =>
-  assignment.exam === Exam.SUKO &&
-  'aiheKoodiArvos' in assignment &&
-  'assignmentTypeKoodiArvo' in assignment &&
-  'oppimaara' in assignment
-
-export const isLdAssignment = (assignment: ContentBaseOut): assignment is LdAssignmentDtoOut =>
-  assignment.exam === Exam.LD && 'aineKoodiArvo' in assignment && 'lukuvuosiKoodiArvos' in assignment
-export const isPuhviAssignment = (assignment: ContentBaseOut): assignment is PuhviAssignmentDtoOut =>
-  assignment.exam === Exam.PUHVI && 'lukuvuosiKoodiArvos' in assignment
-
-export const isAssignment = (data: ContentBaseOut): data is AssignmentOut =>
-  isSukoAssignment(data) || isLdAssignment(data) || isPuhviAssignment(data)
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript

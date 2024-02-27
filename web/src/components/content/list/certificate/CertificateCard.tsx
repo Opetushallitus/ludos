@@ -1,4 +1,10 @@
-import { ContentBaseOut, TeachingLanguage } from '../../../../types'
+import {
+  ContentBaseOut,
+  isLdCertificate,
+  isPuhviCertificate,
+  isSukoCertificate,
+  TeachingLanguage
+} from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -6,7 +12,6 @@ import { toLocaleDate } from '../../../../utils/formatUtils'
 import { PdfViewerLinkTag } from '../../../PdfViewerLinkTag'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
-import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../../../utils/certificateUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
 const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => {

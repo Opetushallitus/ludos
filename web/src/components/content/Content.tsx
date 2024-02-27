@@ -9,10 +9,12 @@ import {
   ContentTypePluralFi,
   ContentTypeSingularEn,
   Exam,
+  isAssignment,
+  isCertificate,
+  isInstruction,
   TeachingLanguage
 } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
-import { isAssignment } from '../../utils/assignmentUtils'
 import { ContentHeader } from './ContentCommon'
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
@@ -25,9 +27,7 @@ import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useCallback, useContext, useState } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
-import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
-import { isCertificate } from '../../utils/certificateUtils'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
 import { createNewVersionInstruction, restoreOldCertificate, updateAssignment } from '../../request'
