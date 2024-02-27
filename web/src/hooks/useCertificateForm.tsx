@@ -21,7 +21,7 @@ export function useCertificateForm<T extends CommonCertificateFormType>(
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
+  const [activeTab, setActiveTab] = useState<TeachingLanguage>(TeachingLanguage.FI)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const { submitFormData, submitError } = useFormSubmission(exam, ContentType.CERTIFICATE, isUpdate)

@@ -18,7 +18,7 @@ const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => 
   if (isSukoCertificate(certificate)) {
     return certificate.attachmentFi.fileKey
   } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {
-    return language === 'fi' ? certificate.attachmentFi.fileKey : certificate.attachmentSv?.fileKey
+    return language === 'FI' ? certificate.attachmentFi.fileKey : certificate.attachmentSv?.fileKey
   }
   return ''
 }
@@ -38,7 +38,7 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
     } else if (isLdCertificate(certificate)) {
       return getKoodiLabel(certificate.aineKoodiArvo, 'ludoslukiodiplomiaine')
     } else if (isPuhviCertificate(certificate)) {
-      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+      return teachingLanguage === 'FI' ? certificate.nameFi : certificate.nameSv
     }
     return null
   }
@@ -47,9 +47,9 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
     if (isSukoCertificate(certificate)) {
       return certificate.descriptionFi
     } else if (isLdCertificate(certificate)) {
-      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+      return teachingLanguage === 'FI' ? certificate.nameFi : certificate.nameSv
     } else if (isPuhviCertificate(certificate)) {
-      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+      return teachingLanguage === 'FI' ? certificate.nameFi : certificate.nameSv
     }
     return null
   }

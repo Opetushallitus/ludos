@@ -77,9 +77,9 @@ export const SukoCertificateForm = ({
               error={attachmentErrorFi}
               name="attachmentFi"
               contentType={ContentType.CERTIFICATE}
-              attachmentData={currentAttachment(TeachingLanguage.fi)}
+              attachmentData={currentAttachment(TeachingLanguage.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
-              language="fi"
+              language={TeachingLanguage.FI}
             />
           </div>
         </form>

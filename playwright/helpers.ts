@@ -76,7 +76,7 @@ async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
 export async function koodiNimi(
   koodistoName: KoodistoName,
   koodiArvo: string,
-  language: TeachingLanguage = TeachingLanguage.fi
+  language: TeachingLanguage = TeachingLanguage.FI
 ): Promise<string> {
   let koodisto = koodistoCache[koodistoName]
   if (!koodisto) {
@@ -138,7 +138,7 @@ export async function assertInputValues(page: Page, inputName: string, expectedV
 export async function koodiLabel(
   koodistoName: KoodistoName,
   koodiArvos: string | string[],
-  teachingLanguage: TeachingLanguage = TeachingLanguage.fi
+  teachingLanguage: TeachingLanguage = TeachingLanguage.FI
 ): Promise<string> {
   if (typeof koodiArvos === 'string') {
     return koodiNimi(koodistoName, koodiArvos, teachingLanguage)

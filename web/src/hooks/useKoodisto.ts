@@ -15,7 +15,7 @@ function getTeachingLanguage(uiLanguage: string, teachingLanguageProvided?: Teac
   if (teachingLanguageProvided) {
     return teachingLanguageProvided
   } else {
-    return uiLanguage === BusinessLanguage.sv ? 'sv' : 'fi'
+    return uiLanguage === BusinessLanguage.sv ? TeachingLanguage.SV : TeachingLanguage.FI
   }
 }
 

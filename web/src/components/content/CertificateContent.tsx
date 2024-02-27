@@ -66,7 +66,7 @@ const PuhviCertificateTitle = ({
     <>
       <h4 className="mt-6 font-semibold">{labelText}</h4>
       <p data-testid="certificate-description">
-        {teachingLanguage === 'fi' ? certificate.descriptionFi : certificate.descriptionSv}
+        {teachingLanguage === 'FI' ? certificate.descriptionFi : certificate.descriptionSv}
       </p>
     </>
   )
@@ -113,7 +113,7 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
       ) : (
         (isLdCertificate(certificate) || isPuhviCertificate(certificate)) && (
           <>
-            {teachingLanguage === 'fi' ? (
+            {teachingLanguage === 'FI' ? (
               <CertificateContentAttachmentView
                 name={certificate.attachmentFi.name}
                 attachment={certificate.attachmentFi}

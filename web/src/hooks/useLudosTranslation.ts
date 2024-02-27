@@ -15,8 +15,8 @@ export const useLudosTranslation = () => {
   const { t } = translation
 
   const LANGUAGE_OPTIONS: Record<TeachingLanguage, KoodiDtoOut> = {
-    fi: { nimi: t('language.suomi'), koodiArvo: 'fi' },
-    sv: { nimi: t('language.ruotsi'), koodiArvo: 'sv' }
+    FI: { nimi: t('language.suomi'), koodiArvo: 'FI' },
+    SV: { nimi: t('language.ruotsi'), koodiArvo: 'SV' }
   }
 
   const LANGUAGE_DROPDOWN: Record<string, KoodiDtoOut> = {

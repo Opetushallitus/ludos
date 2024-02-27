@@ -25,13 +25,13 @@ type LudosContextProviderProps = {
 export const LudosContextProvider = ({ children }: LudosContextProviderProps) => {
   const { i18n } = useTranslation()
   const [koodistos, setKoodistos] = useState<LanguageKoodistoMap>({
-    fi: defaultEmptyKoodistoMap,
-    sv: defaultEmptyKoodistoMap
+    FI: defaultEmptyKoodistoMap,
+    SV: defaultEmptyKoodistoMap
   })
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
   const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(-1)
   const [teachingLanguage, setTeachingLanguageState] = useState<TeachingLanguage>(
-    (localStorage.getItem(ludosTeachingLanguageKey) as TeachingLanguage | null) || defaultLanguage
+    (localStorage.getItem(ludosTeachingLanguageKey) as TeachingLanguage | null) || TeachingLanguage.FI
   )
 
   const setTeachingLanguage = (lang: TeachingLanguage) => {
@@ -81,7 +81,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
 
           // for first time users set teaching language to be the same as business language
           if (!localStorage.getItem(ludosTeachingLanguageKey)) {
-            setTeachingLanguageState(validBusinessLanguageOrDefault)
+            setTeachingLanguageState(validBusinessLanguageOrDefault.toUpperCase() as TeachingLanguage)
           }
 
           setUserDetails(userDetailsJson)
@@ -103,8 +103,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         const koodistosResponse = await getKoodistos()
 
         if (koodistosResponse.ok) {
-          const { FI: fi, SV: sv } = await koodistosResponse.json()
-          setKoodistos({ fi, sv })
+          setKoodistos(await koodistosResponse.json())
         } else {
           console.error('Could not fetch koodistos')
         }

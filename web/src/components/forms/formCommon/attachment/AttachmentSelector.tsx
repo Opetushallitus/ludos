@@ -51,7 +51,7 @@ export const AttachmentSelector = ({
 
   const handleAttachmentNameChange = (newName: string, index: number) => {
     if (handleNewAttachmentName) {
-      handleNewAttachmentName(newName, index, language ?? 'fi')
+      handleNewAttachmentName(newName, index, language ?? 'FI')
     }
   }
 
@@ -83,7 +83,7 @@ export const AttachmentSelector = ({
           contentType={contentType}
           attachments={attachmentData!}
           handleAttachmentNameChange={handleAttachmentNameChange}
-          deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'fi') : null)}
+          deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'FI') : null)}
           language={language}
         />
       )}

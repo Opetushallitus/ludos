@@ -13,7 +13,7 @@ const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfPro
   let content
   try {
     content =
-      teachingLanguage === 'fi'
+      teachingLanguage === 'FI'
         ? assignment.contentFi.map(convertHtmlToReactPdf)
         : assignment.contentSv.map(convertHtmlToReactPdf)
   } catch (e) {
@@ -30,7 +30,7 @@ const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfPro
           <Text>{title}</Text>
         </View>
         <View style={[pdfStyles.section, pdfStyles.instruction]}>
-          <Text>{teachingLanguage === 'fi' ? assignment.instructionFi : assignment.instructionSv}</Text>
+          <Text>{teachingLanguage === 'FI' ? assignment.instructionFi : assignment.instructionSv}</Text>
         </View>
         <View style={[pdfStyles.section, pdfStyles.content]} wrap>
           {content}

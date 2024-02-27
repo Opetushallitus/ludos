@@ -276,27 +276,27 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
   )
 
   await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
-  await expect(page.getByTestId('instruction-fi')).toHaveText(expectedFormData.instructionFi)
+  await expect(page.getByTestId('instruction-FI')).toHaveText(expectedFormData.instructionFi)
 
   if (expectedFormData.contentFi) {
     for (const [i, content] of expectedFormData.contentFi.entries()) {
-      await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+      await expect(page.getByTestId(`editor-content-FI-${i}`)).toHaveText(content)
     }
   }
 
   if (expectedFormData.exam !== Exam.SUKO) {
-    await setTeachingLanguage(page, TeachingLanguage.sv)
+    await setTeachingLanguage(page, TeachingLanguage.SV)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
-    await expect(page.getByTestId('instruction-sv')).toHaveText(expectedFormData.instructionSv)
+    await expect(page.getByTestId('instruction-SV')).toHaveText(expectedFormData.instructionSv)
 
     if (expectedFormData.contentSv) {
       for (const [i, content] of expectedFormData.contentSv.entries()) {
-        await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+        await expect(page.getByTestId(`editor-content-SV-${i}`)).toHaveText(content)
       }
     }
 
-    await setTeachingLanguage(page, TeachingLanguage.fi)
+    await setTeachingLanguage(page, TeachingLanguage.FI)
   }
 }
 export async function assertSukoAssignmentContentPage(page: Page, expectedFormData: SukoAssignmentFormType) {

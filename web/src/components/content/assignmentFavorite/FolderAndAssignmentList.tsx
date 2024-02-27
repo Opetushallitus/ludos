@@ -24,7 +24,7 @@ export const FolderAndAssignmentList = ({
   const { t } = useTranslation()
   const { teachingLanguage } = useContext(LudosContext)
 
-  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
+  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'FI' : teachingLanguage
 
   const hasAssignments = currentFavoriteCardFolder.assignmentCards.length > 0
 

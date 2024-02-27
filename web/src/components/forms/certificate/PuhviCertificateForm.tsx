@@ -78,7 +78,7 @@ export const PuhviCertificateForm = ({
             svErrors={!!hasSvError}
           />
 
-          <div className={`${activeTab === TeachingLanguage.fi ? '' : 'hidden'}`}>
+          <div className={`${activeTab === TeachingLanguage.FI ? '' : 'hidden'}`}>
             <TextInput id="nameFi" register={register} required error={nameErrorFi}>
               {t('form.todistuksennimi')}
             </TextInput>
@@ -97,13 +97,13 @@ export const PuhviCertificateForm = ({
               name="attachmentFi"
               error={attachmentErrorFi}
               contentType={ContentType.CERTIFICATE}
-              attachmentData={currentAttachment(TeachingLanguage.fi)}
+              attachmentData={currentAttachment(TeachingLanguage.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
-              language="fi"
+              language={TeachingLanguage.FI}
             />
           </div>
 
-          <div className={`${activeTab === TeachingLanguage.sv ? '' : 'hidden'}`}>
+          <div className={`${activeTab === TeachingLanguage.SV ? '' : 'hidden'}`}>
             <TextInput id="nameSv" register={register} required error={nameErrorSv}>
               {t('form.todistuksennimi')}
             </TextInput>
@@ -122,9 +122,9 @@ export const PuhviCertificateForm = ({
               name="attachmentSv"
               error={attachmentErrorSv}
               contentType={ContentType.CERTIFICATE}
-              attachmentData={currentAttachment(TeachingLanguage.sv)}
+              attachmentData={currentAttachment(TeachingLanguage.SV)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
-              language="sv"
+              language={TeachingLanguage.SV}
             />
           </div>
         </form>

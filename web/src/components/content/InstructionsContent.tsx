@@ -21,7 +21,7 @@ export const InstructionContent = ({ instruction, teachingLanguage }: Instructio
   const { t } = useTranslation()
   const { getKoodiLabel } = useKoodisto(teachingLanguage)
   const attachmentsFilteredWithLanguage = instruction.attachments
-    .filter((it) => it.language.toLowerCase() === teachingLanguage)
+    .filter((it) => it.language === teachingLanguage)
     .map((it) => it)
 
   const isLdInstruction = (instruction: InstructionDtoOut, exam: Exam): instruction is LdInstructionDtoOut =>
@@ -46,7 +46,7 @@ export const InstructionContent = ({ instruction, teachingLanguage }: Instructio
         <>
           <div className="mb-4">
             <p className="text-sm">
-              {teachingLanguage === TeachingLanguage.fi
+              {teachingLanguage === TeachingLanguage.FI
                 ? instruction.shortDescriptionFi
                 : instruction.shortDescriptionSv}
             </p>

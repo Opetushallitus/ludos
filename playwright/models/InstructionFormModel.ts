@@ -25,7 +25,10 @@ export class InstructionFormModel extends FormModel {
     readonly page: Page,
     readonly exam: Exam,
     readonly contentFiEditor = new EditorModel(page, page.getByTestId('editor-content-fi')),
-    readonly createNewInstructionButton = page.getByTestId('create-ohje-button')
+    readonly contentSvEditor = new EditorModel(page, page.getByTestId('editor-content-sv')),
+    readonly createNewInstructionButton = page.getByTestId('create-ohje-button'),
+    readonly shortDescriptionFi = page.getByTestId('shortDescriptionFi'),
+    readonly shortDescriptionSv = page.getByTestId('shortDescriptionSv')
   ) {
     super(page, exam)
   }
@@ -80,7 +83,7 @@ export class InstructionFormModel extends FormModel {
       attachmentNameSv
     } = formData
 
-    await expect(this.page.getByTestId('heading')).toBeVisible()
+    await expect(this.heading).toBeVisible()
 
     if (this.exam === Exam.LD && aineKoodiArvo) {
       await setSingleSelectDropdownOption(this.page, 'aineKoodiArvo', aineKoodiArvo)
@@ -90,10 +93,10 @@ export class InstructionFormModel extends FormModel {
       await this.nameFi.fill(nameFi)
     }
     if (contentFi) {
-      await this.page.getByTestId('editor-content-fi').locator('div[contenteditable="true"]').fill(contentFi)
+      await this.contentFiEditor.content.fill(contentFi)
     }
     if (this.exam !== Exam.LD && shortDescriptionFi) {
-      await this.page.getByTestId('shortDescriptionFi').fill(shortDescriptionFi)
+      await this.shortDescriptionFi.fill(shortDescriptionFi)
     }
 
     const files = ['fixture1.pdf', 'fixture2.pdf']
@@ -102,33 +105,33 @@ export class InstructionFormModel extends FormModel {
 
     if (attachmentNameFi) {
       for (const filePath of filePaths) {
-        await this.page.getByTestId('file-input-fi').setInputFiles(filePath)
+        await this.attachmentInputFi.setInputFiles(filePath)
       }
       for (const [index] of files.entries()) {
-        await this.page.getByTestId(`attachment-name-input-${index}-fi`).fill(`${attachmentNameFi} ${index + 1}`)
+        await this.page.getByTestId(`attachment-name-input-${index}-FI`).fill(`${attachmentNameFi} ${index + 1}`)
       }
     }
 
     const hasSvFields = nameSv || contentSv || shortDescriptionSv || attachmentNameSv
 
     if (hasSvFields) {
-      await this.page.getByTestId('tab-sv').click()
+      await this.tabSv.click()
       if (nameSv) {
         await this.nameSv.fill(nameSv)
       }
       if (contentSv) {
-        await this.page.getByTestId('editor-content-sv').locator('div[contenteditable="true"]').fill(contentSv)
+        await this.contentSvEditor.content.fill(contentSv)
       }
       if (this.exam !== Exam.LD && shortDescriptionSv) {
-        await this.page.getByTestId('shortDescriptionSv').fill(shortDescriptionSv)
+        await this.shortDescriptionSv.fill(shortDescriptionSv)
       }
 
       if (attachmentNameSv) {
         for (const filePath of filePaths) {
-          await this.page.getByTestId('file-input-sv').setInputFiles(filePath)
+          await this.attachmentInputSv.setInputFiles(filePath)
         }
         for (const [index] of files.entries()) {
-          await this.page.getByTestId(`attachment-name-input-${index}-sv`).fill(`${attachmentNameSv} ${index + 1}`)
+          await this.page.getByTestId(`attachment-name-input-${index}-SV`).fill(`${attachmentNameSv} ${index + 1}`)
         }
       }
     }
@@ -142,14 +145,14 @@ export class InstructionFormModel extends FormModel {
   ) {
     await this.navigateToInstructionExamPage()
 
-    await setTeachingLanguage(this.page, TeachingLanguage.sv)
+    await setTeachingLanguage(this.page, TeachingLanguage.SV)
     const instructionCard = this.page.getByTestId(`instruction-${instructionId}`)
 
     await expect(instructionCard).toBeVisible()
 
     if (this.exam === Exam.LD) {
       await expect(instructionCard.getByTestId('card-title')).toHaveText(
-        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', TeachingLanguage.sv)
+        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', TeachingLanguage.SV)
       )
     } else {
       await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)
@@ -169,9 +172,9 @@ export class InstructionFormModel extends FormModel {
 
     if (action === 'submit') {
       await this.assertNavigationBlockOnDirtyForm()
-      await this.page.getByTestId('form-submit').click()
+      await this.submitButton.click()
     } else {
-      await this.page.getByTestId('form-draft').click()
+      await this.draftButton.click()
     }
 
     await assertSuccessNotification(this.page, expectedNotification)

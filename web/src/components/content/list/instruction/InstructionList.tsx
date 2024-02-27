@@ -30,9 +30,9 @@ import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
-  if (teachingLanguage === TeachingLanguage.fi) {
+  if (teachingLanguage === TeachingLanguage.FI) {
     return data.nameFi !== ''
-  } else if (teachingLanguage === TeachingLanguage.sv) {
+  } else if (teachingLanguage === TeachingLanguage.SV) {
     return data.nameSv !== ''
   }
   return true

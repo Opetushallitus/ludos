@@ -20,7 +20,7 @@ export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCa
   const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
   const nameText =
-    (teachingLanguage === TeachingLanguage.fi ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')
+    (teachingLanguage === TeachingLanguage.FI ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')
 
   const titleText = () => {
     if (isSukoOrPuhviInstruction(instruction)) {
@@ -34,7 +34,7 @@ export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCa
 
   const bodyText = () => {
     if (isSukoOrPuhviInstruction(instruction)) {
-      return teachingLanguage === TeachingLanguage.fi ? instruction.shortDescriptionFi : instruction.shortDescriptionSv
+      return teachingLanguage === TeachingLanguage.FI ? instruction.shortDescriptionFi : instruction.shortDescriptionSv
     }
 
     if (isLdInstruction(instruction)) {

@@ -105,7 +105,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
 
 export const FormContentInput = () => {
   const { t } = useTranslation()
-  const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
+  const [activeTab, setActiveTab] = useState<TeachingLanguage>('FI')
 
   const {
     watch,
@@ -129,7 +129,7 @@ export const FormContentInput = () => {
         </div>
       )}
 
-      <div className={`${activeTab === 'fi' || currentExam === Exam.SUKO ? '' : 'hidden'}`}>
+      <div className={`${activeTab === 'FI' || currentExam === Exam.SUKO ? '' : 'hidden'}`}>
         <TextInput
           id="nameFi"
           register={register}
@@ -147,7 +147,7 @@ export const FormContentInput = () => {
       </div>
 
       {currentExam !== Exam.SUKO && (
-        <div className={`${activeTab === 'sv' ? '' : 'hidden'}`}>
+        <div className={`${activeTab === 'SV' ? '' : 'hidden'}`}>
           <TextInput
             id="nameSv"
             register={register}

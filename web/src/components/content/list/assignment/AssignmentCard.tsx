@@ -57,7 +57,7 @@ export const AssignmentCard = ({
             to={contentPagePath(assignmentCard.exam, ContentType.ASSIGNMENT, assignmentCard.id)}
             state={{ returnLocation }}
             data-testid="card-title">
-            {(teachingLanguage === TeachingLanguage.fi ? assignmentCard.nameFi : assignmentCard.nameSv) ||
+            {(teachingLanguage === TeachingLanguage.FI ? assignmentCard.nameFi : assignmentCard.nameSv) ||
               t('form.nimeton')}
           </InternalLink>
           {isYllapitaja && (
@@ -145,7 +145,7 @@ export const AssignmentCard = ({
           assignmentCard={assignmentCard}
           favoriteIds={favoriteIds}
           assignmentName={
-            (teachingLanguage === TeachingLanguage.fi ? assignmentCard.nameFi : assignmentCard.nameSv) ||
+            (teachingLanguage === TeachingLanguage.FI ? assignmentCard.nameFi : assignmentCard.nameSv) ||
             t('form.nimeton')
           }
           onClose={() => setIsFavoriteModalOpen(false)}

@@ -174,7 +174,7 @@ async function fillAndCheckVisibility(
 }
 
 const toggleTabTo = (form: AssignmentFormModel) => async (to: TeachingLanguage) =>
-  to === 'fi' ? form.tabFi.click() : form.tabSv.click()
+  to === 'FI' ? form.tabFi.click() : form.tabSv.click()
 
 async function testNameField(form: AssignmentFormModel) {
   const toggleTabToFn = toggleTabTo(form)
@@ -182,27 +182,27 @@ async function testNameField(form: AssignmentFormModel) {
   await expect(form.formErrorMsgNameFi).toBeVisible()
 
   if (form.exam !== Exam.SUKO) {
-    await toggleTabToFn('sv')
+    await toggleTabToFn('SV')
     await expect(form.formErrorMsgNameSv).toBeVisible()
-    await toggleTabToFn('fi')
+    await toggleTabToFn('FI')
   }
 
   await fillAndCheckVisibility(form.nameFi, form.formErrorMsgNameFi, 'a', true)
   await fillAndCheckVisibility(form.nameFi, form.formErrorMsgNameFi, 'abc', false)
 
   if (form.exam !== Exam.SUKO) {
-    await toggleTabToFn('sv')
+    await toggleTabToFn('SV')
     await expect(form.formErrorMsgNameSv).toBeHidden()
-    await toggleTabToFn('fi')
+    await toggleTabToFn('FI')
     await form.nameFi.clear()
     await expect(form.formErrorMsgNameFi).toBeVisible()
-    await toggleTabToFn('sv')
+    await toggleTabToFn('SV')
     await expect(form.formErrorMsgNameSv).toBeVisible()
 
     await fillAndCheckVisibility(form.nameSv, form.formErrorMsgNameSv, 'a', true)
     await fillAndCheckVisibility(form.nameSv, form.formErrorMsgNameSv, 'abc', false)
 
-    await toggleTabToFn('sv')
+    await toggleTabToFn('SV')
     await expect(form.formErrorMsgNameFi).toBeHidden()
   }
 }

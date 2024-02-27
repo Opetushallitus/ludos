@@ -131,7 +131,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
           assignmentCard={assignment}
           favoriteIds={favoriteIds}
           assignmentName={
-            (teachingLanguage === TeachingLanguage.fi ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')
+            (teachingLanguage === TeachingLanguage.FI ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')
           }
           onClose={() => setIsFavoriteModalOpen(false)}
           onSetFavoriteFoldersAction={async (favoriteCards) => {

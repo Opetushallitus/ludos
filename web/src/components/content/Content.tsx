@@ -56,7 +56,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const isVersionBrowser = !!version
 
   const teachingLanguageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? TeachingLanguage.fi : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? TeachingLanguage.FI : teachingLanguage
 
   const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`

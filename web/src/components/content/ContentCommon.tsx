@@ -152,14 +152,14 @@ export function ContentInstruction({
   instructionFi,
   instructionSv
 }: {
-  teachingLanguage: string
+  teachingLanguage: TeachingLanguage
   instructionFi: string
   instructionSv: string
 }) {
   return (
     <div className="mb-4 mt-3">
       <p className="text-sm font-semibold" key={teachingLanguage} data-testid={`instruction-${teachingLanguage}`}>
-        {teachingLanguage === 'fi' ? instructionFi : instructionSv}
+        {teachingLanguage === 'FI' ? instructionFi : instructionSv}
       </p>
     </div>
   )
@@ -200,7 +200,7 @@ export function ContentContent({
   contentFi: string | string[]
   contentSv: string | string[]
 }) {
-  const content = teachingLanguage === 'fi' ? contentFi : contentSv
+  const content = teachingLanguage === 'FI' ? contentFi : contentSv
 
   return <RenderContent content={content} teachingLanguage={teachingLanguage} />
 }

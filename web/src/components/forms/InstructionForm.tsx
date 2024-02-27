@@ -36,8 +36,6 @@ type InstructionFormProps = {
   action: ContentFormAction
 }
 
-const convertToLowerCase = (language: 'FI' | 'SV') => language.toLowerCase() as AttachmentLanguage
-
 function mapInstructionInAttachmentDataWithLanguage(
   attachmentIn: AttachmentDtoOut[],
   lang: AttachmentLanguage
@@ -45,7 +43,7 @@ function mapInstructionInAttachmentDataWithLanguage(
   const attachmentData = attachmentIn.map((attachment) => ({
     attachment,
     name: attachment?.name ?? '',
-    language: convertToLowerCase(attachment.language)
+    language: attachment.language
   }))
 
   return attachmentData.filter((it) => it.language === lang)
@@ -61,7 +59,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       ? `/:exam/:contentTypePluralFi/${action}`
       : `/:exam/:contentTypePluralFi/${action}/:id`
   const match = useMatch(matchUrl)
-  const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
+  const [activeTab, setActiveTab] = useState<TeachingLanguage>(TeachingLanguage.FI)
 
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
@@ -83,8 +81,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               const instruction = await fetchDataOrReload<InstructionDtoOut>(
                 `${ContentTypeSingularEn.INSTRUCTION}/${exam}/${id}`
               )
-              const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
-              const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
+              const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'FI')
+              const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'SV')
 
               setAttachmentDataFi(attachmentDataFi)
               setAttachmentDataSv(attachmentDataSv)
@@ -126,7 +124,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         .map(({ attachment, name, language }) => ({
           attachment,
           name,
-          language: language ?? 'fi'
+          language: language ?? 'FI'
         }))
 
       const toUpload: AttachmentData[] = combinedAttachmentData
@@ -134,7 +132,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         .map(({ file, name, language }) => ({
           file,
           name,
-          language: language ?? 'fi'
+          language: language ?? 'FI'
         }))
 
       return await createNewVersionInstruction<number>(Number(id), instruction, toUpdate, toUpload)
@@ -144,7 +142,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         .map(({ file, name, language }) => ({
           file: file!,
           name,
-          language: language ?? 'fi'
+          language: language ?? 'FI'
         }))
 
       return await createInstruction<{ id: number }>(instruction, findFilesFromAttachmentData).then((res) => res.id)
@@ -161,21 +159,21 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const attachLanguageToFiles = (attachmentFiles: AttachmentData[], language: AttachmentLanguage): AttachmentData[] =>
     attachmentFiles.map((attachment) => ({
       ...attachment,
-      language: language ?? 'fi'
+      language: language ?? 'FI'
     }))
 
   const handleNewAttachmentSelected = async (attachmentFiles: AttachmentData[], language?: AttachmentLanguage) => {
-    const dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'fi')
+    const dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'FI')
 
-    if (language === 'sv') {
+    if (language === 'SV') {
       setAttachmentDataSv((prev) => [...prev, ...dataToSet])
-    } else if (language === 'fi') {
+    } else if (language === 'FI') {
       setAttachmentDataFi((prev) => [...prev, ...dataToSet])
     }
   }
 
   const deleteFileByIndex = (index: number, language: AttachmentLanguage) => {
-    if (language === 'fi') {
+    if (language === 'FI') {
       setAttachmentDataFi(attachmentDataFi.filter((_, i) => i !== index))
     } else {
       setAttachmentDataSv(attachmentDataSv.filter((_, i) => i !== index))
@@ -183,9 +181,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   }
 
   const handleAttachmentNameChange = (newName: string, index: number, language: AttachmentLanguage) => {
-    const isSv = language === 'sv'
+    const isSv = language === 'SV'
 
-    const updatedAttachmentData = isSv ? [...attachmentDataSv] : [...attachmentDataFi]
+    const updatedAttachmentData = isSv ? attachmentDataSv : attachmentDataFi
     updatedAttachmentData[index].name = newName
     isSv ? setAttachmentDataSv(updatedAttachmentData) : setAttachmentDataFi(updatedAttachmentData)
   }
@@ -200,9 +198,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const hasSvError = nameSvError || contentSvError || instructionNameError
 
   const handleContentChange = (newContent: string) => {
-    if (activeTab === 'fi') {
+    if (activeTab === 'FI') {
       setValue('contentFi', newContent, { shouldDirty: true })
-    } else if (activeTab === 'sv') {
+    } else if (activeTab === 'SV') {
       setValue('contentSv', newContent, { shouldDirty: true })
     }
   }
@@ -237,7 +235,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             />
           </div>
 
-          <div className={`${activeTab === TeachingLanguage.fi ? '' : 'hidden'}`}>
+          <div className={`${activeTab === TeachingLanguage.FI ? '' : 'hidden'}`}>
             <TextInput
               id="nameFi"
               register={register}
@@ -271,15 +269,15 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <AttachmentSelector
               name="attachmentFi"
               contentType={ContentType.INSTRUCTION}
-              language="fi"
-              attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
+              language={TeachingLanguage.FI}
+              attachmentData={attachmentDataFi.filter(({ language }) => language === TeachingLanguage.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               handleNewAttachmentName={handleAttachmentNameChange}
               deleteFileByIndex={deleteFileByIndex}
             />
           </div>
 
-          <div className={`${activeTab === TeachingLanguage.sv ? '' : 'hidden'}`}>
+          <div className={`${activeTab === TeachingLanguage.SV ? '' : 'hidden'}`}>
             <TextInput
               id="nameSv"
               register={register}
@@ -313,7 +311,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <AttachmentSelector
               name="attachmentSv"
               contentType={ContentType.INSTRUCTION}
-              language="sv"
+              language={TeachingLanguage.SV}
               attachmentData={attachmentDataSv}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               handleNewAttachmentName={handleAttachmentNameChange}

@@ -27,7 +27,7 @@ export const getContentName = (data: ContentBaseOut, teachingLanguage: TeachingL
   if (isSukoAssignment(data) || isSukoCertificate(data)) {
     return data.nameFi
   } else if (isAssignment(data) || isInstruction(data) || isCertificate(data)) {
-    return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
+    return teachingLanguage === 'FI' ? data.nameFi : data.nameSv
   } else {
     throw Error(`Data has unknown type: ${typeof data}`)
   }

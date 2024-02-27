@@ -27,15 +27,15 @@ export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
 
 const placeholderValuesNotInUse: LudosContextValue = {
   koodistos: {
-    [TeachingLanguage.fi]: defaultEmptyKoodistoMap,
-    [TeachingLanguage.sv]: defaultEmptyKoodistoMap
+    [TeachingLanguage.FI]: defaultEmptyKoodistoMap,
+    [TeachingLanguage.SV]: defaultEmptyKoodistoMap
   },
   setKoodistos: () => {},
   userDetails: undefined,
   setUserDetails: () => {},
   userFavoriteAssignmentCount: -1,
   setUserFavoriteAssignmentCount: () => {},
-  teachingLanguage: defaultLanguage,
+  teachingLanguage: TeachingLanguage.FI,
   setTeachingLanguage: () => {},
   uiLanguage: defaultLanguage,
   setUiLanguage: () => {}

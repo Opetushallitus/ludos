@@ -23,14 +23,14 @@ export class AssignmentContentListModel extends ContentListModel {
   async checkListAfterFiltering(expectedAssignmentTitleNumbers: number[]) {
     await expect(
       this.page.getByRole('link', {
-        name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.fi, this.exam)
+        name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], TeachingLanguage.FI, this.exam)
       })
     ).toBeVisible()
     const assignments = await this.page.getByTestId('card-list').locator('li').all()
     const namePromises = assignments.map((listItem) => listItem.getByTestId('card-title').innerText())
     const names = await Promise.all(namePromises)
     expect(names).toEqual(
-      expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.fi, this.exam))
+      expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, TeachingLanguage.FI, this.exam))
     )
   }
 }
