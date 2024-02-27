@@ -10,22 +10,13 @@ export type KoodiDtoOut = {
 }
 
 const defaultLabel = '*'
-
-function getTeachingLanguage(uiLanguage: Language, teachingLanguageProvided?: Language): Language {
-  if (teachingLanguageProvided) {
-    return teachingLanguageProvided
-  } else {
-    return uiLanguage
-  }
-}
-
-export function useKoodisto(teachingLanguageProvided?: Language) {
+export function useKoodisto(language?: Language) {
   const { koodistos, uiLanguage } = useContext(LudosContext)
 
-  const teachingLanguage = getTeachingLanguage(uiLanguage, teachingLanguageProvided)
+  const koodistoLanguage = language || uiLanguage
 
   function getKoodiLabel(koodiArvo: string, koodistoName: KoodistoName) {
-    return koodi(koodiArvo, koodistos[teachingLanguage][koodistoName])?.nimi ?? defaultLabel
+    return koodi(koodiArvo, koodistos[koodistoLanguage][koodistoName])?.nimi ?? defaultLabel
   }
 
   function getKoodisLabel(koodiArvo: string[], koodistoName: KoodistoName) {
@@ -53,7 +44,7 @@ export function useKoodisto(teachingLanguageProvided?: Language) {
   }
 
   return {
-    koodistos: koodistos[teachingLanguage],
+    koodistos: koodistos[koodistoLanguage],
     getKoodiLabel,
     getKoodisLabel,
     getOppimaaraLabel,
