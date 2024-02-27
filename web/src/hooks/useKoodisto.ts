@@ -42,11 +42,22 @@ export function useKoodisto(teachingLanguageProvided?: Language) {
     )
   }
 
+  function sortKooditAlphabetically(koodit: KoodiDtoOut[]) {
+    const locale = uiLanguage === Language.FI ? 'fi-FI' : 'sv-SE'
+
+    return koodit.sort((a, b) =>
+      a.nimi.localeCompare(b.nimi, locale, {
+        sensitivity: 'base'
+      })
+    )
+  }
+
   return {
     koodistos: koodistos[teachingLanguage],
     getKoodiLabel,
     getKoodisLabel,
-    getOppimaaraLabel
+    getOppimaaraLabel,
+    sortKooditAlphabetically
   }
 }
 
@@ -74,15 +85,5 @@ export function koodisOrDefaultLabel(koodiArvos: string[], koodisto: Record<stri
   return (koodiArvos || []).map((koodiArvo) => koodiOrDefaultLabel(koodiArvo, koodisto))
 }
 
-export const sortKooditAlphabetically = (koodit: KoodiDtoOut[]) => {
-  const language = document.documentElement.lang
-  const locale = language === BusinessLanguage.fi ? 'fi-FI' : 'sv-SE'
-
-  return koodit.sort((a, b) =>
-    a.nimi.localeCompare(b.nimi, locale, {
-      sensitivity: 'base'
-    })
-  )
-}
 export const sortKooditByArvo = (koodit: Record<string, KoodiDtoOut>): KoodiDtoOut[] =>
   Object.values(koodit).sort((a, b) => a.koodiArvo.localeCompare(b.koodiArvo))

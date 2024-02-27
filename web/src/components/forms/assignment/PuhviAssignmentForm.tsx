@@ -3,7 +3,7 @@ import { FormProvider } from 'react-hook-form'
 import { PuhviAssignmentFormType } from '../schemas/assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { ContentFormAction, Exam } from '../../../types'
-import { sortKooditAlphabetically, useKoodisto } from '../../../hooks/useKoodisto'
+import { useKoodisto } from '../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
 import { FormHeader } from '../formCommon/FormHeader'
 import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
@@ -21,7 +21,7 @@ type PuhviAssignmentFormProps = {
 
 export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) => {
   const { t } = useTranslation()
-  const { koodistos } = useKoodisto()
+  const { koodistos, sortKooditAlphabetically } = useKoodisto()
 
   const {
     methods,

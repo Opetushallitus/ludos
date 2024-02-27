@@ -1,13 +1,13 @@
 import { FieldLabel } from '../../FieldLabel'
 import { LudosSelect } from '../../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
-import { sortKooditAlphabetically, useKoodisto } from '../../../hooks/useKoodisto'
+import { useKoodisto } from '../../../hooks/useKoodisto'
 import { useFormContext } from 'react-hook-form'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 export const FormAineDropdown = () => {
   const { t } = useLudosTranslation()
-  const { koodistos } = useKoodisto()
+  const { koodistos, sortKooditAlphabetically } = useKoodisto()
   const {
     watch,
     setValue,

@@ -21,7 +21,7 @@ import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../../ludosSelect/helpers'
-import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
+import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
 import { useCallback, useContext } from 'react'
 import { MultiValue } from 'react-select'
 import { LudosContext } from '../../../../contexts/LudosContext'
@@ -47,7 +47,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
   const { isYllapitaja } = useUserDetails()
   const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
-  const { koodistos } = useKoodisto(teachingLanguage)
+  const { koodistos, sortKooditAlphabetically } = useKoodisto(teachingLanguage)
 
   const contentType = ContentType.INSTRUCTION
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
