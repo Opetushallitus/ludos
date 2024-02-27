@@ -15,7 +15,7 @@ import {
   fillAssignmentType,
   fillLdAssignmentForm
 } from '../../examHelpers/assignmentHelpers'
-import { ContentType, Exam, oppimaaraId, TeachingLanguage } from 'web/src/types'
+import { ContentType, Exam, Language, oppimaaraId } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   isLdAssignmentFormType,
@@ -173,7 +173,7 @@ async function fillAndCheckVisibility(
   }
 }
 
-const toggleTabTo = (form: AssignmentFormModel) => async (to: TeachingLanguage) =>
+const toggleTabTo = (form: AssignmentFormModel) => async (to: Language) =>
   to === 'FI' ? form.tabFi.click() : form.tabSv.click()
 
 async function testNameField(form: AssignmentFormModel) {

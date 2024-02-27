@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import { AttachmentDtoOut, ContentType, Exam, KoodistoName, PublishState, TeachingLanguage } from 'web/src/types'
+import { AttachmentDtoOut, ContentType, Exam, KoodistoName, Language, PublishState } from 'web/src/types'
 import {
   assertCreatedInstruction,
   assertUpdatedInstruction,
@@ -145,14 +145,14 @@ export class InstructionFormModel extends FormModel {
   ) {
     await this.navigateToInstructionExamPage()
 
-    await setTeachingLanguage(this.page, TeachingLanguage.SV)
+    await setTeachingLanguage(this.page, Language.SV)
     const instructionCard = this.page.getByTestId(`instruction-${instructionId}`)
 
     await expect(instructionCard).toBeVisible()
 
     if (this.exam === Exam.LD) {
       await expect(instructionCard.getByTestId('card-title')).toHaveText(
-        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', TeachingLanguage.SV)
+        await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', Language.SV)
       )
     } else {
       await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)

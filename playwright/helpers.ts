@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Locator, Page, test as importedTest } from '@playwright/test'
-import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Language } from 'web/src/types'
 import { promises as fsPromises } from 'fs'
 import path from 'path'
 
@@ -76,7 +76,7 @@ async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
 export async function koodiNimi(
   koodistoName: KoodistoName,
   koodiArvo: string,
-  language: TeachingLanguage = TeachingLanguage.FI
+  language: Language = Language.FI
 ): Promise<string> {
   let koodisto = koodistoCache[koodistoName]
   if (!koodisto) {
@@ -113,7 +113,7 @@ export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: 
   await page.getByTestId(`${dropdownTestId}-option-${optionId}`).click()
 }
 
-export async function setTeachingLanguage(page: Page, teachingLanguage: TeachingLanguage) {
+export async function setTeachingLanguage(page: Page, teachingLanguage: Language) {
   await setSingleSelectDropdownOption(page, 'teachingLanguageDropdown', teachingLanguage)
 }
 
@@ -138,7 +138,7 @@ export async function assertInputValues(page: Page, inputName: string, expectedV
 export async function koodiLabel(
   koodistoName: KoodistoName,
   koodiArvos: string | string[],
-  teachingLanguage: TeachingLanguage = TeachingLanguage.FI
+  teachingLanguage: Language = Language.FI
 ): Promise<string> {
   if (typeof koodiArvos === 'string') {
     return koodiNimi(koodistoName, koodiArvos, teachingLanguage)

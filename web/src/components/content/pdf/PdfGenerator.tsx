@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react'
 import { usePDF } from '@react-pdf/renderer'
 import AssignmentPdf from './AssignmentPdf'
-import { AssignmentOut, TeachingLanguage } from '../../../types'
+import { AssignmentOut, Language } from '../../../types'
 import { getContentName } from '../../../utils/assignmentUtils'
 import { useTranslation } from 'react-i18next'
 import { useNotification } from '../../../contexts/NotificationContext'
 
 type LazyPdfGeneratorProps = {
   assignmentOut: AssignmentOut
-  language: TeachingLanguage
+  language: Language
   onGenerated: (blob: Blob) => void
 }
 

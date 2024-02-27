@@ -6,7 +6,7 @@ import {
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../helpers'
-import { Exam, KoodistoName, Oppimaara, oppimaaraId, PublishState, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   CommonAssignmentFormType,
@@ -285,7 +285,7 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
   }
 
   if (expectedFormData.exam !== Exam.SUKO) {
-    await setTeachingLanguage(page, TeachingLanguage.SV)
+    await setTeachingLanguage(page, Language.SV)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
     await expect(page.getByTestId('instruction-SV')).toHaveText(expectedFormData.instructionSv)
@@ -296,7 +296,7 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
       }
     }
 
-    await setTeachingLanguage(page, TeachingLanguage.FI)
+    await setTeachingLanguage(page, Language.FI)
   }
 }
 export async function assertSukoAssignmentContentPage(page: Page, expectedFormData: SukoAssignmentFormType) {
@@ -334,7 +334,7 @@ export async function assertPuhviAssignmentContentPage(page: Page, expectedFormD
   )
 }
 
-export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
+export const filterTestAssignmentName = (number: number, teachingLanguage: Language, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
 export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignmentIn: any) {

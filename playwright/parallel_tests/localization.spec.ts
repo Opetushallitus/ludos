@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 import { login, Role, setTeachingLanguage } from '../helpers'
 import { LayoutModel } from '../models/LayoutModel'
-import { TeachingLanguage } from 'web/src/types'
+import { Language } from 'web/src/types'
 
 async function assertUiLanguage(page: Page, language: string) {
   await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === 'fi' ? 'Etusivu' : 'Hem')
@@ -12,7 +12,7 @@ async function navigateToPuhviInstructionList(page: Page) {
   await page.getByTestId('/puhvi').getByTestId('nav-box-ohjeet').click()
 }
 
-async function assertTeachingLanguageSelect(page: Page, language: TeachingLanguage) {
+async function assertTeachingLanguageSelect(page: Page, language: Language) {
   await expect(page.locator('input[name="teachingLanguageDropdown"]')).toHaveValue(language)
 }
 

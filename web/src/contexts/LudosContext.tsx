@@ -1,12 +1,12 @@
 import { createContext } from 'react'
-import { KoodistoName, TeachingLanguage, UserDetails } from '../types'
+import { KoodistoName, Language, UserDetails } from '../types'
 import { KoodiDtoOut } from '../hooks/useKoodisto'
 
 export const defaultLanguage = 'fi'
 export const ludosUILanguageKey = 'ludosUILanguage'
 export const ludosTeachingLanguageKey = 'ludosTeachingLanguage'
 
-export type LanguageKoodistoMap = Record<TeachingLanguage, Record<KoodistoName, Record<string, KoodiDtoOut>>>
+export type LanguageKoodistoMap = Record<Language, Record<KoodistoName, Record<string, KoodiDtoOut>>>
 export type KoodistoMap = Record<KoodistoName, Record<string, KoodiDtoOut>>
 interface LudosContextValue {
   koodistos: LanguageKoodistoMap
@@ -15,8 +15,8 @@ interface LudosContextValue {
   setUserDetails: (userDetails: UserDetails) => void
   userFavoriteAssignmentCount: number
   setUserFavoriteAssignmentCount: (count: number) => void
-  teachingLanguage: TeachingLanguage
-  setTeachingLanguage: (lang: TeachingLanguage) => void
+  teachingLanguage: Language
+  setTeachingLanguage: (lang: Language) => void
   uiLanguage: string
   setUiLanguage: (lang: string) => void
 }
@@ -27,15 +27,15 @@ export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
 
 const placeholderValuesNotInUse: LudosContextValue = {
   koodistos: {
-    [TeachingLanguage.FI]: defaultEmptyKoodistoMap,
-    [TeachingLanguage.SV]: defaultEmptyKoodistoMap
+    [Language.FI]: defaultEmptyKoodistoMap,
+    [Language.SV]: defaultEmptyKoodistoMap
   },
   setKoodistos: () => {},
   userDetails: undefined,
   setUserDetails: () => {},
   userFavoriteAssignmentCount: -1,
   setUserFavoriteAssignmentCount: () => {},
-  teachingLanguage: TeachingLanguage.FI,
+  teachingLanguage: Language.FI,
   setTeachingLanguage: () => {},
   uiLanguage: defaultLanguage,
   setUiLanguage: () => {}

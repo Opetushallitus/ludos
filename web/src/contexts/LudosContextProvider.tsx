@@ -8,7 +8,7 @@ import {
   ludosTeachingLanguageKey,
   ludosUILanguageKey
 } from './LudosContext'
-import { BusinessLanguage, Roles, TeachingLanguage, UserDetails } from '../types'
+import { BusinessLanguage, Language, Roles, UserDetails } from '../types'
 import { getKoodistos, getUserDetails, getUserFavoriteCount } from '../request'
 
 const unauthorizedUserDetails: UserDetails = {
@@ -30,11 +30,11 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   })
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
   const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(-1)
-  const [teachingLanguage, setTeachingLanguageState] = useState<TeachingLanguage>(
-    (localStorage.getItem(ludosTeachingLanguageKey) as TeachingLanguage | null) || TeachingLanguage.FI
+  const [teachingLanguage, setTeachingLanguageState] = useState<Language>(
+    (localStorage.getItem(ludosTeachingLanguageKey) as Language | null) || Language.FI
   )
 
-  const setTeachingLanguage = (lang: TeachingLanguage) => {
+  const setTeachingLanguage = (lang: Language) => {
     setTeachingLanguageState(lang)
     localStorage.setItem(ludosTeachingLanguageKey, lang)
   }
@@ -81,7 +81,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
 
           // for first time users set teaching language to be the same as business language
           if (!localStorage.getItem(ludosTeachingLanguageKey)) {
-            setTeachingLanguageState(validBusinessLanguageOrDefault.toUpperCase() as TeachingLanguage)
+            setTeachingLanguageState(validBusinessLanguageOrDefault.toUpperCase() as Language)
           }
 
           setUserDetails(userDetailsJson)

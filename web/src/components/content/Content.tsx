@@ -9,10 +9,10 @@ import {
   ContentTypePluralFi,
   ContentTypeSingularEn,
   Exam,
+  Language,
   isAssignment,
   isCertificate,
-  isInstruction,
-  TeachingLanguage
+  isInstruction
 } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { ContentHeader } from './ContentCommon'
@@ -56,7 +56,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const isVersionBrowser = !!version
 
   const teachingLanguageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? TeachingLanguage.FI : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? Language.FI : teachingLanguage
 
   const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`

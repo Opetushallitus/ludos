@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
-import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, PublishState, TeachingLanguage } from '../types'
+import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, Language, PublishState } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
 
 export type ContentAction = {
@@ -14,7 +14,7 @@ export const useLudosTranslation = () => {
   const translation = useTranslation()
   const { t } = translation
 
-  const LANGUAGE_OPTIONS: Record<TeachingLanguage, KoodiDtoOut> = {
+  const LANGUAGE_OPTIONS: Record<Language, KoodiDtoOut> = {
     FI: { nimi: t('language.suomi'), koodiArvo: 'FI' },
     SV: { nimi: t('language.ruotsi'), koodiArvo: 'SV' }
   }

@@ -3,7 +3,7 @@ import {
   isLdCertificate,
   isPuhviCertificate,
   isSukoCertificate,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
@@ -14,7 +14,7 @@ import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
-const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => {
+const getFileKey = (certificate: ContentBaseOut, language: Language) => {
   if (isSukoCertificate(certificate)) {
     return certificate.attachmentFi.fileKey
   } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {
@@ -25,7 +25,7 @@ const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => 
 
 type CertificateCardProps = {
   certificate: ContentBaseOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCardProps) => {

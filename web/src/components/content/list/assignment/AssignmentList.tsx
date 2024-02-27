@@ -8,7 +8,7 @@ import {
   emptyAssignmentFilterOptions,
   Exam,
   FavoriteIdsDtoOut,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
@@ -28,10 +28,10 @@ import { LudosContext } from '../../../../contexts/LudosContext'
 import { InfoBox } from '../../../InfoBox'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
-export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: TeachingLanguage) => {
-  if (teachingLanguage === TeachingLanguage.FI) {
+export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: Language) => {
+  if (teachingLanguage === Language.FI) {
     return data.nameFi !== ''
-  } else if (teachingLanguage === TeachingLanguage.SV) {
+  } else if (teachingLanguage === Language.SV) {
     return data.nameSv !== ''
   }
   return true

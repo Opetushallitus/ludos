@@ -6,7 +6,7 @@ import {
   isLdAssignment,
   isPuhviAssignment,
   isSukoAssignment,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { StateTag } from '../../../StateTag'
 import { useTranslation } from 'react-i18next'
@@ -21,7 +21,7 @@ import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { SetFavoriteFoldersModal } from '../../../modal/favoriteModal/SetFavoriteFoldersModal'
 
 type AssignmentCardProps = {
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
   assignmentCard: AssignmentCardOut
   favoriteIds: FavoriteIdsDtoOut | undefined
   favoriteIdsRefresh?: () => void
@@ -57,8 +57,7 @@ export const AssignmentCard = ({
             to={contentPagePath(assignmentCard.exam, ContentType.ASSIGNMENT, assignmentCard.id)}
             state={{ returnLocation }}
             data-testid="card-title">
-            {(teachingLanguage === TeachingLanguage.FI ? assignmentCard.nameFi : assignmentCard.nameSv) ||
-              t('form.nimeton')}
+            {(teachingLanguage === Language.FI ? assignmentCard.nameFi : assignmentCard.nameSv) || t('form.nimeton')}
           </InternalLink>
           {isYllapitaja && (
             <>
@@ -145,8 +144,7 @@ export const AssignmentCard = ({
           assignmentCard={assignmentCard}
           favoriteIds={favoriteIds}
           assignmentName={
-            (teachingLanguage === TeachingLanguage.FI ? assignmentCard.nameFi : assignmentCard.nameSv) ||
-            t('form.nimeton')
+            (teachingLanguage === Language.FI ? assignmentCard.nameFi : assignmentCard.nameSv) || t('form.nimeton')
           }
           onClose={() => setIsFavoriteModalOpen(false)}
           onSetFavoriteFoldersAction={async (data) => {

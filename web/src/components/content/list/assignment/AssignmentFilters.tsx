@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
-import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId, TeachingLanguage } from '../../../../types'
+import { AssignmentFilterOptions, Exam, Language, Oppimaara, oppimaaraFromId } from '../../../../types'
 import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
@@ -16,7 +16,7 @@ type AssignmentFiltersProps = {
   exam: Exam
   filterValues: FilterValues
   assignmentFilterOptions: AssignmentFilterOptions
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 function ensureTarkentamattomatPaaoppimaarasAreIncluded(oppimaaras: Oppimaara[]): Oppimaara[] {

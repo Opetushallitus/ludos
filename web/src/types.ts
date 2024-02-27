@@ -4,11 +4,11 @@ export const ContentFormAction = {
 } as const
 export type ContentFormAction = (typeof ContentFormAction)[keyof typeof ContentFormAction]
 
-export const TeachingLanguage = {
+export const Language = {
   FI: 'FI',
   SV: 'SV'
 } as const
-export type TeachingLanguage = (typeof TeachingLanguage)[keyof typeof TeachingLanguage]
+export type Language = (typeof Language)[keyof typeof Language]
 
 export const ContentOrder = {
   asc: 'asc',
@@ -282,7 +282,7 @@ export type FileDetails = Partial<AttachmentDtoOut> & {
   fileName: string
 }
 
-export type AttachmentLanguage = TeachingLanguage
+export type AttachmentLanguage = Language
 
 export type AttachmentData = {
   attachment?: AttachmentDtoOut

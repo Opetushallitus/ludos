@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test'
 import { assertSuccessNotification, createFilePathToFixtures, FormAction, setTeachingLanguage } from '../helpers'
-import { Exam, TeachingLanguage } from 'web/src/types'
+import { Exam, Language } from 'web/src/types'
 import { InstructionFormModel } from '../models/InstructionFormModel'
 import { LayoutModel } from '../models/LayoutModel'
 import * as fs from 'fs'
@@ -52,7 +52,7 @@ export async function updateAttachments(form: InstructionFormModel) {
   await form.submitButton.click()
   await assertSuccessNotification(form.page, 'form.notification.ohjeen-tallennus.onnistui')
 
-  await setTeachingLanguage(form.page, TeachingLanguage.FI)
+  await setTeachingLanguage(form.page, Language.FI)
   await expect(form.page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
   await expect(form.page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
 }
@@ -84,7 +84,7 @@ export async function assertCreatedInstruction(form: InstructionFormModel, actio
   await expect(page.getByRole('link', { name: `${attachmentNameFi} 2 open_in_new` })).toBeVisible()
 
   // change language and check that everything is correct
-  await setTeachingLanguage(page, TeachingLanguage.SV)
+  await setTeachingLanguage(page, Language.SV)
   await expect(formHeader).toHaveText(nameSv)
   exam !== Exam.LD && (await expect(page.getByText(shortDescriptionSv, { exact: true })).toBeVisible())
   await expect(page.getByText(contentSv, { exact: true })).toBeVisible()
@@ -93,10 +93,10 @@ export async function assertCreatedInstruction(form: InstructionFormModel, actio
 }
 
 export async function assertUpdatedInstruction(page: Page, newNameFi: string, newNameSv: string) {
-  await setTeachingLanguage(page, TeachingLanguage.FI)
+  await setTeachingLanguage(page, Language.FI)
   const updatedInstructionHeader = page.getByTestId('assignment-header')
   await expect(updatedInstructionHeader).toHaveText(newNameFi)
-  await setTeachingLanguage(page, TeachingLanguage.SV)
+  await setTeachingLanguage(page, Language.SV)
   const updatedInstructionHeaderSv = page.getByTestId('assignment-header')
   await expect(updatedInstructionHeaderSv).toHaveText(newNameSv)
 }

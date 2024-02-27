@@ -1,12 +1,12 @@
 import { Button } from './Button'
 import { useTranslation } from 'react-i18next'
-import { TeachingLanguage } from '../types'
+import { Language } from '../types'
 import { Icon } from './Icon'
 import { twMerge } from 'tailwind-merge'
 
 type LanguageTabsProps = {
   activeTab: string
-  setActiveTab: (opt: TeachingLanguage) => void
+  setActiveTab: (opt: Language) => void
   fiErrors?: boolean
   svErrors?: boolean
 }
@@ -17,7 +17,7 @@ export const LanguageTabs = ({ activeTab, setActiveTab, fiErrors, svErrors }: La
   return (
     <div className="text-gray-500 text-center text-base">
       <div className="flex flex-wrap border-b-4 border-gray-separator font-semibold" role="tablist">
-        {Object.values(TeachingLanguage).map((option, i) => (
+        {Object.values(Language).map((option, i) => (
           <Button
             variant="buttonGhost"
             role="tab"

@@ -1,4 +1,4 @@
-import { ContentFormAction, ContentType, Exam, PublishState, TeachingLanguage } from '../types'
+import { ContentFormAction, ContentType, Exam, Language, PublishState } from '../types'
 import { certificateSchemaByExam, CommonCertificateFormType } from '../components/forms/schemas/certificateSchema'
 import { useFormSubmission } from './useFormSubmission'
 import { DefaultValues, useForm } from 'react-hook-form'
@@ -21,7 +21,7 @@ export function useCertificateForm<T extends CommonCertificateFormType>(
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const [activeTab, setActiveTab] = useState<TeachingLanguage>(TeachingLanguage.FI)
+  const [activeTab, setActiveTab] = useState<Language>(Language.FI)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
   const { submitFormData, submitError } = useFormSubmission(exam, ContentType.CERTIFICATE, isUpdate)

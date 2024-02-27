@@ -2,13 +2,13 @@ import {
   AttachmentDtoOut,
   ContentBaseOut,
   ContentType,
+  Language,
   isLdCertificate,
   isPuhviCertificate,
   isSukoCertificate,
   LdCertificateDtoOut,
   PuhviCertificateDtoOut,
-  SukoCertificateDtoOut,
-  TeachingLanguage
+  SukoCertificateDtoOut
 } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../forms/formCommon/attachment/AttachmentFileDetailView'
@@ -18,7 +18,7 @@ import { useContext } from 'react'
 
 type CertificateContentProps = {
   certificate: ContentBaseOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 const SukoCertificateTitle = ({
@@ -41,7 +41,7 @@ const LdCertificateTitle = ({
 }: {
   certificate: LdCertificateDtoOut
   labelText: string
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }) => {
   const { getKoodiLabel } = useKoodisto(teachingLanguage)
 

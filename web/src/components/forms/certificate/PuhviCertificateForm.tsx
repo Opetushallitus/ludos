@@ -1,6 +1,6 @@
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { useNavigate } from 'react-router-dom'
-import { ContentFormAction, ContentType, Exam, PublishState, TeachingLanguage } from '../../../types'
+import { ContentFormAction, ContentType, Exam, Language, PublishState } from '../../../types'
 import { PuhviCertificateFormType } from '../schemas/certificateSchema'
 import { FormProvider } from 'react-hook-form'
 import { BlockNavigation } from '../../BlockNavigation'
@@ -78,7 +78,7 @@ export const PuhviCertificateForm = ({
             svErrors={!!hasSvError}
           />
 
-          <div className={`${activeTab === TeachingLanguage.FI ? '' : 'hidden'}`}>
+          <div className={`${activeTab === Language.FI ? '' : 'hidden'}`}>
             <TextInput id="nameFi" register={register} required error={nameErrorFi}>
               {t('form.todistuksennimi')}
             </TextInput>
@@ -97,13 +97,13 @@ export const PuhviCertificateForm = ({
               name="attachmentFi"
               error={attachmentErrorFi}
               contentType={ContentType.CERTIFICATE}
-              attachmentData={currentAttachment(TeachingLanguage.FI)}
+              attachmentData={currentAttachment(Language.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
-              language={TeachingLanguage.FI}
+              language={Language.FI}
             />
           </div>
 
-          <div className={`${activeTab === TeachingLanguage.SV ? '' : 'hidden'}`}>
+          <div className={`${activeTab === Language.SV ? '' : 'hidden'}`}>
             <TextInput id="nameSv" register={register} required error={nameErrorSv}>
               {t('form.todistuksennimi')}
             </TextInput>
@@ -122,9 +122,9 @@ export const PuhviCertificateForm = ({
               name="attachmentSv"
               error={attachmentErrorSv}
               contentType={ContentType.CERTIFICATE}
-              attachmentData={currentAttachment(TeachingLanguage.SV)}
+              attachmentData={currentAttachment(Language.SV)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
-              language={TeachingLanguage.SV}
+              language={Language.SV}
             />
           </div>
         </form>

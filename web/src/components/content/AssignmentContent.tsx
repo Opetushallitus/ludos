@@ -7,7 +7,7 @@ import {
   isLdAssignment,
   isPuhviAssignment,
   isSukoAssignment,
-  TeachingLanguage
+  Language
 } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
@@ -20,7 +20,7 @@ import { useFetch } from '../../hooks/useFetch'
 type AssignmentContentProps = {
   assignment: AssignmentOut
   exam: Exam
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
   isPresentation: boolean
 }
 
@@ -131,7 +131,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
           assignmentCard={assignment}
           favoriteIds={favoriteIds}
           assignmentName={
-            (teachingLanguage === TeachingLanguage.FI ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')
+            (teachingLanguage === Language.FI ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')
           }
           onClose={() => setIsFavoriteModalOpen(false)}
           onSetFavoriteFoldersAction={async (favoriteCards) => {

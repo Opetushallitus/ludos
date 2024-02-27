@@ -2,7 +2,7 @@ import { FormProvider } from 'react-hook-form'
 import { SukoCertificateFormType } from '../schemas/certificateSchema'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { useNavigate } from 'react-router-dom'
-import { ContentFormAction, ContentType, Exam, PublishState, TeachingLanguage } from '../../../types'
+import { ContentFormAction, ContentType, Exam, Language, PublishState } from '../../../types'
 import { BlockNavigation } from '../../BlockNavigation'
 import { FormHeader } from '../formCommon/FormHeader'
 import { TextInput } from '../../TextInput'
@@ -77,9 +77,9 @@ export const SukoCertificateForm = ({
               error={attachmentErrorFi}
               name="attachmentFi"
               contentType={ContentType.CERTIFICATE}
-              attachmentData={currentAttachment(TeachingLanguage.FI)}
+              attachmentData={currentAttachment(Language.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
-              language={TeachingLanguage.FI}
+              language={Language.FI}
             />
           </div>
         </form>

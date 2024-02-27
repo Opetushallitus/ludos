@@ -10,8 +10,8 @@ import {
   ContentTypeSingularEn,
   Exam,
   InstructionDtoOut,
-  PublishState,
-  TeachingLanguage
+  Language,
+  PublishState
 } from '../../types'
 import { createInstruction, createNewVersionInstruction, fetchDataOrReload } from '../../request'
 import { useContext, useState } from 'react'
@@ -59,7 +59,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       ? `/:exam/:contentTypePluralFi/${action}`
       : `/:exam/:contentTypePluralFi/${action}/:id`
   const match = useMatch(matchUrl)
-  const [activeTab, setActiveTab] = useState<TeachingLanguage>(TeachingLanguage.FI)
+  const [activeTab, setActiveTab] = useState<Language>(Language.FI)
 
   const [attachmentDataFi, setAttachmentDataFi] = useState<AttachmentData[]>([])
   const [attachmentDataSv, setAttachmentDataSv] = useState<AttachmentData[]>([])
@@ -235,7 +235,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             />
           </div>
 
-          <div className={`${activeTab === TeachingLanguage.FI ? '' : 'hidden'}`}>
+          <div className={`${activeTab === Language.FI ? '' : 'hidden'}`}>
             <TextInput
               id="nameFi"
               register={register}
@@ -269,15 +269,15 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <AttachmentSelector
               name="attachmentFi"
               contentType={ContentType.INSTRUCTION}
-              language={TeachingLanguage.FI}
-              attachmentData={attachmentDataFi.filter(({ language }) => language === TeachingLanguage.FI)}
+              language={Language.FI}
+              attachmentData={attachmentDataFi.filter(({ language }) => language === Language.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               handleNewAttachmentName={handleAttachmentNameChange}
               deleteFileByIndex={deleteFileByIndex}
             />
           </div>
 
-          <div className={`${activeTab === TeachingLanguage.SV ? '' : 'hidden'}`}>
+          <div className={`${activeTab === Language.SV ? '' : 'hidden'}`}>
             <TextInput
               id="nameSv"
               register={register}
@@ -311,7 +311,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <AttachmentSelector
               name="attachmentSv"
               contentType={ContentType.INSTRUCTION}
-              language={TeachingLanguage.SV}
+              language={Language.SV}
               attachmentData={attachmentDataSv}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
               handleNewAttachmentName={handleAttachmentNameChange}

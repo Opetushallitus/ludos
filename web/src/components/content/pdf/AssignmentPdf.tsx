@@ -1,4 +1,4 @@
-import { AssignmentOut, TeachingLanguage } from '../../../types'
+import { AssignmentOut, Language } from '../../../types'
 import { Document, Page, Text, View } from '@react-pdf/renderer'
 import { pdfStyles } from './pdfStyles'
 import { convertHtmlToReactPdf } from './HtmlToReactPdf'
@@ -6,7 +6,7 @@ import { convertHtmlToReactPdf } from './HtmlToReactPdf'
 type AssignmentPdfProps = {
   title: string
   assignment: AssignmentOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfProps) => {

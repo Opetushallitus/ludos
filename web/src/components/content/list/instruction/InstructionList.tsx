@@ -7,7 +7,7 @@ import {
   Exam,
   InstructionDtoOut,
   InstructionsOut,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { InstructionCard } from './InstructionCard'
@@ -29,10 +29,10 @@ import { InfoBox } from '../../../InfoBox'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
-const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
-  if (teachingLanguage === TeachingLanguage.FI) {
+const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: Language) => {
+  if (teachingLanguage === Language.FI) {
     return data.nameFi !== ''
-  } else if (teachingLanguage === TeachingLanguage.SV) {
+  } else if (teachingLanguage === Language.SV) {
     return data.nameSv !== ''
   }
   return true
