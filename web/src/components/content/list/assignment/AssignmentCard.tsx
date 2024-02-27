@@ -34,7 +34,7 @@ export const AssignmentCard = ({
   favoriteIdsRefresh
 }: AssignmentCardProps) => {
   const { t } = useTranslation()
-  const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto(teachingLanguage)
+  const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
