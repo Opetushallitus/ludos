@@ -5,11 +5,9 @@ import { ContentType, Exam } from 'web/src/types'
 export class InstructionContentModel extends ContentModel {
   constructor(
     readonly page: Page,
-    readonly exam: Exam,
-    readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-fi'),
-    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-sv')
+    readonly exam: Exam
   ) {
-    super(page, exam, ContentType.ohjeet)
+    super(page, exam, ContentType.INSTRUCTION)
   }
 
   async assertAttachments(expectedAttachmentNames: string[]) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useMatch } from 'react-router-dom'
-import { ContentFormAction, ContentTypeSingularEng, Exam } from '../../../types'
+import { ContentFormAction, ContentTypeSingularEn, Exam } from '../../../types'
 import { fetchDataOrReload } from '../../../request'
 import {
   AnyCertificateFormType,
@@ -38,7 +38,7 @@ const CertificateFormPage = ({ action }: CertificateFormProps) => {
       if (isUpdate && id) {
         try {
           setDefaultValues(
-            await fetchDataOrReload<AnyCertificateFormType>(`${ContentTypeSingularEng.todistukset}/${exam}/${id}`)
+            await fetchDataOrReload<AnyCertificateFormType>(`${ContentTypeSingularEn.CERTIFICATE}/${exam}/${id}`)
           )
         } catch (e) {
           setDefaultValueError(true)

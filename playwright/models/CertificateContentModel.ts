@@ -7,7 +7,7 @@ export class CertificateContentModel extends ContentModel {
     readonly page: Page,
     readonly exam: Exam
   ) {
-    super(page, exam, ContentType.todistukset)
+    super(page, exam, ContentType.CERTIFICATE)
   }
 
   async assertAttachments(attachmentNames: string[]) {

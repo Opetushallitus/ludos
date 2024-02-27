@@ -7,7 +7,7 @@ import {
   AttachmentLanguage,
   ContentFormAction,
   ContentType,
-  ContentTypeSingularEng,
+  ContentTypeSingularEn,
   Exam,
   InstructionDtoOut,
   PublishState,
@@ -57,7 +57,9 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const { state } = useLocation()
   const navigate = useNavigate()
   const matchUrl =
-    action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
+    action === ContentFormAction.uusi
+      ? `/:exam/:contentTypePluralFi/${action}`
+      : `/:exam/:contentTypePluralFi/${action}/:id`
   const match = useMatch(matchUrl)
   const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
 
@@ -71,7 +73,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const id = match!.params.id
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.ohjeet, isUpdate)
+  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.INSTRUCTION, isUpdate)
 
   const methods = useForm<InstructionFormType>({
     defaultValues:
@@ -79,7 +81,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         ? async () => {
             try {
               const instruction = await fetchDataOrReload<InstructionDtoOut>(
-                `${ContentTypeSingularEng.ohjeet}/${exam}/${id}`
+                `${ContentTypeSingularEn.INSTRUCTION}/${exam}/${id}`
               )
               const attachmentDataFi = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'fi')
               const attachmentDataSv = mapInstructionInAttachmentDataWithLanguage(instruction.attachments, 'sv')
@@ -268,7 +270,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
               name="attachmentFi"
-              contentType={ContentType.ohjeet}
+              contentType={ContentType.INSTRUCTION}
               language="fi"
               attachmentData={attachmentDataFi.filter(({ language }) => language === 'fi')}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -310,7 +312,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
               name="attachmentSv"
-              contentType={ContentType.ohjeet}
+              contentType={ContentType.INSTRUCTION}
               language="sv"
               attachmentData={attachmentDataSv}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -338,12 +340,12 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
       />
 
       <DeleteModal
-        modalTitle={lt.contentDeleteModalTitle[ContentType.ohjeet]}
+        modalTitle={lt.contentDeleteModalTitle.INSTRUCTION}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitInstruction(PublishState.Deleted)}
         onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText[ContentType.ohjeet](uiLanguage === 'fi' ? watchNameFi : watchNameSv)}</p>
+          <p>{lt.contentDeleteModalText.INSTRUCTION(uiLanguage === 'fi' ? watchNameFi : watchNameSv)}</p>
         </div>
       </DeleteModal>
     </div>

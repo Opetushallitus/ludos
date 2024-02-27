@@ -1,4 +1,4 @@
-import { ContentFormAction, ContentType, ContentTypeSingularEng, Exam, PublishState } from '../types'
+import { ContentFormAction, ContentType, ContentTypeSingularEn, Exam, PublishState } from '../types'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { createAssignment, fetchDataOrReload, updateAssignment } from '../request'
@@ -25,12 +25,12 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
 
   const isUpdate = action === ContentFormAction.muokkaus
 
-  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.koetehtavat, isUpdate)
+  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.ASSIGNMENT, isUpdate)
 
   async function defaultValues<T>(): Promise<T> {
     if (isUpdate && id) {
       try {
-        return await fetchDataOrReload(`${ContentTypeSingularEng.koetehtavat}/${exam}/${id}`)
+        return await fetchDataOrReload(`${ContentTypeSingularEn.ASSIGNMENT}/${exam}/${id}`)
       } catch (e) {
         setDefaultValueError(true)
         return assignmentDefaultValuesByExam[exam] as T

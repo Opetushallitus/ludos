@@ -32,18 +32,51 @@ export const Exam = {
 } as const
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
-export type BaseOut = {
-  id: number
+export interface ContentBase {
+  nameFi: string
+  nameSv: string
   exam: Exam
+  contentType: ContentType
   publishState: PublishState
+}
+
+export type ContentBaseOut = ContentBase & {
+  id: number
   createdAt: string
   updatedAt: string
+  authorOid: string
   updaterOid: string
   updaterName: string | null
   version: number
 }
 
-export type AssignmentOut = BaseOut & {
+export const isAssignment = (data: ContentBaseOut): data is AssignmentOut => data.contentType === ContentType.ASSIGNMENT
+export const isSukoAssignment = (assignment: ContentBaseOut): assignment is SukoAssignmentDtoOut =>
+  assignment.exam === Exam.SUKO && isAssignment(assignment)
+export const isLdAssignment = (data: ContentBaseOut): data is LdAssignmentDtoOut =>
+  data.exam === Exam.LD && isAssignment(data)
+export const isPuhviAssignment = (data: ContentBaseOut): data is PuhviAssignmentDtoOut =>
+  data.exam === Exam.PUHVI && isAssignment(data)
+
+export const isInstruction = (data: ContentBaseOut): data is SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut =>
+  data.contentType === ContentType.INSTRUCTION
+export const isLdInstruction = (data: ContentBaseOut): data is LdInstructionDtoOut =>
+  data.exam === Exam.LD && isInstruction(data)
+export const isSukoOrPuhviInstruction = (data: ContentBaseOut): data is SukoOrPuhviInstructionDtoOut =>
+  (data.exam === Exam.SUKO || data.exam === Exam.PUHVI) && isInstruction(data)
+
+export const isCertificate = (
+  data: ContentBaseOut
+): data is LdCertificateDtoOut | PuhviCertificateDtoOut | SukoCertificateDtoOut =>
+  data.contentType === ContentType.CERTIFICATE
+export const isSukoCertificate = (data: ContentBaseOut): data is SukoCertificateDtoOut =>
+  data.exam === Exam.SUKO && isCertificate(data)
+export const isLdCertificate = (data: ContentBaseOut): data is LdCertificateDtoOut =>
+  data.exam === Exam.LD && isCertificate(data)
+export const isPuhviCertificate = (data: ContentBaseOut): data is PuhviCertificateDtoOut =>
+  data.exam === Exam.PUHVI && isCertificate(data)
+
+export type AssignmentOut = ContentBaseOut & {
   nameFi: string
   nameSv: string
   contentFi: string[]
@@ -53,7 +86,7 @@ export type AssignmentOut = BaseOut & {
   laajaalainenOsaaminenKoodiArvos: string[]
 }
 
-export type AssignmentCardOut = BaseOut & {
+export type AssignmentCardOut = ContentBaseOut & {
   id: number
   exam: Exam
   publishState: PublishState
@@ -83,7 +116,7 @@ export const emptyAssignmentFilterOptions: AssignmentFilterOptions = {
   aine: null
 }
 
-export type ContentOut<T = BaseOut> = {
+export type ContentOut<T = ContentBaseOut> = {
   content: T[]
 }
 
@@ -120,7 +153,7 @@ export type PuhviAssignmentDtoOut = AssignmentCardOut & {
   lukuvuosiKoodiArvos: string[]
 }
 
-export type InstructionDtoOut = BaseOut & {
+export type InstructionDtoOut = ContentBaseOut & {
   nameFi: string
   nameSv: string
   contentFi: string
@@ -150,7 +183,7 @@ export type ImageDtoOut = {
   fileName: string
 }
 
-export type CertificateDtoOut = BaseOut & {
+export type CertificateDtoOut = ContentBaseOut & {
   nameFi: string
   nameSv: string
 }
@@ -174,26 +207,42 @@ export type PuhviCertificateDtoOut = CertificateDtoOut & {
 }
 
 export const ContentType = {
-  koetehtavat: 'koetehtavat',
-  ohjeet: 'ohjeet',
-  todistukset: 'todistukset'
+  ASSIGNMENT: 'ASSIGNMENT',
+  INSTRUCTION: 'INSTRUCTION',
+  CERTIFICATE: 'CERTIFICATE'
 } as const
 export type ContentType = (typeof ContentType)[keyof typeof ContentType]
+
 type ContentTypeMapping = {
-  [key in keyof typeof ContentType]: string
+  readonly [key in keyof typeof ContentType]: string
 }
 
-export const ContentTypeSingular: ContentTypeMapping = {
-  koetehtavat: 'koetehtava',
-  ohjeet: 'ohje',
-  todistukset: 'todistus'
-}
+export const ContentTypePluralFi: {
+  readonly [key in keyof typeof ContentType]: 'koetehtavat' | 'ohjeet' | 'todistukset'
+} = {
+  ASSIGNMENT: 'koetehtavat',
+  INSTRUCTION: 'ohjeet',
+  CERTIFICATE: 'todistukset'
+} as const
+export type ContentTypePluralFi = (typeof ContentTypePluralFi)[keyof typeof ContentTypePluralFi]
 
-export const ContentTypeSingularEng: ContentTypeMapping = {
-  koetehtavat: 'assignment',
-  ohjeet: 'instruction',
-  todistukset: 'certificate'
-}
+export const ContentTypeByContentTypePluralFi = {
+  [ContentTypePluralFi.ASSIGNMENT]: ContentType.ASSIGNMENT,
+  [ContentTypePluralFi.INSTRUCTION]: ContentType.INSTRUCTION,
+  [ContentTypePluralFi.CERTIFICATE]: ContentType.CERTIFICATE
+} as const
+
+export const ContentTypeSingularFi: ContentTypeMapping = {
+  ASSIGNMENT: 'koetehtava',
+  INSTRUCTION: 'ohje',
+  CERTIFICATE: 'todistus'
+} as const
+
+export const ContentTypeSingularEn: ContentTypeMapping = {
+  ASSIGNMENT: 'assignment',
+  INSTRUCTION: 'instruction',
+  CERTIFICATE: 'certificate'
+} as const
 
 export const Roles = {
   YLLAPITAJA: 'YLLAPITAJA',

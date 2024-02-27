@@ -44,14 +44,14 @@ export const useLudosTranslation = () => {
       [Exam.PUHVI]: t('header.puhvi')
     },
     buttonTextByContentType: {
-      [ContentType.koetehtavat]: t('button.koetehtavat'),
-      [ContentType.ohjeet]: t('button.ohjeet'),
-      [ContentType.todistukset]: t('button.todistukset')
+      [ContentType.ASSIGNMENT]: t('button.koetehtavat'),
+      [ContentType.INSTRUCTION]: t('button.ohjeet'),
+      [ContentType.CERTIFICATE]: t('button.todistukset')
     },
     tabTextByContentType: {
-      [ContentType.koetehtavat]: t('tab.koetehtavat'),
-      [ContentType.ohjeet]: t('tab.ohjeet'),
-      [ContentType.todistukset]: t('tab.todistukset')
+      [ContentType.ASSIGNMENT]: t('tab.koetehtavat'),
+      [ContentType.INSTRUCTION]: t('tab.ohjeet'),
+      [ContentType.CERTIFICATE]: t('tab.todistukset')
     },
     tabTextByExam: {
       [Exam.SUKO]: t('tab.suko'),
@@ -59,47 +59,47 @@ export const useLudosTranslation = () => {
       [Exam.PUHVI]: t('tab.puhvi')
     },
     returnTextByContentType: {
-      [ContentType.koetehtavat]: t('assignment.palaa'),
-      [ContentType.ohjeet]: t('instruction.palaa'),
-      [ContentType.todistukset]: t('certificate.palaa')
+      [ContentType.ASSIGNMENT]: t('assignment.palaa'),
+      [ContentType.INSTRUCTION]: t('instruction.palaa'),
+      [ContentType.CERTIFICATE]: t('certificate.palaa')
     },
     contentErrorMessage: {
-      [ContentType.koetehtavat]: t('error.koetehtavan-lataus-epaonnistui'),
-      [ContentType.ohjeet]: t('error.ohjeen-lataus-epaonnistui'),
-      [ContentType.todistukset]: t('error.todistuksen-lataus-epaonnistui')
+      [ContentType.ASSIGNMENT]: t('error.koetehtavan-lataus-epaonnistui'),
+      [ContentType.INSTRUCTION]: t('error.ohjeen-lataus-epaonnistui'),
+      [ContentType.CERTIFICATE]: t('error.todistuksen-lataus-epaonnistui')
     },
     contentListErrorMessage: {
-      [ContentType.koetehtavat]: t('error.koetehtavien-lataus-epaonnistui'),
-      [ContentType.ohjeet]: t('error.ohjeiden-lataus-epaonnistui'),
-      [ContentType.todistukset]: t('error.todistusten-lataus-epaonnistui')
+      [ContentType.ASSIGNMENT]: t('error.koetehtavien-lataus-epaonnistui'),
+      [ContentType.INSTRUCTION]: t('error.ohjeiden-lataus-epaonnistui'),
+      [ContentType.CERTIFICATE]: t('error.todistusten-lataus-epaonnistui')
     },
     contentDeleteModalTitle: {
-      [ContentType.koetehtavat]: t('form.assignment.delete-modal.title'),
-      [ContentType.ohjeet]: t('form.instruction.delete-modal.title'),
-      [ContentType.todistukset]: t('form.certificate.delete-modal.title')
+      [ContentType.ASSIGNMENT]: t('form.assignment.delete-modal.title'),
+      [ContentType.INSTRUCTION]: t('form.instruction.delete-modal.title'),
+      [ContentType.CERTIFICATE]: t('form.certificate.delete-modal.title')
     },
     contentDeleteModalText: {
-      [ContentType.koetehtavat]: (tehtavanNimi: string) => t('form.assignment.delete-modal.text', { tehtavanNimi }),
-      [ContentType.ohjeet]: (ohjeenNimi: string) => t('form.instruction.delete-modal.text', { ohjeenNimi }),
-      [ContentType.todistukset]: (todistuksenNimi: string) =>
+      [ContentType.ASSIGNMENT]: (tehtavanNimi: string) => t('form.assignment.delete-modal.text', { tehtavanNimi }),
+      [ContentType.INSTRUCTION]: (ohjeenNimi: string) => t('form.instruction.delete-modal.text', { ohjeenNimi }),
+      [ContentType.CERTIFICATE]: (todistuksenNimi: string) =>
         t('form.certificate.delete-modal.text', { todistuksenNimi })
     },
     contentCreateSuccessNotification: {
-      [ContentType.koetehtavat]: {
+      [ContentType.ASSIGNMENT]: {
         [PublishState.Published]: t('form.notification.tehtavan-tallennus.julkaisu-onnistui'),
         [PublishState.Draft]: t('form.notification.tehtavan-tallennus.luonnos-onnistui')
       },
-      [ContentType.ohjeet]: {
+      [ContentType.INSTRUCTION]: {
         [PublishState.Published]: t('form.notification.ohjeen-tallennus.julkaisu-onnistui'),
         [PublishState.Draft]: t('form.notification.ohjeen-tallennus.luonnos-onnistui')
       },
-      [ContentType.todistukset]: {
+      [ContentType.CERTIFICATE]: {
         [PublishState.Published]: t('form.notification.todistuksen-tallennus.julkaisu-onnistui'),
         [PublishState.Draft]: t('form.notification.todistuksen-tallennus.luonnos-onnistui')
       }
     },
     contentUpdateSuccessNotification: {
-      [ContentType.koetehtavat]: {
+      [ContentType.ASSIGNMENT]: {
         [PublishState.Published]: {
           [PublishState.Published]: t('form.notification.tehtavan-tallennus.onnistui'),
           [PublishState.Draft]: t('form.notification.tehtavan-tallennus.palautettu-luonnostilaan'),
@@ -111,7 +111,7 @@ export const useLudosTranslation = () => {
           [PublishState.Deleted]: t('form.notification.tehtavan-poisto.onnistui')
         }
       },
-      [ContentType.ohjeet]: {
+      [ContentType.INSTRUCTION]: {
         [PublishState.Published]: {
           [PublishState.Published]: t('form.notification.ohjeen-tallennus.onnistui'),
           [PublishState.Draft]: t('form.notification.ohjeen-tallennus.palautettu-luonnostilaan'),
@@ -123,7 +123,7 @@ export const useLudosTranslation = () => {
           [PublishState.Deleted]: t('form.notification.ohjeen-poisto.onnistui')
         }
       },
-      [ContentType.todistukset]: {
+      [ContentType.CERTIFICATE]: {
         [PublishState.Published]: {
           [PublishState.Published]: t('form.notification.todistuksen-tallennus.onnistui'),
           [PublishState.Draft]: t('form.notification.todistuksen-tallennus.palautettu-luonnostilaan'),
@@ -137,9 +137,9 @@ export const useLudosTranslation = () => {
       }
     },
     contentPageLanguageDropdownLabel: {
-      [ContentType.koetehtavat]: t('filter.koetehtavat-kieli'),
-      [ContentType.ohjeet]: t('filter.ohjeet-kieli'),
-      [ContentType.todistukset]: t('filter.todistukset-kieli')
+      [ContentType.ASSIGNMENT]: t('filter.koetehtavat-kieli'),
+      [ContentType.INSTRUCTION]: t('filter.ohjeet-kieli'),
+      [ContentType.CERTIFICATE]: t('filter.todistukset-kieli')
     },
     tiptapImageSizeOptions: {
       original: t('file.koko.alkuperainen'),
@@ -151,14 +151,14 @@ export const useLudosTranslation = () => {
       center: t('file.asemointi.keskitetty')
     },
     formSubmitErrorNotificationMessage: {
-      [ContentType.koetehtavat]: t('form.notification.tehtavan-tallennus.epaonnistui'),
-      [ContentType.ohjeet]: t('form.notification.ohjeen-tallennus.epaonnistui'),
-      [ContentType.todistukset]: t('form.notification.todistuksen-tallennus.epaonnistui')
+      [ContentType.ASSIGNMENT]: t('form.notification.tehtavan-tallennus.epaonnistui'),
+      [ContentType.INSTRUCTION]: t('form.notification.ohjeen-tallennus.epaonnistui'),
+      [ContentType.CERTIFICATE]: t('form.notification.todistuksen-tallennus.epaonnistui')
     },
     formDeleteErrorNotificationMessage: {
-      [ContentType.koetehtavat]: t('form.notification.tehtavan-poisto.epaonnistui'),
-      [ContentType.ohjeet]: t('form.notification.ohjeen-poisto.epaonnistui'),
-      [ContentType.todistukset]: t('form.notification.todistuksen-poisto.epaonnistui')
+      [ContentType.ASSIGNMENT]: t('form.notification.tehtavan-poisto.epaonnistui'),
+      [ContentType.INSTRUCTION]: t('form.notification.ohjeen-poisto.epaonnistui'),
+      [ContentType.CERTIFICATE]: t('form.notification.todistuksen-poisto.epaonnistui')
     },
     favoritePageNoContentMessage: {
       [Exam.SUKO]: t('favorite.suko.ei-suosikkitehtavia'),

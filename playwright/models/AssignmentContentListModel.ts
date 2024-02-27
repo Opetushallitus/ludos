@@ -13,7 +13,7 @@ export class AssignmentContentListModel extends ContentListModel {
     readonly previousPageButton = page.getByTestId('previous-page'),
     readonly nextPageButton = page.getByTestId('next-page')
   ) {
-    super(page, exam, ContentType.koetehtavat)
+    super(page, exam, ContentType.ASSIGNMENT)
   }
 
   async setOrder(direction: 'asc' | 'desc') {

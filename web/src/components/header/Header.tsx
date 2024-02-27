@@ -27,19 +27,19 @@ export const Header = () => {
       key: `${sukoKey}`,
       localizationText: t('header.suko'),
       path: examPath(Exam.SUKO),
-      navigateTo: contentListPath(Exam.SUKO, ContentType.koetehtavat)
+      navigateTo: contentListPath(Exam.SUKO, ContentType.ASSIGNMENT)
     },
     {
       key: `${ldKey}`,
       localizationText: t('header.ld'),
       path: examPath(Exam.LD),
-      navigateTo: contentListPath(Exam.LD, ContentType.koetehtavat)
+      navigateTo: contentListPath(Exam.LD, ContentType.ASSIGNMENT)
     },
     {
       key: `${puhviKey}`,
       localizationText: t('header.puhvi'),
       path: examPath(Exam.PUHVI),
-      navigateTo: contentListPath(Exam.PUHVI, ContentType.koetehtavat)
+      navigateTo: contentListPath(Exam.PUHVI, ContentType.ASSIGNMENT)
     }
   ]
   if (isMobile) {

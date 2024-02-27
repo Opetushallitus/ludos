@@ -1,4 +1,4 @@
-import { InstructionDtoOut, TeachingLanguage } from '../../../../types'
+import { InstructionDtoOut, isLdInstruction, isSukoOrPuhviInstruction, TeachingLanguage } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next'
 
 import { muokkausKey } from '../../../LudosRoutes'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
-import { isLdInstruction, isSukoOrPuhviInstruction } from '../../../../utils/instructionUtils'
 
 type InstructionCardProps = {
   teachingLanguage: TeachingLanguage

@@ -130,7 +130,7 @@ async function deleteAssignment(form: AssignmentFormModel, assignmentId: number)
   // expect not to find the deleted assignment from list
   await expect(page.getByTestId(`assignment-${assignmentId}`)).toBeHidden()
 
-  await form.goToContentPage(ContentType.koetehtavat, assignmentId)
+  await form.goToContentPage(ContentType.ASSIGNMENT, assignmentId)
   await expect(page.getByText('404', { exact: true })).toBeVisible()
 }
 

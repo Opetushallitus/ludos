@@ -1,15 +1,17 @@
 import {
   AssignmentOut,
   ContentType,
-  ContentTypeSingularEng,
+  ContentTypeSingularEn,
   Exam,
   FavoriteIdsDtoOut,
+  isLdAssignment,
+  isPuhviAssignment,
+  isSukoAssignment,
   TeachingLanguage
 } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../utils/assignmentUtils'
 import { useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
@@ -28,7 +30,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
   const { data: favoriteIds, refresh: refreshFavoriteIds } = useFetch<FavoriteIdsDtoOut>(
-    `${ContentTypeSingularEng[ContentType.koetehtavat]}/favorites/${exam.toLocaleUpperCase()}/${assignment.id}`
+    `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}/${assignment.id}`
   )
 
   const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
@@ -102,7 +104,7 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
             pdfData={{
               baseOut: assignment,
               language: teachingLanguage,
-              contentType: ContentType.koetehtavat
+              contentType: ContentType.ASSIGNMENT
             }}
             disabled={!favoriteIds}
           />

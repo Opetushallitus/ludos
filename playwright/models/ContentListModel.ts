@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test'
-import { ContentType, Exam } from 'web/src/types'
+import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { setSingleSelectDropdownOption } from '../helpers'
 import { ContentTypeTabModel } from './ContentTypeTabModel'
 import { BaseModel } from './BaseModel'
@@ -18,7 +18,7 @@ export class ContentListModel extends BaseModel {
   async goto() {
     await this.page.getByTestId(`nav-link-${this.exam.toLowerCase()}`).click()
     await expect(this.page.getByTestId(`page-heading-${this.exam.toLowerCase()}`)).toBeVisible()
-    await this.page.getByTestId(`tab-${this.contentType}`).click()
+    await this.page.getByTestId(`tab-${ContentTypePluralFi[this.contentType]}`).click()
     await expect(this.contentTypeTabs.tab(this.contentType)).toHaveAttribute('aria-current')
   }
 

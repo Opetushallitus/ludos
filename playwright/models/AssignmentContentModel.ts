@@ -9,7 +9,7 @@ export class AssignmentContentModel extends ContentModel {
     readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-fi'),
     readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-sv')
   ) {
-    super(page, exam, ContentType.koetehtavat)
+    super(page, exam, ContentType.ASSIGNMENT)
   }
 
   async assertAttachments(attachmentNames: string[]): Promise<void> {

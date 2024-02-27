@@ -24,7 +24,7 @@ export function useCertificateForm<T extends CommonCertificateFormType>(
   const [activeTab, setActiveTab] = useState<TeachingLanguage>('fi')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.todistukset, isUpdate)
+  const { submitFormData, submitError } = useFormSubmission(exam, ContentType.CERTIFICATE, isUpdate)
 
   const methods = useForm<T>({
     defaultValues: defaultValues as DefaultValues<T>,
@@ -61,7 +61,7 @@ export function useCertificateForm<T extends CommonCertificateFormType>(
           data,
           publishState,
           {
-            returnLocation: contentListPath(exam, ContentType.todistukset)
+            returnLocation: contentListPath(exam, ContentType.CERTIFICATE)
           },
           newAttachmentFi,
           newAttachmentSv

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../Icon'
-import { BaseOut, ContentType, Exam, TeachingLanguage } from '../../types'
+import { ContentBaseOut, ContentType, Exam, TeachingLanguage } from '../../types'
 import { getContentName } from '../../utils/assignmentUtils'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -13,18 +13,19 @@ import { lazy, Suspense } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: TeachingLanguage
-  data: BaseOut
+  data: ContentBaseOut
   contentType: ContentType
   isPresentation: boolean
 }
 
 export function ContentHeader({ data, teachingLanguage, contentType, isPresentation }: ContentHeaderProps) {
+  // TODO: korvaa contentType data.contentType:llä
   const { t, lt } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
-    contentType === ContentType.ohjeet ||
-    (contentType === ContentType.todistukset && data.exam !== Exam.SUKO) ||
-    (contentType === ContentType.koetehtavat && data.exam !== Exam.SUKO)
+    contentType === ContentType.INSTRUCTION ||
+    (contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
+    (contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
@@ -100,7 +101,7 @@ type ContentActionRowProps = {
   isFavorite?: boolean
   disabled?: boolean
   onFavoriteClick?: () => void
-  pdfData?: { baseOut: BaseOut; language: TeachingLanguage; contentType: ContentType }
+  pdfData?: { baseOut: ContentBaseOut; language: TeachingLanguage; contentType: ContentType }
 }
 
 export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {

@@ -1,4 +1,10 @@
-import { BaseOut, TeachingLanguage } from '../../../../types'
+import {
+  ContentBaseOut,
+  isLdCertificate,
+  isPuhviCertificate,
+  isSukoCertificate,
+  TeachingLanguage
+} from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -6,10 +12,9 @@ import { toLocaleDate } from '../../../../utils/formatUtils'
 import { PdfViewerLinkTag } from '../../../PdfViewerLinkTag'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
-import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../../../utils/certificateUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
-const getFileKey = (certificate: BaseOut, language: TeachingLanguage) => {
+const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => {
   if (isSukoCertificate(certificate)) {
     return certificate.attachmentFi.fileKey
   } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {
@@ -19,7 +24,7 @@ const getFileKey = (certificate: BaseOut, language: TeachingLanguage) => {
 }
 
 type CertificateCardProps = {
-  certificate: BaseOut
+  certificate: ContentBaseOut
   teachingLanguage: TeachingLanguage
 }
 

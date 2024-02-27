@@ -1,7 +1,10 @@
 import {
   AttachmentDtoOut,
-  BaseOut,
+  ContentBaseOut,
   ContentType,
+  isLdCertificate,
+  isPuhviCertificate,
+  isSukoCertificate,
   LdCertificateDtoOut,
   PuhviCertificateDtoOut,
   SukoCertificateDtoOut,
@@ -10,12 +13,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../forms/formCommon/attachment/AttachmentFileDetailView'
 import { useKoodisto } from '../../hooks/useKoodisto'
-import { isLdCertificate, isPuhviCertificate, isSukoCertificate } from '../../utils/certificateUtils'
 import { LudosContext } from '../../contexts/LudosContext'
 import { useContext } from 'react'
 
 type CertificateContentProps = {
-  certificate: BaseOut
+  certificate: ContentBaseOut
   teachingLanguage: TeachingLanguage
 }
 
@@ -65,7 +67,7 @@ const PuhviCertificateTitle = ({
 const CertificateContentAttachmentView = ({ name, attachment }: { name: string; attachment: AttachmentDtoOut }) => {
   return (
     <AttachmentFileDetailView
-      contentType={ContentType.todistukset}
+      contentType={ContentType.CERTIFICATE}
       attachments={{
         name,
         attachment

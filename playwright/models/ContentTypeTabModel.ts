@@ -1,10 +1,10 @@
 import { Locator, Page } from '@playwright/test'
-import { ContentType } from 'web/src/types'
+import { ContentType, ContentTypePluralFi } from 'web/src/types'
 
 export class ContentTypeTabModel {
   constructor(readonly page: Page) {}
 
   tab(contentType: ContentType): Locator {
-    return this.page.getByTestId(`tab-${contentType.toLowerCase()}`)
+    return this.page.getByTestId(`tab-${ContentTypePluralFi[contentType]}`)
   }
 }

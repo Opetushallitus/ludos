@@ -41,7 +41,7 @@ async function deleteInstruction(form: InstructionFormModel, instructionId: numb
   // expect not to find the deleted certificate from a list
   await expect(form.page.getByTestId(`instruction-${instructionId}`)).toBeHidden()
 
-  await form.goToContentPage(ContentType.ohjeet, instructionId)
+  await form.goToContentPage(ContentType.INSTRUCTION, instructionId)
   await expect(form.page.getByText('404', { exact: true })).toBeVisible()
 }
 

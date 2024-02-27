@@ -1,5 +1,6 @@
 package fi.oph.ludos.instruction
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
@@ -28,6 +29,10 @@ interface Instruction : ContentBase {
 
     @get:ValidHtmlContent
     val contentSv: String
+
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    override val contentType: ContentType
+        get() = ContentType.INSTRUCTION
 }
 
 @JsonTypeName("SUKO")

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { loginTestGroup, Role } from '../helpers'
-import { ContentType } from 'web/src/types'
+import { ContentType, ContentTypePluralFi } from 'web/src/types'
 
 const pages = ['suko', 'puhvi', 'ld']
 
@@ -27,7 +27,7 @@ test('fail to navigate to new and update form pages', async ({ page }) => {
   for (const action of ['uusi', 'muokkaus/1']) {
     for (const pageName of pages) {
       for (const contentType of Object.values(ContentType)) {
-        await page.goto(`/${pageName}/${contentType}/${action}`)
+        await page.goto(`/${pageName}/${ContentTypePluralFi[contentType]}/${action}`)
         await expect(page.getByTestId('unauthorizedPage')).toBeVisible()
       }
     }

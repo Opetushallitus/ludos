@@ -1,9 +1,16 @@
 import { Icon } from '../../../Icon'
-import { AssignmentCardOut, ContentType, FavoriteIdsDtoOut, TeachingLanguage } from '../../../../types'
+import {
+  AssignmentCardOut,
+  ContentType,
+  FavoriteIdsDtoOut,
+  isLdAssignment,
+  isPuhviAssignment,
+  isSukoAssignment,
+  TeachingLanguage
+} from '../../../../types'
 import { StateTag } from '../../../StateTag'
 import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../../InternalLink'
-import { isLdAssignment, isPuhviAssignment, isSukoAssignment } from '../../../../utils/assignmentUtils'
 import { toLocaleDate } from '../../../../utils/formatUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
@@ -47,7 +54,7 @@ export const AssignmentCard = ({
         <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
           <InternalLink
             className="text-lg font-semibold text-green-primary"
-            to={contentPagePath(assignmentCard.exam, ContentType.koetehtavat, assignmentCard.id)}
+            to={contentPagePath(assignmentCard.exam, ContentType.ASSIGNMENT, assignmentCard.id)}
             state={{ returnLocation }}
             data-testid="card-title">
             {(teachingLanguage === TeachingLanguage.fi ? assignmentCard.nameFi : assignmentCard.nameSv) ||
@@ -57,7 +64,7 @@ export const AssignmentCard = ({
             <>
               <StateTag state={assignmentCard.publishState} />
               <InternalLink
-                to={editingFormPath(assignmentCard.exam, ContentType.koetehtavat, assignmentCard.id)}
+                to={editingFormPath(assignmentCard.exam, ContentType.ASSIGNMENT, assignmentCard.id)}
                 state={{ returnLocation }}
                 data-testid={`assignment-${assignmentCard.id.toString()}-edit`}>
                 <Icon name="muokkaa" color="text-green-primary" />

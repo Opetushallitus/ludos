@@ -2,8 +2,8 @@ import { useFetch } from '../../../../hooks/useFetch'
 import {
   AssignmentOut,
   ContentType,
-  ContentTypeSingular,
-  ContentTypeSingularEng,
+  ContentTypeSingularEn,
+  ContentTypeSingularFi,
   Exam,
   InstructionDtoOut,
   InstructionsOut,
@@ -49,13 +49,11 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
   const { koodistos } = useKoodisto()
   const { teachingLanguage } = useContext(LudosContext)
 
-  const singularActiveTab = ContentTypeSingular[ContentType.ohjeet]
-
-  const contentType = ContentType.ohjeet
+  const contentType = ContentType.INSTRUCTION
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
   const { data, loading, error } = useFetch<InstructionsOut>(
-    `${ContentTypeSingularEng[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
+    `${ContentTypeSingularEn[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
   )
@@ -79,7 +77,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
             <InternalLink
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
-              data-testid={`create-${singularActiveTab}-button`}>
+              data-testid={`create-${ContentTypeSingularFi.INSTRUCTION}-button`}>
               {preventLineBreaksFromSpace(t('button.lisaaohje'))}
             </InternalLink>
           )}

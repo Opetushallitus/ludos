@@ -82,7 +82,7 @@ async function deleteCertificate(form: CertificateFormModel, certificateId: numb
   // expect not to find the deleted certificate from a list
   await expect(form.page.getByTestId(`certificate-${certificateId}`)).toBeHidden()
 
-  await form.goToContentPage(ContentType.todistukset, certificateId)
+  await form.goToContentPage(ContentType.CERTIFICATE, certificateId)
   await expect(form.page.getByText('404', { exact: true })).toBeVisible()
 }
 

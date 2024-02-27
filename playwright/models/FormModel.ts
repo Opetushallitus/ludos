@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { ContentType, Exam } from 'web/src/types'
+import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { BaseModel } from './BaseModel'
 
 export class FormModel extends BaseModel {
@@ -38,7 +38,7 @@ export class FormModel extends BaseModel {
   }
 
   async goToContentPage(contentType: ContentType, id: number) {
-    await this.page.goto(`${this.exam.toLowerCase()}/${contentType}/${id}`)
+    await this.page.goto(`${this.exam.toLowerCase()}/${ContentTypePluralFi[contentType]}/${id}`)
   }
 
   async assertNavigationBlockOnDirtyForm() {

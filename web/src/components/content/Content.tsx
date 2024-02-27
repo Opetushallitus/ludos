@@ -3,14 +3,18 @@ import { Button } from '../Button'
 import {
   AttachmentData,
   AttachmentLanguage,
-  BaseOut,
+  ContentBaseOut,
   ContentType,
-  ContentTypeSingularEng,
+  ContentTypeByContentTypePluralFi,
+  ContentTypePluralFi,
+  ContentTypeSingularEn,
   Exam,
+  isAssignment,
+  isCertificate,
+  isInstruction,
   TeachingLanguage
 } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
-import { isAssignment } from '../../utils/assignmentUtils'
 import { ContentHeader } from './ContentCommon'
 import { StateTag } from '../StateTag'
 import { Icon } from '../Icon'
@@ -23,9 +27,7 @@ import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useCallback, useContext, useState } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
-import { isInstruction } from '../../utils/instructionUtils'
 import { ContentError } from './ContentError'
-import { isCertificate } from '../../utils/certificateUtils'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
 import { createNewVersionInstruction, restoreOldCertificate, updateAssignment } from '../../request'
@@ -39,26 +41,32 @@ type ContentProps = {
 const Content = ({ exam, isPresentation }: ContentProps) => {
   const { lt, t } = useLudosTranslation()
   const navigate = useNavigate()
-  const { contentType, id, version } = useParams<{ contentType: ContentType; id: string; version: string }>()
+  const { contentTypePluralFi, id, version } = useParams<{
+    contentTypePluralFi: ContentTypePluralFi
+    id: string
+    version: string
+  }>()
   const { state } = useLocation()
   const { isYllapitaja } = useUserDetails()
   const { teachingLanguage } = useContext(LudosContext)
   const [openVersionViewerModal, setOpenVersionViewerModal] = useState(false)
 
+  const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
+
   const isVersionBrowser = !!version
 
   const teachingLanguageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.koetehtavat ? TeachingLanguage.fi : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? TeachingLanguage.fi : teachingLanguage
 
-  const { data, loading, error, refresh } = useFetch<BaseOut>(
-    `${ContentTypeSingularEng[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
+  const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
+    `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
 
   const {
     data: versionList,
     error: versionListError,
     refresh: versionListRefresh
-  } = useFetch<BaseOut[]>(`${ContentTypeSingularEng[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
+  } = useFetch<ContentBaseOut[]>(`${ContentTypeSingularEn[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
 
   const handleNavigation = useCallback(() => {
     if (state?.returnLocation) {
@@ -68,7 +76,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
     }
   }, [contentType, exam, navigate, state?.returnLocation])
 
-  const restoreOldVersion = async (data: BaseOut) => {
+  const restoreOldVersion = async (data: ContentBaseOut) => {
     if (isAssignment(data)) {
       await updateAssignment(data.id, data)
     } else if (isInstruction(data)) {
@@ -166,7 +174,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 </div>
               )}
 
-              {contentType === ContentType.koetehtavat && isAssignment(data) && (
+              {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
                 <AssignmentContent
                   assignment={data}
                   exam={exam}
@@ -175,10 +183,10 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 />
               )}
 
-              {contentType === ContentType.todistukset && isCertificate(data) && (
+              {contentType === ContentType.CERTIFICATE && isCertificate(data) && (
                 <CertificateContent certificate={data} teachingLanguage={teachingLanguage} />
               )}
-              {contentType === ContentType.ohjeet && isInstruction(data) && (
+              {contentType === ContentType.INSTRUCTION && isInstruction(data) && (
                 <InstructionContent instruction={data} teachingLanguage={teachingLanguage} />
               )}
             </div>
