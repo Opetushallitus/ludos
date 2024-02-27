@@ -3,8 +3,8 @@ import {
   AssignmentCardOut,
   AssignmentsOut,
   ContentType,
-  ContentTypeSingularFi,
   ContentTypeSingularEn,
+  ContentTypeSingularFi,
   emptyAssignmentFilterOptions,
   Exam,
   FavoriteIdsDtoOut,
@@ -106,7 +106,6 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
         exam={exam}
         filterValues={filterValues}
         assignmentFilterOptions={data?.assignmentFilterOptions ?? emptyAssignmentFilterOptions}
-        teachingLanguage={languageOverrideIfSukoAssignment}
       />
 
       {data && (
