@@ -1,6 +1,6 @@
 import { LudosContext } from '../contexts/LudosContext'
 import { useContext } from 'react'
-import { BusinessLanguage, KoodistoName, Oppimaara } from '../types'
+import { KoodistoName, Language, Oppimaara } from '../types'
 import { preventLineBreaksFromHyphen } from '../utils/formatUtils'
 
 export type KoodiDtoOut = {
@@ -10,12 +10,13 @@ export type KoodiDtoOut = {
 }
 
 const defaultLabel = '*'
+export function useKoodisto(language?: Language) {
+  const { koodistos, uiLanguage } = useContext(LudosContext)
 
-export function useKoodisto() {
-  const { koodistos } = useContext(LudosContext)
+  const koodistoLanguage = language || uiLanguage
 
   function getKoodiLabel(koodiArvo: string, koodistoName: KoodistoName) {
-    return koodi(koodiArvo, koodistos[koodistoName])?.nimi ?? defaultLabel
+    return koodi(koodiArvo, koodistos[koodistoLanguage][koodistoName])?.nimi ?? defaultLabel
   }
 
   function getKoodisLabel(koodiArvo: string[], koodistoName: KoodistoName) {
@@ -32,11 +33,22 @@ export function useKoodisto() {
     )
   }
 
+  function sortKooditAlphabetically(koodit: KoodiDtoOut[]) {
+    const locale = uiLanguage === Language.FI ? 'fi-FI' : 'sv-SE'
+
+    return koodit.sort((a, b) =>
+      a.nimi.localeCompare(b.nimi, locale, {
+        sensitivity: 'base'
+      })
+    )
+  }
+
   return {
-    koodistos,
+    koodistos: koodistos[koodistoLanguage],
     getKoodiLabel,
     getKoodisLabel,
-    getOppimaaraLabel
+    getOppimaaraLabel,
+    sortKooditAlphabetically
   }
 }
 
@@ -64,15 +76,5 @@ export function koodisOrDefaultLabel(koodiArvos: string[], koodisto: Record<stri
   return (koodiArvos || []).map((koodiArvo) => koodiOrDefaultLabel(koodiArvo, koodisto))
 }
 
-export const sortKooditAlphabetically = (koodit: KoodiDtoOut[]) => {
-  const language = document.documentElement.lang
-  const locale = language === BusinessLanguage.fi ? 'fi-FI' : 'sv-SE'
-
-  return koodit.sort((a, b) =>
-    a.nimi.localeCompare(b.nimi, locale, {
-      sensitivity: 'base'
-    })
-  )
-}
 export const sortKooditByArvo = (koodit: Record<string, KoodiDtoOut>): KoodiDtoOut[] =>
   Object.values(koodit).sort((a, b) => a.koodiArvo.localeCompare(b.koodiArvo))

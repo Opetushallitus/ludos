@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test'
 import { assertSuccessNotification, createFilePathToFixtures, FormAction, setTeachingLanguage } from '../helpers'
-import { Exam, TeachingLanguage } from 'web/src/types'
+import { Exam, Language } from 'web/src/types'
 import { InstructionFormModel } from '../models/InstructionFormModel'
 import { LayoutModel } from '../models/LayoutModel'
 import * as fs from 'fs'
@@ -41,20 +41,20 @@ export const instructionFormData: InstructionFormData = {
   attachmentNameSv: 'Test bilaga'
 }
 
-export async function updateAttachments(page: Page) {
-  await page.getByTestId('edit-content-btn').first().click()
+export async function updateAttachments(form: InstructionFormModel) {
+  await form.editContentButton.first().click()
   // delete one finnish file
-  await page.getByTestId('delete-attachment-icon-0').first().click()
-  await page.getByTestId('modal-button-delete').first().click()
+  await form.page.getByTestId('delete-attachment-icon-0').first().click()
+  await form.modalDeleteButton.first().click()
   // rename other finnish file
-  await page.getByTestId('attachment-name-input-0-fi').first().fill('Testi liite muokattu')
+  await form.page.getByTestId('attachment-name-input-0-FI').first().fill('Testi liite muokattu')
 
-  await page.getByTestId('form-submit').click()
-  await assertSuccessNotification(page, 'form.notification.ohjeen-tallennus.onnistui')
+  await form.submitButton.click()
+  await assertSuccessNotification(form.page, 'form.notification.ohjeen-tallennus.onnistui')
 
-  await setTeachingLanguage(page, TeachingLanguage.fi)
-  await expect(page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
-  await expect(page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
+  await setTeachingLanguage(form.page, Language.FI)
+  await expect(form.page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
+  await expect(form.page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
 }
 
 export async function assertCreatedInstruction(form: InstructionFormModel, action: FormAction) {
@@ -84,7 +84,7 @@ export async function assertCreatedInstruction(form: InstructionFormModel, actio
   await expect(page.getByRole('link', { name: `${attachmentNameFi} 2 open_in_new` })).toBeVisible()
 
   // change language and check that everything is correct
-  await setTeachingLanguage(page, TeachingLanguage.sv)
+  await setTeachingLanguage(page, Language.SV)
   await expect(formHeader).toHaveText(nameSv)
   exam !== Exam.LD && (await expect(page.getByText(shortDescriptionSv, { exact: true })).toBeVisible())
   await expect(page.getByText(contentSv, { exact: true })).toBeVisible()
@@ -93,10 +93,10 @@ export async function assertCreatedInstruction(form: InstructionFormModel, actio
 }
 
 export async function assertUpdatedInstruction(page: Page, newNameFi: string, newNameSv: string) {
-  await setTeachingLanguage(page, TeachingLanguage.fi)
+  await setTeachingLanguage(page, Language.FI)
   const updatedInstructionHeader = page.getByTestId('assignment-header')
   await expect(updatedInstructionHeader).toHaveText(newNameFi)
-  await setTeachingLanguage(page, TeachingLanguage.sv)
+  await setTeachingLanguage(page, Language.SV)
   const updatedInstructionHeaderSv = page.getByTestId('assignment-header')
   await expect(updatedInstructionHeaderSv).toHaveText(newNameSv)
 }

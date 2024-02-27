@@ -5,7 +5,7 @@ import {
   isInstruction,
   isSukoAssignment,
   isSukoCertificate,
-  TeachingLanguage
+  Language
 } from '../types'
 
 // Removes key-value pairs with null or undefined values from an object
@@ -23,11 +23,11 @@ export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
   )
 }
 
-export const getContentName = (data: ContentBaseOut, teachingLanguage: TeachingLanguage) => {
+export const getContentName = (data: ContentBaseOut, teachingLanguage: Language) => {
   if (isSukoAssignment(data) || isSukoCertificate(data)) {
     return data.nameFi
   } else if (isAssignment(data) || isInstruction(data) || isCertificate(data)) {
-    return teachingLanguage === 'fi' ? data.nameFi : data.nameSv
+    return teachingLanguage === 'FI' ? data.nameFi : data.nameSv
   } else {
     throw Error(`Data has unknown type: ${typeof data}`)
   }

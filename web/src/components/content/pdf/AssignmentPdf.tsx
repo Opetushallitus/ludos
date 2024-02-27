@@ -1,4 +1,4 @@
-import { AssignmentOut, TeachingLanguage } from '../../../types'
+import { AssignmentOut, Language } from '../../../types'
 import { Document, Page, Text, View } from '@react-pdf/renderer'
 import { pdfStyles } from './pdfStyles'
 import { convertHtmlToReactPdf } from './HtmlToReactPdf'
@@ -6,14 +6,14 @@ import { convertHtmlToReactPdf } from './HtmlToReactPdf'
 type AssignmentPdfProps = {
   title: string
   assignment: AssignmentOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfProps) => {
   let content
   try {
     content =
-      teachingLanguage === 'fi'
+      teachingLanguage === 'FI'
         ? assignment.contentFi.map(convertHtmlToReactPdf)
         : assignment.contentSv.map(convertHtmlToReactPdf)
   } catch (e) {
@@ -30,7 +30,7 @@ const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfPro
           <Text>{title}</Text>
         </View>
         <View style={[pdfStyles.section, pdfStyles.instruction]}>
-          <Text>{teachingLanguage === 'fi' ? assignment.instructionFi : assignment.instructionSv}</Text>
+          <Text>{teachingLanguage === 'FI' ? assignment.instructionFi : assignment.instructionSv}</Text>
         </View>
         <View style={[pdfStyles.section, pdfStyles.content]} wrap>
           {content}

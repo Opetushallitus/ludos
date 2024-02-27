@@ -1,18 +1,18 @@
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
-import { AttachmentData, AttachmentLanguage, ContentType } from '../../../../types'
+import { AttachmentData, ContentType, Language } from '../../../../types'
 import { FileSelector } from '../../../FileSelector'
 import { FormError } from '../FormErrors'
 
 interface AttachmentSelectorProps {
   name: string
   contentType: ContentType
-  handleNewAttachmentSelected: (attachments: AttachmentData[], language?: AttachmentLanguage) => void
-  language: AttachmentLanguage // used mostly for data-testid tagging
+  handleNewAttachmentSelected: (attachments: AttachmentData[], language?: Language) => void
+  language: Language // used mostly for data-testid tagging
   error?: string
   attachmentData?: AttachmentData[] | AttachmentData
-  handleNewAttachmentName?: (newName: string, index: number, language: AttachmentLanguage) => void
-  deleteFileByIndex?: (index: number, lang: AttachmentLanguage) => void
+  handleNewAttachmentName?: (newName: string, index: number, language: Language) => void
+  deleteFileByIndex?: (index: number, lang: Language) => void
   loading?: boolean
 }
 
@@ -51,7 +51,7 @@ export const AttachmentSelector = ({
 
   const handleAttachmentNameChange = (newName: string, index: number) => {
     if (handleNewAttachmentName) {
-      handleNewAttachmentName(newName, index, language ?? 'fi')
+      handleNewAttachmentName(newName, index, language ?? 'FI')
     }
   }
 
@@ -83,7 +83,7 @@ export const AttachmentSelector = ({
           contentType={contentType}
           attachments={attachmentData!}
           handleAttachmentNameChange={handleAttachmentNameChange}
-          deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'fi') : null)}
+          deleteFileByIndex={(index) => (deleteFileByIndex ? deleteFileByIndex(index, language ?? 'FI') : null)}
           language={language}
         />
       )}

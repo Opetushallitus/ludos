@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Locator, Page, test as importedTest } from '@playwright/test'
-import { Exam, KoodistoName, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Language } from 'web/src/types'
 import { promises as fsPromises } from 'fs'
 import path from 'path'
 
@@ -76,7 +76,7 @@ async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
 export async function koodiNimi(
   koodistoName: KoodistoName,
   koodiArvo: string,
-  language: 'FI' | 'SV' = 'FI'
+  language: Language = Language.FI
 ): Promise<string> {
   let koodisto = koodistoCache[koodistoName]
   if (!koodisto) {
@@ -87,9 +87,10 @@ export async function koodiNimi(
   if (!koodi) {
     throw new Error(`Could not find koodiArvo ${koodiArvo} from koodisto ${koodistoName}`)
   } else {
-    const koodiMetadata = koodi['metadata'].find((m: any) => m['kieli'] === language)
+    const koodiMetadata = koodi['metadata'].find((m: any) => m['kieli'] === language.toUpperCase())
     if (!koodiMetadata) {
-      throw new Error(`Could not find language ${language} for koodiArvo ${koodiArvo} in koodisto ${koodistoName}`)
+      const errorMessage = `Could not find language ${language} for koodiArvo ${koodiArvo} in koodisto ${koodistoName}`
+      throw new Error(errorMessage)
     } else {
       return koodiMetadata['nimi']
     }
@@ -112,7 +113,7 @@ export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: 
   await page.getByTestId(`${dropdownTestId}-option-${optionId}`).click()
 }
 
-export async function setTeachingLanguage(page: Page, teachingLanguage: TeachingLanguage) {
+export async function setTeachingLanguage(page: Page, teachingLanguage: Language) {
   await setSingleSelectDropdownOption(page, 'teachingLanguageDropdown', teachingLanguage)
 }
 
@@ -134,9 +135,13 @@ export async function assertInputValues(page: Page, inputName: string, expectedV
   expect(values.sort()).toEqual(expectedValues.slice().sort())
 }
 
-export async function koodiLabel(koodistoName: KoodistoName, koodiArvos: string | string[]): Promise<string> {
+export async function koodiLabel(
+  koodistoName: KoodistoName,
+  koodiArvos: string | string[],
+  teachingLanguage: Language = Language.FI
+): Promise<string> {
   if (typeof koodiArvos === 'string') {
-    return koodiNimi(koodistoName, koodiArvos)
+    return koodiNimi(koodistoName, koodiArvos, teachingLanguage)
   } else {
     const labels = await Promise.all(koodiArvos.map((ka) => koodiLabel(koodistoName, ka)))
     return labels.sort().join(', ')

@@ -2,13 +2,13 @@ import {
   AttachmentDtoOut,
   ContentBaseOut,
   ContentType,
+  Language,
   isLdCertificate,
   isPuhviCertificate,
   isSukoCertificate,
   LdCertificateDtoOut,
   PuhviCertificateDtoOut,
-  SukoCertificateDtoOut,
-  TeachingLanguage
+  SukoCertificateDtoOut
 } from '../../types'
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../forms/formCommon/attachment/AttachmentFileDetailView'
@@ -18,7 +18,7 @@ import { useContext } from 'react'
 
 type CertificateContentProps = {
   certificate: ContentBaseOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 const SukoCertificateTitle = ({
@@ -34,8 +34,16 @@ const SukoCertificateTitle = ({
   </>
 )
 
-const LdCertificateTitle = ({ certificate, labelText }: { certificate: LdCertificateDtoOut; labelText: string }) => {
-  const { getKoodiLabel } = useKoodisto()
+const LdCertificateTitle = ({
+  certificate,
+  labelText,
+  teachingLanguage
+}: {
+  certificate: LdCertificateDtoOut
+  labelText: string
+  teachingLanguage: Language
+}) => {
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
   return (
     <>
@@ -58,7 +66,7 @@ const PuhviCertificateTitle = ({
     <>
       <h4 className="mt-6 font-semibold">{labelText}</h4>
       <p data-testid="certificate-description">
-        {teachingLanguage === 'fi' ? certificate.descriptionFi : certificate.descriptionSv}
+        {teachingLanguage === 'FI' ? certificate.descriptionFi : certificate.descriptionSv}
       </p>
     </>
   )
@@ -84,7 +92,13 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
     if (isSukoCertificate(certificate)) {
       return <SukoCertificateTitle certificate={certificate} labelText={t('certificate.kuvaus')} />
     } else if (isLdCertificate(certificate)) {
-      return <LdCertificateTitle certificate={certificate} labelText={t('assignment.aine')} />
+      return (
+        <LdCertificateTitle
+          certificate={certificate}
+          labelText={t('assignment.aine')}
+          teachingLanguage={teachingLanguage}
+        />
+      )
     } else if (isPuhviCertificate(certificate)) {
       return <PuhviCertificateTitle certificate={certificate} labelText={t('certificate.kuvaus')} />
     }
@@ -99,7 +113,7 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
       ) : (
         (isLdCertificate(certificate) || isPuhviCertificate(certificate)) && (
           <>
-            {teachingLanguage === 'fi' ? (
+            {teachingLanguage === 'FI' ? (
               <CertificateContentAttachmentView
                 name={certificate.attachmentFi.name}
                 attachment={certificate.attachmentFi}

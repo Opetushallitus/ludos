@@ -18,7 +18,7 @@ const bodyTextByExam = {
 const checkListAfterFilteringWithProvidedExam = checkListAfterFilteringWithProvidedContent(bodyTextByExam)
 
 const assertLanguageChange = async (page: Page, expectedSvText: string) => {
-  await setTeachingLanguage(page, 'sv')
+  await setTeachingLanguage(page, 'SV')
   await expect(page.getByTestId('card-body').first()).toHaveText(expectedSvText)
 }
 

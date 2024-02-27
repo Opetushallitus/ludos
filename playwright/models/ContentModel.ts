@@ -9,8 +9,10 @@ export abstract class ContentModel {
     readonly header = page.getByTestId('assignment-header'),
     readonly editButton = page.getByTestId('edit-content-btn'),
     readonly publishState = page.getByTestId('publish-state'),
-    readonly contentFi = page.getByTestId('editor-content-fi-0'),
-    readonly contentSv = page.getByTestId('editor-content-fi-0'),
+    readonly contentFi = page.getByTestId('editor-content-FI-0'),
+    readonly contentSv = page.getByTestId('editor-content-SV-0'),
+    readonly instructionFi = page.getByTestId('instruction-fi'),
+    readonly instructionSV = page.getByTestId('instruction-sv'),
     readonly returnButton = page.getByTestId('return')
   ) {}
 

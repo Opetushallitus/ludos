@@ -3,7 +3,7 @@ import {
   isLdCertificate,
   isPuhviCertificate,
   isSukoCertificate,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
@@ -14,23 +14,23 @@ import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { muokkausKey } from '../../../LudosRoutes'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
-const getFileKey = (certificate: ContentBaseOut, language: TeachingLanguage) => {
+const getFileKey = (certificate: ContentBaseOut, language: Language) => {
   if (isSukoCertificate(certificate)) {
     return certificate.attachmentFi.fileKey
   } else if (isLdCertificate(certificate) || isPuhviCertificate(certificate)) {
-    return language === 'fi' ? certificate.attachmentFi.fileKey : certificate.attachmentSv?.fileKey
+    return language === 'FI' ? certificate.attachmentFi.fileKey : certificate.attachmentSv?.fileKey
   }
   return ''
 }
 
 type CertificateCardProps = {
   certificate: ContentBaseOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCardProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { getKoodiLabel } = useKoodisto()
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
   const getCertificateName = () => {
     if (isSukoCertificate(certificate)) {
@@ -38,7 +38,7 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
     } else if (isLdCertificate(certificate)) {
       return getKoodiLabel(certificate.aineKoodiArvo, 'ludoslukiodiplomiaine')
     } else if (isPuhviCertificate(certificate)) {
-      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+      return teachingLanguage === 'FI' ? certificate.nameFi : certificate.nameSv
     }
     return null
   }
@@ -47,9 +47,9 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
     if (isSukoCertificate(certificate)) {
       return certificate.descriptionFi
     } else if (isLdCertificate(certificate)) {
-      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+      return teachingLanguage === 'FI' ? certificate.nameFi : certificate.nameSv
     } else if (isPuhviCertificate(certificate)) {
-      return teachingLanguage === 'fi' ? certificate.nameFi : certificate.nameSv
+      return teachingLanguage === 'FI' ? certificate.nameFi : certificate.nameSv
     }
     return null
   }

@@ -7,7 +7,7 @@ import { InstructionFormModel } from '../../models/InstructionFormModel'
 async function createAndUpdatePublishedInstruction(form: InstructionFormModel) {
   const instructionId = await form.createInstruction('submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
   await form.updateInstruction(instructionId, 'submit', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
-  await updateAttachments(form.page)
+  await updateAttachments(form)
   await form.updateInstruction(
     instructionId,
     'draft',

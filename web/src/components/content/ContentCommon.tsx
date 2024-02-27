@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../Icon'
-import { ContentBaseOut, ContentType, Exam, TeachingLanguage } from '../../types'
+import { ContentBaseOut, ContentType, Exam, Language } from '../../types'
 import { getContentName } from '../../utils/assignmentUtils'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
@@ -12,7 +12,7 @@ import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
 import { lazy, Suspense } from 'react'
 
 type ContentHeaderProps = {
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
   data: ContentBaseOut
   contentType: ContentType
   isPresentation: boolean
@@ -101,7 +101,7 @@ type ContentActionRowProps = {
   isFavorite?: boolean
   disabled?: boolean
   onFavoriteClick?: () => void
-  pdfData?: { baseOut: ContentBaseOut; language: TeachingLanguage; contentType: ContentType }
+  pdfData?: { baseOut: ContentBaseOut; language: Language; contentType: ContentType }
 }
 
 export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
@@ -152,26 +152,20 @@ export function ContentInstruction({
   instructionFi,
   instructionSv
 }: {
-  teachingLanguage: string
+  teachingLanguage: Language
   instructionFi: string
   instructionSv: string
 }) {
   return (
     <div className="mb-4 mt-3">
       <p className="text-sm font-semibold" key={teachingLanguage} data-testid={`instruction-${teachingLanguage}`}>
-        {teachingLanguage === 'fi' ? instructionFi : instructionSv}
+        {teachingLanguage === 'FI' ? instructionFi : instructionSv}
       </p>
     </div>
   )
 }
 
-const RenderContent = ({
-  content,
-  teachingLanguage
-}: {
-  content: string | string[]
-  teachingLanguage: TeachingLanguage
-}) =>
+const RenderContent = ({ content, teachingLanguage }: { content: string | string[]; teachingLanguage: Language }) =>
   Array.isArray(content) ? (
     content.map((it, i) => (
       <TipTap
@@ -196,11 +190,11 @@ export function ContentContent({
   contentFi,
   contentSv
 }: {
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
   contentFi: string | string[]
   contentSv: string | string[]
 }) {
-  const content = teachingLanguage === 'fi' ? contentFi : contentSv
+  const content = teachingLanguage === 'FI' ? contentFi : contentSv
 
   return <RenderContent content={content} teachingLanguage={teachingLanguage} />
 }

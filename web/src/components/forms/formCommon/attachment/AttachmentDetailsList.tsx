@@ -1,4 +1,4 @@
-import { FileDetails, TeachingLanguage } from '../../../../types'
+import { FileDetails, Language } from '../../../../types'
 import { ExternalLink } from '../../../ExternalLink'
 import { toLocaleDate } from '../../../../utils/formatUtils'
 import { Icon } from '../../../Icon'
@@ -13,7 +13,7 @@ type AttachmentDetailsListProps = {
   attachmentNames: string[]
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
-  language?: TeachingLanguage
+  language?: Language
 }
 
 export const AttachmentDetailsList = ({

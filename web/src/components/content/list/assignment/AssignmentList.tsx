@@ -3,12 +3,12 @@ import {
   AssignmentCardOut,
   AssignmentsOut,
   ContentType,
-  ContentTypeSingularFi,
   ContentTypeSingularEn,
+  ContentTypeSingularFi,
   emptyAssignmentFilterOptions,
   Exam,
   FavoriteIdsDtoOut,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
@@ -28,10 +28,10 @@ import { LudosContext } from '../../../../contexts/LudosContext'
 import { InfoBox } from '../../../InfoBox'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
-export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: TeachingLanguage) => {
-  if (teachingLanguage === TeachingLanguage.fi) {
+export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: Language) => {
+  if (teachingLanguage === Language.FI) {
     return data.nameFi !== ''
-  } else if (teachingLanguage === TeachingLanguage.sv) {
+  } else if (teachingLanguage === Language.SV) {
     return data.nameSv !== ''
   }
   return true
@@ -63,7 +63,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
   } = useFetch<FavoriteIdsDtoOut>(`${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}`)
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
-  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'fi' : teachingLanguage
+  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'FI' : teachingLanguage
 
   const hasError = error || favoriteIdsError
 

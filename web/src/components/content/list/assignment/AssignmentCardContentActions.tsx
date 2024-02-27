@@ -4,7 +4,7 @@ import { InternalLink } from '../../../InternalLink'
 import { ContentAction } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
 import { esitysnakymaKey } from '../../../LudosRoutes'
-import { AssignmentCardOut, ContentTypePluralFi, TeachingLanguage } from '../../../../types'
+import { AssignmentCardOut, ContentTypePluralFi, Language } from '../../../../types'
 import { lazy, Suspense } from 'react'
 
 type AssignmentCardContentActionButtonProps = {
@@ -62,7 +62,7 @@ type AssignmentCardContentActionsProps = {
   isFavorite?: boolean
   onFavoriteClick?: () => void
   isFavoriteButtonDisabled: boolean
-  language: TeachingLanguage
+  language: Language
 }
 
 export const AssignmentCardContentActions = ({

@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import {
   defaultEmptyKoodistoMap,
   defaultLanguage,
-  KoodistoMap,
+  LanguageKoodistoMap,
   LudosContext,
   ludosTeachingLanguageKey,
   ludosUILanguageKey
 } from './LudosContext'
-import { BusinessLanguage, Roles, TeachingLanguage, UserDetails } from '../types'
+import { BusinessLanguage, Language, Roles, UserDetails } from '../types'
 import { getKoodistos, getUserDetails, getUserFavoriteCount } from '../request'
 
 const unauthorizedUserDetails: UserDetails = {
@@ -24,14 +24,17 @@ type LudosContextProviderProps = {
 
 export const LudosContextProvider = ({ children }: LudosContextProviderProps) => {
   const { i18n } = useTranslation()
-  const [koodistos, setKoodistos] = useState<KoodistoMap>(defaultEmptyKoodistoMap)
+  const [koodistos, setKoodistos] = useState<LanguageKoodistoMap>({
+    FI: defaultEmptyKoodistoMap,
+    SV: defaultEmptyKoodistoMap
+  })
   const [userDetails, setUserDetails] = useState<UserDetails | undefined>()
   const [userFavoriteAssignmentCount, setUserFavoriteAssignmentCount] = useState<number>(-1)
-  const [teachingLanguage, setTeachingLanguageState] = useState<TeachingLanguage>(
-    (localStorage.getItem(ludosTeachingLanguageKey) as TeachingLanguage | null) || defaultLanguage
+  const [teachingLanguage, setTeachingLanguageState] = useState<Language>(
+    (localStorage.getItem(ludosTeachingLanguageKey)?.toUpperCase() as Language) || Language.FI
   )
 
-  const setTeachingLanguage = (lang: TeachingLanguage) => {
+  const setTeachingLanguage = (lang: Language) => {
     setTeachingLanguageState(lang)
     localStorage.setItem(ludosTeachingLanguageKey, lang)
   }
@@ -66,10 +69,10 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
           const userDetailsJson: UserDetails = await userDetailsResponse.json()
 
           // set businessLanguage to localStorage if it is not set beforehand
-          const validBusinessLanguageOrDefault =
+          const validBusinessLanguageOrDefault: Language =
             userDetailsJson.businessLanguage === BusinessLanguage.fi ||
             userDetailsJson.businessLanguage === BusinessLanguage.sv
-              ? (userDetailsJson.businessLanguage as 'fi' | 'sv')
+              ? (userDetailsJson.businessLanguage.toUpperCase() as Language)
               : defaultLanguage
 
           if (!localStorage.getItem(ludosUILanguageKey)) {
@@ -97,14 +100,12 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   useEffect(() => {
     const fetchKoodistos = async () => {
       try {
-        if (i18n.language !== 'keys') {
-          const koodistosResponse = await getKoodistos(i18n.language.toUpperCase())
+        const koodistosResponse = await getKoodistos()
 
-          if (koodistosResponse.ok) {
-            setKoodistos(await koodistosResponse.json())
-          } else {
-            console.error('Could not fetch koodistos')
-          }
+        if (koodistosResponse.ok) {
+          setKoodistos(await koodistosResponse.json())
+        } else {
+          console.error('Could not fetch koodistos')
         }
       } catch (e) {
         console.error('Error occurred while fetching koodistos:', e)
@@ -125,7 +126,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         setUserFavoriteAssignmentCount,
         teachingLanguage,
         setTeachingLanguage,
-        uiLanguage: i18n.language,
+        uiLanguage: i18n.language === Language.FI || i18n.language === Language.SV ? i18n.language : defaultLanguage,
         setUiLanguage: setUILanguage
       }}>
       {children}

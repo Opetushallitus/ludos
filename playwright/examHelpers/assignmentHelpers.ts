@@ -6,7 +6,7 @@ import {
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../helpers'
-import { Exam, KoodistoName, Oppimaara, oppimaaraId, PublishState, TeachingLanguage } from 'web/src/types'
+import { Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   CommonAssignmentFormType,
@@ -276,27 +276,27 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
   )
 
   await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
-  await expect(page.getByTestId('instruction-fi')).toHaveText(expectedFormData.instructionFi)
+  await expect(page.getByTestId('instruction-FI')).toHaveText(expectedFormData.instructionFi)
 
   if (expectedFormData.contentFi) {
     for (const [i, content] of expectedFormData.contentFi.entries()) {
-      await expect(page.getByTestId(`editor-content-fi-${i}`)).toHaveText(content)
+      await expect(page.getByTestId(`editor-content-FI-${i}`)).toHaveText(content)
     }
   }
 
   if (expectedFormData.exam !== Exam.SUKO) {
-    await setTeachingLanguage(page, TeachingLanguage.sv)
+    await setTeachingLanguage(page, Language.SV)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
-    await expect(page.getByTestId('instruction-sv')).toHaveText(expectedFormData.instructionSv)
+    await expect(page.getByTestId('instruction-SV')).toHaveText(expectedFormData.instructionSv)
 
     if (expectedFormData.contentSv) {
       for (const [i, content] of expectedFormData.contentSv.entries()) {
-        await expect(page.getByTestId(`editor-content-sv-${i}`)).toHaveText(content)
+        await expect(page.getByTestId(`editor-content-SV-${i}`)).toHaveText(content)
       }
     }
 
-    await setTeachingLanguage(page, TeachingLanguage.fi)
+    await setTeachingLanguage(page, Language.FI)
   }
 }
 export async function assertSukoAssignmentContentPage(page: Page, expectedFormData: SukoAssignmentFormType) {
@@ -334,7 +334,7 @@ export async function assertPuhviAssignmentContentPage(page: Page, expectedFormD
   )
 }
 
-export const filterTestAssignmentName = (number: number, teachingLanguage: TeachingLanguage, exam: Exam) =>
+export const filterTestAssignmentName = (number: number, teachingLanguage: Language, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
 export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignmentIn: any) {

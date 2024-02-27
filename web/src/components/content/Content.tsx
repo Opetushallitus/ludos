@@ -2,17 +2,16 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import {
   AttachmentData,
-  AttachmentLanguage,
   ContentBaseOut,
   ContentType,
   ContentTypeByContentTypePluralFi,
   ContentTypePluralFi,
   ContentTypeSingularEn,
   Exam,
+  Language,
   isAssignment,
   isCertificate,
-  isInstruction,
-  TeachingLanguage
+  isInstruction
 } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { ContentHeader } from './ContentCommon'
@@ -56,7 +55,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const isVersionBrowser = !!version
 
   const teachingLanguageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? TeachingLanguage.fi : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? Language.FI : teachingLanguage
 
   const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
@@ -83,7 +82,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
       const attachmentsToUpdate: AttachmentData[] = data.attachments.map((attachment) => ({
         name: attachment.name,
         attachment: attachment,
-        language: attachment.language.toLowerCase() as AttachmentLanguage
+        language: attachment.language
       }))
       await createNewVersionInstruction(data.id, data, attachmentsToUpdate, [])
     } else if (isCertificate(data)) {

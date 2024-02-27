@@ -6,7 +6,7 @@ import {
   ContentType,
   ContentTypeSingularEn,
   Exam,
-  TeachingLanguage
+  Language
 } from '../../../types'
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../../Icon'
@@ -19,7 +19,7 @@ const PdfGenerator = React.lazy(() => import('./PdfGenerator'))
 type PdfDownloadButtonProps = {
   exam: Exam
   contentId: number
-  language: TeachingLanguage
+  language: Language
 }
 
 export default function PdfDownloadButton({ exam, contentId, language }: PdfDownloadButtonProps) {

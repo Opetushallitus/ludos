@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { loginTestGroup, Role, setMultiSelectDropdownOptions } from '../../helpers'
 import { filterTestAssignmentName } from '../../examHelpers/assignmentHelpers'
-import { Exam, TeachingLanguage } from 'web/src/types'
+import { Exam, Language } from 'web/src/types'
 import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -58,10 +58,8 @@ test.describe('Assignment filter tests', () => {
     await page.reload()
     await contentList.checkListAfterFiltering([20, 8])
 
-    await page.getByRole('link', { name: filterTestAssignmentName(20, TeachingLanguage.fi, Exam.SUKO) }).click()
-    await expect(page.getByTestId('assignment-header')).toHaveText(
-      filterTestAssignmentName(20, TeachingLanguage.fi, Exam.SUKO)
-    )
+    await page.getByRole('link', { name: filterTestAssignmentName(20, Language.FI, Exam.SUKO) }).click()
+    await expect(page.getByTestId('assignment-header')).toHaveText(filterTestAssignmentName(20, Language.FI, Exam.SUKO))
     await page.getByTestId('return').click()
 
     // make sure filters stay when returning from an assignment
@@ -93,10 +91,8 @@ test.describe('Assignment filter tests', () => {
     await setMultiSelectDropdownOptions(page, 'aineFilter', ['6']) // musiikki
     await contentList.checkListAfterFiltering([5])
 
-    await page.getByRole('link', { name: filterTestAssignmentName(5, TeachingLanguage.fi, Exam.LD) }).click()
-    await expect(page.getByTestId('assignment-header')).toHaveText(
-      filterTestAssignmentName(5, TeachingLanguage.fi, Exam.LD)
-    )
+    await page.getByRole('link', { name: filterTestAssignmentName(5, Language.FI, Exam.LD) }).click()
+    await expect(page.getByTestId('assignment-header')).toHaveText(filterTestAssignmentName(5, Language.FI, Exam.LD))
   })
 
   test('puhvi', async ({ page }) => {
@@ -107,9 +103,7 @@ test.describe('Assignment filter tests', () => {
     await setMultiSelectDropdownOptions(page, 'tehtavatyyppiPuhviFilter', ['002']) // esiintymistaidot
     await contentList.checkListAfterFiltering([18, 8])
 
-    await page.getByRole('link', { name: filterTestAssignmentName(8, TeachingLanguage.fi, Exam.PUHVI) }).click()
-    await expect(page.getByTestId('assignment-header')).toHaveText(
-      filterTestAssignmentName(8, TeachingLanguage.fi, Exam.PUHVI)
-    )
+    await page.getByRole('link', { name: filterTestAssignmentName(8, Language.FI, Exam.PUHVI) }).click()
+    await expect(page.getByTestId('assignment-header')).toHaveText(filterTestAssignmentName(8, Language.FI, Exam.PUHVI))
   })
 })

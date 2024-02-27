@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '../../../Spinner'
-import { AttachmentData, ContentType, FileDetails, TeachingLanguage } from '../../../../types'
+import { AttachmentData, ContentType, FileDetails, Language } from '../../../../types'
 import { AttachmentDetails } from './AttachmentDetails'
 import { AttachmentDetailsList } from './AttachmentDetailsList'
 import { useEffect, useState } from 'react'
@@ -12,7 +12,7 @@ interface AttachmentFileDetailViewProps {
   handleAttachmentNameChange: (newName: string, index: number) => void
   deleteFileByIndex?: (index: number) => void
   loading?: boolean
-  language?: TeachingLanguage
+  language?: Language
 }
 
 export const AttachmentFileDetailView = ({

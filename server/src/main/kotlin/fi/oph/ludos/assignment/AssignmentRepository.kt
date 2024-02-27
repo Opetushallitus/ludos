@@ -3,7 +3,6 @@ package fi.oph.ludos.assignment
 import fi.oph.ludos.*
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
-import fi.oph.ludos.koodisto.KoodistoLanguage
 import fi.oph.ludos.koodisto.KoodistoName
 import fi.oph.ludos.koodisto.KoodistoService
 import fi.oph.ludos.repository.getKotlinList
@@ -321,7 +320,7 @@ class AssignmentRepository(
             val (tarkennettavatOppimaaratIlmanTarkennetta, restOfOppimaaras) = oppimaaras.partition {
                 (koodistoService.getKoodi(
                     KoodistoName.OPPIAINEET_JA_OPPIMAARAT_LOPS2021,
-                    KoodistoLanguage.FI,
+                    Language.FI,
                     it.oppimaaraKoodiArvo
                 )?.tarkenteet?.size ?: 0) > 0 && it.kielitarjontaKoodiArvo == null
             }

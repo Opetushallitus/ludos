@@ -1,10 +1,4 @@
-import {
-  Exam,
-  InstructionDtoOut,
-  LdInstructionDtoOut,
-  SukoOrPuhviInstructionDtoOut,
-  TeachingLanguage
-} from '../../types'
+import { Exam, InstructionDtoOut, Language, LdInstructionDtoOut, SukoOrPuhviInstructionDtoOut } from '../../types'
 import { ContentContent } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
@@ -14,14 +8,14 @@ import { useKoodisto } from '../../hooks/useKoodisto'
 
 type InstructionContentProps = {
   instruction: SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
 }
 
 export const InstructionContent = ({ instruction, teachingLanguage }: InstructionContentProps) => {
   const { t } = useTranslation()
-  const { getKoodiLabel } = useKoodisto()
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
   const attachmentsFilteredWithLanguage = instruction.attachments
-    .filter((it) => it.language.toLowerCase() === teachingLanguage)
+    .filter((it) => it.language === teachingLanguage)
     .map((it) => it)
 
   const isLdInstruction = (instruction: InstructionDtoOut, exam: Exam): instruction is LdInstructionDtoOut =>
@@ -46,9 +40,7 @@ export const InstructionContent = ({ instruction, teachingLanguage }: Instructio
         <>
           <div className="mb-4">
             <p className="text-sm">
-              {teachingLanguage === TeachingLanguage.fi
-                ? instruction.shortDescriptionFi
-                : instruction.shortDescriptionSv}
+              {teachingLanguage === Language.FI ? instruction.shortDescriptionFi : instruction.shortDescriptionSv}
             </p>
           </div>
           <div className="mb-4 border-b border-gray-separator" />

@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useTranslation } from 'react-i18next'
 import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
-import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
+import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
   currentKoodistoSelectOptions,
@@ -42,7 +42,7 @@ export const AssignmentFilters = ({
   assignmentFilterOptions
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
-  const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
+  const { koodistos, getKoodiLabel, getOppimaaraLabel, sortKooditAlphabetically } = useKoodisto()
 
   const handleMultiselectFilterChange = useCallback(
     (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {

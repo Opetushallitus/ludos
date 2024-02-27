@@ -3,11 +3,6 @@ package fi.oph.ludos.koodisto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class KoodistoLanguage {
-    FI,
-    SV
-}
-
 enum class KoodistoName(@JsonValue val koodistoUri: String) {
     OPPIAINEET_JA_OPPIMAARAT_LOPS2021("oppiaineetjaoppimaaratlops2021"),
     KIELITARJONTA("lukiokielitarjonta"),

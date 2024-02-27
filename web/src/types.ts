@@ -4,11 +4,18 @@ export const ContentFormAction = {
 } as const
 export type ContentFormAction = (typeof ContentFormAction)[keyof typeof ContentFormAction]
 
-export const TeachingLanguage = {
-  fi: 'fi',
-  sv: 'sv'
+export const Language = {
+  FI: 'FI',
+  SV: 'SV'
 } as const
-export type TeachingLanguage = (typeof TeachingLanguage)[keyof typeof TeachingLanguage]
+export type Language = (typeof Language)[keyof typeof Language]
+
+export const BusinessLanguage = {
+  fi: 'fi',
+  sv: 'sv',
+  en: 'en'
+} as const
+export type BusinessLanguage = keyof typeof BusinessLanguage
 
 export const ContentOrder = {
   asc: 'asc',
@@ -175,7 +182,7 @@ export type AttachmentDtoOut = {
   fileKey: string
   fileUploadDate?: string
   name: string
-  language: 'FI' | 'SV'
+  language: Language
 }
 
 export type ImageDtoOut = {
@@ -250,16 +257,7 @@ export const Roles = {
   OPETTAJA: 'OPETTAJA',
   UNAUTHORIZED: 'UNAUTHORIZED'
 } as const
-
 type RolesType = keyof typeof Roles
-
-export const BusinessLanguage = {
-  fi: 'fi',
-  sv: 'sv',
-  en: 'en'
-} as const
-
-export type BusinessLanguage = keyof typeof BusinessLanguage
 
 export type UserDetails = {
   firstNames: string | null
@@ -282,12 +280,10 @@ export type FileDetails = Partial<AttachmentDtoOut> & {
   fileName: string
 }
 
-export type AttachmentLanguage = 'fi' | 'sv'
-
 export type AttachmentData = {
   attachment?: AttachmentDtoOut
   name: string
-  language?: AttachmentLanguage
+  language?: Language
   file?: File
 }
 export const oppimaaraId: (oppimaara: Oppimaara) => string = (oppimaara: Oppimaara) =>

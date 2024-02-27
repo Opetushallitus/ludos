@@ -7,7 +7,7 @@ import {
   Exam,
   InstructionDtoOut,
   InstructionsOut,
-  TeachingLanguage
+  Language
 } from '../../../../types'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { InstructionCard } from './InstructionCard'
@@ -21,7 +21,7 @@ import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../../ludosSelect/helpers'
-import { koodisOrDefaultLabel, sortKooditAlphabetically, useKoodisto } from '../../../../hooks/useKoodisto'
+import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
 import { useCallback, useContext } from 'react'
 import { MultiValue } from 'react-select'
 import { LudosContext } from '../../../../contexts/LudosContext'
@@ -29,10 +29,10 @@ import { InfoBox } from '../../../InfoBox'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 
-const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: TeachingLanguage) => {
-  if (teachingLanguage === TeachingLanguage.fi) {
+const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: Language) => {
+  if (teachingLanguage === Language.FI) {
     return data.nameFi !== ''
-  } else if (teachingLanguage === TeachingLanguage.sv) {
+  } else if (teachingLanguage === Language.SV) {
     return data.nameSv !== ''
   }
   return true
@@ -46,8 +46,8 @@ type InstructionListProps = {
 export const InstructionList = ({ exam, filterValues: { filterValues, setFilterValue } }: InstructionListProps) => {
   const { isYllapitaja } = useUserDetails()
   const { t, lt } = useLudosTranslation()
-  const { koodistos } = useKoodisto()
   const { teachingLanguage } = useContext(LudosContext)
+  const { koodistos, sortKooditAlphabetically } = useKoodisto(teachingLanguage)
 
   const contentType = ContentType.INSTRUCTION
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)

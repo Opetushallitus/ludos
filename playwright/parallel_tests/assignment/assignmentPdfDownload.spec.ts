@@ -7,7 +7,7 @@ import { assertPDFDownload } from '../../assertPdfDownload'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 
 const fileTitle = (exam: Exam) => `Testitehtävä ${exam} PDF download`
-const expectedFileTitle = (exam: Exam, lang: 'fi' | 'sv') => `${fileTitle(exam)} nimi ${lang}`
+const expectedFileTitle = (exam: Exam, lang: string) => `${fileTitle(exam)} nimi ${lang}`
 const expectedPdfContent = (exam: Exam) => `${fileTitle(exam)} sis`
 
 async function assertContentPagePdfDownload(content: AssignmentContentModel) {
@@ -18,29 +18,29 @@ async function assertContentPagePdfDownload(content: AssignmentContentModel) {
     expectedPdfContent(content.exam)
   )
   if (content.exam !== Exam.SUKO) {
-    await setTeachingLanguage(content.page, 'sv')
+    await setTeachingLanguage(content.page, 'SV')
     await assertPDFDownload(
       content.page,
       content.downloadPdfButtonSv.first(),
       expectedFileTitle(content.exam, 'sv'),
       expectedPdfContent(content.exam)
     )
-    await setTeachingLanguage(content.page, 'fi')
+    await setTeachingLanguage(content.page, 'FI')
   }
 }
 
 async function assertContentListPdfDownload(assignmentId: number, contentList: AssignmentContentListModel) {
   await assertPDFDownload(
     contentList.page,
-    contentList.page.getByTestId(`assignment-list-item-${assignmentId}`).getByTestId('pdf-download-button-fi'),
+    contentList.page.getByTestId(`assignment-list-item-${assignmentId}`).getByTestId('pdf-download-button-FI'),
     expectedFileTitle(contentList.exam, 'fi'),
     expectedPdfContent(contentList.exam)
   )
   if (contentList.exam !== Exam.SUKO) {
-    await setTeachingLanguage(contentList.page, 'sv')
+    await setTeachingLanguage(contentList.page, 'SV')
     await assertPDFDownload(
       contentList.page,
-      contentList.page.getByTestId(`assignment-list-item-${assignmentId}`).getByTestId('pdf-download-button-sv'),
+      contentList.page.getByTestId(`assignment-list-item-${assignmentId}`).getByTestId('pdf-download-button-SV'),
       expectedFileTitle(contentList.exam, 'sv'),
       expectedPdfContent(contentList.exam)
     )

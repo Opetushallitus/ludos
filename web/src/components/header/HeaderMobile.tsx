@@ -9,6 +9,7 @@ import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
 import { HeaderApplicationMenu } from './HeaderApplicationMenu'
 import { HeaderLogoutButton } from './HeaderLogoutButton'
+import { Language } from '../../types'
 
 export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
   const { LANGUAGE_DROPDOWN, t } = useLudosTranslation()
@@ -55,7 +56,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                   <div className="row w-full flex-wrap">
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
-                        uiLanguage === 'fi' ? ' border-l-5 border-green-primary' : ''
+                        uiLanguage === Language.FI ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
                       onClick={() => setUiLanguage('fi')}>
@@ -63,7 +64,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                     </Button>
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
-                        uiLanguage === 'sv' ? ' border-l-5 border-green-primary' : ''
+                        uiLanguage === Language.SV ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
                       onClick={() => setUiLanguage('sv')}>

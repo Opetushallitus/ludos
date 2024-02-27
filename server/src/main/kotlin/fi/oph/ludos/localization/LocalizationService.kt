@@ -1,5 +1,6 @@
 package fi.oph.ludos.localization
 
+import fi.oph.ludos.Language
 import fi.oph.ludos.cache.CacheName
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -8,9 +9,6 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-enum class Locale(val locale: String) {
-    FI("fi"), SV("sv")
-}
 
 @Service
 @Suppress("UNCHECKED_CAST") // We want to retain flexibility with the exact type returned
@@ -37,17 +35,17 @@ class LocalizationService(val localizationRepository: LocalizationRepository, va
 
     private fun updateCache(localizationGetter: () -> Array<Localization>, sourceName: String) {
         try {
-            val localizations = localizationGetter()
-            val localizedTexts = mutableMapOf<String, Map<String, Any>>()
-            for (locale in Locale.entries.map { it.locale }) {
+            val localizations: Array<Localization> = localizationGetter()
+            val localizedTexts = mutableMapOf<Language, Map<String, Any>>()
+            for (locale in Locale.entries) {
                 val localeTexts = localizations.filter { it.locale == locale }
-                localizedTexts[locale] = mapOf("translation" to parseLocalizationTexts(localeTexts))
+                localizedTexts[locale.toLanguage()] = mapOf("translation" to parseLocalizationTexts(localeTexts))
             }
 
             cacheManager.getCache(CacheName.LOCALIZED_TEXT.key)?.put("all", localizedTexts)
 
             val localeStats = Locale.entries
-                .map { locale -> "${locale.locale}: ${localizations.count { it.locale == locale.locale }}" }
+                .map { locale -> "${locale.locale}: ${localizations.count { it.locale == locale }}" }
             logger.info("Updated localization cache from $sourceName: $localeStats")
         } catch (e: Exception) {
             logger.error("Error updating localization cache", e)

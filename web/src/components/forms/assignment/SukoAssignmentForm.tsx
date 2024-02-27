@@ -3,7 +3,7 @@ import { FormProvider } from 'react-hook-form'
 import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
 import { useTranslation } from 'react-i18next'
 import { ContentFormAction, Exam, Oppimaara } from '../../../types'
-import { sortKooditAlphabetically, sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
+import { sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
 import { FormContentInput } from '../formCommon/FormContentInput'
 import { FormHeader } from '../formCommon/FormHeader'
@@ -28,7 +28,7 @@ type SukoAssignmentFormProps = {
 
 export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useTranslation()
-  const { koodistos, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
+  const { koodistos, sortKooditAlphabetically, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
   const {
     methods,

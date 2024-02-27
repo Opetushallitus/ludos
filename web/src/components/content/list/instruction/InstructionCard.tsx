@@ -1,4 +1,4 @@
-import { InstructionDtoOut, isLdInstruction, isSukoOrPuhviInstruction, TeachingLanguage } from '../../../../types'
+import { InstructionDtoOut, isLdInstruction, isSukoOrPuhviInstruction, Language } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -10,17 +10,16 @@ import { muokkausKey } from '../../../LudosRoutes'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
 
 type InstructionCardProps = {
-  teachingLanguage: TeachingLanguage
+  teachingLanguage: Language
   instruction: InstructionDtoOut
 }
 
 export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCardProps) => {
   const { t } = useTranslation()
   const { isYllapitaja } = useUserDetails()
-  const { getKoodiLabel } = useKoodisto()
+  const { getKoodiLabel } = useKoodisto(teachingLanguage)
 
-  const nameText =
-    (teachingLanguage === TeachingLanguage.fi ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')
+  const nameText = (teachingLanguage === Language.FI ? instruction.nameFi : instruction.nameSv) || t('form.nimeton')
 
   const titleText = () => {
     if (isSukoOrPuhviInstruction(instruction)) {
@@ -34,7 +33,7 @@ export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCa
 
   const bodyText = () => {
     if (isSukoOrPuhviInstruction(instruction)) {
-      return teachingLanguage === TeachingLanguage.fi ? instruction.shortDescriptionFi : instruction.shortDescriptionSv
+      return teachingLanguage === Language.FI ? instruction.shortDescriptionFi : instruction.shortDescriptionSv
     }
 
     if (isLdInstruction(instruction)) {

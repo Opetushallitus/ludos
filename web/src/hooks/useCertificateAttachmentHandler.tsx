@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AttachmentData, AttachmentLanguage, TeachingLanguage } from '../types'
+import { AttachmentData, Language } from '../types'
 import { UseFormSetValue, UseFormWatch } from 'react-hook-form'
 
 export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, watch: UseFormWatch<any>) {
@@ -9,11 +9,11 @@ export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, 
   const watchAttachmentFi = watch('attachmentFi')
   const watchAttachmentSv = watch('attachmentSv')
 
-  function handleNewAttachmentSelected(newAttachment: AttachmentData[], language?: AttachmentLanguage) {
+  function handleNewAttachmentSelected(newAttachment: AttachmentData[], language?: Language) {
     const file = newAttachment[0].file
 
     if (file && language) {
-      if (language === 'fi') {
+      if (language === Language.FI) {
         setNewAttachmentFi(file)
         setValue(
           'attachmentFi',
@@ -26,7 +26,7 @@ export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, 
             shouldValidate: true
           }
         )
-      } else if (language === 'sv') {
+      } else if (language === Language.SV) {
         setNewAttachmentSv(file)
         setValue(
           'attachmentSv',
@@ -43,8 +43,8 @@ export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, 
     }
   }
 
-  function currentAttachment(lang: TeachingLanguage): AttachmentData | undefined {
-    if (lang === 'fi') {
+  function currentAttachment(lang: Language): AttachmentData | undefined {
+    if (lang === Language.FI) {
       return newAttachmentFi
         ? {
             file: newAttachmentFi,
@@ -62,7 +62,7 @@ export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, 
               name: watchAttachmentFi.name || ''
             }
           : undefined
-    } else if (lang === 'sv') {
+    } else if (lang === Language.SV) {
       return newAttachmentSv
         ? {
             file: newAttachmentSv,
