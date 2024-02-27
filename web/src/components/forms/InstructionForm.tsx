@@ -4,7 +4,6 @@ import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import {
   AttachmentData,
   AttachmentDtoOut,
-  AttachmentLanguage,
   ContentFormAction,
   ContentType,
   ContentTypeSingularEn,
@@ -38,7 +37,7 @@ type InstructionFormProps = {
 
 function mapInstructionInAttachmentDataWithLanguage(
   attachmentIn: AttachmentDtoOut[],
-  lang: AttachmentLanguage
+  lang: Language
 ): AttachmentData[] {
   const attachmentData = attachmentIn.map((attachment) => ({
     attachment,
@@ -156,13 +155,13 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     )()
   }
 
-  const attachLanguageToFiles = (attachmentFiles: AttachmentData[], language: AttachmentLanguage): AttachmentData[] =>
+  const attachLanguageToFiles = (attachmentFiles: AttachmentData[], language: Language): AttachmentData[] =>
     attachmentFiles.map((attachment) => ({
       ...attachment,
       language: language ?? 'FI'
     }))
 
-  const handleNewAttachmentSelected = async (attachmentFiles: AttachmentData[], language?: AttachmentLanguage) => {
+  const handleNewAttachmentSelected = async (attachmentFiles: AttachmentData[], language?: Language) => {
     const dataToSet = attachLanguageToFiles(attachmentFiles, language ?? 'FI')
 
     if (language === 'SV') {
@@ -172,7 +171,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     }
   }
 
-  const deleteFileByIndex = (index: number, language: AttachmentLanguage) => {
+  const deleteFileByIndex = (index: number, language: Language) => {
     if (language === 'FI') {
       setAttachmentDataFi(attachmentDataFi.filter((_, i) => i !== index))
     } else {
@@ -180,7 +179,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
     }
   }
 
-  const handleAttachmentNameChange = (newName: string, index: number, language: AttachmentLanguage) => {
+  const handleAttachmentNameChange = (newName: string, index: number, language: Language) => {
     const isSv = language === 'SV'
 
     const updatedAttachmentData = isSv ? attachmentDataSv : attachmentDataFi

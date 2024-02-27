@@ -2,7 +2,6 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import {
   AttachmentData,
-  AttachmentLanguage,
   ContentBaseOut,
   ContentType,
   ContentTypeByContentTypePluralFi,
@@ -83,7 +82,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
       const attachmentsToUpdate: AttachmentData[] = data.attachments.map((attachment) => ({
         name: attachment.name,
         attachment: attachment,
-        language: attachment.language.toLowerCase() as AttachmentLanguage
+        language: attachment.language
       }))
       await createNewVersionInstruction(data.id, data, attachmentsToUpdate, [])
     } else if (isCertificate(data)) {

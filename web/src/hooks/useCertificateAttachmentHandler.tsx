@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AttachmentData, AttachmentLanguage, Language } from '../types'
+import { AttachmentData, Language } from '../types'
 import { UseFormSetValue, UseFormWatch } from 'react-hook-form'
 
 export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, watch: UseFormWatch<any>) {
@@ -9,7 +9,7 @@ export function useCertificateAttachmentHandler(setValue: UseFormSetValue<any>, 
   const watchAttachmentFi = watch('attachmentFi')
   const watchAttachmentSv = watch('attachmentSv')
 
-  function handleNewAttachmentSelected(newAttachment: AttachmentData[], language?: AttachmentLanguage) {
+  function handleNewAttachmentSelected(newAttachment: AttachmentData[], language?: Language) {
     const file = newAttachment[0].file
 
     if (file && language) {
