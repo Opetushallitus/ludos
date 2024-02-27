@@ -69,10 +69,10 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
           const userDetailsJson: UserDetails = await userDetailsResponse.json()
 
           // set businessLanguage to localStorage if it is not set beforehand
-          const validBusinessLanguageOrDefault =
+          const validBusinessLanguageOrDefault: Language =
             userDetailsJson.businessLanguage === BusinessLanguage.fi ||
             userDetailsJson.businessLanguage === BusinessLanguage.sv
-              ? (userDetailsJson.businessLanguage as 'fi' | 'sv')
+              ? (userDetailsJson.businessLanguage.toUpperCase() as Language)
               : defaultLanguage
 
           if (!localStorage.getItem(ludosUILanguageKey)) {
@@ -81,7 +81,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
 
           // for first time users set teaching language to be the same as business language
           if (!localStorage.getItem(ludosTeachingLanguageKey)) {
-            setTeachingLanguageState(validBusinessLanguageOrDefault.toUpperCase() as Language)
+            setTeachingLanguageState(validBusinessLanguageOrDefault)
           }
 
           setUserDetails(userDetailsJson)
@@ -126,7 +126,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         setUserFavoriteAssignmentCount,
         teachingLanguage,
         setTeachingLanguage,
-        uiLanguage: i18n.language,
+        uiLanguage: i18n.language === Language.FI || i18n.language === Language.SV ? i18n.language : defaultLanguage,
         setUiLanguage: setUILanguage
       }}>
       {children}

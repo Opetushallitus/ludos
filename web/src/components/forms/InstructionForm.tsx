@@ -342,7 +342,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         onDeleteAction={() => submitInstruction(PublishState.Deleted)}
         onClose={() => setIsDeleteModalOpen(false)}>
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText.INSTRUCTION(uiLanguage === 'fi' ? watchNameFi : watchNameSv)}</p>
+          <p>{lt.contentDeleteModalText.INSTRUCTION(uiLanguage === Language.FI ? watchNameFi : watchNameSv)}</p>
         </div>
       </DeleteModal>
     </div>

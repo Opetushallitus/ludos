@@ -2,7 +2,7 @@ import { createContext } from 'react'
 import { KoodistoName, Language, UserDetails } from '../types'
 import { KoodiDtoOut } from '../hooks/useKoodisto'
 
-export const defaultLanguage = 'fi'
+export const defaultLanguage = Language.FI
 export const ludosUILanguageKey = 'ludosUILanguage'
 export const ludosTeachingLanguageKey = 'ludosTeachingLanguage'
 
@@ -17,7 +17,7 @@ interface LudosContextValue {
   setUserFavoriteAssignmentCount: (count: number) => void
   teachingLanguage: Language
   setTeachingLanguage: (lang: Language) => void
-  uiLanguage: string
+  uiLanguage: Language
   setUiLanguage: (lang: string) => void
 }
 
