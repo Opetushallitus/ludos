@@ -3,7 +3,7 @@ import * as path from 'path'
 import { homedir } from 'os'
 
 import ts from 'typescript'
-import { boolean, command, flag, option, positional, run, subcommands, string, Type, union, optional } from 'cmd-ts'
+import { boolean, command, flag, option, optional, positional, run, string, subcommands, Type, union } from 'cmd-ts'
 import chalk, { ChalkInstance } from 'chalk'
 import * as XLSX from 'xlsx'
 import * as process from 'process'
@@ -372,11 +372,11 @@ async function deleteKeyRequest(
   }
 }
 
-async function deleteKey(from: Environment, key: string, locale: Locale | undefined = undefined) {
-  const localizations = await fetchLocalizations(from, key, locale)
+async function deleteKey(from: Environment, key: string) {
+  const localizations = await fetchLocalizations(from, key)
 
   if (localizations.keys().length === 0) {
-    console.log(`No localizations match key '${key}' and locale '${locale}'`)
+    console.log(`No localizations match key '${key}'`)
     return
   }
 
@@ -481,6 +481,26 @@ async function listMissing(
     console.log('ERROR: Exiting with error because there are missing keys and errorIfMissing is set')
     process.exit(2)
   }
+}
+
+async function listUnused(from: Environment, deleteUnused: boolean) {
+  const localizations = await fetchLocalizations(from)
+  const [localizationKeysUsedInCode, lintErrors] =
+    await listLocalizationKeysUsedAndLintErrorsInDirectory(WEB_SRC_DIR_PATH)
+
+  const missingFromCode = [...localizations.keys()].filter((key) => !localizationKeysUsedInCode.has(key)).sort()
+
+  if (missingFromCode.length > 0) {
+    console.log(`${from} keys that are not in code:\n  ${missingFromCode.join('\n  ')}`)
+  }
+
+  if (deleteUnused) {
+    for (const key of missingFromCode) {
+      await deleteKey(from, key)
+    }
+  }
+
+  reportLintErrors(lintErrors)
 }
 
 async function lint() {
@@ -731,11 +751,10 @@ const deleteCommand = command({
   description: 'delete localization',
   args: {
     from: positional({ type: EnvironmentParameterType, displayName: 'from' }),
-    key: positional({ type: string, displayName: 'key' }),
-    locale: localeParameterWithoutDefault
+    key: positional({ type: string, displayName: 'key' })
   },
-  handler: async (args: { from: Environment; key: string; locale: Locale | undefined }) => {
-    await deleteKey(args.from, args.key, args.locale)
+  handler: async (args: { from: Environment; key: string }) => {
+    await deleteKey(args.from, args.key)
   }
 })
 
@@ -791,6 +810,26 @@ const listMissingCommand = command({
     githubActions: boolean
   }) => {
     await listMissing(args.env, args.locale, args.errorIfMissing, args.githubActions)
+  }
+})
+
+const listUnusedCommand = command({
+  name: 'list-unused',
+  description: 'Lists keys that are in environment but not in code',
+  args: {
+    env: positional({ type: EnvironmentParameterType, displayName: 'environment' }),
+    deleteUnused: flag({
+      type: boolean,
+      long: 'delete-unused',
+      description: 'Delete unused keys from environment',
+      defaultValue(): boolean {
+        return false
+      },
+      defaultValueIsSerializable: true
+    })
+  },
+  handler: async (args: { env: Environment; deleteUnused: boolean }) => {
+    await listUnused(args.env, args.deleteUnused)
   }
 })
 
@@ -850,6 +889,7 @@ const app = subcommands({
     lint: lintCommand,
     list: listCommand,
     'list-missing': listMissingCommand,
+    'list-unused': listUnusedCommand,
     diff: diffCommand,
     copy: copyCommand,
     put: putCommand
