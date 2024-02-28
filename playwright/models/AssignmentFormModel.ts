@@ -24,11 +24,11 @@ export class AssignmentFormModel extends FormModel {
     const base = {
       exam: this.exam,
       nameFi: `${assignmentNameBase} nimi fi`,
-      nameSv: `${assignmentNameBase} nimi sv`,
+      nameSv: this.exam === Exam.SUKO ? '' : `${assignmentNameBase} nimi sv`,
       contentFi: [`${assignmentNameBase} sisältö fi`],
-      contentSv: [`${assignmentNameBase} sisältö sv`],
+      contentSv: this.exam === Exam.SUKO ? [''] : [`${assignmentNameBase} sisältö sv`],
       instructionFi: `${assignmentNameBase} ohje fi`,
-      instructionSv: `${assignmentNameBase} ohje sv`,
+      instructionSv: this.exam === Exam.SUKO ? '' : `${assignmentNameBase} ohje sv`,
       publishState: 'PUBLISHED',
       laajaalainenOsaaminenKoodiArvos: []
     }

@@ -34,6 +34,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     methods,
     handleMultiselectOptionChange,
     submitAssignment,
+    isLoaded,
     submitError,
     defaultValueError,
     isDeleteModalOpen,
@@ -158,7 +159,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput />
+          <FormContentInput formDataIsLoaded={isLoaded} />
         </form>
       </FormProvider>
 

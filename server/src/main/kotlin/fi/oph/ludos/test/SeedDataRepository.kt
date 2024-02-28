@@ -87,6 +87,17 @@ fun instructionContent(title: String) = """
     <p>Lisätietoja ohjeesta saa tarvittaessa <a target="_blank" rel="noopener noreferrer nofollow" class="tiptap-link" href="https://oph.fi">Opetushallituksesta</a>.</p>
 """.replace("\\s*\\n\\s*".toRegex(), "")
 
+fun assignmentInstructionContent(title: String) = """
+    <h4 class="tiptap-text-h1">$title</h1>
+    <p>Ohje</p>
+    <p></p>
+    <ul class="tiptap-bullet-list">
+           <li><p>abc</p></li>
+            <li><p>abc</p></li>
+    </ul>
+""".replace("\\s*\\n\\s*".toRegex(), "")
+
+
 @Repository
 class SeedDataRepository(
     val assignmentRepository: AssignmentRepository,
@@ -179,11 +190,11 @@ class SeedDataRepository(
 
             val sukoAssignmentIn = SukoAssignmentDtoIn(
                 nameFi = "Test name $it FI SUKO",
-                nameSv = "Test name $it SV SUKO",
-                instructionFi = "Test Instruction",
-                instructionSv = "Test Instruction",
+                nameSv = "",
+                instructionFi = assignmentInstructionContent("Test Instruction $it FI SUKO"),
+                instructionSv = "",
                 contentFi = listOf(complexAssignmentContent("Test content $it FI SUKO")),
-                contentSv = listOf(complexAssignmentContent("Test content $it SV SUKO")),
+                contentSv = listOf(),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size],
@@ -197,8 +208,8 @@ class SeedDataRepository(
             val ldAssignmentIn = LdAssignmentDtoIn(
                 nameFi = "Test name $it FI LD",
                 nameSv = "Test name $it SV LD",
-                instructionFi = "Test Instruction LD",
-                instructionSv = "Test Instruction LD",
+                instructionFi = assignmentInstructionContent("Test Instruction $it FI LD"),
+                instructionSv = assignmentInstructionContent("Test Instruction $it SV LD"),
                 contentFi = (1..5).map { i -> complexAssignmentContent("Test content $it FI LD part $i") },
                 contentSv = (1..5).map { i -> complexAssignmentContent("Test content $it SV LD part $i") },
                 publishState = publishState,
@@ -212,8 +223,8 @@ class SeedDataRepository(
             val puhviAssignmentIn = PuhviAssignmentDtoIn(
                 nameFi = "Test name $it FI PUHVI",
                 nameSv = "Test name $it SV PUHVI",
-                instructionFi = "Test Instruction",
-                instructionSv = "Test Instruction",
+                instructionFi = assignmentInstructionContent("Test Instruction $it FI PUHVI"),
+                instructionSv = assignmentInstructionContent("Test Instruction $it SV PUHVI"),
                 contentFi = listOf(complexAssignmentContent("Test content $it FI PUHVI")),
                 contentSv = listOf(complexAssignmentContent("Test content $it SV PUHVI")),
                 publishState = publishState,

@@ -81,11 +81,11 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `create and update suko assignment`() {
         val testAssignment = TestSukoAssignmentDtoIn(
             "name fi",
-            "name sv",
+            "",
             "instruction fi",
-            "instruction sv",
+            "",
             listOf("content fi"),
-            listOf("content sv"),
+            listOf(""),
             TestPublishState.PUBLISHED,
             listOf("06", "03"),
             "003",
@@ -110,11 +110,11 @@ class AssignmentControllerTest : AssignmentRequests() {
         // update request
         val updatedAssignment = TestSukoAssignmentDtoIn(
             "new name fi",
-            "new name sv",
+            "",
             "new instruction fi",
-            "new instruction sv",
+            "",
             listOf("new content fi"),
-            listOf("new content sv"),
+            listOf(""),
             TestPublishState.DRAFT,
             listOf("04", "05"),
             "001",
@@ -424,7 +424,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @WithYllapitajaRole
     fun `create assignment with html in name`() {
         assertThatCreateInvalidAssignmentError(
-            minimalSukoAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>")
+            minimalLdAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>")
         ).isEqualTo(
             """
             nameFi: Non-plain content found
@@ -442,6 +442,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         ).isEqualTo(
             """
             nameFi: size must be between 0 and 1000
+            nameSv: size must be between 0 and 0
             nameSv: size must be between 0 and 1000
             """.trimIndent()
         )
@@ -461,11 +462,27 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `create assignment with script tag in content`() {
         val attackContent = listOf("moi <script>alert('moi')</script> moi")
         assertThatCreateInvalidAssignmentError(
-            minimalSukoAssignmentIn.copy(contentFi = attackContent, contentSv = attackContent)
+            minimalSukoAssignmentIn.copy(contentFi = attackContent, instructionFi = attackContent[0])
+        ).isEqualTo(
+            """
+            contentFi: Unsafe HTML content found
+            instructionFi: Unsafe HTML content found
+            """.trimIndent()
+        )
+
+        assertThatCreateInvalidAssignmentError(
+            minimalLdAssignmentIn.copy(
+                contentFi = attackContent,
+                contentSv = attackContent,
+                instructionFi = attackContent[0],
+                instructionSv = attackContent[0]
+            )
         ).isEqualTo(
             """
             contentFi: Unsafe HTML content found
             contentSv: Unsafe HTML content found
+            instructionFi: Unsafe HTML content found
+            instructionSv: Unsafe HTML content found
             """.trimIndent()
         )
     }

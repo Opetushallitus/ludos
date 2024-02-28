@@ -27,6 +27,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
     methods,
     handleMultiselectOptionChange,
     submitAssignment,
+    isLoaded,
     submitError,
     defaultValueError,
     isDeleteModalOpen,
@@ -96,7 +97,7 @@ export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) =>
             />
           </fieldset>
 
-          <FormContentInput />
+          <FormContentInput formDataIsLoaded={isLoaded} />
         </form>
       </FormProvider>
 

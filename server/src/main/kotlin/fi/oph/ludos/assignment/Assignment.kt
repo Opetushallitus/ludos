@@ -12,6 +12,7 @@ import fi.oph.ludos.koodisto.ValidOppimaara
 import jakarta.validation.*
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
 import java.sql.Timestamp
 import kotlin.reflect.KClass
 
@@ -43,10 +44,10 @@ data class Oppimaara(
 )
 @AtLeastOneAssignmentNameIsNotBlank
 interface Assignment : ContentBase {
-    @get:ValidContentDescription
+    @get:ValidHtmlContent
     val instructionFi: String
 
-    @get:ValidContentDescription
+    @get:ValidHtmlContent
     val instructionSv: String
 
     @get:ValidHtmlContentList
@@ -73,10 +74,13 @@ interface SukoAssignmentMetadata {
 @JsonTypeName("SUKO")
 data class SukoAssignmentDtoIn(
     override val nameFi: String,
+    @field:Size(max = 0)
     override val nameSv: String,
     override val instructionFi: String,
+    @field:Size(max = 0)
     override val instructionSv: String,
     override val contentFi: List<String>,
+    @field:EmptyContentField
     override val contentSv: List<String>,
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: List<String>,

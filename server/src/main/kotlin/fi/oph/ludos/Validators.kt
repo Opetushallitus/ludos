@@ -111,6 +111,21 @@ class SafeHtmlListValidator : ConstraintValidator<SafeHtmlList, List<String>> {
     }
 }
 
+@MustBeDocumented
+@Constraint(validatedBy = [EmptyContentListValidator::class])
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.ANNOTATION_CLASS)
+annotation class EmptyContentField(
+    val message: String = "Content must be empty",
+    val groups: Array<KClass<*>> = [],
+    val payload: Array<KClass<out Payload>> = []
+)
+
+class EmptyContentListValidator : ConstraintValidator<EmptyContentField, List<String>> {
+    override fun isValid(input: List<String>, context: ConstraintValidatorContext?): Boolean {
+        return input.size == 1 && input[0].isEmpty()
+    }
+}
+
 const val MAX_FAVORITE_FOLDER_NAME_LENGTH = 200
 
 @MustBeDocumented

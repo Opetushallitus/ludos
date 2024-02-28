@@ -126,7 +126,7 @@ async function fillCommonAssignmentFields(form: AssignmentFormModel, formData: P
   }
 
   if (formData.instructionFi) {
-    await form.instructionFi.fill(formData.instructionFi)
+    await form.instructionFi.locator('div[contenteditable="true"]').fill(formData.instructionFi)
   }
 
   if (formData.contentFi) {
@@ -149,7 +149,7 @@ async function fillCommonAssignmentFields(form: AssignmentFormModel, formData: P
     }
 
     if (formData.instructionSv) {
-      await form.instructionSv.fill(formData.instructionSv)
+      await form.instructionSv.locator('div[contenteditable="true"]').fill(formData.instructionSv)
     }
 
     if (formData.contentSv) {
@@ -276,7 +276,7 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
   )
 
   await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
-  await expect(page.getByTestId('instruction-FI')).toHaveText(expectedFormData.instructionFi)
+  await expect(page.getByTestId('editor-instruction-FI-0')).toHaveText(expectedFormData.instructionFi)
 
   if (expectedFormData.contentFi) {
     for (const [i, content] of expectedFormData.contentFi.entries()) {
@@ -288,7 +288,7 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
     await setTeachingLanguage(page, Language.SV)
 
     await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameSv)
-    await expect(page.getByTestId('instruction-SV')).toHaveText(expectedFormData.instructionSv)
+    await expect(page.getByTestId('editor-instruction-SV-0')).toHaveText(expectedFormData.instructionSv)
 
     if (expectedFormData.contentSv) {
       for (const [i, content] of expectedFormData.contentSv.entries()) {
