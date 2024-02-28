@@ -1,0 +1,56 @@
+<configuration>
+
+    <property name="LOG_PATTERN" value="%d{&quot;yyyy-MM-dd'T'HH:mm:ss.SSSXXX&quot;} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="local">
+        <appender name="AUDIT_LOCAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/audit.log</file>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/audit.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <logger name="auditLogger" level="INFO" additivity="true">
+            <appender-ref ref="AUDIT_LOCAL"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="!local">
+        <appender name="AUDIT_CLOUDWATCH" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/audit_cloudwatch.log</file>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/audit_cloudwatch.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+        </appender>
+        <!-- TODO TODO TODO
+        <appender name="AUDIT_CLOUDWATCH" class="com.your.package.CloudWatchAppender">
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+        </appender>
+        -->
+
+        <logger name="auditLogger" level="INFO" additivity="true">
+            <appender-ref ref="AUDIT_CLOUDWATCH"/>
+        </logger>
+    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

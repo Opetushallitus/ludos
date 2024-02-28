@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("${Constants.API_PREFIX}/health-check")
 @RequireAtLeastYllapitajaRole
 class HealthCheckController(private val jdbcTemplate: JdbcTemplate) {
+
     @GetMapping("")
     @PreAuthorize("permitAll()")
     fun healthCheck(): ResponseEntity<Nothing> {
