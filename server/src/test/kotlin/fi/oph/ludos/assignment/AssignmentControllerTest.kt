@@ -424,12 +424,11 @@ class AssignmentControllerTest : AssignmentRequests() {
     @WithYllapitajaRole
     fun `create assignment with html in name`() {
         assertThatCreateInvalidAssignmentError(
-            minimalSukoAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>")
+            minimalLdAssignmentIn.copy(nameFi = "<b>nameFi</b>", nameSv = "<i>nameSv</i>")
         ).isEqualTo(
             """
             nameFi: Non-plain content found
             nameSv: Non-plain content found
-            nameSv: size must be between 0 and 0
             """.trimIndent()
         )
     }
