@@ -9,19 +9,28 @@ type AssignmentPdfProps = {
   teachingLanguage: Language
 }
 
-const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfProps) => {
-  let content, instruction
+const convertContentAndInstructionToReactPdf = (
+  { contentFi, contentSv, instructionFi, instructionSv }: AssignmentOut,
+  language: Language
+) => {
   try {
-    content =
-      teachingLanguage === 'FI'
-        ? assignment.contentFi.map(convertHtmlToReactPdf)
-        : assignment.contentSv.map(convertHtmlToReactPdf)
+    const content = language === Language.FI ? contentFi : contentSv
+    const instruction = language === Language.FI ? instructionFi : instructionSv
 
-    instruction = teachingLanguage === 'FI' ? assignment.instructionFi : assignment.instructionSv
+    return { content: content.map(convertHtmlToReactPdf), instruction: convertHtmlToReactPdf(instruction) }
   } catch (e) {
     if (e instanceof Error) {
       console.error(e)
     }
+
+    return null
+  }
+}
+
+const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfProps) => {
+  const reactHtmlContent = convertContentAndInstructionToReactPdf(assignment, teachingLanguage)
+
+  if (!reactHtmlContent) {
     return null
   }
 
@@ -31,9 +40,9 @@ const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfPro
         <View style={[pdfStyles.section, pdfStyles.title]}>
           <Text>{title}</Text>
         </View>
-        <View style={[pdfStyles.section, pdfStyles.content]}>{instruction}</View>
+        <View style={[pdfStyles.section, pdfStyles.content]}>{reactHtmlContent.instruction}</View>
         <View style={[pdfStyles.section, pdfStyles.content]} wrap>
-          {content}
+          {reactHtmlContent.content}
         </View>
       </Page>
     </Document>
