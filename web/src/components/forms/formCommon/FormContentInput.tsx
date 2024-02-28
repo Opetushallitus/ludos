@@ -116,9 +116,9 @@ export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boole
   const currentExam = watch('exam')
 
   const handleContentChange = (newContent: string) => {
-    if (activeTab === 'fi') {
+    if (activeTab === Language.FI) {
       setValue('instructionFi', newContent, { shouldDirty: true })
-    } else if (activeTab === 'sv') {
+    } else if (activeTab === Language.SV) {
       setValue('instructionSv', newContent, { shouldDirty: true })
     }
   }

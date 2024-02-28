@@ -49,7 +49,7 @@ export const InstructionContent = ({ instruction, teachingLanguage }: Instructio
 
       <ContentContent
         teachingLanguage={teachingLanguage}
-        content={teachingLanguage === 'fi' ? instruction.contentFi : instruction.contentSv}
+        content={teachingLanguage === Language.FI ? instruction.contentFi : instruction.contentSv}
       />
 
       {attachmentsFilteredWithLanguage.length > 0 && (

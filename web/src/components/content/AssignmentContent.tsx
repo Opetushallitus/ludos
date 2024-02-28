@@ -113,14 +113,14 @@ export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresen
 
       <ContentInstruction
         teachingLanguage={teachingLanguage}
-        content={teachingLanguage === 'fi' ? assignment.instructionFi : assignment.instructionSv}
+        content={teachingLanguage === Language.FI ? assignment.instructionFi : assignment.instructionSv}
       />
 
       <div className="mb-4 border-b border-gray-separator" />
 
       <ContentContent
         teachingLanguage={teachingLanguage}
-        content={teachingLanguage === 'fi' ? assignment.contentFi : assignment.contentSv}
+        content={teachingLanguage === Language.FI ? assignment.contentFi : assignment.contentSv}
       />
 
       {isFavoriteModalOpen && favoriteIds && (
