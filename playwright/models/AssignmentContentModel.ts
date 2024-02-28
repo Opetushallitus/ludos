@@ -7,7 +7,8 @@ export class AssignmentContentModel extends ContentModel {
     readonly page: Page,
     readonly exam: Exam,
     readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-FI'),
-    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-SV')
+    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-SV'),
+    readonly metadata = page.getByTestId('assignment-metadata')
   ) {
     super(page, exam, ContentType.ASSIGNMENT)
   }
