@@ -20,7 +20,7 @@ const loadResources = async () => {
 
 const i18nOptions = {
   debug: false,
-  lng: localStorage.getItem('i18nextLng') || defaultLanguage,
+  lng: localStorage.getItem('i18nextLng')?.toUpperCase() || defaultLanguage,
   detection: {
     order: ['localStorage']
   },
