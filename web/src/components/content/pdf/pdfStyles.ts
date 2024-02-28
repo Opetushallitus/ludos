@@ -54,11 +54,6 @@ export const pdfStyles: { [key: string]: any } = StyleSheet.create({
     fontSize: 14,
     fontWeight: 600
   },
-  instruction: {
-    paddingTop: 15,
-    paddingBottom: 15,
-    borderTop: `1px solid ${colors.graySeparator}`
-  },
   content: {
     paddingTop: 15,
     paddingBottom: 15,

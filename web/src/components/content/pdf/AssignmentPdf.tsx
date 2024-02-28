@@ -10,12 +10,14 @@ type AssignmentPdfProps = {
 }
 
 const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfProps) => {
-  let content
+  let content, instruction
   try {
     content =
       teachingLanguage === 'FI'
         ? assignment.contentFi.map(convertHtmlToReactPdf)
         : assignment.contentSv.map(convertHtmlToReactPdf)
+
+    instruction = teachingLanguage === 'FI' ? assignment.instructionFi : assignment.instructionSv
   } catch (e) {
     if (e instanceof Error) {
       console.error(e)
@@ -29,9 +31,7 @@ const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfPro
         <View style={[pdfStyles.section, pdfStyles.title]}>
           <Text>{title}</Text>
         </View>
-        <View style={[pdfStyles.section, pdfStyles.instruction]}>
-          <Text>{teachingLanguage === 'FI' ? assignment.instructionFi : assignment.instructionSv}</Text>
-        </View>
+        <View style={[pdfStyles.section, pdfStyles.content]}>{instruction}</View>
         <View style={[pdfStyles.section, pdfStyles.content]} wrap>
           {content}
         </View>
