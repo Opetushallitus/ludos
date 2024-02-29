@@ -37,6 +37,7 @@ dependencies {
     implementation("org.jsoup:jsoup:_")
     implementation("org.springframework.security:spring-security-cas:_")
     implementation("org.springframework:spring-test:_")
+    implementation("software.amazon.awssdk:cloudwatchlogs:_")
     implementation("software.amazon.awssdk:s3:_")
     implementation("software.amazon.awssdk:sso:_")
     implementation("software.amazon.awssdk:ssooidc:_")
