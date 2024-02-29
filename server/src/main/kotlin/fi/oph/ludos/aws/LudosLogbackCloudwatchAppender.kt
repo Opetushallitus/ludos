@@ -2,7 +2,7 @@ package fi.oph.ludos.aws
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
-import ch.qos.logback.core.Layout
+import ch.qos.logback.core.encoder.Encoder
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient
 import software.amazon.awssdk.services.cloudwatchlogs.model.CreateLogStreamRequest
@@ -13,7 +13,7 @@ class LudosLogbackCloudwatchAppender :
     private val logger = LoggerFactory.getLogger(javaClass)
 
     // <logback-spring.xml-attributes>
-    var layout: Layout<ILoggingEvent>? = null
+    var encoder: Encoder<ILoggingEvent>? = null
     var localAwsProfileName: String? = null
     var logGroupName: String? = null
     // </logback-spring.xml-attributes>
@@ -28,7 +28,7 @@ class LudosLogbackCloudwatchAppender :
             return
         }
 
-        checkNotNull(layout) { "Layout was not set for appender" }
+        checkNotNull(encoder) { "encoder was not set for appender" }
         checkNotNull(localAwsProfileName) { "localAwsProfileName was not set for appender" }
         if (localAwsProfileName!!.isBlank()) {
             throw IllegalStateException("localAwsProfileName was blank")
@@ -50,13 +50,13 @@ class LudosLogbackCloudwatchAppender :
     }
 
     override fun append(eventObject: ILoggingEvent) {
-        val message = eventObject.formattedMessage
+        val message = encoder?.encode(eventObject)?.toString(Charsets.UTF_8) ?: eventObject.formattedMessage
         val request = PutLogEventsRequest.builder()
             .logGroupName(logGroupName)
             .logStreamName(logStreamName)
             .logEvents(
                 software.amazon.awssdk.services.cloudwatchlogs.model.InputLogEvent.builder()
-                    .message(layout?.doLayout(eventObject) ?: throw IllegalStateException("Layout was not set"))
+                    .message(message)
                     .timestamp(eventObject.timeStamp)
                     .build()
             )
@@ -65,7 +65,7 @@ class LudosLogbackCloudwatchAppender :
         try {
             cloudWatchLogsClient.putLogEvents(request)
         } catch (e: Throwable) {
-            logger.error("Error calling put-log-events($message)", e)
+            logger.error("Error calling put-log-events(${eventObject.formattedMessage})", e)
         }
     }
 }
