@@ -2,8 +2,8 @@ package fi.oph.ludos.instruction
 
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
-import fi.oph.ludos.s3.Bucket
-import fi.oph.ludos.s3.S3Helper
+import fi.oph.ludos.aws.Bucket
+import fi.oph.ludos.aws.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus

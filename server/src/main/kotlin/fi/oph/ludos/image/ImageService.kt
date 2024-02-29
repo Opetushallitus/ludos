@@ -1,8 +1,8 @@
 package fi.oph.ludos.image
 
 import fi.oph.ludos.Constants
-import fi.oph.ludos.s3.Bucket
-import fi.oph.ludos.s3.S3Helper
+import fi.oph.ludos.aws.Bucket
+import fi.oph.ludos.aws.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
