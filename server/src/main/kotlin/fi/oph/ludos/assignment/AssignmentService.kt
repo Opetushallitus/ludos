@@ -1,7 +1,9 @@
 package fi.oph.ludos.assignment
 
+import fi.oph.ludos.AUDIT_LOGGER_NAME
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -9,13 +11,23 @@ class AssignmentService(
     val repository: AssignmentRepository,
     val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 ) {
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
+
     fun getAssignments(filters: AssignmentBaseFilters): AssignmentListDtoOut = repository.getAssignments(filters)
 
-    fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {
-        is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
-        is PuhviAssignmentDtoIn -> repository.savePuhviAssignment(assignment)
-        is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
-        else -> throw UnknownError("Unreachable")
+    fun createAssignment(assignment: Assignment): AssignmentOut {
+        val createdAssignment = when (assignment) {
+            is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
+            is PuhviAssignmentDtoIn -> repository.savePuhviAssignment(assignment)
+            is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
+            else -> throw UnknownError("Unreachable")
+        }
+        auditLogger.info(
+            "Created ${createdAssignment.contentType} assignment ${createdAssignment.id}" +
+                    ", nameFi='${createdAssignment.nameFi}', nameSv='${createdAssignment.nameSv}'" +
+                    ", publishState=${createdAssignment.publishState}"
+        )
+        return createdAssignment
     }
 
     fun getAssignmentById(exam: Exam, id: Int, version: Int?): AssignmentOut? =
