@@ -2,12 +2,12 @@ import { ContentType, ContentTypeSingularEn, Exam, FavoriteCardFolderDtoOut } fr
 import { useParams } from 'react-router-dom'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { useFetch } from '../../../hooks/useFetch'
-import { AssignmentFavoriteExamMenu } from './AssignmentFavoriteExamMenu'
 import { InfoBox } from '../../InfoBox'
 import { findCurrentData } from '../../../assignmentFavoriteFolderHelpers'
 import { PageLoadingIndicator } from '../../PageLoadingIndicator'
 import { PageNotFound } from '../../LudosRoutes'
 import { AssignmentFavoriteTabPanel } from './AssignmentFavoriteTabPanel'
+import { ListTabs } from '../../ListTabs'
 
 export const AssignmentFavorite = () => {
   const { t, lt } = useLudosTranslation()
@@ -35,7 +35,7 @@ export const AssignmentFavorite = () => {
         {t('favorite.suosikkitehtavat')}
       </h2>
 
-      <AssignmentFavoriteExamMenu />
+      <ListTabs />
 
       {favoriteCardFoldersLoading && <PageLoadingIndicator />}
 

@@ -26,7 +26,7 @@ export const Breadcrumbs = ({ exam, segments }: BreadcrumbsProps) => {
   )
 
   return (
-    <div className="row">
+    <div className="row flex-wrap">
       {pathsAndNames.map(({ name, id }, index) => {
         const isLast = index + 1 === pathsAndNames.length
         const path = id === exam.toLowerCase() ? `${favoritesPagePath()}/${id}` : `${favoritesPagePath(exam)}/${id}`

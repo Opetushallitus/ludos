@@ -11,12 +11,12 @@ export const AttachmentDetails = ({ attachmentDownloadUrlPrefix, fileDetails }: 
   <div className="grid grid-cols-11 gap-2 py-2" data-testid={fileDetails.fileName}>
     {fileDetails.fileKey ? (
       <ExternalLink
-        className="col-span-5 break-all text-green-primary"
+        className="col-span-4 break-all text-green-primary"
         url={`${attachmentDownloadUrlPrefix}/${fileDetails.fileKey}`}>
         {fileDetails.fileName}
       </ExternalLink>
     ) : (
-      <span className="col-span-5 break-all">{fileDetails.fileName}</span>
+      <span className="col-span-4 break-all">{fileDetails.fileName}</span>
     )}
     <p className="col-span-2">{toLocaleDate(fileDetails.fileUploadDate ?? new Date())}</p>
   </div>

@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom'
 import { ContentType, ContentTypeByContentTypePluralFi, ContentTypePluralFi, Exam } from '../../../types'
 import { AssignmentList } from './assignment/AssignmentList'
-import { ContentTypeMenu } from '../../ContentTypeMenu'
 import { useFilterValues } from '../../../hooks/useFilterValues'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { InstructionList } from './instruction/InstructionList'
 import { CertificateList } from './certificate/CertificateList'
+import { ListTabs } from '../../ListTabs'
 
 type ContentListPageProps = {
   exam: Exam
@@ -25,7 +25,7 @@ const ContentListPage = ({ exam }: ContentListPageProps) => {
         {lt.headingTextByExam[exam]}
       </h2>
 
-      <ContentTypeMenu exam={exam} />
+      <ListTabs exam={exam} />
 
       <div role="tabpanel">
         {

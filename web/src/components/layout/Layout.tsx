@@ -2,6 +2,9 @@ import { ReactNode } from 'react'
 import { Header } from '../header/Header'
 import { Footer } from '../Footer'
 import { Notification } from '../Notification'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { IS_MOBILE_QUERY } from '../../constants'
+import { twMerge } from 'tailwind-merge'
 
 interface TLayout {
   header?: ReactNode
@@ -9,15 +12,21 @@ interface TLayout {
   children: ReactNode
 }
 
-export const Layout = ({ header = <Header />, footer = <Footer />, children }: TLayout) => (
-  <main className="grid min-h-[98vh] max-w-full grid-rows-[6rem,1fr,7rem] gap-0">
-    <header className="border-t-5 border-green-primary">{header}</header>
-    <Notification />
-    <div className="flex justify-center">
-      <div className="w-[80vw]">
-        <section>{children}</section>
+export const Layout = ({ header = <Header />, footer = <Footer />, children }: TLayout) => {
+  const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
+
+  return (
+    <main
+      className={twMerge(
+        'grid min-h-[98vh] max-w-full grid-rows-[6rem,1fr,7rem] gap-0',
+        isMobile && 'grid-rows-[3rem,1fr,7rem]'
+      )}>
+      <header className="border-t-5 border-green-primary">{header}</header>
+      <Notification />
+      <div className="flex justify-center">
+        <section className="w-[80vw]">{children}</section>
       </div>
-    </div>
-    <footer>{footer}</footer>
-  </main>
-)
+      <footer>{footer}</footer>
+    </main>
+  )
+}
