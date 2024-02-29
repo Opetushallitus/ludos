@@ -1,5 +1,6 @@
 package fi.oph.ludos.auth
 
+import fi.oph.ludos.AUDIT_LOGGER_NAME
 import fi.oph.ludos.Constants.Companion.API_PREFIX
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -85,13 +86,19 @@ class CasConfig {
 
 class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccessHandler() {
     private val ludosLogger = LoggerFactory.getLogger(javaClass)
+    private val auditLogger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
+
     override fun onAuthenticationSuccess(
         request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication?
     ) {
         val principal = authentication?.principal as? Kayttajatiedot
 
         if (principal != null) {
-            ludosLogger.info("Successful login: username='${principal.username}' oid='${principal.oidHenkilo}' ip='${request?.remoteAddr}'")
+            val userInfo = "username='${principal.username}' oid='${principal.oidHenkilo}' ip='${request?.remoteAddr}'"
+            ludosLogger.info("Successful login: $userInfo")
+            if (principal.role == Role.YLLAPITAJA) {
+                auditLogger.info("Admin login: $userInfo")
+            }
         } else {
             ludosLogger.warn("Successful login but principal was null")
         }
