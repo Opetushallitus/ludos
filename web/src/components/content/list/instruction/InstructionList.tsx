@@ -12,7 +12,7 @@ import {
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { InstructionCard } from './InstructionCard'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
-import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
+import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
@@ -83,10 +83,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
           )}
         </div>
         <div className="row gap-6">
-          <div className="flex flex-col gap-2 md:flex-row">
-            <p className="mt-2">{t('filter.ohjeet-kieli')}</p>
-            <TeachingLanguageSelect />
-          </div>
+          <TeachingLanguageSelectWithLabel text={t('filter.ohjeet-kieli')} />
 
           <ContentOrderFilter
             contentOrder={filterValues.jarjesta}

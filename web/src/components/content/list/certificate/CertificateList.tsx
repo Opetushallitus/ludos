@@ -1,12 +1,12 @@
 import { useFetch } from '../../../../hooks/useFetch'
-import { ContentOut, ContentType, ContentTypeSingularFi, ContentTypeSingularEn, Exam } from '../../../../types'
+import { ContentOut, ContentType, ContentTypeSingularEn, ContentTypeSingularFi, Exam } from '../../../../types'
 import { CertificateCard } from './CertificateCard'
 import { InternalLink } from '../../../InternalLink'
 import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
+import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
@@ -52,10 +52,7 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
         </div>
         <div className="row gap-6">
           {shouldShowTeachingLanguageDropdown && (
-            <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{t('filter.todistukset-kieli')}</p>
-              <TeachingLanguageSelect />
-            </div>
+            <TeachingLanguageSelectWithLabel text={t('filter.todistukset-kieli')} />
           )}
 
           <ContentOrderFilter

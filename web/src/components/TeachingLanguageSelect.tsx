@@ -20,3 +20,10 @@ export const TeachingLanguageSelect = () => {
     />
   )
 }
+
+export const TeachingLanguageSelectWithLabel = ({ text }: { text: string }) => (
+  <div className="flex flex-col gap-2 md:flex-row">
+    <p className="mt-2">{text}</p>
+    <TeachingLanguageSelect />
+  </div>
+)

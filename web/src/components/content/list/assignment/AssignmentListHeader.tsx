@@ -3,11 +3,11 @@ import { buttonClasses } from '../../../Button'
 import { uusiKey } from '../../../LudosRoutes'
 import { ContentTypeSingularFi, Exam } from '../../../../types'
 import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
-import { TeachingLanguageSelect } from '../../../TeachingLanguageSelect'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { FilterValues } from '../../../../hooks/useFilterValues'
+import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
 
 type AssignmentListHeaderProps = {
   exam: Exam
@@ -33,12 +33,7 @@ export const AssignmentListHeader = ({ exam, filterValues }: AssignmentListHeade
         )}
       </div>
       <div className="row gap-6">
-        {shouldShowTeachingLanguageDropdown && (
-          <div className="flex flex-col gap-2 md:flex-row">
-            <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
-            <TeachingLanguageSelect />
-          </div>
-        )}
+        {shouldShowTeachingLanguageDropdown && <TeachingLanguageSelectWithLabel text={t('filter.koetehtavat-kieli')} />}
         <ContentOrderFilter
           contentOrder={filterValues.filterValues.jarjesta}
           setContentOrder={(contentOrder) => filterValues.setFilterValue('jarjesta', contentOrder, true)}

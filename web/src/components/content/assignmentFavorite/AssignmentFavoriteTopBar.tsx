@@ -9,7 +9,7 @@ import { createFavoriteFolder } from '../../../request'
 import { useNotification } from '../../../contexts/NotificationContext'
 import { AssignmentFavoriteFolderDropdownMenu } from './AssignmentFavoriteFolderDropdownMenu'
 import { FolderList } from '../../modal/AssignmentFavoriteMoveFolderModal'
-import { TeachingLanguageSelect } from '../../TeachingLanguageSelect'
+import { TeachingLanguageSelectWithLabel } from '../../TeachingLanguageSelect'
 
 type AssignmentFavoriteTopBarProps = {
   exam: Exam
@@ -59,12 +59,7 @@ export const AssignmentFavoriteTopBar = ({
           <div />
         )}
         <div className="row gap-6 items-center">
-          {exam !== Exam.SUKO && (
-            <div className="flex flex-col gap-2 md:flex-row">
-              <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
-              <TeachingLanguageSelect />
-            </div>
-          )}
+          {exam !== Exam.SUKO && <TeachingLanguageSelectWithLabel text={t('filter.koetehtavat-kieli')} />}
           <Button
             variant="buttonPrimary"
             onClick={() => setOpenAddNewFolderModal(true)}
