@@ -9,6 +9,7 @@ import { createFavoriteFolder } from '../../../request'
 import { useNotification } from '../../../contexts/NotificationContext'
 import { AssignmentFavoriteFolderDropdownMenu } from './AssignmentFavoriteFolderDropdownMenu'
 import { FolderList } from '../../modal/AssignmentFavoriteMoveFolderModal'
+import { TeachingLanguageSelect } from '../../TeachingLanguageSelect'
 
 type AssignmentFavoriteTopBarProps = {
   exam: Exam
@@ -57,12 +58,23 @@ export const AssignmentFavoriteTopBar = ({
         ) : (
           <div />
         )}
-        <Button variant="buttonPrimary" onClick={() => setOpenAddNewFolderModal(true)} data-testid="add-new-folder-btn">
-          <span className="flex items-center">
-            <Icon name="lisää" color="text-white" size="lg" />
-            <span className="pl-1">{t('favorite.lisaa-kansio')}</span>
-          </span>
-        </Button>
+        <div className="row gap-6 items-center">
+          {exam !== Exam.SUKO && (
+            <div className="flex flex-col gap-2 md:flex-row">
+              <p className="mt-2">{t('filter.koetehtavat-kieli')}</p>
+              <TeachingLanguageSelect />
+            </div>
+          )}
+          <Button
+            variant="buttonPrimary"
+            onClick={() => setOpenAddNewFolderModal(true)}
+            data-testid="add-new-folder-btn">
+            <span className="flex items-center">
+              <Icon name="lisää" color="text-white" size="lg" />
+              <span className="pl-1">{t('favorite.lisaa-kansio')}</span>
+            </span>
+          </Button>
+        </div>
       </div>
       {openAddNewFolderModal && (
         <TextInputModal
