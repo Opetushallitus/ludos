@@ -3,14 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Exam } from '../types'
 
 export type FiltersType = {
-  oppimaara: string[] | null
-  tehtavatyyppisuko: string[] | null
-  aihe: string[] | null
-  tavoitetaitotaso: string[] | null
+  oppimaara: string | null
+  tehtavatyyppisuko: string | null
+  aihe: string | null
+  tavoitetaitotaso: string | null
   jarjesta: 'asc' | 'desc'
-  lukuvuosi: string[] | null
-  aine: string[] | null
-  tehtavatyyppipuhvi: string[] | null
+  lukuvuosi: string | null
+  aine: string | null
+  tehtavatyyppipuhvi: string | null
   sivu: number
 }
 
@@ -22,6 +22,7 @@ export type FilterValues = {
   filterValues: FiltersType
   setFilterValue: (key: keyof FiltersType, value: ParamsValue, replace: boolean) => void
   searchStringForNewFilterValue: (key: keyof FiltersType, value: ParamsValue) => string
+  resetFilterValues: () => void
 }
 
 export function useFilterValues(exam: Exam) {
@@ -56,7 +57,7 @@ export function useFilterValues(exam: Exam) {
       } else if (key === 'sivu') {
         currentParams[key] = Number(value)
       } else if (examKeyMap[exam]?.includes(key)) {
-        currentParams[key] = value.split(',')
+        currentParams[key] = value
       }
     })
 
@@ -94,5 +95,7 @@ export function useFilterValues(exam: Exam) {
     navigate({ search: searchStringForNewFilterValue(key, value) }, { replace })
   }
 
-  return { filterValues, setFilterValue, searchStringForNewFilterValue }
+  const resetFilterValues = () => navigate({ search: '' }, { replace: true })
+
+  return { filterValues, setFilterValue, searchStringForNewFilterValue, resetFilterValues }
 }
