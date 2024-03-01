@@ -16,12 +16,12 @@ export const ListTabs = ({ exam }: TabsProps) => {
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     twMerge(
-      'cursor-pointer rounded-t-lg hover:bg-gray-light',
-      isActive && 'border-b-4 border-b-green-primary text-green-primary'
+      'px-2 cursor-pointer rounded-t-lg hover:bg-gray-light border-b-4 border-gray-separator',
+      isActive && 'border-b-green-primary text-green-primary'
     )
 
   return (
-    <div className="row flex-wrap border-b-4 border-gray-separator font-semibold">
+    <div className="row flex-wrap font-semibold">
       {exam ? (
         <>
           {Object.values(ContentType).map((contentType: ContentType, i) => (
@@ -54,8 +54,6 @@ const LinkWrapper = ({ children }: { children: ReactNode }) => {
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   return (
-    <div className={twMerge('inline-block px-3 py-1 text-base text-center', isMobile && 'w-full text-left')}>
-      {children}
-    </div>
+    <div className={twMerge('inline-block py-1 text-base text-center', isMobile && 'w-full text-left')}>{children}</div>
   )
 }
