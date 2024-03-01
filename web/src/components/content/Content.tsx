@@ -8,10 +8,10 @@ import {
   ContentTypePluralFi,
   ContentTypeSingularEn,
   Exam,
-  Language,
   isAssignment,
   isCertificate,
-  isInstruction
+  isInstruction,
+  Language
 } from '../../types'
 import { useFetch } from '../../hooks/useFetch'
 import { ContentHeader } from './ContentCommon'
@@ -103,7 +103,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   }
 
   return (
-    <div className="min-h-[80vh] mt-10">
+    <div className="min-h-[80vh] mt-5">
       {isYllapitaja && isVersionBrowser && versionList && (
         <VersionBrowserBar
           data={data}
