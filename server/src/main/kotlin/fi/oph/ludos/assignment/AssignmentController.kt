@@ -67,8 +67,12 @@ class AssignmentController(val service: AssignmentService) {
 
     @PutMapping("{id}")
     @RequireAtLeastYllapitajaRole
-    fun createNewVersionOfAssignment(@PathVariable("id") id: Int, @Valid @RequestBody assignment: Assignment): Int =
-        service.createNewVersionOfAssignment(id, assignment) ?: throw ResponseStatusException(
+    fun createNewVersionOfAssignment(
+        @PathVariable("id") id: Int,
+        @Valid @RequestBody assignment: Assignment,
+        request: HttpServletRequest
+    ): Int =
+        service.createNewVersionOfAssignment(id, assignment, request) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "Assignment $id not found"
         )

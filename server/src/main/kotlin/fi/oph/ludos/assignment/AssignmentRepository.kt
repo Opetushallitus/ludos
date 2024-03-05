@@ -592,6 +592,19 @@ class AssignmentRepository(
         }
     }
 
+    val assignmentOutFields =
+        "assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at, assignment_version"
+
+    fun contentOutFields(keyHolder: GeneratedKeyHolder) = ContentOutFieldsImpl(
+        id = keyHolder.keys?.get("assignment_id") as Int,
+        createdAt = keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
+        updatedAt = keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
+        authorOid = keyHolder.keys?.get("assignment_author_oid") as String,
+        updaterOid = keyHolder.keys?.get("assignment_updater_oid") as String,
+        updaterName = null,
+        version = keyHolder.keys?.get("assignment_version") as Int,
+    )
+
     fun saveSukoAssignment(assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut =
         transactionTemplate.execute { _ ->
             val version = INITIAL_VERSION_NUMBER
@@ -614,7 +627,7 @@ class AssignmentRepository(
                             assignment_updater_oid,
                             assignment_version) 
                             VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?, ?, ?) 
-                            RETURNING assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at""".trimIndent(),
+                            RETURNING $assignmentOutFields""".trimIndent(),
                     arrayOf("assignment_id")
                 )
                 ps.setString(1, assignment.nameFi)
@@ -638,31 +651,50 @@ class AssignmentRepository(
 
             insertAssignmentContent(Exam.SUKO, assignmentId, assignment.contentFi, assignment.contentSv, version)
 
-            SukoAssignmentDtoOut(
-                id = assignmentId,
-                nameFi = assignment.nameFi,
-                nameSv = assignment.nameSv,
-                instructionFi = assignment.instructionFi,
-                instructionSv = assignment.instructionSv,
-                contentFi = assignment.contentFi,
-                contentSv = assignment.contentSv,
-                publishState = assignment.publishState,
-                createdAt = keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
-                updatedAt = keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
-                laajaalainenOsaaminenKoodiArvos = assignment.laajaalainenOsaaminenKoodiArvos,
-                authorOid = keyHolder.keys?.get("assignment_author_oid") as String,
-                updaterOid = keyHolder.keys?.get("assignment_updater_oid") as String,
-                updaterName = null,
-                version = version,
-                assignmentTypeKoodiArvo = assignment.assignmentTypeKoodiArvo,
-                oppimaara = Oppimaara(
-                    assignment.oppimaara.oppimaaraKoodiArvo,
-                    assignment.oppimaara.kielitarjontaKoodiArvo
-                ),
-                tavoitetasoKoodiArvo = assignment.tavoitetasoKoodiArvo,
-                aiheKoodiArvos = assignment.aiheKoodiArvos,
-            )
+            SukoAssignmentDtoOut(assignment, contentOutFields(keyHolder))
         }!!
+
+    fun saveLdAssignment(assignment: LdAssignmentDtoIn): LdAssignmentDtoOut = transactionTemplate.execute { _ ->
+        val version = INITIAL_VERSION_NUMBER
+        val keyHolder = GeneratedKeyHolder()
+        jdbcTemplate.update({ con ->
+            val ps = con.prepareStatement(
+                """INSERT INTO ld_assignment (
+                            assignment_name_fi, 
+                            assignment_name_sv, 
+                            assignment_instruction_fi,
+                            assignment_instruction_sv,
+                            assignment_publish_state,
+                            assignment_laajaalainen_osaaminen_koodi_arvos,
+                            assignment_author_oid,
+                            assignment_updater_oid,
+                            assignment_version,
+                            ld_assignment_lukuvuosi_koodi_arvos,
+                            ld_assignment_aine_koodi_arvo
+                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
+                        RETURNING $assignmentOutFields""",
+                arrayOf("assignment_id")
+            )
+            ps.setString(1, assignment.nameFi)
+            ps.setString(2, assignment.nameSv)
+            ps.setString(3, assignment.instructionFi)
+            ps.setString(4, assignment.instructionSv)
+            ps.setString(5, assignment.publishState.toString())
+            ps.setArray(6, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray()))
+            ps.setString(7, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+            ps.setString(8, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+            ps.setInt(9, version)
+            ps.setArray(10, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos.toTypedArray()))
+            ps.setString(11, assignment.aineKoodiArvo)
+            ps
+        }, keyHolder)
+
+        val assignmentId = keyHolder.keys?.get("assignment_id") as Int
+
+        insertAssignmentContent(Exam.LD, assignmentId, assignment.contentFi, assignment.contentSv, version)
+
+        LdAssignmentDtoOut(assignment, contentOutFields(keyHolder))
+    }!!
 
     fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut =
         transactionTemplate.execute { _ ->
@@ -683,7 +715,7 @@ class AssignmentRepository(
                             puhvi_assignment_assignment_type_koodi_arvo,
                             puhvi_assignment_lukuvuosi_koodi_arvos
                         ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
-                        RETURNING assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at""",
+                        RETURNING $assignmentOutFields""",
                     arrayOf("assignment_id")
                 )
                 ps.setString(1, assignment.nameFi)
@@ -725,65 +757,6 @@ class AssignmentRepository(
             )
         }!!
 
-    fun saveLdAssignment(assignment: LdAssignmentDtoIn): LdAssignmentDtoOut = transactionTemplate.execute { _ ->
-        val version = INITIAL_VERSION_NUMBER
-        val keyHolder = GeneratedKeyHolder()
-        jdbcTemplate.update({ con ->
-            val ps = con.prepareStatement(
-                """INSERT INTO ld_assignment (
-                            assignment_name_fi, 
-                            assignment_name_sv, 
-                            assignment_instruction_fi,
-                            assignment_instruction_sv,
-                            assignment_publish_state,
-                            assignment_laajaalainen_osaaminen_koodi_arvos,
-                            assignment_author_oid,
-                            assignment_updater_oid,
-                            assignment_version,
-                            ld_assignment_lukuvuosi_koodi_arvos,
-                            ld_assignment_aine_koodi_arvo
-                        ) VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
-                        RETURNING assignment_id, assignment_author_oid, assignment_updater_oid, assignment_created_at, assignment_updated_at""",
-                arrayOf("assignment_id")
-            )
-            ps.setString(1, assignment.nameFi)
-            ps.setString(2, assignment.nameSv)
-            ps.setString(3, assignment.instructionFi)
-            ps.setString(4, assignment.instructionSv)
-            ps.setString(5, assignment.publishState.toString())
-            ps.setArray(6, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray()))
-            ps.setString(7, Kayttajatiedot.fromSecurityContext().oidHenkilo)
-            ps.setString(8, Kayttajatiedot.fromSecurityContext().oidHenkilo)
-            ps.setInt(9, version)
-            ps.setArray(10, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos.toTypedArray()))
-            ps.setString(11, assignment.aineKoodiArvo)
-            ps
-        }, keyHolder)
-
-        val assignmentId = keyHolder.keys?.get("assignment_id") as Int
-
-        insertAssignmentContent(Exam.LD, assignmentId, assignment.contentFi, assignment.contentSv, version)
-
-        LdAssignmentDtoOut(
-            id = assignmentId,
-            nameFi = assignment.nameFi,
-            nameSv = assignment.nameSv,
-            instructionFi = assignment.instructionFi,
-            instructionSv = assignment.instructionSv,
-            contentFi = assignment.contentFi,
-            contentSv = assignment.contentSv,
-            publishState = assignment.publishState,
-            createdAt = keyHolder.keys?.get("assignment_created_at") as java.sql.Timestamp,
-            updatedAt = keyHolder.keys?.get("assignment_updated_at") as java.sql.Timestamp,
-            laajaalainenOsaaminenKoodiArvos = assignment.laajaalainenOsaaminenKoodiArvos,
-            authorOid = keyHolder.keys?.get("assignment_author_oid") as String,
-            updaterOid = keyHolder.keys?.get("assignment_updater_oid") as String,
-            updaterName = null,
-            version = version,
-            lukuvuosiKoodiArvos = assignment.lukuvuosiKoodiArvos,
-            aineKoodiArvo = assignment.aineKoodiArvo
-        )
-    }!!
 
     fun getAssignmentsByIds(ids: List<Int>, exam: Exam, version: Int?): List<AssignmentOut> {
         if (version != null && ids.size != 1) {
@@ -844,133 +817,150 @@ class AssignmentRepository(
         return jdbcTemplate.query(query, mapper, id)
     }
 
-    fun createNewVersionOfSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): Int? =
+    fun createNewVersionOfSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): SukoAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
             val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
                 ?: return@execute null
 
             val version = currentLatestVersion + 1
-
-            jdbcTemplate.update(
-                """INSERT INTO suko_assignment (
-                    assignment_id,
-                    assignment_name_fi,
-                    assignment_name_sv,
-                    assignment_instruction_fi,
-                    assignment_instruction_sv,
-                    assignment_publish_state,
-                    suko_assignment_aihe_koodi_arvos, 
-                    suko_assignment_assignment_type_koodi_arvo, 
-                    suko_assignment_oppimaara_koodi_arvo, 
-                    suko_assignment_oppimaara_kielitarjonta_koodi_arvo, 
-                    suko_assignment_tavoitetaso_koodi_arvo,
-                    assignment_laajaalainen_osaaminen_koodi_arvos,
-                    assignment_author_oid,
-                    assignment_updater_oid,
-                    assignment_version) 
-                    VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                id,
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState.toString(),
-                assignment.aiheKoodiArvos.toTypedArray(),
-                assignment.assignmentTypeKoodiArvo,
-                assignment.oppimaara.oppimaaraKoodiArvo,
-                assignment.oppimaara.kielitarjontaKoodiArvo,
-                assignment.tavoitetasoKoodiArvo,
-                assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray(),
-                authorOid,
-                Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                version
-            )
+            val keyHolder = GeneratedKeyHolder()
+            jdbcTemplate.update({ con ->
+                val ps = con.prepareStatement(
+                    """INSERT INTO suko_assignment (
+                        assignment_id,
+                        assignment_name_fi,
+                        assignment_name_sv,
+                        assignment_instruction_fi,
+                        assignment_instruction_sv,
+                        assignment_publish_state,
+                        suko_assignment_aihe_koodi_arvos, 
+                        suko_assignment_assignment_type_koodi_arvo, 
+                        suko_assignment_oppimaara_koodi_arvo, 
+                        suko_assignment_oppimaara_kielitarjonta_koodi_arvo, 
+                        suko_assignment_tavoitetaso_koodi_arvo,
+                        assignment_laajaalainen_osaaminen_koodi_arvos,
+                        assignment_author_oid,
+                        assignment_updater_oid,
+                        assignment_version) 
+                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                       RETURNING $assignmentOutFields""".trimIndent(),
+                    arrayOf("assignment_id")
+                )
+                ps.setInt(1, id)
+                ps.setString(2, assignment.nameFi)
+                ps.setString(3, assignment.nameSv)
+                ps.setString(4, assignment.instructionFi)
+                ps.setString(5, assignment.instructionSv)
+                ps.setString(6, assignment.publishState.toString())
+                ps.setArray(7, con.createArrayOf("text", assignment.aiheKoodiArvos.toTypedArray()))
+                ps.setString(8, assignment.assignmentTypeKoodiArvo)
+                ps.setString(9, assignment.oppimaara.oppimaaraKoodiArvo)
+                ps.setString(10, assignment.oppimaara.kielitarjontaKoodiArvo)
+                ps.setString(11, assignment.tavoitetasoKoodiArvo)
+                ps.setArray(12, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray()))
+                ps.setString(13, authorOid)
+                ps.setString(14, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setInt(15, version)
+                ps
+            }, keyHolder)
 
             insertAssignmentContent(Exam.SUKO, id, assignment.contentFi, assignment.contentSv, version)
 
-            return@execute id
+            SukoAssignmentDtoOut(assignment, contentOutFields(keyHolder))
         }
 
-    fun createNewVersionOfLdAssignment(assignment: LdAssignmentDtoIn, id: Int): Int? =
+    fun createNewVersionOfLdAssignment(assignment: LdAssignmentDtoIn, id: Int): LdAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
             val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
                 ?: return@execute null
 
             val version = currentLatestVersion + 1
-            jdbcTemplate.update(
-                """INSERT INTO ld_assignment (
-                assignment_id,
-                assignment_name_fi,
-                assignment_name_sv,
-                assignment_instruction_fi,
-                assignment_instruction_sv,
-                assignment_publish_state,
-                assignment_author_oid,
-                assignment_updated_at,
-                assignment_updater_oid,
-                assignment_laajaalainen_osaaminen_koodi_arvos,
-                ld_assignment_lukuvuosi_koodi_arvos,
-                ld_assignment_aine_koodi_arvo,
-                assignment_version)
-            VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?)""",
-                id,
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState.toString(),
-                authorOid,
-                Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray(),
-                assignment.lukuvuosiKoodiArvos.toTypedArray(),
-                assignment.aineKoodiArvo,
-                version
-            )
+            val keyHolder = GeneratedKeyHolder()
+            jdbcTemplate.update({ con ->
+                val ps = con.prepareStatement(
+                    """INSERT INTO ld_assignment (
+                        assignment_id,
+                        assignment_name_fi,
+                        assignment_name_sv,
+                        assignment_instruction_fi,
+                        assignment_instruction_sv,
+                        assignment_publish_state,
+                        assignment_author_oid,
+                        assignment_updated_at,
+                        assignment_updater_oid,
+                        assignment_laajaalainen_osaaminen_koodi_arvos,
+                        ld_assignment_lukuvuosi_koodi_arvos,
+                        ld_assignment_aine_koodi_arvo,
+                        assignment_version)
+                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?)
+                       RETURNING $assignmentOutFields""".trimIndent(),
+                    arrayOf("assignment_id")
+                )
+                ps.setInt(1, id)
+                ps.setString(2, assignment.nameFi)
+                ps.setString(3, assignment.nameSv)
+                ps.setString(4, assignment.instructionFi)
+                ps.setString(5, assignment.instructionSv)
+                ps.setString(6, assignment.publishState.toString())
+                ps.setString(7, authorOid)
+                ps.setString(8, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setArray(9, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray()))
+                ps.setArray(10, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos.toTypedArray()))
+                ps.setString(11, assignment.aineKoodiArvo)
+                ps.setInt(12, version)
+                ps
+            }, keyHolder)
 
             insertAssignmentContent(Exam.LD, id, assignment.contentFi, assignment.contentSv, version)
 
-            return@execute id
+            LdAssignmentDtoOut(assignment, contentOutFields(keyHolder))
         }
 
-    fun createNewVersionOfPuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): Int? =
+    fun createNewVersionOfPuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): PuhviAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
             val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
                 ?: return@execute null
 
             val version = currentLatestVersion + 1
-            jdbcTemplate.update(
-                """INSERT INTO puhvi_assignment (
-                assignment_id,
-                assignment_name_fi,
-                assignment_name_sv,
-                assignment_instruction_fi,
-                assignment_instruction_sv,
-                assignment_publish_state,
-                assignment_author_oid,
-                assignment_updated_at,
-                assignment_updater_oid,
-                assignment_laajaalainen_osaaminen_koodi_arvos,
-                puhvi_assignment_assignment_type_koodi_arvo,
-                puhvi_assignment_lukuvuosi_koodi_arvos,
-                assignment_version)
-            VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?)""",
-                id,
-                assignment.nameFi,
-                assignment.nameSv,
-                assignment.instructionFi,
-                assignment.instructionSv,
-                assignment.publishState.toString(),
-                authorOid,
-                Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray(),
-                assignment.assignmentTypeKoodiArvo,
-                assignment.lukuvuosiKoodiArvos.toTypedArray(),
-                version
-            )
+            val keyHolder = GeneratedKeyHolder()
+            jdbcTemplate.update({ con ->
+                val ps = con.prepareStatement(
+                    """INSERT INTO puhvi_assignment (
+                        assignment_id,
+                        assignment_name_fi,
+                        assignment_name_sv,
+                        assignment_instruction_fi,
+                        assignment_instruction_sv,
+                        assignment_publish_state,
+                        assignment_author_oid,
+                        assignment_updated_at,
+                        assignment_updater_oid,
+                        assignment_laajaalainen_osaaminen_koodi_arvos,
+                        puhvi_assignment_assignment_type_koodi_arvo,
+                        puhvi_assignment_lukuvuosi_koodi_arvos,
+                        assignment_version)
+                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?)
+                       RETURNING $assignmentOutFields""".trimIndent(),
+                    arrayOf("assignment_id")
+                )
+                ps.setInt(1, id)
+                ps.setString(2, assignment.nameFi)
+                ps.setString(3, assignment.nameSv)
+                ps.setString(4, assignment.instructionFi)
+                ps.setString(5, assignment.instructionSv)
+                ps.setString(6, assignment.publishState.toString())
+                ps.setString(7, authorOid)
+                ps.setString(8, Kayttajatiedot.fromSecurityContext().oidHenkilo)
+                ps.setArray(9, con.createArrayOf("text", assignment.laajaalainenOsaaminenKoodiArvos.toTypedArray()))
+                ps.setString(10, assignment.assignmentTypeKoodiArvo)
+                ps.setArray(11, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos.toTypedArray()))
+                ps.setInt(12, version)
+                ps
+            }, keyHolder)
 
             insertAssignmentContent(Exam.PUHVI, id, assignment.contentFi, assignment.contentSv, version)
 
-            return@execute id
+            PuhviAssignmentDtoOut(assignment, contentOutFields(keyHolder))
         }
 
 

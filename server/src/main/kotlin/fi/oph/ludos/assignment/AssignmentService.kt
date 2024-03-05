@@ -33,6 +33,26 @@ class AssignmentService(
         return createdAssignment
     }
 
+    fun createNewVersionOfAssignment(id: Int, assignment: Assignment, request: ServletRequest): Int? {
+        val newAssignmentVersion = when (assignment) {
+            is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(assignment, id)
+            is LdAssignmentDtoIn -> repository.createNewVersionOfLdAssignment(assignment, id)
+            is PuhviAssignmentDtoIn -> repository.createNewVersionOfPuhviAssignment(assignment, id)
+            else -> throw UnknownError("Unreachable")
+        }
+        if (newAssignmentVersion != null) {
+            auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(newAssignmentVersion))
+                .log("Created new version of assignment")
+        } else {
+            auditLogger.atError().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("assignmentId", id)
+                .log("Tried to create new version of non-existent assignment")
+        }
+
+        return newAssignmentVersion?.id
+    }
+
     fun getAssignmentById(exam: Exam, id: Int, version: Int?): AssignmentOut? =
         repository.getAssignmentsByIds(listOf(id), exam, version).firstOrNull()
 
@@ -50,13 +70,6 @@ class AssignmentService(
                 is PuhviAssignmentDtoOut -> it.copy(updaterName = updaterName)
             }
         }
-    }
-
-    fun createNewVersionOfAssignment(id: Int, assignment: Assignment): Int? = when (assignment) {
-        is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(assignment, id)
-        is PuhviAssignmentDtoIn -> repository.createNewVersionOfPuhviAssignment(assignment, id)
-        is LdAssignmentDtoIn -> repository.createNewVersionOfLdAssignment(assignment, id)
-        else -> throw UnknownError("Unreachable")
     }
 
     fun getFavoriteAssignmentsCount(): Int = repository.getFavoriteAssignmentsCount()

@@ -27,7 +27,7 @@ interface ContentBase {
     val publishState: PublishState
 }
 
-interface ContentBaseOut : ContentBase {
+interface ContentOutFields {
     val id: Int
     val createdAt: Timestamp
     val updatedAt: Timestamp
@@ -36,6 +36,18 @@ interface ContentBaseOut : ContentBase {
     val updaterName: String?
     val version: Int
 }
+
+data class ContentOutFieldsImpl(
+    override val id: Int,
+    override val createdAt: Timestamp,
+    override val updatedAt: Timestamp,
+    override val authorOid: String,
+    override val updaterOid: String,
+    override val updaterName: String?,
+    override val version: Int
+) : ContentOutFields
+
+interface ContentBaseOut : ContentBase, ContentOutFields
 
 // NOTE: This enum must match the postgres enum type language
 enum class Language {
