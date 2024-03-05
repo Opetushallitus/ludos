@@ -1,5 +1,6 @@
 package fi.oph.ludos.test
 
+import fi.oph.ludos.ContentBase
 import fi.oph.ludos.Exam
 import fi.oph.ludos.Language
 import fi.oph.ludos.PublishState
@@ -9,11 +10,15 @@ import fi.oph.ludos.certificate.LdCertificateDtoIn
 import fi.oph.ludos.certificate.PuhviCertificateDtoIn
 import fi.oph.ludos.certificate.SukoCertificateDtoIn
 import fi.oph.ludos.instruction.*
+import jakarta.validation.Validation
+import jakarta.validation.Validator
 import org.springframework.core.io.ClassPathResource
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.stereotype.Repository
+import org.springframework.web.server.ResponseStatusException
 
 fun complexAssignmentContent(title: String) = """
     <h1 class="tiptap-text-h1">$title</h1>
@@ -88,12 +93,12 @@ fun instructionContent(title: String) = """
 """.replace("\\s*\\n\\s*".toRegex(), "")
 
 fun assignmentInstructionContent(title: String) = """
-    <h4 class="tiptap-text-h1">$title</h1>
+    <h4 class="tiptap-text-h1">$title</h4>
     <p>Ohje</p>
     <p></p>
     <ul class="tiptap-bullet-list">
            <li><p>abc</p></li>
-            <li><p>abc</p></li>
+           <li><p>abc</p></li>
     </ul>
 """.replace("\\s*\\n\\s*".toRegex(), "")
 
@@ -180,6 +185,8 @@ class SeedDataRepository(
             assignmentRepository.setAssignmentFavoriteFolders(exam, assignmentId, favoriteFolderIds)
         }
 
+        val validatedAssignmentProperties = listOf("instructionFi", "instructionSv", "contentFi", "contentSv")
+
         repeat(24) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
 
@@ -194,7 +201,7 @@ class SeedDataRepository(
                 instructionFi = assignmentInstructionContent("Test Instruction $it FI SUKO"),
                 instructionSv = "",
                 contentFi = listOf(complexAssignmentContent("Test content $it FI SUKO")),
-                contentSv = listOf(),
+                contentSv = listOf(""),
                 publishState = publishState,
                 laajaalainenOsaaminenKoodiArvos = laajaalainenOsaaminenVarying,
                 assignmentTypeKoodiArvo = sukoAssignmentTypeKoodiArvos[it % sukoAssignmentTypeKoodiArvos.size],
@@ -202,6 +209,8 @@ class SeedDataRepository(
                 tavoitetasoKoodiArvo = taitotasoKoodiArvos[it % taitotasoKoodiArvos.size],
                 aiheKoodiArvos = List(if (it % 2 == 0) 1 else 2) { index -> aiheKoodiArvos[(index + it) % aiheKoodiArvos.size] },
             )
+            validateSomeProperties(sukoAssignmentIn, validatedAssignmentProperties)
+
             val sukoAssignmentOut = assignmentRepository.saveSukoAssignment(sukoAssignmentIn)
             addAssignmentToFavoriteFolders(Exam.SUKO, sukoAssignmentOut.id, it)
 
@@ -217,6 +226,7 @@ class SeedDataRepository(
                 lukuvuosiKoodiArvos = lukuvuosiVarying,
                 aineKoodiArvo = aineKoodiArvos[it % aineKoodiArvos.size]
             )
+            validateSomeProperties(ldAssignmentIn, validatedAssignmentProperties)
             val ldAssignmentOut = assignmentRepository.saveLdAssignment(ldAssignmentIn)
             addAssignmentToFavoriteFolders(Exam.LD, ldAssignmentOut.id, it)
 
@@ -232,8 +242,24 @@ class SeedDataRepository(
                 assignmentTypeKoodiArvo = puhviAssignmentTypeKoodiArvos[it % puhviAssignmentTypeKoodiArvos.size],
                 lukuvuosiKoodiArvos = lukuvuosiVarying,
             )
+            validateSomeProperties(puhviAssignmentIn, validatedAssignmentProperties)
             val puhviAssignmentOut = assignmentRepository.savePuhviAssignment(puhviAssignmentIn)
             addAssignmentToFavoriteFolders(Exam.PUHVI, puhviAssignmentOut.id, it)
+        }
+    }
+
+    private fun validateSomeProperties(
+        content: ContentBase,
+        validatedProperties: List<String>
+    ) {
+        val validator: Validator = Validation.buildDefaultValidatorFactory().validator
+        validatedProperties.flatMap { validator.validateProperty(content, it) }.let { violations ->
+            if (violations.isNotEmpty()) {
+                throw ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Invalid ${content.exam} ${content.contentType} properties: ${violations.map { "${it.propertyPath}" }}"
+                )
+            }
         }
     }
 
@@ -262,6 +288,7 @@ class SeedDataRepository(
                 InstructionAttachmentMetadataDtoIn(null, "Fixture3 pdf", Language.FI, 1)
             ),
         )
+        val validatedInstructionProperties = listOf("contentFi", "contentSv")
 
         repeat(12) {
             val publishState = if (it > 3) PublishState.PUBLISHED else PublishState.DRAFT
@@ -270,12 +297,13 @@ class SeedDataRepository(
                 nameFi = "Test name $it FI",
                 nameSv = "Test name $it SV",
                 contentFi = instructionContent("${Exam.SUKO} Test content $it FI"),
+
                 contentSv = instructionContent("${Exam.SUKO} Test content $it SV"),
                 shortDescriptionFi = "Test short description $it FI",
                 shortDescriptionSv = "Test short description $it SV",
                 publishState = publishState,
             )
-
+            validateSomeProperties(sukoInstruction, validatedInstructionProperties)
             instructionRepository.createInstruction(sukoInstruction, if (it == 0) attachments else emptyList())
 
 
@@ -287,7 +315,7 @@ class SeedDataRepository(
                 publishState = publishState,
                 aineKoodiArvo = aineKoodiArvos[it % aineKoodiArvos.size]
             )
-
+            validateSomeProperties(ldInstruction, validatedInstructionProperties)
             instructionRepository.createInstruction(ldInstruction, emptyList())
 
             val puhviInstruction = PuhviInstructionDtoIn(
@@ -299,7 +327,7 @@ class SeedDataRepository(
                 shortDescriptionSv = "PUHVI Test short description $it SV",
                 publishState = publishState
             )
-
+            validateSomeProperties(puhviInstruction, validatedInstructionProperties)
             instructionRepository.createInstruction(puhviInstruction, emptyList())
         }
     }
