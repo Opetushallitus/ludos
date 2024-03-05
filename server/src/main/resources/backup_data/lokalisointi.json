@@ -2927,6 +2927,34 @@
   },
   {
     "accesscount": 0,
+    "accessed": 1709288259739,
+    "category": "ludos",
+    "created": 1709288259739,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56641,
+    "key": "filter.tyhjenna-valinnat",
+    "locale": "fi",
+    "modified": 1709288259736,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "Tyhjennä valinnat"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709288259743,
+    "category": "ludos",
+    "created": 1709288259743,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56642,
+    "key": "filter.tyhjenna-valinnat",
+    "locale": "sv",
+    "modified": 1709288259736,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": ""
+  },
+  {
+    "accesscount": 0,
     "accessed": 1682668515703,
     "category": "ludos",
     "created": 1682668515703,
@@ -2980,6 +3008,62 @@
     "modified": 1693210418398,
     "modifiedBy": "1.2.246.562.24.48151945144",
     "value": "Välj ..."
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211495,
+    "category": "ludos",
+    "created": 1709213211495,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56632,
+    "key": "footer.kayttoohjeet",
+    "locale": "fi",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "Käyttöohjeet"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211499,
+    "category": "ludos",
+    "created": 1709213211499,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56633,
+    "key": "footer.kayttoohjeet",
+    "locale": "sv",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": ""
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211503,
+    "category": "ludos",
+    "created": 1709213211503,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56634,
+    "key": "footer.kayttoohjeet-url",
+    "locale": "fi",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "https://wiki.eduuni.fi/display/OPHPALV/LUDOS"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211506,
+    "category": "ludos",
+    "created": 1709213211506,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56635,
+    "key": "footer.kayttoohjeet-url",
+    "locale": "sv",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "https://wiki.eduuni.fi/display/OPHPALV/LUDOS"
   },
   {
     "accesscount": 0,
@@ -3313,9 +3397,9 @@
     "id": 47641,
     "key": "form.kuvauskoetehtava",
     "locale": "fi",
-    "modified": 1693210418397,
+    "modified": 1709299525133,
     "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lisää uusi tehtävä molemmilla kielillä. Julkaise tehtävä tai tallenna se luonnoksena ."
+    "value": "Lisää uusi tehtävä. Julkaise tehtävä tai tallenna se luonnoksena."
   },
   {
     "accesscount": 0,
@@ -3327,9 +3411,9 @@
     "id": 49871,
     "key": "form.kuvauskoetehtava",
     "locale": "sv",
-    "modified": 1693289464496,
-    "modifiedBy": "1.2.246.562.24.77925329174",
-    "value": "Lägg till ny uppgift på båda språken. Publicera uppgiften eller spara den som utkast."
+    "modified": 1709299525133,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "Lägg till en ny uppgift. Publicera uppgiften eller spara den som utkast."
   },
   {
     "accesscount": 0,
