@@ -1,7 +1,7 @@
 package fi.oph.ludos.instruction
 
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -68,7 +68,7 @@ class InstructionControllerTest : InstructionRequests() {
     @BeforeEach
     fun setupMocks() {
         Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString())) // when does not work in BeforeAll
-            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
+            .thenReturn(OppijanumerorekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
     }
 
 

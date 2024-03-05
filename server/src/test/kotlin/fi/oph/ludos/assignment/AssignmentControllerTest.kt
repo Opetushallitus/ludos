@@ -2,7 +2,7 @@ package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
@@ -32,7 +32,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @BeforeEach
     fun setupMocks() {
         Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString())) // when does not work inside BeforeAll
-            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
+            .thenReturn(OppijanumerorekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
     }
 
     fun assertCommonFieldsBetweenInAndOutEqual(assignmentIn: TestAssignmentIn, assignmentOut: AssignmentOut) {
