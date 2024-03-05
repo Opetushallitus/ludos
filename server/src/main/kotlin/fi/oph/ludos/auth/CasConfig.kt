@@ -84,6 +84,8 @@ class CasConfig {
     }
 }
 
+data class UserLoginInfo(val username: String, val oidHenkilo: String, val role: Role, val ip: String?)
+
 class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccessHandler() {
     private val ludosLogger = LoggerFactory.getLogger(javaClass)
     private val auditLogger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
@@ -94,13 +96,13 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
         val principal = authentication?.principal as? Kayttajatiedot
 
         if (principal != null) {
-            val userInfo = "username='${principal.username}' oid='${principal.oidHenkilo}' ip='${request?.remoteAddr}'"
-            ludosLogger.info("Successful login: $userInfo")
+            val userInfo = UserLoginInfo(principal.username, principal.oidHenkilo, principal.role, request?.remoteAddr)
+            ludosLogger.atInfo().addKeyValue("userLoginInfo", userInfo).log("User login")
             if (principal.role == Role.YLLAPITAJA) {
-                auditLogger.info("Admin login: $userInfo")
+                auditLogger.atInfo().addKeyValue("userLoginInfo", userInfo).log("Admin login")
             }
         } else {
-            ludosLogger.warn("Successful login but principal was null")
+            auditLogger.atWarn().addKeyValue("ip", request?.remoteAddr).log("Successful login but principal was null")
         }
 
         super.onAuthenticationSuccess(request, response, authentication)

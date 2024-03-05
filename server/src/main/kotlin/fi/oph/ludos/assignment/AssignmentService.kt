@@ -22,11 +22,8 @@ class AssignmentService(
             is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
             else -> throw UnknownError("Unreachable")
         }
-        auditLogger.info(
-            "Created ${createdAssignment.contentType} assignment ${createdAssignment.id}" +
-                    ", nameFi='${createdAssignment.nameFi}', nameSv='${createdAssignment.nameSv}'" +
-                    ", publishState=${createdAssignment.publishState}"
-        )
+        auditLogger.atInfo().addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(createdAssignment))
+            .log("Created assignment")
         return createdAssignment
     }
 
