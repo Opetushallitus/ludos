@@ -2,6 +2,8 @@ package fi.oph.ludos.auth
 
 import fi.oph.ludos.AUDIT_LOGGER_NAME
 import fi.oph.ludos.Constants.Companion.API_PREFIX
+import fi.oph.ludos.addLudosUserInfo
+import fi.oph.ludos.addUserIp
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.apereo.cas.client.validation.Cas30ServiceTicketValidator
@@ -84,8 +86,6 @@ class CasConfig {
     }
 }
 
-data class UserLoginInfo(val username: String, val oidHenkilo: String, val role: Role, val ip: String?)
-
 class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccessHandler() {
     private val ludosLogger = LoggerFactory.getLogger(javaClass)
     private val auditLogger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
@@ -96,13 +96,12 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
         val principal = authentication?.principal as? Kayttajatiedot
 
         if (principal != null) {
-            val userInfo = UserLoginInfo(principal.username, principal.oidHenkilo, principal.role, request?.remoteAddr)
-            ludosLogger.atInfo().addKeyValue("userLoginInfo", userInfo).log("User login")
+            ludosLogger.atInfo().addUserIp(request).addLudosUserInfo().log("User login")
             if (principal.role == Role.YLLAPITAJA) {
-                auditLogger.atInfo().addKeyValue("userLoginInfo", userInfo).log("Admin login")
+                auditLogger.atInfo().addUserIp(request).addLudosUserInfo().log("Admin login")
             }
         } else {
-            auditLogger.atWarn().addKeyValue("ip", request?.remoteAddr).log("Successful login but principal was null")
+            auditLogger.atWarn().addUserIp(request).log("Successful login but principal was null")
         }
 
         super.onAuthenticationSuccess(request, response, authentication)
@@ -115,7 +114,12 @@ class LudosAuthenticationFailureHandler : AuthenticationFailureHandler {
     override fun onAuthenticationFailure(
         request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException?
     ) {
-        ludosLogger.warn("Login failed: ${exception?.message}")
+        val logEventBuilder = ludosLogger.atWarn().addUserIp(request).addKeyValue("causeMessage", exception?.message)
+        if (exception != null) {
+            logEventBuilder.setCause(exception)
+        }
+        logEventBuilder.log("Login failed")
+
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "text/html"
         response.writer.write("""<h1>Odottamaton virhe kirjautuessa sisään. Yritä uudestaan <a href="/">tästä.</a></h1>""")

@@ -2,7 +2,11 @@ package fi.oph.ludos.assignment
 
 import fi.oph.ludos.AUDIT_LOGGER_NAME
 import fi.oph.ludos.Exam
+import fi.oph.ludos.addLudosUserInfo
+import fi.oph.ludos.addUserIp
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import jakarta.servlet.ServletRequest
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -15,14 +19,16 @@ class AssignmentService(
 
     fun getAssignments(filters: AssignmentBaseFilters): AssignmentListDtoOut = repository.getAssignments(filters)
 
-    fun createAssignment(assignment: Assignment): AssignmentOut {
+    fun createAssignment(assignment: Assignment, request: ServletRequest?): AssignmentOut {
         val createdAssignment = when (assignment) {
             is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
             is PuhviAssignmentDtoIn -> repository.savePuhviAssignment(assignment)
             is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
             else -> throw UnknownError("Unreachable")
         }
-        auditLogger.atInfo().addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(createdAssignment))
+        auditLogger.atInfo().addLudosUserInfo()
+            .addUserIp(request)
+            .addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(createdAssignment))
             .log("Created assignment")
         return createdAssignment
     }

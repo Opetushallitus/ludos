@@ -5,6 +5,7 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,8 +20,8 @@ import org.springframework.web.server.ResponseStatusException
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
     @RequireAtLeastYllapitajaRole
-    fun createAssignment(@Valid @RequestBody assignment: Assignment): AssignmentOut =
-        service.createAssignment(assignment)
+    fun createAssignment(@Valid @RequestBody assignment: Assignment, request: HttpServletRequest): AssignmentOut =
+        service.createAssignment(assignment, request)
 
     @GetMapping("SUKO")
     @RequireAtLeastOpettajaRole

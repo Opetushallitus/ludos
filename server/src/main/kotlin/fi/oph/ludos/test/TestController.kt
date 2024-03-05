@@ -80,21 +80,22 @@ class TestController(
 
     @GetMapping("/seedAssignmentsForFilterTest")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithAssignmentsForFilterTest(httpServletResponse: HttpServletResponse): ResponseEntity<Unit> {
+    fun seedDatabaseWithAssignmentsForFilterTest(request: HttpServletRequest): ResponseEntity<Unit> {
         val assignments = AssignmentFiltersTestData.assignmentsForFilterTest()
-        assignments.forEach { assignmentService.createAssignment(it) }
+        assignments.forEach { assignmentService.createAssignment(it, request) }
         return redirectToRoot
     }
 
     // this endpoint is used by api tests
     @PostMapping("/seedAssignments")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithCustomAssignments(@RequestBody assignments: Array<Assignment>) = try {
-        assignments.forEach { assignmentService.createAssignment(it) }
-        ResponseEntity.status(HttpStatus.OK).body("OK")
-    } catch (e: Exception) {
-        ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong ${e.message}")
-    }
+    fun seedDatabaseWithCustomAssignments(@RequestBody assignments: Array<Assignment>, request: HttpServletRequest) =
+        try {
+            assignments.forEach { assignmentService.createAssignment(it, request) }
+            ResponseEntity.status(HttpStatus.OK).body("OK")
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Something went wrong ${e.message}")
+        }
 
     @GetMapping("/seedInstructions")
     @RequireAtLeastYllapitajaRole
