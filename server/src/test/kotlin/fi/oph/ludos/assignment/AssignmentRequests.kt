@@ -73,6 +73,10 @@ abstract class AssignmentRequests {
         Exam.LD -> minimalLdAssignmentIn
     }
 
+    fun createMinimalAssignmentByExam(exam: Exam): AssignmentOut =
+        createAssignmentByExam(exam, minimalAssignmentIn(exam))
+
+
     fun examByAssignmentOutClass(assignmentOutClass: KClass<out AssignmentOut>): Exam =
         when (assignmentOutClass) {
             SukoAssignmentDtoOut::class -> Exam.SUKO
@@ -101,6 +105,12 @@ abstract class AssignmentRequests {
 
         val responseBody = mockMvc.perform(req).andExpect(status().isOk).andReturn().response.contentAsString
         return mapper.readValue(responseBody)
+    }
+
+    fun createAssignmentByExam(exam: Exam, assignmentIn: TestAssignmentIn): AssignmentOut = when (exam) {
+        Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(assignmentIn)
+        Exam.LD -> createAssignment<LdAssignmentDtoOut>(assignmentIn)
+        Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(assignmentIn)
     }
 
     fun assertThatCreateInvalidAssignmentError(assignmentIn: TestAssignmentIn): AbstractStringAssert<*> {
@@ -134,6 +144,16 @@ abstract class AssignmentRequests {
         val getUpdatedByIdStr = mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
 
         return mapper.readValue(getUpdatedByIdStr)
+    }
+
+    fun getAssignmentByIdByExam(
+        exam: Exam,
+        id: Int,
+        version: Int? = null
+    ): AssignmentOut = when (exam) {
+        Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(id, version)
+        Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(id, version)
+        Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(id, version)
     }
 
     fun updateAssignmentReq(id: Int, body: String) =
@@ -175,6 +195,13 @@ abstract class AssignmentRequests {
                 .andReturn().response.contentAsString
         return mapper.readValue<List<T>>(responseContent)
     }
+
+    fun getAllAssignmentVersionsByExam(exam: Exam, id: Int) = when (exam) {
+        Exam.SUKO -> getAllAssignmentVersions<SukoAssignmentDtoOut>(id)
+        Exam.LD -> getAllAssignmentVersions<LdAssignmentDtoOut>(id)
+        Exam.PUHVI -> getAllAssignmentVersions<PuhviAssignmentDtoOut>(id)
+    }
+
 
     private fun getSukoAssignmentsReq(filter: SukoFilters): MockHttpServletRequestBuilder {
         val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/${Exam.SUKO}")

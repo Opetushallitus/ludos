@@ -2,8 +2,8 @@ package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
@@ -16,9 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.stream.Stream
 import kotlin.reflect.full.memberProperties
-import kotlin.streams.asStream
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -245,19 +243,11 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `only latest versions of assignments in get all assignment data`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `only latest versions of assignments in get all assignment data`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                val createdAssignment = when (exam!!) {
-                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
-                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
-                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
-                }
-                val updatedAssignmentIn = when (exam) {
-                    Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                }
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment, " updated")
 
                 updateAssignment(createdAssignment.id, updatedAssignmentIn)
 
@@ -281,22 +271,14 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `updating an assignment saves updater oid`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `updating an assignment saves updater oid`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                val createdAssignment = when (exam!!) {
-                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
-                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
-                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
-                }
+                val createdAssignment = createMinimalAssignmentByExam(exam)
                 assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(createdAssignment.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
 
-                val updatedAssignmentIn = when (exam) {
-                    Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                }
+                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment, " updated")
 
                 updateAssignment(
                     createdAssignment.id,
@@ -304,46 +286,34 @@ class AssignmentControllerTest : AssignmentRequests() {
                     yllapitaja2User
                 )
 
-                val updatedAssignment = when (exam) {
-                    Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id)
-                    Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id)
-                    Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(createdAssignment.id)
-                }
+                val updatedAssignment = getAssignmentByIdByExam(exam, createdAssignment.id)
                 assertThat(updatedAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(updatedAssignment.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
             }
         }
 
-
-    private fun getMinimalAssignmentInByExam(exam: Exam) = when (exam) {
-        Exam.SUKO -> minimalSukoAssignmentIn
-        Exam.LD -> minimalLdAssignmentIn
-        Exam.PUHVI -> minimalPuhviAssignmentIn
-    }
-
-    private fun getAllAssignmentVersionsByExam(exam: Exam, id: Int) = when (exam) {
-        Exam.SUKO -> getAllAssignmentVersions<SukoAssignmentDtoOut>(id)
-        Exam.LD -> getAllAssignmentVersions<LdAssignmentDtoOut>(id)
-        Exam.PUHVI -> getAllAssignmentVersions<PuhviAssignmentDtoOut>(id)
+    private fun updatedMinimalAssignmentInByExam(
+        exam: Exam,
+        createdAssignment: AssignmentOut,
+        nameSuffix: String
+    ): TestAssignmentIn {
+        val updatedAssignmentIn = when (exam) {
+            Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
+            Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
+            Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
+        }
+        return updatedAssignmentIn
     }
 
     @TestFactory
     @WithYllapitajaRole
-    fun `get all versions and a certain version of assignment for different exams`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `get all versions and a certain version of assignment for different exams`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam get all versions and a certain version of assignment") {
-                val createdAssignment = when (exam!!) {
-                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
-                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
-                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
-                }
+                val createdAssignment = createMinimalAssignmentByExam(exam)
 
                 val assignments = (1..4).map { index ->
-                    when (exam) {
-                        Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
-                        Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
-                        Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
-                    }
+                    updatedMinimalAssignmentInByExam(exam, createdAssignment, " updated$index")
                 }
 
                 assignments.forEach { assignment ->
@@ -355,11 +325,7 @@ class AssignmentControllerTest : AssignmentRequests() {
 
                 assignments.forEachIndexed { index, assignment ->
                     val indexOfVersion = index + 2
-                    val assignmentById = when (exam) {
-                        Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
-                        Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
-                        Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
-                    }
+                    val assignmentById = getAssignmentByIdByExam(exam, createdAssignment.id, indexOfVersion)
                     assertCommonFieldsBetweenInAndOutEqual(assignment, assignmentById)
                 }
 
@@ -370,7 +336,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                     assignmentVersions.forEachIndexed { index, assignment ->
                         assertThat(assignment.updaterName).isEqualTo(expectedUpdaterName)
                         if (index == 0) {
-                            assertCommonFieldsBetweenInAndOutEqual(getMinimalAssignmentInByExam(exam), assignment)
+                            assertCommonFieldsBetweenInAndOutEqual(minimalAssignmentIn(exam), assignment)
                         } else {
                             assertCommonFieldsBetweenInAndOutEqual(assignments[index - 1], assignment)
                         }
