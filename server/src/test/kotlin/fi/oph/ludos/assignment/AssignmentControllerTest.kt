@@ -121,7 +121,7 @@ class AssignmentControllerTest : AssignmentRequests() {
             listOf("002", "004"),
         )
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        val updatedAssignmentId = updateAssignment(assignmentById.id, updatedAssignment)
+        val updatedAssignmentId = createNewVersionOfAssignment(assignmentById.id, updatedAssignment)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         assertEquals(updatedAssignmentId, assignmentById.id.toString())
@@ -179,7 +179,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                 aineKoodiArvo = "2",
             )
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        updateAssignment(ldAssignmentOut.id, editedLdAssignmentIn)
+        createNewVersionOfAssignment(ldAssignmentOut.id, editedLdAssignmentIn)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         val updatedAssignmentById = getAssignmentById<LdAssignmentDtoOut>(ldAssignmentOut.id)
@@ -227,7 +227,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         )
 
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        updateAssignment(puhviAssignmentOut.id, editedPuhviAssignmentIn)
+        createNewVersionOfAssignment(puhviAssignmentOut.id, editedPuhviAssignmentIn)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         val updatedAssignmentById = getAssignmentById<PuhviAssignmentDtoOut>(puhviAssignmentOut.id)
@@ -247,9 +247,9 @@ class AssignmentControllerTest : AssignmentRequests() {
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
                 val createdAssignment = createMinimalAssignmentByExam(exam)
-                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment, " updated")
+                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment)
 
-                updateAssignment(createdAssignment.id, updatedAssignmentIn)
+                createNewVersionOfAssignment(createdAssignment.id, updatedAssignmentIn)
 
                 val assignments = when (exam) {
                     Exam.SUKO -> getAllAssignmentsForExam<SukoAssignmentCardDtoOut>()
@@ -278,9 +278,9 @@ class AssignmentControllerTest : AssignmentRequests() {
                 assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(createdAssignment.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
 
-                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment, " updated")
+                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment)
 
-                updateAssignment(
+                createNewVersionOfAssignment(
                     createdAssignment.id,
                     updatedAssignmentIn,
                     yllapitaja2User
@@ -295,7 +295,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     private fun updatedMinimalAssignmentInByExam(
         exam: Exam,
         createdAssignment: AssignmentOut,
-        nameSuffix: String
+        nameSuffix: String = " updated"
     ): TestAssignmentIn {
         val updatedAssignmentIn = when (exam) {
             Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
@@ -317,7 +317,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                 }
 
                 assignments.forEach { assignment ->
-                    updateAssignment(
+                    createNewVersionOfAssignment(
                         createdAssignment.id,
                         assignment
                     )
@@ -472,7 +472,12 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun sukoAssignmentUpdateFailsWhenIdDoesNotExist() {
         val nonExistentId = -1
         val errorMessage =
-            mockMvc.perform(updateAssignmentReq(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
+            mockMvc.perform(
+                createNewVersionOfAssignmentReq(
+                    nonExistentId,
+                    mapper.writeValueAsString(minimalSukoAssignmentIn)
+                )
+            )
                 .andExpect(status().isNotFound).andReturn().response.contentAsString
         assertThat(errorMessage).isEqualTo("Assignment $nonExistentId not found")
     }
@@ -549,7 +554,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @WithYllapitajaRole
     fun `assignment not found on UPDATE`() {
         val updateResult = mockMvc.perform(
-            updateAssignmentReq(
+            createNewVersionOfAssignmentReq(
                 999,
                 mapper.writeValueAsString(minimalSukoAssignmentIn)
             )
@@ -576,7 +581,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `create and update with insufficient role`() {
         val testAssignmentStr = mapper.writeValueAsString(minimalSukoAssignmentIn)
         mockMvc.perform(createAssignmentReq(testAssignmentStr)).andExpect(status().isUnauthorized())
-        mockMvc.perform(updateAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
+        mockMvc.perform(createNewVersionOfAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
     }
 
     @Test
@@ -584,7 +589,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `test deleting a assignment`() {
         val assignmentId = createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn).id
 
-        updateAssignment(
+        createNewVersionOfAssignment(
             assignmentId,
             minimalSukoAssignmentIn.copy(publishState = TestPublishState.DELETED)
         )
@@ -617,4 +622,67 @@ class AssignmentControllerTest : AssignmentRequests() {
         """.trimIndent()
         createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn.copy(contentFi = listOf(validContentFi)))
     }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring current version yields 400`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                val errorMessage =
+                    mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
+                        .andExpect(status().isBadRequest).andReturn().response.contentAsString
+                assertEquals("Cannot restore latest version", errorMessage)
+            }
+        }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring non-existent assignment id yields 404`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                mockMvc.perform(restoreAssignmentReq(exam, -1, 1))
+                    .andExpect(status().isNotFound)
+            }
+        }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring non-existent version yields 404`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, -1))
+                    .andExpect(status().isNotFound)
+            }
+        }
+
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring an old version creates a new version`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                createNewVersionOfAssignment(
+                    createdAssignment.id,
+                    updatedMinimalAssignmentInByExam(exam, createdAssignment)
+                )
+                val updatedAssignmentById = getAssignmentByIdByExam(exam, createdAssignment.id)
+                assertNotEquals(createdAssignment.nameFi, updatedAssignmentById.nameFi)
+
+                val versionsBeforeRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
+                assertEquals(2, versionsBeforeRestore.size)
+
+                mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
+                    .andExpect(status().isOk)
+                val versionsAfterRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
+                val latestVersionById = getAssignmentByIdByExam(exam, createdAssignment.id)
+                assertEquals(3, versionsAfterRestore.size)
+                assertEquals(versionsAfterRestore.last().version, latestVersionById.version)
+                assertEquals(3, latestVersionById.version)
+
+                assertEquals(createdAssignment.nameFi, latestVersionById.nameFi)
+            }
+        }
 }

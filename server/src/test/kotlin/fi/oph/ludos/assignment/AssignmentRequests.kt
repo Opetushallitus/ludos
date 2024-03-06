@@ -156,16 +156,16 @@ abstract class AssignmentRequests {
         Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(id, version)
     }
 
-    fun updateAssignmentReq(id: Int, body: String) =
+    fun createNewVersionOfAssignmentReq(id: Int, body: String) =
         MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
-    fun updateAssignment(
+    fun createNewVersionOfAssignment(
         id: Int,
         testAssignmentIn: TestAssignmentIn,
         user: RequestPostProcessor = yllapitajaUser
     ): String {
-        val builder = updateAssignmentReq(id, mapper.writeValueAsString(testAssignmentIn)).with(user)
+        val builder = createNewVersionOfAssignmentReq(id, mapper.writeValueAsString(testAssignmentIn)).with(user)
 
         return mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
     }
@@ -259,6 +259,16 @@ abstract class AssignmentRequests {
 
         return mapper.readValue(assignmentsString)
     }
+
+    fun restoreAssignmentReq(
+        exam: Exam,
+        id: Int,
+        version: Int
+    ): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/assignment/$exam/$id/$version/restore"
+        return MockMvcRequestBuilders.post(url)
+    }
+
 
     fun createFavoriteFolderReq(exam: Exam, body: String) =
         MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment/favorites/$exam/folder")

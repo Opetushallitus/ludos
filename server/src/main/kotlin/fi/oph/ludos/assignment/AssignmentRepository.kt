@@ -817,7 +817,7 @@ class AssignmentRepository(
         return jdbcTemplate.query(query, mapper, id)
     }
 
-    fun createNewVersionOfSukoAssignment(assignment: SukoAssignmentDtoIn, id: Int): SukoAssignmentDtoOut? =
+    fun createNewVersionOfSukoAssignment(id: Int, assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
             val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
                 ?: return@execute null
@@ -869,7 +869,7 @@ class AssignmentRepository(
             SukoAssignmentDtoOut(assignment, contentOutFields(keyHolder))
         }
 
-    fun createNewVersionOfLdAssignment(assignment: LdAssignmentDtoIn, id: Int): LdAssignmentDtoOut? =
+    fun createNewVersionOfLdAssignment(id: Int, assignment: LdAssignmentDtoIn): LdAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
             val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
                 ?: return@execute null
@@ -916,7 +916,7 @@ class AssignmentRepository(
             LdAssignmentDtoOut(assignment, contentOutFields(keyHolder))
         }
 
-    fun createNewVersionOfPuhviAssignment(assignment: PuhviAssignmentDtoIn, id: Int): PuhviAssignmentDtoOut? =
+    fun createNewVersionOfPuhviAssignment(id: Int, assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
             val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
                 ?: return@execute null

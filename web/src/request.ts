@@ -227,6 +227,17 @@ export async function restoreOldCertificate(id: number, exam: Exam, version: num
 
   return result.json()
 }
+
+export async function restoreOldAssignment(id: number, exam: Exam, version: number): Promise<number> {
+  const result = await doRequest(`${ASSIGNMENT_URL}/${exam}/${id}/${version}/restore`, 'POST', '{}')
+
+  if (!result.ok) {
+    throw new Error(await result.text())
+  }
+
+  return result.json()
+}
+
 export async function getKoodistos(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/koodisto`, 'GET')
 }

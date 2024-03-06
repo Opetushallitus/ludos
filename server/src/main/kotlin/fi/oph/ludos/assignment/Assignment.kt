@@ -131,7 +131,20 @@ data class LdAssignmentDtoIn(
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     override val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD,
-) : Assignment, LdAssignmentMetadata
+) : Assignment, LdAssignmentMetadata {
+    constructor(dtoOut: LdAssignmentDtoOut) : this(
+        nameFi = dtoOut.nameFi,
+        nameSv = dtoOut.nameSv,
+        instructionFi = dtoOut.instructionFi,
+        instructionSv = dtoOut.instructionSv,
+        contentFi = dtoOut.contentFi,
+        contentSv = dtoOut.contentSv,
+        publishState = dtoOut.publishState,
+        laajaalainenOsaaminenKoodiArvos = dtoOut.laajaalainenOsaaminenKoodiArvos,
+        lukuvuosiKoodiArvos = dtoOut.lukuvuosiKoodiArvos,
+        aineKoodiArvo = dtoOut.aineKoodiArvo
+    )
+}
 
 interface PuhviAssignmentMetadata {
     val assignmentTypeKoodiArvo: String
@@ -153,7 +166,20 @@ data class PuhviAssignmentDtoIn(
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
     override val lukuvuosiKoodiArvos: List<String>,
     override val exam: Exam = Exam.PUHVI,
-) : Assignment, PuhviAssignmentMetadata
+) : Assignment, PuhviAssignmentMetadata {
+    constructor(dtoOut: PuhviAssignmentDtoOut) : this(
+        nameFi = dtoOut.nameFi,
+        nameSv = dtoOut.nameSv,
+        instructionFi = dtoOut.instructionFi,
+        instructionSv = dtoOut.instructionSv,
+        contentFi = dtoOut.contentFi,
+        contentSv = dtoOut.contentSv,
+        publishState = dtoOut.publishState,
+        laajaalainenOsaaminenKoodiArvos = dtoOut.laajaalainenOsaaminenKoodiArvos,
+        assignmentTypeKoodiArvo = dtoOut.assignmentTypeKoodiArvo,
+        lukuvuosiKoodiArvos = dtoOut.lukuvuosiKoodiArvos
+    )
+}
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(

@@ -29,7 +29,12 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { ContentError } from './ContentError'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
-import { createNewVersionInstruction, restoreOldCertificate, updateAssignment } from '../../request'
+import {
+  createNewVersionInstruction,
+  restoreOldAssignment,
+  restoreOldCertificate,
+  updateAssignment
+} from '../../request'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { ListTabs } from '../ListTabs'
 import { ContentBreadcrumbs } from '../Breadcrumbs'
@@ -79,7 +84,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
   const restoreOldVersion = async (data: ContentBaseOut) => {
     if (isAssignment(data)) {
-      await updateAssignment(data.id, data)
+      await restoreOldAssignment(data.id, data.exam, data.version)
     } else if (isInstruction(data)) {
       const attachmentsToUpdate: AttachmentData[] = data.attachments.map((attachment) => ({
         name: attachment.name,

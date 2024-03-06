@@ -77,6 +77,19 @@ class AssignmentController(val service: AssignmentService) {
         "Assignment $id or its version $version not found"
     )
 
+    @PostMapping("/{exam}/{id}/{version}/restore")
+    @RequireAtLeastYllapitajaRole
+    fun restoreOldVersionOfAssignment(
+        @PathVariable exam: Exam,
+        @PathVariable id: Int,
+        @PathVariable version: Int,
+        request: HttpServletRequest
+    ): Int = service.restoreOldVersionOfAssignment(exam, id, version, request)
+        ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Assignment $id not found"
+        )
+
     @PostMapping("/favorites/{exam}/folder")
     @RequireAtLeastOpettajaRole
     fun createNewFavoriteFolder(
