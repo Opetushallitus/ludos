@@ -117,7 +117,12 @@ class InstructionController(val service: InstructionService, private val objectM
             "Instruction $id not found"
         )
 
-    @GetMapping("{exam}/{id}/{version}")
+    @GetMapping("/{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfInstruction(@PathVariable exam: Exam, @PathVariable id: Int): List<InstructionOut> =
+        service.getAllVersionsOfInstruction(exam, id)
+
+    @GetMapping("/{exam}/{id}/{version}")
     @RequireAtLeastYllapitajaRole
     fun getInstructionVersion(
         @PathVariable exam: Exam,
@@ -127,11 +132,6 @@ class InstructionController(val service: InstructionService, private val objectM
         HttpStatus.NOT_FOUND,
         "Instruction $id or its version $version not found"
     )
-
-    @GetMapping("{exam}/{id}/versions")
-    @RequireAtLeastYllapitajaRole
-    fun getAllVersionsOfInstruction(@PathVariable exam: Exam, @PathVariable id: Int): List<InstructionOut> =
-        service.getAllVersionsOfInstruction(exam, id)
 
     fun attachmentResponse(attachmentKey: String, version: Int?): ResponseEntity<InputStreamResource> {
         val (uploadFile, attachmentInputStream) = service.getAttachment(attachmentKey, version)

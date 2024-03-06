@@ -23,49 +23,7 @@ class AssignmentController(val service: AssignmentService) {
     fun createAssignment(@Valid @RequestBody assignment: Assignment, request: HttpServletRequest): AssignmentOut =
         service.createAssignment(assignment, request)
 
-    @GetMapping("SUKO")
-    @RequireAtLeastOpettajaRole
-    fun getSukoAssignments(
-        @Valid filters: SukoFilters
-    ): AssignmentListDtoOut = service.getAssignments(filters)
-
-    @GetMapping("PUHVI")
-    @RequireAtLeastOpettajaRole
-    fun getPuhviAssignments(
-        @Valid filters: PuhviFilters
-    ): AssignmentListDtoOut = service.getAssignments(filters)
-
-    @GetMapping("LD")
-    @RequireAtLeastOpettajaRole
-    fun getLdAssignments(
-        @Valid filters: LdFilters
-    ): AssignmentListDtoOut = service.getAssignments(filters)
-
-    @GetMapping("{exam}/{id}")
-    @RequireAtLeastOpettajaRole
-    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
-        service.getAssignmentById(exam, id, null) ?: throw ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Assignment $id not found"
-        )
-
-    @GetMapping("{exam}/{id}/{version}")
-    @RequireAtLeastYllapitajaRole
-    fun getAssignmentVersion(
-        @PathVariable exam: Exam,
-        @PathVariable("id") id: Int,
-        @PathVariable("version") version: Int
-    ): AssignmentOut = service.getAssignmentById(exam, id, version) ?: throw ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Assignment $id or its version $version not found"
-    )
-
-    @GetMapping("{exam}/{id}/versions")
-    @RequireAtLeastYllapitajaRole
-    fun getAllVersionsOfAssignment(@PathVariable exam: Exam, @PathVariable id: Int): List<AssignmentOut> =
-        service.getAllVersionsOfAssignment(exam, id)
-
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @RequireAtLeastYllapitajaRole
     fun createNewVersionOfAssignment(
         @PathVariable("id") id: Int,
@@ -77,14 +35,56 @@ class AssignmentController(val service: AssignmentService) {
             "Assignment $id not found"
         )
 
-    @PostMapping("favorites/{exam}/folder")
+    @GetMapping("/SUKO")
+    @RequireAtLeastOpettajaRole
+    fun getSukoAssignments(
+        @Valid filters: SukoFilters
+    ): AssignmentListDtoOut = service.getAssignments(filters)
+
+    @GetMapping("/LD")
+    @RequireAtLeastOpettajaRole
+    fun getLdAssignments(
+        @Valid filters: LdFilters
+    ): AssignmentListDtoOut = service.getAssignments(filters)
+
+    @GetMapping("/PUHVI")
+    @RequireAtLeastOpettajaRole
+    fun getPuhviAssignments(
+        @Valid filters: PuhviFilters
+    ): AssignmentListDtoOut = service.getAssignments(filters)
+
+    @GetMapping("/{exam}/{id}")
+    @RequireAtLeastOpettajaRole
+    fun getAssignment(@PathVariable exam: Exam, @PathVariable("id") id: Int): AssignmentOut =
+        service.getAssignmentById(exam, id, null) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Assignment $id not found"
+        )
+
+    @GetMapping("/{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfAssignment(@PathVariable exam: Exam, @PathVariable id: Int): List<AssignmentOut> =
+        service.getAllVersionsOfAssignment(exam, id)
+
+    @GetMapping("/{exam}/{id}/{version}")
+    @RequireAtLeastYllapitajaRole
+    fun getAssignmentVersion(
+        @PathVariable exam: Exam,
+        @PathVariable("id") id: Int,
+        @PathVariable("version") version: Int
+    ): AssignmentOut = service.getAssignmentById(exam, id, version) ?: throw ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "Assignment $id or its version $version not found"
+    )
+
+    @PostMapping("/favorites/{exam}/folder")
     @RequireAtLeastOpettajaRole
     fun createNewFavoriteFolder(
         @PathVariable exam: Exam,
         @Valid @RequestBody folder: FavoriteFolderDtoIn
     ): Int = service.createNewFavoriteFolder(exam, folder)
 
-    @PutMapping("favorites/{exam}/folder/{folderId}")
+    @PutMapping("/favorites/{exam}/folder/{folderId}")
     @RequireAtLeastOpettajaRole
     fun updateFavoriteFolder(
         @PathVariable exam: Exam,
@@ -95,7 +95,7 @@ class AssignmentController(val service: AssignmentService) {
         return ResponseEntity.ok().build()
     }
 
-    @DeleteMapping("favorites/{exam}/folder/{folderId}")
+    @DeleteMapping("/favorites/{exam}/folder/{folderId}")
     @RequireAtLeastOpettajaRole
     fun deleteFavoriteFolder(@PathVariable exam: Exam, @PathVariable folderId: Int): ResponseEntity<Nothing> {
         when (val deletedCount = service.deleteFavoriteFolder(exam, folderId)) {
@@ -119,21 +119,21 @@ class AssignmentController(val service: AssignmentService) {
         }
     }
 
-    @GetMapping("favorites/{exam}")
+    @GetMapping("/favorites/{exam}")
     @RequireAtLeastOpettajaRole
     fun getFavoriteIds(@PathVariable exam: Exam): FavoriteIdsDtoOut = service.getFavorites(exam, null)
 
-    @GetMapping("favorites/{exam}/cardFolders")
+    @GetMapping("/favorites/{exam}/cardFolders")
     @RequireAtLeastOpettajaRole
     fun getFavoriteCardFolders(@PathVariable exam: Exam): FavoriteCardFolderDtoOut =
         service.getFavoriteCardFolders(exam)
 
-    @GetMapping("favorites/{exam}/{assignmentId}")
+    @GetMapping("/favorites/{exam}/{assignmentId}")
     @RequireAtLeastOpettajaRole
     fun getFavoriteIdsForAssignment(@PathVariable exam: Exam, @PathVariable assignmentId: Int): FavoriteIdsDtoOut =
         service.getFavorites(exam, assignmentId)
 
-    @PutMapping("favorites/{exam}/{assignmentId}")
+    @PutMapping("/favorites/{exam}/{assignmentId}")
     @RequireAtLeastOpettajaRole
     fun setAssignmentFavoriteFolders(
         @PathVariable exam: Exam,
@@ -141,7 +141,7 @@ class AssignmentController(val service: AssignmentService) {
         @Valid @RequestBody folderIds: List<Int>
     ): Int? = service.setAssignmentFavoriteFolders(exam, assignmentId, folderIds)
 
-    @GetMapping("favorites/count")
+    @GetMapping("/favorites/count")
     @RequireAtLeastOpettajaRole
     fun getFavoriteAssignmentsCount(): Int = service.getFavoriteAssignmentsCount()
 }

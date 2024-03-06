@@ -41,48 +41,6 @@ class CertificateController(val service: CertificateService) {
         else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
     }
 
-    @GetMapping("SUKO")
-    @RequireAtLeastOpettajaRole
-    fun getSukoCertificates(
-        @Valid filters: CertificateFilters
-    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.SUKO, filters))
-
-    @GetMapping("PUHVI")
-    @RequireAtLeastOpettajaRole
-    fun getPuhviCertificates(
-        @Valid filters: CertificateFilters
-    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.PUHVI, filters))
-
-    @GetMapping("LD")
-    @RequireAtLeastOpettajaRole
-    fun getLdCertificates(
-        @Valid filters: CertificateFilters
-    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.LD, filters))
-
-    @GetMapping("/{exam}/{id}")
-    @RequireAtLeastOpettajaRole
-    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? =
-        service.getCertificateById(id, exam, null) ?: throw ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Certificate $id not found"
-        )
-
-    @GetMapping("{exam}/{id}/{version}")
-    @RequireAtLeastYllapitajaRole
-    fun getCertificateVersion(
-        @PathVariable exam: Exam,
-        @PathVariable("id") id: Int,
-        @PathVariable("version") version: Int
-    ): CertificateOut = service.getCertificateById(id, exam, version) ?: throw ResponseStatusException(
-        HttpStatus.NOT_FOUND,
-        "Certificate $id or its version $version not found"
-    )
-
-    @GetMapping("{exam}/{id}/versions")
-    @RequireAtLeastYllapitajaRole
-    fun getAllVersionsOfCertificate(@PathVariable exam: Exam, @PathVariable id: Int): List<CertificateOut> =
-        service.getAllVersionsOfCertificate(exam, id)
-
     @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun createNewVersionOfCertificate(
@@ -96,7 +54,49 @@ class CertificateController(val service: CertificateService) {
             "Certificate $id not found"
         )
 
-    @PostMapping("{exam}/{id}/{version}/restore")
+    @GetMapping("/SUKO")
+    @RequireAtLeastOpettajaRole
+    fun getSukoCertificates(
+        @Valid filters: CertificateFilters
+    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.SUKO, filters))
+
+    @GetMapping("/PUHVI")
+    @RequireAtLeastOpettajaRole
+    fun getPuhviCertificates(
+        @Valid filters: CertificateFilters
+    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.PUHVI, filters))
+
+    @GetMapping("/LD")
+    @RequireAtLeastOpettajaRole
+    fun getLdCertificates(
+        @Valid filters: CertificateFilters
+    ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.LD, filters))
+
+    @GetMapping("/{exam}/{id}")
+    @RequireAtLeastOpettajaRole
+    fun getCertificateById(@PathVariable exam: Exam, @PathVariable("id") id: Int): CertificateOut? =
+        service.getCertificateById(id, exam, null) ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Certificate $id not found"
+        )
+
+    @GetMapping("/{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfCertificate(@PathVariable exam: Exam, @PathVariable id: Int): List<CertificateOut> =
+        service.getAllVersionsOfCertificate(exam, id)
+
+    @GetMapping("/{exam}/{id}/{version}")
+    @RequireAtLeastYllapitajaRole
+    fun getCertificateVersion(
+        @PathVariable exam: Exam,
+        @PathVariable("id") id: Int,
+        @PathVariable("version") version: Int
+    ): CertificateOut = service.getCertificateById(id, exam, version) ?: throw ResponseStatusException(
+        HttpStatus.NOT_FOUND,
+        "Certificate $id or its version $version not found"
+    )
+
+    @PostMapping("/{exam}/{id}/{version}/restore")
     @RequireAtLeastYllapitajaRole
     fun restoreOldVersionOfCertificate(
         @PathVariable exam: Exam,
