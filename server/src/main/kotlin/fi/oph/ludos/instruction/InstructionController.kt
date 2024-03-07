@@ -45,7 +45,8 @@ class InstructionController(val service: InstructionService, private val objectM
         @Valid @RequestPart("instruction") instruction: InstructionIn,
         @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?,
         @RequestPart("new-attachments", required = false) newAttachments: List<MultipartFile>?,
-        @RequestPart("new-attachments-metadata", required = false) newAttachmentsMetadata: List<Part>?
+        @RequestPart("new-attachments-metadata", required = false) newAttachmentsMetadata: List<Part>?,
+        request: HttpServletRequest
     ): Int? {
         val attachmentsMetadataDeserialized = deserializeAttachmentsMetadata(attachmentsMetadata)
         validateExistingAttachmentsMetadata(attachmentsMetadataDeserialized)
@@ -59,7 +60,13 @@ class InstructionController(val service: InstructionService, private val objectM
         val newAttachmentIns = createAttachmentIns(newNonNullAttachments, newAttachmentMetadataDeserialized)
 
         val createdVersion =
-            service.createNewVersionOfInstruction(id, instruction, attachmentsMetadataDeserialized, newAttachmentIns)
+            service.createNewVersionOfInstruction(
+                id,
+                instruction,
+                attachmentsMetadataDeserialized,
+                newAttachmentIns,
+                request
+            )
 
         return createdVersion ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction $id not found")
     }

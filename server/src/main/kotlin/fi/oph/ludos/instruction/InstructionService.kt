@@ -1,7 +1,6 @@
 package fi.oph.ludos.instruction
 
 import fi.oph.ludos.*
-import fi.oph.ludos.assignment.*
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import fi.oph.ludos.aws.Bucket
 import fi.oph.ludos.aws.S3Helper
@@ -41,28 +40,43 @@ class InstructionService(
         id: Int,
         instruction: InstructionIn,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
-        newAttachments: List<InstructionAttachmentIn>
-    ): Int? = when (instruction) {
-        is SukoInstructionDtoIn -> repository.createNewVersionOfSukoInstruction(
-            id,
-            instruction,
-            attachmentsMetadata,
-            newAttachments
-        )
+        newAttachments: List<InstructionAttachmentIn>,
+        request: ServletRequest
+    ): Int? {
+        val createdVersion = when (instruction) {
+            is SukoInstructionDtoIn -> repository.createNewVersionOfSukoInstruction(
+                id,
+                instruction,
+                attachmentsMetadata,
+                newAttachments
+            )
 
-        is LdInstructionDtoIn -> repository.createNewVersionOfLdInstruction(
-            id,
-            instruction,
-            attachmentsMetadata,
-            newAttachments
-        )
+            is LdInstructionDtoIn -> repository.createNewVersionOfLdInstruction(
+                id,
+                instruction,
+                attachmentsMetadata,
+                newAttachments
+            )
 
-        is PuhviInstructionDtoIn -> repository.createNewVersionOfPuhviInstruction(
-            id,
-            instruction,
-            attachmentsMetadata,
-            newAttachments
-        )
+            is PuhviInstructionDtoIn -> repository.createNewVersionOfPuhviInstruction(
+                id,
+                instruction,
+                attachmentsMetadata,
+                newAttachments
+            )
+        }
+        if (createdVersion != null) {
+            val createdInstruction = repository.getInstructionById(Exam.SUKO, id, createdVersion)
+            auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("instruction", createdInstruction)
+                .log("Created new version of instruction")
+        } else {
+            auditLogger.atError().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("assignmentId", id)
+                .log("Tried to create new version of non-existent instruction")
+        }
+
+        return createdVersion
     }
 
     fun restoreOldVersionOfInstruction(

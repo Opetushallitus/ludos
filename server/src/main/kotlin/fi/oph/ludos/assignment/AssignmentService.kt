@@ -32,14 +32,14 @@ class AssignmentService(
     }
 
     fun createNewVersionOfAssignment(id: Int, assignment: AssignmentIn, request: ServletRequest): Int? {
-        val newAssignmentVersion = when (assignment) {
+        val createdAssignment = when (assignment) {
             is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(id, assignment)
             is LdAssignmentDtoIn -> repository.createNewVersionOfLdAssignment(id, assignment)
             is PuhviAssignmentDtoIn -> repository.createNewVersionOfPuhviAssignment(id, assignment)
         }
-        if (newAssignmentVersion != null) {
+        if (createdAssignment != null) {
             auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
-                .addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(newAssignmentVersion))
+                .addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(createdAssignment))
                 .log("Created new version of assignment")
         } else {
             auditLogger.atError().addUserIp(request).addLudosUserInfo()
@@ -47,7 +47,7 @@ class AssignmentService(
                 .log("Tried to create new version of non-existent assignment")
         }
 
-        return newAssignmentVersion?.id
+        return createdAssignment?.id
     }
 
     fun restoreOldVersionOfAssignment(
