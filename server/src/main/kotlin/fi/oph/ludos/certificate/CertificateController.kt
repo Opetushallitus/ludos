@@ -24,23 +24,9 @@ class CertificateController(val service: CertificateService) {
     fun createCertificate(
         @Valid @RequestPart("certificate") certificate: CertificateIn,
         @RequestPart("attachmentFi") attachment: MultipartFile,
-        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
-    ): CertificateOut = when (certificate) {
-        is SukoCertificateDtoIn -> service.createSukoCertificate(certificate, attachment)
-        is LdCertificateDtoIn -> if (attachmentSv != null) service.createLdCertificate(
-            certificate,
-            attachment,
-            attachmentSv
-        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
-
-        is PuhviCertificateDtoIn -> if (attachmentSv != null) service.createPuhviCertificate(
-            certificate,
-            attachment,
-            attachmentSv
-        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
-
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
-    }
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?,
+        request: HttpServletRequest
+    ): CertificateOut = service.createCertificate(certificate, attachment, attachmentSv, request)
 
     @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole

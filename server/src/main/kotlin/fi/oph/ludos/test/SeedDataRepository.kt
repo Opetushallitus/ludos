@@ -346,7 +346,7 @@ class SeedDataRepository(
             )
 
             val multipartFile = readAttachmentFixtureFile("fixture1.pdf")
-            certificateRepository.createSukoCertificate(multipartFile, sukoCertificateDtoIn)
+            certificateRepository.createSukoCertificate(sukoCertificateDtoIn, multipartFile)
 
             val ldCertificateDtoIn = LdCertificateDtoIn(
                 exam = Exam.LD,
@@ -356,7 +356,7 @@ class SeedDataRepository(
                 aineKoodiArvo = "1"
             )
 
-            certificateRepository.createLdCertificate(multipartFile, multipartFile, ldCertificateDtoIn)
+            certificateRepository.createLdCertificate(ldCertificateDtoIn, multipartFile, multipartFile)
 
             val puhviCertificateDtoIn = PuhviCertificateDtoIn(
                 exam = Exam.PUHVI,
@@ -367,7 +367,7 @@ class SeedDataRepository(
                 publishState = publishState,
             )
 
-            certificateRepository.createPuhviCertificate(multipartFile, multipartFile, puhviCertificateDtoIn)
+            certificateRepository.createPuhviCertificate(puhviCertificateDtoIn, multipartFile, multipartFile)
         }
     }
 

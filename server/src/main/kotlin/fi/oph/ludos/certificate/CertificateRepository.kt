@@ -44,8 +44,8 @@ class CertificateRepository(
     }!!
 
     fun createSukoCertificate(
-        attachment: MultipartFile,
-        certificateDtoIn: SukoCertificateDtoIn
+        certificateDtoIn: SukoCertificateDtoIn,
+        attachment: MultipartFile
     ): SukoCertificateDtoOut = createSukoCertificate(attachment) { createdAttachment ->
         jdbcTemplate.query(
             """
@@ -104,9 +104,9 @@ class CertificateRepository(
     }!!
 
     fun createLdCertificate(
+        certificateDtoIn: LdCertificateDtoIn,
         attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile,
-        certificateDtoIn: LdCertificateDtoIn
+        attachmentSv: MultipartFile
     ): LdCertificateDtoOut =
         createCertificate(attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(
@@ -156,9 +156,9 @@ class CertificateRepository(
         }
 
     fun createPuhviCertificate(
+        certificateDtoIn: PuhviCertificateDtoIn,
         attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile,
-        certificateDtoIn: PuhviCertificateDtoIn
+        attachmentSv: MultipartFile
     ): PuhviCertificateDtoOut =
         createCertificate(attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(

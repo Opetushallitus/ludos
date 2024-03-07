@@ -23,8 +23,19 @@ class InstructionService(
     val logger: Logger = LoggerFactory.getLogger(javaClass)
     val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
 
-    fun createInstruction(instruction: Instruction, attachments: List<InstructionAttachmentIn>) =
-        repository.createInstruction(instruction, attachments)
+    fun createInstruction(
+        instruction: Instruction,
+        attachments: List<InstructionAttachmentIn>,
+        request: ServletRequest
+    ): InstructionOut {
+        val createdInstruction = repository.createInstruction(instruction, attachments)
+
+        auditLogger.atInfo().addLudosUserInfo().addUserIp(request)
+            .addKeyValue("instruction", createdInstruction)
+            .log("Created instruction")
+
+        return createdInstruction
+    }
 
     fun createNewVersionOfInstruction(
         id: Int,

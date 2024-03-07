@@ -25,7 +25,8 @@ class InstructionController(val service: InstructionService, private val objectM
     fun createInstruction(
         @Valid @RequestPart("instruction") instruction: InstructionIn,
         @RequestPart("attachments", required = false) attachments: List<MultipartFile>?,
-        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?
+        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?,
+        request: HttpServletRequest
     ): InstructionOut? {
         val nonNullAttachments = attachments ?: emptyList()
         val nonNullAttachmentsMetadata = attachmentsMetadata ?: emptyList()
@@ -34,7 +35,7 @@ class InstructionController(val service: InstructionService, private val objectM
         val attachmentMetadataDeserialized = deserializeAttachmentsMetadata(nonNullAttachmentsMetadata)
         val attachmentIns = createAttachmentIns(nonNullAttachments, attachmentMetadataDeserialized)
 
-        return service.createInstruction(instruction, attachmentIns)
+        return service.createInstruction(instruction, attachmentIns, request)
     }
 
     @PutMapping("/{id}")

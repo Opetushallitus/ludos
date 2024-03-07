@@ -27,22 +27,33 @@ class CertificateService(
     fun getCertificates(exam: Exam, filters: CertificateFilters): List<CertificateOut> =
         repository.getCertificates(exam, filters)
 
-    fun createSukoCertificate(certificate: SukoCertificateDtoIn, attachment: MultipartFile): CertificateOut =
-        repository.createSukoCertificate(attachment, certificate)
-
-    fun createLdCertificate(
-        certificate: LdCertificateDtoIn,
+    fun createCertificate(
+        certificate: CertificateIn,
         attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile
-    ): CertificateOut =
-        repository.createLdCertificate(attachmentFi, attachmentSv, certificate)
+        attachmentSv: MultipartFile?,
+        request: ServletRequest
+    ): CertificateOut {
+        val createdCertificate = when (certificate) {
+            is SukoCertificateDtoIn -> repository.createSukoCertificate(certificate, attachmentFi)
+            is LdCertificateDtoIn -> repository.createLdCertificate(
+                certificate,
+                attachmentFi,
+                attachmentSv ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+            )
 
-    fun createPuhviCertificate(
-        certificate: PuhviCertificateDtoIn,
-        attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile
-    ): CertificateOut =
-        repository.createPuhviCertificate(attachmentFi, attachmentSv, certificate)
+            is PuhviCertificateDtoIn -> repository.createPuhviCertificate(
+                certificate,
+                attachmentFi,
+                attachmentSv ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing"),
+            )
+        }
+
+        auditLogger.atInfo().addLudosUserInfo().addUserIp(request)
+            .addKeyValue("certificate", createdCertificate)
+            .log("Created certificate")
+
+        return createdCertificate
+    }
 
     fun getCertificateById(id: Int, exam: Exam, version: Int?): CertificateOut? =
         repository.getCertificateById(id, exam, version)
