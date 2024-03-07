@@ -5,7 +5,7 @@ import { DefaultValues, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useBlockFormCloseOrRefresh } from './useBlockFormCloseOrRefresh'
 import { useState } from 'react'
-import { createCertificate, updateCertificate } from '../request'
+import { createCertificate, createNewVersionOfCertificate } from '../request'
 import { contentListPath } from '../components/LudosRoutes'
 import { useMatch } from 'react-router-dom'
 
@@ -42,7 +42,8 @@ export function useCertificateForm<T extends CommonCertificateFormType>(
 
   async function submitCertificateData(certificate: T, newAttachmentFi: File | null, newAttachmentSv: File | null) {
     if (isUpdate && id) {
-      return await updateCertificate(Number(id), certificate, newAttachmentFi, newAttachmentSv)
+      await createNewVersionOfCertificate(Number(id), certificate, newAttachmentFi, newAttachmentSv)
+      return Number(id)
     } else {
       return await createCertificate(certificate, newAttachmentFi!, newAttachmentSv).then((res) => res.id)
     }

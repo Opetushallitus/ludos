@@ -661,9 +661,9 @@ class CertificateRepository(
             getCertificateById(id, certificateDtoIn.exam, attachmentSource.leftOrNull()) ?: return@execute null
         val attachmentKeys = getCurrentOrNewAttachmentKeys(attachmentSourceCertificate, attachmentSource)
 
-        val newVersion = latestAssignmentVersion + 1
-        updateCertificateRow(attachmentKeys, newVersion, author)
+        val versionToCreate = latestAssignmentVersion + 1
+        updateCertificateRow(attachmentKeys, versionToCreate, author)
 
-        return@execute id
+        return@execute versionToCreate
     }
 }

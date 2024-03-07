@@ -1,10 +1,11 @@
 package fi.oph.ludos.certificate
 
 import arrow.core.Either
-import fi.oph.ludos.Exam
+import fi.oph.ludos.*
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import fi.oph.ludos.aws.Bucket
 import fi.oph.ludos.aws.S3Helper
+import jakarta.servlet.ServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -21,6 +22,7 @@ class CertificateService(
     val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
 
     fun getCertificates(exam: Exam, filters: CertificateFilters): List<CertificateOut> =
         repository.getCertificates(exam, filters)
@@ -64,7 +66,7 @@ class CertificateService(
 
     fun createNewVersionOfCertificate(
         id: Int,
-        certificate: Certificate,
+        certificate: CertificateIn,
         attachmentFi: MultipartFile?,
         attachmentSv: MultipartFile?
     ) = when (certificate) {
@@ -85,29 +87,36 @@ class CertificateService(
             certificate,
             Either.Right(Pair(attachmentFi, attachmentSv))
         )
-
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
     }
 
     fun restoreOldVersionOfCertificate(
         exam: Exam,
         id: Int,
-        version: Int
+        versionToRestore: Int,
+        request: ServletRequest
     ): Int? {
-        val certificateToRestore = repository.getCertificateById(id, exam, version) ?: return null
-        return when (certificateToRestore) {
+        val certificateToRestore = repository.getCertificateById(id, exam, versionToRestore) ?: return null
+        val createdVersion = when (certificateToRestore) {
             is SukoCertificateDtoOut -> repository.createNewVersionOfSukoCertificate(
-                id, SukoCertificateDtoIn(certificateToRestore), Either.Left(version)
+                id, SukoCertificateDtoIn(certificateToRestore), Either.Left(versionToRestore)
             )
 
             is LdCertificateDtoOut -> repository.createNewVersionOfLdCertificate(
-                id, LdCertificateDtoIn(certificateToRestore), Either.Left(version)
+                id, LdCertificateDtoIn(certificateToRestore), Either.Left(versionToRestore)
             )
 
             is PuhviCertificateDtoOut -> repository.createNewVersionOfPuhviCertificate(
-                id, PuhviCertificateDtoIn(certificateToRestore), Either.Left(version)
+                id, PuhviCertificateDtoIn(certificateToRestore), Either.Left(versionToRestore)
             )
         }
+
+        auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+            .addKeyValue(
+                "restoreVersionInfo",
+                RestoreVersionInfoForLogging(exam, id, versionToRestore, createdVersion!!)
+            ).log("Restored old version of certificate")
+
+        return createdVersion
     }
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {

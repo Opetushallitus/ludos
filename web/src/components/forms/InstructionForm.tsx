@@ -12,7 +12,7 @@ import {
   Language,
   PublishState
 } from '../../types'
-import { createInstruction, createNewVersionInstruction, fetchDataOrReload } from '../../request'
+import { createInstruction, createNewVersionOfInstruction, fetchDataOrReload } from '../../request'
 import { useContext, useState } from 'react'
 import { LanguageTabs } from '../LanguageTabs'
 import { instructionDefaultValues, InstructionFormType, instructionSchema } from './schemas/instructionSchema'
@@ -134,7 +134,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           language: language ?? 'FI'
         }))
 
-      await createNewVersionInstruction<number>(Number(id), instruction, toUpdate, toUpload)
+      await createNewVersionOfInstruction<number>(Number(id), instruction, toUpdate, toUpload)
       return Number(id)
     } else {
       const findFilesFromAttachmentData: AttachmentData[] = combinedAttachmentData

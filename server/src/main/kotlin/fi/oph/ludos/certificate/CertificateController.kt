@@ -4,6 +4,7 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.*
@@ -21,10 +22,10 @@ class CertificateController(val service: CertificateService) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun createCertificate(
-        @Valid @RequestPart("certificate") certificate: Certificate,
+        @Valid @RequestPart("certificate") certificate: CertificateIn,
         @RequestPart("attachmentFi") attachment: MultipartFile,
         @RequestPart("attachmentSv") attachmentSv: MultipartFile?
-    ): Certificate = when (certificate) {
+    ): CertificateOut = when (certificate) {
         is SukoCertificateDtoIn -> service.createSukoCertificate(certificate, attachment)
         is LdCertificateDtoIn -> if (attachmentSv != null) service.createLdCertificate(
             certificate,
@@ -45,7 +46,7 @@ class CertificateController(val service: CertificateService) {
     @RequireAtLeastYllapitajaRole
     fun createNewVersionOfCertificate(
         @PathVariable("id") id: Int,
-        @Valid @RequestPart("certificate") certificate: Certificate,
+        @Valid @RequestPart("certificate") certificate: CertificateIn,
         @RequestPart("attachmentFi") attachment: MultipartFile?,
         @RequestPart("attachmentSv") attachmentSv: MultipartFile?
     ): Int = service.createNewVersionOfCertificate(id, certificate, attachment, attachmentSv)
@@ -102,7 +103,8 @@ class CertificateController(val service: CertificateService) {
         @PathVariable exam: Exam,
         @PathVariable id: Int,
         @PathVariable version: Int,
-    ): Int = service.restoreOldVersionOfCertificate(exam, id, version)
+        request: HttpServletRequest
+    ): Int = service.restoreOldVersionOfCertificate(exam, id, version, request)
         ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "$exam certificate $id or its version $version not found"

@@ -11,17 +11,19 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import java.sql.Timestamp
 
+interface Certificate : ContentBase {
+    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    override val contentType: ContentType
+        get() = ContentType.CERTIFICATE
+}
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
 @JsonSubTypes(
     JsonSubTypes.Type(value = SukoCertificateDtoIn::class, name = "SUKO"),
     JsonSubTypes.Type(value = PuhviCertificateDtoIn::class, name = "PUHVI"),
     JsonSubTypes.Type(value = LdCertificateDtoIn::class, name = "LD")
 )
-interface Certificate : ContentBase {
-    @get:JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    override val contentType: ContentType
-        get() = ContentType.CERTIFICATE
-}
+sealed interface CertificateIn : Certificate
 
 @JsonTypeName("SUKO")
 data class SukoCertificateDtoIn(
@@ -37,7 +39,7 @@ data class SukoCertificateDtoIn(
     val descriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.SUKO
-) : Certificate {
+) : CertificateIn {
     constructor(out: SukoCertificateDtoOut) : this(
         out.nameFi,
         out.nameSv,
@@ -60,7 +62,7 @@ data class LdCertificateDtoIn(
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
-) : Certificate {
+) : CertificateIn {
     constructor(out: LdCertificateDtoOut) : this(
         out.nameFi,
         out.nameSv,
@@ -86,7 +88,7 @@ data class PuhviCertificateDtoIn(
     val descriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.PUHVI
-) : Certificate {
+) : CertificateIn {
     constructor(out: PuhviCertificateDtoOut) : this(
         out.nameFi,
         out.nameSv,

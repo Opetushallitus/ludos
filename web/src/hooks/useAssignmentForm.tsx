@@ -1,7 +1,7 @@
 import { ContentFormAction, ContentType, ContentTypeSingularEn, Exam, PublishState } from '../types'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { createAssignment, fetchDataOrReload, updateAssignment } from '../request'
+import { createAssignment, fetchDataOrReload, createNewVersionOfAssignment } from '../request'
 import { FieldPath, PathValue, useForm } from 'react-hook-form'
 import {
   assignmentDefaultValuesByExam,
@@ -66,7 +66,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
 
   async function submitAssignmentData(assignment: T) {
     if (action === ContentFormAction.muokkaus && id) {
-      return await updateAssignment<T>(Number(id), assignment)
+      return await createNewVersionOfAssignment<T>(Number(id), assignment)
     } else {
       return await createAssignment<T>(assignment).then((res) => res.id)
     }

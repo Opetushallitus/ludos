@@ -428,7 +428,7 @@ class CertificateControllerTest : CertificateRequests() {
                 .andReturn().response.contentAsString
         assertThat(
             postResponseBody,
-            CoreMatchers.containsString("Invalid type: JSON parse error: Could not resolve type id 'WRONG' as a subtype of `fi.oph.ludos.certificate.Certificate`: known type ids = [LD, PUHVI, SUKO]")
+            CoreMatchers.containsString("Invalid type: JSON parse error: Could not resolve type id 'WRONG' as a subtype of `fi.oph.ludos.certificate.CertificateIn`: known type ids = [LD, PUHVI, SUKO]")
         )
     }
 

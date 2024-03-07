@@ -84,7 +84,7 @@ export async function createAssignment<T>(body: T): Promise<{ id: number }> {
   return await result.json()
 }
 
-export async function updateAssignment<T>(id: number, body: T): Promise<number> {
+export async function createNewVersionOfAssignment<T>(id: number, body: T): Promise<number> {
   const result = await doRequest(`${ASSIGNMENT_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
@@ -124,7 +124,7 @@ export async function createInstruction<T>(
   return await result.json()
 }
 
-export async function createNewVersionInstruction<T>(
+export async function createNewVersionOfInstruction<T>(
   id: number,
   instructionIn: InstructionFormType,
   attachmentsToUpdate: AttachmentData[],
@@ -192,7 +192,7 @@ export async function createCertificate(
   return await result.json()
 }
 
-export async function updateCertificate(
+export async function createNewVersionOfCertificate(
   id: number,
   certificateIn: CommonCertificateFormType,
   newAttachmentFi: File | null,
