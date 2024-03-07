@@ -92,7 +92,7 @@ object AssignmentFiltersTestData {
         }
 
 
-    fun assignmentsForFilterTest(): List<Assignment> =
+    fun assignmentsForFilterTest(): List<AssignmentIn> =
         sukoAssignments(DEFAULT_NUMBER_OF_ASSIGNMENTS) +
                 ldAssignments(DEFAULT_NUMBER_OF_ASSIGNMENTS) +
                 puhviAssignments(DEFAULT_NUMBER_OF_ASSIGNMENTS)

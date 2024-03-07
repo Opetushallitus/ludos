@@ -36,12 +36,6 @@ data class Oppimaara(
     }
 }
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
-@JsonSubTypes(
-    JsonSubTypes.Type(value = SukoAssignmentDtoIn::class, name = "SUKO"),
-    JsonSubTypes.Type(value = PuhviAssignmentDtoIn::class, name = "PUHVI"),
-    JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
-)
 @AtLeastOneAssignmentNameIsNotBlank
 interface Assignment : ContentBase {
     @get:ValidHtmlContent
@@ -71,6 +65,14 @@ interface SukoAssignmentMetadata {
     val aiheKoodiArvos: List<String>
 }
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = SukoAssignmentDtoIn::class, name = "SUKO"),
+    JsonSubTypes.Type(value = PuhviAssignmentDtoIn::class, name = "PUHVI"),
+    JsonSubTypes.Type(value = LdAssignmentDtoIn::class, name = "LD")
+)
+sealed interface AssignmentIn : Assignment
+
 @JsonTypeName("SUKO")
 data class SukoAssignmentDtoIn(
     override val nameFi: String,
@@ -94,7 +96,7 @@ data class SukoAssignmentDtoIn(
     @field:ValidKoodiArvos(koodisto = KoodistoName.AIHE_SUKO)
     override val aiheKoodiArvos: List<String>,
     override val exam: Exam = Exam.SUKO,
-) : Assignment, SukoAssignmentMetadata {
+) : AssignmentIn, SukoAssignmentMetadata {
     constructor(dtoOut: SukoAssignmentDtoOut) : this(
         nameFi = dtoOut.nameFi,
         nameSv = dtoOut.nameSv,
@@ -131,7 +133,7 @@ data class LdAssignmentDtoIn(
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     override val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD,
-) : Assignment, LdAssignmentMetadata {
+) : AssignmentIn, LdAssignmentMetadata {
     constructor(dtoOut: LdAssignmentDtoOut) : this(
         nameFi = dtoOut.nameFi,
         nameSv = dtoOut.nameSv,
@@ -166,7 +168,7 @@ data class PuhviAssignmentDtoIn(
     @field:ValidKoodiArvos(koodisto = KoodistoName.LUDOS_LUKUVUOSI)
     override val lukuvuosiKoodiArvos: List<String>,
     override val exam: Exam = Exam.PUHVI,
-) : Assignment, PuhviAssignmentMetadata {
+) : AssignmentIn, PuhviAssignmentMetadata {
     constructor(dtoOut: PuhviAssignmentDtoOut) : this(
         nameFi = dtoOut.nameFi,
         nameSv = dtoOut.nameSv,

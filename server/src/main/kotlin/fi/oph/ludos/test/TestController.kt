@@ -2,7 +2,7 @@ package fi.oph.ludos.test
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.LudosApplication
-import fi.oph.ludos.assignment.Assignment
+import fi.oph.ludos.assignment.AssignmentIn
 import fi.oph.ludos.assignment.AssignmentService
 import fi.oph.ludos.auth.*
 import jakarta.annotation.PostConstruct
@@ -89,7 +89,7 @@ class TestController(
     // this endpoint is used by api tests
     @PostMapping("/seedAssignments")
     @RequireAtLeastYllapitajaRole
-    fun seedDatabaseWithCustomAssignments(@RequestBody assignments: Array<Assignment>, request: HttpServletRequest) =
+    fun seedDatabaseWithCustomAssignments(@RequestBody assignments: Array<AssignmentIn>, request: HttpServletRequest) =
         try {
             assignments.forEach { assignmentService.createAssignment(it, request) }
             ResponseEntity.status(HttpStatus.OK).body("OK")

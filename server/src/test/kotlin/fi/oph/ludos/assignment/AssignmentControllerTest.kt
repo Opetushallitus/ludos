@@ -363,7 +363,7 @@ class AssignmentControllerTest : AssignmentRequests() {
             assertThat(response.status).`as`("missing ${field.name} yields bad request")
                 .isEqualTo(HttpStatus.SC_BAD_REQUEST)
             if (field.name == "exam") {
-                assertThat(response.contentAsString).contains("Invalid type: JSON parse error: Could not resolve subtype of [simple type, class fi.oph.ludos.assignment.Assignment]: missing type id property 'exam'")
+                assertThat(response.contentAsString).contains("Invalid type: JSON parse error: Could not resolve subtype of [simple type, class fi.oph.ludos.assignment.AssignmentIn]: missing type id property 'exam'")
                     .`as`("missing ${field.name} yields proper error message")
             } else {
                 assertThat(response.contentAsString).contains("property ${field.name} due to missing")

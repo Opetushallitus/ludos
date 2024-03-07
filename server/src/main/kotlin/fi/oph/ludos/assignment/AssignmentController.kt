@@ -20,14 +20,14 @@ import org.springframework.web.server.ResponseStatusException
 class AssignmentController(val service: AssignmentService) {
     @PostMapping("")
     @RequireAtLeastYllapitajaRole
-    fun createAssignment(@Valid @RequestBody assignment: Assignment, request: HttpServletRequest): AssignmentOut =
+    fun createAssignment(@Valid @RequestBody assignment: AssignmentIn, request: HttpServletRequest): AssignmentOut =
         service.createAssignment(assignment, request)
 
     @PutMapping("/{id}")
     @RequireAtLeastYllapitajaRole
     fun createNewVersionOfAssignment(
         @PathVariable("id") id: Int,
-        @Valid @RequestBody assignment: Assignment,
+        @Valid @RequestBody assignment: AssignmentIn,
         request: HttpServletRequest
     ): Int =
         service.createNewVersionOfAssignment(id, assignment, request) ?: throw ResponseStatusException(

@@ -18,12 +18,11 @@ class AssignmentService(
 
     fun getAssignments(filters: AssignmentBaseFilters): AssignmentListDtoOut = repository.getAssignments(filters)
 
-    fun createAssignment(assignment: Assignment, request: ServletRequest?): AssignmentOut {
+    fun createAssignment(assignment: AssignmentIn, request: ServletRequest?): AssignmentOut {
         val createdAssignment = when (assignment) {
             is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
             is PuhviAssignmentDtoIn -> repository.savePuhviAssignment(assignment)
             is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
-            else -> throw UnknownError("Unreachable")
         }
         auditLogger.atInfo().addLudosUserInfo()
             .addUserIp(request)
@@ -32,12 +31,11 @@ class AssignmentService(
         return createdAssignment
     }
 
-    fun createNewVersionOfAssignment(id: Int, assignment: Assignment, request: ServletRequest): Int? {
+    fun createNewVersionOfAssignment(id: Int, assignment: AssignmentIn, request: ServletRequest): Int? {
         val newAssignmentVersion = when (assignment) {
             is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(id, assignment)
             is LdAssignmentDtoIn -> repository.createNewVersionOfLdAssignment(id, assignment)
             is PuhviAssignmentDtoIn -> repository.createNewVersionOfPuhviAssignment(id, assignment)
-            else -> throw UnknownError("Unreachable")
         }
         if (newAssignmentVersion != null) {
             auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
