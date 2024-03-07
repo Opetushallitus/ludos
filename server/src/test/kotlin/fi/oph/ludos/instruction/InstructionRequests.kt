@@ -28,7 +28,7 @@ abstract class InstructionRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
-    val minimalSukoInstruction = TestSukoInstructionDtoIn(
+    val minimalSukoInstructionIn = TestSukoInstructionDtoIn(
         nameFi = "nameFi",
         nameSv = "",
         contentFi = "",
@@ -39,7 +39,7 @@ abstract class InstructionRequests {
         exam = Exam.SUKO,
     )
 
-    val minimalLdInstruction = TestLdInstructionDtoIn(
+    val minimalLdInstructionIn = TestLdInstructionDtoIn(
         nameFi = "nameFi",
         nameSv = "",
         contentFi = "",
@@ -49,7 +49,7 @@ abstract class InstructionRequests {
         exam = Exam.LD,
     )
 
-    val minimalPuhviInstruction = TestPuhviInstructionDtoIn(
+    val minimalPuhviInstructionIn = TestPuhviInstructionDtoIn(
         nameFi = "nameFi",
         nameSv = "",
         contentFi = "",
@@ -61,9 +61,9 @@ abstract class InstructionRequests {
     )
 
     fun minimalInstructionIn(exam: Exam) = when (exam) {
-        Exam.SUKO -> minimalSukoInstruction
-        Exam.LD -> minimalLdInstruction
-        Exam.PUHVI -> minimalPuhviInstruction
+        Exam.SUKO -> minimalSukoInstructionIn
+        Exam.LD -> minimalLdInstructionIn
+        Exam.PUHVI -> minimalPuhviInstructionIn
     }
 
     fun examByTestInstructionOutClass(testInstructionOutClass: KClass<out InstructionOut>): Exam =
@@ -194,14 +194,14 @@ abstract class InstructionRequests {
 
     fun createNewVersionOfInstruction(
         instructionId: Int,
-        updatedInstructionDtoInStr: String,
+        updatedInstructionIn: TestInstruction,
         updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
         newAttachments: List<InstructionAttachmentIn> = emptyList(),
         updaterUser: RequestPostProcessor = yllapitajaUser
     ): Int = mockMvc.perform(
         createNewVersionOfInstructionReq(
             instructionId,
-            updatedInstructionDtoInStr,
+            mapper.writeValueAsString(updatedInstructionIn),
             updatedInstructionAttachmentsMetadata,
             newAttachments
         ).with(updaterUser)
@@ -238,6 +238,15 @@ abstract class InstructionRequests {
                 .andExpect(status().isOk).andReturn().response.contentAsString
 
         return mapper.readValue(responseBody)
+    }
+
+    fun restoreInstructionReq(
+        exam: Exam,
+        id: Int,
+        version: Int
+    ): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/instruction/$exam/$id/$version/restore"
+        return MockMvcRequestBuilders.post(url)
     }
 
     fun readAttachmentFixtureFile(attachmentFixtureFileName: String, partName: String): MockMultipartFile {

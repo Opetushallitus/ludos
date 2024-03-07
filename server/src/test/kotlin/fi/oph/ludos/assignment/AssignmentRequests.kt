@@ -269,7 +269,6 @@ abstract class AssignmentRequests {
         return MockMvcRequestBuilders.post(url)
     }
 
-
     fun createFavoriteFolderReq(exam: Exam, body: String) =
         MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment/favorites/$exam/folder")
             .contentType(MediaType.APPLICATION_JSON)
