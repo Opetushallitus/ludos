@@ -34,7 +34,7 @@ abstract class InstructionRequests {
             PuhviInstructionDtoOut::class -> Exam.PUHVI
             else -> throw RuntimeException("unsupported InstructionOutClass '$testInstructionOutClass'")
         }
-    
+
     fun getInstructionByIdReq(exam: Exam, id: Int, version: Int? = null): MockHttpServletRequestBuilder {
         val url = "${Constants.API_PREFIX}/instruction/$exam/$id" + if (version != null) "/$version" else ""
         return MockMvcRequestBuilders.get(url).contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +99,14 @@ abstract class InstructionRequests {
         return mapper.readValue<InstructionListDtoOut<I, O>>(res)
     }
 
-    fun updateInstructionReq(
+    fun getAllInstructionsByExam(exam: Exam): InstructionListDtoOut<out InstructionOut, out InstructionFilterOptions> =
+        when (exam) {
+            Exam.SUKO -> getAllInstructions<SukoInstructionFilters, SukoInstructionDtoOut, SukoInstructionFilterOptionsDtoOut>()
+            Exam.LD -> getAllInstructions<LdInstructionFilters, LdInstructionDtoOut, LdInstructionFilterOptionsDtoOut>()
+            Exam.PUHVI -> getAllInstructions<PuhviInstructionFilters, PuhviInstructionDtoOut, PuhviInstructionFilterOptionsDtoOut>()
+        }
+
+    fun createNewVersionOfInstructionReq(
         id: Int,
         instructionIn: String,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
@@ -130,14 +137,14 @@ abstract class InstructionRequests {
         return reqBuilder
     }
 
-    fun performInstructionUpdate(
+    fun createNewVersionOfInstruction(
         instructionId: Int,
         updatedInstructionDtoInStr: String,
         updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
         newAttachments: List<InstructionAttachmentIn> = emptyList(),
         updaterUser: RequestPostProcessor = yllapitajaUser
     ): Int = mockMvc.perform(
-        updateInstructionReq(
+        createNewVersionOfInstructionReq(
             instructionId,
             updatedInstructionDtoInStr,
             updatedInstructionAttachmentsMetadata,

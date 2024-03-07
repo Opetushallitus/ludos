@@ -1,7 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../Button'
 import {
-  AttachmentData,
   ContentBaseOut,
   ContentType,
   ContentTypeByContentTypePluralFi,
@@ -29,12 +28,7 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { ContentError } from './ContentError'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
-import {
-  createNewVersionInstruction,
-  restoreOldAssignment,
-  restoreOldCertificate,
-  updateAssignment
-} from '../../request'
+import { restoreOldContentVersion } from '../../request'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { ListTabs } from '../ListTabs'
 import { ContentBreadcrumbs } from '../Breadcrumbs'
@@ -82,20 +76,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
     }
   }, [contentType, exam, navigate, state?.returnLocation])
 
-  const restoreOldVersion = async (data: ContentBaseOut) => {
-    if (isAssignment(data)) {
-      await restoreOldAssignment(data.id, data.exam, data.version)
-    } else if (isInstruction(data)) {
-      const attachmentsToUpdate: AttachmentData[] = data.attachments.map((attachment) => ({
-        name: attachment.name,
-        attachment: attachment,
-        language: attachment.language
-      }))
-      await createNewVersionInstruction(data.id, data, attachmentsToUpdate, [])
-    } else if (isCertificate(data)) {
-      await restoreOldCertificate(data.id, data.exam, data.version)
-    }
-  }
+  const restoreOldVersion = (data: ContentBaseOut) =>
+    restoreOldContentVersion(data.exam, data.contentType, data.id, data.version)
 
   if (loading) {
     return <PageLoadingIndicator />

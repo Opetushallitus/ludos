@@ -1,9 +1,6 @@
 package fi.oph.ludos.instruction
 
-import fi.oph.ludos.Exam
-import fi.oph.ludos.INITIAL_VERSION_NUMBER
-import fi.oph.ludos.Language
-import fi.oph.ludos.PublishState
+import fi.oph.ludos.*
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
 import fi.oph.ludos.repository.getKotlinArray
@@ -550,19 +547,19 @@ class InstructionRepository(
         instructionDtoIn: T,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
         newAttachments: List<InstructionAttachmentIn>,
-        updateInstructionRow: (version: Int, authorOid: String) -> Unit
+        updateInstructionRow: (versionToCreate: Int, authorOid: String) -> Unit
     ): Int? = transactionTemplate.execute { _ ->
         val (currentLatestVersion, authorOid) = getLatestInstructionVersionAndAuthor(id, instructionDtoIn.exam)
             ?: return@execute null
 
         val table = tableNameByExam(instructionDtoIn.exam)
 
-        val version = currentLatestVersion + 1
+        val versionToCreate = currentLatestVersion + 1
 
-        updateInstructionRow(version, authorOid)
+        updateInstructionRow(versionToCreate, authorOid)
 
         val attachmentWithInstructionVersion = { metadata: InstructionAttachmentMetadataDtoIn ->
-            metadata.copy(instructionVersion = version)
+            metadata.copy(instructionVersion = versionToCreate)
         }
 
         for (attachment in newAttachments) {
@@ -594,13 +591,13 @@ class InstructionRepository(
                 it.fileKey,
                 it.name,
                 id,
-                version,
+                versionToCreate,
                 it.name,
-                it.language.toString()
+                it.language.toString(),
             )
         }
 
-        return@execute id
+        return@execute versionToCreate
     }
 
     fun createNewVersionOfSukoInstruction(
@@ -609,7 +606,12 @@ class InstructionRepository(
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
         newAttachments: List<InstructionAttachmentIn>
     ): Int? =
-        createNewVersionOfInstruction(id, instruction, attachmentsMetadata, newAttachments) { version, authorOid ->
+        createNewVersionOfInstruction(
+            id,
+            instruction,
+            attachmentsMetadata,
+            newAttachments
+        ) { versionToCreate, authorOid ->
             jdbcTemplate.update(
                 """
             INSERT INTO suko_instruction (
@@ -636,7 +638,7 @@ class InstructionRepository(
                 instruction.shortDescriptionSv,
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                version
+                versionToCreate
             )
         }
 
@@ -646,7 +648,12 @@ class InstructionRepository(
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
         newAttachments: List<InstructionAttachmentIn>
     ): Int? =
-        createNewVersionOfInstruction(id, instruction, attachmentsMetadata, newAttachments) { version, authorOid ->
+        createNewVersionOfInstruction(
+            id,
+            instruction,
+            attachmentsMetadata,
+            newAttachments
+        ) { versionToCreate, authorOid ->
             jdbcTemplate.update(
                 """INSERT INTO ld_instruction (
                 instruction_id,
@@ -670,7 +677,7 @@ class InstructionRepository(
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 instruction.aineKoodiArvo,
-                version
+                versionToCreate
             )
         }
 
@@ -680,7 +687,12 @@ class InstructionRepository(
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
         newAttachments: List<InstructionAttachmentIn>
     ): Int? =
-        createNewVersionOfInstruction(id, instruction, attachmentsMetadata, newAttachments) { version, authorOid ->
+        createNewVersionOfInstruction(
+            id,
+            instruction,
+            attachmentsMetadata,
+            newAttachments
+        ) { versionToCreate, authorOid ->
             jdbcTemplate.update(
                 """INSERT INTO puhvi_instruction (
                 instruction_id,
@@ -706,7 +718,7 @@ class InstructionRepository(
                 instruction.publishState.toString(),
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                version
+                versionToCreate
             )
         }
 

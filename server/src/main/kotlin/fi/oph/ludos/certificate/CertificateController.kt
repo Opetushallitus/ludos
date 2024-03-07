@@ -105,7 +105,7 @@ class CertificateController(val service: CertificateService) {
     ): Int = service.restoreOldVersionOfCertificate(exam, id, version)
         ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            "Certificate $id not found"
+            "$exam certificate $id or its version $version not found"
         )
 
     @GetMapping("/attachment/{key}")

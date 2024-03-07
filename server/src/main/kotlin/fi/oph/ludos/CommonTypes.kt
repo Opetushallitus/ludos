@@ -64,5 +64,5 @@ data class RestoreVersionInfoForLogging(
     val exam: Exam,
     val id: Int,
     val versionToRestore: Int,
-    val newVersion: Int
+    val createdVersion: Int?
 )

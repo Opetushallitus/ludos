@@ -16,12 +16,6 @@ import org.springframework.web.multipart.MultipartFile
 import java.sql.Timestamp
 import kotlin.reflect.KClass
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
-@JsonSubTypes(
-    JsonSubTypes.Type(value = SukoInstructionDtoIn::class, name = "SUKO"),
-    JsonSubTypes.Type(value = LdInstructionDtoIn::class, name = "LD"),
-    JsonSubTypes.Type(value = PuhviInstructionDtoIn::class, name = "PUHVI")
-)
 @AtLeastOneInstructionNameIsNotBlank
 interface Instruction : ContentBase {
     @get:ValidHtmlContent
@@ -35,6 +29,14 @@ interface Instruction : ContentBase {
         get() = ContentType.INSTRUCTION
 }
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "exam")
+@JsonSubTypes(
+    JsonSubTypes.Type(value = SukoInstructionDtoIn::class, name = "SUKO"),
+    JsonSubTypes.Type(value = LdInstructionDtoIn::class, name = "LD"),
+    JsonSubTypes.Type(value = PuhviInstructionDtoIn::class, name = "PUHVI")
+)
+sealed interface InstructionIn : Instruction
+
 @JsonTypeName("SUKO")
 data class SukoInstructionDtoIn(
     override val nameFi: String,
@@ -47,7 +49,17 @@ data class SukoInstructionDtoIn(
     val shortDescriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.SUKO
-) : Instruction
+) : InstructionIn {
+    constructor(dtoOut: SukoInstructionDtoOut) : this(
+        nameFi = dtoOut.nameFi,
+        nameSv = dtoOut.nameSv,
+        contentFi = dtoOut.contentFi,
+        contentSv = dtoOut.contentSv,
+        shortDescriptionFi = dtoOut.shortDescriptionFi,
+        shortDescriptionSv = dtoOut.shortDescriptionSv,
+        publishState = dtoOut.publishState,
+    )
+}
 
 @JsonTypeName("LD")
 data class LdInstructionDtoIn(
@@ -59,7 +71,16 @@ data class LdInstructionDtoIn(
     @field:ValidKoodiArvo(koodisto = KoodistoName.LUDOS_LUKIODIPLOMI_AINE)
     val aineKoodiArvo: String,
     override val exam: Exam = Exam.LD
-) : Instruction
+) : InstructionIn {
+    constructor(dtoOut: LdInstructionDtoOut) : this(
+        nameFi = dtoOut.nameFi,
+        nameSv = dtoOut.nameSv,
+        contentFi = dtoOut.contentFi,
+        contentSv = dtoOut.contentSv,
+        publishState = dtoOut.publishState,
+        aineKoodiArvo = dtoOut.aineKoodiArvo
+    )
+}
 
 @JsonTypeName("PUHVI")
 data class PuhviInstructionDtoIn(
@@ -73,7 +94,17 @@ data class PuhviInstructionDtoIn(
     val shortDescriptionSv: String,
     override val publishState: PublishState,
     override val exam: Exam = Exam.PUHVI
-) : Instruction
+) : InstructionIn {
+    constructor(dtoOut: PuhviInstructionDtoOut) : this(
+        nameFi = dtoOut.nameFi,
+        nameSv = dtoOut.nameSv,
+        contentFi = dtoOut.contentFi,
+        contentSv = dtoOut.contentSv,
+        shortDescriptionFi = dtoOut.shortDescriptionFi,
+        shortDescriptionSv = dtoOut.shortDescriptionSv,
+        publishState = dtoOut.publishState
+    )
+}
 
 interface InstructionAttachmentMetadata {
     val name: String
@@ -86,7 +117,14 @@ data class InstructionAttachmentMetadataDtoIn(
     override val name: String,
     override val language: Language,
     override val instructionVersion: Int
-) : InstructionAttachmentMetadata
+) : InstructionAttachmentMetadata {
+    constructor(dtoOut: InstructionAttachmentDtoOut) : this(
+        fileKey = dtoOut.fileKey,
+        name = dtoOut.name,
+        language = dtoOut.language,
+        instructionVersion = dtoOut.instructionVersion
+    )
+}
 
 data class InstructionAttachmentIn(
     val file: MultipartFile,
@@ -99,7 +137,7 @@ data class InstructionAttachmentIn(
     JsonSubTypes.Type(value = LdInstructionDtoOut::class, name = "LD"),
     JsonSubTypes.Type(value = PuhviInstructionDtoOut::class, name = "PUHVI")
 )
-interface InstructionOut : ContentBaseOut, Instruction {
+sealed interface InstructionOut : ContentBaseOut, Instruction {
     val attachments: List<InstructionAttachmentDtoOut>
 }
 

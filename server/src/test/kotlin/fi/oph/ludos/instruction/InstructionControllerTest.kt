@@ -175,7 +175,7 @@ class InstructionControllerTest : InstructionRequests() {
         )
 
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        val updatedId = performInstructionUpdate(
+        val createdVersion = createNewVersionOfInstruction(
             createdInstruction.id,
             mapper.writeValueAsString(updatedInstructionDtoIn),
             listOf(),
@@ -183,7 +183,7 @@ class InstructionControllerTest : InstructionRequests() {
         )
         val timeAfterUpdate = nowFromDb(mockMvc)
 
-        assertEquals(createdInstruction.id, updatedId)
+        assertThat(createdVersion).isEqualTo(createdInstruction.version + 1)
 
         val updatedInstructionById = when (exam) {
             Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
@@ -454,7 +454,7 @@ class InstructionControllerTest : InstructionRequests() {
                     Exam.PUHVI -> minimalPuhviInstruction.copy(nameFi = createInstruction.nameFi + " updated")
                 }
 
-                performInstructionUpdate(
+                createNewVersionOfInstruction(
                     createInstruction.id,
                     mapper.writeValueAsString(updateInstructionIn),
                 )
@@ -491,7 +491,7 @@ class InstructionControllerTest : InstructionRequests() {
                     Exam.LD -> minimalLdInstruction.copy(nameFi = instructionIn.nameFi + " updated")
                     Exam.PUHVI -> minimalPuhviInstruction.copy(nameFi = instructionIn.nameFi + " updated")
                 }
-                performInstructionUpdate(
+                createNewVersionOfInstruction(
                     createdInstruction.id,
                     mapper.writeValueAsString(updatedInstructionIn),
                     emptyList(),
@@ -606,7 +606,7 @@ class InstructionControllerTest : InstructionRequests() {
             else -> throw Exception("Invalid index")
         }
 
-        performInstructionUpdate(
+        createNewVersionOfInstruction(
             createdInstruction.id,
             mapper.writeValueAsString(instruction),
             toUpdate,
@@ -688,7 +688,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun updateInstructionWithNonExistentId() {
         val nonExistentId = -1
         val failUpdate = mockMvc.perform(
-            updateInstructionReq(
+            createNewVersionOfInstructionReq(
                 nonExistentId,
                 mapper.writeValueAsString(minimalSukoInstruction),
                 emptyList(),
@@ -757,7 +757,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun opettajaCannotCallYllapitajaRoutes() {
         val instructionInStr = mapper.writeValueAsString(minimalSukoInstruction)
         mockMvc.perform(createInstructionReq(instructionInStr, emptyList())).andExpect(status().isUnauthorized())
-        mockMvc.perform(updateInstructionReq(1, instructionInStr, emptyList(), emptyList()))
+        mockMvc.perform(createNewVersionOfInstructionReq(1, instructionInStr, emptyList(), emptyList()))
             .andExpect(status().isUnauthorized())
     }
 
@@ -769,7 +769,7 @@ class InstructionControllerTest : InstructionRequests() {
             emptyList()
         )
 
-        performInstructionUpdate(
+        createNewVersionOfInstruction(
             id,
             mapper.writeValueAsString(minimalSukoInstruction.copy(publishState = PublishState.DELETED)),
         )

@@ -758,7 +758,7 @@ class AssignmentRepository(
         }!!
 
 
-    fun getAssignmentsByIds(ids: List<Int>, exam: Exam, version: Int?): List<AssignmentOut> {
+    fun getAssignmentsByIds(exam: Exam, ids: List<Int>, version: Int?): List<AssignmentOut> {
         if (version != null && ids.size != 1) {
             throw IllegalArgumentException("Version may only be provided with exactly one id in ids list")
         }
@@ -1159,8 +1159,8 @@ class AssignmentRepository(
             val assignmentFavoriteRows: List<AssignmentFavoriteRow> = getAssignmentFavoriteRowsByExam(exam, null)
             val assignmentsById =
                 getAssignmentsByIds(
-                    assignmentFavoriteRows.map { it.assignmentId },
                     exam,
+                    assignmentFavoriteRows.map { it.assignmentId },
                     null
                 ).map(AssignmentCardOut::fromAssignmentOut).associateBy { it.id }
 

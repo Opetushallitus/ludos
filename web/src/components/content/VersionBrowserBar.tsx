@@ -11,7 +11,7 @@ type VersionBrowserBarProps = {
   dataList: ContentBaseOut[]
   openVersionBrowserClick: () => void
   stopVersionBrowsing: () => void
-  restoreOldVersion: (data: ContentBaseOut) => Promise<void>
+  restoreOldVersion: (data: ContentBaseOut) => Promise<any>
 }
 
 export const VersionBrowserBar = ({

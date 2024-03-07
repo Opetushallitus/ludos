@@ -87,7 +87,7 @@ class AssignmentController(val service: AssignmentService) {
     ): Int = service.restoreOldVersionOfAssignment(exam, id, version, request)
         ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            "Assignment $id not found"
+            "$exam assignment $id or its version $version not found"
         )
 
     @PostMapping("/favorites/{exam}/folder")

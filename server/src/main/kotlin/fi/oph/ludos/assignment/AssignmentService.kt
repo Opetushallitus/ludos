@@ -2,7 +2,6 @@ package fi.oph.ludos.assignment
 
 import fi.oph.ludos.*
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
-import fi.oph.ludos.certificate.*
 import jakarta.servlet.ServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -59,14 +58,14 @@ class AssignmentService(
         version: Int,
         request: ServletRequest
     ): Int? {
-        val assignmentToRestore = repository.getAssignmentsByIds(listOf(id), exam, version).firstOrNull() ?: return null
+        val assignmentToRestore = repository.getAssignmentsByIds(exam, listOf(id), version).firstOrNull() ?: return null
 
-        val latestVersion = repository.getAssignmentsByIds(listOf(id), exam, null).first()
+        val latestVersion = repository.getAssignmentsByIds(exam, listOf(id), null).first()
         if (version == latestVersion.version) {
             auditLogger.atWarn().addUserIp(request).addLudosUserInfo()
                 .addKeyValue(
                     "restoreVersionInfo",
-                    RestoreVersionInfoForLogging(exam, id, version, latestVersion.version)
+                    RestoreVersionInfoForLogging(exam, id, version, null)
                 )
                 .log("Tried to restore latest version of assignment")
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot restore latest version")
@@ -93,7 +92,7 @@ class AssignmentService(
     }
 
     fun getAssignmentById(exam: Exam, id: Int, version: Int?): AssignmentOut? =
-        repository.getAssignmentsByIds(listOf(id), exam, version).firstOrNull()
+        repository.getAssignmentsByIds(exam, listOf(id), version).firstOrNull()
 
     fun getAllVersionsOfAssignment(exam: Exam, id: Int): List<AssignmentOut> =
         addUpdaterNames(repository.getAllVersionsOfAssignment(id, exam))

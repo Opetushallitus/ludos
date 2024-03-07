@@ -1,9 +1,11 @@
 package fi.oph.ludos.instruction
 
-import fi.oph.ludos.Exam
+import fi.oph.ludos.*
+import fi.oph.ludos.assignment.*
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import fi.oph.ludos.aws.Bucket
 import fi.oph.ludos.aws.S3Helper
+import jakarta.servlet.ServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -19,13 +21,14 @@ class InstructionService(
     val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
 
     fun createInstruction(instruction: Instruction, attachments: List<InstructionAttachmentIn>) =
         repository.createInstruction(instruction, attachments)
 
     fun createNewVersionOfInstruction(
         id: Int,
-        instruction: Instruction,
+        instruction: InstructionIn,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
         newAttachments: List<InstructionAttachmentIn>
     ): Int? = when (instruction) {
@@ -49,8 +52,61 @@ class InstructionService(
             attachmentsMetadata,
             newAttachments
         )
+    }
 
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid instruction type")
+    fun restoreOldVersionOfInstruction(
+        exam: Exam,
+        id: Int,
+        version: Int,
+        request: ServletRequest
+    ): Int? {
+        val instructionToRestore = repository.getInstructionById(exam, id, version) ?: return null
+
+        val latestVersion = repository.getInstructionById(exam, id, null)!!
+        if (version == latestVersion.version) {
+            auditLogger.atWarn().addUserIp(request).addLudosUserInfo()
+                .addKeyValue(
+                    "restoreVersionInfo",
+                    RestoreVersionInfoForLogging(exam, id, version, null)
+                )
+                .log("Tried to restore latest version of instruction")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot restore latest version")
+        }
+
+        val attachmentMetadatas = instructionToRestore.attachments.map { InstructionAttachmentMetadataDtoIn(it) }
+        val createdVersion = when (instructionToRestore) {
+            is SukoInstructionDtoOut ->
+                repository.createNewVersionOfSukoInstruction(
+                    id,
+                    SukoInstructionDtoIn(instructionToRestore),
+                    attachmentMetadatas,
+                    emptyList()
+                )
+
+            is LdInstructionDtoOut ->
+                repository.createNewVersionOfLdInstruction(
+                    id,
+                    LdInstructionDtoIn(instructionToRestore),
+                    attachmentMetadatas,
+                    emptyList()
+                )
+
+            is PuhviInstructionDtoOut ->
+                repository.createNewVersionOfPuhviInstruction(
+                    id,
+                    PuhviInstructionDtoIn(instructionToRestore),
+                    attachmentMetadatas,
+                    emptyList()
+                )
+        }
+
+        auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+            .addKeyValue(
+                "restoreVersionInfo",
+                RestoreVersionInfoForLogging(exam, id, version, createdVersion!!)
+            ).log("Restored old version of instruction")
+
+        return createdVersion
     }
 
     fun getInstructions(
@@ -65,16 +121,15 @@ class InstructionService(
     fun getAllVersionsOfInstruction(exam: Exam, id: Int): List<InstructionOut> =
         addUpdaterNames(repository.getAllVersionsOfInstruction(id, exam))
 
-    fun addUpdaterNames(assignments: List<InstructionOut>): List<InstructionOut> {
-        val uniqueOids = assignments.map { it.updaterOid }.toSet()
+    fun addUpdaterNames(instructions: List<InstructionOut>): List<InstructionOut> {
+        val uniqueOids = instructions.map { it.updaterOid }.toSet()
         val oidToName = uniqueOids.associateWith { oppijanumerorekisteriClient.getUserDetailsByOid(it) }
-        return assignments.map {
+        return instructions.map {
             val updaterName = oidToName.getOrDefault(it.updaterOid, null)?.formatName()
             when (it) {
                 is SukoInstructionDtoOut -> it.copy(updaterName = updaterName)
                 is LdInstructionDtoOut -> it.copy(updaterName = updaterName)
                 is PuhviInstructionDtoOut -> it.copy(updaterName = updaterName)
-                else -> throw RuntimeException("unreachable")
             }
         }
     }

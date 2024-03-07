@@ -134,7 +134,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
           language: language ?? 'FI'
         }))
 
-      return await createNewVersionInstruction<number>(Number(id), instruction, toUpdate, toUpload)
+      await createNewVersionInstruction<number>(Number(id), instruction, toUpdate, toUpload)
+      return Number(id)
     } else {
       const findFilesFromAttachmentData: AttachmentData[] = combinedAttachmentData
         .filter(({ file }) => file !== undefined)
