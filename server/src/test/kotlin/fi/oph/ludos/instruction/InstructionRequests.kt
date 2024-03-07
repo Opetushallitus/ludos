@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
+import fi.oph.ludos.PublishState
 import fi.oph.ludos.yllapitajaUser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -27,6 +28,44 @@ abstract class InstructionRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
+    val minimalSukoInstruction = TestSukoInstructionDtoIn(
+        nameFi = "nameFi",
+        nameSv = "",
+        contentFi = "",
+        contentSv = "",
+        shortDescriptionFi = "",
+        shortDescriptionSv = "",
+        publishState = PublishState.PUBLISHED,
+        exam = Exam.SUKO,
+    )
+
+    val minimalLdInstruction = TestLdInstructionDtoIn(
+        nameFi = "nameFi",
+        nameSv = "",
+        contentFi = "",
+        contentSv = "",
+        publishState = PublishState.PUBLISHED,
+        aineKoodiArvo = "1",
+        exam = Exam.LD,
+    )
+
+    val minimalPuhviInstruction = TestPuhviInstructionDtoIn(
+        nameFi = "nameFi",
+        nameSv = "",
+        contentFi = "",
+        contentSv = "",
+        shortDescriptionFi = "",
+        shortDescriptionSv = "",
+        publishState = PublishState.PUBLISHED,
+        exam = Exam.PUHVI,
+    )
+
+    fun minimalInstructionIn(exam: Exam) = when (exam) {
+        Exam.SUKO -> minimalSukoInstruction
+        Exam.LD -> minimalLdInstruction
+        Exam.PUHVI -> minimalPuhviInstruction
+    }
+
     fun examByTestInstructionOutClass(testInstructionOutClass: KClass<out InstructionOut>): Exam =
         when (testInstructionOutClass) {
             SukoInstructionDtoOut::class -> Exam.SUKO
@@ -40,7 +79,7 @@ abstract class InstructionRequests {
         return MockMvcRequestBuilders.get(url).contentType(MediaType.APPLICATION_JSON)
     }
 
-    inline fun <reified T : InstructionOut> performGetInstructionById(id: Int, version: Int? = null): T {
+    inline fun <reified T : InstructionOut> getInstructionById(id: Int, version: Int? = null): T {
         val exam = examByTestInstructionOutClass(T::class)
 
         val createdInstructionByIdStr =
@@ -48,6 +87,35 @@ abstract class InstructionRequests {
                 .andReturn().response.contentAsString
 
         return mapper.readValue(createdInstructionByIdStr)
+    }
+
+    fun getInstructionByIdByExam(
+        exam: Exam,
+        id: Int,
+        version: Int? = null
+    ): InstructionOut = when (exam) {
+        Exam.SUKO -> getInstructionById<SukoInstructionDtoOut>(id, version)
+        Exam.LD -> getInstructionById<LdInstructionDtoOut>(id, version)
+        Exam.PUHVI -> getInstructionById<PuhviInstructionDtoOut>(id, version)
+    }
+
+    fun getAllInstructionVersionsReq(exam: Exam, id: Int) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id/versions")
+            .contentType(MediaType.APPLICATION_JSON)
+
+    inline fun <reified T : InstructionOut> getAllInstructionVersions(id: Int): List<T> {
+        val exam = examByTestInstructionOutClass(T::class)
+
+        val responseContent =
+            mockMvc.perform(getAllInstructionVersionsReq(exam, id)).andExpect(status().isOk())
+                .andReturn().response.contentAsString
+        return mapper.readValue<List<T>>(responseContent)
+    }
+
+    fun getAllInstructionVersionsByExam(exam: Exam, id: Int) = when (exam) {
+        Exam.SUKO -> getAllInstructionVersions<SukoInstructionDtoOut>(id)
+        Exam.LD -> getAllInstructionVersions<LdInstructionDtoOut>(id)
+        Exam.PUHVI -> getAllInstructionVersions<PuhviInstructionDtoOut>(id)
     }
 
     fun getAllInstructionsReq(
@@ -72,19 +140,6 @@ abstract class InstructionRequests {
         }
 
         return builder.contentType(MediaType.APPLICATION_JSON)
-    }
-
-    fun getAllInstructionVersionsReq(exam: Exam, id: Int) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/$id/versions")
-            .contentType(MediaType.APPLICATION_JSON)
-
-    inline fun <reified T : InstructionOut> getAllInstructionVersions(id: Int): List<T> {
-        val exam = examByTestInstructionOutClass(T::class)
-
-        val responseContent =
-            mockMvc.perform(getAllInstructionVersionsReq(exam, id)).andExpect(status().isOk())
-                .andReturn().response.contentAsString
-        return mapper.readValue<List<T>>(responseContent)
     }
 
     inline fun <reified F : InstructionBaseFilters, reified I : InstructionOut, reified O : InstructionFilterOptions> getAllInstructions(

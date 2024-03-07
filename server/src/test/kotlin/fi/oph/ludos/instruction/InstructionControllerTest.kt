@@ -18,38 +18,6 @@ import java.time.ZonedDateTime
 import java.util.stream.Stream
 import kotlin.streams.asStream
 
-val minimalSukoInstruction = TestSukoInstructionDtoIn(
-    nameFi = "nameFi",
-    nameSv = "",
-    contentFi = "",
-    contentSv = "",
-    shortDescriptionFi = "",
-    shortDescriptionSv = "",
-    publishState = PublishState.PUBLISHED,
-    exam = Exam.SUKO,
-)
-
-val minimalLdInstruction = TestLdInstructionDtoIn(
-    nameFi = "nameFi",
-    nameSv = "",
-    contentFi = "",
-    contentSv = "",
-    publishState = PublishState.PUBLISHED,
-    aineKoodiArvo = "1",
-    exam = Exam.LD,
-)
-
-val minimalPuhviInstruction = TestPuhviInstructionDtoIn(
-    nameFi = "nameFi",
-    nameSv = "",
-    contentFi = "",
-    contentSv = "",
-    shortDescriptionFi = "",
-    shortDescriptionSv = "",
-    publishState = PublishState.PUBLISHED,
-    exam = Exam.PUHVI,
-)
-
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -185,11 +153,7 @@ class InstructionControllerTest : InstructionRequests() {
 
         assertThat(createdVersion).isEqualTo(createdInstruction.version + 1)
 
-        val updatedInstructionById = when (exam) {
-            Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
-            Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id)
-            Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id)
-        }
+        val updatedInstructionById = getInstructionByIdByExam(exam, createdInstruction.id)
 
         val assertionData = UpdatedInstructionAssertionData(
             updatedInstructionDtoIn,
@@ -224,11 +188,7 @@ class InstructionControllerTest : InstructionRequests() {
         assertTimeIsRoughlyBetween(timeBeforeCreate, createdInstruction.createdAt, timeAfterCreate, "createdAt")
         assertAttachments(attachments, createdInstruction.attachments, Pair(timeBeforeCreate, timeAfterCreate))
 
-        val createdInstructionById = when (exam) {
-            Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
-            Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id)
-            Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id)
-        }
+        val createdInstructionById = getInstructionByIdByExam(exam, createdInstruction.id)
 
         assertEquals(createdInstruction, createdInstructionById)
 
@@ -257,13 +217,9 @@ class InstructionControllerTest : InstructionRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `get all instructions of each exam`(): Stream<DynamicTest> = Exam.entries.stream().map { exam ->
+    fun `get all instructions of each exam`(): List<DynamicTest> = Exam.entries.map { exam ->
         DynamicTest.dynamicTest("Get all instructions for $exam") {
-            val instructions = when (exam!!) {
-                Exam.SUKO -> getAllInstructions<SukoInstructionFilters, SukoInstructionDtoOut, SukoInstructionFilterOptionsDtoOut>().content
-                Exam.LD -> getAllInstructions<LdInstructionFilters, LdInstructionDtoOut, LdInstructionFilterOptionsDtoOut>().content
-                Exam.PUHVI -> getAllInstructions<PuhviInstructionFilters, PuhviInstructionDtoOut, PuhviInstructionFilterOptionsDtoOut>().content
-            }
+            val instructions = getAllInstructionsByExam(exam).content
 
             assertEquals(12, instructions.size)
             assertTrue(
@@ -472,14 +428,10 @@ class InstructionControllerTest : InstructionRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `updating instruction saves updater oid`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `updating instruction saves updater oid`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                val instructionIn = when (exam!!) {
-                    Exam.SUKO -> minimalSukoInstruction
-                    Exam.LD -> minimalLdInstruction
-                    Exam.PUHVI -> minimalPuhviInstruction
-                }
+                val instructionIn = this.minimalInstructionIn(exam)
 
                 val createdInstruction = createInstruction<InstructionOut>(mapper.writeValueAsString(instructionIn))
 
@@ -499,28 +451,13 @@ class InstructionControllerTest : InstructionRequests() {
                     yllapitaja2User
                 )
 
-                val updatedInstruction = when (exam) {
-                    Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id)
-                    Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id)
-                    Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id)
-                }
+                val updatedInstruction =
+                    getInstructionByIdByExam(exam, createdInstruction.id)
 
                 assertThat(updatedInstruction.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(updatedInstruction.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
             }
         }
-
-    private fun getMinimalInstructionInByExam(exam: Exam) = when (exam) {
-        Exam.SUKO -> minimalSukoInstruction
-        Exam.LD -> minimalLdInstruction
-        Exam.PUHVI -> minimalPuhviInstruction
-    }
-
-    private fun getAllInstructionVersionsByExam(exam: Exam, id: Int) = when (exam) {
-        Exam.SUKO -> getAllInstructionVersions<SukoInstructionDtoOut>(id)
-        Exam.LD -> getAllInstructionVersions<LdInstructionDtoOut>(id)
-        Exam.PUHVI -> getAllInstructionVersions<PuhviInstructionDtoOut>(id)
-    }
 
     @TestFactory
     @WithYllapitajaRole
@@ -540,7 +477,7 @@ class InstructionControllerTest : InstructionRequests() {
                     instructionVersions.forEachIndexed { index, instruction ->
                         assertThat(instruction.updaterName).isEqualTo(expectedUpdaterName)
                         if (index == 0) {
-                            assertFieldsInAndOutEqual(getMinimalInstructionInByExam(exam), instruction)
+                            assertFieldsInAndOutEqual(this.minimalInstructionIn(exam), instruction)
                             assertEquals(instruction.attachments[0].name, "fixture1.pdf")
                             assertEquals(instruction.attachments[0].instructionVersion, 1)
                         } else {
@@ -620,7 +557,7 @@ class InstructionControllerTest : InstructionRequests() {
         createdInstruction: InstructionOut
     ) = instructions.forEachIndexed { index, instruction ->
         val version = index + 2
-        val instructionById = getInstructionByIdAndExam(exam, createdInstruction, version)
+        val instructionById = getInstructionByIdByExam(exam, createdInstruction.id, version)
 
         assertFieldsInAndOutEqual(instruction, instructionById)
 
@@ -647,16 +584,6 @@ class InstructionControllerTest : InstructionRequests() {
 
             else -> throw Exception("Invalid index")
         }
-    }
-
-    private fun getInstructionByIdAndExam(
-        exam: Exam?,
-        createdInstruction: InstructionOut,
-        version: Int
-    ): InstructionOut = when (exam!!) {
-        Exam.SUKO -> performGetInstructionById<SukoInstructionDtoOut>(createdInstruction.id, version)
-        Exam.LD -> performGetInstructionById<LdInstructionDtoOut>(createdInstruction.id, version)
-        Exam.PUHVI -> performGetInstructionById<PuhviInstructionDtoOut>(createdInstruction.id, version)
     }
 
     private fun createFourCopiesOfInstruction(
