@@ -34,8 +34,9 @@ class CertificateController(val service: CertificateService) {
         @PathVariable("id") id: Int,
         @Valid @RequestPart("certificate") certificate: CertificateIn,
         @RequestPart("attachmentFi") attachment: MultipartFile?,
-        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
-    ): Int = service.createNewVersionOfCertificate(id, certificate, attachment, attachmentSv)
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?,
+        request: HttpServletRequest
+    ): Int = service.createNewVersionOfCertificate(id, certificate, attachment, attachmentSv, request)
         ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
             "Certificate $id not found"

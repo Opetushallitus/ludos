@@ -79,25 +79,41 @@ class CertificateService(
         id: Int,
         certificate: CertificateIn,
         attachmentFi: MultipartFile?,
-        attachmentSv: MultipartFile?
-    ) = when (certificate) {
-        is SukoCertificateDtoIn -> repository.createNewVersionOfSukoCertificate(
-            id,
-            certificate,
-            Either.Right(attachmentFi)
-        )
+        attachmentSv: MultipartFile?,
+        request: ServletRequest
+    ): Int? {
+        val createdVersion = when (certificate) {
+            is SukoCertificateDtoIn -> repository.createNewVersionOfSukoCertificate(
+                id,
+                certificate,
+                Either.Right(attachmentFi)
+            )
 
-        is LdCertificateDtoIn -> repository.createNewVersionOfLdCertificate(
-            id,
-            certificate,
-            Either.Right(Pair(attachmentFi, attachmentSv))
-        )
+            is LdCertificateDtoIn -> repository.createNewVersionOfLdCertificate(
+                id,
+                certificate,
+                Either.Right(Pair(attachmentFi, attachmentSv))
+            )
 
-        is PuhviCertificateDtoIn -> repository.createNewVersionOfPuhviCertificate(
-            id,
-            certificate,
-            Either.Right(Pair(attachmentFi, attachmentSv))
-        )
+            is PuhviCertificateDtoIn -> repository.createNewVersionOfPuhviCertificate(
+                id,
+                certificate,
+                Either.Right(Pair(attachmentFi, attachmentSv))
+            )
+        }
+
+        if (createdVersion != null) {
+            val createdCertificate = repository.getCertificateById(id, Exam.SUKO, createdVersion)
+            auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("certificate", createdCertificate)
+                .log("Created new version of certificate")
+        } else {
+            auditLogger.atError().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("instructionId", id)
+                .log("Tried to create new version of non-existent certificate")
+        }
+
+        return createdVersion
     }
 
     fun restoreOldVersionOfCertificate(

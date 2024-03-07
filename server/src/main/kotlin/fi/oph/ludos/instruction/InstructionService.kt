@@ -72,7 +72,7 @@ class InstructionService(
                 .log("Created new version of instruction")
         } else {
             auditLogger.atError().addUserIp(request).addLudosUserInfo()
-                .addKeyValue("assignmentId", id)
+                .addKeyValue("instructionId", id)
                 .log("Tried to create new version of non-existent instruction")
         }
 
