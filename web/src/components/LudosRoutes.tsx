@@ -17,7 +17,6 @@ import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
-import { ContentWrapper } from './ContentWrapper'
 
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi
@@ -177,9 +176,7 @@ function examRoute(exam: Exam): RouteObject {
         element: (
           <Layout>
             <SpinnerSuspense>
-              <ContentWrapper exam={exam} showHeading>
-                <ContentListPage exam={exam} />
-              </ContentWrapper>
+              <ContentListPage exam={exam} />
             </SpinnerSuspense>
           </Layout>
         )
@@ -189,9 +186,7 @@ function examRoute(exam: Exam): RouteObject {
         element: (
           <Layout>
             <SpinnerSuspense>
-              <ContentWrapper exam={exam} showBreadCrumbs>
-                <Content exam={exam} isPresentation={false} />
-              </ContentWrapper>
+              <Content exam={exam} isPresentation={false} />
             </SpinnerSuspense>
           </Layout>
         )
