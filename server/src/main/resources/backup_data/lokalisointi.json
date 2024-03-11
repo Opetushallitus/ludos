@@ -247,9 +247,9 @@
     "id": 56581,
     "key": "assignment.notification.suosikki-muokattu",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867006,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Redigering av favorit lyckades"
   },
   {
     "accesscount": 0,
@@ -583,9 +583,9 @@
     "id": 54577,
     "key": "button.palauta-luonnostilaan",
     "locale": "sv",
-    "modified": 1696233001447,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Återställ till redigeringsläge"
   },
   {
     "accesscount": 0,
@@ -611,9 +611,9 @@
     "id": 48387,
     "key": "button.peruuta",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Avbryt vai ångra?"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Avbryt"
   },
   {
     "accesscount": 0,
@@ -639,9 +639,9 @@
     "id": 54579,
     "key": "button.tallenna",
     "locale": "sv",
-    "modified": 1696233001447,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Spara"
   },
   {
     "accesscount": 0,
@@ -779,9 +779,9 @@
     "id": 49904,
     "key": "button.valmis",
     "locale": "sv",
-    "modified": 1693219184072,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Redo"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Klar"
   },
   {
     "accesscount": 0,
@@ -835,9 +835,9 @@
     "id": 49838,
     "key": "certificate.palaa",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Tillbaks till intygen"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Tillbaka till intygen"
   },
   {
     "accesscount": 0,
@@ -947,9 +947,9 @@
     "id": 49842,
     "key": "common.peruuta",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Avbryt vai ångra?"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Avbryt"
   },
   {
     "accesscount": 0,
@@ -1003,9 +1003,9 @@
     "id": 55188,
     "key": "common.poistu-tallentamatta",
     "locale": "sv",
-    "modified": 1705057782119,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Avsluta utan att spara"
   },
   {
     "accesscount": 0,
@@ -1031,9 +1031,9 @@
     "id": 54921,
     "key": "common.virkailijan-opintopolku",
     "locale": "sv",
-    "modified": 1701255456809,
+    "modified": 1709713867006,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Administratörens Studieinfo"
   },
   {
     "accesscount": 0,
@@ -1059,9 +1059,9 @@
     "id": 49844,
     "key": "content.tiedostot",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Fil"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Filer"
   },
   {
     "accesscount": 0,
@@ -1115,9 +1115,9 @@
     "id": 49846,
     "key": "error.ei-tiedostoa",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Bifoga fil"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till bilaga"
   },
   {
     "accesscount": 0,
@@ -1143,9 +1143,9 @@
     "id": 54987,
     "key": "error.ei-tuettu-kuvalisays",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Bilden kunde inte skickas. Lägg till bilden med hjälp av verktygsfältet."
   },
   {
     "accesscount": 0,
@@ -1171,9 +1171,9 @@
     "id": 54749,
     "key": "error.koetehtavan-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1698750107426,
+    "modified": 1709713867006,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Provuppgiften kunde inte laddas upp / Provuppgiften kunde inte laddas ned"
   },
   {
     "accesscount": 0,
@@ -1199,9 +1199,9 @@
     "id": 54677,
     "key": "error.koetehtavien-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1697694083895,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Provuppgifterna kunde inte laddas upp/Provuppgifterna kunde inte laddas ner"
   },
   {
     "accesscount": 0,
@@ -1227,9 +1227,9 @@
     "id": 54989,
     "key": "error.kuvan-vaihtoehtoinen-teksti-pakollinen",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Alternativ text till bilden är obligatorisk information"
   },
   {
     "accesscount": 0,
@@ -1255,9 +1255,9 @@
     "id": 49847,
     "key": "error.lataaminen-epaonnistui",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Nedladdningen av fil misslyckades/Filhämtningen misslyckades"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Nedladdningen av filen misslyckades/Filhämtningen misslyckades/Uppladdningen av filen misslyckades"
   },
   {
     "accesscount": 0,
@@ -1283,9 +1283,9 @@
     "id": 49848,
     "key": "error.liian-iso-tiedosto",
     "locale": "sv",
-    "modified": 1693300505094,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Filen är för stor. Maximalt tillåten storlek är {{maxSize}}"
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Filen är för stor. Den största tillåtna storleken är {{maxSize}}"
   },
   {
     "accesscount": 0,
@@ -1339,9 +1339,9 @@
     "id": 56583,
     "key": "error.lisaa-kansio-epaonnistui",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867006,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Tillägg av mapp misslyckades"
   },
   {
     "accesscount": 0,
@@ -1356,6 +1356,20 @@
     "modified": 1699961496589,
     "modifiedBy": "1.2.246.562.24.20745323310",
     "value": "Odottamaton virhe"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709713867067,
+    "category": "ludos",
+    "created": 1709713867067,
+    "createdBy": "1.2.246.562.24.20745323310",
+    "force": false,
+    "id": 56649,
+    "key": "error.odottamaton-virhe",
+    "locale": "sv",
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Oväntat fel"
   },
   {
     "accesscount": 0,
@@ -1381,9 +1395,9 @@
     "id": 54751,
     "key": "error.ohjeen-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1698750107426,
+    "modified": 1709713867006,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Anvisningen kunde inte laddas upp"
   },
   {
     "accesscount": 0,
@@ -1409,9 +1423,9 @@
     "id": 54679,
     "key": "error.ohjeiden-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1697694083895,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867006,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Anvisningarna kunde inte laddas upp (beror på användaren: om gäller administratören -> ladda upp, läraren laddar ner anvisningar i pdf-format)"
   },
   {
     "accesscount": 0,
@@ -1465,9 +1479,9 @@
     "id": 56538,
     "key": "error.sisallon-lataaminen-epaonnistui",
     "locale": "sv",
-    "modified": 1706696443865,
+    "modified": 1709713867006,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Innehållet kunde inte laddas."
   },
   {
     "accesscount": 0,
@@ -1493,9 +1507,9 @@
     "id": 49852,
     "key": "error.sivua-ei-loydy",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Tyvärr hittades sidan inte"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Sidan hittades tyvärr inte."
   },
   {
     "accesscount": 0,
@@ -1521,9 +1535,9 @@
     "id": 49853,
     "key": "error.tehtavan-nimi-pakollinen",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till endera finskspråkigt namn eller svenskspråkigt namn"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till antingen ett finskspråkigt namn eller ett svenskspråkigt namn"
   },
   {
     "accesscount": 0,
@@ -1549,9 +1563,9 @@
     "id": 54753,
     "key": "error.todistuksen-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1698750107427,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Intyget kunde inte laddas upp/Intyget kunde inte laddas ner"
   },
   {
     "accesscount": 0,
@@ -1577,9 +1591,9 @@
     "id": 54681,
     "key": "error.todistusten-lataus-epaonnistui",
     "locale": "sv",
-    "modified": 1697694083895,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intygen kunde inte laddas upp/Intygen kunde inte laddas ner"
   },
   {
     "accesscount": 0,
@@ -1605,9 +1619,9 @@
     "id": 56585,
     "key": "favorite.folder.nimea-uudelleen",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Namnge på nytt"
   },
   {
     "accesscount": 0,
@@ -1633,9 +1647,9 @@
     "id": 56587,
     "key": "favorite.folder.poista-kansio",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Ta bort mappen"
   },
   {
     "accesscount": 0,
@@ -1661,9 +1675,9 @@
     "id": 56589,
     "key": "favorite.folder.poista-kansio-leipateksti",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Favorituppgifterna i mappen raderas i samband med detta."
   },
   {
     "accesscount": 0,
@@ -1689,9 +1703,9 @@
     "id": 56591,
     "key": "favorite.folder.siirra-kansio",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Flytta mappen"
   },
   {
     "accesscount": 0,
@@ -1717,9 +1731,9 @@
     "id": 56593,
     "key": "favorite.folder.siirra-kansioon",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Flytta till mappen"
   },
   {
     "accesscount": 0,
@@ -1745,9 +1759,9 @@
     "id": 56595,
     "key": "favorite.kansion-nimi",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Mappens namn"
   },
   {
     "accesscount": 0,
@@ -1801,9 +1815,9 @@
     "id": 56597,
     "key": "favorite.lisaa-kansio",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Lägg till mapp"
   },
   {
     "accesscount": 0,
@@ -1829,9 +1843,9 @@
     "id": 56599,
     "key": "favorite.lisaa-kansio-onnistui",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Mappen lades till"
   },
   {
     "accesscount": 0,
@@ -1857,9 +1871,9 @@
     "id": 56601,
     "key": "favorite.lisaa-kansioon",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Lägg till i mappen"
   },
   {
     "accesscount": 0,
@@ -1913,9 +1927,9 @@
     "id": 56603,
     "key": "favorite.lisaa-suosikiksi-paatasolle",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Lägg till som favorit på huvudnivån"
   },
   {
     "accesscount": 0,
@@ -1941,9 +1955,9 @@
     "id": 56607,
     "key": "favorite.lisaa-uuteen-kansioon-paatasolle",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Lägg till ny mapp på huvudnivån"
   },
   {
     "accesscount": 0,
@@ -1969,9 +1983,9 @@
     "id": 56609,
     "key": "favorite.muokkaa-suosikkeja",
     "locale": "sv",
-    "modified": 1708601553156,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Redigera favoriter"
   },
   {
     "accesscount": 0,
@@ -2081,9 +2095,9 @@
     "id": 56611,
     "key": "favorite.suosikkien-paataso",
     "locale": "sv",
-    "modified": 1708601553157,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Huvudnivå för favoriter"
   },
   {
     "accesscount": 0,
@@ -2137,9 +2151,9 @@
     "id": 56613,
     "key": "favorite.tallenna-valinnat",
     "locale": "sv",
-    "modified": 1708601553157,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Spara val"
   },
   {
     "accesscount": 0,
@@ -2165,9 +2179,9 @@
     "id": 56615,
     "key": "favorite.tyhja-kansio-viesti",
     "locale": "sv",
-    "modified": 1708601553157,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Ännu inga provuppgifter i den här mappen. Lägg till provuppgifter i listvyn."
   },
   {
     "accesscount": 0,
@@ -2193,9 +2207,9 @@
     "id": 56617,
     "key": "favorite.valitse-kansio",
     "locale": "sv",
-    "modified": 1708601553157,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Välj mapp"
   },
   {
     "accesscount": 0,
@@ -2221,9 +2235,9 @@
     "id": 54993,
     "key": "file.asemointi.ei-mitaan",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Inget val"
   },
   {
     "accesscount": 0,
@@ -2249,9 +2263,9 @@
     "id": 54995,
     "key": "file.asemointi.keskitetty",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Centraliserad"
   },
   {
     "accesscount": 0,
@@ -2277,9 +2291,9 @@
     "id": 54999,
     "key": "file.koko.alkuperainen",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Ursprunglig"
   },
   {
     "accesscount": 0,
@@ -2305,9 +2319,9 @@
     "id": 55001,
     "key": "file.koko.pieni",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Liten (bredd 400px)"
   },
   {
     "accesscount": 0,
@@ -2333,9 +2347,9 @@
     "id": 55003,
     "key": "file.koko.suuri",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Stor (bredd 1024px)"
   },
   {
     "accesscount": 0,
@@ -2361,9 +2375,9 @@
     "id": 55009,
     "key": "file.label.asemointi",
     "locale": "sv",
-    "modified": 1701949780344,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Placering"
   },
   {
     "accesscount": 0,
@@ -2389,9 +2403,9 @@
     "id": 55011,
     "key": "file.label.koko",
     "locale": "sv",
-    "modified": 1701949780344,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Storlek"
   },
   {
     "accesscount": 0,
@@ -2501,9 +2515,9 @@
     "id": 49858,
     "key": "file.ohje-poista-liite",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Ta bort bilaga/bifogad fil"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Ta bort bilaga"
   },
   {
     "accesscount": 0,
@@ -2529,9 +2543,9 @@
     "id": 49859,
     "key": "file.ohje-poista-liite-teksti",
     "locale": "sv",
-    "modified": 1693300724014,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Är det säkert att du vill ta bort bilagan {{liite}}?"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Är du säker på att du vill ta bort bilagan {{liite}}?"
   },
   {
     "accesscount": 0,
@@ -2557,9 +2571,9 @@
     "id": 55005,
     "key": "file.vaihtoehtoinen-teksti",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Alternativ text (alt-text)"
   },
   {
     "accesscount": 0,
@@ -2641,9 +2655,9 @@
     "id": 54755,
     "key": "filter.ei-tuloksia",
     "locale": "sv",
-    "modified": 1698750107427,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Inga resultat"
   },
   {
     "accesscount": 0,
@@ -2669,9 +2683,9 @@
     "id": 48392,
     "key": "filter.jarjesta",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Gruppera efter"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Gruppera"
   },
   {
     "accesscount": 0,
@@ -2781,9 +2795,9 @@
     "id": 49864,
     "key": "filter.nouseva",
     "locale": "sv",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Äldst först"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Äldsta först"
   },
   {
     "accesscount": 0,
@@ -2826,6 +2840,20 @@
     "modified": 1700574901161,
     "modifiedBy": "1.2.246.562.24.48151945144",
     "value": "Suodata ohjeita"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709713867350,
+    "category": "ludos",
+    "created": 1709713867350,
+    "createdBy": "1.2.246.562.24.20745323310",
+    "force": false,
+    "id": 56650,
+    "key": "filter.ohjeet.otsikko",
+    "locale": "sv",
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Filtrera anvisningar"
   },
   {
     "accesscount": 0,
@@ -2927,6 +2955,48 @@
   },
   {
     "accesscount": 0,
+    "accessed": 1709713867362,
+    "category": "ludos",
+    "created": 1709713867362,
+    "createdBy": "1.2.246.562.24.20745323310",
+    "force": false,
+    "id": 56651,
+    "key": "filter.todistukset-kieli",
+    "locale": "sv",
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intygens språk"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709288259739,
+    "category": "ludos",
+    "created": 1709288259739,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56641,
+    "key": "filter.tyhjenna-valinnat",
+    "locale": "fi",
+    "modified": 1709288259736,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "Tyhjennä valinnat"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709288259743,
+    "category": "ludos",
+    "created": 1709288259743,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56642,
+    "key": "filter.tyhjenna-valinnat",
+    "locale": "sv",
+    "modified": 1709288259736,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": ""
+  },
+  {
+    "accesscount": 0,
     "accessed": 1682668515703,
     "category": "ludos",
     "created": 1682668515703,
@@ -2980,6 +3050,62 @@
     "modified": 1693210418398,
     "modifiedBy": "1.2.246.562.24.48151945144",
     "value": "Välj ..."
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211495,
+    "category": "ludos",
+    "created": 1709213211495,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56632,
+    "key": "footer.kayttoohjeet",
+    "locale": "fi",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "Käyttöohjeet"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211499,
+    "category": "ludos",
+    "created": 1709213211499,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56633,
+    "key": "footer.kayttoohjeet",
+    "locale": "sv",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": ""
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211503,
+    "category": "ludos",
+    "created": 1709213211503,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56634,
+    "key": "footer.kayttoohjeet-url",
+    "locale": "fi",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "https://wiki.eduuni.fi/display/OPHPALV/LUDOS"
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709213211506,
+    "category": "ludos",
+    "created": 1709213211506,
+    "createdBy": "1.2.246.562.24.48151945144",
+    "force": false,
+    "id": 56635,
+    "key": "footer.kayttoohjeet-url",
+    "locale": "sv",
+    "modified": 1709213211493,
+    "modifiedBy": "1.2.246.562.24.48151945144",
+    "value": "https://wiki.eduuni.fi/display/OPHPALV/LUDOS"
   },
   {
     "accesscount": 0,
@@ -3117,9 +3243,9 @@
     "id": 54688,
     "key": "form.assignment.delete-modal.text",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Är du säker på att du vill ta bort provuppgiften \"{{tehtavanNimi}}\"?"
   },
   {
     "accesscount": 0,
@@ -3145,9 +3271,9 @@
     "id": 54690,
     "key": "form.assignment.delete-modal.title",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Ta bort provuppgiften"
   },
   {
     "accesscount": 0,
@@ -3173,9 +3299,9 @@
     "id": 54692,
     "key": "form.button.poista",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Ta bort"
   },
   {
     "accesscount": 0,
@@ -3201,9 +3327,9 @@
     "id": 54694,
     "key": "form.certificate.delete-modal.text",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Är du säker på att du vill ta bort intyget \"{{todistuksenNimi}}\"?"
   },
   {
     "accesscount": 0,
@@ -3229,9 +3355,9 @@
     "id": 54696,
     "key": "form.certificate.delete-modal.title",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Ta bort intyget"
   },
   {
     "accesscount": 0,
@@ -3246,6 +3372,20 @@
     "modified": 1698227389489,
     "modifiedBy": "1.2.246.562.24.20745323310",
     "value": "Lomakkeen tiedoissa puutteita. Tarkista tiedot."
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709713867386,
+    "category": "ludos",
+    "created": 1709713867386,
+    "createdBy": "1.2.246.562.24.20745323310",
+    "force": false,
+    "id": 56652,
+    "key": "form.error.validaatiovirhe",
+    "locale": "sv",
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Uppgifterna på blanketten är bristfälliga. Kontrollera uppgifterna."
   },
   {
     "accesscount": 0,
@@ -3271,9 +3411,9 @@
     "id": 54698,
     "key": "form.instruction.delete-modal.text",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Är du säker på att du vill ta bort anvisningen \"{{ohjeenNimi}}\"?"
   },
   {
     "accesscount": 0,
@@ -3299,9 +3439,9 @@
     "id": 54700,
     "key": "form.instruction.delete-modal.title",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Ta bort anvisningen"
   },
   {
     "accesscount": 0,
@@ -3313,8 +3453,8 @@
     "id": 47641,
     "key": "form.kuvauskoetehtava",
     "locale": "fi",
-    "modified": 1693210418397,
-    "modifiedBy": "1.2.246.562.24.48151945144",
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
     "value": "Lisää uusi tehtävä molemmilla kielillä. Julkaise tehtävä tai tallenna se luonnoksena ."
   },
   {
@@ -3327,9 +3467,9 @@
     "id": 49871,
     "key": "form.kuvauskoetehtava",
     "locale": "sv",
-    "modified": 1693289464496,
-    "modifiedBy": "1.2.246.562.24.77925329174",
-    "value": "Lägg till ny uppgift på båda språken. Publicera uppgiften eller spara den som utkast."
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till en ny uppgift på båda språken. Publicera uppgiften eller spara den som utkast."
   },
   {
     "accesscount": 0,
@@ -3355,9 +3495,9 @@
     "id": 49872,
     "key": "form.kuvausohje",
     "locale": "sv",
-    "modified": 1693289464498,
-    "modifiedBy": "1.2.246.562.24.77925329174",
-    "value": "Lägg till ny anvisning på båda språken. Publicera anvisningen eller spara den som utkast."
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till en ny anvisning på båda språken. Publicera anvisningen eller spara den som utkast."
   },
   {
     "accesscount": 0,
@@ -3383,9 +3523,9 @@
     "id": 49873,
     "key": "form.kuvaustodistus",
     "locale": "sv",
-    "modified": 1693289464503,
-    "modifiedBy": "1.2.246.562.24.77925329174",
-    "value": "Lägg till nytt intyg på båda språken. Publicera intyget eller spara det som utkast."
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till ett nytt intyg på båda språken. Publicera intyget eller spara det som utkast."
   },
   {
     "accesscount": 0,
@@ -3439,9 +3579,9 @@
     "id": 54431,
     "key": "form.lisaa-kentta",
     "locale": "sv",
-    "modified": 1696236448955,
-    "modifiedBy": "1.2.246.562.24.77925329174",
-    "value": "Lägg till innehållsfält"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till ett innehållsfält"
   },
   {
     "accesscount": 0,
@@ -3467,9 +3607,9 @@
     "id": 49875,
     "key": "form.lisaa-tiedostot-kuvaus",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till filer i pdf-format"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till filerna i pdf-format."
   },
   {
     "accesscount": 0,
@@ -3495,9 +3635,9 @@
     "id": 49876,
     "key": "form.lisaa-url",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till url"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till url:"
   },
   {
     "accesscount": 0,
@@ -3579,9 +3719,9 @@
     "id": 49879,
     "key": "form.muokkauskuvaus",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Redigera provuppgift"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Redigera provuppgiften"
   },
   {
     "accesscount": 0,
@@ -3635,9 +3775,9 @@
     "id": 54702,
     "key": "form.notification.ohjeen-poisto.epaonnistui",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Anvisningen kunde inte tas bort"
   },
   {
     "accesscount": 0,
@@ -3663,9 +3803,9 @@
     "id": 54704,
     "key": "form.notification.ohjeen-poisto.onnistui",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Anvisningen togs bort"
   },
   {
     "accesscount": 0,
@@ -3691,9 +3831,9 @@
     "id": 54581,
     "key": "form.notification.ohjeen-tallennus.epaonnistui",
     "locale": "sv",
-    "modified": 1696233001447,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Anvisningen kunde inte läggas till"
   },
   {
     "accesscount": 0,
@@ -3719,9 +3859,9 @@
     "id": 54583,
     "key": "form.notification.ohjeen-tallennus.julkaisu-onnistui",
     "locale": "sv",
-    "modified": 1696233001447,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Anvisningen publicerades"
   },
   {
     "accesscount": 0,
@@ -3747,9 +3887,9 @@
     "id": 54585,
     "key": "form.notification.ohjeen-tallennus.luonnos-onnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Anvisningen sparades som utkast"
   },
   {
     "accesscount": 0,
@@ -3775,9 +3915,9 @@
     "id": 54587,
     "key": "form.notification.ohjeen-tallennus.onnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Anvisningen sparades"
   },
   {
     "accesscount": 0,
@@ -3803,9 +3943,9 @@
     "id": 54589,
     "key": "form.notification.ohjeen-tallennus.palautettu-luonnostilaan",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Anvisningen återställdes till redigeringsläge"
   },
   {
     "accesscount": 0,
@@ -3831,9 +3971,9 @@
     "id": 54706,
     "key": "form.notification.tehtavan-poisto.epaonnistui",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Provuppgiften kunde inte tas bort"
   },
   {
     "accesscount": 0,
@@ -3859,9 +3999,9 @@
     "id": 54708,
     "key": "form.notification.tehtavan-poisto.onnistui",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Provuppgiften togs bort"
   },
   {
     "accesscount": 0,
@@ -3887,9 +4027,9 @@
     "id": 54591,
     "key": "form.notification.tehtavan-tallennus.epaonnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Provuppgiften kunde inte läggas till"
   },
   {
     "accesscount": 0,
@@ -3915,9 +4055,9 @@
     "id": 54593,
     "key": "form.notification.tehtavan-tallennus.julkaisu-onnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Provuppgiften publicerades"
   },
   {
     "accesscount": 0,
@@ -3943,9 +4083,9 @@
     "id": 54595,
     "key": "form.notification.tehtavan-tallennus.luonnos-onnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Provuppgiften sparades som utkast"
   },
   {
     "accesscount": 0,
@@ -3971,9 +4111,9 @@
     "id": 54597,
     "key": "form.notification.tehtavan-tallennus.onnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Provuppgiften sparades"
   },
   {
     "accesscount": 0,
@@ -3999,9 +4139,9 @@
     "id": 54599,
     "key": "form.notification.tehtavan-tallennus.palautettu-luonnostilaan",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Provuppuppgiften återställdes till redigeringsläge"
   },
   {
     "accesscount": 0,
@@ -4027,9 +4167,9 @@
     "id": 54710,
     "key": "form.notification.todistuksen-poisto.epaonnistui",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Intyget kunde inte tas bort"
   },
   {
     "accesscount": 0,
@@ -4055,9 +4195,9 @@
     "id": 54712,
     "key": "form.notification.todistuksen-poisto.onnistui",
     "locale": "sv",
-    "modified": 1698230999538,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Intyget togs bort"
   },
   {
     "accesscount": 0,
@@ -4083,9 +4223,9 @@
     "id": 54601,
     "key": "form.notification.todistuksen-tallennus.epaonnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intyget kunde inte läggas till"
   },
   {
     "accesscount": 0,
@@ -4111,9 +4251,9 @@
     "id": 54603,
     "key": "form.notification.todistuksen-tallennus.julkaisu-onnistui",
     "locale": "sv",
-    "modified": 1696233001448,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intyget publicerades"
   },
   {
     "accesscount": 0,
@@ -4139,9 +4279,9 @@
     "id": 54605,
     "key": "form.notification.todistuksen-tallennus.luonnos-onnistui",
     "locale": "sv",
-    "modified": 1696233001449,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intyget sparades som utkast"
   },
   {
     "accesscount": 0,
@@ -4167,9 +4307,9 @@
     "id": 54607,
     "key": "form.notification.todistuksen-tallennus.onnistui",
     "locale": "sv",
-    "modified": 1696233001449,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intyget sparades    "
   },
   {
     "accesscount": 0,
@@ -4195,9 +4335,9 @@
     "id": 54609,
     "key": "form.notification.todistuksen-tallennus.palautettu-luonnostilaan",
     "locale": "sv",
-    "modified": 1696233001449,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Intyget återställdes till redigeringsläge"
   },
   {
     "accesscount": 0,
@@ -4307,9 +4447,9 @@
     "id": 49884,
     "key": "form.otsikkokoetehtava",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till ny provuppgift"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till en ny provuppgift"
   },
   {
     "accesscount": 0,
@@ -4335,9 +4475,9 @@
     "id": 49885,
     "key": "form.otsikkoohje",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till ny anvisning"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till en ny anvisning"
   },
   {
     "accesscount": 0,
@@ -4363,9 +4503,9 @@
     "id": 49886,
     "key": "form.otsikkotodistus",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till nytt intyg"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till ett nytt intyg"
   },
   {
     "accesscount": 0,
@@ -4391,9 +4531,9 @@
     "id": 54433,
     "key": "form.poista-kentta",
     "locale": "sv",
-    "modified": 1696236448947,
-    "modifiedBy": "1.2.246.562.24.77925329174",
-    "value": "'Ta bort innehållsfält"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Ta bort innehållsfältet"
   },
   {
     "accesscount": 0,
@@ -4475,9 +4615,9 @@
     "id": 49889,
     "key": "form.tehtavan_ohje",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Anvisning för uppgiften"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Uppgiftsbeskrivning"
   },
   {
     "accesscount": 0,
@@ -4699,9 +4839,9 @@
     "id": 49895,
     "key": "form.todistus-ala-otsikko-kuvaus",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Lägg till intyg i pdf-format"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till intygsbotten i pdf-format"
   },
   {
     "accesscount": 0,
@@ -4895,9 +5035,9 @@
     "id": 54923,
     "key": "header.vaihda-sovellusta",
     "locale": "sv",
-    "modified": 1701255456809,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": ""
+    "value": "Byt applikation"
   },
   {
     "accesscount": 0,
@@ -4923,9 +5063,9 @@
     "id": 49897,
     "key": "instruction.palaa",
     "locale": "sv",
-    "modified": 1693210418398,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": "Tillbaks till anvisningarna"
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Tillbaka till anvisningarna"
   },
   {
     "accesscount": 0,
@@ -5035,9 +5175,9 @@
     "id": 55190,
     "key": "modal.body.teksti",
     "locale": "sv",
-    "modified": 1705057782119,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Du har gjort ändringar på sidan som inte har sparats. Om du avslutar, sparas inte ändringarna."
   },
   {
     "accesscount": 0,
@@ -5063,9 +5203,9 @@
     "id": 55192,
     "key": "modal.title.poistua-tallentamatta",
     "locale": "sv",
-    "modified": 1705057782119,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Vill du avsluta utan att spara?"
   },
   {
     "accesscount": 0,
@@ -5119,9 +5259,9 @@
     "id": 55866,
     "key": "notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki",
     "locale": "sv",
-    "modified": 1706096933792,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Logga in på nytt (öppnas i en ny flik)"
   },
   {
     "accesscount": 0,
@@ -5147,9 +5287,9 @@
     "id": 55050,
     "key": "notification.error.link.laheta-palautetta-virheesta",
     "locale": "sv",
-    "modified": 1702649960777,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Skicka respons på ett fel."
   },
   {
     "accesscount": 0,
@@ -5164,6 +5304,20 @@
     "modified": 1702649940625,
     "modifiedBy": "1.2.246.562.24.48151945144",
     "value": "Pdf:n generointi epäonnistui."
+  },
+  {
+    "accesscount": 0,
+    "accessed": 1709713867591,
+    "category": "ludos",
+    "created": 1709713867591,
+    "createdBy": "1.2.246.562.24.20745323310",
+    "force": false,
+    "id": 56653,
+    "key": "notification.error.pdf-generointi",
+    "locale": "sv",
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Pdf-filen kunde inte genereras."
   },
   {
     "accesscount": 0,
@@ -5189,9 +5343,9 @@
     "id": 54683,
     "key": "pagination.link.edellinen-sivu",
     "locale": "sv",
-    "modified": 1697694083895,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Föregående"
   },
   {
     "accesscount": 0,
@@ -5217,9 +5371,9 @@
     "id": 54685,
     "key": "pagination.link.seuraava-sivu",
     "locale": "sv",
-    "modified": 1697694083895,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Nästa"
   },
   {
     "accesscount": 0,
@@ -5469,9 +5623,9 @@
     "id": 54445,
     "key": "tab.suko",
     "locale": "sv",
-    "modified": 1694698569519,
+    "modified": 1709713867007,
     "modifiedBy": "1.2.246.562.24.20745323310",
-    "value": "Muntlig kommunikation"
+    "value": "Muntlig språkfärdighet"
   },
   {
     "accesscount": 0,
@@ -5553,9 +5707,9 @@
     "id": 55007,
     "key": "tiptap.modal.lisaa-url",
     "locale": "sv",
-    "modified": 1701947412875,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Lägg till url"
   },
   {
     "accesscount": 0,
@@ -5609,9 +5763,9 @@
     "id": 55884,
     "key": "version-control.muokattu",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Redigerad"
   },
   {
     "accesscount": 0,
@@ -5637,9 +5791,9 @@
     "id": 55886,
     "key": "version-control.muokkaaja",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Redigerad av"
   },
   {
     "accesscount": 0,
@@ -5665,9 +5819,9 @@
     "id": 55888,
     "key": "version-control.muokkaushistoria",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Redigeringshistorik"
   },
   {
     "accesscount": 0,
@@ -5693,9 +5847,9 @@
     "id": 55890,
     "key": "version-control.muokkaushistoria-lataus-virhe",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Fel vid laddningen av redigeringshistorik"
   },
   {
     "accesscount": 0,
@@ -5721,9 +5875,9 @@
     "id": 55892,
     "key": "version-control.nayta",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Visa"
   },
   {
     "accesscount": 0,
@@ -5749,9 +5903,9 @@
     "id": 55894,
     "key": "version-control.palauta",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Återställ"
   },
   {
     "accesscount": 0,
@@ -5777,9 +5931,9 @@
     "id": 55896,
     "key": "version-control.palauta-tama-versio",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Återställ den här versionen"
   },
   {
     "accesscount": 0,
@@ -5805,9 +5959,9 @@
     "id": 55898,
     "key": "version-control.toiminnot",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Funktioner"
   },
   {
     "accesscount": 0,
@@ -5833,9 +5987,9 @@
     "id": 55900,
     "key": "version-control.tuntematon-muokkaaja",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Okänd"
   },
   {
     "accesscount": 0,
@@ -5861,9 +6015,9 @@
     "id": 55902,
     "key": "version-control.versio",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Version"
   },
   {
     "accesscount": 0,
@@ -5889,8 +6043,8 @@
     "id": 55904,
     "key": "version-control.viimeisin-versio",
     "locale": "sv",
-    "modified": 1706262771317,
-    "modifiedBy": "1.2.246.562.24.48151945144",
-    "value": ""
+    "modified": 1709713867007,
+    "modifiedBy": "1.2.246.562.24.20745323310",
+    "value": "Senaste versionen"
   }
 ]
