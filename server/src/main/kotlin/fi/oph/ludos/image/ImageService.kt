@@ -21,8 +21,8 @@ import java.util.*
 @Service
 class ImageService(val s3Helper: S3Helper) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
-    val auditLogger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
-    val allowedMimeTypes = setOf("image/jpeg", "image/png", "image/gif", "image/svg+xml")
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
+    val allowedMimeTypes = setOf("image/gif", "image/jpeg", "image/png", "image/svg+xml")
 
     fun uploadImage(file: MultipartFile, request: HttpServletRequest): ImageDtoOut {
 
