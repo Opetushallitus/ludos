@@ -1,19 +1,14 @@
 import { expect, test } from '@playwright/test'
-import { initializeInstructionTest, instructionFormData, updateAttachments } from '../../examHelpers/instructionHelpers'
+import { initializeInstructionTest, updateAttachments } from '../../examHelpers/instructionHelpers'
 import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
 import { ContentType, Exam } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 
 async function createAndUpdatePublishedInstruction(form: InstructionFormModel) {
   const instructionId = await form.createInstruction('submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
-  await form.updateInstruction(instructionId, 'submit', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.updateInstruction(instructionId, 'submit', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.changeState(instructionId, 'draft', 'form.notification.ohjeen-tallennus.palautettu-luonnostilaan')
   await updateAttachments(form)
-  await form.updateInstruction(
-    instructionId,
-    'draft',
-    'Testuppgift redigerade',
-    'form.notification.ohjeen-tallennus.palautettu-luonnostilaan'
-  )
 
   await deleteInstruction(form, instructionId)
 }
@@ -21,16 +16,12 @@ async function createAndUpdatePublishedInstruction(form: InstructionFormModel) {
 async function createAndUpdateDraftInstruction(form: InstructionFormModel) {
   const instructionId = await form.createInstruction('draft', 'form.notification.ohjeen-tallennus.luonnos-onnistui')
 
-  await form.updateInstruction(instructionId, 'draft', 'Testuppgift', 'form.notification.ohjeen-tallennus.onnistui')
-  await form.updateInstruction(
-    instructionId,
-    'submit',
-    'Testuppgift redigerade',
-    'form.notification.ohjeen-tallennus.julkaisu-onnistui'
-  )
+  await form.updateInstruction(instructionId, 'draft', 'form.notification.ohjeen-tallennus.onnistui')
+  await form.changeState(instructionId, 'submit', 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
 
   await deleteInstruction(form, instructionId)
 }
+
 async function deleteInstruction(form: InstructionFormModel, instructionId: number) {
   await form.editContentButton.click()
 
@@ -89,14 +80,14 @@ Object.values(Exam).forEach((exam) => {
       await expect(form.formErrorMsgList).toBeVisible()
 
       await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgNameFi, () =>
-        form.nameFi.fill(instructionFormData.nameFi)
+        form.nameFi.fill(form.formData.nameFi)
       )
       await form.nameFi.clear()
 
       await form.tabSv.click()
 
       await form.fillFieldAndAssertErrorVisibility(form.formErrorMsgNameSv, () =>
-        form.nameSv.fill(instructionFormData.nameSv)
+        form.nameSv.fill(form.formData.nameSv)
       )
     })
   })

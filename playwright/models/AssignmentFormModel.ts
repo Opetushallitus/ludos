@@ -68,11 +68,11 @@ export class AssignmentFormModel extends FormModel {
   }
 
   private async createAssignmentApiCall(context: BrowserContext, baseURL: string, assignment: any) {
-    return (await fetchWithSession(context, `${baseURL}/api/assignment`, JSON.stringify(assignment), 'POST')).json()
+    return (await fetchWithSession(context, `${baseURL}/api/assignment`, 'POST', JSON.stringify(assignment))).json()
   }
 
   private async updateAssignmentApiCall(context: BrowserContext, baseURL: string, id: string, body: string) {
-    return await fetchWithSession(context, `${baseURL}/api/assignment/${id}`, body, 'PUT')
+    return await fetchWithSession(context, `${baseURL}/api/assignment/${id}`, 'PUT', body)
   }
 
   async clickFormAction(action: FormAction) {

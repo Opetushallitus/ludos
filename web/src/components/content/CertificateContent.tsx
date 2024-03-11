@@ -2,10 +2,11 @@ import {
   AttachmentDtoOut,
   ContentBaseOut,
   ContentType,
-  Language,
+  Exam,
   isLdCertificate,
   isPuhviCertificate,
   isSukoCertificate,
+  Language,
   LdCertificateDtoOut,
   PuhviCertificateDtoOut,
   SukoCertificateDtoOut
@@ -72,9 +73,18 @@ const PuhviCertificateTitle = ({
   )
 }
 
-const CertificateContentAttachmentView = ({ name, attachment }: { name: string; attachment: AttachmentDtoOut }) => {
+const CertificateContentAttachmentView = ({
+  exam,
+  name,
+  attachment
+}: {
+  exam: Exam
+  name: string
+  attachment: AttachmentDtoOut
+}) => {
   return (
     <AttachmentFileDetailView
+      exam={exam}
       contentType={ContentType.CERTIFICATE}
       attachments={{
         name,
@@ -109,17 +119,23 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
       <RenderCertificateCardTitle />
       <h4 className="mb-3 mt-8 font-semibold">{t('certificate.todistus')}</h4>
       {isSukoCertificate(certificate) ? (
-        <CertificateContentAttachmentView name={certificate.attachmentFi.name} attachment={certificate.attachmentFi} />
+        <CertificateContentAttachmentView
+          exam={certificate.exam}
+          name={certificate.attachmentFi.name}
+          attachment={certificate.attachmentFi}
+        />
       ) : (
         (isLdCertificate(certificate) || isPuhviCertificate(certificate)) && (
           <>
             {teachingLanguage === 'FI' ? (
               <CertificateContentAttachmentView
+                exam={certificate.exam}
                 name={certificate.attachmentFi.name}
                 attachment={certificate.attachmentFi}
               />
             ) : certificate.attachmentSv ? (
               <CertificateContentAttachmentView
+                exam={certificate.exam}
                 name={certificate.attachmentSv.name}
                 attachment={certificate.attachmentSv}
               />

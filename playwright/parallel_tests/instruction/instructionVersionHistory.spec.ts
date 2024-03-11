@@ -27,20 +27,8 @@ Object.values(Exam).forEach((exam) => {
         } else if (version === 3) {
           currentAttachments = []
         } else {
-          currentAttachments = [
-            {
-              fileName: 'fixture2.pdf',
-              fileKey: String(Math.random()),
-              name: 'fixture2.pdf',
-              language: 'FI'
-            },
-            {
-              fileName: 'fixture3.pdf',
-              fileKey: String(Math.random()),
-              name: 'fixture3.pdf',
-              language: 'FI'
-            }
-          ]
+          const newestInstruction: InstructionDtoOut = await form.getInstructionApiCall(baseURL!, instruction.id)
+          currentAttachments = newestInstruction.attachments
         }
         await form.updateInstructionApiCall(
           baseURL!,

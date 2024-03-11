@@ -76,6 +76,7 @@ export const SukoCertificateForm = ({
             <AttachmentSelector
               error={attachmentErrorFi}
               name="attachmentFi"
+              exam={Exam.SUKO}
               contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(Language.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}

@@ -7,23 +7,17 @@ import {
   Role
 } from '../../helpers'
 import { Exam, ImageAlignOption, ImageSizeOption } from 'web/src/types'
-import { InstructionFormData, instructionFormData } from '../../examHelpers/instructionHelpers'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 import { LayoutModel } from '../../models/LayoutModel'
 import { InstructionContentModel } from '../../models/InstructionContentModel'
 
-type MinimalInstructionDataWithAltText = Pick<InstructionFormData, 'nameFi'> & { imageAltText: string }
-
-const formData: MinimalInstructionDataWithAltText = {
-  nameFi: instructionFormData.nameFi,
-  imageAltText: 'Kuvassa on punainen laatikko'
-}
+const imageAltText = 'Kuvassa on punainen laatikko'
 
 export async function assertCreatedInstruction(form: InstructionFormModel) {
   const content = new InstructionContentModel(form.page, form.exam)
   await expect(content.publishState).toHaveText('state.julkaistu')
-  await expect(content.header).toHaveText(formData.nameFi)
-  const image = content.contentFi.getByRole('img', { name: formData.imageAltText })
+  await expect(content.header).toHaveText(form.formData.nameFi)
+  const image = content.contentFi.getByRole('img', { name: imageAltText })
   await expect(image).toBeVisible()
   await expect(image).toHaveClass('tiptap-image-size-original tiptap-image-align-left')
 }
@@ -31,9 +25,9 @@ export async function assertCreatedInstruction(form: InstructionFormModel) {
 async function createInstructionWithImage(form: InstructionFormModel, imageFilePath: string) {
   await expect(form.heading).toBeVisible()
   await form.fillMinimalInstructionForm()
-  await form.contentFiEditor.uploadImage(imageFilePath, formData.imageAltText)
+  await form.contentFiEditor.uploadImage(imageFilePath, imageAltText)
 
-  const imageEditor = await form.contentFiEditor.imageEditorByAltText(formData.imageAltText)
+  const imageEditor = await form.contentFiEditor.imageEditorByAltText(imageAltText)
   await imageEditor.assertImageOptions(ImageSizeOption.original, ImageAlignOption.left)
 
   await form.submitButton.click()
@@ -43,10 +37,10 @@ async function createInstructionWithImage(form: InstructionFormModel, imageFileP
 }
 
 async function updateImageAttributes(form: InstructionFormModel) {
-  const editedAltText = `${formData.imageAltText} muokattu`
+  const editedAltText = `${imageAltText} muokattu`
 
   await new InstructionContentModel(form.page, form.exam).editButton.click()
-  await (await form.contentFiEditor.imageEditorByAltText(formData.imageAltText)).altInput.fill(editedAltText)
+  await (await form.contentFiEditor.imageEditorByAltText(imageAltText)).altInput.fill(editedAltText)
   const imageEditor = await form.contentFiEditor.imageEditorByAltText(editedAltText)
   await imageEditor.selectImageSize(ImageSizeOption.small)
   await imageEditor.selectImageAlign(ImageAlignOption.center)

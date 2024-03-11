@@ -92,6 +92,7 @@ export const LdCertificateForm = ({
 
             <AttachmentSelector
               name="attachmentFi"
+              exam={Exam.LD}
               contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(Language.FI)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}
@@ -114,6 +115,7 @@ export const LdCertificateForm = ({
             <AttachmentSelector
               error={attachmentErrorSv}
               name="attachmentSv"
+              exam={Exam.LD}
               contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(Language.SV)}
               handleNewAttachmentSelected={handleNewAttachmentSelected}

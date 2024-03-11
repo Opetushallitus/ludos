@@ -1,8 +1,8 @@
 package fi.oph.ludos.instruction
 
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
@@ -12,6 +12,7 @@ import org.mockito.Mockito
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.ZonedDateTime
@@ -192,7 +193,7 @@ class InstructionControllerTest : InstructionRequests() {
 
         assertEquals(createdInstruction, createdInstructionById)
 
-        testDownloadingAttachment(createdInstruction)
+        testDownloadingAttachment(createdInstruction, readAttachmentFixtureFile("fixture1.pdf", "file"))
 
         updateInstructionTest(
             exam,
@@ -201,18 +202,22 @@ class InstructionControllerTest : InstructionRequests() {
         )
     }
 
-    private fun testDownloadingAttachment(createdInstruction: InstructionOut) {
+    private fun testDownloadingAttachment(
+        createdInstruction: InstructionOut,
+        expectedAttachment: MockMultipartFile,
+        withVersion: Boolean = true
+    ) {
         val firstAttachmentBytes =
             mockMvc.perform(
                 downloadInstructionAttachment(
+                    createdInstruction.exam,
                     createdInstruction.attachments[0].fileKey,
-                    createdInstruction.version
+                    if (withVersion) createdInstruction.version else null
                 )
             ).andExpect(status().isOk).andReturn().response.contentAsByteArray
 
-        val firstAttachmentExpectedBytes = readAttachmentFixtureFile("fixture1.pdf", "file").bytes
-        assertThat(firstAttachmentBytes.size).isEqualTo(firstAttachmentExpectedBytes.size)
-        assertThat(firstAttachmentBytes).isEqualTo(firstAttachmentExpectedBytes)
+        assertThat(firstAttachmentBytes.size).isEqualTo(expectedAttachment.bytes.size)
+        assertThat(firstAttachmentBytes).isEqualTo(expectedAttachment.bytes)
     }
 
     @TestFactory
@@ -628,6 +633,30 @@ class InstructionControllerTest : InstructionRequests() {
 
     @Test
     @WithYllapitajaRole
+    fun updateInstructionWithNonExistentCurrentAttachment() {
+        val instruction = createInstructionByExam(Exam.SUKO)
+
+        val failUpdate = mockMvc.perform(
+            createNewVersionOfInstructionReq(
+                instruction.id,
+                mapper.writeValueAsString(minimalSukoInstructionIn),
+                listOf(
+                    InstructionAttachmentMetadataDtoIn(
+                        "nonExistentFileKey",
+                        "lorem",
+                        Language.FI,
+                        instruction.version
+                    )
+                ),
+                emptyList()
+            )
+        ).andReturn().response.contentAsString
+
+        assertEquals("Attachment 'nonExistentFileKey' not found", failUpdate)
+    }
+
+    @Test
+    @WithYllapitajaRole
     fun createWithInvalidExam() {
         val body = mapper.writeValueAsString(minimalSukoInstructionIn).replace("SUKO", "WRONG")
         val responseContent =
@@ -669,6 +698,36 @@ class InstructionControllerTest : InstructionRequests() {
         val instructions: SukoInstructionListDtoOut = getAllInstructions(SukoInstructionFilters())
         assertThat(instructions.content.size).isEqualTo(8)
     }
+
+    @Test
+    @WithOpettajaRole
+    fun getInstructionAttachmentsAsOpettaja() {
+        val instruction = createInstruction<SukoInstructionDtoOut>(
+            mapper.writeValueAsString(minimalSukoInstructionIn),
+            attachments,
+            yllapitaja2User
+        )
+
+        val fixture2 = readAttachmentFixtureFile("fixture2.pdf", "new-attachments")
+
+        val newAttachment = InstructionAttachmentIn(
+            fixture2,
+            InstructionAttachmentMetadataDtoIn(null, "fixture2.pdf", Language.FI, 1)
+        )
+
+        createNewVersionOfInstruction(
+            instruction.id,
+            minimalSukoInstructionIn.copy(nameFi = instruction.nameFi + " updated"),
+            emptyList(),
+            listOf(newAttachment),
+            yllapitaja2User
+        )
+
+        val newestInstruction = getInstructionByIdByExam(instruction.exam, instruction.id)
+
+        testDownloadingAttachment(newestInstruction, fixture2, false)
+    }
+
 
     @Test
     @WithOpettajaRole

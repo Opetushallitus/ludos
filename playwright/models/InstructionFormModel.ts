@@ -1,13 +1,7 @@
 import { expect, Page } from '@playwright/test'
 import { FormModel } from './FormModel'
 import { AttachmentDtoOut, ContentType, Exam, KoodistoName, Language, PublishState } from 'web/src/types'
-import {
-  assertCreatedInstruction,
-  assertUpdatedInstruction,
-  getFileBlob,
-  InstructionFormData,
-  instructionFormData
-} from '../examHelpers/instructionHelpers'
+import { assertInstructionContentPage, getFileBlob } from '../examHelpers/instructionHelpers'
 import { EditorModel } from './EditorModel'
 import {
   assertSuccessNotification,
@@ -19,6 +13,19 @@ import {
   setTeachingLanguage
 } from '../helpers'
 import { ContentListModel } from './ContentListModel'
+import { InstructionContentModel } from './InstructionContentModel'
+
+export type InstructionFormData = {
+  nameFi: string
+  nameSv: string
+  contentFi: string
+  contentSv: string
+  aineKoodiArvo: string
+  shortDescriptionFi: string
+  shortDescriptionSv: string
+  attachmentNameFi: string
+  attachmentNameSv: string
+}
 
 export class InstructionFormModel extends FormModel {
   constructor(
@@ -28,7 +35,19 @@ export class InstructionFormModel extends FormModel {
     readonly contentSvEditor = new EditorModel(page, page.getByTestId('editor-content-sv')),
     readonly createNewInstructionButton = page.getByTestId('create-ohje-button'),
     readonly shortDescriptionFi = page.getByTestId('shortDescriptionFi'),
-    readonly shortDescriptionSv = page.getByTestId('shortDescriptionSv')
+    readonly shortDescriptionSv = page.getByTestId('shortDescriptionSv'),
+    readonly content = new InstructionContentModel(page, exam),
+    readonly formData: InstructionFormData = {
+      nameFi: 'Testi ohje',
+      nameSv: 'Testuppgift',
+      contentFi: 'Testi sisältö',
+      contentSv: 'Test innehåll',
+      aineKoodiArvo: '9',
+      shortDescriptionFi: 'Testi lyhyt kuvaus',
+      shortDescriptionSv: 'Test kort beskrivning',
+      attachmentNameFi: 'Testi ohje 1.pdf',
+      attachmentNameSv: 'Testuppgift 2.pdf'
+    }
   ) {
     super(page, exam)
   }
@@ -43,12 +62,12 @@ export class InstructionFormModel extends FormModel {
   }
 
   async fillMinimalInstructionForm() {
-    await this.nameFi.fill(instructionFormData.nameFi)
+    await this.nameFi.fill(this.formData.nameFi)
   }
 
   async createInstruction(action: FormAction, expectedNotification: string) {
     await this.assertNavigationNoBlockOnCleanForm()
-    await this.fillInstructionForm(instructionFormData)
+    await this.fillInstructionForm(this.formData)
 
     await this.assertNavigationBlockOnDirtyForm()
 
@@ -65,84 +84,72 @@ export class InstructionFormModel extends FormModel {
     const instructionToUpdate = responseData.id
 
     await assertSuccessNotification(this.page, expectedNotification)
-    await assertCreatedInstruction(this, action)
+    await assertInstructionContentPage(this, action, this.formData)
 
     return instructionToUpdate
   }
 
   async fillInstructionForm(formData: Partial<InstructionFormData>) {
-    const {
-      nameFi,
-      nameSv,
-      contentFi,
-      contentSv,
-      aineKoodiArvo,
-      shortDescriptionFi,
-      shortDescriptionSv,
-      attachmentNameFi,
-      attachmentNameSv
-    } = formData
-
     await expect(this.heading).toBeVisible()
 
-    if (this.exam === Exam.LD && aineKoodiArvo) {
-      await setSingleSelectDropdownOption(this.page, 'aineKoodiArvo', aineKoodiArvo)
+    if (this.exam === Exam.LD && formData?.aineKoodiArvo) {
+      await setSingleSelectDropdownOption(this.page, 'aineKoodiArvo', formData.aineKoodiArvo)
     }
 
-    if (nameFi) {
-      await this.nameFi.fill(nameFi)
+    if (formData?.nameFi) {
+      await this.nameFi.fill(formData.nameFi)
     }
-    if (contentFi) {
-      await this.contentFiEditor.content.fill(contentFi)
+
+    if (formData?.contentFi) {
+      await this.contentFiEditor.content.fill(formData.contentFi)
     }
-    if (this.exam !== Exam.LD && shortDescriptionFi) {
-      await this.shortDescriptionFi.fill(shortDescriptionFi)
+    if (this.exam !== Exam.LD && formData?.shortDescriptionFi) {
+      await this.shortDescriptionFi.fill(formData.shortDescriptionFi)
     }
 
     const files = ['fixture1.pdf', 'fixture2.pdf']
-
     const filePaths = files.map((file) => createFilePathToFixtures(file))
 
-    if (attachmentNameFi) {
-      for (const filePath of filePaths) {
-        await this.attachmentInputFi.setInputFiles(filePath)
-      }
+    for (const filePath of filePaths) {
+      await this.attachmentInputFi.setInputFiles(filePath)
+    }
+
+    if (formData?.nameFi) {
       for (const [index] of files.entries()) {
-        await this.page.getByTestId(`attachment-name-input-${index}-FI`).fill(`${attachmentNameFi} ${index + 1}`)
+        await this.page.getByTestId(`attachment-name-input-${index}-FI`).fill(`${formData.nameFi} ${index + 1}`)
+      }
+
+      // Tarkistetaan että input kentissä näkyy teksti oikein. OPHLUDOS-183
+      for (const [index] of files.entries()) {
+        await expect(this.page.getByTestId(`attachment-name-input-${index}-FI`)).toHaveValue(
+          `${formData.nameFi} ${index + 1}`
+        )
       }
     }
 
-    const hasSvFields = nameSv || contentSv || shortDescriptionSv || attachmentNameSv
+    await this.tabSv.click()
+    if (formData?.nameSv) {
+      await this.nameSv.fill(formData.nameSv)
+    }
+    if (formData?.contentSv) {
+      await this.contentSvEditor.content.fill(formData.contentSv)
+    }
+    if (this.exam !== Exam.LD && formData?.shortDescriptionSv) {
+      await this.shortDescriptionSv.fill(formData.shortDescriptionSv)
+    }
 
-    if (hasSvFields) {
-      await this.tabSv.click()
-      if (nameSv) {
-        await this.nameSv.fill(nameSv)
-      }
-      if (contentSv) {
-        await this.contentSvEditor.content.fill(contentSv)
-      }
-      if (this.exam !== Exam.LD && shortDescriptionSv) {
-        await this.shortDescriptionSv.fill(shortDescriptionSv)
-      }
+    for (const filePath of filePaths) {
+      await this.attachmentInputSv.setInputFiles(filePath)
+    }
 
-      if (attachmentNameSv) {
-        for (const filePath of filePaths) {
-          await this.attachmentInputSv.setInputFiles(filePath)
-        }
-        for (const [index] of files.entries()) {
-          await this.page.getByTestId(`attachment-name-input-${index}-SV`).fill(`${attachmentNameSv} ${index + 1}`)
-        }
+    if (formData?.nameSv) {
+      for (const [index] of files.entries()) {
+        await this.page.getByTestId(`attachment-name-input-${index}-SV`).fill(`${formData.nameSv} ${index + 1}`)
       }
     }
   }
 
-  async updateInstruction(
-    instructionId: number,
-    action: FormAction,
-    previousName: string,
-    expectedNotification: string
-  ) {
+  async updateInstruction(instructionId: number, action: FormAction, expectedNotification: string) {
     await this.navigateToInstructionExamPage()
 
     await setTeachingLanguage(this.page, Language.SV)
@@ -155,7 +162,7 @@ export class InstructionFormModel extends FormModel {
         await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', Language.SV)
       )
     } else {
-      await expect(instructionCard.getByTestId('card-title')).toHaveText(previousName)
+      await expect(instructionCard.getByTestId('card-title')).toHaveText(this.formData.nameSv)
     }
 
     await this.page.getByTestId(`instruction-${instructionId}-edit`).click()
@@ -163,12 +170,15 @@ export class InstructionFormModel extends FormModel {
 
     await this.assertNavigationNoBlockOnCleanForm()
 
-    await this.fillInstructionForm({
-      nameFi: 'Testi ohje muokattu',
-      nameSv: `${previousName} redigerade`,
+    const updateFormData: Partial<InstructionFormData> = {
+      ...this.formData,
+      nameFi: `${this.formData.nameFi} muokattu`,
+      nameSv: `${this.formData.nameSv} redigerade`,
       contentFi: 'Testi sisältö muokattu',
       contentSv: 'Testinstruktioner redigerade'
-    })
+    }
+
+    await this.fillInstructionForm(updateFormData)
 
     if (action === 'submit') {
       await this.assertNavigationBlockOnDirtyForm()
@@ -178,8 +188,22 @@ export class InstructionFormModel extends FormModel {
     }
 
     await assertSuccessNotification(this.page, expectedNotification)
+    await assertInstructionContentPage(this, action, updateFormData)
+  }
 
-    await assertUpdatedInstruction(this.page, 'Testi ohje muokattu', `${previousName} redigerade`)
+  async changeState(instructionId: number, action: FormAction, expectedNotification: string) {
+    await this.navigateToInstructionExamPage()
+
+    await this.page.getByTestId(`instruction-${instructionId}-edit`).click()
+
+    if (action === 'submit') {
+      await this.assertNavigationNoBlockOnCleanForm()
+      await this.submitButton.click()
+    } else {
+      await this.draftButton.click()
+    }
+
+    await assertSuccessNotification(this.page, expectedNotification)
   }
 
   private addAttachmentPartToFormData(form: FormData, partName: string, attachmentName: string) {
@@ -226,7 +250,7 @@ export class InstructionFormModel extends FormModel {
     })
 
     return await (
-      await fetchWithSession(this.page.context(), `${baseURL}/api/instruction/${id}`, formData, 'PUT')
+      await fetchWithSession(this.page.context(), `${baseURL}/api/instruction/${id}`, 'PUT', formData)
     ).json()
   }
 
@@ -234,7 +258,7 @@ export class InstructionFormModel extends FormModel {
     const formData = new FormData()
 
     const instructionPart = new Blob(
-      [JSON.stringify({ ...instructionFormData, exam: this.exam, publishState: PublishState.Published })],
+      [JSON.stringify({ ...this.formData, exam: this.exam, publishState: PublishState.Published })],
       {
         type: 'application/json'
       }
@@ -245,6 +269,12 @@ export class InstructionFormModel extends FormModel {
       this.addAttachmentPartToFormData(formData, 'attachments', attachmentFixtureFilename)
     })
 
-    return await (await fetchWithSession(this.page.context(), `${baseURL}/api/instruction`, formData, 'POST')).json()
+    return await (await fetchWithSession(this.page.context(), `${baseURL}/api/instruction`, 'POST', formData)).json()
+  }
+
+  async getInstructionApiCall(baseURL: string, id: number) {
+    return await (
+      await fetchWithSession(this.page.context(), `${baseURL}/api/instruction/${this.exam}/${id}`, 'GET')
+    ).json()
   }
 }

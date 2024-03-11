@@ -1,7 +1,13 @@
 import { expect, Page } from '@playwright/test'
-import { assertSuccessNotification, createFilePathToFixtures, FormAction, setTeachingLanguage } from '../helpers'
-import { Exam, Language } from 'web/src/types'
-import { InstructionFormModel } from '../models/InstructionFormModel'
+import {
+  assertSuccessNotification,
+  createFilePathToFixtures,
+  FormAction,
+  koodiLabel,
+  setTeachingLanguage
+} from '../helpers'
+import { Exam, KoodistoName, Language } from 'web/src/types'
+import { InstructionFormData, InstructionFormModel } from '../models/InstructionFormModel'
 import { LayoutModel } from '../models/LayoutModel'
 import * as fs from 'fs'
 
@@ -17,86 +23,77 @@ export async function initializeInstructionTest(page: Page, exam: Exam) {
   await new InstructionFormModel(page, exam).gotoNew()
 }
 
-export type InstructionFormData = {
-  nameFi: string
-  nameSv: string
-  contentFi: string
-  contentSv: string
-  aineKoodiArvo: string
-  shortDescriptionFi: string
-  shortDescriptionSv: string
-  attachmentNameFi: string
-  attachmentNameSv: string
-}
-
-export const instructionFormData: InstructionFormData = {
-  nameFi: 'Testi ohje',
-  nameSv: 'Testuppgift',
-  contentFi: 'Testi sisältö',
-  contentSv: 'Test innehåll',
-  aineKoodiArvo: '9',
-  shortDescriptionFi: 'Testi lyhyt kuvaus',
-  shortDescriptionSv: 'Test kort beskrivning',
-  attachmentNameFi: 'Testi liite',
-  attachmentNameSv: 'Test bilaga'
-}
-
 export async function updateAttachments(form: InstructionFormModel) {
   await form.editContentButton.first().click()
   // delete one finnish file
   await form.page.getByTestId('delete-attachment-icon-0').first().click()
   await form.modalDeleteButton.first().click()
   // rename other finnish file
-  await form.page.getByTestId('attachment-name-input-0-FI').first().fill('Testi liite muokattu')
+  await form.page.getByTestId('attachment-name-input-0-FI').first().fill('Testi liite uusi nimi')
 
   await form.submitButton.click()
-  await assertSuccessNotification(form.page, 'form.notification.ohjeen-tallennus.onnistui')
+
+  await assertSuccessNotification(form.page, 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
 
   await setTeachingLanguage(form.page, Language.FI)
   await expect(form.page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
-  await expect(form.page.getByRole('link', { name: 'Testi liite muokattu' })).toBeVisible()
+  await expect(form.page.getByRole('link', { name: 'Testi liite uusi nimi' })).toBeVisible()
 }
 
-export async function assertCreatedInstruction(form: InstructionFormModel, action: FormAction) {
-  const { page, exam, formHeader } = form
-  const {
-    nameFi,
-    contentFi,
-    shortDescriptionFi,
-    attachmentNameFi,
-    nameSv,
-    contentSv,
-    shortDescriptionSv,
-    attachmentNameSv
-  } = instructionFormData
+export async function assertInstructionContentPage(
+  form: InstructionFormModel,
+  action: FormAction,
+  formData: Partial<InstructionFormData>
+) {
+  const { page, exam } = form
 
-  await expect(page.getByTestId('publish-state')).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
+  await expect(form.content.publishState).toHaveText(action === 'submit' ? 'state.julkaistu' : 'state.luonnos')
 
-  // aineKoodiArvon tsekkaus puuttuu?
-
-  await expect(formHeader).toHaveText(nameFi)
-  // check short description
-  exam !== Exam.LD && (await expect(page.getByText(shortDescriptionFi, { exact: true })).toBeVisible())
-  // check content
-  await expect(page.getByText(contentFi, { exact: true })).toBeVisible()
-  // check files
-  await expect(page.getByRole('link', { name: `${attachmentNameFi} 1 open_in_new` })).toBeVisible()
-  await expect(page.getByRole('link', { name: `${attachmentNameFi} 2 open_in_new` })).toBeVisible()
-
-  // change language and check that everything is correct
-  await setTeachingLanguage(page, Language.SV)
-  await expect(formHeader).toHaveText(nameSv)
-  exam !== Exam.LD && (await expect(page.getByText(shortDescriptionSv, { exact: true })).toBeVisible())
-  await expect(page.getByText(contentSv, { exact: true })).toBeVisible()
-  await expect(page.getByRole('link', { name: `${attachmentNameSv} 1 open_in_new` })).toBeVisible()
-  await expect(page.getByRole('link', { name: `${attachmentNameSv} 2 open_in_new` })).toBeVisible()
-}
-
-export async function assertUpdatedInstruction(page: Page, newNameFi: string, newNameSv: string) {
   await setTeachingLanguage(page, Language.FI)
-  const updatedInstructionHeader = page.getByTestId('assignment-header')
-  await expect(updatedInstructionHeader).toHaveText(newNameFi)
+
+  if (exam === Exam.LD) {
+    await expect(form.content.aineKoodiArvo).toHaveText(
+      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', Language.FI)
+    )
+  }
+
+  if (formData.nameFi) {
+    const updatedInstructionHeader = page.getByTestId('assignment-header')
+    await expect(updatedInstructionHeader).toHaveText(formData.nameFi)
+  }
+
+  if (formData.shortDescriptionFi) {
+    exam !== Exam.LD && (await expect(page.getByText(formData.shortDescriptionFi, { exact: true })).toBeVisible())
+  }
+
+  if (formData.contentFi) {
+    await expect(page.getByText(formData.contentFi, { exact: true })).toBeVisible()
+  }
+
+  await expect(page.getByRole('link', { name: `${formData.nameFi} 1 open_in_new` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${formData.nameFi} 2 open_in_new` })).toBeVisible()
+
   await setTeachingLanguage(page, Language.SV)
-  const updatedInstructionHeaderSv = page.getByTestId('assignment-header')
-  await expect(updatedInstructionHeaderSv).toHaveText(newNameSv)
+
+  if (exam === Exam.LD) {
+    await expect(form.content.aineKoodiArvo).toHaveText(
+      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, '9', Language.SV)
+    )
+  }
+
+  if (formData.nameSv) {
+    const updatedInstructionHeaderSv = page.getByTestId('assignment-header')
+    await expect(updatedInstructionHeaderSv).toHaveText(formData.nameSv)
+  }
+
+  if (exam !== Exam.LD && formData.shortDescriptionSv) {
+    await expect(page.getByText(formData.shortDescriptionSv, { exact: true })).toBeVisible()
+  }
+
+  if (formData.contentSv) {
+    await expect(page.getByText(formData.contentSv, { exact: true })).toBeVisible()
+  }
+
+  await expect(page.getByRole('link', { name: `${formData.nameSv} 1 open_in_new` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${formData.nameSv} 2 open_in_new` })).toBeVisible()
 }

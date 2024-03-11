@@ -159,8 +159,8 @@ class InstructionService(
         }
     }
 
-    fun getAttachment(key: String, version: Int? = null): Pair<InstructionAttachmentDtoOut, InputStream> {
-        val fileUpload = repository.getAttachmentByFileKey(key, version) ?: throw ResponseStatusException(
+    fun getAttachment(exam: Exam, key: String, version: Int? = null): Pair<InstructionAttachmentDtoOut, InputStream> {
+        val fileUpload = repository.getAttachmentByFileKey(exam, key, version) ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND, "Certificate attachment '${key}' not found in db"
         )
 

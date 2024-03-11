@@ -33,8 +33,8 @@ export function loginTestGroup(test: typeof importedTest, role: Role) {
 export async function fetchWithSession(
   context: BrowserContext,
   url: string,
-  body: string | FormData,
-  method: 'POST' | 'PUT'
+  method: 'POST' | 'PUT' | 'GET',
+  body?: string | FormData
 ) {
   const storageState = await context.storageState()
   const sessionCookie = storageState.cookies.find((cookie) => cookie.name === 'SESSION')

@@ -97,9 +97,9 @@ class CertificateController(val service: CertificateService) {
             "$exam certificate $id or its version $version not found"
         )
 
-    @GetMapping("/attachment/{key}")
+    @GetMapping("/{exam}/attachment/{key}")
     @RequireAtLeastOpettajaRole
-    fun getAttachment(@PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
+    fun getAttachment(@PathVariable exam: Exam, @PathVariable("key") key: String): ResponseEntity<InputStreamResource> {
         val (uploadFile, attachmentInputStream) = service.getAttachment(key)
 
         return ResponseEntity.ok()

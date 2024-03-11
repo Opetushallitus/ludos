@@ -258,8 +258,8 @@ abstract class InstructionRequests {
         )
     }
 
-    fun downloadInstructionAttachment(fileKey: String, version: Int) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/attachment/$fileKey/$version")
+    fun downloadInstructionAttachment(exam: Exam, fileKey: String, version: Int?) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/instruction/$exam/attachment/$fileKey" + if (version != null) "/$version" else "")
 
     private fun mockMultipartFile(file: MultipartFile): MockMultipartFile =
         when (file) {

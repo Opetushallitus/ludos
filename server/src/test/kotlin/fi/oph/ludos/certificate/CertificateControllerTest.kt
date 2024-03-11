@@ -2,8 +2,8 @@ package fi.oph.ludos.certificate
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions
 import org.hamcrest.CoreMatchers
@@ -98,10 +98,10 @@ class CertificateControllerTest : CertificateRequests() {
         assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
 
     private fun assertGetReturnsExpectedAttachment(
-        fileKey: String, expectedFileName: String, expectedFileContent: ByteArray
+        exam: Exam, fileKey: String, expectedFileName: String, expectedFileContent: ByteArray
     ) {
         val attachmentGetResponse =
-            mockMvc.perform(getAttachment(fileKey)).andExpect(status().isOk).andReturn().response
+            mockMvc.perform(getAttachment(exam, fileKey)).andExpect(status().isOk).andReturn().response
 
         assertArrayEquals(expectedFileContent, attachmentGetResponse.contentAsByteArray)
         assertEquals("application/pdf", attachmentGetResponse.contentType)
@@ -111,6 +111,7 @@ class CertificateControllerTest : CertificateRequests() {
     }
 
     private fun assertAttachment(
+        exam: Exam,
         expectedAttachmentName: String,
         updatedAttachmentDtoOut: CertificateAttachmentDtoOut,
     ) {
@@ -119,6 +120,7 @@ class CertificateControllerTest : CertificateRequests() {
         assertNotNull(updatedAttachmentDtoOut.fileUploadDate)
 
         assertGetReturnsExpectedAttachment(
+            exam,
             updatedAttachmentDtoOut.fileKey,
             expectedAttachmentName,
             readAttachmentFixtureFile(expectedAttachmentName).bytes
@@ -148,11 +150,13 @@ class CertificateControllerTest : CertificateRequests() {
         assertNotNull(dtoOut.updatedAt)
 
         assertAttachment(
+            dtoIn.exam,
             newAttachment,
             dtoOut.attachmentFi
         )
         if ((dtoIn.exam != Exam.SUKO)) {
             assertAttachment(
+                dtoIn.exam,
                 newAttachmentSv,
                 dtoOut.attachmentSv
             )
@@ -358,13 +362,25 @@ class CertificateControllerTest : CertificateRequests() {
                     assertEquals(version, certificateVersionById.version)
 
                     if (index == certificateVersionsIn.lastIndex) {
-                        assertAttachment(attachmentFileNameToUpdate, certificateVersionById.attachmentFi)
+                        assertAttachment(
+                            certificateIn.exam,
+                            attachmentFileNameToUpdate,
+                            certificateVersionById.attachmentFi
+                        )
                     } else {
-                        assertAttachment(attachmentFileNameToCreate, certificateVersionById.attachmentFi)
+                        assertAttachment(
+                            certificateIn.exam,
+                            attachmentFileNameToCreate,
+                            certificateVersionById.attachmentFi
+                        )
                     }
 
                     if (certificateIn.exam != Exam.SUKO) {
-                        assertAttachment(attachmentFileNameToCreateSv, certificateVersionById.attachmentSv)
+                        assertAttachment(
+                            certificateIn.exam,
+                            attachmentFileNameToCreateSv,
+                            certificateVersionById.attachmentSv
+                        )
                     }
                 }
 

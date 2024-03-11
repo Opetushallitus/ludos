@@ -183,9 +183,10 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
   const handleAttachmentNameChange = (newName: string, index: number, language: Language) => {
     const isSv = language === 'SV'
 
-    const updatedAttachmentData = isSv ? attachmentDataSv : attachmentDataFi
-    updatedAttachmentData[index].name = newName
-    isSv ? setAttachmentDataSv(updatedAttachmentData) : setAttachmentDataFi(updatedAttachmentData)
+    const attachmentDataCopy = isSv ? [...attachmentDataSv] : [...attachmentDataFi]
+
+    attachmentDataCopy[index].name = newName
+    isSv ? setAttachmentDataSv(attachmentDataCopy) : setAttachmentDataFi(attachmentDataCopy)
   }
 
   const instructionNameError = errors.nameRequired?.message as string
@@ -268,6 +269,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
               name="attachmentFi"
+              exam={exam}
               contentType={ContentType.INSTRUCTION}
               language={Language.FI}
               attachmentData={attachmentDataFi.filter(({ language }) => language === Language.FI)}
@@ -310,6 +312,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
             <p>{t('form.lisaa-tiedostot-kuvaus')}</p>
             <AttachmentSelector
               name="attachmentSv"
+              exam={exam}
               contentType={ContentType.INSTRUCTION}
               language={Language.SV}
               attachmentData={attachmentDataSv}
