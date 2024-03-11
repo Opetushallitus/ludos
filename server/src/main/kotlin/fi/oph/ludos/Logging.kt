@@ -27,7 +27,7 @@ fun LoggingEventBuilder.addLudosUserInfo(): LoggingEventBuilder {
 }
 
 fun LoggingEventBuilder.addUserIp(request: ServletRequest?): LoggingEventBuilder {
-    addKeyValue("ip", request?.remoteAddr ?: "unknown")
+    addKeyValue("real_remote_host", request?.remoteAddr ?: "unknown")
     return this
 }
 
