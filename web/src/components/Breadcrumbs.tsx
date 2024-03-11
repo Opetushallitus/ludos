@@ -2,19 +2,12 @@ import { InternalLink } from './InternalLink'
 import { FAVORITE_ROOT_FOLDER_ID } from '../constants'
 import { FolderList } from './modal/AssignmentFavoriteMoveFolderModal'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
-import {
-  ContentBaseOut,
-  ContentTypeByContentTypePluralFi,
-  ContentTypePluralFi,
-  ContentTypeSingularEn,
-  Exam
-} from '../types'
+import { ContentTypeByContentTypePluralFi, ContentTypePluralFi, Exam } from '../types'
 import { contentListPath, examPath, favoritesPagePath, frontpagePath } from './LudosRoutes'
 import { useParams } from 'react-router-dom'
-import { useFetch } from '../hooks/useFetch'
 
 const BreadcrumbItem = ({ last, name, index, path }: { last: boolean; name: string; path: string; index: number }) => (
-  <div>
+  <div className="text-xs">
     {last ? (
       <p>/ {name}</p>
     ) : (
@@ -61,19 +54,12 @@ export const FavoriteFolderBreadcrumbs = ({ exam, segments }: BreadcrumbsProps) 
   )
 }
 
-export const ContentBreadcrumbs = ({ exam }: { exam: Exam }) => {
+export const ContentBreadcrumbs = ({ exam, name }: { exam: Exam; name: string }) => {
   const { t, lt } = useLudosTranslation()
-  const { contentTypePluralFi, id } = useParams<{
+  const { contentTypePluralFi } = useParams<{
     contentTypePluralFi: ContentTypePluralFi
     id: string
   }>()
-
-  const contentTypeSingularEn = ContentTypeSingularEn[ContentTypeByContentTypePluralFi[contentTypePluralFi!]]
-  const { data } = useFetch<ContentBaseOut>(`${contentTypeSingularEn}/${exam}/${id}`)
-
-  if (!data) {
-    return null
-  }
 
   const segments = [
     {
@@ -90,12 +76,12 @@ export const ContentBreadcrumbs = ({ exam }: { exam: Exam }) => {
     },
     {
       path: '',
-      name: data.nameFi
+      name: name
     }
   ]
 
   return (
-    <div className="row flex-wrap mb-5">
+    <div className="row flex-wrap">
       {segments.map(({ name, path }, index) => (
         <BreadcrumbItem last={index + 1 === segments.length} name={name} path={path} index={index} key={index} />
       ))}

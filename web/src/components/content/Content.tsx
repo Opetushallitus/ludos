@@ -31,6 +31,8 @@ import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
 import { VersionBrowserBar } from './VersionBrowserBar'
 import { createNewVersionInstruction, restoreOldCertificate, updateAssignment } from '../../request'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
+import { ListTabs } from '../ListTabs'
+import { ContentBreadcrumbs } from '../Breadcrumbs'
 
 type ContentProps = {
   exam: Exam
@@ -104,6 +106,17 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
   return (
     <div className="min-h-[80vh] mt-5">
+      <div className="py-5">
+        <ContentBreadcrumbs
+          exam={exam}
+          name={teachingLanguageOverrideIfSukoAssignment === Language.FI ? data.nameFi : data.nameSv}
+        />
+      </div>
+
+      <div className="mb-5">
+        <ListTabs exam={exam} />
+      </div>
+
       {isYllapitaja && isVersionBrowser && versionList && (
         <VersionBrowserBar
           data={data}
