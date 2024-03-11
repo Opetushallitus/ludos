@@ -31,6 +31,7 @@ dependencies {
     implementation("fi.vm.sade.java-utils:java-http:_")
     implementation("io.github.cdimascio:dotenv-kotlin:_")
     implementation("jakarta.servlet:jakarta.servlet-api:_")
+    implementation("ch.qos.logback:logback-access:_")
     implementation("net.logstash.logback:logstash-logback-encoder:_")
     implementation("org.flywaydb:flyway-core:_")
     implementation("org.flywaydb:flyway-database-postgresql:_")
