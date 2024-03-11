@@ -26,7 +26,7 @@
                         "level_value": 21000,
                         "user_agent": "%i{User-Agent}",
                         "x_forwarded_for": "%i{X-Forwarded-For}",
-                        "message": "%requestURL returned %statusCode in %elapsedTime ms"
+                        "correlation_id": "%reqAttribute{correlation_id}"
                         }
                     </pattern>
                 </pattern>

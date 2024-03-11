@@ -1,6 +1,5 @@
 package fi.oph.ludos
 
-import ch.qos.logback.access.tomcat.LogbackValve
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.DotenvException
 import io.github.cdimascio.dotenv.dotenv
@@ -8,8 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory
-import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -114,11 +111,3 @@ class Config : WebMvcConfigurer {
     }
 }
 
-@Configuration
-class LogbackAccessConfiguration : WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> {
-    override fun customize(factory: ConfigurableTomcatWebServerFactory) {
-        val logbackValve = LogbackValve()
-        logbackValve.setFilename("logback-access.xml")
-        factory.addEngineValves(logbackValve)
-    }
-}
