@@ -21,7 +21,7 @@ export const ListTabs = ({ exam }: TabsProps) => {
     )
 
   return (
-    <div className="row flex-wrap font-semibold">
+    <div className="row flex-wrap font-semibold border-b-4 border-gray-separator">
       {exam ? (
         <>
           {Object.values(ContentType).map((contentType: ContentType, i) => (
@@ -53,7 +53,5 @@ export const ListTabs = ({ exam }: TabsProps) => {
 const LinkWrapper = ({ children }: { children: ReactNode }) => {
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
-  return (
-    <div className={twMerge('inline-block py-1 text-base text-center', isMobile && 'w-full text-left')}>{children}</div>
-  )
+  return <div className={twMerge('inline-block text-base text-center', isMobile && 'w-full text-left')}>{children}</div>
 }
