@@ -11,10 +11,12 @@ const BreadcrumbItem = ({ last, name, index, path }: { last: boolean; name: stri
     {last ? (
       <p>/ {name}</p>
     ) : (
-      <InternalLink className="px-1" to={path}>
+      <>
         {index > 0 ? '/ ' : ''}
-        {name}
-      </InternalLink>
+        <InternalLink className="px-1" to={path}>
+          {name}
+        </InternalLink>
+      </>
     )}
   </div>
 )
