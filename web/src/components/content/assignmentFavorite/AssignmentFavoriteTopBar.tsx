@@ -1,4 +1,4 @@
-import { Breadcrumbs } from '../../Breadcrumbs'
+import { FavoriteFolderBreadcrumbs } from '../../Breadcrumbs'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
@@ -46,8 +46,8 @@ export const AssignmentFavoriteTopBar = ({
     <>
       <div className="row flex-wrap justify-between pb-3 pt-6">
         {segments.length > 1 && currentFolder.id ? (
-          <div className="row items-center gap-2">
-            <Breadcrumbs exam={exam} segments={segments} />
+          <div className="row items-center gap-2 pb-4 md:pb-0">
+            <FavoriteFolderBreadcrumbs exam={exam} segments={segments} />
             <AssignmentFavoriteFolderDropdownMenu
               exam={exam}
               favoriteCardFolders={assignmentFavorites}

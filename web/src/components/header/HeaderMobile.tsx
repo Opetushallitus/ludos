@@ -30,7 +30,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
               <div className="row justify-between bg-green-primary pt-2">
                 <Header onClick={toggleMenu} />
               </div>
-              <div className="bg-white p-3" onClick={(e) => e.stopPropagation}>
+              <div className="bg-white p-3">
                 <p className="font-semibold">{`${firstNames} ${lastName}` || ''}</p>
                 <p className="text-gray-secondary">{role}</p>
               </div>
@@ -59,16 +59,16 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                         uiLanguage === Language.FI ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
-                      onClick={() => setUiLanguage('fi')}>
-                      {LANGUAGE_DROPDOWN.fi.nimi}
+                      onClick={() => setUiLanguage(Language.FI)}>
+                      {LANGUAGE_DROPDOWN.FI.nimi}
                     </Button>
                     <Button
                       className={`col w-full pl-4 text-lg text-black${
                         uiLanguage === Language.SV ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
-                      onClick={() => setUiLanguage('sv')}>
-                      {LANGUAGE_DROPDOWN.sv.nimi}
+                      onClick={() => setUiLanguage(Language.SV)}>
+                      {LANGUAGE_DROPDOWN.SV.nimi}
                     </Button>
                   </div>
                 </div>
