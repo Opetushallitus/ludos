@@ -1,10 +1,11 @@
 package fi.oph.ludos.certificate
 
 import arrow.core.Either
-import fi.oph.ludos.Exam
+import fi.oph.ludos.*
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
-import fi.oph.ludos.s3.Bucket
-import fi.oph.ludos.s3.S3Helper
+import fi.oph.ludos.aws.Bucket
+import fi.oph.ludos.aws.S3Helper
+import jakarta.servlet.ServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -21,26 +22,38 @@ class CertificateService(
     val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 ) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
 
     fun getCertificates(exam: Exam, filters: CertificateFilters): List<CertificateOut> =
         repository.getCertificates(exam, filters)
 
-    fun createSukoCertificate(certificate: SukoCertificateDtoIn, attachment: MultipartFile): CertificateOut =
-        repository.createSukoCertificate(attachment, certificate)
-
-    fun createLdCertificate(
-        certificate: LdCertificateDtoIn,
+    fun createCertificate(
+        certificate: CertificateIn,
         attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile
-    ): CertificateOut =
-        repository.createLdCertificate(attachmentFi, attachmentSv, certificate)
+        attachmentSv: MultipartFile?,
+        request: ServletRequest
+    ): CertificateOut {
+        val createdCertificate = when (certificate) {
+            is SukoCertificateDtoIn -> repository.createSukoCertificate(certificate, attachmentFi)
+            is LdCertificateDtoIn -> repository.createLdCertificate(
+                certificate,
+                attachmentFi,
+                attachmentSv ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+            )
 
-    fun createPuhviCertificate(
-        certificate: PuhviCertificateDtoIn,
-        attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile
-    ): CertificateOut =
-        repository.createPuhviCertificate(attachmentFi, attachmentSv, certificate)
+            is PuhviCertificateDtoIn -> repository.createPuhviCertificate(
+                certificate,
+                attachmentFi,
+                attachmentSv ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing"),
+            )
+        }
+
+        auditLogger.atInfo().addLudosUserInfo().addUserIp(request)
+            .addKeyValue("certificate", createdCertificate)
+            .log("Created certificate")
+
+        return createdCertificate
+    }
 
     fun getCertificateById(id: Int, exam: Exam, version: Int?): CertificateOut? =
         repository.getCertificateById(id, exam, version)
@@ -64,50 +77,73 @@ class CertificateService(
 
     fun createNewVersionOfCertificate(
         id: Int,
-        certificate: Certificate,
+        certificate: CertificateIn,
         attachmentFi: MultipartFile?,
-        attachmentSv: MultipartFile?
-    ) = when (certificate) {
-        is SukoCertificateDtoIn -> repository.createNewVersionOfSukoCertificate(
-            id,
-            certificate,
-            Either.Right(attachmentFi)
-        )
+        attachmentSv: MultipartFile?,
+        request: ServletRequest
+    ): Int? {
+        val createdVersion = when (certificate) {
+            is SukoCertificateDtoIn -> repository.createNewVersionOfSukoCertificate(
+                id,
+                certificate,
+                Either.Right(attachmentFi)
+            )
 
-        is LdCertificateDtoIn -> repository.createNewVersionOfLdCertificate(
-            id,
-            certificate,
-            Either.Right(Pair(attachmentFi, attachmentSv))
-        )
+            is LdCertificateDtoIn -> repository.createNewVersionOfLdCertificate(
+                id,
+                certificate,
+                Either.Right(Pair(attachmentFi, attachmentSv))
+            )
 
-        is PuhviCertificateDtoIn -> repository.createNewVersionOfPuhviCertificate(
-            id,
-            certificate,
-            Either.Right(Pair(attachmentFi, attachmentSv))
-        )
+            is PuhviCertificateDtoIn -> repository.createNewVersionOfPuhviCertificate(
+                id,
+                certificate,
+                Either.Right(Pair(attachmentFi, attachmentSv))
+            )
+        }
 
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
+        if (createdVersion != null) {
+            val createdCertificate = repository.getCertificateById(id, Exam.SUKO, createdVersion)
+            auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("certificate", createdCertificate)
+                .log("Created new version of certificate")
+        } else {
+            auditLogger.atError().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("instructionId", id)
+                .log("Tried to create new version of non-existent certificate")
+        }
+
+        return createdVersion
     }
 
     fun restoreOldVersionOfCertificate(
         exam: Exam,
         id: Int,
-        version: Int
+        versionToRestore: Int,
+        request: ServletRequest
     ): Int? {
-        val certificateToRestore = repository.getCertificateById(id, exam, version) ?: return null
-        return when (certificateToRestore) {
+        val certificateToRestore = repository.getCertificateById(id, exam, versionToRestore) ?: return null
+        val createdVersion = when (certificateToRestore) {
             is SukoCertificateDtoOut -> repository.createNewVersionOfSukoCertificate(
-                id, SukoCertificateDtoIn(certificateToRestore), Either.Left(version)
+                id, SukoCertificateDtoIn(certificateToRestore), Either.Left(versionToRestore)
             )
 
             is LdCertificateDtoOut -> repository.createNewVersionOfLdCertificate(
-                id, LdCertificateDtoIn(certificateToRestore), Either.Left(version)
+                id, LdCertificateDtoIn(certificateToRestore), Either.Left(versionToRestore)
             )
 
             is PuhviCertificateDtoOut -> repository.createNewVersionOfPuhviCertificate(
-                id, PuhviCertificateDtoIn(certificateToRestore), Either.Left(version)
+                id, PuhviCertificateDtoIn(certificateToRestore), Either.Left(versionToRestore)
             )
         }
+
+        auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+            .addKeyValue(
+                "restoreVersionInfo",
+                RestoreVersionInfoForLogging(exam, id, versionToRestore, createdVersion!!)
+            ).log("Restored old version of certificate")
+
+        return createdVersion
     }
 
     fun getAttachment(key: String): Pair<CertificateAttachmentDtoOut, InputStream> {

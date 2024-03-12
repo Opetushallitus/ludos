@@ -707,7 +707,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
 
             val updatedAssignmentIn =
                 TestSukoAssignmentDtoIn(SukoAssignmentDtoIn(assignmentOut)).copy(nameFi = assignmentOut.nameFi + " updated")
-            updateAssignment(assignmentOut.id, updatedAssignmentIn)
+            createNewVersionOfAssignment(assignmentOut.id, updatedAssignmentIn)
 
             assertThat(getTotalFavoriteCount()).isEqualTo(1)
         }

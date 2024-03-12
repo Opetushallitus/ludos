@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_PATTERN" value="%d{&quot;yyyy-MM-dd'T'HH:mm:ss.SSSXXX&quot;} %-5level [%thread] %logger{36} - %msg%n"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>correlation_id</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+    <springProfile name="local">
+        <appender name="AUDIT_LOCAL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/audit.log</file>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeMdcKeyName>correlation_id</includeMdcKeyName>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/audit.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <logger name="auditLogger" level="INFO" additivity="true">
+            <appender-ref ref="AUDIT_LOCAL"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="!local">
+        <appender name="AUDIT_CLOUDWATCH" class="fi.oph.ludos.aws.LudosLogbackCloudwatchAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <includeMdcKeyName>correlation_id</includeMdcKeyName>
+            </encoder>
+            <localAwsProfileName>oph-ludos-dev</localAwsProfileName>
+            <logGroupName>${AUDIT_LOG_LOG_GROUP_NAME:-}</logGroupName>
+        </appender>
+
+        <logger name="auditLogger" level="INFO" additivity="true">
+            <appender-ref ref="AUDIT_CLOUDWATCH"/>
+        </logger>
+    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

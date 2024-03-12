@@ -1,6 +1,6 @@
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentData, Exam, ImageDtoOut } from './types'
+import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, ImageDtoOut } from './types'
 import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
 import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
 
@@ -84,7 +84,7 @@ export async function createAssignment<T>(body: T): Promise<{ id: number }> {
   return await result.json()
 }
 
-export async function updateAssignment<T>(id: number, body: T): Promise<number> {
+export async function createNewVersionOfAssignment<T>(id: number, body: T): Promise<number> {
   const result = await doRequest(`${ASSIGNMENT_URL}/${id}`, 'PUT', JSON.stringify(body))
 
   if (!result.ok) {
@@ -124,7 +124,7 @@ export async function createInstruction<T>(
   return await result.json()
 }
 
-export async function createNewVersionInstruction<T>(
+export async function createNewVersionOfInstruction<T>(
   id: number,
   instructionIn: InstructionFormType,
   attachmentsToUpdate: AttachmentData[],
@@ -192,7 +192,7 @@ export async function createCertificate(
   return await result.json()
 }
 
-export async function updateCertificate(
+export async function createNewVersionOfCertificate(
   id: number,
   certificateIn: CommonCertificateFormType,
   newAttachmentFi: File | null,
@@ -218,8 +218,17 @@ export async function updateCertificate(
   return result.json()
 }
 
-export async function restoreOldCertificate(id: number, exam: Exam, version: number): Promise<number> {
-  const result = await doRequest(`${CERTIFICATE_URL}/${exam}/${id}/${version}/restore`, 'POST', '{}')
+export async function restoreOldContentVersion(
+  exam: Exam,
+  contentType: ContentType,
+  id: number,
+  version: number
+): Promise<number> {
+  const result = await doRequest(
+    `${BASE_API_URL}/${ContentTypeSingularEn[contentType]}/${exam}/${id}/${version}/restore`,
+    'POST',
+    '{}'
+  )
 
   if (!result.ok) {
     throw new Error(await result.text())
@@ -227,6 +236,7 @@ export async function restoreOldCertificate(id: number, exam: Exam, version: num
 
   return result.json()
 }
+
 export async function getKoodistos(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/koodisto`, 'GET')
 }

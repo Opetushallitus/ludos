@@ -6,4 +6,5 @@ interface Constants {
     }
 }
 
+const val AUDIT_LOGGER_NAME = "auditLogger"
 const val INITIAL_VERSION_NUMBER = 1

@@ -4,6 +4,7 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.*
@@ -21,39 +22,39 @@ class CertificateController(val service: CertificateService) {
     @PostMapping("", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     @RequireAtLeastYllapitajaRole
     fun createCertificate(
-        @Valid @RequestPart("certificate") certificate: Certificate,
+        @Valid @RequestPart("certificate") certificate: CertificateIn,
         @RequestPart("attachmentFi") attachment: MultipartFile,
-        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
-    ): Certificate = when (certificate) {
-        is SukoCertificateDtoIn -> service.createSukoCertificate(certificate, attachment)
-        is LdCertificateDtoIn -> if (attachmentSv != null) service.createLdCertificate(
-            certificate,
-            attachment,
-            attachmentSv
-        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?,
+        request: HttpServletRequest
+    ): CertificateOut = service.createCertificate(certificate, attachment, attachmentSv, request)
 
-        is PuhviCertificateDtoIn -> if (attachmentSv != null) service.createPuhviCertificate(
-            certificate,
-            attachment,
-            attachmentSv
-        ) else throw ResponseStatusException(HttpStatus.BAD_REQUEST, "attachmentSv missing")
+    @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @RequireAtLeastYllapitajaRole
+    fun createNewVersionOfCertificate(
+        @PathVariable("id") id: Int,
+        @Valid @RequestPart("certificate") certificate: CertificateIn,
+        @RequestPart("attachmentFi") attachment: MultipartFile?,
+        @RequestPart("attachmentSv") attachmentSv: MultipartFile?,
+        request: HttpServletRequest
+    ): Int = service.createNewVersionOfCertificate(id, certificate, attachment, attachmentSv, request)
+        ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Certificate $id not found"
+        )
 
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid certificate type")
-    }
-
-    @GetMapping("SUKO")
+    @GetMapping("/SUKO")
     @RequireAtLeastOpettajaRole
     fun getSukoCertificates(
         @Valid filters: CertificateFilters
     ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.SUKO, filters))
 
-    @GetMapping("PUHVI")
+    @GetMapping("/PUHVI")
     @RequireAtLeastOpettajaRole
     fun getPuhviCertificates(
         @Valid filters: CertificateFilters
     ): CertificatesOut = CertificatesOut(service.getCertificates(Exam.PUHVI, filters))
 
-    @GetMapping("LD")
+    @GetMapping("/LD")
     @RequireAtLeastOpettajaRole
     fun getLdCertificates(
         @Valid filters: CertificateFilters
@@ -67,7 +68,12 @@ class CertificateController(val service: CertificateService) {
             "Certificate $id not found"
         )
 
-    @GetMapping("{exam}/{id}/{version}")
+    @GetMapping("/{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfCertificate(@PathVariable exam: Exam, @PathVariable id: Int): List<CertificateOut> =
+        service.getAllVersionsOfCertificate(exam, id)
+
+    @GetMapping("/{exam}/{id}/{version}")
     @RequireAtLeastYllapitajaRole
     fun getCertificateVersion(
         @PathVariable exam: Exam,
@@ -78,34 +84,17 @@ class CertificateController(val service: CertificateService) {
         "Certificate $id or its version $version not found"
     )
 
-    @GetMapping("{exam}/{id}/versions")
-    @RequireAtLeastYllapitajaRole
-    fun getAllVersionsOfCertificate(@PathVariable exam: Exam, @PathVariable id: Int): List<CertificateOut> =
-        service.getAllVersionsOfCertificate(exam, id)
-
-    @PutMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    @RequireAtLeastYllapitajaRole
-    fun createNewVersionOfCertificate(
-        @PathVariable("id") id: Int,
-        @Valid @RequestPart("certificate") certificate: Certificate,
-        @RequestPart("attachmentFi") attachment: MultipartFile?,
-        @RequestPart("attachmentSv") attachmentSv: MultipartFile?
-    ): Int = service.createNewVersionOfCertificate(id, certificate, attachment, attachmentSv)
-        ?: throw ResponseStatusException(
-            HttpStatus.NOT_FOUND,
-            "Certificate $id not found"
-        )
-
-    @PostMapping("{exam}/{id}/{version}/restore")
+    @PostMapping("/{exam}/{id}/{version}/restore")
     @RequireAtLeastYllapitajaRole
     fun restoreOldVersionOfCertificate(
         @PathVariable exam: Exam,
         @PathVariable id: Int,
         @PathVariable version: Int,
-    ): Int = service.restoreOldVersionOfCertificate(exam, id, version)
+        request: HttpServletRequest
+    ): Int = service.restoreOldVersionOfCertificate(exam, id, version, request)
         ?: throw ResponseStatusException(
             HttpStatus.NOT_FOUND,
-            "Certificate $id not found"
+            "$exam certificate $id or its version $version not found"
         )
 
     @GetMapping("/attachment/{key}")

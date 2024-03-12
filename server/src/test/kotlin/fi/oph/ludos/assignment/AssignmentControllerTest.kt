@@ -2,8 +2,8 @@ package fi.oph.ludos.assignment
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import jakarta.transaction.Transactional
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
@@ -16,9 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import java.util.stream.Stream
 import kotlin.reflect.full.memberProperties
-import kotlin.streams.asStream
 
 @TestPropertySource(locations = ["classpath:application.properties"])
 @SpringBootTest
@@ -32,7 +30,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @BeforeEach
     fun setupMocks() {
         Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString())) // when does not work inside BeforeAll
-            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
+            .thenReturn(OppijanumerorekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
     }
 
     fun assertCommonFieldsBetweenInAndOutEqual(assignmentIn: TestAssignmentIn, assignmentOut: AssignmentOut) {
@@ -123,7 +121,7 @@ class AssignmentControllerTest : AssignmentRequests() {
             listOf("002", "004"),
         )
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        val updatedAssignmentId = updateAssignment(assignmentById.id, updatedAssignment)
+        val updatedAssignmentId = createNewVersionOfAssignment(assignmentById.id, updatedAssignment)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         assertEquals(updatedAssignmentId, assignmentById.id.toString())
@@ -181,7 +179,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                 aineKoodiArvo = "2",
             )
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        updateAssignment(ldAssignmentOut.id, editedLdAssignmentIn)
+        createNewVersionOfAssignment(ldAssignmentOut.id, editedLdAssignmentIn)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         val updatedAssignmentById = getAssignmentById<LdAssignmentDtoOut>(ldAssignmentOut.id)
@@ -229,7 +227,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         )
 
         val timeBeforeUpdate = nowFromDb(mockMvc)
-        updateAssignment(puhviAssignmentOut.id, editedPuhviAssignmentIn)
+        createNewVersionOfAssignment(puhviAssignmentOut.id, editedPuhviAssignmentIn)
         val timeAfterUpdate = nowFromDb(mockMvc)
 
         val updatedAssignmentById = getAssignmentById<PuhviAssignmentDtoOut>(puhviAssignmentOut.id)
@@ -245,21 +243,13 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `only latest versions of assignments in get all assignment data`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `only latest versions of assignments in get all assignment data`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                val createdAssignment = when (exam!!) {
-                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
-                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
-                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
-                }
-                val updatedAssignmentIn = when (exam) {
-                    Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                }
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment)
 
-                updateAssignment(createdAssignment.id, updatedAssignmentIn)
+                createNewVersionOfAssignment(createdAssignment.id, updatedAssignmentIn)
 
                 val assignments = when (exam) {
                     Exam.SUKO -> getAllAssignmentsForExam<SukoAssignmentCardDtoOut>()
@@ -281,73 +271,53 @@ class AssignmentControllerTest : AssignmentRequests() {
 
     @TestFactory
     @WithYllapitajaRole
-    fun `updating an assignment saves updater oid`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `updating an assignment saves updater oid`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                val createdAssignment = when (exam!!) {
-                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
-                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
-                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
-                }
+                val createdAssignment = createMinimalAssignmentByExam(exam)
                 assertThat(createdAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(createdAssignment.updaterOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
 
-                val updatedAssignmentIn = when (exam) {
-                    Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                    Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated")
-                }
+                val updatedAssignmentIn = updatedMinimalAssignmentInByExam(exam, createdAssignment)
 
-                updateAssignment(
+                createNewVersionOfAssignment(
                     createdAssignment.id,
                     updatedAssignmentIn,
                     yllapitaja2User
                 )
 
-                val updatedAssignment = when (exam) {
-                    Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id)
-                    Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id)
-                    Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(createdAssignment.id)
-                }
+                val updatedAssignment = getAssignmentByIdByExam(exam, createdAssignment.id)
                 assertThat(updatedAssignment.authorOid).isEqualTo(YllapitajaSecurityContextFactory().kayttajatiedot().oidHenkilo)
                 assertThat(updatedAssignment.updaterOid).isEqualTo(Yllapitaja2SecurityContextFactory().kayttajatiedot().oidHenkilo)
             }
         }
 
-
-    private fun getMinimalAssignmentInByExam(exam: Exam) = when (exam) {
-        Exam.SUKO -> minimalSukoAssignmentIn
-        Exam.LD -> minimalLdAssignmentIn
-        Exam.PUHVI -> minimalPuhviAssignmentIn
-    }
-
-    private fun getAllAssignmentVersionsByExam(exam: Exam, id: Int) = when (exam) {
-        Exam.SUKO -> getAllAssignmentVersions<SukoAssignmentDtoOut>(id)
-        Exam.LD -> getAllAssignmentVersions<LdAssignmentDtoOut>(id)
-        Exam.PUHVI -> getAllAssignmentVersions<PuhviAssignmentDtoOut>(id)
+    private fun updatedMinimalAssignmentInByExam(
+        exam: Exam,
+        createdAssignment: AssignmentOut,
+        nameSuffix: String = " updated"
+    ): TestAssignmentIn {
+        val updatedAssignmentIn = when (exam) {
+            Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
+            Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
+            Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + nameSuffix)
+        }
+        return updatedAssignmentIn
     }
 
     @TestFactory
     @WithYllapitajaRole
-    fun `get all versions and a certain version of assignment for different exams`(): Stream<DynamicTest> =
-        Exam.entries.asSequence().asStream().map { exam ->
+    fun `get all versions and a certain version of assignment for different exams`(): List<DynamicTest> =
+        Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam get all versions and a certain version of assignment") {
-                val createdAssignment = when (exam!!) {
-                    Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn)
-                    Exam.LD -> createAssignment<LdAssignmentDtoOut>(minimalLdAssignmentIn)
-                    Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(minimalPuhviAssignmentIn)
-                }
+                val createdAssignment = createMinimalAssignmentByExam(exam)
 
                 val assignments = (1..4).map { index ->
-                    when (exam) {
-                        Exam.SUKO -> minimalSukoAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
-                        Exam.LD -> minimalLdAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
-                        Exam.PUHVI -> minimalPuhviAssignmentIn.copy(nameFi = createdAssignment.nameFi + " updated$index")
-                    }
+                    updatedMinimalAssignmentInByExam(exam, createdAssignment, " updated$index")
                 }
 
                 assignments.forEach { assignment ->
-                    updateAssignment(
+                    createNewVersionOfAssignment(
                         createdAssignment.id,
                         assignment
                     )
@@ -355,11 +325,7 @@ class AssignmentControllerTest : AssignmentRequests() {
 
                 assignments.forEachIndexed { index, assignment ->
                     val indexOfVersion = index + 2
-                    val assignmentById = when (exam) {
-                        Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
-                        Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
-                        Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(createdAssignment.id, indexOfVersion)
-                    }
+                    val assignmentById = getAssignmentByIdByExam(exam, createdAssignment.id, indexOfVersion)
                     assertCommonFieldsBetweenInAndOutEqual(assignment, assignmentById)
                 }
 
@@ -370,7 +336,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                     assignmentVersions.forEachIndexed { index, assignment ->
                         assertThat(assignment.updaterName).isEqualTo(expectedUpdaterName)
                         if (index == 0) {
-                            assertCommonFieldsBetweenInAndOutEqual(getMinimalAssignmentInByExam(exam), assignment)
+                            assertCommonFieldsBetweenInAndOutEqual(minimalAssignmentIn(exam), assignment)
                         } else {
                             assertCommonFieldsBetweenInAndOutEqual(assignments[index - 1], assignment)
                         }
@@ -397,7 +363,7 @@ class AssignmentControllerTest : AssignmentRequests() {
             assertThat(response.status).`as`("missing ${field.name} yields bad request")
                 .isEqualTo(HttpStatus.SC_BAD_REQUEST)
             if (field.name == "exam") {
-                assertThat(response.contentAsString).contains("Invalid type: JSON parse error: Could not resolve subtype of [simple type, class fi.oph.ludos.assignment.Assignment]: missing type id property 'exam'")
+                assertThat(response.contentAsString).contains("Invalid type: JSON parse error: Could not resolve subtype of [simple type, class fi.oph.ludos.assignment.AssignmentIn]: missing type id property 'exam'")
                     .`as`("missing ${field.name} yields proper error message")
             } else {
                 assertThat(response.contentAsString).contains("property ${field.name} due to missing")
@@ -506,7 +472,12 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun sukoAssignmentUpdateFailsWhenIdDoesNotExist() {
         val nonExistentId = -1
         val errorMessage =
-            mockMvc.perform(updateAssignmentReq(nonExistentId, mapper.writeValueAsString(minimalSukoAssignmentIn)))
+            mockMvc.perform(
+                createNewVersionOfAssignmentReq(
+                    nonExistentId,
+                    mapper.writeValueAsString(minimalSukoAssignmentIn)
+                )
+            )
                 .andExpect(status().isNotFound).andReturn().response.contentAsString
         assertThat(errorMessage).isEqualTo("Assignment $nonExistentId not found")
     }
@@ -583,7 +554,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @WithYllapitajaRole
     fun `assignment not found on UPDATE`() {
         val updateResult = mockMvc.perform(
-            updateAssignmentReq(
+            createNewVersionOfAssignmentReq(
                 999,
                 mapper.writeValueAsString(minimalSukoAssignmentIn)
             )
@@ -610,7 +581,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `create and update with insufficient role`() {
         val testAssignmentStr = mapper.writeValueAsString(minimalSukoAssignmentIn)
         mockMvc.perform(createAssignmentReq(testAssignmentStr)).andExpect(status().isUnauthorized())
-        mockMvc.perform(updateAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
+        mockMvc.perform(createNewVersionOfAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
     }
 
     @Test
@@ -618,7 +589,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `test deleting a assignment`() {
         val assignmentId = createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn).id
 
-        updateAssignment(
+        createNewVersionOfAssignment(
             assignmentId,
             minimalSukoAssignmentIn.copy(publishState = TestPublishState.DELETED)
         )
@@ -651,4 +622,67 @@ class AssignmentControllerTest : AssignmentRequests() {
         """.trimIndent()
         createAssignment<SukoAssignmentDtoOut>(minimalSukoAssignmentIn.copy(contentFi = listOf(validContentFi)))
     }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring current version yields 400`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                val errorMessage =
+                    mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
+                        .andExpect(status().isBadRequest).andReturn().response.contentAsString
+                assertEquals("Cannot restore latest version", errorMessage)
+            }
+        }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring non-existent assignment id yields 404`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                mockMvc.perform(restoreAssignmentReq(exam, -1, 1))
+                    .andExpect(status().isNotFound)
+            }
+        }
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring non-existent version yields 404`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, -1))
+                    .andExpect(status().isNotFound)
+            }
+        }
+
+
+    @TestFactory
+    @WithYllapitajaRole
+    fun `restoring an old version creates a new version`() =
+        Exam.entries.map { exam ->
+            DynamicTest.dynamicTest("$exam") {
+                val createdAssignment = createMinimalAssignmentByExam(exam)
+                createNewVersionOfAssignment(
+                    createdAssignment.id,
+                    updatedMinimalAssignmentInByExam(exam, createdAssignment)
+                )
+                val updatedAssignmentById = getAssignmentByIdByExam(exam, createdAssignment.id)
+                assertNotEquals(createdAssignment.nameFi, updatedAssignmentById.nameFi)
+
+                val versionsBeforeRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
+                assertEquals(2, versionsBeforeRestore.size)
+
+                mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
+                    .andExpect(status().isOk)
+                val versionsAfterRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
+                val latestVersionById = getAssignmentByIdByExam(exam, createdAssignment.id)
+                assertEquals(3, versionsAfterRestore.size)
+                assertEquals(versionsAfterRestore.last().version, latestVersionById.version)
+                assertEquals(3, latestVersionById.version)
+
+                assertEquals(createdAssignment.nameFi, latestVersionById.nameFi)
+            }
+        }
 }

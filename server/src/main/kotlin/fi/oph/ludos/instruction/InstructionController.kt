@@ -6,6 +6,7 @@ import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.Part
 import jakarta.validation.Valid
 import org.springframework.core.io.InputStreamResource
@@ -22,9 +23,10 @@ class InstructionController(val service: InstructionService, private val objectM
     @PostMapping("")
     @RequireAtLeastYllapitajaRole
     fun createInstruction(
-        @Valid @RequestPart("instruction") instruction: Instruction,
+        @Valid @RequestPart("instruction") instruction: InstructionIn,
         @RequestPart("attachments", required = false) attachments: List<MultipartFile>?,
-        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?
+        @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?,
+        request: HttpServletRequest
     ): InstructionOut? {
         val nonNullAttachments = attachments ?: emptyList()
         val nonNullAttachmentsMetadata = attachmentsMetadata ?: emptyList()
@@ -33,17 +35,18 @@ class InstructionController(val service: InstructionService, private val objectM
         val attachmentMetadataDeserialized = deserializeAttachmentsMetadata(nonNullAttachmentsMetadata)
         val attachmentIns = createAttachmentIns(nonNullAttachments, attachmentMetadataDeserialized)
 
-        return service.createInstruction(instruction, attachmentIns)
+        return service.createInstruction(instruction, attachmentIns, request)
     }
 
     @PutMapping("/{id}")
     @RequireAtLeastYllapitajaRole
     fun createNewVersionOfInstruction(
         @PathVariable("id") id: Int,
-        @Valid @RequestPart("instruction") instruction: Instruction,
+        @Valid @RequestPart("instruction") instruction: InstructionIn,
         @RequestPart("attachments-metadata", required = false) attachmentsMetadata: List<Part>?,
         @RequestPart("new-attachments", required = false) newAttachments: List<MultipartFile>?,
-        @RequestPart("new-attachments-metadata", required = false) newAttachmentsMetadata: List<Part>?
+        @RequestPart("new-attachments-metadata", required = false) newAttachmentsMetadata: List<Part>?,
+        request: HttpServletRequest
     ): Int? {
         val attachmentsMetadataDeserialized = deserializeAttachmentsMetadata(attachmentsMetadata)
         validateExistingAttachmentsMetadata(attachmentsMetadataDeserialized)
@@ -56,10 +59,16 @@ class InstructionController(val service: InstructionService, private val objectM
 
         val newAttachmentIns = createAttachmentIns(newNonNullAttachments, newAttachmentMetadataDeserialized)
 
-        val updatedInstructionId =
-            service.createNewVersionOfInstruction(id, instruction, attachmentsMetadataDeserialized, newAttachmentIns)
+        val createdVersion =
+            service.createNewVersionOfInstruction(
+                id,
+                instruction,
+                attachmentsMetadataDeserialized,
+                newAttachmentIns,
+                request
+            )
 
-        return updatedInstructionId ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction $id not found")
+        return createdVersion ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Instruction $id not found")
     }
 
     private fun createAttachmentIns(
@@ -117,7 +126,12 @@ class InstructionController(val service: InstructionService, private val objectM
             "Instruction $id not found"
         )
 
-    @GetMapping("{exam}/{id}/{version}")
+    @GetMapping("/{exam}/{id}/versions")
+    @RequireAtLeastYllapitajaRole
+    fun getAllVersionsOfInstruction(@PathVariable exam: Exam, @PathVariable id: Int): List<InstructionOut> =
+        service.getAllVersionsOfInstruction(exam, id)
+
+    @GetMapping("/{exam}/{id}/{version}")
     @RequireAtLeastYllapitajaRole
     fun getInstructionVersion(
         @PathVariable exam: Exam,
@@ -128,10 +142,18 @@ class InstructionController(val service: InstructionService, private val objectM
         "Instruction $id or its version $version not found"
     )
 
-    @GetMapping("{exam}/{id}/versions")
+    @PostMapping("/{exam}/{id}/{version}/restore")
     @RequireAtLeastYllapitajaRole
-    fun getAllVersionsOfInstruction(@PathVariable exam: Exam, @PathVariable id: Int): List<InstructionOut> =
-        service.getAllVersionsOfInstruction(exam, id)
+    fun restoreOldVersionOfInstruction(
+        @PathVariable exam: Exam,
+        @PathVariable id: Int,
+        @PathVariable version: Int,
+        request: HttpServletRequest
+    ): Int = service.restoreOldVersionOfInstruction(exam, id, version, request)
+        ?: throw ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "$exam instruction $id or its version $version not found"
+        )
 
     fun attachmentResponse(attachmentKey: String, version: Int?): ResponseEntity<InputStreamResource> {
         val (uploadFile, attachmentInputStream) = service.getAttachment(attachmentKey, version)

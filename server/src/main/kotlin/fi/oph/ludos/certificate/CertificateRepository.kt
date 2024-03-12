@@ -6,8 +6,8 @@ import fi.oph.ludos.INITIAL_VERSION_NUMBER
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
-import fi.oph.ludos.s3.Bucket
-import fi.oph.ludos.s3.S3Helper
+import fi.oph.ludos.aws.Bucket
+import fi.oph.ludos.aws.S3Helper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.dao.EmptyResultDataAccessException
@@ -44,8 +44,8 @@ class CertificateRepository(
     }!!
 
     fun createSukoCertificate(
-        attachment: MultipartFile,
-        certificateDtoIn: SukoCertificateDtoIn
+        certificateDtoIn: SukoCertificateDtoIn,
+        attachment: MultipartFile
     ): SukoCertificateDtoOut = createSukoCertificate(attachment) { createdAttachment ->
         jdbcTemplate.query(
             """
@@ -104,9 +104,9 @@ class CertificateRepository(
     }!!
 
     fun createLdCertificate(
+        certificateDtoIn: LdCertificateDtoIn,
         attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile,
-        certificateDtoIn: LdCertificateDtoIn
+        attachmentSv: MultipartFile
     ): LdCertificateDtoOut =
         createCertificate(attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(
@@ -156,9 +156,9 @@ class CertificateRepository(
         }
 
     fun createPuhviCertificate(
+        certificateDtoIn: PuhviCertificateDtoIn,
         attachmentFi: MultipartFile,
-        attachmentSv: MultipartFile,
-        certificateDtoIn: PuhviCertificateDtoIn
+        attachmentSv: MultipartFile
     ): PuhviCertificateDtoOut =
         createCertificate(attachmentFi, attachmentSv) { createdAttachmentFi, createdAttachmentSv ->
             jdbcTemplate.query(
@@ -661,9 +661,9 @@ class CertificateRepository(
             getCertificateById(id, certificateDtoIn.exam, attachmentSource.leftOrNull()) ?: return@execute null
         val attachmentKeys = getCurrentOrNewAttachmentKeys(attachmentSourceCertificate, attachmentSource)
 
-        val newVersion = latestAssignmentVersion + 1
-        updateCertificateRow(attachmentKeys, newVersion, author)
+        val versionToCreate = latestAssignmentVersion + 1
+        updateCertificateRow(attachmentKeys, versionToCreate, author)
 
-        return@execute id
+        return@execute versionToCreate
     }
 }

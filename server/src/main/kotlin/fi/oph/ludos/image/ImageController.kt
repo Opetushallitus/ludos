@@ -3,6 +3,7 @@ package fi.oph.ludos.image
 import fi.oph.ludos.Constants
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpStatus
@@ -19,18 +20,12 @@ import java.time.Duration
 class ImageController(val service: ImageService) {
     @PostMapping("")
     @RequireAtLeastYllapitajaRole
-    fun uploadImage(@RequestPart("file") file: MultipartFile): ImageDtoOut {
+    fun uploadImage(@RequestPart("file") file: MultipartFile, request: HttpServletRequest): ImageDtoOut {
         if (file.originalFilename == "this-will-fail.png") {
             throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "Failed successfully :)")
         }
 
-        val allowedMimeTypes = setOf("image/jpeg", "image/png", "image/gif", "image/svg+xml")
-
-        if (!allowedMimeTypes.contains(file.contentType)) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file type: ${file.contentType}")
-        }
-
-        return service.uploadImage(file)
+        return service.uploadImage(file, request)
     }
 
     @GetMapping("{fileKey}")

@@ -1,4 +1,4 @@
-package fi.oph.ludos.s3
+package fi.oph.ludos.aws
 
 import jakarta.annotation.PostConstruct
 import org.slf4j.Logger

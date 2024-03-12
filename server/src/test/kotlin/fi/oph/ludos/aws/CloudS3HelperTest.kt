@@ -1,4 +1,4 @@
-package fi.oph.ludos.s3
+package fi.oph.ludos.aws
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll

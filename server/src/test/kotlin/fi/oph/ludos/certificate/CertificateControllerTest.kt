@@ -2,7 +2,7 @@ package fi.oph.ludos.certificate
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.*
-import fi.oph.ludos.auth.OppijanumeroRekisteriHenkilo
+import fi.oph.ludos.auth.OppijanumerorekisteriHenkilo
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions
@@ -91,7 +91,7 @@ class CertificateControllerTest : CertificateRequests() {
     @BeforeEach
     fun setupMocks() {
         Mockito.`when`(mockOppijanumerorekisteriClient.getUserDetailsByOid(anyString()))  // when does not work inside BeforeAll
-            .thenReturn(OppijanumeroRekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
+            .thenReturn(OppijanumerorekisteriHenkilo(YllapitajaSecurityContextFactory().kayttajatiedot()))
     }
 
     private fun validateFileKey(fileKey: String) =
@@ -428,7 +428,7 @@ class CertificateControllerTest : CertificateRequests() {
                 .andReturn().response.contentAsString
         assertThat(
             postResponseBody,
-            CoreMatchers.containsString("Invalid type: JSON parse error: Could not resolve type id 'WRONG' as a subtype of `fi.oph.ludos.certificate.Certificate`: known type ids = [LD, PUHVI, SUKO]")
+            CoreMatchers.containsString("Invalid type: JSON parse error: Could not resolve type id 'WRONG' as a subtype of `fi.oph.ludos.certificate.CertificateIn`: known type ids = [LD, PUHVI, SUKO]")
         )
     }
 

@@ -73,6 +73,10 @@ abstract class AssignmentRequests {
         Exam.LD -> minimalLdAssignmentIn
     }
 
+    fun createMinimalAssignmentByExam(exam: Exam): AssignmentOut =
+        createAssignmentByExam(exam, minimalAssignmentIn(exam))
+
+
     fun examByAssignmentOutClass(assignmentOutClass: KClass<out AssignmentOut>): Exam =
         when (assignmentOutClass) {
             SukoAssignmentDtoOut::class -> Exam.SUKO
@@ -101,6 +105,12 @@ abstract class AssignmentRequests {
 
         val responseBody = mockMvc.perform(req).andExpect(status().isOk).andReturn().response.contentAsString
         return mapper.readValue(responseBody)
+    }
+
+    fun createAssignmentByExam(exam: Exam, assignmentIn: TestAssignmentIn): AssignmentOut = when (exam) {
+        Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(assignmentIn)
+        Exam.LD -> createAssignment<LdAssignmentDtoOut>(assignmentIn)
+        Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(assignmentIn)
     }
 
     fun assertThatCreateInvalidAssignmentError(assignmentIn: TestAssignmentIn): AbstractStringAssert<*> {
@@ -136,16 +146,26 @@ abstract class AssignmentRequests {
         return mapper.readValue(getUpdatedByIdStr)
     }
 
-    fun updateAssignmentReq(id: Int, body: String) =
+    fun getAssignmentByIdByExam(
+        exam: Exam,
+        id: Int,
+        version: Int? = null
+    ): AssignmentOut = when (exam) {
+        Exam.SUKO -> getAssignmentById<SukoAssignmentDtoOut>(id, version)
+        Exam.LD -> getAssignmentById<LdAssignmentDtoOut>(id, version)
+        Exam.PUHVI -> getAssignmentById<PuhviAssignmentDtoOut>(id, version)
+    }
+
+    fun createNewVersionOfAssignmentReq(id: Int, body: String) =
         MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
-    fun updateAssignment(
+    fun createNewVersionOfAssignment(
         id: Int,
         testAssignmentIn: TestAssignmentIn,
         user: RequestPostProcessor = yllapitajaUser
     ): String {
-        val builder = updateAssignmentReq(id, mapper.writeValueAsString(testAssignmentIn)).with(user)
+        val builder = createNewVersionOfAssignmentReq(id, mapper.writeValueAsString(testAssignmentIn)).with(user)
 
         return mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
     }
@@ -175,6 +195,13 @@ abstract class AssignmentRequests {
                 .andReturn().response.contentAsString
         return mapper.readValue<List<T>>(responseContent)
     }
+
+    fun getAllAssignmentVersionsByExam(exam: Exam, id: Int) = when (exam) {
+        Exam.SUKO -> getAllAssignmentVersions<SukoAssignmentDtoOut>(id)
+        Exam.LD -> getAllAssignmentVersions<LdAssignmentDtoOut>(id)
+        Exam.PUHVI -> getAllAssignmentVersions<PuhviAssignmentDtoOut>(id)
+    }
+
 
     private fun getSukoAssignmentsReq(filter: SukoFilters): MockHttpServletRequestBuilder {
         val uriBuilder = UriComponentsBuilder.fromPath("${Constants.API_PREFIX}/assignment/${Exam.SUKO}")
@@ -231,6 +258,15 @@ abstract class AssignmentRequests {
             .andReturn().response.contentAsString
 
         return mapper.readValue(assignmentsString)
+    }
+
+    fun restoreAssignmentReq(
+        exam: Exam,
+        id: Int,
+        version: Int
+    ): MockHttpServletRequestBuilder {
+        val url = "${Constants.API_PREFIX}/assignment/$exam/$id/$version/restore"
+        return MockMvcRequestBuilders.post(url)
     }
 
     fun createFavoriteFolderReq(exam: Exam, body: String) =

@@ -1,25 +1,96 @@
 package fi.oph.ludos.assignment
 
-import fi.oph.ludos.Exam
+import fi.oph.ludos.*
 import fi.oph.ludos.auth.OppijanumerorekisteriClient
+import jakarta.servlet.ServletRequest
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class AssignmentService(
     val repository: AssignmentRepository,
     val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 ) {
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
+
     fun getAssignments(filters: AssignmentBaseFilters): AssignmentListDtoOut = repository.getAssignments(filters)
 
-    fun createAssignment(assignment: Assignment): AssignmentOut = when (assignment) {
-        is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
-        is PuhviAssignmentDtoIn -> repository.savePuhviAssignment(assignment)
-        is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
-        else -> throw UnknownError("Unreachable")
+    fun createAssignment(assignment: AssignmentIn, request: ServletRequest?): AssignmentOut {
+        val createdAssignment = when (assignment) {
+            is SukoAssignmentDtoIn -> repository.saveSukoAssignment(assignment)
+            is PuhviAssignmentDtoIn -> repository.savePuhviAssignment(assignment)
+            is LdAssignmentDtoIn -> repository.saveLdAssignment(assignment)
+        }
+        auditLogger.atInfo().addLudosUserInfo()
+            .addUserIp(request)
+            .addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(createdAssignment))
+            .log("Created assignment")
+        return createdAssignment
+    }
+
+    fun createNewVersionOfAssignment(id: Int, assignment: AssignmentIn, request: ServletRequest): Int? {
+        val createdAssignment = when (assignment) {
+            is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(id, assignment)
+            is LdAssignmentDtoIn -> repository.createNewVersionOfLdAssignment(id, assignment)
+            is PuhviAssignmentDtoIn -> repository.createNewVersionOfPuhviAssignment(id, assignment)
+        }
+        if (createdAssignment != null) {
+            auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("assignment", AssignmentCardOut.fromAssignmentOut(createdAssignment))
+                .log("Created new version of assignment")
+        } else {
+            auditLogger.atError().addUserIp(request).addLudosUserInfo()
+                .addKeyValue("assignmentId", id)
+                .log("Tried to create new version of non-existent assignment")
+        }
+
+        return createdAssignment?.id
+    }
+
+    fun restoreOldVersionOfAssignment(
+        exam: Exam,
+        id: Int,
+        version: Int,
+        request: ServletRequest
+    ): Int? {
+        val assignmentToRestore = repository.getAssignmentsByIds(exam, listOf(id), version).firstOrNull() ?: return null
+
+        val latestVersion = repository.getAssignmentsByIds(exam, listOf(id), null).first()
+        if (version == latestVersion.version) {
+            auditLogger.atWarn().addUserIp(request).addLudosUserInfo()
+                .addKeyValue(
+                    "restoreVersionInfo",
+                    RestoreVersionInfoForLogging(exam, id, version, null)
+                )
+                .log("Tried to restore latest version of assignment")
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot restore latest version")
+        }
+
+        val newAssignmentVersion = when (assignmentToRestore) {
+            is SukoAssignmentDtoOut ->
+                repository.createNewVersionOfSukoAssignment(id, SukoAssignmentDtoIn(assignmentToRestore))
+
+            is LdAssignmentDtoOut ->
+                repository.createNewVersionOfLdAssignment(id, LdAssignmentDtoIn(assignmentToRestore))
+
+            is PuhviAssignmentDtoOut ->
+                repository.createNewVersionOfPuhviAssignment(id, PuhviAssignmentDtoIn(assignmentToRestore))
+        }
+
+        auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+            .addKeyValue(
+                "restoreVersionInfo",
+                RestoreVersionInfoForLogging(exam, id, version, newAssignmentVersion!!.version)
+            ).log("Restored old version of assignment")
+
+        return newAssignmentVersion.id
     }
 
     fun getAssignmentById(exam: Exam, id: Int, version: Int?): AssignmentOut? =
-        repository.getAssignmentsByIds(listOf(id), exam, version).firstOrNull()
+        repository.getAssignmentsByIds(exam, listOf(id), version).firstOrNull()
 
     fun getAllVersionsOfAssignment(exam: Exam, id: Int): List<AssignmentOut> =
         addUpdaterNames(repository.getAllVersionsOfAssignment(id, exam))
@@ -35,13 +106,6 @@ class AssignmentService(
                 is PuhviAssignmentDtoOut -> it.copy(updaterName = updaterName)
             }
         }
-    }
-
-    fun createNewVersionOfAssignment(id: Int, assignment: Assignment): Int? = when (assignment) {
-        is SukoAssignmentDtoIn -> repository.createNewVersionOfSukoAssignment(assignment, id)
-        is PuhviAssignmentDtoIn -> repository.createNewVersionOfPuhviAssignment(assignment, id)
-        is LdAssignmentDtoIn -> repository.createNewVersionOfLdAssignment(assignment, id)
-        else -> throw UnknownError("Unreachable")
     }
 
     fun getFavoriteAssignmentsCount(): Int = repository.getFavoriteAssignmentsCount()

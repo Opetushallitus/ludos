@@ -4,7 +4,3 @@ ludos:
   instruction-bucket-name: ludos-application-instruction-bucket-qa
   certificate-bucket-name: ludos-application-certificate-bucket-qa
   image-bucket-name: ludos-application-image-bucket-qa
-
-server:
-  tomcat:
-      pattern: "%{X-Forwarded-For}i %l %u %t \"%r\" %s %b"

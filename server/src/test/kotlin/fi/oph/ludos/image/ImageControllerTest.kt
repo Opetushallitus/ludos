@@ -30,16 +30,19 @@ class ImageControllerTest : ImageRequests() {
     val fileKeyRegex = "^image_[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$".toRegex()
 
     private final val filePathToPdf: Path = Paths.get("src/main/resources/fixtures/fixture1.pdf")
+    private final val filePathToGif: Path = Paths.get("src/main/resources/fixtures/test-image.gif")
+    private final val filePathToJpg: Path = Paths.get("src/main/resources/fixtures/test-image.jpg")
     private final val filePathToPng: Path = Paths.get("src/main/resources/fixtures/test-image.png")
+    private final val filePathToSvg: Path = Paths.get("src/main/resources/fixtures/test-image.svg")
 
     private fun validateImageKey(fileKey: String) =
         assertTrue(fileKey.matches(fileKeyRegex), "Invalid fileKey: $fileKey")
 
     val supportedFiles = listOf(
+        MockMultipartFile("file", "test-image.gif", MediaType.IMAGE_GIF_VALUE, Files.readAllBytes(filePathToGif)),
+        MockMultipartFile("file", "test-image.jpg", MediaType.IMAGE_JPEG_VALUE, Files.readAllBytes(filePathToJpg)),
         MockMultipartFile("file", "test-image.png", MediaType.IMAGE_PNG_VALUE, Files.readAllBytes(filePathToPng)),
-        MockMultipartFile("file", "test-image.jpg", MediaType.IMAGE_PNG_VALUE, Files.readAllBytes(filePathToPng)),
-        MockMultipartFile("file", "test-image.svg", MediaType.IMAGE_PNG_VALUE, Files.readAllBytes(filePathToPng)),
-        MockMultipartFile("file", "test-image.gif", MediaType.IMAGE_PNG_VALUE, Files.readAllBytes(filePathToPng))
+        MockMultipartFile("file", "test-image.svg", "image/svg+xml", Files.readAllBytes(filePathToSvg))
     )
 
     @TestFactory

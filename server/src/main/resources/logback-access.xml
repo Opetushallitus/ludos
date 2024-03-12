@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.AccessEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <version/>
+                <pattern>
+                    <pattern>
+                        {
+                        "message": "%requestMethod %requestURI returned %statusCode in %elapsedTime ms"
+                        }
+                    </pattern>
+                </pattern>
+                <method/>
+                <requestedUri/>
+                <statusCode/>
+                <elapsedTime/>
+                <remoteHost/>
+                <provider class="fi.oph.ludos.RealRemoteHostProvider"/>
+                <pattern>
+                    <pattern>
+                        {
+                        "type": "access",
+                        "level": "INFO",
+                        "level_value": 21000,
+                        "user_agent": "%i{User-Agent}",
+                        "x_forwarded_for": "%i{X-Forwarded-For}",
+                        "correlation_id": "%reqAttribute{correlation_id}"
+                        }
+                    </pattern>
+                </pattern>
+            </providers>
+        </encoder>
+    </appender>
+
+    <appender-ref ref="STDOUT" />
+</configuration>

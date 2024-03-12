@@ -14,7 +14,7 @@ type ModalProps = {
   onClose: (refresh?: boolean) => void
   versionList: ContentBaseOut[]
   contentType: ContentType
-  restoreOldVersion: (data: ContentBaseOut) => Promise<void>
+  restoreOldVersion: (data: ContentBaseOut) => Promise<any>
 }
 export const VersionHistoryViewerModal = ({
   open,

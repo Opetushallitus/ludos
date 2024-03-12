@@ -1,8 +1,12 @@
 package fi.oph.ludos.image
 
+import fi.oph.ludos.AUDIT_LOGGER_NAME
 import fi.oph.ludos.Constants
-import fi.oph.ludos.s3.Bucket
-import fi.oph.ludos.s3.S3Helper
+import fi.oph.ludos.addLudosUserInfo
+import fi.oph.ludos.addUserIp
+import fi.oph.ludos.aws.Bucket
+import fi.oph.ludos.aws.S3Helper
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -17,8 +21,15 @@ import java.util.*
 @Service
 class ImageService(val s3Helper: S3Helper) {
     val logger: Logger = LoggerFactory.getLogger(javaClass)
+    val auditLogger: Logger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
+    val allowedMimeTypes = setOf("image/gif", "image/jpeg", "image/png", "image/svg+xml")
 
-    fun uploadImage(file: MultipartFile): ImageDtoOut {
+    fun uploadImage(file: MultipartFile, request: HttpServletRequest): ImageDtoOut {
+
+        if (!allowedMimeTypes.contains(file.contentType)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid file type: ${file.contentType}")
+        }
+
         val fileKey = "image_${UUID.randomUUID()}"
 
         try {
@@ -28,6 +39,13 @@ class ImageService(val s3Helper: S3Helper) {
             logger.error(errorMsg, ex)
             throw ResponseStatusException(HttpStatus.BAD_GATEWAY, errorMsg)
         }
+
+        auditLogger.atInfo().addUserIp(request).addLudosUserInfo()
+            .addKeyValue("originalFilename", file.originalFilename)
+            .addKeyValue("contentType", file.contentType)
+            .addKeyValue("sizeBytes", file.size)
+            .addKeyValue("fileKey", fileKey)
+            .log("Uploaded image")
 
         return ImageDtoOut(
             "${Constants.API_PREFIX}/image/${fileKey}",
