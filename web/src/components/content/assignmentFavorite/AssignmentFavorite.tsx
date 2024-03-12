@@ -30,7 +30,7 @@ export const AssignmentFavorite = () => {
   }
 
   return (
-    <div className="pt-3">
+    <div className="min-h-[80vh] mt-10">
       <h2 className="mb-3" data-testid="favorite-page-heading">
         {t('favorite.suosikkitehtavat')}
       </h2>
