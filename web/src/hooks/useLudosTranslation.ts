@@ -169,6 +169,12 @@ export const useLudosTranslation = () => {
       [AddToFavoriteOptions.FAVORITES]: t('favorite.lisaa-suosikiksi-paatasolle'),
       [AddToFavoriteOptions.FOLDER]: t('favorite.lisaa-kansioon'),
       [AddToFavoriteOptions.NEW_FOLDER]: t('favorite.lisaa-uuteen-kansioon-paatasolle')
+    },
+    headerRoleTexts: {
+      YLLAPITAJA: t('header.yllapitaja'),
+      OPETTAJA: t('header.opettaja'),
+      LAATIJA: t('header.laatija'),
+      UNAUTHORIZED: t('header.luvaton')
     }
   }
 

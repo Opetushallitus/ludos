@@ -12,7 +12,7 @@ import { HeaderLogoutButton } from './HeaderLogoutButton'
 import { Language } from '../../types'
 
 export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
-  const { LANGUAGE_DROPDOWN, t } = useLudosTranslation()
+  const { LANGUAGE_DROPDOWN, t, lt } = useLudosTranslation()
   const { firstNames, lastName, role } = useUserDetails()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { uiLanguage, setUiLanguage } = useContext(LudosContext)
@@ -31,8 +31,8 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                 <Header onClick={toggleMenu} />
               </div>
               <div className="bg-white p-3">
-                <p className="font-semibold">{`${firstNames} ${lastName}` || ''}</p>
-                <p className="text-gray-secondary">{role}</p>
+                <p className="font-semibold">{`${firstNames} ${lastName}`}</p>
+                <p className="text-gray-secondary">{role && lt.headerRoleTexts[role]}</p>
               </div>
 
               <nav className="flex h-full flex-col bg-white">
