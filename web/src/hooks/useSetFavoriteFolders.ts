@@ -1,34 +1,27 @@
-import { useTranslation } from 'react-i18next'
-import { useContext } from 'react'
-import { LudosContext } from '../contexts/LudosContext'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { setAssignmentFavorite } from '../request'
 import { FavoriteToggleModalFormType } from '../components/modal/favoriteModal/favoriteToggleModalFormSchema'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FAVORITE_COUNT_QUERY_KEY } from '../contexts/LudosContextProvider'
 import { useLudosTranslation } from './useLudosTranslation'
 
-interface UseToggleFavoriteProps {
-  refreshData?: () => void
-}
-
-export function useSetFavoriteFolders({ refreshData }: UseToggleFavoriteProps) {
+export function useSetFavoriteFolders(refresh: () => void) {
   const { t } = useLudosTranslation()
-  const { setUserFavoriteAssignmentCount } = useContext(LudosContext)
   const { setNotification } = useNotification()
+  const queryClient = useQueryClient()
 
-  const setFavoriteFolders = async (data: FavoriteToggleModalFormType) => {
-    try {
-      const totalFavoriteCount = await setAssignmentFavorite(data)
-      setUserFavoriteAssignmentCount(totalFavoriteCount)
+  const { mutateAsync: setFavoriteFolders } = useMutation({
+    mutationFn: (data: FavoriteToggleModalFormType) => setAssignmentFavorite(data),
+    onSuccess: (totalFavoriteCount) => {
+      queryClient.setQueryData(FAVORITE_COUNT_QUERY_KEY, totalFavoriteCount)
       setNotification({
         type: NotificationEnum.success,
         message: t('assignment.notification.suosikki-muokattu')
       })
-    } catch (e) {
-      console.error(e)
-    } finally {
-      refreshData?.()
-    }
-  }
+      refresh()
+    },
+    onError: (error) => console.error(error)
+  })
 
-  return { setFavoriteFolders }
+  return { setFavoriteFolder: setFavoriteFolders }
 }

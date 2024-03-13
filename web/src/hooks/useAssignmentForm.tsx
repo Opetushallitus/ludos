@@ -1,7 +1,7 @@
 import { ContentFormAction, ContentType, ContentTypeSingularEn, Exam, PublishState } from '../types'
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { createAssignment, fetchDataOrReload, createNewVersionOfAssignment } from '../request'
+import { createAssignment, createNewVersionOfAssignment, fetchDataOrReload } from '../request'
 import { FieldPath, PathValue, useForm } from 'react-hook-form'
 import {
   assignmentDefaultValuesByExam,

@@ -1,6 +1,6 @@
 const eslintConfig = {
   plugins: ['prettier', 'react-hooks', 'jsx-a11y'],
-  extends: ['plugin:prettier/recommended', "plugin:jsx-a11y/recommended"],
+  extends: ['plugin:prettier/recommended', "plugin:jsx-a11y/recommended", "plugin:@tanstack/eslint-plugin-query/recommended"],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
@@ -20,7 +20,10 @@ const eslintConfig = {
     'prefer-template': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "@tanstack/query/exhaustive-deps": "error",
+    "@tanstack/query/no-rest-destructuring": "warn",
+    "@tanstack/query/stable-query-client": "error"
   }
 }
 

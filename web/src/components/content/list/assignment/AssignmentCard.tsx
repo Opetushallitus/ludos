@@ -24,23 +24,21 @@ type AssignmentCardProps = {
   teachingLanguage: Language
   assignmentCard: AssignmentCardOut
   favoriteIds: FavoriteIdsDtoOut | undefined
-  favoriteIdsRefresh?: () => void
+  refetchFavoriteIds: () => void
 }
 
 export const AssignmentCard = ({
   teachingLanguage,
   assignmentCard,
   favoriteIds,
-  favoriteIdsRefresh
+  refetchFavoriteIds
 }: AssignmentCardProps) => {
   const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
-  const { setFavoriteFolders } = useSetFavoriteFolders({
-    refreshData: favoriteIdsRefresh
-  })
+  const { setFavoriteFolder } = useSetFavoriteFolders(refetchFavoriteIds)
 
   const isFavorite = (favoriteIds && !!favoriteIds?.folderIdsByAssignmentId[assignmentCard.id]) || false
 
@@ -148,7 +146,7 @@ export const AssignmentCard = ({
           }
           onClose={() => setIsFavoriteModalOpen(false)}
           onSetFavoriteFoldersAction={async (data) => {
-            await setFavoriteFolders(data)
+            await setFavoriteFolder(data)
             setIsFavoriteModalOpen(false)
           }}
         />

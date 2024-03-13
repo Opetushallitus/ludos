@@ -42,7 +42,8 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
   const contentType = ContentType.ASSIGNMENT
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues.filterValues)
 
-  const { data, loading, error } = useFetch<AssignmentsOut>(
+  const { data, isError, isFetching } = useFetch<AssignmentsOut>(
+    ['assignmentsOutFiltered'],
     `${ContentTypeSingularEn[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -50,13 +51,16 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
 
   const {
     data: favoriteIds,
-    error: favoriteIdsError,
-    refresh: favoriteIdsRefresh
-  } = useFetch<FavoriteIdsDtoOut>(`${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}`)
+    isError: isFavoriteIdsError,
+    refetch: refetchFavoriteIds
+  } = useFetch<FavoriteIdsDtoOut>(
+    ['favoriteIds'],
+    `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}`
+  )
 
   const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'FI' : teachingLanguage
 
-  const hasError = error || favoriteIdsError
+  const hasError = isError || isFavoriteIdsError
 
   if (hasError) {
     return <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />
@@ -72,7 +76,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
         assignmentFilterOptions={data?.assignmentFilterOptions ?? emptyAssignmentFilterOptions}
       />
 
-      {loading && <PageLoadingIndicator />}
+      {isFetching && <PageLoadingIndicator />}
 
       {data && (
         <>
@@ -85,7 +89,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
                   assignmentCard={assignment}
                   favoriteIds={favoriteIds}
                   key={`${exam}-${contentType}-${i}`}
-                  favoriteIdsRefresh={favoriteIdsRefresh}
+                  refetchFavoriteIds={refetchFavoriteIds}
                 />
               ))}
           </ul>

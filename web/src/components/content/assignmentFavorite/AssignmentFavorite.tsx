@@ -18,10 +18,11 @@ export const AssignmentFavorite = () => {
 
   const {
     data: favoriteCardFolders,
-    loading: favoriteCardFoldersLoading,
+    isFetching: favoriteCardFoldersLoading,
     error: favoriteCardFoldersError,
-    refresh
+    refetch: favoriteCardFoldersRefetch
   } = useFetch<FavoriteCardFolderDtoOut>(
+    ['favoriteCardFolders'],
     `${ContentTypeSingularEn[contentType]}/favorites/${exam.toLocaleUpperCase()}/cardFolders`
   )
 
@@ -46,7 +47,7 @@ export const AssignmentFavorite = () => {
               exam={exam}
               folderId={folderId!}
               favoriteCardFolders={favoriteCardFolders}
-              refresh={refresh}
+              favoriteCardFoldersRefetch={favoriteCardFoldersRefetch}
             />
           ) : (
             <PageNotFound />

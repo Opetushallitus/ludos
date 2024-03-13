@@ -3,6 +3,7 @@ import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from '
 import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, ImageDtoOut } from './types'
 import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
 import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
+import { LanguageKoodistoMap } from './contexts/LudosContext'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
@@ -69,7 +70,7 @@ export async function fetchDataOrReload<T>(url: string): Promise<T> {
       location.reload()
       throw SessionExpiredFetchError
     } else {
-      throw Error('Unexpected error', { cause: e })
+      throw e
     }
   }
 }
@@ -237,11 +238,21 @@ export async function restoreOldContentVersion(
   return result.json()
 }
 
-export async function getKoodistos(): Promise<Response> {
-  return await doRequest(`${BASE_API_URL}/koodisto`, 'GET')
+export async function getKoodistos(): Promise<LanguageKoodistoMap> {
+  try {
+    const response = await doRequest(`${BASE_API_URL}/koodisto`, 'GET')
+    if (!response.ok) {
+      console.error('Error occurred while fetching koodistos:')
+    }
+
+    return await response.json()
+  } catch (e) {
+    console.error('Error occurred while fetching koodistos:', e)
+    throw e
+  }
 }
 
-export async function getUserDetails(): Promise<Response> {
+export async function getUserDetailsRequest(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
 
@@ -261,8 +272,20 @@ export async function uploadImage(file: File): Promise<ImageDtoOut> {
   return await result.json()
 }
 
-export async function getUserFavoriteCount(): Promise<Response> {
-  return await doRequest(`${ASSIGNMENT_URL}/favorites/count`, 'GET')
+export async function getUserFavoriteCount(): Promise<number> {
+  try {
+    const userFavoriteAssignmentCountResponse = await doRequest(`${ASSIGNMENT_URL}/favorites/count`, 'GET')
+
+    if (userFavoriteAssignmentCountResponse.ok) {
+      return await userFavoriteAssignmentCountResponse.json()
+    } else {
+      console.error('Could not fetch userFavoriteAssignmentCount')
+      return -1
+    }
+  } catch (e) {
+    console.error('Error occurred while fetching userFavoriteAssignmentCount:', e)
+    return -1
+  }
 }
 
 export async function setAssignmentFavorite(data: FavoriteToggleModalFormType): Promise<number> {

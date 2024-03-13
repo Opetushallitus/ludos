@@ -12,14 +12,14 @@ type FolderAndAssignmentListProps = {
   exam: Exam
   favoriteCardFolders: FavoriteCardFolderDtoOut
   currentFavoriteCardFolder: FavoriteCardFolderDtoOut
-  refresh: () => void
+  favoriteCardFoldersRefetch: () => void
 }
 
 export const FolderAndAssignmentList = ({
   exam,
   favoriteCardFolders,
   currentFavoriteCardFolder,
-  refresh
+  favoriteCardFoldersRefetch
 }: FolderAndAssignmentListProps) => {
   const { t } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
@@ -36,7 +36,7 @@ export const FolderAndAssignmentList = ({
             exam={exam}
             favoriteCardFolders={favoriteCardFolders}
             currentFavoriteCardFolder={folder}
-            refresh={refresh}
+            refresh={favoriteCardFoldersRefetch}
             key={i}
           />
         ))}
@@ -50,8 +50,8 @@ export const FolderAndAssignmentList = ({
                   teachingLanguage={languageOverrideIfSukoAssignment}
                   assignmentCard={assignment}
                   favoriteIds={favoriteIdsFromFavoriteCardFolders(favoriteCardFolders)}
+                  refetchFavoriteIds={favoriteCardFoldersRefetch}
                   key={i}
-                  favoriteIdsRefresh={refresh}
                 />
               ))
           ) : (

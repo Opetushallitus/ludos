@@ -203,6 +203,7 @@ export class InstructionFormModel extends FormModel {
       await this.draftButton.click()
     }
 
+    await expect(this.page.getByTestId('assignment-header')).toBeVisible()
     await assertSuccessNotification(this.page, expectedNotification)
   }
 
