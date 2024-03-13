@@ -20,7 +20,6 @@ import org.springframework.web.server.ResponseStatusException
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.util.*
 
 data class AssignmentListMetadata(
     val assignmentFilterOptions: AssignmentFilterOptionsDtoOut,
@@ -256,14 +255,17 @@ class AssignmentRepository(
         return Pair(StringBuilder(query), parameters)
     }
 
-    private fun addLukuvuosiQuery(
-        query: StringBuilder, parameters: MapSqlParameterSource, exam: Exam, lukuvuosi: String?
-    ) {
+    private fun lukuvuosiFilter(
+        exam: Exam, lukuvuosi: String?
+    ): Pair<String, MapSqlParameterSource> {
+        val query = StringBuilder()
+        val parameters = MapSqlParameterSource()
         val lowercaseExam = exam.toString().lowercase()
         if (lukuvuosi != null) {
             query.append(" AND ARRAY[:lukuvuosiKoodiArvo ]::text[] && ${lowercaseExam}_assignment_lukuvuosi_koodi_arvos")
             parameters.addValue("lukuvuosiKoodiArvo", lukuvuosi.split(","))
         }
+        return Pair(query.toString(), parameters)
     }
 
     private fun addOrderClause(query: StringBuilder, orderDirection: String?) {
@@ -295,7 +297,9 @@ class AssignmentRepository(
         }
     }
 
-    private fun addSukoFilters(queryBuilder: StringBuilder, parameters: MapSqlParameterSource, filters: SukoFilters) {
+    private fun sukoFilters(filters: SukoFilters): Pair<String, MapSqlParameterSource> {
+        val parameters = MapSqlParameterSource()
+        val queryBuilder = StringBuilder()
         if (filters.tehtavatyyppisuko != null) {
             val values = filters.tehtavatyyppisuko.split(",")
 
@@ -304,10 +308,7 @@ class AssignmentRepository(
         }
 
         if (filters.oppimaara != null) {
-            val oppimaaras = filters.oppimaara.split(",").map {
-                val parts = it.split(".")
-                Oppimaara(parts[0], parts.elementAtOrNull(1))
-            }
+            val oppimaaras = filters.oppimaara.split(",").map(Oppimaara::fromString)
 
             // Oppimääriä on kolmea eri tyyppiä
             // 1) Oppimäärät, joille ei voi antaa tarkennetta
@@ -361,6 +362,8 @@ class AssignmentRepository(
             queryBuilder.append(" AND suko_assignment_tavoitetaso_koodi_arvo IN (:tavoitetasoKoodiArvo)")
             parameters.addValue("tavoitetasoKoodiArvo", values)
         }
+
+        return Pair(queryBuilder.toString(), parameters)
     }
 
     private fun buildSukoListQuery(
@@ -368,40 +371,26 @@ class AssignmentRepository(
     ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> SukoAssignmentCardDtoOut> {
         val (queryBuilder, parameters) = baseAssignmentListQuery(Exam.SUKO)
 
-        addSukoFilters(queryBuilder, parameters, filters)
+        val (sukoFilterString, sukoFilterParameters) = sukoFilters(filters)
+        parameters.addValues(sukoFilterParameters.values)
+        queryBuilder.append(sukoFilterString)
+
         commonQueryFilters(filters, role, queryBuilder, parameters, noLimit)
 
         return Triple(queryBuilder.toString(), parameters, mapSukoMinimumListResultSet)
     }
 
     private val sukoListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
-        val oppimaaraOptions: SortedSet<Oppimaara> = sortedSetOf()
-        val tehtavatyyppiOptions: SortedSet<String> = sortedSetOf()
-        val aiheOptions: SortedSet<String> = sortedSetOf()
-        val tavoitetaitotasoOptions: SortedSet<String> = sortedSetOf()
-        var totalCount = 0
-
-        while (rs.next()) {
-            totalCount++
-            oppimaaraOptions.add(
-                Oppimaara(
-                    rs.getString("suko_assignment_oppimaara_koodi_arvo"),
-                    rs.getString("suko_assignment_oppimaara_kielitarjonta_koodi_arvo")
-                )
-            )
-            tehtavatyyppiOptions.add(rs.getString("suko_assignment_assignment_type_koodi_arvo"))
-            rs.getKotlinList<String>("suko_assignment_aihe_koodi_arvos").forEach { aiheOptions.add(it) }
-            rs.getString("suko_assignment_tavoitetaso_koodi_arvo")?.let { tavoitetaitotasoOptions.add(it) }
-        }
-
+        rs.next()
+        val oppimaaraPairs = rs.getKotlinList<Array<String?>>("oppimaara_array")
         AssignmentListMetadata(
             assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
-                oppimaara = oppimaaraOptions.toList(),
-                tehtavatyyppi = tehtavatyyppiOptions.toList(),
-                aihe = aiheOptions.toList(),
-                tavoitetaitotaso = tavoitetaitotasoOptions.toList(),
+                oppimaara = oppimaaraPairs.map { Oppimaara(it[0]!!, it[1]) }.sorted(),
+                tehtavatyyppi = rs.getKotlinList("assignment_type_array"),
+                aihe = rs.getKotlinList("aihe_array"),
+                tavoitetaitotaso = rs.getKotlinList("tavoitetaso_array")
             ),
-            totalCount = totalCount
+            totalCount = rs.getInt("filtered_assignment_count")
         )
     }
 
@@ -409,109 +398,43 @@ class AssignmentRepository(
         filters: SukoFilters,
         role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
-        val queryBuilder = StringBuilder(
-            """
-            SELECT
-                a.suko_assignment_aihe_koodi_arvos,
-                a.suko_assignment_assignment_type_koodi_arvo,
-                a.suko_assignment_oppimaara_koodi_arvo,
-                a.suko_assignment_oppimaara_kielitarjonta_koodi_arvo,
-                a.suko_assignment_tavoitetaso_koodi_arvo
-            FROM suko_assignment a
-            WHERE true
-         """.trimIndent()
-        )
-
         val parameters = MapSqlParameterSource()
 
-        addSukoFilters(queryBuilder, parameters, filters)
-        queryBuilder.append(publishStateFilter(role))
-
-        return Triple(queryBuilder.toString(), parameters, sukoListMetadataResultSetExtractor)
-    }
-
-    private val puhviListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
-        val lukuvuosiOptions: SortedSet<String> = sortedSetOf()
-        val tehtavatyyppiOptions: SortedSet<String> = sortedSetOf()
-        var totalCount = 0
-
-        while (rs.next()) {
-            totalCount++
-            tehtavatyyppiOptions.add(rs.getString("puhvi_assignment_assignment_type_koodi_arvo"))
-            rs.getKotlinList<String>("puhvi_assignment_lukuvuosi_koodi_arvos").forEach { lukuvuosiOptions.add(it) }
+        fun buildFilters(filters: SukoFilters): String {
+            val (sukoFilterString, sukoFilterParameters) = sukoFilters(filters)
+            parameters.addValues(sukoFilterParameters.values)
+            return "$sukoFilterString ${publishStateFilter(role)}"
         }
 
-        AssignmentListMetadata(
-            assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
-                lukuvuosi = lukuvuosiOptions.toList(),
-                tehtavatyyppi = tehtavatyyppiOptions.toList()
-            ),
-            totalCount = totalCount
-        )
-    }
-
-    private fun buildPuhviListMetadataQuery(
-        filters: PuhviFilters,
-        role: Role
-    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
-        val queryBuilder = StringBuilder(
+        val query =
             """
-            SELECT
-                a.assignment_laajaalainen_osaaminen_koodi_arvos,
-                a.puhvi_assignment_lukuvuosi_koodi_arvos,
-                a.puhvi_assignment_assignment_type_koodi_arvo
-            FROM puhvi_assignment a
-            WHERE true
-         """.trimIndent()
-        )
+    SELECT
+        (SELECT count(1) FROM suko_assignment a WHERE TRUE ${buildFilters(filters)}) AS filtered_assignment_count,
+        ARRAY(SELECT DISTINCT ARRAY[suko_assignment_oppimaara_koodi_arvo, suko_assignment_oppimaara_kielitarjonta_koodi_arvo] as oppimaara_pairs
+              FROM suko_assignment a WHERE TRUE ${buildFilters(filters.copy(oppimaara = null))}
+              ORDER BY oppimaara_pairs) AS oppimaara_array,
+        ARRAY(SELECT DISTINCT suko_assignment_assignment_type_koodi_arvo
+              FROM suko_assignment a WHERE TRUE ${buildFilters(filters.copy(tehtavatyyppisuko = null))}
+              ORDER BY suko_assignment_assignment_type_koodi_arvo) AS assignment_type_array,
+        ARRAY(SELECT DISTINCT unnest(suko_assignment_aihe_koodi_arvos) as aihe_koodi_arvo
+              FROM suko_assignment a WHERE TRUE ${buildFilters(filters.copy(aihe = null))}
+              ORDER BY aihe_koodi_arvo) AS aihe_array,
+        ARRAY(SELECT DISTINCT suko_assignment_tavoitetaso_koodi_arvo
+              FROM suko_assignment a WHERE TRUE ${buildFilters(filters.copy(tavoitetaitotaso = null))}
+              ORDER BY suko_assignment_tavoitetaso_koodi_arvo) AS tavoitetaso_array
+     """.trimIndent()
 
-        val parameters = MapSqlParameterSource()
-
-        addPuhviFilters(queryBuilder, parameters, filters)
-        queryBuilder.append(publishStateFilter(role))
-        return Triple(queryBuilder.toString(), parameters, puhviListMetadataResultSetExtractor)
-    }
-
-    private fun addPuhviFilters(queryBuilder: StringBuilder, parameters: MapSqlParameterSource, filters: PuhviFilters) {
-        if (filters.tehtavatyyppipuhvi != null) {
-            val values = filters.tehtavatyyppipuhvi.split(",")
-
-            queryBuilder.append(" AND puhvi_assignment_assignment_type_koodi_arvo IN (:puhviAssignmentTypeKoodiArvo)")
-            parameters.addValue("puhviAssignmentTypeKoodiArvo", values)
-        }
-
-        addLukuvuosiQuery(queryBuilder, parameters, Exam.PUHVI, filters.lukuvuosi)
-    }
-
-
-    private fun buildPuhviListQuery(
-        filters: PuhviFilters, role: Role, noLimit: Boolean
-    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentCardDtoOut> {
-        val (queryBuilder, parameters) = baseAssignmentListQuery(Exam.PUHVI)
-
-        addPuhviFilters(queryBuilder, parameters, filters)
-        commonQueryFilters(filters, role, queryBuilder, parameters, noLimit)
-
-        return Triple(queryBuilder.toString(), parameters, mapPuhviMinimumResultSet)
+        return Triple(query, parameters, sukoListMetadataResultSetExtractor)
     }
 
     private val ldListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
-        val lukuvuosiOptions: SortedSet<String> = sortedSetOf()
-        val aineOptions: SortedSet<String> = sortedSetOf()
-        var totalCount = 0
-
-        while (rs.next()) {
-            totalCount++
-            rs.getKotlinList<String>("ld_assignment_lukuvuosi_koodi_arvos").forEach { lukuvuosiOptions.add(it) }
-            aineOptions.add(rs.getString("ld_assignment_aine_koodi_arvo"))
-        }
-
+        rs.next()
         AssignmentListMetadata(
             assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
-                lukuvuosi = lukuvuosiOptions.toList(),
-                aine = aineOptions.toList(),
+                lukuvuosi = rs.getKotlinList("lukuvuosi_array"),
+                aine = rs.getKotlinList("aine_array"),
             ),
-            totalCount = totalCount
+            totalCount = rs.getInt("filtered_assignment_count")
         )
     }
 
@@ -519,25 +442,33 @@ class AssignmentRepository(
         filters: LdFilters,
         role: Role
     ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
-        val queryBuilder = StringBuilder(
-            """
-            SELECT
-                a.assignment_laajaalainen_osaaminen_koodi_arvos,
-                a.ld_assignment_lukuvuosi_koodi_arvos,
-                a.ld_assignment_aine_koodi_arvo
-            FROM ld_assignment a
-            WHERE true
-         """.trimIndent()
-        )
-
         val parameters = MapSqlParameterSource()
 
-        addLdFilters(queryBuilder, parameters, filters)
-        queryBuilder.append(publishStateFilter(role))
-        return Triple(queryBuilder.toString(), parameters, ldListMetadataResultSetExtractor)
+        fun buildFilters(filters: LdFilters): String {
+            val (ldFilterString, ldFilterParameters) = ldFilters(filters)
+            parameters.addValues(ldFilterParameters.values)
+            return "$ldFilterString ${publishStateFilter(role)}"
+        }
+
+        val query =
+            """
+    SELECT
+        (SELECT count(1) FROM ld_assignment a WHERE TRUE ${buildFilters(filters)}) AS filtered_assignment_count,
+        ARRAY(SELECT DISTINCT ld_assignment_aine_koodi_arvo
+              FROM ld_assignment a WHERE TRUE ${buildFilters(filters.copy(aine = null))}
+              ORDER BY ld_assignment_aine_koodi_arvo) AS aine_array,
+        ARRAY(SELECT DISTINCT UNNEST(ld_assignment_lukuvuosi_koodi_arvos) as lukuvuosi
+              FROM ld_assignment a WHERE TRUE ${buildFilters(filters.copy(lukuvuosi = null))}
+              ORDER BY lukuvuosi) AS lukuvuosi_array
+         """.trimIndent()
+
+        return Triple(query, parameters, ldListMetadataResultSetExtractor)
     }
 
-    private fun addLdFilters(queryBuilder: StringBuilder, parameters: MapSqlParameterSource, filters: LdFilters) {
+    private fun ldFilters(filters: LdFilters): Pair<String, MapSqlParameterSource> {
+        val queryBuilder = StringBuilder()
+        val parameters = MapSqlParameterSource()
+
         if (filters.aine != null) {
             val values = filters.aine.split(",")
 
@@ -545,7 +476,11 @@ class AssignmentRepository(
             parameters.addValue("aineKoodiArvo", values)
         }
 
-        addLukuvuosiQuery(queryBuilder, parameters, Exam.LD, filters.lukuvuosi)
+        val (lukuvuosiFilterQuery, lukuvuosiFilterParameters) = lukuvuosiFilter(Exam.LD, filters.lukuvuosi)
+        queryBuilder.append(lukuvuosiFilterQuery)
+        parameters.addValues(lukuvuosiFilterParameters.values)
+
+        return Pair(queryBuilder.toString(), parameters)
     }
 
     private fun buildLdListQuery(
@@ -554,10 +489,82 @@ class AssignmentRepository(
         val (query, parameters) = baseAssignmentListQuery(Exam.LD)
         val queryBuilder = StringBuilder(query)
 
-        addLdFilters(queryBuilder, parameters, filters)
+        val (ldFilterQuery, ldFilterParameters) = ldFilters(filters)
+        queryBuilder.append(ldFilterQuery)
+        parameters.addValues(ldFilterParameters.values)
+
         commonQueryFilters(filters, role, queryBuilder, parameters, noLimit)
 
         return Triple(queryBuilder.toString(), parameters, mapLdMinimumResultSet)
+    }
+
+    private val puhviListMetadataResultSetExtractor: (ResultSet) -> AssignmentListMetadata = { rs: ResultSet ->
+        rs.next()
+        AssignmentListMetadata(
+            assignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                tehtavatyyppi = rs.getKotlinList("assignment_type_array"),
+                lukuvuosi = rs.getKotlinList("lukuvuosi_array"),
+            ),
+            totalCount = rs.getInt("filtered_assignment_count")
+        )
+    }
+
+    private fun buildPuhviListMetadataQuery(
+        filters: PuhviFilters,
+        role: Role
+    ): Triple<String, MapSqlParameterSource, (ResultSet) -> AssignmentListMetadata> {
+        val parameters = MapSqlParameterSource()
+
+        fun buildFilters(filters: PuhviFilters): String {
+            val (puhviFilterString, puhviFilterParameters) = puhviFilters(filters)
+            parameters.addValues(puhviFilterParameters.values)
+            return "$puhviFilterString ${publishStateFilter(role)}"
+        }
+
+        val query = """
+    SELECT
+        (SELECT COUNT(1) FROM puhvi_assignment a WHERE TRUE ${buildFilters(filters)}) AS filtered_assignment_count,
+        ARRAY(SELECT DISTINCT puhvi_assignment_assignment_type_koodi_arvo
+              FROM puhvi_assignment a WHERE TRUE ${buildFilters(filters.copy(tehtavatyyppipuhvi = null))}
+              ORDER BY puhvi_assignment_assignment_type_koodi_arvo) AS assignment_type_array,
+        ARRAY(SELECT DISTINCT UNNEST(puhvi_assignment_lukuvuosi_koodi_arvos) as lukuvuosi
+              FROM puhvi_assignment a WHERE TRUE ${buildFilters(filters.copy(lukuvuosi = null))}
+              ORDER BY lukuvuosi) AS lukuvuosi_array
+     """.trimIndent()
+
+        return Triple(query, parameters, puhviListMetadataResultSetExtractor)
+    }
+
+    private fun puhviFilters(filters: PuhviFilters): Pair<String, MapSqlParameterSource> {
+        val queryBuilder = StringBuilder()
+        val parameters = MapSqlParameterSource()
+        if (filters.tehtavatyyppipuhvi != null) {
+            val values = filters.tehtavatyyppipuhvi.split(",")
+
+            queryBuilder.append(" AND puhvi_assignment_assignment_type_koodi_arvo IN (:puhviAssignmentTypeKoodiArvo)")
+            parameters.addValue("puhviAssignmentTypeKoodiArvo", values)
+        }
+
+        val (lukuvuosiFilterQuery, lukuvuosiFilterParameters) = lukuvuosiFilter(Exam.PUHVI, filters.lukuvuosi)
+        queryBuilder.append(lukuvuosiFilterQuery)
+        parameters.addValues(lukuvuosiFilterParameters.values)
+
+        return Pair(queryBuilder.toString(), parameters)
+    }
+
+
+    private fun buildPuhviListQuery(
+        filters: PuhviFilters, role: Role, noLimit: Boolean
+    ): Triple<String, MapSqlParameterSource, (ResultSet, Int) -> PuhviAssignmentCardDtoOut> {
+        val (queryBuilder, parameters) = baseAssignmentListQuery(Exam.PUHVI)
+
+        val (puhviFilterQuery, puhviFilterParameters) = puhviFilters(filters)
+        queryBuilder.append(puhviFilterQuery)
+        parameters.addValues(puhviFilterParameters.values)
+
+        commonQueryFilters(filters, role, queryBuilder, parameters, noLimit)
+
+        return Triple(queryBuilder.toString(), parameters, mapPuhviMinimumResultSet)
     }
 
     private fun insertAssignmentContent(

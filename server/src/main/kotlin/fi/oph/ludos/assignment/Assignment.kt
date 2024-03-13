@@ -21,6 +21,17 @@ data class Oppimaara(
     val oppimaaraKoodiArvo: String,
     val kielitarjontaKoodiArvo: String? = null
 ) : Comparable<Oppimaara> {
+    companion object {
+        fun fromString(oppimaaraString: String): Oppimaara {
+            val parts = oppimaaraString.split(".")
+            return when (parts.size) {
+                1 -> Oppimaara(parts[0])
+                2 -> Oppimaara(parts[0], parts[1])
+                else -> throw IllegalArgumentException("Invalid oppimaaraString: $oppimaaraString")
+            }
+        }
+    }
+
     override fun compareTo(other: Oppimaara): Int {
         val oppimaaraOrder = oppimaaraKoodiArvo.compareTo(other.oppimaaraKoodiArvo)
         return if (oppimaaraOrder != 0) {
@@ -32,7 +43,6 @@ data class Oppimaara(
         } else {
             kielitarjontaKoodiArvo.compareTo(other.kielitarjontaKoodiArvo)
         }
-
     }
 }
 

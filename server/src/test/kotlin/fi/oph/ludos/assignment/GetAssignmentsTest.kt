@@ -3,6 +3,7 @@ package fi.oph.ludos.assignment
 import fi.oph.ludos.*
 import fi.oph.ludos.test.AssignmentFiltersTestData
 import jakarta.transaction.Transactional
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -110,6 +111,38 @@ class GetAssignmentsTest : AssignmentRequests() {
         testSukoFilterOptions(null, null, null, "0010", "asc", listOf(listOf(12, 24)))
 
         testSukoFilterOptions("TKFIA1", "002", "001", null, "asc", listOf(listOf()))
+
+        val allAssignmentNumbers = listOf(24.downTo(5).toList(), 4.downTo(1).toList())
+        val allOppimaaras = listOf(
+            "TKFIA1",
+            "TKFIAI",
+            "TKFIB1",
+            "TKFIB3",
+            "TKRUAI",
+            "TKRUB1",
+            "TKRUB3",
+            "VKA1.RA",
+            "VKA1.SA",
+            "VKB1",
+            "VKENA1",
+        ).map(Oppimaara::fromString)
+        val allTehtavatyyppis = listOf("001", "002", "003")
+        val allAihes = listOf("001", "003", "005", "007", "013", "017")
+        val allTavoitetaitotasos = listOf(
+            "0001",
+            "0002",
+            "0003",
+            "0004",
+            "0005",
+            "0006",
+            "0007",
+            "0008",
+            "0009",
+            "0010",
+            "0011",
+            "0012",
+        )
+
         testSukoFilterOptions(
             // Kaikki oppimäärät, jotka testidatasta löytyy
             "TKFIA1,TKFIB1,TKFIB3,TKFIAI,TKRUB1,TKRUB3,TKRUAI,VKB1,VKA1.RA,VKA1.SA,VKENA1",
@@ -117,9 +150,12 @@ class GetAssignmentsTest : AssignmentRequests() {
             null,
             null,
             "desc",
-            listOf(
-                24.downTo(5).toList(),
-                4.downTo(1).toList()
+            allAssignmentNumbers,
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                oppimaara = allOppimaaras,
+                tehtavatyyppi = allTehtavatyyppis,
+                aihe = allAihes,
+                tavoitetaitotaso = allTavoitetaitotasos,
             )
         )
 
@@ -148,35 +184,175 @@ class GetAssignmentsTest : AssignmentRequests() {
             "0003,0005,0006", "asc",
             listOf(listOf(7, 8, 9, 19, 20, 21))
         )
+
+        // assignmentFilterOptions-testit:
+
+        // nolla filtteriä valittuna
+        testSukoFilterOptions(
+            null,
+            null,
+            null,
+            null,
+            "desc",
+            allAssignmentNumbers,
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                oppimaara = allOppimaaras,
+                tehtavatyyppi = allTehtavatyyppis,
+                aihe = allAihes,
+                tavoitetaitotaso = allTavoitetaitotasos,
+            )
+        )
+
+        // yksi filtteri valittuna
+        testSukoFilterOptions(
+            "VKA1.SA",
+            null,
+            null,
+            null,
+            "desc",
+            listOf(listOf(20, 9)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                oppimaara = allOppimaaras,
+                tehtavatyyppi = listOf("002", "003"),
+                aihe = listOf("005", "013", "017"),
+                tavoitetaitotaso = listOf("0005", "0006"),
+            )
+        )
+        testSukoFilterOptions(
+            null,
+            null,
+            "017",
+            null,
+            "desc",
+            listOf(listOf(21, 15, 9, 3)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                oppimaara = listOf("TKFIAI", "TKRUB1", "VKA1.SA", "VKENA1").map(Oppimaara::fromString),
+                tehtavatyyppi = listOf("002"),
+                aihe = allAihes,
+                tavoitetaitotaso = listOf("0005", "0011"),
+            )
+        )
+
+        // kaksi filtteriä valittuna
+        testSukoFilterOptions(
+            "VKA1.SA",
+            null,
+            "017",
+            null,
+            "desc",
+            listOf(listOf(9)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                oppimaara = listOf("TKFIAI", "TKRUB1", "VKA1.SA", "VKENA1").map(Oppimaara::fromString),
+                tehtavatyyppi = listOf("002"),
+                aihe = listOf("005", "013", "017"),
+                tavoitetaitotaso = listOf("0005"),
+            )
+        )
     }
 
     @Test
     @WithYllapitajaRole
     fun testLdFilters() {
+        val allAines = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
+        val allLukuvuosis = listOf("20202021", "20212022", "20222023", "20232024", "20242025")
+
         testLdFilterOptions(
             null,
             null,
             "asc",
-            listOf((1..20).toList(), (21..24).toList())
+            listOf((1..20).toList(), (21..24).toList()),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = allLukuvuosis,
+                aine = allAines
+            )
         )
-        testLdFilterOptions("1", null, "asc", listOf(listOf(9, 18)))
-        testLdFilterOptions(null, "20202021", "asc", listOf(listOf(5, 9, 10, 15, 19, 20)))
+        testLdFilterOptions(
+            "1", null, "asc", listOf(listOf(9, 18)), expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = listOf("20202021", "20232024", "20242025"),
+                aine = allAines
+            )
+        )
+        testLdFilterOptions(
+            null,
+            "20202021",
+            "asc",
+            listOf(listOf(5, 9, 10, 15, 19, 20)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = allLukuvuosis,
+                aine = listOf("1", "2", "3", "6", "7")
+            )
+        )
         testLdFilterOptions(null, "20202021", "desc", listOf(listOf(5, 9, 10, 15, 19, 20).reversed()))
         testLdFilterOptions("3", "20202021,20212022", "asc", listOf(listOf(2, 11, 20)))
+        testLdFilterOptions(
+            "3",
+            "20202021",
+            "asc",
+            listOf(listOf(20)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = listOf("20202021", "20212022", "20222023"),
+                aine = listOf("1", "2", "3", "6", "7")
+            )
+        )
+        testLdFilterOptions(
+            "3",
+            "20202021",
+            "asc",
+            listOf(listOf(20)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = listOf("20202021", "20212022", "20222023"),
+                aine = listOf("1", "2", "3", "6", "7")
+            )
+        )
     }
 
     @Test
     @WithYllapitajaRole
     fun testPuhviFilters() {
+        val allLukuvuosis = listOf("20202021", "20212022", "20222023", "20232024", "20242025")
+        val allTehtavatyyppis = listOf("001", "002")
+
         testPuhviFilterOptions(
             null,
             null,
             "asc",
-            listOf((1..20).toList(), (21..24).toList())
+            listOf((1..20).toList(), (21..24).toList()),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = allLukuvuosis,
+                tehtavatyyppi = allTehtavatyyppis
+            )
         )
-        testPuhviFilterOptions("001", null, "asc", listOf(listOf(1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23)))
-        testPuhviFilterOptions(null, "20202021", "asc", listOf(listOf(5, 9, 10, 15, 19, 20)))
+        testPuhviFilterOptions(
+            "001",
+            null,
+            "asc",
+            listOf(listOf(1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = allLukuvuosis,
+                tehtavatyyppi = allTehtavatyyppis
+            )
+        )
+        testPuhviFilterOptions(
+            null,
+            "20202021",
+            "asc",
+            listOf(listOf(5, 9, 10, 15, 19, 20)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = allLukuvuosis,
+                tehtavatyyppi = allTehtavatyyppis
+            )
+        )
         testPuhviFilterOptions("002", "20202021,20212022", "asc", listOf(listOf(2, 10, 12, 20, 22)))
+        testPuhviFilterOptions(
+            "002",
+            "20202021",
+            "asc",
+            listOf(listOf(10, 20)),
+            expectedAssignmentFilterOptions = AssignmentFilterOptionsDtoOut(
+                lukuvuosi = allLukuvuosis,
+                tehtavatyyppi = allTehtavatyyppis
+            )
+        )
     }
 
     @Test
@@ -217,7 +393,8 @@ class GetAssignmentsTest : AssignmentRequests() {
         tavoitetaitotaso: String?,
         orderDirection: String?,
         expectedNumbersInPages: List<List<Int>>,
-        expectedTotalPages: Int = expectedNumbersInPages.size
+        expectedTotalPages: Int = expectedNumbersInPages.size,
+        expectedAssignmentFilterOptions: AssignmentFilterOptionsDtoOut? = null
     ) {
         expectedNumbersInPages.mapIndexed { i, expectedNumbersInPage ->
             val page = i + 1
@@ -230,15 +407,17 @@ class GetAssignmentsTest : AssignmentRequests() {
                 sivu = page
             )
 
-            val content = getSukoAssignments(sukoFilters)
-            testPageNumber(content, page, expectedTotalPages)
-            val assignments = content.content
+            val assignmentsOut = getSukoAssignments(sukoFilters)
+            testPageNumber(assignmentsOut, page, expectedTotalPages)
 
-            val actualNumbersInName = assignments.flatMap { assignment ->
+            val actualNumbersInName = assignmentsOut.content.flatMap { assignment ->
                 Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
             }
+            assertThat(actualNumbersInName).isEqualTo(expectedNumbersInPage)
 
-            assertEquals(expectedNumbersInPage, actualNumbersInName)
+            expectedAssignmentFilterOptions?.let {
+                assertThat(assignmentsOut.assignmentFilterOptions).isEqualTo(it)
+            }
         }
     }
 
@@ -247,7 +426,8 @@ class GetAssignmentsTest : AssignmentRequests() {
         lukuvuosi: String?,
         orderDirection: String?,
         expectedNumbersInPages: List<List<Int>>,
-        expectedTotalPages: Int = expectedNumbersInPages.size
+        expectedTotalPages: Int = expectedNumbersInPages.size,
+        expectedAssignmentFilterOptions: AssignmentFilterOptionsDtoOut? = null
     ) {
         expectedNumbersInPages.mapIndexed { i, expectedNumbersInPage ->
             val page = i + 1
@@ -258,13 +438,14 @@ class GetAssignmentsTest : AssignmentRequests() {
             val content = getPuhviAssignments(puhviFilters)
             testPageNumber(content, page, expectedTotalPages)
 
-            val assignments = content.content
-
-            val actualNumbersInName = assignments.flatMap { assignment ->
+            val actualNumbersInName = content.content.flatMap { assignment ->
                 Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
             }
-
             assertEquals(expectedNumbersInPage.sorted(), actualNumbersInName.sorted())
+
+            expectedAssignmentFilterOptions?.let {
+                assertThat(content.assignmentFilterOptions).isEqualTo(it)
+            }
         }
     }
 
@@ -273,7 +454,8 @@ class GetAssignmentsTest : AssignmentRequests() {
         lukuvuosi: String?,
         orderDirection: String?,
         expectedNumbersInPages: List<List<Int>>,
-        expectedTotalPages: Int = expectedNumbersInPages.size
+        expectedTotalPages: Int = expectedNumbersInPages.size,
+        expectedAssignmentFilterOptions: AssignmentFilterOptionsDtoOut? = null
     ) {
         expectedNumbersInPages.mapIndexed { i, expectedNumbersInPage ->
             val page = i + 1
@@ -281,13 +463,14 @@ class GetAssignmentsTest : AssignmentRequests() {
             val content = getLdAssignments(ldFilters)
             testPageNumber(content, page, expectedTotalPages)
 
-            val assignments = content.content
-
-            val actualNumbersInName = assignments.flatMap { assignment ->
+            val actualNumbersInName = content.content.flatMap { assignment ->
                 Regex("\\d+").findAll(assignment.nameFi).map { it.value.toInt() }.toList()
             }
-
             assertEquals(expectedNumbersInPage, actualNumbersInName)
+
+            expectedAssignmentFilterOptions?.let {
+                assertThat(content.assignmentFilterOptions).isEqualTo(it)
+            }
         }
     }
 
