@@ -6,8 +6,7 @@ export class InstructionContentModel extends ContentModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
-    readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-FI'),
-    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-SV')
+    readonly aineKoodiArvo = page.getByTestId('instruction-aine')
   ) {
     super(page, exam, ContentType.INSTRUCTION)
   }

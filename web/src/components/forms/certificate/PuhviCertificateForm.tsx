@@ -95,6 +95,7 @@ export const PuhviCertificateForm = ({
 
             <AttachmentSelector
               name="attachmentFi"
+              exam={Exam.PUHVI}
               error={attachmentErrorFi}
               contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(Language.FI)}
@@ -120,6 +121,7 @@ export const PuhviCertificateForm = ({
 
             <AttachmentSelector
               name="attachmentSv"
+              exam={Exam.PUHVI}
               error={attachmentErrorSv}
               contentType={ContentType.CERTIFICATE}
               attachmentData={currentAttachment(Language.SV)}

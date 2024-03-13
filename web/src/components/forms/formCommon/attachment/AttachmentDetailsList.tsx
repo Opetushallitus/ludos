@@ -10,19 +10,17 @@ import { Button } from '../../../Button'
 type AttachmentDetailsListProps = {
   attachmentDownloadUrlPrefix: string
   fileDetails: FileDetails[]
-  attachmentNames: string[]
-  handleAttachmentNameChange: (newName: string, index: number) => void
+  handleAttachmentNameChange: (newName: string, index: number, language: Language) => void
   deleteFileByIndex?: (index: number) => void
-  language?: Language
+  language: Language
 }
 
 export const AttachmentDetailsList = ({
   attachmentDownloadUrlPrefix,
   fileDetails,
-  attachmentNames,
   handleAttachmentNameChange,
-  deleteFileByIndex,
-  language
+  language,
+  deleteFileByIndex
 }: AttachmentDetailsListProps) => {
   const { t } = useTranslation()
   const [indexToDelete, setIndexToDelete] = useState<number | null>(null)
@@ -49,9 +47,8 @@ export const AttachmentDetailsList = ({
           )}
           <input
             className="col-span-4 border border-gray-secondary px-1"
-            value={attachmentNames![index] || ''}
-            onChange={(e) => handleAttachmentNameChange(e.target.value, index)}
-            placeholder={attachmentNames![index] || ''}
+            value={attachment.name}
+            onChange={(e) => handleAttachmentNameChange(e.target.value, index, language)}
             data-testid={`attachment-name-input-${index}-${language}`}
           />
           <p className="col-span-2">{toLocaleDate(attachment.fileUploadDate ?? new Date())}</p>

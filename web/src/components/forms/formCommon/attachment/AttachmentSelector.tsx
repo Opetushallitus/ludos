@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
-import { AttachmentData, ContentType, Language } from '../../../../types'
+import { AttachmentData, ContentType, Exam, Language } from '../../../../types'
 import { FileSelector } from '../../../FileSelector'
 import { FormError } from '../FormErrors'
 
 interface AttachmentSelectorProps {
   name: string
+  exam: Exam
   contentType: ContentType
   handleNewAttachmentSelected: (attachments: AttachmentData[], language?: Language) => void
   language: Language // used mostly for data-testid tagging
@@ -18,6 +19,7 @@ interface AttachmentSelectorProps {
 
 export const AttachmentSelector = ({
   name,
+  exam,
   contentType,
   attachmentData,
   handleNewAttachmentSelected,
@@ -49,9 +51,9 @@ export const AttachmentSelector = ({
     }
   }
 
-  const handleAttachmentNameChange = (newName: string, index: number) => {
+  const handleAttachmentNameChange = (newName: string, index: number, language: Language) => {
     if (handleNewAttachmentName) {
-      handleNewAttachmentName(newName, index, language ?? 'FI')
+      handleNewAttachmentName(newName, index, language)
     }
   }
 
@@ -80,6 +82,7 @@ export const AttachmentSelector = ({
       />
       {showFileDetails() && (
         <AttachmentFileDetailView
+          exam={exam}
           contentType={contentType}
           attachments={attachmentData!}
           handleAttachmentNameChange={handleAttachmentNameChange}

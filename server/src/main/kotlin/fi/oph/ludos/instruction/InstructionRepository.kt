@@ -1,13 +1,17 @@
 package fi.oph.ludos.instruction
 
-import fi.oph.ludos.*
+import fi.oph.ludos.Exam
+import fi.oph.ludos.INITIAL_VERSION_NUMBER
+import fi.oph.ludos.Language
+import fi.oph.ludos.PublishState
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
-import fi.oph.ludos.repository.getKotlinArray
 import fi.oph.ludos.aws.Bucket
 import fi.oph.ludos.aws.S3Helper
+import fi.oph.ludos.repository.getKotlinArray
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.http.HttpStatus
 import org.springframework.jdbc.core.JdbcTemplate
@@ -552,8 +556,6 @@ class InstructionRepository(
         val (currentLatestVersion, authorOid) = getLatestInstructionVersionAndAuthor(id, instructionDtoIn.exam)
             ?: return@execute null
 
-        val table = tableNameByExam(instructionDtoIn.exam)
-
         val versionToCreate = currentLatestVersion + 1
 
         updateInstructionRow(versionToCreate, authorOid)
@@ -562,11 +564,13 @@ class InstructionRepository(
             metadata.copy(instructionVersion = versionToCreate)
         }
 
+        val table = tableNameByExam(instructionDtoIn.exam)
+
         for (attachment in newAttachments) {
             val fileKey = newInstructionAttachmentFileKey()
             uploadInstructionAttachmentToS3(fileKey, attachment.file)
             insertInstructionAttachment(
-                tableNameByExam(instructionDtoIn.exam),
+                table,
                 id.toLong(),
                 attachmentWithInstructionVersion(attachment.metadata),
                 attachment.file.originalFilename!!,
@@ -574,27 +578,44 @@ class InstructionRepository(
             )
         }
 
-        attachmentsMetadata.forEach {
-            jdbcTemplate.update(
-                """
-                INSERT INTO ${table}_attachment (
-                        attachment_file_key, 
-                        attachment_file_name, 
-                        attachment_upload_date,
-                        instruction_id, 
-                        instruction_version,
-                        instruction_attachment_name,
-                        instruction_attachment_language
-                )
-                VALUES (?, ?, clock_timestamp(), ?, ?, ?, ?::language)
-                """.trimIndent(),
-                it.fileKey,
-                it.name,
-                id,
-                versionToCreate,
-                it.name,
-                it.language.toString(),
+        for (attachmentMetadata in attachmentsMetadata) {
+            val sql = """
+            INSERT INTO ${table}_attachment (
+                attachment_file_key, 
+                attachment_file_name, 
+                attachment_upload_date,
+                instruction_id, 
+                instruction_version,
+                instruction_attachment_name,
+                instruction_attachment_language
             )
+            VALUES (
+                :attachmentFileKey, 
+                (SELECT attachment_file_name FROM ${table}_attachment ia WHERE ia.attachment_file_key = :attachmentFileKey LIMIT 1), 
+                clock_timestamp(), 
+                :instructionId, 
+                :instructionVersion, 
+                :attachmentName, 
+                :attachmentLanguage::language
+            )
+            """.trimIndent()
+
+            val params = MapSqlParameterSource()
+                .addValue("attachmentFileKey", attachmentMetadata.fileKey)
+                .addValue("instructionId", id)
+                .addValue("instructionVersion", versionToCreate)
+                .addValue("attachmentName", attachmentMetadata.name)
+                .addValue("attachmentLanguage", attachmentMetadata.language.toString())
+
+            try {
+                namedJdbcTemplate.update(sql, params)
+            } catch (e: DataIntegrityViolationException) {
+                if (e.mostSpecificCause.message?.contains("null value in column \"attachment_file_name\"") == true) throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Attachment '${attachmentMetadata.fileKey}' not found"
+                )
+                else throw e
+            }
         }
 
         return@execute versionToCreate
@@ -722,26 +743,35 @@ class InstructionRepository(
             )
         }
 
-    fun getAttachmentByFileKey(fileKey: String, version: Int?): InstructionAttachmentDtoOut? {
-        val versionCondition = version?.let { "AND instruction_version = $version" }
-            ?: "AND instruction_version = (SELECT MAX(instruction_version) FROM instruction_attachment ia WHERE instruction_id = ia.instruction_id)"
+    fun getAttachmentByFileKey(exam: Exam, fileKey: String, version: Int?): InstructionAttachmentDtoOut? {
+        val tableName = tableNameByExam(exam)
+        val paramMap = mapOf("fileKey" to fileKey, "version" to version)
 
-        val results = jdbcTemplate.query(
+        val versionCondition = version?.let { "AND ia.instruction_version = :version" }
+            ?: "AND ia.instruction_version = (SELECT MAX(i.instruction_version) FROM $tableName i WHERE ia.instruction_id = i.instruction_id)"
+
+        val results = namedJdbcTemplate.query(
             """
-            SELECT attachment_file_key, attachment_file_name, attachment_upload_date, instruction_attachment_name, instruction_attachment_language, instruction_version
-            FROM instruction_attachment
-            WHERE attachment_file_key = ? $versionCondition
-            """.trimIndent(), { rs, _ ->
-                InstructionAttachmentDtoOut(
-                    rs.getString("attachment_file_key"),
-                    rs.getString("attachment_file_name"),
-                    rs.getTimestamp("attachment_upload_date"),
-                    rs.getString("instruction_attachment_name"),
-                    Language.valueOf(rs.getString("instruction_attachment_language")),
-                    rs.getInt("instruction_version")
-                )
-            }, fileKey
-        )
+                SELECT 
+                    attachment_file_key, 
+                    attachment_file_name, 
+                    attachment_upload_date, 
+                    instruction_attachment_name, 
+                    instruction_attachment_language, 
+                    instruction_version
+                FROM ${tableName}_attachment ia
+                WHERE ia.attachment_file_key = :fileKey $versionCondition
+            """.trimIndent(), paramMap
+        ) { rs, _ ->
+            InstructionAttachmentDtoOut(
+                rs.getString("attachment_file_key"),
+                rs.getString("attachment_file_name"),
+                rs.getTimestamp("attachment_upload_date"),
+                rs.getString("instruction_attachment_name"),
+                Language.valueOf(rs.getString("instruction_attachment_language")),
+                rs.getInt("instruction_version")
+            )
+        }
 
         return results.firstOrNull()
     }

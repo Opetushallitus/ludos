@@ -1,41 +1,33 @@
 import { useTranslation } from 'react-i18next'
 import { Spinner } from '../../../Spinner'
-import { AttachmentData, ContentType, FileDetails, Language } from '../../../../types'
+import { AttachmentData, ContentType, Exam, FileDetails, Language } from '../../../../types'
 import { AttachmentDetails } from './AttachmentDetails'
 import { AttachmentDetailsList } from './AttachmentDetailsList'
-import { useEffect, useState } from 'react'
-import { DOWNLOAD_CERTIFICATE_ATTACHMENT_URL, DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../../../constants'
+import { CERTIFICATE_URL, INSTRUCTION_URL } from '../../../../constants'
 
 interface AttachmentFileDetailViewProps {
+  exam: Exam
   contentType: ContentType
   attachments: AttachmentData[] | AttachmentData
-  handleAttachmentNameChange: (newName: string, index: number) => void
+  handleAttachmentNameChange: (newName: string, index: number, language: Language) => void
   deleteFileByIndex?: (index: number) => void
   loading?: boolean
   language?: Language
 }
 
 export const AttachmentFileDetailView = ({
+  exam,
   contentType,
   attachments,
   handleAttachmentNameChange,
   deleteFileByIndex,
   loading,
-  language
+  language = Language.FI
 }: AttachmentFileDetailViewProps) => {
   const { t } = useTranslation()
-  const [attachmentNames, setAttachmentNames] = useState<string[]>([])
   const attachmentDownloadUrlPrefix = `${
-    contentType === ContentType.INSTRUCTION ? DOWNLOAD_INSTRUCTION_ATTACHMENT_URL : DOWNLOAD_CERTIFICATE_ATTACHMENT_URL
-  }`
-
-  useEffect(() => {
-    if (Array.isArray(attachments)) {
-      setAttachmentNames(attachments.map((it) => it.name))
-    } else {
-      setAttachmentNames([attachments.name])
-    }
-  }, [attachments])
+    contentType === ContentType.INSTRUCTION ? INSTRUCTION_URL : CERTIFICATE_URL
+  }/${exam}/attachment`
 
   const fileDetails: FileDetails[] | FileDetails = Array.isArray(attachments)
     ? (attachments.map((it) => ({
@@ -73,7 +65,6 @@ export const AttachmentFileDetailView = ({
                   handleAttachmentNameChange={handleAttachmentNameChange}
                   deleteFileByIndex={deleteFileByIndex}
                   fileDetails={fileDetails}
-                  attachmentNames={attachmentNames}
                   attachmentDownloadUrlPrefix={attachmentDownloadUrlPrefix}
                   language={language}
                 />

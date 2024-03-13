@@ -3,7 +3,6 @@ import { loginTestGroup, Role } from '../helpers'
 import { ContentTypePluralFi, ContentTypeSingularEn, Exam } from 'web/src/types'
 import { createFormData, fillAssignmentForm } from '../examHelpers/assignmentHelpers'
 import { fillCertificateForm } from '../examHelpers/certificateHelpers'
-import { instructionFormData } from '../examHelpers/instructionHelpers'
 import { InstructionFormModel } from '../models/InstructionFormModel'
 import { CertificateFormModel } from '../models/CertificateFormModel'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
@@ -64,7 +63,7 @@ Object.values(Exam).forEach((exam) => {
     test(`should show error notification and message on submit ${exam} instruction form`, async ({ page }) => {
       const form = new InstructionFormModel(page, exam)
       await page.goto(`/${exam}/${ContentTypePluralFi.INSTRUCTION}/uusi`)
-      await form.fillInstructionForm(instructionFormData)
+      await form.fillInstructionForm(form.formData)
       await clearCookiesAndSubmit(page, ContentTypeSingularEn.INSTRUCTION)
       await assertSessionExpiryFormErrorMessage(page)
     })

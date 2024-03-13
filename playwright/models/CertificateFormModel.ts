@@ -105,7 +105,7 @@ export class CertificateFormModel extends FormModel {
     attachmentFixtureFilename: string
   ) {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)
-    return await (await fetchWithSession(this.page.context(), `${baseURL}/api/certificate`, formData, 'POST')).json()
+    return await (await fetchWithSession(this.page.context(), `${baseURL}/api/certificate`, 'POST', formData)).json()
   }
 
   async updateCertificateApiCall(
@@ -116,7 +116,7 @@ export class CertificateFormModel extends FormModel {
   ) {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)
     return await (
-      await fetchWithSession(this.page.context(), `${baseURL}/api/certificate/${id}`, formData, 'PUT')
+      await fetchWithSession(this.page.context(), `${baseURL}/api/certificate/${id}`, 'PUT', formData)
     ).json()
   }
 }

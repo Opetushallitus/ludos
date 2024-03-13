@@ -132,8 +132,8 @@ abstract class CertificateRequests {
         return MockMvcRequestBuilders.post(url)
     }
 
-    fun getAttachment(fileKey: String) =
-        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/attachment/$fileKey")
+    fun getAttachment(exam: Exam, fileKey: String) =
+        MockMvcRequestBuilders.get("${Constants.API_PREFIX}/certificate/$exam/attachment/$fileKey")
 
     private fun getAllCertificatesReq(
         exam: Exam,

@@ -155,8 +155,8 @@ class InstructionController(val service: InstructionService, private val objectM
             "$exam instruction $id or its version $version not found"
         )
 
-    fun attachmentResponse(attachmentKey: String, version: Int?): ResponseEntity<InputStreamResource> {
-        val (uploadFile, attachmentInputStream) = service.getAttachment(attachmentKey, version)
+    fun attachmentResponse(exam: Exam, attachmentKey: String, version: Int?): ResponseEntity<InputStreamResource> {
+        val (uploadFile, attachmentInputStream) = service.getAttachment(exam, attachmentKey, version)
 
         return ResponseEntity.ok()
             .contentType(MediaType.APPLICATION_PDF)
@@ -165,16 +165,18 @@ class InstructionController(val service: InstructionService, private val objectM
             .body(InputStreamResource(attachmentInputStream))
     }
 
-    @GetMapping("/attachment/{key}")
+    @GetMapping("/{exam}/attachment/{key}")
     @RequireAtLeastOpettajaRole
     fun downloadAttachment(
+        @PathVariable exam: Exam,
         @PathVariable("key") key: String,
-    ): ResponseEntity<InputStreamResource> = attachmentResponse(key, null)
+    ): ResponseEntity<InputStreamResource> = attachmentResponse(exam, key, null)
 
-    @GetMapping("/attachment/{key}/{version}")
+    @GetMapping("/{exam}/attachment/{key}/{version}")
     @RequireAtLeastYllapitajaRole
     fun previewAttachmentVersion(
+        @PathVariable exam: Exam,
         @PathVariable("key") key: String,
         @PathVariable("version") version: Int
-    ): ResponseEntity<InputStreamResource> = attachmentResponse(key, version)
+    ): ResponseEntity<InputStreamResource> = attachmentResponse(exam, key, version)
 }

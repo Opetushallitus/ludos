@@ -1,10 +1,4 @@
-import {
-  ContentBaseOut,
-  isLdCertificate,
-  isPuhviCertificate,
-  isSukoCertificate,
-  Language
-} from '../../../../types'
+import { ContentBaseOut, isLdCertificate, isPuhviCertificate, isSukoCertificate, Language } from '../../../../types'
 import { InternalLink } from '../../../InternalLink'
 import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
@@ -81,7 +75,7 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
       <div className="row mt-3 justify-between">
         {isYllapitaja && <StateTag state={certificate.publishState} />}
         <p className="text-center text-xs">{toLocaleDate(certificate.createdAt)}</p>
-        {fileKey && <PdfViewerLinkTag fileKey={fileKey} />}
+        {fileKey && <PdfViewerLinkTag exam={certificate.exam} fileKey={fileKey} />}
       </div>
     </li>
   )

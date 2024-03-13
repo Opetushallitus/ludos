@@ -1,7 +1,7 @@
 import { Exam, InstructionDtoOut, Language, LdInstructionDtoOut, SukoOrPuhviInstructionDtoOut } from '../../types'
 import { ContentContent } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
-import { DOWNLOAD_INSTRUCTION_ATTACHMENT_URL } from '../../constants'
+import { INSTRUCTION_URL } from '../../constants'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
@@ -9,9 +9,10 @@ import { useKoodisto } from '../../hooks/useKoodisto'
 type InstructionContentProps = {
   instruction: SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut
   teachingLanguage: Language
+  isVersionBrowser: boolean
 }
 
-export const InstructionContent = ({ instruction, teachingLanguage }: InstructionContentProps) => {
+export const InstructionContent = ({ instruction, teachingLanguage, isVersionBrowser }: InstructionContentProps) => {
   const { t } = useTranslation()
   const { getKoodiLabel } = useKoodisto(teachingLanguage)
   const attachmentsFilteredWithLanguage = instruction.attachments
@@ -59,7 +60,7 @@ export const InstructionContent = ({ instruction, teachingLanguage }: Instructio
             <Fragment key={index}>
               <ExternalLink
                 className="text-green-primary"
-                url={`${DOWNLOAD_INSTRUCTION_ATTACHMENT_URL}/${attachment.fileKey}/${instruction.version}`}
+                url={`${INSTRUCTION_URL}/${instruction.exam}/attachment/${attachment.fileKey}${isVersionBrowser ? `/${instruction.version}` : ''}`}
                 data-testid="attachment-link">
                 {attachment.name}
               </ExternalLink>
