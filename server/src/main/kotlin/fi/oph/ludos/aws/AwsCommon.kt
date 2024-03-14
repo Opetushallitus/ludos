@@ -7,7 +7,7 @@ import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
 import software.amazon.awssdk.regions.Region
 
 
-val AWS_REGION = Region.EU_WEST_1
+val AWS_REGION: Region = Region.EU_WEST_1
 fun awsCredentialsProviderChain(localAwsProfileName: String?): AwsCredentialsProviderChain {
 
     val providerChain = AwsCredentialsProviderChain.builder()
