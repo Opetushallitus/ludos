@@ -32,6 +32,7 @@ import { restoreOldContentVersion } from '../../request'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { ListTabs } from '../ListTabs'
 import { ContentBreadcrumbs } from '../Breadcrumbs'
+import { getContentName } from '../../utils/assignmentUtils'
 
 type ContentProps = {
   exam: Exam
@@ -55,8 +56,10 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
   const isVersionBrowser = !!version
 
-  const teachingLanguageOverrideIfSukoAssignment =
-    exam === Exam.SUKO && contentType === ContentType.ASSIGNMENT ? Language.FI : teachingLanguage
+  const teachingLanguageOverride =
+    exam === Exam.SUKO && (contentType === ContentType.ASSIGNMENT || contentType === ContentType.CERTIFICATE)
+      ? Language.FI
+      : teachingLanguage
 
   const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
@@ -94,10 +97,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   return (
     <div className="min-h-[80vh] mt-5">
       <div className="py-5">
-        <ContentBreadcrumbs
-          exam={exam}
-          name={teachingLanguageOverrideIfSukoAssignment === Language.FI ? data.nameFi : data.nameSv}
-        />
+        <ContentBreadcrumbs exam={exam} name={getContentName(data, teachingLanguage)} />
       </div>
 
       <div className="mb-5">
@@ -121,7 +121,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
               <ContentHeader
-                teachingLanguage={teachingLanguageOverrideIfSukoAssignment}
+                teachingLanguage={teachingLanguageOverride}
                 data={data}
                 contentType={contentType}
                 isPresentation={isPresentation}
@@ -177,7 +177,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 <AssignmentContent
                   assignment={data}
                   exam={exam}
-                  teachingLanguage={teachingLanguageOverrideIfSukoAssignment}
+                  teachingLanguage={teachingLanguageOverride}
                   isPresentation={isPresentation}
                 />
               )}
