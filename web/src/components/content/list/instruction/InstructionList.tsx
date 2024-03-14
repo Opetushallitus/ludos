@@ -20,10 +20,10 @@ import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
 import { ContentOrderFilter } from '../ContentOrderFilter'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
-import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../../ludosSelect/helpers'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../../ludosSelect/helpers'
 import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
 import { useCallback, useContext } from 'react'
-import { MultiValue } from 'react-select'
+import { SingleValue } from 'react-select'
 import { LudosContext } from '../../../../contexts/LudosContext'
 import { InfoBox } from '../../../InfoBox'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
@@ -58,13 +58,10 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
     ).toString()}`
   )
 
-  const handleMultiselectFilterChange = useCallback(
-    (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
-      setFilterValue(
-        key,
-        value.map((it) => it.value),
-        true
-      )
+  const handleFilterChange = useCallback(
+    (key: keyof FiltersType, value: SingleValue<LudosSelectOption>) => {
+      const filterValue = value?.value || null
+      setFilterValue(key, filterValue, true)
     },
     [setFilterValue]
   )
@@ -103,10 +100,10 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
                   koodisOrDefaultLabel(data?.instructionFilterOptions.aine || [], koodistos.ludoslukiodiplomiaine)
                 )
               )}
-              value={currentKoodistoSelectOptions(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
-              onChange={(opt) => handleMultiselectFilterChange('aine', opt)}
-              isMulti
+              value={currentKoodistoSelectOption(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
+              onChange={(opt) => handleFilterChange('aine', opt)}
               isSearchable
+              isClearable
             />
           </div>
         </div>

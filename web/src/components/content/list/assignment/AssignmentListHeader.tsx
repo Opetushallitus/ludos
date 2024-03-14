@@ -16,7 +16,7 @@ type AssignmentListHeaderProps = {
 
 export const AssignmentListHeader = ({ exam, filterValues }: AssignmentListHeaderProps) => {
   const { isYllapitaja } = useUserDetails()
-  const { t, lt } = useLudosTranslation()
+  const { t } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
 

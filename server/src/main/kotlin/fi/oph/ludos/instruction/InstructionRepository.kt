@@ -4,11 +4,13 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.INITIAL_VERSION_NUMBER
 import fi.oph.ludos.Language
 import fi.oph.ludos.PublishState
+import fi.oph.ludos.assignment.LdFilters
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
 import fi.oph.ludos.aws.Bucket
 import fi.oph.ludos.aws.S3Helper
 import fi.oph.ludos.repository.getKotlinArray
+import fi.oph.ludos.repository.getKotlinList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
@@ -401,59 +403,59 @@ class InstructionRepository(
         return jdbcTemplate.query(sql, mapper, id)
     }
 
-    private val ldListMetadataResultSetExtractor: (ResultSet) -> LdInstructionFilterOptionsDtoOut = { rs: ResultSet ->
-        val aineOptions: SortedSet<String> = sortedSetOf()
-
-        while (rs.next()) {
-            aineOptions.add(rs.getString("ld_instruction_aine_koodi_arvo"))
-        }
-
-        LdInstructionFilterOptionsDtoOut(
-            aine = aineOptions.toList(),
-        )
-    }
-
-    private fun addExamSpecificFilters(
+    private fun examSpecificFilters(
         filters: InstructionBaseFilters,
-        queryBuilder: StringBuilder,
-        parameters: MapSqlParameterSource
-    ) {
+    ): Pair<String, MapSqlParameterSource> {
+        val queryBuilder = StringBuilder()
+        val parameters = MapSqlParameterSource()
         if (filters is LdInstructionFilters && filters.aine != null) {
             val values = filters.aine.split(",")
             queryBuilder.append(" AND ld_instruction_aine_koodi_arvo IN (:aineKoodiArvo)")
             parameters.addValue("aineKoodiArvo", values)
         }
+        return Pair(queryBuilder.toString(), parameters)
     }
 
     private fun listMetadata(
         filters: InstructionBaseFilters,
         role: Role,
     ): InstructionFilterOptions {
+        return when (filters) {
+            is SukoInstructionFilters -> SukoInstructionFilterOptionsDtoOut()
+            is LdInstructionFilters -> ldListMetadata(filters, role)
+            is PuhviInstructionFilters -> PuhviInstructionFilterOptionsDtoOut()
+        }
+    }
+
+    private val ldListMetadataResultSetExtractor: (ResultSet) -> LdInstructionFilterOptionsDtoOut = { rs: ResultSet ->
+        rs.next()
+
+        LdInstructionFilterOptionsDtoOut(
+            aine = rs.getKotlinList("aine_array"),
+        )
+    }
+
+    private fun ldListMetadata(
+        filters: LdInstructionFilters,
+        role: Role
+    ): LdInstructionFilterOptionsDtoOut {
+        val parameters = MapSqlParameterSource()
+
+        fun buildFilters(filters: LdInstructionFilters): String {
+            val (ldFilterString, ldFilterParameters) = examSpecificFilters(filters)
+            parameters.addValues(ldFilterParameters.values)
+            return "$ldFilterString ${publishStateFilter(role)}"
+        }
+
         val queryBuilder = StringBuilder(
             """
-            SELECT
-                i.ld_instruction_aine_koodi_arvo
-            FROM ld_instruction i
-            WHERE true 
+            SELECT ARRAY(SELECT DISTINCT ld_instruction_aine_koodi_arvo
+                         FROM ld_instruction i WHERE TRUE ${buildFilters(filters.copy(aine = null))}
+                         ORDER BY ld_instruction_aine_koodi_arvo) as aine_array
          """.trimIndent()
         )
 
-        val parameters = MapSqlParameterSource()
-
-        addExamSpecificFilters(filters, queryBuilder, parameters)
-
-        queryBuilder.append(publishStateFilter(role))
-
-        return when (filters) {
-            is SukoInstructionFilters -> SukoInstructionFilterOptionsDtoOut()
-            is LdInstructionFilters -> namedJdbcTemplate.query(
-                queryBuilder.toString(),
-                parameters,
-                ldListMetadataResultSetExtractor
-            )!!
-
-            is PuhviInstructionFilters -> PuhviInstructionFilterOptionsDtoOut()
-        }
+        return namedJdbcTemplate.query(queryBuilder.toString(), parameters, ldListMetadataResultSetExtractor)!!
     }
 
     private fun listInstructions(filters: InstructionBaseFilters, exam: Exam, role: Role): List<InstructionOut> {
@@ -469,7 +471,9 @@ class InstructionRepository(
 
         filterBuilder.append("true ${publishStateFilter(role)}")
 
-        addExamSpecificFilters(filters, filterBuilder, parameters)
+        val (examSpecificFilterQuery, examSpecificFilterParameters) = examSpecificFilters(filters)
+        filterBuilder.append(examSpecificFilterQuery)
+        parameters.addValues(examSpecificFilterParameters.values)
 
         val orderDirection = filters.jarjesta ?: ""
 

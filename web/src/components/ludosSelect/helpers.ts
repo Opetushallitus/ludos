@@ -92,14 +92,3 @@ export function currentOppimaaraSelectOption(
     label: getOppimaaraLabel(selectedOppimaaraOption)
   }
 }
-
-export function currentOppimaaraSelectOptions(
-  selectedOppimaaraOptions: Oppimaara[] | undefined,
-  getOppimaaraLabel: (oppimaara: Oppimaara) => string
-): LudosSelectOption[] {
-  if (!selectedOppimaaraOptions) {
-    return []
-  }
-
-  return selectedOppimaaraOptions.map((o) => currentOppimaaraSelectOption(o, getOppimaaraLabel)!)
-}

@@ -319,12 +319,11 @@ class InstructionControllerTest : InstructionRequests() {
 
     private fun assertFilteredLdInstructionList(
         filters: LdInstructionFilters,
-        expectedSize: Int,
         expectedNumbersInList: List<Int>,
         expectedAineOptions: List<Int>
     ) {
         val instructionsOut: LdInstructionListDtoOut = getAllInstructions(filters)
-        assertEquals(expectedSize, instructionsOut.content.size)
+        assertEquals(expectedNumbersInList.size, instructionsOut.content.size)
         assertTrue(
             instructionsOut.content.all { it.exam == Exam.LD },
             "Wrong exam in list, expected: ${Exam.LD}, got ${instructionsOut.content.map { it.exam }}"
@@ -365,12 +364,21 @@ class InstructionControllerTest : InstructionRequests() {
             aine = null
         )
 
-        assertFilteredLdInstructionList(filters, 8, listOf(4, 5, 6, 7, 8, 9, 10, 11), listOf(1, 2, 3, 5, 6, 7, 8, 9))
-        assertFilteredLdInstructionList(filters.copy(aine = "1"), 1, listOf(9), listOf(1))
-        assertFilteredLdInstructionList(filters.copy(aine = "9"), 1, listOf(8), listOf(9))
-        assertFilteredLdInstructionList(filters.copy(aine = "1,9"), 2, listOf(8, 9), listOf(1, 9))
-        assertFilteredLdInstructionList(filters.copy(jarjesta = "desc", aine = "1,9"), 2, listOf(9, 8), listOf(1, 9))
-        assertFilteredLdInstructionList(filters.copy(jarjesta = null, aine = "1,9"), 2, listOf(8, 9), listOf(1, 9))
+        val allPubAineKoodiArvos = listOf(1, 2, 3, 5, 6, 7, 8, 9)
+        assertFilteredLdInstructionList(filters, listOf(4, 5, 6, 7, 8, 9, 10, 11), allPubAineKoodiArvos)
+        assertFilteredLdInstructionList(filters.copy(aine = "1"), listOf(9), allPubAineKoodiArvos)
+        assertFilteredLdInstructionList(filters.copy(aine = "9"), listOf(8), allPubAineKoodiArvos)
+        assertFilteredLdInstructionList(filters.copy(aine = "1,9"), listOf(8, 9), allPubAineKoodiArvos)
+        assertFilteredLdInstructionList(
+            filters.copy(jarjesta = "desc", aine = "1,9"),
+            listOf(9, 8),
+            allPubAineKoodiArvos
+        )
+        assertFilteredLdInstructionList(
+            filters.copy(jarjesta = null, aine = "1,9"),
+            listOf(8, 9),
+            allPubAineKoodiArvos
+        )
     }
 
     @Test

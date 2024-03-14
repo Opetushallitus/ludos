@@ -59,12 +59,12 @@ Vaihtoehtoja backendin ajamiseen:
 2) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
 3) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
 4) `server/gradlew build -p server -x test && LUDOS_PROFILES=local docker-build/run.sh`
-  * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta spring
-    bootin kautta kuten tuotannossa.
-  * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev` ois päällä
-    `web`-kansiossa, vaan siellä on ajettava `yarn build` erikseen joka kerta.
-  * Fronttia devatessa onkin suositeltavaa ajaa `web`-kansiossa `yarn dev` ja
-    käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
+   * Tää buildaa myös frontendin, joka tarjoillaan https://localhost:8080/:sta spring
+     bootin kautta kuten tuotannossa.
+   * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev` ois päällä
+     `web`-kansiossa, vaan siellä on ajettava `yarn build` erikseen joka kerta.
+   * Fronttia devatessa onkin suositeltavaa ajaa `web`-kansiossa `yarn dev` ja
+     käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
 5) `build:docker` + `run:docker` (profiili kovakoodattu `local`)
 
 ### Frontend

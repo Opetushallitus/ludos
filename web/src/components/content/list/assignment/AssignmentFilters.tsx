@@ -5,12 +5,13 @@ import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../..
 import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import {
-  currentKoodistoSelectOptions,
-  currentOppimaaraSelectOptions,
+  currentKoodistoSelectOption,
+  currentOppimaaraSelectOption,
   koodistoSelectOptions,
   oppimaaraSelectOptions
 } from '../../../ludosSelect/helpers'
-import { MultiValue } from 'react-select'
+import { SingleValue } from 'react-select'
+import { Button } from '../../../Button'
 
 type AssignmentFiltersProps = {
   exam: Exam
@@ -38,19 +39,16 @@ function ensureTarkentamattomatPaaoppimaarasAreIncluded(oppimaaras: Oppimaara[])
 
 export const AssignmentFilters = ({
   exam,
-  filterValues: { filterValues, setFilterValue },
+  filterValues: { filterValues, setFilterValue, resetFilterValues },
   assignmentFilterOptions
 }: AssignmentFiltersProps) => {
   const { t } = useTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel, sortKooditAlphabetically } = useKoodisto()
 
-  const handleMultiselectFilterChange = useCallback(
-    (key: keyof FiltersType, value: MultiValue<LudosSelectOption>) => {
-      setFilterValue(
-        key,
-        value.map((it) => it.value),
-        true
-      )
+  const handleFilterChange = useCallback(
+    (key: keyof FiltersType, value: SingleValue<LudosSelectOption>) => {
+      const filterValue = value?.value || null
+      setFilterValue(key, filterValue, true)
     },
     [setFilterValue]
   )
@@ -87,10 +85,13 @@ export const AssignmentFilters = ({
                 name="oppimaaraFilter"
                 menuSize="lg"
                 options={oppimaaraSelectOptions(oppimaaraOptions, getKoodiLabel)}
-                value={currentOppimaaraSelectOptions(filterValues.oppimaara?.map(oppimaaraFromId), getOppimaaraLabel)}
-                onChange={(opt) => handleMultiselectFilterChange('oppimaara', opt)}
-                isMulti
+                value={currentOppimaaraSelectOption(
+                  filterValues.oppimaara ? oppimaaraFromId(filterValues.oppimaara) : undefined,
+                  getOppimaaraLabel
+                )}
+                onChange={(opt) => handleFilterChange('oppimaara', opt)}
                 isSearchable
+                isClearable
               />
             </div>
             <div className="w-full px-2 md:w-6/12 lg:w-3/12">
@@ -99,10 +100,10 @@ export const AssignmentFilters = ({
                 name="contentTypeFilter"
                 menuSize="md"
                 options={koodistoSelectOptions(sortKooditAlphabetically(tehtavatyyppiSukoOptions))}
-                value={currentKoodistoSelectOptions(filterValues.tehtavatyyppisuko, koodistos['tehtavatyyppisuko'])}
-                onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppisuko', opt)}
-                isMulti
+                value={currentKoodistoSelectOption(filterValues.tehtavatyyppisuko, koodistos['tehtavatyyppisuko'])}
+                onChange={(opt) => handleFilterChange('tehtavatyyppisuko', opt)}
                 isSearchable
+                isClearable
               />
             </div>
             <div className="w-full px-2 lg:w-3/12">
@@ -111,10 +112,10 @@ export const AssignmentFilters = ({
                 name="aiheFilter"
                 menuSize="md"
                 options={koodistoSelectOptions(sortKooditAlphabetically(aiheOptions))}
-                value={currentKoodistoSelectOptions(filterValues.aihe, koodistos['aihesuko'])}
-                onChange={(opt) => handleMultiselectFilterChange('aihe', opt)}
-                isMulti
+                value={currentKoodistoSelectOption(filterValues.aihe, koodistos['aihesuko'])}
+                onChange={(opt) => handleFilterChange('aihe', opt)}
                 isSearchable
+                isClearable
               />
             </div>
             {/* OPHLUDOS-125: https://jira.eduuni.fi/browse/OPHLUDOS-125 */}
@@ -137,10 +138,10 @@ export const AssignmentFilters = ({
             <LudosSelect
               name="lukuvuosiFilter"
               options={koodistoSelectOptions(sortKooditAlphabetically(lukuvuosiOptions))}
-              value={currentKoodistoSelectOptions(filterValues.lukuvuosi, koodistos['ludoslukuvuosi'])}
-              onChange={(opt) => handleMultiselectFilterChange('lukuvuosi', opt)}
-              isMulti
+              value={currentKoodistoSelectOption(filterValues.lukuvuosi, koodistos['ludoslukuvuosi'])}
+              onChange={(opt) => handleFilterChange('lukuvuosi', opt)}
               isSearchable
+              isClearable
             />
           </div>
         )}
@@ -150,10 +151,10 @@ export const AssignmentFilters = ({
             <LudosSelect
               name="aineFilter"
               options={koodistoSelectOptions(sortKooditAlphabetically(lukiodiplomiaineOptions))}
-              value={currentKoodistoSelectOptions(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
-              onChange={(opt) => handleMultiselectFilterChange('aine', opt)}
-              isMulti
+              value={currentKoodistoSelectOption(filterValues.aine, koodistos['ludoslukiodiplomiaine'])}
+              onChange={(opt) => handleFilterChange('aine', opt)}
               isSearchable
+              isClearable
             />
           </div>
         )}
@@ -163,13 +164,18 @@ export const AssignmentFilters = ({
             <LudosSelect
               name="tehtavatyyppiPuhviFilter"
               options={koodistoSelectOptions(sortKooditAlphabetically(tehtavatyyppiPuhviOptions))}
-              value={currentKoodistoSelectOptions(filterValues.tehtavatyyppipuhvi, koodistos['tehtavatyyppipuhvi'])}
-              onChange={(opt) => handleMultiselectFilterChange('tehtavatyyppipuhvi', opt)}
-              isMulti
+              value={currentKoodistoSelectOption(filterValues.tehtavatyyppipuhvi, koodistos['tehtavatyyppipuhvi'])}
+              onChange={(opt) => handleFilterChange('tehtavatyyppipuhvi', opt)}
               isSearchable
+              isClearable
             />
           </div>
         )}
+        <div className="flex items-end w-full md:w-3/12">
+          <Button variant="buttonGhost" onClick={resetFilterValues}>
+            <span className="text-green-primary text-xs">{t('filter.tyhjenna-valinnat')}</span>
+          </Button>
+        </div>
       </div>
     </div>
   )

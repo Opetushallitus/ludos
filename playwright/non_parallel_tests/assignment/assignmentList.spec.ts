@@ -49,7 +49,7 @@ test.describe('Assignment filter tests', () => {
 
     await assertStartPage()
 
-    await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1', 'VKA1.RA'])
+    await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1'])
     await setMultiSelectDropdownOptions(page, 'contentTypeFilter', ['003']) // keskustelu
     await setMultiSelectDropdownOptions(page, 'aiheFilter', ['013']) // pohjoismaat
 
