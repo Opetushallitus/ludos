@@ -2,7 +2,6 @@ import {
   AssignmentOut,
   ContentType,
   ContentTypeSingularEn,
-  Exam,
   FavoriteIdsDtoOut,
   isLdAssignment,
   isPuhviAssignment,
@@ -19,18 +18,17 @@ import { useFetch } from '../../hooks/useFetch'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
-  exam: Exam
   teachingLanguage: Language
   isPresentation: boolean
 }
 
-export const AssignmentContent = ({ assignment, exam, teachingLanguage, isPresentation }: AssignmentContentProps) => {
+export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
   const { t } = useTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto(teachingLanguage)
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
   const { data: favoriteIds, refresh: refreshFavoriteIds } = useFetch<FavoriteIdsDtoOut>(
-    `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}/${assignment.id}`
+    `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${assignment.exam.toLocaleUpperCase()}/${assignment.id}`
   )
 
   const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false

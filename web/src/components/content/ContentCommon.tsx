@@ -14,18 +14,16 @@ import { lazy, Suspense } from 'react'
 type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut
-  contentType: ContentType
   isPresentation: boolean
 }
 
-export function ContentHeader({ data, teachingLanguage, contentType, isPresentation }: ContentHeaderProps) {
-  // TODO: korvaa contentType data.contentType:llä
+export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
   const { t, lt } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
-    contentType === ContentType.INSTRUCTION ||
-    (contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    (contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
+    data.contentType === ContentType.INSTRUCTION ||
+    (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
+    (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
@@ -43,7 +41,7 @@ export function ContentHeader({ data, teachingLanguage, contentType, isPresentat
       </div>
       {shouldShowTeachingLanguageDropdown && (
         <div>
-          <p>{lt.contentPageLanguageDropdownLabel[contentType]}</p>
+          <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
           <TeachingLanguageSelect />
         </div>
       )}

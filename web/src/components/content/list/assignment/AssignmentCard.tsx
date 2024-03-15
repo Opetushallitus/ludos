@@ -63,7 +63,7 @@ export const AssignmentCard = ({
             <>
               <StateTag state={assignmentCard.publishState} />
               <InternalLink
-                to={editingFormPath(assignmentCard.exam, ContentType.ASSIGNMENT, assignmentCard.id)}
+                to={editingFormPath(assignmentCard)}
                 state={{ returnLocation }}
                 data-testid={`assignment-${assignmentCard.id.toString()}-edit`}>
                 <Icon name="muokkaa" color="text-green-primary" />
