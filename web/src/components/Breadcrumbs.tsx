@@ -7,13 +7,13 @@ import { contentListPath, examPath, favoritesPagePath, frontpagePath } from './L
 import { useParams } from 'react-router-dom'
 
 const BreadcrumbItem = ({ last, name, index, path }: { last: boolean; name: string; path: string; index: number }) => (
-  <div className="text-xs">
+  <div className="text-sm">
     {last ? (
       <p>/ {name}</p>
     ) : (
       <>
         {index > 0 ? '/ ' : ''}
-        <InternalLink className="px-1" to={path}>
+        <InternalLink className="pr-1" to={path}>
           {name}
         </InternalLink>
       </>
@@ -47,7 +47,7 @@ export const FavoriteFolderBreadcrumbs = ({ exam, segments }: BreadcrumbsProps) 
         <BreadcrumbItem
           last={index + 1 === pathsAndNames.length}
           name={name}
-          path={id === exam.toLowerCase() ? `${favoritesPagePath()}/${id}` : `${favoritesPagePath(exam)}/${id}`}
+          path={id === exam.toLowerCase() ? `${favoritesPagePath(exam)}` : `${favoritesPagePath(exam)}/${id}`}
           index={index}
           key={index}
         />

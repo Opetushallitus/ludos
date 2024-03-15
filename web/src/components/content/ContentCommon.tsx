@@ -120,7 +120,7 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
       {pdfData && (
         <Suspense
           fallback={
-            <Button variant="buttonGhost" customClass="p-0 flex items-center pr-3" disabled>
+            <Button variant="buttonGhost" customClass="p-0 flex items-center" disabled>
               <Icon name="pdf" color="text-green-primary" />
               <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
             </Button>
@@ -133,7 +133,7 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
           contentAction={{
             actionName: 'suosikki',
             iconName: 'suosikki',
-            text: isFavorite ? t('favorite.muokkaa-suosikkeja') : t('favorite.lisaa-suosikiksi')
+            text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
           }}
           onClickHandler={onFavoriteClick}
           isActive={isFavorite}

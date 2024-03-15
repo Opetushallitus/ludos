@@ -21,7 +21,7 @@ function AssignmentCardContentActionButton({
   onClickHandler,
   isDisabled
 }: AssignmentCardContentActionButtonProps) {
-  const className = 'flex items-center pr-3'
+  const className = 'flex items-center'
   const children = (
     <>
       <Icon name={iconName} color="text-green-primary" filled={isIconFilled} />
@@ -44,7 +44,7 @@ function AssignmentCardContentActionButton({
     return (
       <Button
         variant="buttonGhost"
-        customClass="p-0 flex items-center pr-3"
+        customClass="p-0 flex items-center"
         onClick={onClickHandler}
         disabled={isDisabled}
         data-testid={actionName}>
@@ -56,25 +56,34 @@ function AssignmentCardContentActionButton({
 
 const PdfDownloadButton = lazy(() => import('../../pdf/PdfDownloadButton'))
 
+type FavoriteActionProps = {
+  isFavorite: boolean
+  onClick: () => void
+  isDisabled: boolean
+}
+
+type MoveFolderActionProps = {
+  onClick: () => void
+  hasFolders: boolean
+}
+
 type AssignmentCardContentActionsProps = {
   assignment: AssignmentCardOut
-  isFavorite?: boolean
-  onFavoriteClick?: () => void
-  isFavoriteButtonDisabled: boolean
   language: Language
+  favoriteAction: FavoriteActionProps
+  moveFolderAction?: MoveFolderActionProps
 }
 
 export const AssignmentCardContentActions = ({
   assignment,
-  isFavorite,
-  onFavoriteClick,
-  isFavoriteButtonDisabled,
-  language
+  language,
+  favoriteAction,
+  moveFolderAction
 }: AssignmentCardContentActionsProps) => {
   const { t } = useLudosTranslation()
 
   return (
-    <div className="flex w-full flex-wrap items-center justify-evenly md:w-4/12 md:justify-end">
+    <div className="flex w-full flex-wrap items-center justify-evenly gap-3 pr-2 md:w-5/12 md:justify-end">
       <AssignmentCardContentActionButton
         assignment={assignment}
         contentAction={{
@@ -99,13 +108,26 @@ export const AssignmentCardContentActions = ({
         contentAction={{
           actionName: 'suosikki',
           iconName: 'suosikki',
-          text: isFavorite ? t('favorite.muokkaa-suosikkeja') : t('favorite.lisaa-suosikiksi')
+          text: favoriteAction.isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
         }}
-        onClickHandler={onFavoriteClick}
-        isIconFilled={isFavorite}
-        isDisabled={isFavoriteButtonDisabled}
+        onClickHandler={favoriteAction.onClick}
+        isIconFilled={favoriteAction.isFavorite}
+        isDisabled={favoriteAction.isDisabled}
         key="suosikki"
       />
+      {moveFolderAction && (
+        <AssignmentCardContentActionButton
+          assignment={assignment}
+          contentAction={{
+            actionName: 'folder',
+            iconName: 'kansio',
+            text: t('favorite.siirra-kansioon')
+          }}
+          onClickHandler={moveFolderAction.onClick}
+          isDisabled={!moveFolderAction.hasFolders}
+          key="folder"
+        />
+      )}
     </div>
   )
 }

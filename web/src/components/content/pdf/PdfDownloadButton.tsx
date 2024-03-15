@@ -44,7 +44,7 @@ export default function PdfDownloadButton({ exam, contentId, language }: PdfDown
     <>
       <Button
         variant="buttonGhost"
-        customClass="p-0 flex items-center pr-3"
+        customClass="p-0 flex items-center"
         onClick={handleDownloadClick}
         disabled={!!assignmentShouldBeGenerated}
         data-testid={`pdf-download-button-${language}`}>

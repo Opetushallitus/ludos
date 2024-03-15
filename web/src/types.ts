@@ -39,6 +39,13 @@ export const Exam = {
 } as const
 export type Exam = (typeof Exam)[keyof typeof Exam]
 
+export const FavoriteAction = {
+  ADD: 'ADD',
+  REMOVE: 'REMOVE',
+  EDIT: 'EDIT'
+} as const
+export type FavoriteAction = (typeof FavoriteAction)[keyof typeof FavoriteAction]
+
 export interface ContentBase {
   nameFi: string
   nameSv: string

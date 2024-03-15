@@ -34,7 +34,6 @@ Object.values(Exam).forEach(async (exam) => {
       const [assignment, _] = await favorite.prepAssignmentGoToAssignmentList(baseURL!)
 
       await favorite.headerFavorites.click()
-      await favorite.goToExamTab()
 
       const folderId = await favorite.createFolder(newFolderName)
 
@@ -46,7 +45,6 @@ Object.values(Exam).forEach(async (exam) => {
       await favorite.addToFavoritesBtn.click()
 
       await favorite.headerFavorites.click()
-      await favorite.goToExamTab()
 
       await expect(page.getByRole('link', { name: newFolderName }).first()).toBeVisible()
       await favorite.goToFolder(folderId)
@@ -65,24 +63,24 @@ Object.values(Exam).forEach(async (exam) => {
 
       const assignmentCard = page.getByTestId(`assignment-list-item-${assignment.id}`)
       const assignmentCardFavoriteBtn = assignmentCard.getByTestId('suosikki')
+      const assignmentCardFolderBtn = assignmentCard.getByTestId('folder')
 
       await favorite.layout.navHeaderGoToPageByExam(exam)
       await assignmentCardFavoriteBtn.click()
       await favorite.addToFavoritesBtn.click()
 
       await favorite.headerFavorites.click()
-      await favorite.goToExamTab()
 
       const folderId = await favorite.createFolder('folder 1')
       const folderId2 = await favorite.createFolder('folder 2')
 
-      await assignmentCardFavoriteBtn.click()
+      await assignmentCardFolderBtn.click()
       await favorite.doFolderSelectionInToggleFavoriteModal([folderId], [0])
 
       await page.getByTestId(`folder-${folderId}-card`).getByTestId('link').click()
       await expect(assignmentCard).toBeVisible()
 
-      await assignmentCardFavoriteBtn.click()
+      await assignmentCardFolderBtn.click()
       await favorite.doFolderSelectionInToggleFavoriteModal([folderId2], [folderId])
 
       await expect(assignmentCard).toBeHidden()

@@ -2,6 +2,7 @@ import { Icon } from '../../../Icon'
 import {
   AssignmentCardOut,
   ContentType,
+  FavoriteAction,
   FavoriteIdsDtoOut,
   isLdAssignment,
   isPuhviAssignment,
@@ -15,9 +16,11 @@ import { useKoodisto } from '../../../../hooks/useKoodisto'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { useState } from 'react'
 import { useSetFavoriteFolders } from '../../../../hooks/useSetFavoriteFolders'
-import { contentPagePath, editingFormPath } from '../../../LudosRoutes'
+import { contentPagePath, editingFormPath, suosikitKey } from '../../../LudosRoutes'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { SetFavoriteFoldersModal } from '../../../modal/favoriteModal/SetFavoriteFoldersModal'
+import { useLocation } from 'react-router-dom'
+import { FavoriteToggleModalFormType } from '../../../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 type AssignmentCardProps = {
@@ -37,12 +40,27 @@ export const AssignmentCard = ({
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
+  const location = useLocation()
 
-  const { setFavoriteFolder } = useSetFavoriteFolders(refetchFavoriteIds)
+  const isFavoritesPage = location.pathname.includes(suosikitKey)
+
+  const { setFavoriteFolders, unFavorite } = useSetFavoriteFolders(refetchFavoriteIds)
 
   const isFavorite = (favoriteIds && !!favoriteIds?.folderIdsByAssignmentId[assignmentCard.id]) || false
 
   const returnLocation = `${location.pathname}${location.search}${location.hash}`
+
+  const onSetFavoriteFoldersAction = async (data: FavoriteToggleModalFormType) => {
+    await setFavoriteFolders({ data, favoriteAction: isFavorite ? FavoriteAction.EDIT : FavoriteAction.ADD })
+    setIsFavoriteModalOpen(false)
+  }
+
+  const moveFolderAction = isFavoritesPage
+    ? {
+        onClick: () => setIsFavoriteModalOpen(true),
+        hasFolders: Object.values(favoriteIds ? favoriteIds.rootFolder.subfolders : []).length > 0
+      }
+    : undefined
 
   return (
     <>
@@ -70,7 +88,7 @@ export const AssignmentCard = ({
           )}
         </div>
         <div className="flex flex-wrap">
-          <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-8/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">
+          <div className="flex w-full flex-col flex-wrap p-3 md:flex md:w-7/12 md:flex-row md:flex-nowrap md:items-center md:gap-10">
             {(isLdAssignment(assignmentCard) || isPuhviAssignment(assignmentCard)) && (
               <>
                 <div>
@@ -115,10 +133,6 @@ export const AssignmentCard = ({
                   <p className="text-xs text-gray-secondary">{t('assignment.aihe')}</p>
                   <p className="text-xs text-black">{getKoodisLabel(assignmentCard.aiheKoodiArvos, 'aihesuko')}</p>
                 </div>
-                {/*<div>*/}
-                {/*  <p className="text-xs text-gray-secondary">{t('assignment.tavoitetaso')}</p>*/}
-                {/*  <p className="text-xs text-black">{getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}</p>*/}
-                {/*</div>*/}
               </>
             )}
             <div>
@@ -128,10 +142,13 @@ export const AssignmentCard = ({
           </div>
           <AssignmentCardContentActions
             assignment={assignmentCard}
-            isFavorite={isFavorite}
-            onFavoriteClick={() => setIsFavoriteModalOpen(true)}
+            favoriteAction={{
+              isFavorite,
+              onClick: () => (isFavorite ? unFavorite(assignmentCard) : setIsFavoriteModalOpen(true)),
+              isDisabled: !favoriteIds
+            }}
             language={teachingLanguage}
-            isFavoriteButtonDisabled={!favoriteIds}
+            moveFolderAction={moveFolderAction}
           />
         </div>
       </li>
@@ -145,10 +162,7 @@ export const AssignmentCard = ({
             (teachingLanguage === Language.FI ? assignmentCard.nameFi : assignmentCard.nameSv) || t('form.nimeton')
           }
           onClose={() => setIsFavoriteModalOpen(false)}
-          onSetFavoriteFoldersAction={async (data) => {
-            await setFavoriteFolder(data)
-            setIsFavoriteModalOpen(false)
-          }}
+          onSetFavoriteFoldersAction={onSetFavoriteFoldersAction}
         />
       )}
     </>

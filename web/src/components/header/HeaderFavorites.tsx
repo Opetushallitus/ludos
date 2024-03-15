@@ -4,7 +4,11 @@ import { Icon } from '../Icon'
 import { favoritesPagePath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { twMerge } from 'tailwind-merge'
+import { useLocation } from 'react-router-dom'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Exam } from '../../types'
+
+const toLower = (str: string) => str.toLowerCase()
 
 type HeaderFavoritesProps = {
   userFavoriteAssignmentCount: number
@@ -13,6 +17,11 @@ type HeaderFavoritesProps = {
 
 export const HeaderFavorites = ({ userFavoriteAssignmentCount, isMobile }: HeaderFavoritesProps) => {
   const { t } = useLudosTranslation()
+  const location = useLocation()
+
+  const pathSegments = location.pathname.split('/')
+  const examInPath = pathSegments.find((p) => Object.values(Exam).map(toLower).includes(p))
+  const exam: Exam = examInPath ? (examInPath.toUpperCase() as Exam) : Exam.SUKO
 
   return (
     <InternalLink
@@ -20,7 +29,7 @@ export const HeaderFavorites = ({ userFavoriteAssignmentCount, isMobile }: Heade
         buttonClasses('buttonGhost'),
         'flex justify-center gap-1 border-l border-green-primary pt-1 pb-0 pr-2'
       )}
-      to={favoritesPagePath()}
+      to={favoritesPagePath(exam)}
       data-testid="header-favorites">
       {isMobile ? null : <span className="text-green-primary">{t('favorite.suosikit')}</span>}
       <div className="relative">
