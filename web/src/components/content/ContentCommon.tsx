@@ -29,14 +29,14 @@ export function ContentHeader({ data, teachingLanguage, contentType, isPresentat
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
-      <div className="flex w-2/3 flex-col">
+      <div className="flex flex-col">
         {!isPresentation && (
           <div className="row my-1">
             <p>{toLocaleDate(data.createdAt)}</p>
           </div>
         )}
         <div className="row">
-          <h2 className="w-full md:w-1/2" data-testid="assignment-header">
+          <h2 className="w-full break-normal" data-testid="assignment-header">
             {getContentName(data, teachingLanguage) || t('form.nimeton')}
           </h2>
         </div>
