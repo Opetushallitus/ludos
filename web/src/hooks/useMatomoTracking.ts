@@ -9,8 +9,8 @@ export const useMatomoTracking = () => {
     window._paq = window._paq || []
 
     // Track page view
-    window._paq.push(['setCustomUrl', window.location.href])
+    window._paq.push(['setCustomUrl', `${window.location.origin}${location.pathname}`])
     window._paq.push(['setDocumentTitle', document.title])
     window._paq.push(['trackPageView'])
-  }, [location])
+  }, [location.pathname])
 }
