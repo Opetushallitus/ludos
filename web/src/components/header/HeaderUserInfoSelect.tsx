@@ -5,8 +5,10 @@ import { HeaderLogoutButton } from './HeaderLogoutButton'
 import { useState } from 'react'
 import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
 import { useUserDetails } from '../../hooks/useUserDetails'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const HeaderUserInfoSelect = () => {
+  const { lt } = useLudosTranslation()
   const { firstNames, lastName, role } = useUserDetails()
 
   const [showMenu, setShowMenu] = useState(false)
@@ -23,7 +25,7 @@ export const HeaderUserInfoSelect = () => {
         <Icon name="laajenna" color="text-black" size="lg" />
       </Button>
       <p className="text-xss absolute" data-testid="header-user-role">
-        {role}
+        {role && lt.headerRoleTexts[role]}
       </p>
       {showMenu && (
         <div className="absolute right-0 mt-2 w-max pr-3 rounded border border-gray-border bg-white">
