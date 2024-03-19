@@ -2,13 +2,13 @@ import { Editor } from '@tiptap/react'
 import { useRef, useState } from 'react'
 import { Icon } from '../../../Icon'
 import { Button } from '../../../Button'
-import { useTranslation } from 'react-i18next'
 import { TextInputModal } from '../../../modal/TextInputModal'
 import { ImageSelector } from './ImageSelector'
 import { ImageDtoOut } from '../../../../types'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const [isUrlModalOpen, setIsUrlModalOpen] = useState(false)
   const imageFileInputRef = useRef<HTMLInputElement>(null)
 

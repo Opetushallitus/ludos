@@ -3,8 +3,8 @@ import { usePDF } from '@react-pdf/renderer'
 import AssignmentPdf from './AssignmentPdf'
 import { AssignmentOut, Language } from '../../../types'
 import { getContentName } from '../../../utils/assignmentUtils'
-import { useTranslation } from 'react-i18next'
 import { useNotification } from '../../../contexts/NotificationContext'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type LazyPdfGeneratorProps = {
   assignmentOut: AssignmentOut
@@ -13,7 +13,7 @@ type LazyPdfGeneratorProps = {
 }
 
 const PdfGenerator = ({ assignmentOut, language, onGenerated }: LazyPdfGeneratorProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { setNotification } = useNotification()
 
   const [instance] = usePDF({

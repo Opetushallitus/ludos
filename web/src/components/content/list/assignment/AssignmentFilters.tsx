@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
-import { useTranslation } from 'react-i18next'
 import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
 import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
 import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
@@ -12,6 +11,7 @@ import {
 } from '../../../ludosSelect/helpers'
 import { SingleValue } from 'react-select'
 import { Button } from '../../../Button'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 type AssignmentFiltersProps = {
   exam: Exam
@@ -42,7 +42,7 @@ export const AssignmentFilters = ({
   filterValues: { filterValues, setFilterValue, resetFilterValues },
   assignmentFilterOptions
 }: AssignmentFiltersProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { koodistos, getKoodiLabel, getOppimaaraLabel, sortKooditAlphabetically } = useKoodisto()
 
   const handleFilterChange = useCallback(

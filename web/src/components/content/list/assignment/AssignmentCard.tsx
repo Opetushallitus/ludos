@@ -9,7 +9,6 @@ import {
   Language
 } from '../../../../types'
 import { StateTag } from '../../../StateTag'
-import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../../InternalLink'
 import { toLocaleDate } from '../../../../utils/formatUtils'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
@@ -19,6 +18,7 @@ import { useSetFavoriteFolders } from '../../../../hooks/useSetFavoriteFolders'
 import { contentPagePath, editingFormPath } from '../../../LudosRoutes'
 import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 import { SetFavoriteFoldersModal } from '../../../modal/favoriteModal/SetFavoriteFoldersModal'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 type AssignmentCardProps = {
   teachingLanguage: Language
@@ -33,7 +33,7 @@ export const AssignmentCard = ({
   favoriteIds,
   favoriteIdsRefresh
 }: AssignmentCardProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const { isYllapitaja } = useUserDetails()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)

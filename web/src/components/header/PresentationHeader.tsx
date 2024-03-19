@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const PresentationHeader = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="flex justify-center bg-gray-bg pb-6">

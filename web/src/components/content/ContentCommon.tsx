@@ -103,7 +103,7 @@ type ContentActionRowProps = {
 }
 
 export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="row mt-3 w-full flex-wrap gap-3">

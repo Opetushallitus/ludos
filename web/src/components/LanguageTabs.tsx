@@ -1,8 +1,8 @@
 import { Button } from './Button'
-import { useTranslation } from 'react-i18next'
 import { Language } from '../types'
 import { Icon } from './Icon'
 import { twMerge } from 'tailwind-merge'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 type LanguageTabsProps = {
   activeTab: string
@@ -12,7 +12,7 @@ type LanguageTabsProps = {
 }
 
 export const LanguageTabs = ({ activeTab, setActiveTab, fiErrors, svErrors }: LanguageTabsProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="text-gray-500 text-center text-base">

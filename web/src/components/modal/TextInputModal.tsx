@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Button } from '../Button'
-import { useTranslation } from 'react-i18next'
 import { useModal } from './useModal'
 import styles from './modal.module.css'
 import { ModalHeader } from './ModalHeader'
 import { useInputAutoFocus } from '../../hooks/useInputAutoFocus'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 interface ModalProps {
   modalTitle: string
@@ -25,7 +25,7 @@ export const TextInputModal = ({
   onAddText,
   dataTestId
 }: ModalProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef, onClick } = useModal({ open: true, onClose })
   const [text, setText] = useState(initialText ?? '')
   const inputRef = useInputAutoFocus(true, autoSelectInputText)

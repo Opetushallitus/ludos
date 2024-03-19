@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next'
 import { useModal } from './useModal'
 import { Icon } from '../Icon'
 import { Button } from '../Button'
 import styles from './modal.module.css'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type BlockNavigationModalProps = {
   open: boolean
@@ -11,7 +11,7 @@ type BlockNavigationModalProps = {
 }
 
 export const BlockNavigationModal = ({ open, onProceed, onClose }: BlockNavigationModalProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { modalRef, dialogClasses, onCancel, onAnimEnd } = useModal({ open, onClose })
 
   return (

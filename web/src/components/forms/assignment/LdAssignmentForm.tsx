@@ -1,7 +1,6 @@
 import { FieldLabel } from '../../FieldLabel'
 import { FormProvider } from 'react-hook-form'
 import { LdAssignmentFormType } from '../schemas/assignmentSchema'
-import { useTranslation } from 'react-i18next'
 import { ContentFormAction, Exam } from '../../../types'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { FormContentInput } from '../formCommon/FormContentInput'
@@ -13,6 +12,7 @@ import { FormAineDropdown } from '../formCommon/FormAineDropdown'
 import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 import { InfoBox } from '../../InfoBox'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type LdAssignmentFormProps = {
   action: ContentFormAction
@@ -20,7 +20,7 @@ type LdAssignmentFormProps = {
 }
 
 export const LdAssignmentForm = ({ action, id }: LdAssignmentFormProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { koodistos, sortKooditAlphabetically } = useKoodisto()
 
   const {

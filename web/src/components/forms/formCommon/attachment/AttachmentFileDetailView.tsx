@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next'
 import { Spinner } from '../../../Spinner'
 import { AttachmentData, ContentType, Exam, FileDetails, Language } from '../../../../types'
 import { AttachmentDetails } from './AttachmentDetails'
 import { AttachmentDetailsList } from './AttachmentDetailsList'
 import { CERTIFICATE_URL, INSTRUCTION_URL } from '../../../../constants'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 interface AttachmentFileDetailViewProps {
   exam: Exam
@@ -24,7 +24,7 @@ export const AttachmentFileDetailView = ({
   loading,
   language = Language.FI
 }: AttachmentFileDetailViewProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const attachmentDownloadUrlPrefix = `${
     contentType === ContentType.INSTRUCTION ? INSTRUCTION_URL : CERTIFICATE_URL
   }/${exam}/attachment`

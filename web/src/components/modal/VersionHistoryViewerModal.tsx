@@ -6,8 +6,8 @@ import { toLocaleDate } from '../../utils/formatUtils'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
 import { contentPagePath } from '../LudosRoutes'
-import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type ModalProps = {
   open: boolean
@@ -23,7 +23,7 @@ export const VersionHistoryViewerModal = ({
   contentType,
   restoreOldVersion
 }: ModalProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef } = useModal({ open, onClose })
 
   const latestVersion = versionList.at(-1)?.version

@@ -1,9 +1,9 @@
-import { useTranslation } from 'react-i18next'
 import { ErrorMessages, ErrorMessagesType } from '../../../types'
 import { MIN_NAME_LENGTH } from '../schemas/schemaCommon'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 export const FormError = ({ error, name }: { error?: string; name: string }) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   function getErrorMessage(errorMsg: ErrorMessagesType) {
     switch (errorMsg) {

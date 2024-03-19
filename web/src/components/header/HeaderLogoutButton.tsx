@@ -1,10 +1,10 @@
 import { Icon } from '../Icon'
 import { ExternalLink } from '../ExternalLink'
 import { LOGOUT_URL } from '../../constants'
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const HeaderLogoutButton = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   return (
     <div className="row gap-2 items-center border-t border-gray-separator mt-2 px-4">
       <Icon name="logout" color="text-green-primary" size="lg" />

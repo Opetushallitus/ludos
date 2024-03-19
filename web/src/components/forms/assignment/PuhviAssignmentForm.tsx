@@ -1,7 +1,6 @@
 import { FieldLabel } from '../../FieldLabel'
 import { FormProvider } from 'react-hook-form'
 import { PuhviAssignmentFormType } from '../schemas/assignmentSchema'
-import { useTranslation } from 'react-i18next'
 import { ContentFormAction, Exam } from '../../../types'
 import { useKoodisto } from '../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
@@ -13,6 +12,7 @@ import { currentKoodistoSelectOptions, koodistoSelectOptions } from '../../ludos
 import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 import { InfoBox } from '../../InfoBox'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type PuhviAssignmentFormProps = {
   action: ContentFormAction
@@ -20,7 +20,7 @@ type PuhviAssignmentFormProps = {
 }
 
 export const PuhviAssignmentForm = ({ action, id }: PuhviAssignmentFormProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { koodistos, sortKooditAlphabetically } = useKoodisto()
 
   const {

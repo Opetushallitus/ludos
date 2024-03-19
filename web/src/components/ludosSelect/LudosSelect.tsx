@@ -10,10 +10,10 @@ import Select, {
 } from 'react-select'
 import { Icon } from '../Icon'
 import './ludosSelect.css'
-import { useTranslation } from 'react-i18next'
 import { Button } from '../Button'
 import { useState } from 'react'
 import { FormError } from '../forms/formCommon/FormErrors'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export type LudosSelectOption = {
   value: string
@@ -47,7 +47,7 @@ export function LudosSelect<
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>
 >({ menuSize = 'full', ...props }: LudosSelectProps<Option, IsMulti, Group>) {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
   const DropdownIndicator = (props: DropdownIndicatorProps<Option, boolean, GroupBase<Option>>) => (

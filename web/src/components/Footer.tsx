@@ -1,15 +1,15 @@
 import logo from 'web/assets/oph_fin_vaaka.png'
 import { ExternalLink } from './ExternalLink'
 import { OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
-import { useTranslation } from 'react-i18next'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 type FooterProps = {
   isPresentation?: boolean
 }
 
 export const Footer = ({ isPresentation }: FooterProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const feedbackUrl = useFeedbackUrl()
 
   return (

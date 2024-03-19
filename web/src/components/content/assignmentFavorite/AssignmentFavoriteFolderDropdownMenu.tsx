@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useDropdownCloseOnBlur } from '../../../hooks/useDropdownCloseOnBlur'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { useTranslation } from 'react-i18next'
 import { TextInputModal } from '../../modal/TextInputModal'
 import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
 import { AssignmentFavoriteMoveFolderModal } from '../../modal/AssignmentFavoriteMoveFolderModal'
@@ -12,6 +11,7 @@ import { useNotification } from '../../../contexts/NotificationContext'
 import { useNavigate } from 'react-router-dom'
 import { favoritesPagePath } from '../../LudosRoutes'
 import { DeleteModal } from '../../modal/DeleteModal'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type AssignmentFavoriteFolderDropdownMenuProps = {
   exam: Exam
@@ -26,7 +26,7 @@ export const AssignmentFavoriteFolderDropdownMenu = ({
   currentFavoriteCardFolder,
   refresh
 }: AssignmentFavoriteFolderDropdownMenuProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { setNotification } = useNotification()
   const navigate = useNavigate()
 

@@ -3,14 +3,14 @@ import { twMerge } from 'tailwind-merge'
 import { Icon } from './Icon'
 import { Button } from './Button'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
-import { useTranslation } from 'react-i18next'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
 import { ExternalLink } from './ExternalLink'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
 export const Notification = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const feedbackUrl = useFeedbackUrl()
   const { notification, setNotification } = useNotification()
   const hideNotification = useCallback(() => setNotification(null), [setNotification])

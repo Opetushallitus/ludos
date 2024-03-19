@@ -1,7 +1,7 @@
 import { Button } from './Button'
 import { ChangeEvent, HTMLAttributes, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { Spinner } from './Spinner'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 const maxSizeInMiB = 5
 const maxSizeInBytes = maxSizeInMiB * 1024 * 1024
@@ -16,7 +16,7 @@ interface FileSelectorProps extends HTMLAttributes<HTMLInputElement> {
 }
 
 export const FileSelector = ({ acceptedMimeTypes, btnText, onFileSelected, loading, ...props }: FileSelectorProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const hiddenFileInputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
 

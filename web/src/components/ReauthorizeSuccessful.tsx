@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 export const ReauthorizeSuccessful = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="mt-10">

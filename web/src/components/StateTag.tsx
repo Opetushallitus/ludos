@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next'
 import { PublishState } from '../types'
 import { twMerge } from 'tailwind-merge'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 type TagAttributes = {
   localizationKey: string
@@ -8,7 +8,7 @@ type TagAttributes = {
 }
 
 export const StateTag = ({ state }: { state: PublishState }) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const tagAttributes = getTagAttributes(state)
 
   function getTagAttributes(state: PublishState): TagAttributes {

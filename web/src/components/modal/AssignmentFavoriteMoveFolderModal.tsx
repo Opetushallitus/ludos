@@ -1,5 +1,4 @@
 import styles from './modal.module.css'
-import { useTranslation } from 'react-i18next'
 import { useModal } from './useModal'
 import { ModalHeader } from './ModalHeader'
 import { FavoriteCardFolderDtoOut } from '../../types'
@@ -7,6 +6,7 @@ import { makeFlatListFromFolder } from '../../assignmentFavoriteFolderHelpers'
 import { FAVORITE_ROOT_FOLDER_ID } from '../../constants'
 import { useState } from 'react'
 import { Button } from '../Button'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export type FolderList = { id: number; name: string }[]
 
@@ -23,7 +23,7 @@ export const AssignmentFavoriteMoveFolderModal = ({
   onSubmit,
   onClose
 }: AssignmentFavoriteMoveFolderModalProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { modalRef, dialogClasses, onClick, onCancel, onAnimEnd } = useModal({ open: true, onClose })
   const [selectedFolderId, setSelectedFolderId] = useState(folder.id)
 
@@ -73,7 +73,7 @@ type FavoriteFolderRadioProps = {
 }
 
 export const FavoriteFolderRadio = ({ folders, checkedFolder, setCheckedFolder }: FavoriteFolderRadioProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="pb-4">
