@@ -3,6 +3,7 @@ import { ExternalLink } from './ExternalLink'
 import { OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { ConsentModal } from './modal/ConsentModal'
 
 type FooterProps = {
   isPresentation?: boolean
@@ -16,6 +17,7 @@ export const Footer = ({ isPresentation }: FooterProps) => {
     <div
       className="row flex-wrap items-center text-xs mt-5 py-4 px-10 border-t-2 border-gray-separator"
       data-testid="footer">
+      <ConsentModal />
       <div className="w-full md:w-1/3">
         <a href={OPH_URL} target="_blank" rel="noopener noreferrer" title="Opetushallituksen nettisivut">
           <img className="h-12" src={logo} alt="Opetushallituksen logo" />
