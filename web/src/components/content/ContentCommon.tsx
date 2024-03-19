@@ -14,36 +14,34 @@ import { lazy, Suspense } from 'react'
 type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut
-  contentType: ContentType
   isPresentation: boolean
 }
 
-export function ContentHeader({ data, teachingLanguage, contentType, isPresentation }: ContentHeaderProps) {
-  // TODO: korvaa contentType data.contentType:llä
+export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
   const { t, lt } = useLudosTranslation()
 
   const shouldShowTeachingLanguageDropdown =
-    contentType === ContentType.INSTRUCTION ||
-    (contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    (contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
+    data.contentType === ContentType.INSTRUCTION ||
+    (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
+    (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
-      <div className="flex w-2/3 flex-col">
+      <div className="flex flex-col">
         {!isPresentation && (
           <div className="row my-1">
             <p>{toLocaleDate(data.createdAt)}</p>
           </div>
         )}
         <div className="row">
-          <h2 className="w-full md:w-1/2" data-testid="assignment-header">
+          <h2 className="w-full break-normal" data-testid="assignment-header">
             {getContentName(data, teachingLanguage) || t('form.nimeton')}
           </h2>
         </div>
       </div>
       {shouldShowTeachingLanguageDropdown && (
         <div>
-          <p>{lt.contentPageLanguageDropdownLabel[contentType]}</p>
+          <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
           <TeachingLanguageSelect />
         </div>
       )}

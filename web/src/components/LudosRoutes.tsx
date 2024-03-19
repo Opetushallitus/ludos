@@ -8,7 +8,7 @@ import {
   useRouteError
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
+import { ContentBaseOut, ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
 import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from './Spinner'
@@ -38,7 +38,7 @@ export const contentPagePath = (exam: Exam, contentType: ContentType, id: number
 export const contentListPath = (exam: Exam, contentType: ContentType, search?: string) =>
   `${examPath(exam)}/${ContentTypePluralFi[contentType]}${search ?? ''}`
 
-export const editingFormPath = (exam: Exam, contentType: ContentType, id: number) =>
+export const editingFormPath = ({ exam, contentType, id }: ContentBaseOut) =>
   `${examPath(exam)}/${ContentTypePluralFi[contentType]}/${muokkausKey}/${id}`
 
 export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`

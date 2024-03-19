@@ -120,19 +120,14 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader
-                teachingLanguage={teachingLanguageOverride}
-                data={data}
-                contentType={contentType}
-                isPresentation={isPresentation}
-              />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} isPresentation={isPresentation} />
 
               {!isPresentation && isYllapitaja && (
                 <div className="row">
                   <StateTag state={data.publishState} />
                   <InternalLink
                     className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
-                    to={editingFormPath(exam, contentType, data.id)}
+                    to={editingFormPath(data)}
                     state={state}
                     data-testid="edit-content-btn">
                     <Icon name="muokkaa" color="text-green-primary" />
@@ -176,7 +171,6 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
                 <AssignmentContent
                   assignment={data}
-                  exam={exam}
                   teachingLanguage={teachingLanguageOverride}
                   isPresentation={isPresentation}
                 />
