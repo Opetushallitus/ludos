@@ -133,7 +133,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         assertEquals(createdAssignment.authorOid, updatedAssignmentById.authorOid)
         assertEquals(createdAssignment.updaterOid, updatedAssignmentById.updaterOid)
         // uusi versio luotu
-        assertNotEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
+        assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
         assertTimeIsRoughlyBetween(timeBeforeUpdate, updatedAssignmentById.updatedAt, timeAfterUpdate, "updatedAt")
     }
 
@@ -670,6 +670,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                 )
                 val updatedAssignmentById = getAssignmentByIdByExam(exam, createdAssignment.id)
                 assertNotEquals(createdAssignment.nameFi, updatedAssignmentById.nameFi)
+                assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
 
                 val versionsBeforeRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
                 assertEquals(2, versionsBeforeRestore.size)
@@ -683,6 +684,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                 assertEquals(3, latestVersionById.version)
 
                 assertEquals(createdAssignment.nameFi, latestVersionById.nameFi)
+                assertEquals(createdAssignment.createdAt, updatedAssignmentById.createdAt)
             }
         }
 }

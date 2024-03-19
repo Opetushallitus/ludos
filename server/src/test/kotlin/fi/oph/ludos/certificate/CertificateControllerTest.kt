@@ -625,6 +625,7 @@ class CertificateControllerTest : CertificateRequests() {
                 updateCertificateByExamAndCheckIt(exam, createdCertificate)
                 val updatedCertificateById = getCertificateById(exam, createdCertificate.id)
                 assertNotEquals(createdCertificate.nameFi, updatedCertificateById.nameFi)
+                assertEquals(createdCertificate.createdAt, updatedCertificateById.createdAt)
 
                 val versionsBeforeRestore = getAllCertificateVersions(exam, createdCertificate.id)
                 assertEquals(2, versionsBeforeRestore.size)
@@ -638,6 +639,7 @@ class CertificateControllerTest : CertificateRequests() {
                 assertEquals(3, latestVersionById.version)
 
                 assertEquals(createdCertificate.nameFi, latestVersionById.nameFi)
+                assertEquals(createdCertificate.createdAt, updatedCertificateById.createdAt)
             }
         }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.sql.Timestamp
 
 data class AssignmentListMetadata(
     val assignmentFilterOptions: AssignmentFilterOptionsDtoOut,
@@ -176,13 +177,24 @@ class AssignmentRepository(
         Exam.LD -> "ld_assignment"
     }
 
-    private fun getLatestAssignmentVersionAndAuthor(id: Int, exam: Exam): Pair<Int, String>? = try {
+    private fun getLatestAssignmentDataForNewVersion(id: Int, exam: Exam): Triple<Int, String, Timestamp>? = try {
         jdbcTemplate.queryForObject(
             """
-            SELECT assignment_version, assignment_author_oid
+            SELECT assignment_version, assignment_author_oid, assignment_created_at
             FROM ${tableNameByExam(exam)}
-            WHERE assignment_id = ? AND assignment_version = (SELECT MAX(assignment_version) FROM ${tableNameByExam(exam)} WHERE assignment_id = ?);""".trimIndent(),
-            { rs, _ -> Pair(rs.getInt("assignment_version"), rs.getString("assignment_author_oid")) },
+            WHERE assignment_id = ? AND assignment_version = (
+                SELECT MAX(assignment_version) 
+                FROM ${tableNameByExam(exam)} 
+                WHERE assignment_id = ?
+            ) 
+            FOR UPDATE;""".trimIndent(),
+            { rs, _ ->
+                Triple(
+                    rs.getInt("assignment_version"),
+                    rs.getString("assignment_author_oid"),
+                    rs.getTimestamp("assignment_created_at")
+                )
+            },
             id, id
         )
     } catch (e: EmptyResultDataAccessException) {
@@ -826,7 +838,10 @@ class AssignmentRepository(
 
     fun createNewVersionOfSukoAssignment(id: Int, assignment: SukoAssignmentDtoIn): SukoAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
-            val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
+            val (currentLatestVersion, authorOid, originalCreatedAt) = getLatestAssignmentDataForNewVersion(
+                id,
+                assignment.exam
+            )
                 ?: return@execute null
 
             val version = currentLatestVersion + 1
@@ -848,8 +863,9 @@ class AssignmentRepository(
                         assignment_laajaalainen_osaaminen_koodi_arvos,
                         assignment_author_oid,
                         assignment_updater_oid,
-                        assignment_version) 
-                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        assignment_version,
+                        assignment_created_at) 
+                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                        RETURNING $assignmentOutFields""".trimIndent(),
                     arrayOf("assignment_id")
                 )
@@ -868,6 +884,7 @@ class AssignmentRepository(
                 ps.setString(13, authorOid)
                 ps.setString(14, Kayttajatiedot.fromSecurityContext().oidHenkilo)
                 ps.setInt(15, version)
+                ps.setTimestamp(16, originalCreatedAt)
                 ps
             }, keyHolder)
 
@@ -878,7 +895,10 @@ class AssignmentRepository(
 
     fun createNewVersionOfLdAssignment(id: Int, assignment: LdAssignmentDtoIn): LdAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
-            val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
+            val (currentLatestVersion, authorOid, originalCreatedAt) = getLatestAssignmentDataForNewVersion(
+                id,
+                assignment.exam
+            )
                 ?: return@execute null
 
             val version = currentLatestVersion + 1
@@ -898,8 +918,9 @@ class AssignmentRepository(
                         assignment_laajaalainen_osaaminen_koodi_arvos,
                         ld_assignment_lukuvuosi_koodi_arvos,
                         ld_assignment_aine_koodi_arvo,
-                        assignment_version)
-                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?)
+                        assignment_version,
+                        assignment_created_at)
+                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?, ?)
                        RETURNING $assignmentOutFields""".trimIndent(),
                     arrayOf("assignment_id")
                 )
@@ -915,6 +936,7 @@ class AssignmentRepository(
                 ps.setArray(10, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos.toTypedArray()))
                 ps.setString(11, assignment.aineKoodiArvo)
                 ps.setInt(12, version)
+                ps.setTimestamp(13, originalCreatedAt)
                 ps
             }, keyHolder)
 
@@ -925,7 +947,10 @@ class AssignmentRepository(
 
     fun createNewVersionOfPuhviAssignment(id: Int, assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut? =
         transactionTemplate.execute { _ ->
-            val (currentLatestVersion, authorOid) = getLatestAssignmentVersionAndAuthor(id, assignment.exam)
+            val (currentLatestVersion, authorOid, originalCreatedAt) = getLatestAssignmentDataForNewVersion(
+                id,
+                assignment.exam
+            )
                 ?: return@execute null
 
             val version = currentLatestVersion + 1
@@ -945,8 +970,9 @@ class AssignmentRepository(
                         assignment_laajaalainen_osaaminen_koodi_arvos,
                         puhvi_assignment_assignment_type_koodi_arvo,
                         puhvi_assignment_lukuvuosi_koodi_arvos,
-                        assignment_version)
-                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?)
+                        assignment_version,
+                        assignment_created_at)
+                       VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, clock_timestamp(), ?, ?, ?, ?, ?, ?)
                        RETURNING $assignmentOutFields""".trimIndent(),
                     arrayOf("assignment_id")
                 )
@@ -962,6 +988,7 @@ class AssignmentRepository(
                 ps.setString(10, assignment.assignmentTypeKoodiArvo)
                 ps.setArray(11, con.createArrayOf("text", assignment.lukuvuosiKoodiArvos.toTypedArray()))
                 ps.setInt(12, version)
+                ps.setTimestamp(13, originalCreatedAt)
                 ps
             }, keyHolder)
 
