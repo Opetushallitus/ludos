@@ -102,6 +102,9 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
     resetAndSetIsOpen(false)
   }
 
+  if (!isOpen) {
+    return null
+  }
   return (
     <dialog
       ref={modalRef}
@@ -152,7 +155,7 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
             {isSettingsOpen ? t('consent.modal.hide-settings') : t('consent.modal.show-settings')}
           </Button>
           {isSettingsOpen && (
-            <Button variant="buttonSecondary" onClick={onAcceptSelected} data-testid="accept-all-button">
+            <Button variant="buttonSecondary" onClick={onAcceptSelected} data-testid="accept-selected-button">
               {t('consent.modal.accept-selected')}
             </Button>
           )}

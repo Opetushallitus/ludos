@@ -27,7 +27,7 @@ async function assertKoodistoLanguageInPuhviKoetehtavaForm(page: Page, language:
 
 test.beforeEach(async ({ page }) => {
   await login(page, Role.YLLAPITAJA, 'sv')
-  await page.goto('/')
+  await new LayoutModel(page).acceptOnlyNecessaryCookies()
 })
 
 test('Business language is the default for UI, teaching language and koodisto language', async ({ page }) => {
