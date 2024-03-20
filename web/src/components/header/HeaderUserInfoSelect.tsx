@@ -24,7 +24,7 @@ export const HeaderUserInfoSelect = () => {
         {`${firstNames} ${lastName}`}
         <Icon name="laajenna" color="text-black" size="lg" />
       </Button>
-      <p className="text-xss absolute" data-testid="header-user-role">
+      <p className="text-xss absolute mt-[-6px]" data-testid="header-user-role">
         {role && lt.headerRoleTexts[role]}
       </p>
       {showMenu && (
