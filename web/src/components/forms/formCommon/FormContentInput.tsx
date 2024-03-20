@@ -1,6 +1,5 @@
 import { TextInput } from '../../TextInput'
 import { FormError } from './FormErrors'
-import { useTranslation } from 'react-i18next'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { LanguageTabs } from '../../LanguageTabs'
 import { useEffect, useState } from 'react'
@@ -8,6 +7,7 @@ import { TipTap } from './editor/TipTap'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { Exam, Language } from '../../../types'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 interface Field {
   id: string
@@ -15,7 +15,7 @@ interface Field {
 }
 
 const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const {
     watch,
     control,
@@ -103,7 +103,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
 }
 
 export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boolean }) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
 
   const {

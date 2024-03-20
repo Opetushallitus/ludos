@@ -415,6 +415,18 @@ function listLocalizationKeysUsedAndLintErrorsInFile(filePath: string): [Set<str
         errors.push(formatTypescriptError(node, 't function called with a non-string-literal'))
       }
     }
+    if (
+      ts.isCallExpression(node) &&
+      node.expression.getText() === 'useTranslation' &&
+      path.basename(node.getSourceFile().fileName) !== 'useLudosTranslation.ts'
+    ) {
+      errors.push(
+        formatTypescriptError(
+          node,
+          'useTranslation function called outside of useLudosTranslation.ts. Use useLudosTranslation everywhere else.'
+        )
+      )
+    }
     node.forEachChild(findLocalizationKeysUsedInAstNode)
   }
   findLocalizationKeysUsedInAstNode(sourceFile)

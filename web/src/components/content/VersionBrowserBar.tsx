@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom'
 import { contentPagePath, pageNotFoundPath } from '../LudosRoutes'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
-import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../InternalLink'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type VersionBrowserBarProps = {
   data: ContentBaseOut
@@ -21,7 +21,7 @@ export const VersionBrowserBar = ({
   stopVersionBrowsing,
   restoreOldVersion
 }: VersionBrowserBarProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { contentTypePluralFi } = useParams<{ contentTypePluralFi: ContentTypePluralFi; id: string; version: string }>()
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
 

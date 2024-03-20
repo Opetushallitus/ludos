@@ -44,6 +44,7 @@ export class FormModel extends BaseModel {
   async assertNavigationBlockOnDirtyForm() {
     await this.page.getByTestId('nav-link-etusivu').click()
     await expect(this.blockNavigationModal).toBeVisible()
+    await expect(this.blockNavigationModal.getByTestId('cancel')).toBeVisible()
     await this.blockNavigationModal.getByTestId('cancel').click()
     await expect(this.blockNavigationModal).toBeHidden()
   }

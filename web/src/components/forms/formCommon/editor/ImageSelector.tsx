@@ -1,8 +1,8 @@
 import { ChangeEvent, HTMLAttributes, RefObject } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useNotification } from '../../../../contexts/NotificationContext'
 import { ImageDtoOut } from '../../../../types'
 import { uploadImage } from '../../../../request'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 const maxSizeInMiB = 5
 const maxSizeInBytes = maxSizeInMiB * 1024 * 1024
@@ -15,7 +15,7 @@ interface FileSelectorProps extends HTMLAttributes<HTMLInputElement> {
 }
 
 export const ImageSelector = ({ imageFileInputRef, onImageUploaded }: FileSelectorProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { setNotification } = useNotification()
 
   const uploadSelectedFile = async (file: File) => {

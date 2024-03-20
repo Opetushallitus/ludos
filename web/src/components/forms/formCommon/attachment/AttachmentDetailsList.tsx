@@ -4,8 +4,8 @@ import { toLocaleDate } from '../../../../utils/formatUtils'
 import { Icon } from '../../../Icon'
 import { useState } from 'react'
 import { DeleteModal } from '../../../modal/DeleteModal'
-import { useTranslation } from 'react-i18next'
 import { Button } from '../../../Button'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 type AttachmentDetailsListProps = {
   attachmentDownloadUrlPrefix: string
@@ -22,7 +22,7 @@ export const AttachmentDetailsList = ({
   language,
   deleteFileByIndex
 }: AttachmentDetailsListProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const [indexToDelete, setIndexToDelete] = useState<number | null>(null)
 
   const handleDeleteClick = () => {

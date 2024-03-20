@@ -4,9 +4,9 @@ import { AssignmentCard } from '../list/assignment/AssignmentCard'
 import { favoriteIdsFromFavoriteCardFolders } from '../../../assignmentFavoriteFolderHelpers'
 import { InfoBox } from '../../InfoBox'
 import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
-import { useTranslation } from 'react-i18next'
 import { useContext } from 'react'
 import { LudosContext } from '../../../contexts/LudosContext'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type FolderAndAssignmentListProps = {
   exam: Exam
@@ -21,7 +21,7 @@ export const FolderAndAssignmentList = ({
   currentFavoriteCardFolder,
   refresh
 }: FolderAndAssignmentListProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
 
   const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'FI' : teachingLanguage

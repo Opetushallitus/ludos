@@ -11,11 +11,11 @@ import {
   PuhviCertificateDtoOut,
   SukoCertificateDtoOut
 } from '../../types'
-import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from '../forms/formCommon/attachment/AttachmentFileDetailView'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { LudosContext } from '../../contexts/LudosContext'
 import { useContext } from 'react'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type CertificateContentProps = {
   certificate: ContentBaseOut
@@ -96,7 +96,7 @@ const CertificateContentAttachmentView = ({
 }
 
 export const CertificateContent = ({ certificate, teachingLanguage }: CertificateContentProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   const RenderCertificateCardTitle = () => {
     if (isSukoCertificate(certificate)) {

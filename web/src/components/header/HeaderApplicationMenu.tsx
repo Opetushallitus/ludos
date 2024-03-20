@@ -1,11 +1,11 @@
 import { Icon } from '../Icon'
 import { ExternalLink } from '../ExternalLink'
 import { virkailijanOpintopolkuUrl } from '../../constants'
-import { useTranslation } from 'react-i18next'
 import { twJoin } from 'tailwind-merge'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const HeaderApplicationMenu = ({ showBorder = false }: { showBorder?: boolean }) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   return (
     <>
       <div

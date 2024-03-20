@@ -4,7 +4,7 @@ import { HeaderMobile } from './HeaderMobile'
 import { HeaderDesktop } from './HeaderDesktop'
 import { contentListPath, etusivuKey, examPath, frontpagePath, ldKey, puhviKey, sukoKey } from '../LudosRoutes'
 import { ContentType, Exam } from '../../types'
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export interface HeaderPage {
   key: string
@@ -14,7 +14,7 @@ export interface HeaderPage {
 }
 
 export const Header = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   const pages: HeaderPage[] = [

@@ -1,7 +1,6 @@
 import { Icon } from '../../../Icon'
-import { useTranslation } from 'react-i18next'
 import { InternalLink } from '../../../InternalLink'
-import { ContentAction } from '../../../../hooks/useLudosTranslation'
+import { ContentAction, useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
 import { esitysnakymaKey } from '../../../LudosRoutes'
 import { AssignmentCardOut, ContentTypePluralFi, Language } from '../../../../types'
@@ -72,7 +71,7 @@ export const AssignmentCardContentActions = ({
   isFavoriteButtonDisabled,
   language
 }: AssignmentCardContentActionsProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="flex w-full flex-wrap items-center justify-evenly md:w-4/12 md:justify-end">

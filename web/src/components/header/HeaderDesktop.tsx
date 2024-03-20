@@ -4,15 +4,15 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { HeaderFavorites } from './HeaderFavorites'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
-import { useTranslation } from 'react-i18next'
 import { HeaderUserInfoSelect } from './HeaderUserInfoSelect'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type HeaderDesktopProps = {
   pages: HeaderPage[]
 }
 
 export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { userFavoriteAssignmentCount } = useContext(LudosContext)
 
   return (

@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react'
 import styles from './modal.module.css'
 import { Button } from '../Button'
-import { useTranslation } from 'react-i18next'
 import { useModal } from './useModal'
 import { ModalHeader } from './ModalHeader'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 interface ModalProps {
   modalTitle: string
@@ -14,7 +14,7 @@ interface ModalProps {
 }
 
 export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, children }: ModalProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { modalRef, dialogClasses, onCancel, onAnimEnd, onClick } = useModal({ open, onClose })
 
   return (

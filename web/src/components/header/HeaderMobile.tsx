@@ -85,7 +85,7 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
 }
 
 function Header(props: { onClick: () => void }) {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { userFavoriteAssignmentCount } = useContext(LudosContext)
 
   return (

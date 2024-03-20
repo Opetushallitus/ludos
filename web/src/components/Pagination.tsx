@@ -5,6 +5,7 @@ import { SearchStringForNewFilterValue } from '../hooks/useFilterValues'
 import { twMerge } from 'tailwind-merge'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { IS_MOBILE_QUERY } from '../constants'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 const FIRST_PAGE = 1
 const START_ELLIPSIS_THRESHOLD = 1
@@ -17,7 +18,7 @@ type PaginationProps = {
 }
 
 export const Pagination = ({ page, totalPages, searchStringForNewFilterValue }: PaginationProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   const prevDisabled = page === FIRST_PAGE

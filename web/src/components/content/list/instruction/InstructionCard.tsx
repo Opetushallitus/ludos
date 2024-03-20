@@ -4,10 +4,10 @@ import { StateTag } from '../../../StateTag'
 import { Icon } from '../../../Icon'
 import { toLocaleDate } from '../../../../utils/formatUtils'
 import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useTranslation } from 'react-i18next'
 
 import { muokkausKey } from '../../../LudosRoutes'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 type InstructionCardProps = {
   teachingLanguage: Language
@@ -15,7 +15,7 @@ type InstructionCardProps = {
 }
 
 export const InstructionCard = ({ teachingLanguage, instruction }: InstructionCardProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { isYllapitaja } = useUserDetails()
   const { getKoodiLabel } = useKoodisto(teachingLanguage)
 

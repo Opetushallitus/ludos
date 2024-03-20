@@ -3,8 +3,8 @@ import { ContentContent } from './ContentCommon'
 import { ExternalLink } from '../ExternalLink'
 import { INSTRUCTION_URL } from '../../constants'
 import { Fragment } from 'react'
-import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type InstructionContentProps = {
   instruction: SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut
@@ -13,7 +13,7 @@ type InstructionContentProps = {
 }
 
 export const InstructionContent = ({ instruction, teachingLanguage, isVersionBrowser }: InstructionContentProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { getKoodiLabel } = useKoodisto(teachingLanguage)
   const attachmentsFilteredWithLanguage = instruction.attachments
     .filter((it) => it.language === teachingLanguage)

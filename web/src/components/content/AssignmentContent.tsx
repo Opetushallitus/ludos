@@ -8,13 +8,13 @@ import {
   isSukoAssignment,
   Language
 } from '../../types'
-import { useTranslation } from 'react-i18next'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 import { useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { useFetch } from '../../hooks/useFetch'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -23,7 +23,7 @@ type AssignmentContentProps = {
 }
 
 export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto(teachingLanguage)
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 

@@ -1,18 +1,11 @@
 import { Button } from '../../Button'
 import React, { Suspense, useState } from 'react'
-import {
-  AssignmentOut,
-  ContentBaseOut,
-  ContentType,
-  ContentTypeSingularEn,
-  Exam,
-  Language
-} from '../../../types'
-import { useTranslation } from 'react-i18next'
+import { AssignmentOut, ContentBaseOut, ContentType, ContentTypeSingularEn, Exam, Language } from '../../../types'
 import { Icon } from '../../Icon'
 import { getContentName } from '../../../utils/assignmentUtils'
 import { Spinner } from '../../Spinner'
 import { fetchData } from '../../../request'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 const PdfGenerator = React.lazy(() => import('./PdfGenerator'))
 
@@ -23,7 +16,7 @@ type PdfDownloadButtonProps = {
 }
 
 export default function PdfDownloadButton({ exam, contentId, language }: PdfDownloadButtonProps) {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const [assignmentShouldBeGenerated, setAssignmentShouldBeGenerated] = useState<AssignmentOut>()
 
   const handleDownloadClick = async () => {

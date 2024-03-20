@@ -3,6 +3,7 @@ import { FavoriteFolderDtoOut } from '../../../types'
 import { FavoriteToggleModalFormType } from './favoriteToggleModalFormSchema'
 import { useTranslation } from 'react-i18next'
 import { FAVORITE_ROOT_FOLDER_ID } from '../../../constants'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type FavoriteFolderCheckboxesProps = {
   folders: FavoriteFolderDtoOut[]
@@ -10,7 +11,7 @@ type FavoriteFolderCheckboxesProps = {
 }
 
 export const FavoriteFolderCheckboxes = ({ folders = [], prefix = '' }: FavoriteFolderCheckboxesProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { setValue, getValues, watch } = useFormContext<FavoriteToggleModalFormType>()
 
   const handleCheckboxChange = (folderId: number) => {

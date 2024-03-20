@@ -7,7 +7,6 @@ import {
   RouteObject,
   useRouteError
 } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { ContentBaseOut, ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
 import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
@@ -17,6 +16,7 @@ import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi
@@ -80,7 +80,7 @@ const YllapitajaRoute = (): ReactElement => {
 }
 
 const DefaultError = () => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   let error = useRouteError()
   if (isRouteErrorResponse(error) && error.status === 404) {
     return <PageNotFound />
@@ -224,7 +224,7 @@ function examRoute(exam: Exam): RouteObject {
 }
 
 export function PageNotFound() {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <div className="p-10">

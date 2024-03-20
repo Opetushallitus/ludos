@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next'
 import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 import { AttachmentData, ContentType, Exam, Language } from '../../../../types'
 import { FileSelector } from '../../../FileSelector'
 import { FormError } from '../FormErrors'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 
 interface AttachmentSelectorProps {
   name: string
@@ -29,7 +29,7 @@ export const AttachmentSelector = ({
   loading,
   error
 }: AttachmentSelectorProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const isMultiple = Array.isArray(attachmentData)
 
   const handleAttachmentSelected = async (uploadedFiles: File[]) => {

@@ -4,13 +4,14 @@ import { LudosContext } from '../contexts/LudosContext'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { setAssignmentFavorite } from '../request'
 import { FavoriteToggleModalFormType } from '../components/modal/favoriteModal/favoriteToggleModalFormSchema'
+import { useLudosTranslation } from './useLudosTranslation'
 
 interface UseToggleFavoriteProps {
   refreshData?: () => void
 }
 
 export function useSetFavoriteFolders({ refreshData }: UseToggleFavoriteProps) {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { setUserFavoriteAssignmentCount } = useContext(LudosContext)
   const { setNotification } = useNotification()
 

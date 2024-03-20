@@ -1,5 +1,4 @@
 import { ReactNode, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import {
   defaultEmptyKoodistoMap,
   defaultLanguage,
@@ -10,6 +9,7 @@ import {
 } from './LudosContext'
 import { BusinessLanguage, Language, Roles, UserDetails } from '../types'
 import { getKoodistos, getUserDetails, getUserFavoriteCount } from '../request'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 const unauthorizedUserDetails: UserDetails = {
   role: Roles.UNAUTHORIZED,
@@ -23,7 +23,7 @@ type LudosContextProviderProps = {
 }
 
 export const LudosContextProvider = ({ children }: LudosContextProviderProps) => {
-  const { i18n } = useTranslation()
+  const { i18n } = useLudosTranslation()
   const [koodistos, setKoodistos] = useState<LanguageKoodistoMap>({
     FI: defaultEmptyKoodistoMap,
     SV: defaultEmptyKoodistoMap

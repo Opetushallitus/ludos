@@ -1,8 +1,8 @@
-import { useTranslation } from 'react-i18next'
 import { useEffect } from 'react'
+import { useLudosTranslation } from './useLudosTranslation'
 
 export function useDocumentLanguage() {
-  const { i18n, t } = useTranslation()
+  const { i18n, t } = useLudosTranslation()
 
   useEffect(() => {
     document.documentElement.lang = i18n.language

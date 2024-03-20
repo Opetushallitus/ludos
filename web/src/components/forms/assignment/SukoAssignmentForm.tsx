@@ -1,7 +1,6 @@
 import { FieldLabel } from '../../FieldLabel'
 import { FormProvider } from 'react-hook-form'
 import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
-import { useTranslation } from 'react-i18next'
 import { ContentFormAction, Exam, Oppimaara } from '../../../types'
 import { sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
@@ -20,6 +19,7 @@ import { useCallback } from 'react'
 import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 import { InfoBox } from '../../InfoBox'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -27,7 +27,7 @@ type SukoAssignmentFormProps = {
 }
 
 export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const { koodistos, sortKooditAlphabetically, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
   const {

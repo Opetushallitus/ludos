@@ -1,10 +1,10 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next'
 import { buttonClasses } from '../Button'
 import { Icon } from '../Icon'
 import { favoritesPagePath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { twMerge } from 'tailwind-merge'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type HeaderFavoritesProps = {
   userFavoriteAssignmentCount: number
@@ -12,7 +12,7 @@ type HeaderFavoritesProps = {
 }
 
 export const HeaderFavorites = ({ userFavoriteAssignmentCount, isMobile }: HeaderFavoritesProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   return (
     <InternalLink

@@ -4,7 +4,7 @@ import { ModalHeader } from '../ModalHeader'
 import { AssignmentCardOut, FavoriteIdsDtoOut } from '../../../types'
 import { FavoriteToggleModalFormType } from './favoriteToggleModalFormSchema'
 import { FavoriteForm } from './FavoriteForm'
-import { useTranslation } from 'react-i18next'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 type SetFavoriteFoldersModalProps = {
   isFavorite: boolean
@@ -23,7 +23,7 @@ export const SetFavoriteFoldersModal = ({
   onClose,
   onSetFavoriteFoldersAction
 }: SetFavoriteFoldersModalProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
 
   const { modalRef, dialogClasses, onClick, onCancel, onAnimEnd } = useModal({ open: true, onClose })
 

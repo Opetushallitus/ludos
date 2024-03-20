@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
 import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, Language, PublishState } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
+import { TFunction } from 'i18next'
 
 export type ContentAction = {
   actionName: string
@@ -178,11 +179,25 @@ export const useLudosTranslation = () => {
     }
   }
 
+  const tWrapper: (key: string, options?: Record<string, string | number>) => string = (
+    key: string,
+    options?: Record<string, string | number>
+  ) => {
+    const realT: TFunction<'translation', undefined> = t
+    const val = realT(key, options)
+    if (val.length === 0) {
+      return key
+    } else {
+      return val
+    }
+  }
+
   return {
     LANGUAGE_OPTIONS,
     ORDER_OPTIONS,
     LANGUAGE_DROPDOWN,
     lt,
-    ...translation
+    ...translation,
+    t: tWrapper
   }
 }

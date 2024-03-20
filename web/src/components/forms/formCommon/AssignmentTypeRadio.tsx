@@ -1,7 +1,7 @@
 import { Control, Controller, FieldError } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
 import { FormError } from './FormErrors'
 import { KoodiDtoOut } from '../../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 interface AssignmentTypeFieldProps {
   control: Control<any>
@@ -12,7 +12,7 @@ interface AssignmentTypeFieldProps {
 }
 
 export const AssignmentTypeField = ({ control, name, required, options, errorMessage }: AssignmentTypeFieldProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   return (
     <div className="mb-6">
       <legend className="mb-2 font-semibold">{t('form.tehtavatyyppi')} *</legend>

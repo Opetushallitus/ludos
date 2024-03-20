@@ -1,8 +1,9 @@
 import { Icon } from './Icon'
-import { Trans, useTranslation } from 'react-i18next'
+import { Trans } from 'react-i18next'
 import { twMerge } from 'tailwind-merge'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
 import { ExternalLink } from './ExternalLink'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
 
 type InfoBoxProps = {
   type: 'info' | 'error'
@@ -10,7 +11,7 @@ type InfoBoxProps = {
 }
 
 export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
-  const { t } = useTranslation()
+  const { t } = useLudosTranslation()
   const feedbackUrl = useFeedbackUrl()
   const isError = type === 'error'
 
