@@ -4,7 +4,6 @@ import fi.oph.ludos.Exam
 import fi.oph.ludos.INITIAL_VERSION_NUMBER
 import fi.oph.ludos.Language
 import fi.oph.ludos.PublishState
-import fi.oph.ludos.assignment.LdFilters
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.Role
 import fi.oph.ludos.aws.Bucket
@@ -533,17 +532,23 @@ class InstructionRepository(
         )
     }
 
-    private fun getLatestInstructionVersionAndAuthor(id: Int, exam: Exam): Pair<Int, String>? = try {
+    private fun getLatestInstructioDataForNewVersion(id: Int, exam: Exam): Triple<Int, String, Timestamp>? = try {
         jdbcTemplate.queryForObject(
             """
-            SELECT instruction_version, instruction_author_oid
+            SELECT instruction_version, instruction_author_oid, instruction_created_at
             FROM ${tableNameByExam(exam)}
             WHERE instruction_id = ? AND instruction_version = (SELECT MAX(instruction_version) FROM ${
                 tableNameByExam(
                     exam
                 )
-            } WHERE instruction_id = ?);""".trimIndent(),
-            { rs, _ -> Pair(rs.getInt("instruction_version"), rs.getString("instruction_author_oid")) },
+            } WHERE instruction_id = ?) FOR UPDATE;""".trimIndent(),
+            { rs, _ ->
+                Triple(
+                    rs.getInt("instruction_version"),
+                    rs.getString("instruction_author_oid"),
+                    rs.getTimestamp("instruction_created_at")
+                )
+            },
             id, id
         )
     } catch (e: EmptyResultDataAccessException) {
@@ -555,14 +560,17 @@ class InstructionRepository(
         instructionDtoIn: T,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn>,
         newAttachments: List<InstructionAttachmentIn>,
-        updateInstructionRow: (versionToCreate: Int, authorOid: String) -> Unit
+        updateInstructionRow: (versionToCreate: Int, authorOid: String, originalCreatedAt: Timestamp) -> Unit
     ): Int? = transactionTemplate.execute { _ ->
-        val (currentLatestVersion, authorOid) = getLatestInstructionVersionAndAuthor(id, instructionDtoIn.exam)
+        val (currentLatestVersion, authorOid, createdAt) = getLatestInstructioDataForNewVersion(
+            id,
+            instructionDtoIn.exam
+        )
             ?: return@execute null
 
         val versionToCreate = currentLatestVersion + 1
 
-        updateInstructionRow(versionToCreate, authorOid)
+        updateInstructionRow(versionToCreate, authorOid, createdAt)
 
         val attachmentWithInstructionVersion = { metadata: InstructionAttachmentMetadataDtoIn ->
             metadata.copy(instructionVersion = versionToCreate)
@@ -636,7 +644,7 @@ class InstructionRepository(
             instruction,
             attachmentsMetadata,
             newAttachments
-        ) { versionToCreate, authorOid ->
+        ) { versionToCreate, authorOid, originalCreatedAt ->
             jdbcTemplate.update(
                 """
             INSERT INTO suko_instruction (
@@ -650,8 +658,9 @@ class InstructionRepository(
                 suko_instruction_short_description_sv,
                 instruction_author_oid,
                 instruction_updater_oid,
-                instruction_version
-            ) VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+                instruction_version,
+                instruction_created_at
+            ) VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
             """.trimIndent(),
                 id,
                 instruction.nameFi,
@@ -663,7 +672,8 @@ class InstructionRepository(
                 instruction.shortDescriptionSv,
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                versionToCreate
+                versionToCreate,
+                originalCreatedAt
             )
         }
 
@@ -678,7 +688,7 @@ class InstructionRepository(
             instruction,
             attachmentsMetadata,
             newAttachments
-        ) { versionToCreate, authorOid ->
+        ) { versionToCreate, authorOid, originalCreatedAt ->
             jdbcTemplate.update(
                 """INSERT INTO ld_instruction (
                 instruction_id,
@@ -690,9 +700,10 @@ class InstructionRepository(
                 instruction_author_oid,
                 instruction_updater_oid,
                 ld_instruction_aine_koodi_arvo,
-                instruction_version
+                instruction_version,
+                instruction_created_at
             ) 
-            VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?)""".trimIndent(),
+            VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)""".trimIndent(),
                 id,
                 instruction.nameFi,
                 instruction.nameSv,
@@ -702,7 +713,8 @@ class InstructionRepository(
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
                 instruction.aineKoodiArvo,
-                versionToCreate
+                versionToCreate,
+                originalCreatedAt
             )
         }
 
@@ -717,7 +729,7 @@ class InstructionRepository(
             instruction,
             attachmentsMetadata,
             newAttachments
-        ) { versionToCreate, authorOid ->
+        ) { versionToCreate, authorOid, originalCreatedAt ->
             jdbcTemplate.update(
                 """INSERT INTO puhvi_instruction (
                 instruction_id,
@@ -730,9 +742,10 @@ class InstructionRepository(
                 instruction_publish_state, 
                 instruction_author_oid,
                 instruction_updater_oid,
-                instruction_version
+                instruction_version,
+                instruction_created_at
             ) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?) """.trimIndent(),
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?) """.trimIndent(),
                 id,
                 instruction.nameFi,
                 instruction.nameSv,
@@ -743,7 +756,8 @@ class InstructionRepository(
                 instruction.publishState.toString(),
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                versionToCreate
+                versionToCreate,
+                originalCreatedAt
             )
         }
 

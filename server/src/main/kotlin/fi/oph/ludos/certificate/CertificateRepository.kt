@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import software.amazon.awssdk.core.exception.SdkException
 import java.sql.ResultSet
+import java.sql.Timestamp
 import java.util.*
 
 @Component
@@ -488,7 +489,7 @@ class CertificateRepository(
             id,
             certificateDtoIn,
             attachmentSource
-        ) { attachmentKeys, version, authorOid ->
+        ) { attachmentKeys, version, authorOid, originalCreatedAt ->
             jdbcTemplate.update(
                 """
                 INSERT INTO suko_certificate (
@@ -500,9 +501,10 @@ class CertificateRepository(
                     attachment_file_key_sv,
                     certificate_author_oid,
                     certificate_updater_oid,
-                    certificate_version
+                    certificate_version,
+                    certificate_created_at
                 )
-                VALUES (?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(),
                 id,
                 certificateDtoIn.nameFi,
@@ -512,7 +514,8 @@ class CertificateRepository(
                 attachmentKeys.first,
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                version
+                version,
+                originalCreatedAt
             )
         }
     }
@@ -526,7 +529,7 @@ class CertificateRepository(
             id,
             certificateDtoIn,
             attachmentSource
-        ) { createdAttachments, version, authorOid ->
+        ) { createdAttachments, version, authorOid, originalCreatedAt ->
             jdbcTemplate.update(
                 """
                 INSERT INTO ld_certificate (
@@ -539,9 +542,10 @@ class CertificateRepository(
                     attachment_file_key_sv,
                     certificate_author_oid,
                     certificate_updater_oid,
-                    certificate_version
+                    certificate_version,
+                    certificate_created_at
                 )
-                VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(),
                 id,
                 certificateDtoIn.nameFi,
@@ -552,7 +556,8 @@ class CertificateRepository(
                 createdAttachments.second,
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                version
+                version,
+                originalCreatedAt
             )
 
         }
@@ -566,7 +571,7 @@ class CertificateRepository(
             id,
             certificateDtoIn,
             attachmentSource
-        ) { createdAttachments, version, authorOid ->
+        ) { createdAttachments, version, authorOid, originalCreatedAt ->
             jdbcTemplate.update(
                 """
                 INSERT INTO puhvi_certificate (
@@ -580,9 +585,10 @@ class CertificateRepository(
                     attachment_file_key_sv,
                     certificate_author_oid,
                     certificate_updater_oid,
-                    certificate_version
+                    certificate_version,
+                    certificate_created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?::publish_state, ?, ?, ?, ?, ?, ?)
                 """.trimIndent(),
                 id,
                 certificateDtoIn.nameFi,
@@ -594,7 +600,8 @@ class CertificateRepository(
                 createdAttachments.second,
                 authorOid,
                 Kayttajatiedot.fromSecurityContext().oidHenkilo,
-                version
+                version,
+                originalCreatedAt
             )
         }
 
@@ -626,17 +633,23 @@ class CertificateRepository(
         }
     }
 
-    private fun getLatestAssignmentVersionAndAuthor(id: Int, exam: Exam): Pair<Int, String>? = try {
+    private fun getLatestCertificateDataForNewVersion(id: Int, exam: Exam): Triple<Int, String, Timestamp>? = try {
         jdbcTemplate.queryForObject(
             """
-            SELECT certificate_version, certificate_author_oid
+            SELECT certificate_version, certificate_author_oid, certificate_created_at
             FROM ${tableNameAndMapperByExam(exam).first}
             WHERE certificate_id = ? AND certificate_version = (SELECT MAX(certificate_version) FROM ${
                 tableNameAndMapperByExam(
                     exam
                 ).first
-            } WHERE certificate_id = ?);""".trimIndent(),
-            { rs, _ -> Pair(rs.getInt("certificate_version"), rs.getString("certificate_author_oid")) },
+            } WHERE certificate_id = ?) FOR UPDATE;""".trimIndent(),
+            { rs, _ ->
+                Triple(
+                    rs.getInt("certificate_version"),
+                    rs.getString("certificate_author_oid"),
+                    rs.getTimestamp("certificate_created_at")
+                )
+            },
             id, id
         )
     } catch (e: EmptyResultDataAccessException) {
@@ -648,10 +661,10 @@ class CertificateRepository(
         id: Int,
         certificateDtoIn: Certificate,
         attachmentSource: Either<Int, Pair<MultipartFile?, MultipartFile?>>,
-        updateCertificateRow: (Pair<String, String>, version: Int, authorOid: String) -> Unit
+        updateCertificateRow: (Pair<String, String>, version: Int, authorOid: String, originalCreatedAt: Timestamp) -> Unit
     ): Int? = transactionTemplate.execute { _ ->
-        val (latestAssignmentVersion, author) =
-            getLatestAssignmentVersionAndAuthor(id, certificateDtoIn.exam) ?: return@execute null
+        val (latestAssignmentVersion, author, originalCreatedAt) =
+            getLatestCertificateDataForNewVersion(id, certificateDtoIn.exam) ?: return@execute null
 
         if (attachmentSource is Either.Left && attachmentSource.value == latestAssignmentVersion) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot restore latest version")
@@ -662,7 +675,7 @@ class CertificateRepository(
         val attachmentKeys = getCurrentOrNewAttachmentKeys(attachmentSourceCertificate, attachmentSource)
 
         val versionToCreate = latestAssignmentVersion + 1
-        updateCertificateRow(attachmentKeys, versionToCreate, author)
+        updateCertificateRow(attachmentKeys, versionToCreate, author, originalCreatedAt)
 
         return@execute versionToCreate
     }

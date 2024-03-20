@@ -846,6 +846,7 @@ class InstructionControllerTest : InstructionRequests() {
                 )
                 val updatedInstructionById = getInstructionByIdByExam(exam, createdInstruction.id)
                 assertNotEquals(createdInstruction.nameFi, updatedInstructionById.nameFi)
+                assertEquals(createdInstruction.createdAt, updatedInstructionById.createdAt)
 
                 val versionsBeforeRestore = getAllInstructionVersionsByExam(exam, createdInstruction.id)
                 assertEquals(2, versionsBeforeRestore.size)
@@ -859,6 +860,7 @@ class InstructionControllerTest : InstructionRequests() {
                 assertEquals(3, latestVersionById.version)
 
                 assertEquals(createdInstruction.nameFi, latestVersionById.nameFi)
+                assertEquals(createdInstruction.createdAt, updatedInstructionById.createdAt)
             }
         }
 }
