@@ -22,7 +22,8 @@
       (function() {
         var u="//analytiikka.opintopolku.fi/matomo/";
         _paq.push(['setTrackerUrl', u+'matomo.php']);
-        _paq.push(['setSiteId', '33']);
+        var siteId = window.location && window.location.hostname ? (window.location.hostname.indexOf('.testiopintopolku.fi') !== -1 ? '31' : (window.location.hostname.indexOf('.opintopolku.fi') !== -1 ? '32' : '33')) : '33';
+        _paq.push(['setSiteId', siteId]);
         var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
         g.type='text/javascript'; g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
       })();
