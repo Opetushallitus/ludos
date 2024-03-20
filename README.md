@@ -114,7 +114,7 @@ Salaisuuksien hakeminen:
 Vaihtoehtoja backendin ajamiseen:
 1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
 2) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
-3) `yarn build:docker` + `yarn run:docker` (profiili kovakoodattu `local`)
+3) `yarn build:docker:local` + `yarn run:docker` (profiili kovakoodattu `local`)
 4) `cd server && ./gradlew build -x test && LUDOS_PROFILES=local ../docker-build/run.sh`
     * Tää buildaa myös frontendin, joka tarjoillaan osoitteesta https://localhost:8080/ spring
       bootin kautta kuten tuotannossa.
