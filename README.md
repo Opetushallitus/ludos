@@ -112,10 +112,12 @@ Salaisuuksien hakeminen:
 1) luo `server/.env` ja `playwright/.env`, jossa tarvittavat salaisuudet serverin ajamiseen ja testaamiseen: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
 
 Vaihtoehtoja backendin ajamiseen:
-1) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
-2) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
-3) `yarn build:docker:local` + `yarn run:docker` (profiili kovakoodattu `local`)
-4) `cd server && ./gradlew build -x test && LUDOS_PROFILES=local ../docker-build/run.sh`
+1) Luo Spring Boot run configuration IDEAssa
+   ![image](https://github.com/Opetushallitus/ludos/assets/1202380/aa273728-0b41-4625-8d3f-1a6cf9c63079)
+2) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
+3) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
+4) `yarn build:docker:local` + `yarn run:docker` (profiili kovakoodattu `local`)
+5) `cd server && ./gradlew build -x test && LUDOS_PROFILES=local ../docker-build/run.sh`
     * Tää buildaa myös frontendin, joka tarjoillaan osoitteesta https://localhost:8080/ spring
       bootin kautta kuten tuotannossa.
     * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev:web` ois päällä, vaan on ajettava `yarn build:web` erikseen joka kerta.
