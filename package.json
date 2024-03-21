@@ -16,6 +16,7 @@
     "localizations": "yarn workspace scripts localizations",
     "vitest:ci": "yarn workspace web vitest --run",
     "postinstall": "git config core.hooksPath .githooks",
+    "test:server": "cd server && ./gradlew test --rerun-tasks",
     "build:web": "yarn workspace web build",
     "build:docker": "cd server && ./gradlew build -x test && docker build -f ../docker-build/Dockerfile -t ludos:manual-$(git rev-parse --short HEAD) -t ludos:latest ..",
     "build:docker:local": "cd server && ./gradlew build -x test && docker build -f ../docker-build/Dockerfile.local -t ludos:manual-$(git rev-parse --short HEAD) -t ludos:latest ..",

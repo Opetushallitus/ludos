@@ -123,6 +123,8 @@ Vaihtoehtoja backendin ajamiseen:
     * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev:web` ois päällä, vaan on ajettava `yarn build:web` erikseen joka kerta.
     * Fronttia devatessa onkin suositeltavaa ajaa `yarn dev:web` ja käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
 
+Backend-testit ajetaan esim. komennolla `yarn test:server`.
+
 ### Frontend
 
 Vaihtoehtoja:
