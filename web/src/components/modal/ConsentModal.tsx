@@ -3,7 +3,6 @@ import styles from './modal.module.css'
 import { Button } from '../Button'
 import { useModal } from './useModal'
 import { ModalHeader } from './ModalHeader'
-import { twMerge } from 'tailwind-merge'
 import { ExternalLink } from '../ExternalLink'
 import { TIETOSUOJA_SELOSTE_URL } from '../../constants'
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie'
@@ -83,7 +82,6 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
 
   const onClose = () => setIsOpen(false)
   const { modalRef, dialogClasses, onAnimEnd } = useModal({ open: isOpen, onClose })
-  const margin = 'm-6'
 
   const onAcceptAll = () => {
     rememberTrackingConsentGiven()
@@ -118,16 +116,14 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
       <div className={styles['modal__container']}>
         <ModalHeader modalTitle={t('consent.title')} />
 
-        <div className="flex-grow" />
+        <p className="m-6">{t('consent.modal.info')}</p>
 
-        <p className={margin}>{t('consent.modal.info')}</p>
-
-        <div className={margin}>
+        <div className="m-6">
           <ExternalLink url={TIETOSUOJA_SELOSTE_URL}>{t('footer.tietosuoja')}</ExternalLink>
         </div>
 
         {isSettingsOpen && (
-          <div className={twMerge(margin, 'border-t border-separate')}>
+          <div className="m-6 border-t border-separate">
             <h3 className="my-3">{t('consent.modal.settings-title')}</h3>
             <input type="checkbox" disabled checked id="consent-mandatory-checkbox" name="mandatory" />
             <label className="pl-2" htmlFor="consent-mandatory-checkbox">
@@ -140,6 +136,7 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
               checked={isTrackingConsentChecked}
               readOnly
               onClick={() => setIsTrackingConsentChecked(!isTrackingConsentChecked)}
+              data-testid="consent-tracking-checkbox"
             />
             <label className="pl-2" htmlFor="consent-tracking-checkbox">
               {t('consent.modal.checkbox.tracking')}
@@ -147,7 +144,7 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
           </div>
         )}
 
-        <div className={twMerge('flex justify-end gap-5 min-w-[650px]', margin)}>
+        <div className="flex justify-end m-6 gap-5 min-w-[650px]">
           <Button
             variant="buttonSecondary"
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
