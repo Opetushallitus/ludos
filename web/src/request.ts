@@ -4,6 +4,7 @@ import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, ImageDtoOut }
 import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
 import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
 import { LanguageKoodistoMap } from './contexts/LudosContext'
+import { getCookie } from 'typescript-cookie'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
@@ -34,7 +35,8 @@ const doRequest = async (
   method: string,
   body?: string | FormData,
   headers: HeadersInit = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN') || ''
   }
 ) => {
   const response = await fetch(url, {
