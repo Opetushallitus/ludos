@@ -1,3 +1,5 @@
+import { LayoutModel } from '../../models/LayoutModel'
+
 require('dotenv').config({ path: '.env' })
 import { expect, test } from '@playwright/test'
 
@@ -17,6 +19,7 @@ test('yllapitaja can login and logout', async ({ page }) => {
   await page.locator('#username').fill(username)
   await page.locator('#password').fill(password)
   await page.locator('input[type=submit]').click()
+  await new LayoutModel(page).acceptOnlyNecessaryCookies()
   await expect(page.getByTestId('page-heading-etusivu')).toContainText('Hei Ludos, tervetuloa LUDOS-palveluun!')
 
   await page.getByTestId('user-menu-expand').click()

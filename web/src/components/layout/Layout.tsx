@@ -5,6 +5,7 @@ import { Notification } from '../Notification'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { IS_MOBILE_QUERY } from '../../constants'
 import { twMerge } from 'tailwind-merge'
+import { useMatomoTracking } from '../../hooks/useMatomoTracking'
 
 interface TLayout {
   header?: ReactNode
@@ -13,6 +14,7 @@ interface TLayout {
 }
 
 export const Layout = ({ header = <Header />, footer = <Footer />, children }: TLayout) => {
+  useMatomoTracking()
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   return (
