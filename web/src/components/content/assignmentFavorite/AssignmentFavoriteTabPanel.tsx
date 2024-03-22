@@ -9,14 +9,14 @@ type AssignmentFavoriteTapPanelProps = {
   exam: Exam
   folderId: string
   favoriteCardFolders: FavoriteCardFolderDtoOut
-  refresh: () => void
+  favoriteCardFoldersRefetch: () => void
 }
 
 export const AssignmentFavoriteTabPanel = ({
   exam,
   folderId,
   favoriteCardFolders,
-  refresh
+  favoriteCardFoldersRefetch
 }: AssignmentFavoriteTapPanelProps) => {
   const { lt } = useLudosTranslation()
 
@@ -33,7 +33,7 @@ export const AssignmentFavoriteTabPanel = ({
         assignmentFavorites={favoriteCardFolders}
         segments={findFolderPathTo(favoriteCardFolders, Number(folderId))}
         currentFolder={data}
-        refresh={refresh}
+        favoriteCardFoldersRefetch={favoriteCardFoldersRefetch}
       />
       {data.assignmentCards.length === 0 && data.subfolders.length === 0 ? (
         <InfoBox type="info" i18nKey={lt.favoritePageNoContentMessage[exam]} />
@@ -42,7 +42,7 @@ export const AssignmentFavoriteTabPanel = ({
           exam={exam}
           currentFavoriteCardFolder={data}
           favoriteCardFolders={favoriteCardFolders}
-          refresh={refresh}
+          favoriteCardFoldersRefetch={favoriteCardFoldersRefetch}
         />
       )}
     </div>

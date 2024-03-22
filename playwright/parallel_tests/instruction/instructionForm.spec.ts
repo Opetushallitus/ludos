@@ -28,6 +28,7 @@ async function deleteInstruction(form: InstructionFormModel, instructionId: numb
   await form.deleteButton.click()
   await form.modalDeleteButton.last().click()
 
+  await expect(form.page.getByTestId('card-list')).toBeVisible()
   await assertSuccessNotification(form.page, 'ohjeen-poisto.onnistui')
   // expect not to find the deleted certificate from a list
   await expect(form.page.getByTestId(`instruction-${instructionId}`)).toBeHidden()

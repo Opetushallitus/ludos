@@ -118,7 +118,10 @@ export async function setTeachingLanguage(page: Page, teachingLanguage: Language
 }
 
 export async function assertSuccessNotification(page: Page, notificationLocalisationKey: string) {
-  await expect(page.getByText(notificationLocalisationKey)).toBeVisible()
+  const successNotification = page.getByTestId('notification-success')
+  await expect(successNotification).toBeVisible()
+
+  await expect(successNotification.getByText(notificationLocalisationKey)).toBeVisible()
 }
 
 export async function assertFailureNotification(page: Page, notificationLocalisationKey: string) {

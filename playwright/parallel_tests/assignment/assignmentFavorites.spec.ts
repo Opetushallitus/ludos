@@ -32,7 +32,6 @@ Object.values(Exam).forEach(async (exam) => {
       const newFolderName = `test-folder ${exam}`
 
       const [assignment, _] = await favorite.prepAssignmentGoToAssignmentList(baseURL!)
-      const assignmentCard = page.getByTestId(`assignment-list-item-${assignment.id}`)
 
       await favorite.headerFavorites.click()
       await favorite.goToExamTab()
@@ -40,7 +39,7 @@ Object.values(Exam).forEach(async (exam) => {
       const folderId = await favorite.createFolder(newFolderName)
 
       await favorite.layout.navHeaderGoToPageByExam(exam)
-      await assignmentCard.getByTestId('suosikki').click()
+      await page.getByTestId(`assignment-list-item-${assignment.id}`).getByTestId('suosikki').click()
 
       await page.getByTestId('radio-1').click()
       await page.getByTestId(`option-${folderId}`).click()
@@ -51,7 +50,7 @@ Object.values(Exam).forEach(async (exam) => {
 
       await expect(page.getByRole('link', { name: newFolderName }).first()).toBeVisible()
       await favorite.goToFolder(folderId)
-      await expect(assignmentCard).toBeVisible()
+      await expect(page.getByTestId(`assignment-list-item-${assignment.id}`)).toBeVisible()
       await expect(page.getByTestId('card-title')).toContainText(assignment.nameFi)
 
       await favorite.goToFolderRootByBreadCrumb()

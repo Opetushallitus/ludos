@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { Icon } from './Icon'
 import { Button } from './Button'
@@ -15,10 +15,24 @@ export const Notification = () => {
   const { notification, setNotification } = useNotification()
   const hideNotification = useCallback(() => setNotification(null), [setNotification])
 
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+
   useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+    }
+
     if (notification && notification.type === NotificationEnum.success) {
-      const timer = setTimeout(() => hideNotification(), NOTIFICATION_TIMEOUT_MS)
-      return () => clearTimeout(timer)
+      timerRef.current = setTimeout(() => {
+        hideNotification()
+        timerRef.current = null
+      }, NOTIFICATION_TIMEOUT_MS)
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
     }
   }, [notification, hideNotification])
 

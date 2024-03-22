@@ -27,13 +27,14 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto(teachingLanguage)
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
-  const { data: favoriteIds, refresh: refreshFavoriteIds } = useFetch<FavoriteIdsDtoOut>(
+  const { data: favoriteIds, refetch: refetchFavoriteData } = useFetch<FavoriteIdsDtoOut>(
+    ['favoriteIds'],
     `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${assignment.exam.toLocaleUpperCase()}/${assignment.id}`
   )
 
-  const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
+  const { setFavoriteFolder } = useSetFavoriteFolders(refetchFavoriteData)
 
-  const { setFavoriteFolders } = useSetFavoriteFolders({})
+  const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
 
   return (
     <>
@@ -131,8 +132,7 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
           }
           onClose={() => setIsFavoriteModalOpen(false)}
           onSetFavoriteFoldersAction={async (favoriteCards) => {
-            await setFavoriteFolders(favoriteCards)
-            refreshFavoriteIds()
+            await setFavoriteFolder(favoriteCards)
             setIsFavoriteModalOpen(false)
           }}
         />

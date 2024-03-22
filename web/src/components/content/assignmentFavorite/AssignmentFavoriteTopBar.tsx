@@ -16,7 +16,7 @@ type AssignmentFavoriteTopBarProps = {
   assignmentFavorites: FavoriteCardFolderDtoOut
   currentFolder: FavoriteCardFolderDtoOut
   segments: FolderList
-  refresh: () => void
+  favoriteCardFoldersRefetch: () => void
 }
 
 export const AssignmentFavoriteTopBar = ({
@@ -24,7 +24,7 @@ export const AssignmentFavoriteTopBar = ({
   assignmentFavorites,
   currentFolder,
   segments,
-  refresh
+  favoriteCardFoldersRefetch
 }: AssignmentFavoriteTopBarProps) => {
   const { t } = useLudosTranslation()
   const { setNotification } = useNotification()
@@ -36,7 +36,7 @@ export const AssignmentFavoriteTopBar = ({
       await createFavoriteFolder(exam, folderName, currentFolder.id)
       setNotification({ message: t('favorite.lisaa-kansio-onnistui'), type: 'success' })
       setOpenAddNewFolderModal(false)
-      refresh()
+      favoriteCardFoldersRefetch()
     } catch (e) {
       setNotification({ message: t('error.lisaa-kansio-epaonnistui'), type: 'error' })
     }
@@ -52,7 +52,7 @@ export const AssignmentFavoriteTopBar = ({
               exam={exam}
               favoriteCardFolders={assignmentFavorites}
               currentFavoriteCardFolder={currentFolder}
-              refresh={refresh}
+              refresh={favoriteCardFoldersRefetch}
             />
           </div>
         ) : (

@@ -31,7 +31,8 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
   const singularActiveTab = ContentTypeSingularFi[contentType]
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
-  const { data, loading, error } = useFetch<ContentOut>(
+  const { data, isFetching, error } = useFetch<ContentOut>(
+    ['certificateList'],
     `${ContentTypeSingularEn[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -64,7 +65,7 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
 
       {error && <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />}
 
-      {loading && <PageLoadingIndicator />}
+      {isFetching && <PageLoadingIndicator />}
 
       <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
         {data?.content.map((certificate, i) => (

@@ -52,7 +52,8 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
   const contentType = ContentType.INSTRUCTION
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
-  const { data, loading, error } = useFetch<InstructionsOut>(
+  const { data, isFetching, error } = useFetch<InstructionsOut>(
+    ['instructionList'],
     `${ContentTypeSingularEn[contentType]}/${exam.toLocaleUpperCase()}?${new URLSearchParams(
       removeNullsFromFilterObj
     ).toString()}`
@@ -111,7 +112,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
 
       {error && <InfoBox type="error" i18nKey={lt.contentListErrorMessage[contentType]} />}
 
-      {loading && <PageLoadingIndicator />}
+      {isFetching && <PageLoadingIndicator />}
 
       <ul className="mt-3 flex flex-wrap gap-5" data-testid="card-list">
         {data?.content

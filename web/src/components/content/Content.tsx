@@ -61,15 +61,25 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
       ? Language.FI
       : teachingLanguage
 
-  const { data, loading, error, refresh } = useFetch<ContentBaseOut>(
+  const {
+    data,
+    isFetching,
+    error,
+    refetch: refetchContent
+  } = useFetch<ContentBaseOut>(
+    ['content'],
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
 
   const {
     data: versionList,
     error: versionListError,
-    refresh: versionListRefresh
-  } = useFetch<ContentBaseOut[]>(`${ContentTypeSingularEn[contentType!]}/${exam}/${id}/versions`, !isYllapitaja)
+    refetch: refetchVersionList
+  } = useFetch<ContentBaseOut[]>(
+    ['version'],
+    `${ContentTypeSingularEn[contentType!]}/${exam}/${id}/versions`,
+    isYllapitaja
+  )
 
   const handleNavigation = useCallback(() => {
     if (state?.returnLocation) {
@@ -82,7 +92,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const restoreOldVersion = (data: ContentBaseOut) =>
     restoreOldContentVersion(data.exam, data.contentType, data.id, data.version)
 
-  if (loading) {
+  if (isFetching) {
     return <PageLoadingIndicator />
   }
 
@@ -110,8 +120,8 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
           dataList={versionList!}
           restoreOldVersion={restoreOldVersion}
           openVersionBrowserClick={() => setOpenVersionViewerModal(true)}
-          stopVersionBrowsing={() => {
-            versionListRefresh()
+          stopVersionBrowsing={async () => {
+            await refetchVersionList()
             navigate(contentPagePath(data.exam, contentType!, data.id))
           }}
         />
@@ -153,10 +163,10 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                   {openVersionViewerModal && (
                     <VersionHistoryViewerModal
                       open={openVersionViewerModal}
-                      onClose={(refreshCall) => {
+                      onClose={async (refreshCall) => {
                         if (refreshCall) {
-                          refresh()
-                          versionListRefresh()
+                          await refetchVersionList()
+                          await refetchContent()
                         }
                         setOpenVersionViewerModal(false)
                       }}
