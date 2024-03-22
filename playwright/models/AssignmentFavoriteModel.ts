@@ -65,9 +65,14 @@ export class AssignmentFavoriteModel extends BaseModel {
       .toBe(expectedCount)
   }
 
+  private async removeFavorite(assignmentCard: any, favoriteCountBefore: number) {
+    await assignmentCard.getByTestId('suosikki').click()
+    await assertSuccessNotification(this.page, 'assignment.notification.suosikki-poistettu')
+    await expect(assignmentCard).toBeHidden()
+  }
+
   async assertFavoritesPage(assignment: any, favoriteCountBefore: number) {
     await this.headerFavorites.click()
-    await this.goToExamTab()
 
     const assignmentCard = this.page.getByTestId(`assignment-list-item-${assignment.id}`)
 
@@ -75,11 +80,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     await assignmentCard.getByTestId('card-title').click()
     await expect(this.page.getByTestId('assignment-header')).toHaveText(assignment.nameFi)
     await this.page.goBack()
-    await assignmentCard.getByTestId('suosikki').click()
-    await this.checkBoxFavoriteRoot.uncheck()
-    await this.addToFavoritesBtn.click()
-    await assertSuccessNotification(this.page, 'assignment.notification.suosikki-muokattu')
-    await expect(assignmentCard).toBeHidden()
+    await this.removeFavorite(assignmentCard, favoriteCountBefore)
 
     await this.assertFavoriteCountIsEventually(favoriteCountBefore)
   }
@@ -131,8 +132,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     await expect(favoriteButtonLocator.locator('span')).toHaveText('favorite.lisaa-suosikiksi')
     await favoriteButtonLocator.click()
     await this.addToFavoritesBtn.click()
-    await assertSuccessNotification(this.page, 'assignment.notification.suosikki-muokattu')
-    await expect(favoriteButtonLocator.locator('span')).toHaveText('favorite.muokkaa-suosikkeja')
+    await assertSuccessNotification(this.page, 'assignment.notification.suosikki-lisatty')
     await this.assertFavoriteCountIsEventually(favoriteCountBefore + 1)
 
     await this.assertFavoritesPage(assignment, favoriteCountBefore)

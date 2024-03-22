@@ -2,6 +2,7 @@ import {
   AssignmentOut,
   ContentType,
   ContentTypeSingularEn,
+  FavoriteAction,
   FavoriteIdsDtoOut,
   isLdAssignment,
   isPuhviAssignment,
@@ -14,6 +15,7 @@ import { useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { useFetch } from '../../hooks/useFetch'
+import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type AssignmentContentProps = {
@@ -32,9 +34,14 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
     `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${assignment.exam.toLocaleUpperCase()}/${assignment.id}`
   )
 
-  const { setFavoriteFolder } = useSetFavoriteFolders(refetchFavoriteData)
+  const { setFavoriteFolders, unFavorite } = useSetFavoriteFolders(refetchFavoriteData)
 
   const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
+
+  const onSetFavoriteFoldersAction = async (data: FavoriteToggleModalFormType) => {
+    await setFavoriteFolders({ data, favoriteAction: isFavorite ? FavoriteAction.EDIT : FavoriteAction.ADD })
+    setIsFavoriteModalOpen(false)
+  }
 
   return (
     <>
@@ -53,10 +60,6 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
                     {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
                   </span>
                 </li>
-                {/*<li}
-                {/*  <span className="pr-1 font-semibold">{t('assignment.tavoitetaso')}:</span>*/}
-                {/*  <span data-testid="suko-tavoitetaso">{getKoodiLabel(assignment.tavoitetasoKoodiArvo, 'taitotaso')}</span>*/}
-                {/*</li>*/}
                 <li>
                   <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
                   <span data-testid="suko-aihe">
@@ -99,7 +102,9 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
 
           <ContentActionRow
             isFavorite={isFavorite}
-            onFavoriteClick={() => setIsFavoriteModalOpen(true)}
+            onFavoriteClick={() => {
+              isFavorite ? unFavorite(assignment) : setIsFavoriteModalOpen(true)
+            }}
             pdfData={{
               baseOut: assignment,
               language: teachingLanguage,
@@ -131,10 +136,7 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
             (teachingLanguage === Language.FI ? assignment.nameFi : assignment.nameSv) || t('form.nimeton')
           }
           onClose={() => setIsFavoriteModalOpen(false)}
-          onSetFavoriteFoldersAction={async (favoriteCards) => {
-            await setFavoriteFolder(favoriteCards)
-            setIsFavoriteModalOpen(false)
-          }}
+          onSetFavoriteFoldersAction={onSetFavoriteFoldersAction}
         />
       )}
     </>

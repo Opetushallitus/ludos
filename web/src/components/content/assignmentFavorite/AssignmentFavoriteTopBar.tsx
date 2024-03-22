@@ -44,22 +44,19 @@ export const AssignmentFavoriteTopBar = ({
 
   return (
     <>
-      <div className="row flex-wrap justify-between pb-3 pt-6">
-        {segments.length > 1 && currentFolder.id ? (
-          <div className="row items-center gap-2 pb-4 md:pb-0">
-            <FavoriteFolderBreadcrumbs exam={exam} segments={segments} />
-            <AssignmentFavoriteFolderDropdownMenu
-              exam={exam}
-              favoriteCardFolders={assignmentFavorites}
-              currentFavoriteCardFolder={currentFolder}
-              refresh={favoriteCardFoldersRefetch}
-            />
-          </div>
-        ) : (
-          <div />
-        )}
-        <div className="row gap-6 items-center">
-          {exam !== Exam.SUKO && <TeachingLanguageSelectWithLabel text={t('filter.koetehtavat-kieli')} />}
+      <div className="row flex-wrap justify-between pb-1 pt-4">
+        <div>
+          {segments.length > 1 && currentFolder.id && (
+            <div className="row items-center gap-2 pb-4 md:pb-0">
+              <FavoriteFolderBreadcrumbs exam={exam} segments={segments} />
+              <AssignmentFavoriteFolderDropdownMenu
+                exam={exam}
+                favoriteCardFolders={assignmentFavorites}
+                currentFavoriteCardFolder={currentFolder}
+                refresh={favoriteCardFoldersRefetch}
+              />
+            </div>
+          )}
           <Button
             variant="buttonPrimary"
             onClick={() => setOpenAddNewFolderModal(true)}
@@ -69,6 +66,10 @@ export const AssignmentFavoriteTopBar = ({
               <span className="pl-1">{t('favorite.lisaa-kansio')}</span>
             </span>
           </Button>
+        </div>
+
+        <div className="row gap-6 items-center">
+          {exam !== Exam.SUKO && <TeachingLanguageSelectWithLabel text={t('filter.koetehtavat-kieli')} />}
         </div>
       </div>
       {openAddNewFolderModal && (

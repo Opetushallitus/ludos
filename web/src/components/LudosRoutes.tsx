@@ -41,7 +41,7 @@ export const contentListPath = (exam: Exam, contentType: ContentType, search?: s
 export const editingFormPath = ({ exam, contentType, id }: ContentBaseOut) =>
   `${examPath(exam)}/${ContentTypePluralFi[contentType]}/${muokkausKey}/${id}`
 
-export const favoritesPagePath = (exam?: Exam) => `/${suosikitKey}${exam ? `/${exam.toLowerCase()}` : ''}`
+export const favoritesPagePath = (exam: Exam = Exam.SUKO) => `/${suosikitKey}/${exam.toLowerCase()}`
 
 export const pageNotFoundPath = '/sivua-ei-loydy'
 

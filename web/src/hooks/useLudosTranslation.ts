@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
-import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, Language, PublishState } from '../types'
+import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, FavoriteAction, Language, PublishState } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
 import { TFunction } from 'i18next'
 
@@ -176,6 +176,11 @@ export const useLudosTranslation = () => {
       OPETTAJA: t('header.opettaja'),
       LAATIJA: t('header.laatija'),
       UNAUTHORIZED: t('header.luvaton')
+    },
+    favoriteActionNotificationTexts: {
+      [FavoriteAction.ADD]: t('assignment.notification.suosikki-lisatty'),
+      [FavoriteAction.REMOVE]: t('assignment.notification.suosikki-poistettu'),
+      [FavoriteAction.EDIT]: t('assignment.notification.suosikki-muokattu')
     }
   }
 
