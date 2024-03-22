@@ -1,4 +1,5 @@
 # Ludos
+Wiki: https://wiki.eduuni.fi/display/OPHPALV/LUDOS
 
 ## Käsitteet
 
@@ -100,7 +101,7 @@ output = json
 
 ### Backend
 
-Backend tarttee possun: `docker compose up`
+Käynnistä ensin PostgreSQL tietokanta Dockerissa projektin juuressa: `docker compose up`
 
 Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
 - `local` = devaus ja testaus osoitteessa localhost:8000 (vite) tai localhost:8080 (buildattu)
@@ -143,9 +144,6 @@ Vaihtoehtoja:
 
 
 ## Riippuvuuksien päivitykset
-
-Vielä manuaalisesti, mutta tarkoitus automatisoida vähintään fronttidepsupäivitykset Dependabot-tyyliin, kunhan
-ehditään. Tehdään uusi pull request jokaista depsupäivityskierrosta varten.
 
 ### Backend
 
