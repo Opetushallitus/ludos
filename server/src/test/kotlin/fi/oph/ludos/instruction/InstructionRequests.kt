@@ -12,7 +12,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.mock.web.MockPart
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
@@ -27,6 +29,9 @@ abstract class InstructionRequests {
     @Autowired
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
+
+    fun performWithCsrf(requestBuilder: MockHttpServletRequestBuilder): ResultActions =
+        mockMvc.perform(requestBuilder.with(SecurityMockMvcRequestPostProcessors.csrf()))
 
     val minimalSukoInstructionIn = TestSukoInstructionDtoIn(
         nameFi = "nameFi",
@@ -198,7 +203,7 @@ abstract class InstructionRequests {
         updatedInstructionAttachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
         newAttachments: List<InstructionAttachmentIn> = emptyList(),
         updaterUser: RequestPostProcessor = yllapitajaUser
-    ): Int = mockMvc.perform(
+    ): Int = performWithCsrf(
         createNewVersionOfInstructionReq(
             instructionId,
             mapper.writeValueAsString(updatedInstructionIn),
@@ -234,7 +239,7 @@ abstract class InstructionRequests {
         user: RequestPostProcessor = yllapitajaUser
     ): T {
         val responseBody =
-            mockMvc.perform(createInstructionReq(certificateIn, attachmentParts).with(user))
+            performWithCsrf(createInstructionReq(certificateIn, attachmentParts).with(user))
                 .andExpect(status().isOk).andReturn().response.contentAsString
 
         return mapper.readValue(responseBody)

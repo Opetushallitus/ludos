@@ -54,7 +54,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
             expectedErrorMessage: String
         ) {
             val errorMessage =
-                mockMvc.perform(createFavoriteFolderReq(Exam.SUKO, mapper.writeValueAsString(folderToCreate)))
+                performWithCsrf(createFavoriteFolderReq(Exam.SUKO, mapper.writeValueAsString(folderToCreate)))
                     .andExpect(status().isBadRequest)
                     .andReturn().response.contentAsString
             assertThat(errorMessage).isEqualTo(expectedErrorMessage)
@@ -158,7 +158,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
             expectedErrorMessage: String
         ) {
             val errorMessage =
-                mockMvc.perform(updateFavoriteFolderReq(Exam.SUKO, folderId, mapper.writeValueAsString(updatedFolder)))
+                performWithCsrf(updateFavoriteFolderReq(Exam.SUKO, folderId, mapper.writeValueAsString(updatedFolder)))
                     .andExpect(status().isBadRequest)
                     .andReturn().response.contentAsString
             assertThat(errorMessage).isEqualTo(expectedErrorMessage)
@@ -179,7 +179,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
         fun `non-existent id`() {
             val nonExistentFolderId = -1
             val folder = FavoriteFolderDtoIn("Kansio", ROOT_FOLDER_ID)
-            mockMvc.perform(updateFavoriteFolderReq(Exam.SUKO, nonExistentFolderId, mapper.writeValueAsString(folder)))
+            performWithCsrf(updateFavoriteFolderReq(Exam.SUKO, nonExistentFolderId, mapper.writeValueAsString(folder)))
                 .andExpect(status().isNotFound)
         }
 
@@ -252,7 +252,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
             val folderId = createFavoriteFolder(Exam.SUKO, folderIn, yllapitajaUser)
 
             val updatedFolder1 = FavoriteFolderDtoIn("Kansio 1", ROOT_FOLDER_ID)
-            mockMvc.perform(updateFavoriteFolderReq(Exam.SUKO, folderId, mapper.writeValueAsString(updatedFolder1)))
+            performWithCsrf(updateFavoriteFolderReq(Exam.SUKO, folderId, mapper.writeValueAsString(updatedFolder1)))
                 .andExpect(status().isNotFound)
 
             assertThat(getFavoriteIds(Exam.SUKO, yllapitajaUser).rootFolder.asFavoriteFolderWithoutId()).isEqualTo(
@@ -319,7 +319,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
         @Test
         @WithOpettajaRole
         fun root() {
-            val errorMessage = mockMvc.perform(deleteFavoriteFolderReq(Exam.SUKO, ROOT_FOLDER_ID))
+            val errorMessage = performWithCsrf(deleteFavoriteFolderReq(Exam.SUKO, ROOT_FOLDER_ID))
                 .andExpect(status().isBadRequest)
                 .andReturn().response.contentAsString
             assertThat(errorMessage).isEqualTo("Root folder cannot be deleted")
@@ -329,7 +329,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
         @WithOpettajaRole
         fun `non-existent folderId`() {
             val nonExistentFolderId = -1
-            val errorMessage = mockMvc.perform(deleteFavoriteFolderReq(Exam.SUKO, nonExistentFolderId))
+            val errorMessage = performWithCsrf(deleteFavoriteFolderReq(Exam.SUKO, nonExistentFolderId))
                 .andExpect(status().isNotFound)
                 .andReturn().response.contentAsString
             assertThat(errorMessage).isEqualTo("Favorite folder $nonExistentFolderId not found for user ${OpettajaSecurityContextFactory().kayttajatiedot().oidHenkilo}")
@@ -340,7 +340,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
         fun `someone else owns`() {
             val folderIn = FavoriteFolderDtoIn("Toisen omistaman kansion poistotesti", ROOT_FOLDER_ID)
             val folderId = createFavoriteFolder(Exam.SUKO, folderIn, yllapitajaUser)
-            val errorMessage = mockMvc.perform(deleteFavoriteFolderReq(Exam.SUKO, folderId))
+            val errorMessage = performWithCsrf(deleteFavoriteFolderReq(Exam.SUKO, folderId))
                 .andExpect(status().isNotFound)
                 .andReturn().response.contentAsString
             assertThat(errorMessage).isEqualTo("Favorite folder $folderId not found for user ${OpettajaSecurityContextFactory().kayttajatiedot().oidHenkilo}")
@@ -626,7 +626,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
         @WithOpettajaRole
         fun `non-existent assignmentId`() {
             val nonExistentAssignmentId = -1
-            val errorMessage = mockMvc.perform(
+            val errorMessage = performWithCsrf(
                 setAssignmentFavoriteFoldersReq(
                     Exam.SUKO,
                     nonExistentAssignmentId,
@@ -645,7 +645,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
                 `create folder and assignment and add assignment to root and folder`(Exam.SUKO)
 
             val newFolderIdList = listOf(ROOT_FOLDER_ID, -1)
-            val errorMessage = mockMvc.perform(
+            val errorMessage = performWithCsrf(
                 setAssignmentFavoriteFoldersReq(
                     Exam.SUKO,
                     yllapitajaFavorites.assignmentOuts[0].id,
@@ -664,7 +664,7 @@ class AssignmentFavoritesTest : AssignmentRequests() {
                 `create folder and assignment and add assignment to root and folder`(Exam.SUKO, yllapitajaUser)
 
             val newFolderIdList = listOf(yllapitajaFavorites.favoriteFolderIds[0])
-            val errorMessage = mockMvc.perform(
+            val errorMessage = performWithCsrf(
                 setAssignmentFavoriteFoldersReq(
                     Exam.SUKO,
                     yllapitajaFavorites.assignmentOuts[0].id,

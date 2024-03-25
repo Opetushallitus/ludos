@@ -10,7 +10,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.mock.web.MockPart
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
@@ -24,6 +26,9 @@ abstract class CertificateRequests {
     @Autowired
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
+
+    fun performWithCsrf(requestBuilder: MockHttpServletRequestBuilder): ResultActions =
+        mockMvc.perform(requestBuilder.with(SecurityMockMvcRequestPostProcessors.csrf()))
 
     fun examByTestCertificateOutClass(testCertificateOutClass: KClass<out CertificateOut>): Exam =
         when (testCertificateOutClass) {

@@ -614,7 +614,7 @@ class InstructionControllerTest : InstructionRequests() {
     @Test
     @WithYllapitajaRole
     fun createInstructionWithBothNamesBlank() {
-        val responseContent = mockMvc.perform(
+        val responseContent = performWithCsrf(
             createInstructionReq(
                 mapper.writeValueAsString(minimalSukoInstructionIn.copy(nameFi = "")),
                 emptyList()
@@ -627,7 +627,7 @@ class InstructionControllerTest : InstructionRequests() {
     @WithYllapitajaRole
     fun updateInstructionWithNonExistentId() {
         val nonExistentId = -1
-        val failUpdate = mockMvc.perform(
+        val failUpdate = performWithCsrf(
             createNewVersionOfInstructionReq(
                 nonExistentId,
                 mapper.writeValueAsString(minimalSukoInstructionIn),
@@ -644,7 +644,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun updateInstructionWithNonExistentCurrentAttachment() {
         val instruction = createInstructionByExam(Exam.SUKO)
 
-        val failUpdate = mockMvc.perform(
+        val failUpdate = performWithCsrf(
             createNewVersionOfInstructionReq(
                 instruction.id,
                 mapper.writeValueAsString(minimalSukoInstructionIn),
@@ -668,7 +668,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun createWithInvalidExam() {
         val body = mapper.writeValueAsString(minimalSukoInstructionIn).replace("SUKO", "WRONG")
         val responseContent =
-            mockMvc.perform(createInstructionReq(body, emptyList())).andExpect(status().isBadRequest())
+            performWithCsrf(createInstructionReq(body, emptyList())).andExpect(status().isBadRequest())
                 .andReturn().response.contentAsString
 
         assertThat(responseContent).contains("Could not resolve type id 'WRONG' as a subtype")
@@ -679,7 +679,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun createWithInvalidPublishState() {
         val body = mapper.writeValueAsString(minimalSukoInstructionIn).replace("PUBLISHED", "WRONG")
         val responseContent =
-            mockMvc.perform(createInstructionReq(body, emptyList())).andExpect(status().isBadRequest())
+            performWithCsrf(createInstructionReq(body, emptyList())).andExpect(status().isBadRequest())
                 .andReturn().response.contentAsString
 
         assertThat(responseContent).contains("Cannot deserialize value of type `fi.oph.ludos.PublishState` from String \"WRONG\": not one of the values accepted for Enum class")
@@ -750,8 +750,8 @@ class InstructionControllerTest : InstructionRequests() {
     @WithOpettajaRole
     fun opettajaCannotCallYllapitajaRoutes() {
         val instructionInStr = mapper.writeValueAsString(minimalSukoInstructionIn)
-        mockMvc.perform(createInstructionReq(instructionInStr, emptyList())).andExpect(status().isUnauthorized())
-        mockMvc.perform(createNewVersionOfInstructionReq(1, instructionInStr, emptyList(), emptyList()))
+        performWithCsrf(createInstructionReq(instructionInStr, emptyList())).andExpect(status().isUnauthorized())
+        performWithCsrf(createNewVersionOfInstructionReq(1, instructionInStr, emptyList(), emptyList()))
             .andExpect(status().isUnauthorized())
     }
 
@@ -794,7 +794,7 @@ class InstructionControllerTest : InstructionRequests() {
             DynamicTest.dynamicTest("$exam") {
                 val createdInstruction = createInstructionByExam(exam)
                 val errorMessage =
-                    mockMvc.perform(restoreInstructionReq(exam, createdInstruction.id, createdInstruction.version))
+                    performWithCsrf(restoreInstructionReq(exam, createdInstruction.id, createdInstruction.version))
                         .andExpect(status().isBadRequest).andReturn().response.contentAsString
                 assertEquals("Cannot restore latest version", errorMessage)
             }
@@ -805,7 +805,7 @@ class InstructionControllerTest : InstructionRequests() {
     fun `restoring non-existent instruction id yields 404`() =
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                mockMvc.perform(restoreInstructionReq(exam, -1, 1))
+                performWithCsrf(restoreInstructionReq(exam, -1, 1))
                     .andExpect(status().isNotFound)
             }
         }
@@ -816,7 +816,7 @@ class InstructionControllerTest : InstructionRequests() {
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
                 val createdInstruction = createInstructionByExam(exam)
-                mockMvc.perform(restoreInstructionReq(exam, createdInstruction.id, -1))
+                performWithCsrf(restoreInstructionReq(exam, createdInstruction.id, -1))
                     .andExpect(status().isNotFound)
             }
         }
@@ -851,7 +851,7 @@ class InstructionControllerTest : InstructionRequests() {
                 val versionsBeforeRestore = getAllInstructionVersionsByExam(exam, createdInstruction.id)
                 assertEquals(2, versionsBeforeRestore.size)
 
-                mockMvc.perform(restoreInstructionReq(exam, createdInstruction.id, createdInstruction.version))
+                performWithCsrf(restoreInstructionReq(exam, createdInstruction.id, createdInstruction.version))
                     .andExpect(status().isOk)
                 val versionsAfterRestore = getAllInstructionVersionsByExam(exam, createdInstruction.id)
                 val latestVersionById = getInstructionByIdByExam(exam, createdInstruction.id)

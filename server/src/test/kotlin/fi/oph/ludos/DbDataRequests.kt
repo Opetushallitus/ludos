@@ -3,6 +3,7 @@ package fi.oph.ludos
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.assignment.Assignment
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -12,7 +13,7 @@ val mapper = jacksonObjectMapper()
 
 fun seedDbWithCustomAssignmentsRequest(data: String): MockHttpServletRequestBuilder =
     MockMvcRequestBuilders.post("${Constants.API_PREFIX}/test/seedAssignments").contentType(MediaType.APPLICATION_JSON)
-        .content(data)
+        .content(data).with(csrf())
 
 fun seedDbWithCustomAssignments(mockMvc: MockMvc, assignments: List<Assignment>) {
     val result = mockMvc.perform(

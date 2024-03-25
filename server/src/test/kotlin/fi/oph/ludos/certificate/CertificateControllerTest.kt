@@ -188,7 +188,7 @@ class CertificateControllerTest : CertificateRequests() {
 
         val certificateToCreateStr = mapper.writeValueAsString(certificateToCreate)
         val createdCertificateStr =
-            mockMvc.perform(postCertificate(certificateToCreateStr, attachmentFileName, attachmentFileNameSv))
+            performWithCsrf(postCertificate(certificateToCreateStr, attachmentFileName, attachmentFileNameSv))
                 .andExpect(status().isOk)
                 .andReturn().response.contentAsString
 
@@ -212,7 +212,7 @@ class CertificateControllerTest : CertificateRequests() {
         val newAttachment = readAttachmentFixtureFile(attachmentFileNameToUpdate)
         val newAttachmentSv = readAttachmentFixtureFile(attachmentFileNameToUpdateSv, "attachmentSv")
 
-        mockMvc.perform(
+        performWithCsrf(
             putCertificate(
                 createdCertificate.id,
                 mapper.writeValueAsString(editedCertificate),
@@ -343,7 +343,7 @@ class CertificateControllerTest : CertificateRequests() {
                         readAttachmentFixtureFile(attachmentFileNameToUpdate)
                     } else null
 
-                    mockMvc.perform(
+                    performWithCsrf(
                         putCertificate(
                             createdCertificate.id,
                             mapper.writeValueAsString(certificateIn),
@@ -429,7 +429,7 @@ class CertificateControllerTest : CertificateRequests() {
     @WithYllapitajaRole
     fun putNonExistentCertificate() = assertEquals(
         "Certificate -1 not found",
-        mockMvc.perform(putCertificate(-1, mapper.writeValueAsString(sukoCertificateToCreate)))
+        performWithCsrf(putCertificate(-1, mapper.writeValueAsString(sukoCertificateToCreate)))
             .andExpect(status().isNotFound)
             .andReturn().response.contentAsString
     )
@@ -440,7 +440,7 @@ class CertificateControllerTest : CertificateRequests() {
         val body = mapper.writeValueAsString(sukoCertificateToCreate).replace("\"SUKO\"", "\"WRONG\"")
 
         val postResponseBody =
-            mockMvc.perform(postCertificate(body, attachmentFileNameToCreate)).andExpect(status().isBadRequest)
+            performWithCsrf(postCertificate(body, attachmentFileNameToCreate)).andExpect(status().isBadRequest)
                 .andReturn().response.contentAsString
         assertThat(
             postResponseBody,
@@ -452,7 +452,7 @@ class CertificateControllerTest : CertificateRequests() {
     @WithYllapitajaRole
     fun postCertificateWithMissingAttachment() =
         assertThat(
-            mockMvc.perform(postCertificate(mapper.writeValueAsString(sukoCertificateToCreate), null))
+            performWithCsrf(postCertificate(mapper.writeValueAsString(sukoCertificateToCreate), null))
                 .andExpect(status().isBadRequest)
                 .andReturn().response.contentAsString, emptyString()
         )
@@ -464,7 +464,7 @@ class CertificateControllerTest : CertificateRequests() {
 
         val body = mapper.writeValueAsString(sukoCertificateToCreate.copy(publishState = TestPublishState.OLEMATON))
 
-        val putResponseBody = mockMvc.perform(putCertificate(createdCertificateOut.id, body))
+        val putResponseBody = performWithCsrf(putCertificate(createdCertificateOut.id, body))
             .andExpect(status().isBadRequest)
             .andReturn().response.contentAsString
 
@@ -493,7 +493,7 @@ class CertificateControllerTest : CertificateRequests() {
 
         updates.forEach { updateFunction ->
             val updatedCertificateIn = updateFunction(createdCertificateOut)
-            mockMvc.perform(
+            performWithCsrf(
                 putCertificate(
                     createdCertificateOut.id,
                     mapper.writeValueAsString(updatedCertificateIn),
@@ -503,7 +503,7 @@ class CertificateControllerTest : CertificateRequests() {
             ).andExpect(status().isOk)
         }
 
-        mockMvc.perform(
+        performWithCsrf(
             putCertificate(
                 createdCertificateOut.id,
                 mapper.writeValueAsString(updateCertificate(createdCertificateOut)),
@@ -588,7 +588,7 @@ class CertificateControllerTest : CertificateRequests() {
             DynamicTest.dynamicTest("$exam") {
                 val createdCertificate = createCertificateByExamAndCheckIt(exam)
                 val errorMessage =
-                    mockMvc.perform(restoreCertificateReq(exam, createdCertificate.id, createdCertificate.version))
+                    performWithCsrf(restoreCertificateReq(exam, createdCertificate.id, createdCertificate.version))
                         .andExpect(status().isBadRequest).andReturn().response.contentAsString
                 assertEquals("Cannot restore latest version", errorMessage)
             }
@@ -599,7 +599,7 @@ class CertificateControllerTest : CertificateRequests() {
     fun `restoring non-existent certificate id yields 404`() =
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                mockMvc.perform(restoreCertificateReq(exam, -1, 1))
+                performWithCsrf(restoreCertificateReq(exam, -1, 1))
                     .andExpect(status().isNotFound)
             }
         }
@@ -610,7 +610,7 @@ class CertificateControllerTest : CertificateRequests() {
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
                 val createdCertificate = createCertificateByExamAndCheckIt(exam)
-                mockMvc.perform(restoreCertificateReq(exam, createdCertificate.id, -1))
+                performWithCsrf(restoreCertificateReq(exam, createdCertificate.id, -1))
                     .andExpect(status().isNotFound)
             }
         }
@@ -630,7 +630,7 @@ class CertificateControllerTest : CertificateRequests() {
                 val versionsBeforeRestore = getAllCertificateVersions(exam, createdCertificate.id)
                 assertEquals(2, versionsBeforeRestore.size)
 
-                mockMvc.perform(restoreCertificateReq(exam, createdCertificate.id, createdCertificate.version))
+                performWithCsrf(restoreCertificateReq(exam, createdCertificate.id, createdCertificate.version))
                     .andExpect(status().isOk)
                 val versionsAfterRestore = getAllCertificateVersions(exam, createdCertificate.id)
                 val latestVersionById = getCertificateById(exam, createdCertificate.id)

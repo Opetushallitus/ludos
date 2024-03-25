@@ -11,7 +11,9 @@ import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
@@ -24,6 +26,10 @@ abstract class AssignmentRequests {
     @Autowired
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
+
+    fun performWithCsrf(requestBuilder: MockHttpServletRequestBuilder): ResultActions =
+        mockMvc.perform(requestBuilder.with(csrf()))
+
 
     val minimalSukoAssignmentIn = TestSukoAssignmentDtoIn(
         "nameFi",
@@ -76,7 +82,6 @@ abstract class AssignmentRequests {
     fun createMinimalAssignmentByExam(exam: Exam): AssignmentOut =
         createAssignmentByExam(exam, minimalAssignmentIn(exam))
 
-
     fun examByAssignmentOutClass(assignmentOutClass: KClass<out AssignmentOut>): Exam =
         when (assignmentOutClass) {
             SukoAssignmentDtoOut::class -> Exam.SUKO
@@ -84,6 +89,7 @@ abstract class AssignmentRequests {
             PuhviAssignmentDtoOut::class -> Exam.PUHVI
             else -> throw RuntimeException("unsupported AssignmentOutClass '$assignmentOutClass'")
         }
+
 
     fun examByAssignmentCardOutClass(assignmentCardOutClass: KClass<out AssignmentCardOut>): Exam =
         when (assignmentCardOutClass) {
@@ -94,7 +100,8 @@ abstract class AssignmentRequests {
         }
 
     fun createAssignmentReq(body: String) =
-        MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment").contentType(MediaType.APPLICATION_JSON)
+        MockMvcRequestBuilders.post("${Constants.API_PREFIX}/assignment")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
     inline fun <reified T : AssignmentOut> createAssignment(
@@ -103,11 +110,11 @@ abstract class AssignmentRequests {
     ): T {
         val req = createAssignmentReq(mapper.writeValueAsString(assignmentIn)).with(user)
 
-        val responseBody = mockMvc.perform(req).andExpect(status().isOk).andReturn().response.contentAsString
+        val responseBody = performWithCsrf(req).andExpect(status().isOk).andReturn().response.contentAsString
         return mapper.readValue(responseBody)
     }
 
-    fun createAssignmentByExam(exam: Exam, assignmentIn: TestAssignmentIn): AssignmentOut = when (exam) {
+    private fun createAssignmentByExam(exam: Exam, assignmentIn: TestAssignmentIn): AssignmentOut = when (exam) {
         Exam.SUKO -> createAssignment<SukoAssignmentDtoOut>(assignmentIn)
         Exam.LD -> createAssignment<LdAssignmentDtoOut>(assignmentIn)
         Exam.PUHVI -> createAssignment<PuhviAssignmentDtoOut>(assignmentIn)
@@ -115,7 +122,7 @@ abstract class AssignmentRequests {
 
     fun assertThatCreateInvalidAssignmentError(assignmentIn: TestAssignmentIn): AbstractStringAssert<*> {
         val errorMessage =
-            mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentIn)))
+            performWithCsrf(createAssignmentReq(mapper.writeValueAsString(assignmentIn)))
                 .andExpect(status().isBadRequest).andReturn().response.contentAsString
         return assertThat(errorMessage)
     }
@@ -141,7 +148,7 @@ abstract class AssignmentRequests {
             builder.with(user)
         }
 
-        val getUpdatedByIdStr = mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
+        val getUpdatedByIdStr = performWithCsrf(builder).andExpect(status().isOk()).andReturn().response.contentAsString
 
         return mapper.readValue(getUpdatedByIdStr)
     }
@@ -157,7 +164,8 @@ abstract class AssignmentRequests {
     }
 
     fun createNewVersionOfAssignmentReq(id: Int, body: String) =
-        MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id").contentType(MediaType.APPLICATION_JSON)
+        MockMvcRequestBuilders.put("${Constants.API_PREFIX}/assignment/$id")
+            .contentType(MediaType.APPLICATION_JSON)
             .content(body)
 
     fun createNewVersionOfAssignment(
@@ -167,7 +175,7 @@ abstract class AssignmentRequests {
     ): String {
         val builder = createNewVersionOfAssignmentReq(id, mapper.writeValueAsString(testAssignmentIn)).with(user)
 
-        return mockMvc.perform(builder).andExpect(status().isOk()).andReturn().response.contentAsString
+        return performWithCsrf(builder).andExpect(status().isOk()).andReturn().response.contentAsString
     }
 
     fun getAllAssignmentsReq(exam: Exam) =
@@ -183,11 +191,11 @@ abstract class AssignmentRequests {
         return mapper.readValue<TestAssignmentsOut<T>>(responseContent)
     }
 
-    fun getAllAssignmentVersionsReq(exam: Exam, id: Int) =
+    private fun getAllAssignmentVersionsReq(exam: Exam, id: Int) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/$exam/$id/versions")
             .contentType(MediaType.APPLICATION_JSON)
 
-    inline fun <reified T : AssignmentOut> getAllAssignmentVersions(id: Int): List<T> {
+    private inline fun <reified T : AssignmentOut> getAllAssignmentVersions(id: Int): List<T> {
         val exam = examByAssignmentOutClass(T::class)
 
         val responseContent =
@@ -280,7 +288,7 @@ abstract class AssignmentRequests {
             builder.with(user)
         }
 
-        return mockMvc.perform(builder).andExpect(status().isOk())
+        return performWithCsrf(builder).andExpect(status().isOk())
             .andReturn().response.contentAsString.toInt()
     }
 
@@ -300,7 +308,7 @@ abstract class AssignmentRequests {
             builder.with(user)
         }
 
-        mockMvc.perform(builder).andExpect(status().isOk())
+        performWithCsrf(builder).andExpect(status().isOk())
     }
 
     fun deleteFavoriteFolderReq(exam: Exam, folderId: Int) =
@@ -313,10 +321,10 @@ abstract class AssignmentRequests {
             builder.with(user)
         }
 
-        mockMvc.perform(builder).andExpect(status().isOk())
+        performWithCsrf(builder).andExpect(status().isOk())
     }
 
-    fun getFavoriteIdsReq(exam: Exam, user: RequestPostProcessor? = null) =
+    private fun getFavoriteIdsReq(exam: Exam, user: RequestPostProcessor? = null) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favorites/$exam")
             .contentType(MediaType.APPLICATION_JSON)
             .let { if (user != null) it.with(user) else it }
@@ -330,7 +338,7 @@ abstract class AssignmentRequests {
         )
     }
 
-    fun getFavoriteIdsForAssignmentReq(exam: Exam, assignmentId: Int, user: RequestPostProcessor? = null) =
+    private fun getFavoriteIdsForAssignmentReq(exam: Exam, assignmentId: Int, user: RequestPostProcessor? = null) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favorites/$exam/$assignmentId")
             .contentType(MediaType.APPLICATION_JSON)
             .let { if (user != null) it.with(user) else it }
@@ -348,7 +356,7 @@ abstract class AssignmentRequests {
         )
     }
 
-    fun getCardFoldersReq(exam: Exam, user: RequestPostProcessor? = null) =
+    private fun getCardFoldersReq(exam: Exam, user: RequestPostProcessor? = null) =
         MockMvcRequestBuilders.get("${Constants.API_PREFIX}/assignment/favorites/$exam/cardFolders")
             .contentType(MediaType.APPLICATION_JSON)
             .let { if (user != null) it.with(user) else it }
@@ -357,7 +365,7 @@ abstract class AssignmentRequests {
         val builder = getCardFoldersReq(exam, user)
 
         return mapper.readValue(
-            mockMvc.perform(builder).andExpect(status().isOk())
+            performWithCsrf(builder).andExpect(status().isOk())
                 .andReturn().response.contentAsString
         )
     }
@@ -381,7 +389,7 @@ abstract class AssignmentRequests {
     ): Int? {
         val builder = setAssignmentFavoriteFoldersReq(exam, assignmentId, mapper.writeValueAsString(folderIds), user)
 
-        return mockMvc.perform(builder).andExpect(status().isOk())
+        return performWithCsrf(builder).andExpect(status().isOk())
             .andReturn().response.contentAsString.toIntOrNull()
     }
 

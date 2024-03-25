@@ -35,14 +35,16 @@ const doRequest = async (
   method: string,
   body?: string | FormData,
   headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'X-XSRF-TOKEN': getCookie('XSRF-TOKEN') || ''
+    'Content-Type': 'application/json'
   }
 ) => {
   const response = await fetch(url, {
     method,
     body,
-    headers,
+    headers: {
+      ...headers,
+      'X-XSRF-TOKEN': getCookie('XSRF-TOKEN') || ''
+    },
     redirect: 'manual'
   })
 

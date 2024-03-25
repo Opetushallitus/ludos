@@ -1,6 +1,5 @@
 package fi.oph.ludos.auth
 
-import fi.oph.ludos.LudosApplication
 import fi.oph.ludos.test.TestController
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
@@ -45,18 +44,12 @@ class WebSecurityConfiguration {
         casAuthenticationFilter: CasAuthenticationFilter,
         casConfig: CasConfig
     ): SecurityFilterChain {
-        val activeProfiles = LudosApplication.activeProfiles().toSet()
-
-        if (activeProfiles.contains("local")) {
-            http.csrf { it.disable() }
-        } else {
-            http.csrf {
-                it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
-            }
-
-            http.addFilterAfter(SpaCsrfTokenRequestHandler.CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
+        http.csrf {
+            it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
         }
+
+        http.addFilterAfter(SpaCsrfTokenRequestHandler.CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
 
         val requestCache = HttpSessionRequestCache()
         requestCache.setMatchingRequestParameterName("j")
