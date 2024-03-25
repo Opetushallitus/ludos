@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.*
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.util.StringUtils
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
@@ -58,6 +59,7 @@ class WebSecurityConfiguration {
         http.logout {
             it.logoutSuccessUrl(casConfig.getCasLogoutUrl())
             it.logoutUrl(casConfig.logoutUrl)
+            it.logoutRequestMatcher(AntPathRequestMatcher(casConfig.logoutUrl, "GET"))
         }
 
         http.authorizeHttpRequests {
