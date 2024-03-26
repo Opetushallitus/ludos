@@ -25,7 +25,6 @@ export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
         customClass="pr-3"
         name={isError ? 'virhe' : 'info'}
         color={isError ? 'text-white' : 'text-black'}
-        filled={isError}
         size="lg"
       />
       <p className="flex-grow">

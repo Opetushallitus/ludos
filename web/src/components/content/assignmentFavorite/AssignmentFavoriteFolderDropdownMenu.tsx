@@ -94,7 +94,7 @@ export const AssignmentFavoriteFolderDropdownMenu = ({
         id="menu-button"
         data-testid="folder-action-menu-btn"
         aria-expanded={showActionMenu}>
-        <Icon name="kolme-pistetta" color="text-green-primary" customClass="text-[2rem] mt-2" filled />
+        <Icon name="kolme-pistetta" color="text-green-primary" customClass="text-[2rem] mt-2" />
       </Button>
       {showActionMenu && (
         <div

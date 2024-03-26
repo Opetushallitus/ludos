@@ -9,7 +9,6 @@ import { lazy, Suspense } from 'react'
 type AssignmentCardContentActionButtonProps = {
   assignment: AssignmentCardOut
   contentAction: ContentAction
-  isIconFilled?: boolean
   onClickHandler?: () => void
   isDisabled?: boolean
 }
@@ -17,14 +16,13 @@ type AssignmentCardContentActionButtonProps = {
 function AssignmentCardContentActionButton({
   assignment: { id: contentId, exam },
   contentAction: { actionName, iconName, text, link },
-  isIconFilled,
   onClickHandler,
   isDisabled
 }: AssignmentCardContentActionButtonProps) {
   const className = 'flex items-center'
   const children = (
     <>
-      <Icon name={iconName} color="text-green-primary" filled={isIconFilled} />
+      <Icon name={iconName} color="text-green-primary" />
       <span className="ml-1 text-xs text-green-primary">{text}</span>
     </>
   )
@@ -107,11 +105,10 @@ export const AssignmentCardContentActions = ({
         assignment={assignment}
         contentAction={{
           actionName: 'suosikki',
-          iconName: 'suosikki',
+          iconName: favoriteAction.isFavorite ? 'suosikki' : 'suosikki-border',
           text: favoriteAction.isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
         }}
         onClickHandler={favoriteAction.onClick}
-        isIconFilled={favoriteAction.isFavorite}
         isDisabled={favoriteAction.isDisabled}
         key="suosikki"
       />

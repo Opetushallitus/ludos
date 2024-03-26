@@ -48,7 +48,7 @@ export const Notification = () => {
           {notification.type === NotificationEnum.success ? (
             <Icon name="onnistunut" color="text-white" />
           ) : (
-            <Icon name="virhe" color="text-white" filled />
+            <Icon name="virhe" color="text-white" />
           )}
           {notification.message}
           {notification.type === NotificationEnum.error && (
