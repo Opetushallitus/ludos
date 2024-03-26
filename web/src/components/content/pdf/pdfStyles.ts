@@ -1,7 +1,11 @@
 import { Font, StyleSheet } from '@react-pdf/renderer'
 import colors from '../../../colors'
-import italic from '../../../../assets/OpenSans-Italic.ttf'
-import boldItalic from '../../../../assets/OpenSans-BoldItalic.ttf'
+import openSansRegular from '../../../../assets/fonts/OpenSans-Regular.ttf'
+import openSansRegular400 from '../../../../assets/fonts/OpenSans-Regular400.ttf'
+import openSansRegular700 from '../../../../assets/fonts/OpenSans-Regular700.ttf'
+import openSansRegular800 from '../../../../assets/fonts/OpenSans-Regular800.ttf'
+import italic from '../../../../assets/fonts/OpenSans-Italic.ttf'
+import boldItalic from '../../../../assets/fonts/OpenSans-BoldItalic.ttf'
 
 // disable hyphenation
 Font.registerHyphenationCallback((word) => [word])
@@ -10,18 +14,18 @@ Font.register({
   family: 'Open Sans',
   fonts: [
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem8YaGs126MiZpBA-UFVZ0e.ttf'
+      src: openSansRegular
     },
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem5YaGs126MiZpBA-UNirkOUuhs.ttf',
+      src: openSansRegular400,
       fontWeight: 400
     },
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem5YaGs126MiZpBA-UN7rgOUuhs.ttf',
+      src: openSansRegular700,
       fontWeight: 700
     },
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem5YaGs126MiZpBA-UN8rsOUuhs.ttf',
+      src: openSansRegular800,
       fontWeight: 800
     },
     {
