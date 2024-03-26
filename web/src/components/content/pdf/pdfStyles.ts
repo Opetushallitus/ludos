@@ -3,6 +3,9 @@ import colors from '../../../colors'
 import italic from '../../../../assets/OpenSans-Italic.ttf'
 import boldItalic from '../../../../assets/OpenSans-BoldItalic.ttf'
 
+// disable hyphenation
+Font.registerHyphenationCallback((word) => [word])
+
 Font.register({
   family: 'Open Sans',
   fonts: [
@@ -38,34 +41,31 @@ export const pdfStyles: { [key: string]: any } = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
     fontFamily: 'Open Sans',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 400,
-    marginTop: 10,
-    paddingBottom: 40
+    paddingVertical: 30
   },
   section: {
-    paddingLeft: 30,
-    paddingRight: 30,
+    paddingLeft: 35,
+    paddingRight: 50,
     width: '100%'
   },
   title: {
-    paddingTop: 15,
-    paddingBottom: 15,
+    paddingVertical: 15,
     fontSize: 14,
     fontWeight: 600
   },
   content: {
-    paddingTop: 15,
-    paddingBottom: 15,
+    paddingVertical: 15,
     borderTop: `1px solid ${colors.graySeparator}`
   },
   p: {
-    paddingTop: 5,
-    paddingBottom: 5
+    paddingVertical: 5
   },
   h1: {
     fontSize: 16,
-    fontWeight: 600
+    fontWeight: 600,
+    textAlign: 'justify'
   },
   h2: {
     fontSize: 14,
@@ -121,5 +121,10 @@ export const pdfStyles: { [key: string]: any } = StyleSheet.create({
   contentItemWithBorder: {
     borderTop: `1px solid ${colors.graySeparator}`,
     paddingTop: 10
+  },
+  footerImage: {
+    position: 'absolute',
+    width: 200,
+    bottom: 20
   }
 })
