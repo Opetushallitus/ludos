@@ -143,6 +143,11 @@ Vaihtoehtoja:
   - Huom: CI:llä playwright ajetaan buildattua fronttia ja porttia 8080 vasten
 
 
+## Skriptit `/scripts`
+- `fetch_secrets.sh` hakee AWS-secrets-managerista backendin tarvitsemat salaisuudet ja tallentaa ne `.env`-tiedostoihin
+- `update_backups.sh` kopio lokalisaatio ja koodisto palveluista Ludokseen tarvittavat datat `/server/src/main/resources/backup_data`-kansioon. Skripti ajautuu git on-push hookissa.
+- `localizations.ts` komentorivi wrapperi lokalisaatio palvelulle. Käyttohjeet: `yarn localizations`, sekä käyttö esimerkkejä: https://wiki.eduuni.fi/pages/viewpage.action?pageId=380016595
+
 ## Riippuvuuksien päivitykset
 
 ### Backend
