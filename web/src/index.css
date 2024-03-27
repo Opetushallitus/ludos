@@ -64,8 +64,14 @@
     }
 }
 
+@font-face {
+    font-family: 'Open Sans Variable';
+    src: url('../assets/fonts/OpenSans-VariableFont_wdth,wght.ttf') format('truetype-variations');
+    font-weight: 400 700;
+}
+
 :root {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans Variable', 'Open Sans', sans-serif;
     line-height: 1.5;
     font-weight: normal;
 
@@ -98,7 +104,3 @@ body {
      border-right: 2px solid theme('colors.green.primary');
      border-bottom: 2px solid theme('colors.green.primary');
  }
-
-.material-symbols-outlined-filled {
-    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}

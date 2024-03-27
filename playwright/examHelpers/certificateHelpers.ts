@@ -32,7 +32,7 @@ export async function fillCertificateForm(form: CertificateFormModel, inputs: An
 }
 
 export async function testAttachmentLink(page: Page, context: BrowserContext, attachment: AttachmentFormType) {
-  const attachmentLink = page.getByRole('link', { name: `${attachment.name} open_in_new` })
+  const attachmentLink = page.getByRole('link', { name: `${attachment.name}` })
   const attachmentLinkTarget = await attachmentLink.evaluate((l) => l.getAttribute('target'))
   const attachmentLinkHref = await attachmentLink.evaluate((l) => l.getAttribute('href'))
 

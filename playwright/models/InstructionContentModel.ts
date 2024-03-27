@@ -14,6 +14,6 @@ export class InstructionContentModel extends ContentModel {
   async assertAttachments(expectedAttachmentNames: string[]) {
     const expectedAttachmentNamesSorted = expectedAttachmentNames.slice().sort()
     const attachmentLinkContentsSorted = (await this.page.getByTestId('attachment-link').allTextContents()).sort()
-    expect(attachmentLinkContentsSorted).toEqual(expectedAttachmentNamesSorted.map((n) => `${n}open_in_new`))
+    expect(attachmentLinkContentsSorted).toEqual(expectedAttachmentNamesSorted)
   }
 }

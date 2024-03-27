@@ -36,7 +36,7 @@ export async function updateAttachments(form: InstructionFormModel) {
   await assertSuccessNotification(form.page, 'form.notification.ohjeen-tallennus.julkaisu-onnistui')
 
   await setTeachingLanguage(form.page, Language.FI)
-  await expect(form.page.getByRole('link', { name: 'Testi liite 1 open_in_new' })).toBeHidden()
+  await expect(form.page.getByRole('link', { name: 'Testi liite 1' })).toBeHidden()
   await expect(form.page.getByRole('link', { name: 'Testi liite uusi nimi' })).toBeVisible()
 }
 
@@ -70,8 +70,8 @@ export async function assertInstructionContentPage(
     await expect(page.getByText(formData.contentFi, { exact: true })).toBeVisible()
   }
 
-  await expect(page.getByRole('link', { name: `${formData.nameFi} 1 open_in_new` })).toBeVisible()
-  await expect(page.getByRole('link', { name: `${formData.nameFi} 2 open_in_new` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${formData.nameFi} 1` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${formData.nameFi} 2` })).toBeVisible()
 
   await setTeachingLanguage(page, Language.SV)
 
@@ -94,6 +94,6 @@ export async function assertInstructionContentPage(
     await expect(page.getByText(formData.contentSv, { exact: true })).toBeVisible()
   }
 
-  await expect(page.getByRole('link', { name: `${formData.nameSv} 1 open_in_new` })).toBeVisible()
-  await expect(page.getByRole('link', { name: `${formData.nameSv} 2 open_in_new` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${formData.nameSv} 1` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `${formData.nameSv} 2` })).toBeVisible()
 }

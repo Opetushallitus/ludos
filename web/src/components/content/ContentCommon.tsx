@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next'
 import { Icon } from '../Icon'
 import { ContentBaseOut, ContentType, Exam, Language } from '../../types'
 import { getContentName } from '../../utils/assignmentUtils'
@@ -51,12 +50,10 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
 
 function ContentActionButton({
   contentAction: { actionName, iconName, text, link },
-  isActive,
   disabled,
   onClickHandler
 }: {
   contentAction: ContentAction
-  isActive?: boolean
   disabled?: boolean
   onClickHandler?: (actionName: string) => void
 }) {
@@ -64,7 +61,7 @@ function ContentActionButton({
 
   const children = (
     <>
-      <Icon name={iconName} color="text-green-primary" filled={isActive} />
+      <Icon name={iconName} color="text-green-primary" />
       <span className="ml-1 text-xs text-green-primary">{text}</span>
     </>
   )
@@ -132,11 +129,10 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
         <ContentActionButton
           contentAction={{
             actionName: 'suosikki',
-            iconName: 'suosikki',
+            iconName: isFavorite ? 'suosikki' : 'suosikki-border',
             text: isFavorite ? t('favorite.poista-suosikeista') : t('favorite.lisaa-suosikiksi')
           }}
           onClickHandler={onFavoriteClick}
-          isActive={isFavorite}
           disabled={disabled}
           key="suosikki"
         />
