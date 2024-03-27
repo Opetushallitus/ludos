@@ -359,7 +359,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         SukoAssignmentDtoIn::class.memberProperties.filter { !ignoredFields.contains(it.name) }.forEach { field ->
             val dtoInMap: Map<*, *> = mapper.readValue(mapper.writeValueAsString(minimalSukoAssignmentIn))
             val jsonWithFieldRemoved = mapper.writeValueAsString(dtoInMap - field.name)
-            val response = mockMvc.perform(createAssignmentReq(jsonWithFieldRemoved)).andReturn().response
+            val response = performWithCsrf(createAssignmentReq(jsonWithFieldRemoved)).andReturn().response
             assertThat(response.status).`as`("missing ${field.name} yields bad request")
                 .isEqualTo(HttpStatus.SC_BAD_REQUEST)
             if (field.name == "exam") {
@@ -472,7 +472,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun sukoAssignmentUpdateFailsWhenIdDoesNotExist() {
         val nonExistentId = -1
         val errorMessage =
-            mockMvc.perform(
+            performWithCsrf(
                 createNewVersionOfAssignmentReq(
                     nonExistentId,
                     mapper.writeValueAsString(minimalSukoAssignmentIn)
@@ -494,7 +494,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         )
 
         val errorMessage =
-            mockMvc.perform(createAssignmentReq(mapper.writeValueAsString(assignmentWithInvalidKoodiArvos)))
+            performWithCsrf(createAssignmentReq(mapper.writeValueAsString(assignmentWithInvalidKoodiArvos)))
                 .andExpect(status().isBadRequest).andReturn().response.contentAsString.trimIndent()
 
         assertThat(errorMessage).isEqualTo(
@@ -553,7 +553,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     @Test
     @WithYllapitajaRole
     fun `assignment not found on UPDATE`() {
-        val updateResult = mockMvc.perform(
+        val updateResult = performWithCsrf(
             createNewVersionOfAssignmentReq(
                 999,
                 mapper.writeValueAsString(minimalSukoAssignmentIn)
@@ -580,8 +580,8 @@ class AssignmentControllerTest : AssignmentRequests() {
     @WithOpettajaRole
     fun `create and update with insufficient role`() {
         val testAssignmentStr = mapper.writeValueAsString(minimalSukoAssignmentIn)
-        mockMvc.perform(createAssignmentReq(testAssignmentStr)).andExpect(status().isUnauthorized())
-        mockMvc.perform(createNewVersionOfAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
+        performWithCsrf(createAssignmentReq(testAssignmentStr)).andExpect(status().isUnauthorized())
+        performWithCsrf(createNewVersionOfAssignmentReq(1, testAssignmentStr)).andExpect(status().isUnauthorized())
     }
 
     @Test
@@ -630,7 +630,7 @@ class AssignmentControllerTest : AssignmentRequests() {
             DynamicTest.dynamicTest("$exam") {
                 val createdAssignment = createMinimalAssignmentByExam(exam)
                 val errorMessage =
-                    mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
+                    performWithCsrf(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
                         .andExpect(status().isBadRequest).andReturn().response.contentAsString
                 assertEquals("Cannot restore latest version", errorMessage)
             }
@@ -641,7 +641,7 @@ class AssignmentControllerTest : AssignmentRequests() {
     fun `restoring non-existent assignment id yields 404`() =
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
-                mockMvc.perform(restoreAssignmentReq(exam, -1, 1))
+                performWithCsrf(restoreAssignmentReq(exam, -1, 1))
                     .andExpect(status().isNotFound)
             }
         }
@@ -652,7 +652,7 @@ class AssignmentControllerTest : AssignmentRequests() {
         Exam.entries.map { exam ->
             DynamicTest.dynamicTest("$exam") {
                 val createdAssignment = createMinimalAssignmentByExam(exam)
-                mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, -1))
+                performWithCsrf(restoreAssignmentReq(exam, createdAssignment.id, -1))
                     .andExpect(status().isNotFound)
             }
         }
@@ -675,7 +675,7 @@ class AssignmentControllerTest : AssignmentRequests() {
                 val versionsBeforeRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
                 assertEquals(2, versionsBeforeRestore.size)
 
-                mockMvc.perform(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
+                performWithCsrf(restoreAssignmentReq(exam, createdAssignment.id, createdAssignment.version))
                     .andExpect(status().isOk)
                 val versionsAfterRestore = getAllAssignmentVersionsByExam(exam, createdAssignment.id)
                 val latestVersionById = getAssignmentByIdByExam(exam, createdAssignment.id)

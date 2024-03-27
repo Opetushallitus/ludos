@@ -38,12 +38,14 @@ export async function fetchWithSession(
 ) {
   const storageState = await context.storageState()
   const sessionCookie = storageState.cookies.find((cookie) => cookie.name === 'SESSION')
-  if (!sessionCookie) {
-    throw new Error('Session cookie not found from storagestate, did you authenticate?')
+  const xsrfToken = storageState.cookies.find((cookie) => cookie.name === 'XSRF-TOKEN')
+
+  if (!sessionCookie || !xsrfToken) {
+    throw new Error('Cookies not found from storagestate, did you authenticate?')
   }
 
   const headers: { [key: string]: string } = {
-    Cookie: `SESSION=${sessionCookie.value}`
+    Cookie: `SESSION=${sessionCookie.value}; XSRF-TOKEN=${xsrfToken.value};`
   }
 
   if (!(body instanceof FormData)) {
@@ -53,7 +55,11 @@ export async function fetchWithSession(
   return await fetch(url, {
     method,
     body,
-    headers
+    credentials: 'include',
+    headers: {
+      ...headers,
+      'X-XSRF-TOKEN': xsrfToken.value
+    }
   })
 }
 

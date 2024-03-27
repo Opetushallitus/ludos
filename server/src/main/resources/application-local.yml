@@ -12,9 +12,10 @@ server:
       cookie:
         secure: false
 
-# logging:
-#   level:
-#     org:
-#       springframework:
-#         jdbc:
-#           core: TRACE
+#logging:
+# level:
+#   org:
+#     springframework:
+#       jdbc:
+#         core: TRACE
+#       security: DEBUG

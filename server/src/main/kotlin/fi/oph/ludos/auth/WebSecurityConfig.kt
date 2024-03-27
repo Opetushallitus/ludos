@@ -1,6 +1,10 @@
 package fi.oph.ludos.auth
 
 import fi.oph.ludos.test.TestController
+import jakarta.servlet.FilterChain
+import jakarta.servlet.ServletException
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.apereo.cas.client.session.SingleSignOutFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -13,7 +17,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
+import org.springframework.security.web.csrf.*
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.util.StringUtils
+import org.springframework.web.filter.OncePerRequestFilter
+import java.io.IOException
+import java.util.function.Supplier
 
 @Configuration
 @EnableWebSecurity
@@ -32,10 +43,14 @@ class WebSecurityConfiguration {
         authenticationEntryPoint: AuthenticationEntryPoint,
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
-        casConfig: CasConfig,
+        casConfig: CasConfig
     ): SecurityFilterChain {
-        // todo: enable csrf for non local environments
-        http.csrf { it.disable() }
+        http.csrf {
+            it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
+        }
+
+        http.addFilterAfter(SpaCsrfTokenRequestHandler.CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
 
         val requestCache = HttpSessionRequestCache()
         requestCache.setMatchingRequestParameterName("j")
@@ -44,6 +59,7 @@ class WebSecurityConfiguration {
         http.logout {
             it.logoutSuccessUrl(casConfig.getCasLogoutUrl())
             it.logoutUrl(casConfig.logoutUrl)
+            it.logoutRequestMatcher(AntPathRequestMatcher(casConfig.logoutUrl, "GET"))
         }
 
         http.authorizeHttpRequests {
@@ -71,5 +87,40 @@ class WebSecurityConfiguration {
         http.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
 
         return http.build()
+    }
+
+    // https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html#csrf-integration-javascript
+    class SpaCsrfTokenRequestHandler : CsrfTokenRequestAttributeHandler() {
+        private val delegate: CsrfTokenRequestHandler = XorCsrfTokenRequestAttributeHandler()
+
+        override fun handle(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            csrfToken: Supplier<CsrfToken>
+        ) {
+            delegate.handle(request, response, csrfToken)
+        }
+
+        override fun resolveCsrfTokenValue(request: HttpServletRequest, csrfToken: CsrfToken): String {
+            return if (StringUtils.hasText(request.getHeader(csrfToken.headerName))) super.resolveCsrfTokenValue(
+                request,
+                csrfToken
+            ) else delegate.resolveCsrfTokenValue(request, csrfToken)
+        }
+
+        class CsrfCookieFilter : OncePerRequestFilter() {
+
+            @Throws(ServletException::class, IOException::class)
+            override fun doFilterInternal(
+                request: HttpServletRequest,
+                response: HttpServletResponse,
+                filterChain: FilterChain
+            ) {
+                val csrfToken = request.getAttribute("_csrf") as CsrfToken
+                // Render the token value to a cookie by causing the deferred token to be loaded
+                csrfToken.token
+                filterChain.doFilter(request, response)
+            }
+        }
     }
 }

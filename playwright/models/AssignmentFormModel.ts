@@ -68,7 +68,15 @@ export class AssignmentFormModel extends FormModel {
   }
 
   private async createAssignmentApiCall(context: BrowserContext, baseURL: string, assignment: any) {
-    return (await fetchWithSession(context, `${baseURL}/api/assignment`, 'POST', JSON.stringify(assignment))).json()
+    const result = await fetchWithSession(context, `${baseURL}/api/assignment`, 'POST', JSON.stringify(assignment))
+
+    if (!result.ok) {
+      const errorText = await result.text()
+      // throw new Error(`Failed to create assignment: ${errorText}`)
+      return ''
+    }
+
+    return await result.json()
   }
 
   private async updateAssignmentApiCall(context: BrowserContext, baseURL: string, id: string, body: string) {
