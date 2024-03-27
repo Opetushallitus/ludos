@@ -1,7 +1,8 @@
 import { AssignmentOut, Language } from '../../../types'
-import { Document, Page, Text, View } from '@react-pdf/renderer'
+import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import { pdfStyles } from './pdfStyles'
 import { convertHtmlToReactPdf } from './HtmlToReactPdf'
+import logo from 'web/assets/oph_fin_vaaka.png'
 
 type AssignmentPdfProps = {
   title: string
@@ -40,9 +41,14 @@ const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfPro
         <View style={[pdfStyles.section, pdfStyles.title]}>
           <Text>{title}</Text>
         </View>
-        <View style={[pdfStyles.section, pdfStyles.content]}>{reactHtmlContent.instruction}</View>
+        <View style={[pdfStyles.section, pdfStyles.content]} wrap>
+          {reactHtmlContent.instruction}
+        </View>
         <View style={[pdfStyles.section, pdfStyles.content]} wrap>
           {reactHtmlContent.content}
+        </View>
+        <View style={[pdfStyles.section, pdfStyles.footerImage]}>
+          <Image src={logo} />
         </View>
       </Page>
     </Document>

@@ -1,24 +1,31 @@
 import { Font, StyleSheet } from '@react-pdf/renderer'
 import colors from '../../../colors'
-import italic from '../../../../assets/OpenSans-Italic.ttf'
-import boldItalic from '../../../../assets/OpenSans-BoldItalic.ttf'
+import openSansRegular from '../../../../assets/fonts/OpenSans-Regular.ttf'
+import openSansRegular400 from '../../../../assets/fonts/OpenSans-Regular400.ttf'
+import openSansRegular700 from '../../../../assets/fonts/OpenSans-Regular700.ttf'
+import openSansRegular800 from '../../../../assets/fonts/OpenSans-Regular800.ttf'
+import italic from '../../../../assets/fonts/OpenSans-Italic.ttf'
+import boldItalic from '../../../../assets/fonts/OpenSans-BoldItalic.ttf'
+
+// disable hyphenation
+Font.registerHyphenationCallback((word) => [word])
 
 Font.register({
   family: 'Open Sans',
   fonts: [
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem8YaGs126MiZpBA-UFVZ0e.ttf'
+      src: openSansRegular
     },
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem5YaGs126MiZpBA-UNirkOUuhs.ttf',
+      src: openSansRegular400,
       fontWeight: 400
     },
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem5YaGs126MiZpBA-UN7rgOUuhs.ttf',
+      src: openSansRegular700,
       fontWeight: 700
     },
     {
-      src: 'https://fonts.gstatic.com/s/opensans/v23/mem5YaGs126MiZpBA-UN8rsOUuhs.ttf',
+      src: openSansRegular800,
       fontWeight: 800
     },
     {
@@ -38,34 +45,31 @@ export const pdfStyles: { [key: string]: any } = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: colors.white,
     fontFamily: 'Open Sans',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 400,
-    marginTop: 10,
-    paddingBottom: 40
+    paddingVertical: 30
   },
   section: {
-    paddingLeft: 30,
-    paddingRight: 30,
+    paddingLeft: 35,
+    paddingRight: 50,
     width: '100%'
   },
   title: {
-    paddingTop: 15,
-    paddingBottom: 15,
+    paddingVertical: 15,
     fontSize: 14,
     fontWeight: 600
   },
   content: {
-    paddingTop: 15,
-    paddingBottom: 15,
+    paddingVertical: 15,
     borderTop: `1px solid ${colors.graySeparator}`
   },
   p: {
-    paddingTop: 5,
-    paddingBottom: 5
+    paddingVertical: 5
   },
   h1: {
     fontSize: 16,
-    fontWeight: 600
+    fontWeight: 600,
+    textAlign: 'justify'
   },
   h2: {
     fontSize: 14,
@@ -121,5 +125,10 @@ export const pdfStyles: { [key: string]: any } = StyleSheet.create({
   contentItemWithBorder: {
     borderTop: `1px solid ${colors.graySeparator}`,
     paddingTop: 10
+  },
+  footerImage: {
+    position: 'absolute',
+    width: 200,
+    bottom: 20
   }
 })
