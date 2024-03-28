@@ -38,10 +38,11 @@ Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista 
 ## Kehitystyökalut
 
 Minimissään tarvitset nämä:
-
 - JDK 17
 - Docker PostgreSQL:n
-- node (oikea versio löytyy tiedostosta .nvmrc)
+- Node ^20.0.0
+- Yarn ^1.22.0
+- Tarvittaessa tmux `start-local.sh`-skriptiä varten
 
 ## AWS-tunnusten konffaus
 
@@ -98,6 +99,9 @@ output = json
 
 
 ## Ajaminen paikallisesti
+
+### Oikotie kehitysympäristön käyynistykseen
+- aja projektin juuressa `./start-local.sh`
 
 ### Backend
 
