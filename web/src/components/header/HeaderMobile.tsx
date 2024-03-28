@@ -94,7 +94,7 @@ function Header(props: { onClick: () => void }) {
         <button
           className="flex flex-col items-center justify-center rounded-md p-2"
           onClick={props.onClick}
-          aria-label="Toggle menu">
+          aria-label={t('aria-label.header.avaa-valikko-nappi')}>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
