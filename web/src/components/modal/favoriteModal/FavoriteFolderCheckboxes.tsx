@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form'
 import { FavoriteFolderDtoOut } from '../../../types'
 import { FavoriteToggleModalFormType } from './favoriteToggleModalFormSchema'
-import { useTranslation } from 'react-i18next'
 import { FAVORITE_ROOT_FOLDER_ID } from '../../../constants'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 

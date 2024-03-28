@@ -83,7 +83,7 @@ export const FavoriteForm = ({
   return (
     <div>
       <FormProvider {...methods}>
-        <form className="px-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="px-4 min-h-[18vh]" onSubmit={(e) => e.preventDefault()}>
           {isFavorite ? (
             <FavoriteFolderCheckboxes
               folders={[
