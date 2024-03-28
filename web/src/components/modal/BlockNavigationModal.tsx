@@ -28,7 +28,7 @@ export const BlockNavigationModal = ({ open, onProceed, onClose }: BlockNavigati
           <h2 className="text-base text-white" id="modal-title">
             {t('modal.title.poistua-tallentamatta')}
           </h2>
-          <button className="text-right" onClick={onClose} aria-label="modal-close">
+          <button className="text-right" onClick={onClose} aria-label={t('aria-label.modal.sulje')}>
             <Icon name="sulje" color="text-white" />
           </button>
         </div>

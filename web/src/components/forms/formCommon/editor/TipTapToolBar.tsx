@@ -32,13 +32,16 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
   }
 
   return (
-    <div className="flex flex-wrap border-b border-gray-light bg-gray-bg px-2 py-1">
+    <div
+      className="flex flex-wrap border-b border-gray-light bg-gray-bg px-2 py-1"
+      aria-label={t('aria-label.tekstieditori.toolbar')}>
       <Button
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
         variant="buttonGhost"
         data-testid="undo"
-        aria-label="undo">
+        aria-label={t('aria-label.tekstieditori.undo')}
+        title={t('aria-label.tekstieditori.undo')}>
         <Icon name="undo" color="text-black" />
       </Button>
 
@@ -46,7 +49,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
         variant="buttonGhost"
-        aria-label="redo"
+        aria-label={t('aria-label.tekstieditori.redo')}
+        title={t('aria-label.tekstieditori.redo')}
         data-testid="redo">
         <Icon name="redo" color="text-black" />
       </Button>
@@ -57,7 +61,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={`${editor.isActive('bold') ? 'bg-gray-active' : ''}`}
         data-testid="bold"
-        aria-label="bold">
+        aria-label={t('aria-label.tekstieditori.bold')}
+        title={t('aria-label.tekstieditori.bold')}>
         <Icon name="lihavointi" color="text-black" />
       </Button>
 
@@ -67,7 +72,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={`${editor.isActive('italic') ? 'bg-gray-active' : ''}`}
         data-testid="italic"
-        aria-label="italic">
+        aria-label={t('aria-label.tekstieditori.italic')}
+        title={t('aria-label.tekstieditori.italic')}>
         <Icon name="kursiivi" color="text-black" />
       </Button>
 
@@ -76,7 +82,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         customClass={`text-xs ${editor.isActive('paragraph') ? 'bg-gray-active' : ''}`}
         onClick={() => editor.chain().focus().setParagraph().run()}
         data-testid="paragraph"
-        aria-label="paragraph">
+        aria-label={t('aria-label.tekstieditori.paragraph')}
+        title={t('aria-label.tekstieditori.paragraph')}>
         <span className="mt-1">{t('editor.leipateksti-nappi')}</span>
       </Button>
 
@@ -85,7 +92,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('heading', { level: 1 }) ? 'bg-gray-active' : ''}
         data-testid="heading-1"
-        aria-label="heading 1">
+        aria-label={t('aria-label.tekstieditori.h1')}
+        title={t('aria-label.tekstieditori.h1')}>
         <Icon name="h1" color="text-black" />
       </Button>
 
@@ -94,7 +102,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('heading', { level: 2 }) ? 'bg-gray-active' : ''}
         data-testid="heading-2"
-        aria-label="heading 2">
+        aria-label={t('aria-label.tekstieditori.h2')}
+        title={t('aria-label.tekstieditori.h2')}>
         <Icon name="h2" color="text-black" />
       </Button>
 
@@ -103,7 +112,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('heading', { level: 3 }) ? 'bg-gray-active' : ''}
         data-testid="heading-3"
-        aria-label="heading 3">
+        aria-label={t('aria-label.tekstieditori.h3')}
+        title={t('aria-label.tekstieditori.h3')}>
         <Icon name="h3" color="text-black" />
       </Button>
 
@@ -112,7 +122,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('heading', { level: 4 }) ? 'bg-gray-active' : ''}
         data-testid="heading-4"
-        aria-label="heading 4">
+        aria-label={t('aria-label.tekstieditori.h4')}
+        title={t('aria-label.tekstieditori.h4')}>
         <Icon name="h4" color="text-black" />
       </Button>
 
@@ -121,7 +132,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('bulletList') ? 'bg-gray-active' : ''}
         data-testid="bullet-list"
-        aria-label="bullet list">
+        aria-label={t('aria-label.tekstieditori.bullet-list')}
+        title={t('aria-label.tekstieditori.bullet-list')}>
         <Icon name="bulletList" color="text-black" />
       </Button>
 
@@ -130,7 +142,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('orderedList') ? 'bg-gray-active' : ''}
         data-testid="ordered-list"
-        aria-label="ordered list">
+        aria-label={t('aria-label.tekstieditori.ordered-list')}
+        title={t('aria-label.tekstieditori.ordered-list')}>
         <Icon name="orderedList" color="text-black" />
       </Button>
 
@@ -139,7 +152,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('blockquote') ? 'bg-gray-active' : ''}
         data-testid="blockquote"
-        aria-label="blockquote">
+        aria-label={t('aria-label.tekstieditori.blockquote')}
+        title={t('aria-label.tekstieditori.blockquote')}>
         <Icon name="blockQuote" color="text-black" />
       </Button>
 
@@ -148,7 +162,8 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
         variant="buttonGhost"
         customClass={editor.isActive('link') ? 'bg-gray-active' : ''}
         data-testid="link"
-        aria-label="link">
+        aria-label={t('aria-label.tekstieditori.link')}
+        title={t('aria-label.tekstieditori.link')}>
         <Icon name="link" color="text-black" />
       </Button>
       {isUrlModalOpen && (
@@ -158,14 +173,15 @@ export const TipTapToolBar = ({ editor }: { editor: Editor }) => {
           onAddText={handleAddUrlAction}
           onClose={() => setIsUrlModalOpen(false)}
           dataTestId="add-url-modal"
-          aria-label="add url modal"
+          aria-label={t('aria-label.modal.lisaa-url')}
         />
       )}
       <Button
         onClick={() => imageFileInputRef.current?.click()}
         variant="buttonGhost"
         data-testid="add-image"
-        aria-label="image">
+        aria-label={t('aria-label.tekstieditori.kuva')}
+        title={t('aria-label.tekstieditori.kuva')}>
         <Icon name="kuva" color="text-black" />
       </Button>
       <ImageSelector onImageUploaded={handleAddImageAction} imageFileInputRef={imageFileInputRef} />

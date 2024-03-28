@@ -140,7 +140,7 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
                 attachment={certificate.attachmentSv}
               />
             ) : (
-              <span aria-label="no attachment">&#8208;</span>
+              <span aria-label={t('aria-label.ei-liitteita')}>&#8208;</span>
             )}
           </>
         )
