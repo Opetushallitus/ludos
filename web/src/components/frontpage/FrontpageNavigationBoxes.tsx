@@ -23,7 +23,7 @@ export const NavigationBoxes = () => {
                 data-testid={`nav-box-${ContentTypePluralFi[contentType]}`}
                 key={i}>
                 <span className="row my-auto ml-3 gap-2">
-                  <Icon name={ContentTypePluralFi[contentType]} color="text-green-primary" />
+                  <Icon name={ContentTypePluralFi[contentType]} color="text-green-primary" customClass="mt-0.5" />
                   <p className="text-green-primary">{lt.buttonTextByContentType[contentType]}</p>
                 </span>
               </InternalLink>

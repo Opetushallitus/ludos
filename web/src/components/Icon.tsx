@@ -95,7 +95,13 @@ const icons: Record<Icons, string> = {
 }
 
 export const Icon = ({ name, color, disabled = false, size, dataTestId, customClass }: IconProps) => {
-  const className = twMerge(color, size ? `text-${size}` : 'text-base', customClass, disabled && 'opacity-50')
+  const className = twMerge(
+    'flex justify-center',
+    color,
+    size ? `text-${size}` : 'text-base',
+    customClass,
+    disabled && 'opacity-50'
+  )
 
   return (
     <i className={className} data-testid={dataTestId}>
