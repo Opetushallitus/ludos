@@ -11,8 +11,8 @@ const NOTIFICATION_TIMEOUT_MS = 5000
 
 export const Notification = () => {
   const { t } = useLudosTranslation()
-  const feedbackUrl = useFeedbackUrl()
   const { notification, setNotification } = useNotification()
+  const feedbackUrl = useFeedbackUrl(notification?.message)
   const hideNotification = useCallback(() => setNotification(null), [setNotification])
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
