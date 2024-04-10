@@ -19,9 +19,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: yarn
-      - name: yarn install
-        run: yarn install --frozen-lockfile
+          cache: npm 
+      - name: npm install
+        run: npm ci
       - name: Code check
         uses: ./.github/actions/code_check
   localization_check_untuva:
@@ -65,9 +65,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: yarn
-      - name: yarn install
-        run: yarn install --frozen-lockfile
+          cache: npm 
+      - name: npm install
+        run: npm ci 
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -118,7 +118,7 @@ jobs:
       - name: Playwright
         uses: ./.github/actions/playwright
         with:
-          yarn-script: 'test:parallel_tests'
+          npm-script: 'test:parallel_tests'
           ludos-profiles: local
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}
@@ -135,7 +135,7 @@ jobs:
       - name: Playwright
         uses: ./.github/actions/playwright
         with:
-          yarn-script: 'test:non_parallel_tests'
+          npm-script: 'test:non_parallel_tests'
           ludos-profiles: local
           testikayttaja-yllapitaja-username: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_USERNAME }}
           testikayttaja-yllapitaja-password: ${{ secrets.TESTIKAYTTAJA_YLLAPITAJA_PASSWORD }}

@@ -11,8 +11,7 @@ function stop() {
 }
 trap stop EXIT
 
-init_nodejs
-yarn install --frozen-lockfile
+use_correct_node_version
 scripts/update_backups.sh --if-stale
 
 check_env_files() {
@@ -48,7 +47,7 @@ tmux split-window -v
 tmux send-keys -t $session:0.1 "./scripts/run-server.sh" C-m
 
 tmux split-window -h
-tmux send-keys -t $session:0.2 "yarn dev:web" C-m
+tmux send-keys -t $session:0.2 "./scripts/run-web.sh" C-m
 
 tmux select-layout -t $session tiled
 

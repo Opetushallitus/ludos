@@ -5,8 +5,10 @@ runs:
   using: composite
   steps:
     - name: Lint web
+      working-directory: ./web
       shell: bash
-      run: yarn lint:web
+      run: npm run lint
     - name: Lint playwright
+      working-directory: ./playwright
       shell: bash
-      run: yarn lint:playwright
+      run: npm run lint

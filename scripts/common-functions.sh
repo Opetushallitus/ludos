@@ -2,20 +2,14 @@
 set -o errexit -o nounset -o pipefail
 
 readonly repo="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-readonly node_version="$(<.nvmrc)"
+readonly NODE_VERSION="v20.11.0"
 
-function init_nodejs {
+function use_correct_node_version {
   export NVM_DIR="${NVM_DIR:-$HOME/.cache/nvm}"
   set +o errexit
-  source "$repo/nvm.sh"
-  nvm use "${node_version}" || nvm install "${node_version}"
-  init_yarn
+  source "$repo/scripts/nvm.sh"
   set -o errexit
-}
-
-function init_yarn {
-  corepack enable
-  corepack prepare yarn@1.22 --activate
+  nvm use "$NODE_VERSION" || nvm install -b "$NODE_VERSION"
 }
 
 function npm_ci_if_package_lock_has_changed {
@@ -38,25 +32,6 @@ function npm_ci_if_package_lock_has_changed {
     info "package-lock.json doesn't seem to have changed, skipping npm ci"
   fi
 }
-
-# function wait_until_port_is_listening {
-#   require_command nc
-#   local -r port="$1"
-
-#   info "Waiting until port $port is listening"
-#   while ! nc -z localhost "$port"; do
-#     sleep 1
-#   done
-# }
-# function wait_for_container_to_be_healthy {
-#   require_command docker
-#   local -r container_name="$1"
-
-#   info "Waiting for docker container $container_name to be healthy"
-#   until [ "$(docker inspect -f {{.State.Health.Status}} "$container_name" 2>/dev/null || echo "not-running")" == "healthy" ]; do
-#     sleep 2;
-#   done;
-# }
 
 function require_command {
   if ! command -v "$1" > /dev/null; then

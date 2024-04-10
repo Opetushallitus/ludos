@@ -71,7 +71,7 @@ val buildWeb = tasks.register("buildWeb") {
         File(pathToStatic).deleteRecursively()
         exec {
             workingDir("..")
-            commandLine("sh", "-c", "yarn && yarn build:web")
+            commandLine("sh", "-c", "cd web && tsc && npx vite build")
         }
     }
 }
@@ -82,7 +82,7 @@ val buildWebIfMissing = tasks.register("buildWebIfMissing") {
     doLast {
         exec {
             workingDir("..")
-            commandLine("sh", "-c", "! [ -f '${pathToStatic}/index.html' ] && yarn && yarn build:web || true")
+            commandLine("sh", "-c", "! [ -f '${pathToStatic}/index.html' ] && cd web && tsc && npx vite build || true")
         }
     }
 }

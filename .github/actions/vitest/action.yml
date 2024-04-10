@@ -6,10 +6,11 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
-        cache: yarn
-    - name: yarn install
+        cache: npm 
+    - name: npm install
       shell: bash
-      run: yarn install --frozen-lockfile
+      run: npm ci 
     - name: run unit tests
+      working-directory: ./web
       shell: bash
-      run: yarn vitest:ci
+      run: npm run test
