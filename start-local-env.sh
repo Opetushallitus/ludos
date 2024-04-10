@@ -1,8 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -o errexit -o nounset -o pipefail
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts/common-functions.sh"
 
 SERVER_ENV="$(dirname "$0")/../ludos/server/.env"
 PLAYWRIGHT_ENV="$(dirname "$0")/../ludos/playwright/.env"
 FETCH_SECRETS_SCRIPT="$(dirname "$0")/../ludos/scripts/fetch_secrets.sh"
+
+function stop() {
+  docker compose down
+}
+trap stop EXIT
+
+init_nodejs
+yarn install --frozen-lockfile
 
 check_env_files() {
     if [[ ! -f "$SERVER_ENV" ]] || [[ ! -f "$PLAYWRIGHT_ENV" ]]; then
@@ -25,20 +35,20 @@ if ! check_env_files; then
     fi
 fi
 
-# Stop the existing containers
-docker compose down
+session="ludos"
 
-SESSION_NAME="dev-environment"
+tmux kill-session -t $session || true
+tmux start-server
+tmux new-session -d -s $session -c "$repo"
 
-tmux new-session -d -s $SESSION_NAME -n database
-tmux send-keys -t $SESSION_NAME "docker compose up" C-m
+tmux send-keys -t $session "docker compose up" C-m
 
-tmux split-window -v -t $SESSION_NAME
-tmux send-keys -t $SESSION_NAME:0.1 "SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun" C-m
+tmux split-window -v
+tmux send-keys -t $session:0.1 "./scripts/run-server.sh" C-m
 
-tmux split-window -h -t $SESSION_NAME
-tmux send-keys -t $SESSION_NAME:0.2 "yarn dev:web" C-m
+tmux split-window -h
+tmux send-keys -t $session:0.2 "yarn dev:web" C-m
 
-tmux select-layout -t $SESSION_NAME tiled
+tmux select-layout -t $session tiled
 
-tmux attach -t $SESSION_NAME
+tmux attach-session -t $session
