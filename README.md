@@ -54,42 +54,35 @@ Minimissään tarvitset nämä:
 2) Asenna AWS CLI ja konffaa tilit siihen tiedostoon ~/.aws/config. Esimerkki:
 
 ```
-[default]
-region = eu-west-1
-cli_pager =
-
-[oma]
-region = eu-west-1
-
-[profile oph-ludos-dev]
+[sso-session oph-org-sso]
 sso_start_url = https://oph-aws-sso.awsapps.com/start
 sso_region = eu-west-1
+
+[profile oph-ludos-dev]
+sso_session = oph-org-sso
 sso_account_id = 782034763554
-sso_role_name = LudosAdmins
+sso_role_name = AdministratorAccess
 region = eu-west-1
 output = json
 
 [profile oph-ludos-qa]
-sso_start_url = https://oph-aws-sso.awsapps.com/start
-sso_region = eu-west-1
+sso_session = oph-org-sso
 sso_account_id = 260185049060
-sso_role_name = LudosAdmins
+sso_role_name = AdministratorAccess
 region = eu-west-1
 output = json
 
 [profile oph-ludos-prod]
-sso_start_url = https://oph-aws-sso.awsapps.com/start
-sso_region = eu-west-1
+sso_session = oph-org-sso
 sso_account_id = 072794607950
-sso_role_name = LudosAdmins
+sso_role_name = AdministratorAccess
 region = eu-west-1
 output = json
 
 [profile oph-ludos-utility]
-sso_start_url = https://oph-aws-sso.awsapps.com/start
-sso_region = eu-west-1
+sso_session = oph-org-sso
 sso_account_id = 505953557276
-sso_role_name = LudosAdmins
+sso_role_name = AdministratorAccess
 region = eu-west-1
 output = json
 ```
