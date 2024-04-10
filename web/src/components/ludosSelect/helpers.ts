@@ -76,7 +76,7 @@ export function oppimaaraSelectOptions(
 
   return oppimaaras
     .map(addLabelsToOppimaara)
-    .toSorted(sortOppimaarasWithLabels)
+    .sort(sortOppimaarasWithLabels)
     .map(selectOptionFromOppimaaraWithLabels)
 }
 export function currentOppimaaraSelectOption(

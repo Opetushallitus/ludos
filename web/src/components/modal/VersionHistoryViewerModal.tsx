@@ -56,7 +56,7 @@ export const VersionHistoryViewerModal = ({
               </tr>
             </thead>
             <tbody>
-              {versionList.toReversed().map((item) => (
+              {versionList.reverse().map((item) => (
                 <tr className="even:bg-gray-bg" key={item.version} data-testid={`version-history-item-${item.version}`}>
                   <td className="pr-6 py-3 pl-3">{item.version}</td>
                   <td className="pr-6">{toLocaleDate(item.updatedAt)}</td>
