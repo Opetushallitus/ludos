@@ -112,6 +112,7 @@ export const CertificateContent = ({ certificate, teachingLanguage }: Certificat
     } else if (isPuhviCertificate(certificate)) {
       return <PuhviCertificateTitle certificate={certificate} labelText={t('certificate.kuvaus')} />
     }
+    return null
   }
 
   return (

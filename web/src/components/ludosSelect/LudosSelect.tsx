@@ -57,18 +57,18 @@ export function LudosSelect<
   )
 
   const ClearIndicator = (props: ClearIndicatorProps<Option, IsMulti, Group> | undefined) =>
-    props && (
+    props ? (
       <components.ClearIndicator {...props}>
         <Icon name="sulje" color="text-black" dataTestId={`${props.selectProps.name}-reset-selected-options`} />
       </components.ClearIndicator>
-    )
+    ) : null
 
   const Option = (props: OptionProps<Option, boolean, GroupBase<Option>>) =>
-    isLudosSelectOption(props.data) && (
+    isLudosSelectOption(props.data) ? (
       <components.Option {...props}>
         <span data-testid={`${props.selectProps.name}-option-${props.data.value}`}>{props.data.label}</span>
       </components.Option>
-    )
+    ) : null
 
   const Menu = (props: MenuProps<Option, boolean, GroupBase<Option>>) => (
     <components.Menu {...props} className={`min-w-full ${sizeToClassMap[menuSize]}`}>

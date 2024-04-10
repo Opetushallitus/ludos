@@ -155,14 +155,16 @@ type RenderContentProps = {
   customKey: string
 }
 
-const RenderContent = ({ content, customKey }: RenderContentProps) =>
-  Array.isArray(content) ? (
+const RenderContent = ({ content, customKey }: RenderContentProps) => {
+if (Array.isArray(content)) {
+  return <> {
     content.map((it, i) => (
       <TipTap key={`${customKey}-${i}`} content={it} editable={false} dataTestId={`${customKey}-${i}`} />
     ))
-  ) : (
-    <TipTap key={customKey} content={content} editable={false} dataTestId={`${customKey}-0`} />
-  )
+    }</>
+  }
+  return <TipTap key={customKey} content={content} editable={false} dataTestId={`${customKey}-0`} />
+}
 
 type ContentContentProps = {
   teachingLanguage: Language
