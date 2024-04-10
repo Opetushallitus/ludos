@@ -13,6 +13,7 @@ trap stop EXIT
 
 init_nodejs
 yarn install --frozen-lockfile
+scripts/update_backups.sh --if-stale
 
 check_env_files() {
     if [[ ! -f "$SERVER_ENV" ]] || [[ ! -f "$PLAYWRIGHT_ENV" ]]; then
