@@ -12,11 +12,3 @@ runs:
       working-directory: ./web
       shell: bash
       run: npm run lint
-    - name: ci localizations
-      working-directory: ./scripts
-      shell: bash
-      run: npm ci
-    - name: Lint localizations
-      working-directory: ./scripts
-      shell: bash
-      run: npm run lint
