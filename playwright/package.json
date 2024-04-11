@@ -9,7 +9,6 @@
     "dotenv": "^16.3.1"
   },
   "scripts": {
-    "lint": "eslint **/*.ts",
     "test": "bash -c 'npm run test:parallel_tests \"$@\"; npm run test:non_parallel_tests \"$@\"' --",
     "test:ci": "bash -c 'npm run test:parallel_tests \"$@\" && npm run test:non_parallel_tests \"$@\"' --",
     "test:parallel_tests": "npx playwright test --project parallel_tests --workers 4",

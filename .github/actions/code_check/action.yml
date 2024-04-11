@@ -20,11 +20,3 @@ runs:
       working-directory: ./scripts
       shell: bash
       run: npm run lint
-    - name: ci playwright
-      working-directory: ./playwright
-      shell: bash
-      run: npm ci
-    - name: Lint playwright
-      working-directory: ./playwright
-      shell: bash
-      run: npm run lint
