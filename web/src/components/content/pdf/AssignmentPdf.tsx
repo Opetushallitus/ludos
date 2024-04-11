@@ -2,7 +2,7 @@ import { AssignmentOut, Language } from '../../../types'
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import { pdfStyles } from './pdfStyles'
 import { convertHtmlToReactPdf } from './HtmlToReactPdf'
-import logo from 'web/assets/oph_fin_vaaka.png'
+import logo from '../../../../assets/oph_fin_vaaka.png'
 
 type AssignmentPdfProps = {
   title: string

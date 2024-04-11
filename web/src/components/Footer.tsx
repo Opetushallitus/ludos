@@ -1,4 +1,4 @@
-import logo from 'web/assets/oph_fin_vaaka.png'
+import logo from '../../assets/oph_fin_vaaka.png'
 import { ExternalLink } from './ExternalLink'
 import { OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
