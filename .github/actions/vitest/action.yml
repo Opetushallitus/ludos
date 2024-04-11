@@ -8,6 +8,7 @@ runs:
         node-version: v20.11.0
         cache: npm 
     - name: npm install
+      working-directory: ./web
       shell: bash
       run: npm ci 
     - name: run unit tests
