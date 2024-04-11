@@ -4,18 +4,27 @@ description: Run eslint and prettier on project TypeScript files
 runs:
   using: composite
   steps:
-    - name: Lint web
+    - name: ci web
       working-directory: ./web
       shell: bash
       run: npm ci
+    - name: Lint web
+      working-directory: ./web
+      shell: bash
       run: npm run lint
-    - name: Lint localizations
+    - name: ci localizations
       working-directory: ./scripts
       shell: bash
       run: npm ci
+    - name: Lint localizations
+      working-directory: ./scripts
+      shell: bash
       run: npm run lint
-    - name: Lint playwright
+    - name: ci playwright
       working-directory: ./playwright
       shell: bash
       run: npm ci
+    - name: Lint playwright
+      working-directory: ./playwright
+      shell: bash
       run: npm run lint
