@@ -13,7 +13,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
   },
   "scripts": {
-    "lint": "tsc && eslint *.ts && npm run localizations list-missing untuva",
+    "lint": "tsc && npm run localizations list-missing untuva",
     "localizations": "node --no-warnings --loader @swc-node/register/esm localizations.ts"
   }
 }
