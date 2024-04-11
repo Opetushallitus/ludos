@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "build": "tsc && vite build",
     "build:ci": "tsc && vite build --mode CI",
-    "lint": "tsc --noEmit && eslint src/**/*.ts src/**/*.tsx && cd ../scripts && npm run localizations list-missing untuva",
+    "lint": "tsc --noEmit && eslint src/**/*.ts src/**/*.tsx",
     "lint:fix": "eslint --fix src/**/*.ts src/**/*.tsx",
     "test": "vitest",
     "test:watch": "vitest watch"

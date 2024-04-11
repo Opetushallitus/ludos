@@ -20,8 +20,6 @@ jobs:
         with:
           node-version: v20.11.0
           cache: npm 
-      - name: npm install
-        run: npm ci
       - name: Code check
         uses: ./.github/actions/code_check
   localization_check_untuva:

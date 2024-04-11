@@ -7,8 +7,15 @@ runs:
     - name: Lint web
       working-directory: ./web
       shell: bash
+      run: npm ci
+      run: npm run lint
+    - name: Lint localizations
+      working-directory: ./scripts
+      shell: bash
+      run: npm ci
       run: npm run lint
     - name: Lint playwright
       working-directory: ./playwright
       shell: bash
+      run: npm ci
       run: npm run lint
