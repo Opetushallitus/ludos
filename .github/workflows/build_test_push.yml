@@ -64,8 +64,12 @@ jobs:
         with:
           node-version: v20.11.0
           cache: npm 
-      - name: npm install
+      - name: npm install web
+        working-directory: ./web
         run: npm ci 
+      - name: build web
+        working-directory: ./web
+        run: npm run build
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
