@@ -50,8 +50,12 @@ runs:
         ludos-profiles: ${{ inputs.ludos-profiles }}
         ludos-palvelukayttaja-username: ${{ inputs.ludos-palvelukayttaja-username }}
         ludos-palvelukayttaja-password: ${{ inputs.ludos-palvelukayttaja-password }}
-    - name: npm install
+    - name: npm install playwright
       working-directory: ./playwright
+      shell: bash
+      run: npm ci 
+    - name: npm install web
+      working-directory: ./web
       shell: bash
       run: npm ci 
     - name: 'Get playwright version'
