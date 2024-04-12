@@ -23,7 +23,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
-      "web/*": ["web/*"]
+      "web/*": ["./web/*"]
     }
   }
 }
