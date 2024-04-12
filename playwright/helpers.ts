@@ -1,5 +1,5 @@
 import { BrowserContext, expect, Locator, Page, test as importedTest } from '@playwright/test'
-import { Exam, KoodistoName, Language } from 'web/src/types'
+import { Exam, KoodistoName, Language } from '../web/src/types'
 import { promises as fsPromises } from 'fs'
 import path from 'path'
 
