@@ -1,5 +1,8 @@
 {
   "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./"
+  },
   "include": [
     "non_parallel_tests", "parallel_tests", "*.ts"]
 }
