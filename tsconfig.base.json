@@ -22,6 +22,8 @@
 
     "skipLibCheck": true,
     "noEmit": true,
+
+    "baseUrl": "./",
     "paths": {
       "web/*": ["./web/*"]
     }
