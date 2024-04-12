@@ -21,6 +21,9 @@
     "resolveJsonModule": true,
 
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "web/*": ["web/*"]
+    }
   }
 }
