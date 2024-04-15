@@ -76,7 +76,7 @@ jobs:
           java-version: 17
           distribution: zulu
       - name: Start database for API tests
-        run: docker compose up -d
+        run: docker compose -f docker-compose-db.yaml up  -d
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
         with:

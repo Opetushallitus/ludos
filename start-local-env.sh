@@ -7,7 +7,7 @@ PLAYWRIGHT_ENV="$(dirname "$0")/../ludos/playwright/.env"
 FETCH_SECRETS_SCRIPT="$(dirname "$0")/../ludos/scripts/fetch_secrets.sh"
 
 function stop() {
-  docker compose down
+  docker compose -f docker-compose-db.yaml down
 }
 trap stop EXIT
 
@@ -41,7 +41,7 @@ tmux kill-session -t $session || true
 tmux start-server
 tmux new-session -d -s $session -c "$repo"
 
-tmux send-keys -t $session "docker compose up" C-m
+tmux send-keys -t $session "./scripts/run-db.sh" C-m
 
 tmux split-window -v
 tmux send-keys -t $session:0.1 "./scripts/run-server.sh" C-m

@@ -39,7 +39,7 @@ runs:
         distribution: zulu
     - name: 'Start database'
       shell: bash
-      run: docker compose up -d
+      run: docker compose -f docker-compose-db.yaml up  -d
     - uses: actions/download-artifact@v4
       with:
         name: jar
