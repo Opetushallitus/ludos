@@ -4,10 +4,23 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/common-functions.sh"
 
 function main () {
-  echo "brew install gradle"
-  echo "brew install openjdk@17"
-  echo "set github pat to GITHUB_TOKEN env variable and export it"
-  SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun
+  pushd "$repo"/server
+
+  "$repo"/scripts/build-web.sh
+  docker build . -t ludos-server:local
+
+
+  if [[ -z "${GITHUB_TOKEN}" ]]; then
+    echo "You must set github pat to GITHUB_TOKEN env variable and export it"
+    echo "Go to github settings and find developer settings in the bottom (its kinda hidden)"
+    echo "Then create classic token that has read:packages"
+    echo "NO SOUP FOR YOU"
+    exit 1
+  fi
+
+  docker compose -f "$repo"/docker-compose-server.yaml up
+
+  popd
 }
 
 main

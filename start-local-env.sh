@@ -7,11 +7,17 @@ PLAYWRIGHT_ENV="$(dirname "$0")/../ludos/playwright/.env"
 FETCH_SECRETS_SCRIPT="$(dirname "$0")/../ludos/scripts/fetch_secrets.sh"
 
 function stop() {
-  docker compose -f docker-compose-db.yaml down
+  docker compose -f docker-compose-db.yaml down --remove-orphans || true
+  docker compose -f docker-compose-server.yaml down --remove-orphans || true
 }
 trap stop EXIT
 
 use_correct_node_version
+
+pushd "$repo/web/"
+npm_ci_if_package_lock_has_changed
+popd
+
 scripts/update_backups.sh --if-stale
 
 check_env_files() {
@@ -43,11 +49,11 @@ tmux new-session -d -s $session -c "$repo"
 
 tmux send-keys -t $session "./scripts/run-db.sh" C-m
 
-tmux split-window -v
-tmux send-keys -t $session:0.1 "./scripts/run-server.sh" C-m
-
 tmux split-window -h
-tmux send-keys -t $session:0.2 "./scripts/run-web.sh" C-m
+tmux send-keys -t $session:0.1 "./scripts/run-web.sh" C-m
+
+tmux split-window -v
+tmux send-keys -t $session:0.2 "./scripts/run-server.sh" C-m
 
 tmux select-layout -t $session tiled
 

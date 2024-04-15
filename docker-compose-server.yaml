@@ -1,0 +1,12 @@
+version: "3"
+services:
+  server:
+    image: "ludos-server:local"
+    volumes:
+      - ./web:/ludos/web
+      - ./server:/ludos/server
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    ports:
+      - "8080:8080"

@@ -64,29 +64,6 @@ tasks.withType<KotlinCompile> {
 
 val pathToStatic = "server/build/resources/main/static"
 
-val buildWeb = tasks.register("buildWeb") {
-    dependsOn(tasks.withType<KotlinCompile>())
-
-    doLast {
-        File(pathToStatic).deleteRecursively()
-        exec {
-            workingDir("..")
-            commandLine("sh", "-c", "cd web && tsc && npx vite build")
-        }
-    }
-}
-
-val buildWebIfMissing = tasks.register("buildWebIfMissing") {
-    dependsOn(tasks.withType<KotlinCompile>())
-
-    doLast {
-        exec {
-            workingDir("..")
-            commandLine("sh", "-c", "! [ -f '${pathToStatic}/index.html' ] && cd web && tsc && npx vite build || true")
-        }
-    }
-}
-
 val linkJar = tasks.register("linkJar") {
     mustRunAfter(tasks.withType<BootJar>())
 
@@ -99,16 +76,16 @@ val linkJar = tasks.register("linkJar") {
 }
 
 tasks.withType<BootJar> {
-    dependsOn(buildWeb)
+    dependsOn(tasks.withType<KotlinCompile>())
     finalizedBy(linkJar)
 }
 
 tasks.withType<BootRun> {
-    dependsOn(buildWeb)
+    dependsOn(tasks.withType<KotlinCompile>())
 }
 
 tasks.withType<Test> {
-    dependsOn(buildWebIfMissing)
+    dependsOn(tasks.withType<KotlinCompile>())
     useJUnitPlatform()
     systemProperty("spring.profiles.active", "local")
     testLogging {

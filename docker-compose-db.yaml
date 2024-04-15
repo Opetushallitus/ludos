@@ -3,9 +3,9 @@ services:
   postgres:
     image: "postgres:15.2"
     environment:
-    - "POSTGRES_USER=oph"
-    - "POSTGRES_PASSWORD=oph"
-    - "POSTGRES_DB=ludos"
-    - "TZ=Europe/Helsinki"
+      - "POSTGRES_USER=oph"
+      - "POSTGRES_PASSWORD=oph"
+      - "POSTGRES_DB=ludos"
+      - "TZ=Europe/Helsinki"
     ports:
-    - "5432:5432"
+      - "5432:5432"
