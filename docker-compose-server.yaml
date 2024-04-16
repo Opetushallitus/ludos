@@ -8,5 +8,6 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=local
       - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos 
     ports:
       - "8080:8080"

@@ -2,7 +2,7 @@
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${DB_URL:jdbc:postgresql://host.docker.internal:5432/ludos}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ludos}
     username: ${DB_USER:oph}
     password: ${DB_PASS:oph}
   session:
