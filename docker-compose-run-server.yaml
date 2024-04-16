@@ -1,7 +1,9 @@
 version: "3"
 services:
   server:
-    image: "ludos-server:local"
+    image: amazoncorretto:17-alpine3.17
+    working_dir: /ludos
+    command: server/gradlew bootRun -p server bootRun
     volumes:
       - ./web:/ludos/web
       - ./server:/ludos/server

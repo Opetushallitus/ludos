@@ -8,7 +8,7 @@ FETCH_SECRETS_SCRIPT="$(dirname "$0")/../ludos/scripts/fetch_secrets.sh"
 
 function stop() {
   docker compose -f docker-compose-db.yaml down --remove-orphans || true
-  docker compose -f docker-compose-server.yaml down --remove-orphans || true
+  docker compose -f docker-compose-run-server.yaml down --remove-orphans || true
 }
 trap stop EXIT
 

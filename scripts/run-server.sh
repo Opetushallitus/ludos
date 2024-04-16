@@ -7,7 +7,6 @@ function main () {
   pushd "$repo"/server
 
   "$repo"/scripts/build-web.sh
-  docker build . -t ludos-server:local
 
 
   if [[ -z "${GITHUB_TOKEN}" ]]; then
@@ -18,7 +17,7 @@ function main () {
     exit 1
   fi
 
-  docker compose -f "$repo"/docker-compose-server.yaml up
+  docker compose -f "$repo"/docker-compose-run-server.yaml up
 
   popd
 }
