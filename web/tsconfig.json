@@ -1,5 +1,33 @@
 {
-  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
+
+    "useDefineForClassFields": true,
+    "allowJs": false,
+    "strict": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "web/*": ["./web/*"]
+    }
+  },
   "include": [
     "**/*.ts",
     "**/*.tsx"

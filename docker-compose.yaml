@@ -1,0 +1,38 @@
+version: "3"
+name: oph-ludos
+services:
+  ludos-server:
+    build:
+      secrets:
+        - github_token
+    image: ludos-server:local
+    env_file:
+      - path: server/.env
+    environment:
+      - SPRING_PROFILES_ACTIVE=local
+      - DB_URL=jdbc:postgresql://ludos-db:5432/ludos
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      ludos-db:
+        condition: service_healthy
+  ludos-db:
+    image: "postgres:15.2"
+    environment:
+      - "POSTGRES_USER=oph"
+      - "POSTGRES_PASSWORD=oph"
+      - "POSTGRES_DB=ludos"
+      - "TZ=Europe/Helsinki"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5432:5432"
+
+secrets:
+  # For downloading packages from Github Packages Maven registry
+  # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
+  github_token:
+    environment: GITHUB_TOKEN
