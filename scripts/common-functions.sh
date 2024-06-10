@@ -7,7 +7,7 @@ if [ -n "${COMMON_FUNCTIONS_SOURCED:-}" ]; then
 fi
 readonly COMMON_FUNCTIONS_SOURCED="true"
 
-
+readonly revision="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 readonly repo="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 readonly NODE_VERSION="v20.11.0"
 
@@ -131,6 +131,10 @@ function require_docker {
   docker ps > /dev/null 2>&1 || fatal "Running 'docker ps' failed. Is docker daemon running? Aborting."
 }
 
+function require_docker_compose {
+  docker compose > /dev/null || fatal "docker compose missing"
+}
+
 function parse_env_from_script_name {
   local BASE_FILENAME="$1"
   FILE_NAME=$(basename "$0")
@@ -142,6 +146,30 @@ function parse_env_from_script_name {
     echo >&2 "Don't call this script directly"
     exit 1
   fi
+}
+
+CURRENT_GROUP=""
+GROUP_START_TIME=0
+function start_gh_actions_group {
+  local group_title="$1"
+  GROUP_START_TIME=$(date +%s)
+  CURRENT_GROUP="$group_title"
+
+  if [ "${GITHUB_ACTIONS:-}" == "true" ]; then
+    echo "::group::$group_title"
+  fi
+}
+
+function end_gh_actions_group {
+  if [ "${GITHUB_ACTIONS:-}" == "true" ]; then
+    echo "::endgroup::"
+  fi
+  END_TIME=$(date +%s)
+  info "$CURRENT_GROUP took $(( END_TIME - GROUP_START_TIME )) seconds"
+}
+
+function running_on_gh_actions {
+  [ "${GITHUB_ACTIONS:-}" == "true" ]
 }
 
 function info {

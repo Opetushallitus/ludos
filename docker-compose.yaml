@@ -5,12 +5,12 @@ services:
     build:
       secrets:
         - github_token
-    image: ludos-server:local
+    image: ${LUDOS_TAG}
     env_file:
       - path: server/.env
     environment:
-      - SPRING_PROFILES_ACTIVE=local
-      - DB_URL=jdbc:postgresql://ludos-db:5432/ludos
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - DB_URL=${DB_URL}
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:

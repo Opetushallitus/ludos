@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "tsc && vite build",
+    "dev": "vite --host --config vite-local.config.ts",
+    "build": "tsc && vite build --config vite-local.config.ts",
     "build:ci": "tsc && vite build --mode CI",
     "lint": "tsc --noEmit && eslint src/**/*.ts src/**/*.tsx",
     "lint:fix": "eslint --fix src/**/*.ts src/**/*.tsx",

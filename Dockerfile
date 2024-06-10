@@ -12,7 +12,7 @@ COPY web/vite.config.ts .
 COPY web/index.html .
 COPY web/assets/ ./assets/
 COPY web/src/ ./src/
-RUN npm run build
+RUN npm run build:ci
 
 
 FROM gradle:jdk17 as server-build
