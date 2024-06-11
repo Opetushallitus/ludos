@@ -10,8 +10,15 @@ readonly DEPLOY_FUNCTIONS_SOURCED="true"
 # shellcheck source=../scripts/common-functions.sh
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
 
-readonly ecr_registry="505953557276.dkr.ecr.eu-west-1.amazonaws.com/ludos"
-readonly image_tag="${ecr_registry}:ludos-${revision}"
+readonly service_name="ludos"
+readonly image_tag="${service_name}-${revision}"
+
+readonly ecr_registry="505953557276.dkr.ecr.eu-west-1.amazonaws.com/${service_name}"
+readonly ecr_image_tag="${ecr_registry}:${image_tag}"
+
+readonly github_registry="ghcr.io/opetushallitus/${service_name}"
+readonly github_image_tag="${github_registry}:${image_tag}"
+
 readonly deploy_dist_dir="$repo/deploy-scripts/dist/"
 mkdir -p "$deploy_dist_dir"
 
