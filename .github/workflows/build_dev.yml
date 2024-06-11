@@ -15,6 +15,8 @@ defaults:
 
 jobs:
   build:
+    permissions:
+      packages: read
     name: 01-build.sh
     runs-on: ubuntu-22.04
     steps:
@@ -27,3 +29,5 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Run 01-build.sh
         run: ./deploy-scripts/01-build.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
