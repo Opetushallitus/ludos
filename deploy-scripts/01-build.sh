@@ -7,7 +7,6 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 # shellcheck source=./deploy-functions.sh
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
 
-readonly service_name="ludos"
 
 function main {
   require_command docker
@@ -19,16 +18,11 @@ function main {
 
   start_gh_actions_group "Building $image_tag"
 
-  SPRING_PROFILES_ACTIVE="$SPRING_PROFILES_ACTIVE"
-  DB_URL="$DB_URL"
   LUDOS_TAG="$image_tag"
   # if !running_on_gh_actions; then
-  #   SPRING_PROFILES_ACTIVE=local
-  #   DB_URL=jdbc:postgresql://ludos-db:5432/ludos
   #   LUDOS_TAG=ludos-server:local
   # fi
-  export SPRING_PROFILES_ACTIVE
-  export DB_URL
+
   export LUDOS_TAG
 
   docker compose build
