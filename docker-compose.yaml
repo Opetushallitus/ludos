@@ -6,8 +6,6 @@ services:
       secrets:
         - github_token
     image: ${LUDOS_TAG}
-    env_file:
-      - path: server/.env
     ports:
       - '127.0.0.1:8080:8080'
     depends_on:
