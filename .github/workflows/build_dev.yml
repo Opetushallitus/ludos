@@ -16,7 +16,7 @@ defaults:
 jobs:
   build:
     permissions:
-      packages: read
+      packages: write
     name: 01-build.sh
     runs-on: ubuntu-22.04
     steps:
