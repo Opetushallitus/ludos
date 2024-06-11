@@ -27,7 +27,6 @@ function main {
 
   docker compose build
 
-  tags_to_push+=("$image_tag")
   end_gh_actions_group
 
   if [ -n "${GITHUB_REF_NAME:-}" ]; then
