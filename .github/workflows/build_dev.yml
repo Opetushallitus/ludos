@@ -32,6 +32,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   server_tests:
+    permissions:
+      id-token: write
+      contents: read
     name: 02-run-server-tests.sh
     runs-on: ubuntu-22.04
     steps:
