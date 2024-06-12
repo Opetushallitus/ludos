@@ -36,7 +36,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.1.6
-
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
       - name: Run 02-run-server-tests.sh
         run: ./deploy-scripts/02-run-server-tests.sh
         env:
