@@ -19,7 +19,7 @@ function main {
   end_gh_actions_group
 
   start_gh_actions_group "Running gradle server tests"
-  docker build --target server-build --tag server-stage .
+  docker build --secret id=github_token,env=GITHUB_TOKEN --target server-build --tag server-stage .
   pushd server
   if running_on_gh_actions; then
     docker run --env SPRING_PROFILES_ACTIVE=local \
@@ -32,7 +32,7 @@ function main {
     server-stage \
     gradle test
   else
-    docker run --env SPRING_PROFILES_ACTIVE=local \
+    docker run  --rm --env SPRING_PROFILES_ACTIVE=local \
     --env DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos \
     --volume "${HOME}/.aws:/root/.aws" -v "$( pwd ):/aws" \
     server-stage \
