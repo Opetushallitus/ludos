@@ -31,3 +31,13 @@ jobs:
         run: ./deploy-scripts/01-build.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  server_tests:
+    name: 02-run-server-tests.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.6
+
+      - name: Run 02-run-server-tests.sh
+        run: ./deploy-scripts/02-run-server-tests.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
