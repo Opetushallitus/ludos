@@ -13,9 +13,6 @@ readonly NODE_VERSION="v20.11.0"
 
 read -r -d '' AWS_CLI_DOCKERFILE <<EOF || true
 FROM public.ecr.aws/aws-cli/aws-cli:2.10.1
-RUN echo "image/webp webp" >> /etc/mime.types
-RUN echo "font/woff woff" >> /etc/mime.types
-RUN echo "font/woff2 woff2" >> /etc/mime.types
 EOF
 
 function maybe_build_aws_cli {
