@@ -16,16 +16,16 @@ function main {
 
   local tags_to_push=()
 
-  start_gh_actions_group "Building $image_tag"
+  start_gh_actions_group "Building $github_image_tag"
 
-  LUDOS_TAG="$image_tag"
+  LUDOS_TAG="$github_image_tag"
   # if !running_on_gh_actions; then
   #   LUDOS_TAG=ludos-server:local
   # fi
 
   export LUDOS_TAG
-
-  docker compose build
+  docker compose build ludos-server
+  tags_to_push+=("$github_image_tag")
 
   end_gh_actions_group
 
@@ -35,7 +35,7 @@ function main {
     readonly clean_ref_name="${GITHUB_REF_NAME//[!a-zA-Z0-9._-]/-}"
     readonly ref_tag="$github_registry:$clean_ref_name"
     info "Tagging as $ref_tag"
-    docker tag "$image_tag" "$ref_tag"
+    docker tag "$github_image_tag" "$ref_tag"
     tags_to_push+=("$ref_tag")
   fi
 
