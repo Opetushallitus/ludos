@@ -29,7 +29,7 @@ function main {
     --env AWS_SESSION_TOKEN \
     --env AWS_REGION \
     --env AWS_DEFAULT_REGION \
-    --network oph-ludos_default
+    --network oph-ludos_default \
     server-stage \
     gradle test
   else
