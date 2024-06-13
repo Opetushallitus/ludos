@@ -4,4 +4,4 @@
 .package-lock.json.checksum
 .aws-cli.Dockerfile
 .aws-cli.Dockerfile.checksum
-
+playwright-results/
