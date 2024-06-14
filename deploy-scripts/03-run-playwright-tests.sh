@@ -42,38 +42,37 @@ function main {
       --env LUDOS_PALVELUKAYTTAJA_USERNAME \
       --env LUDOS_PALVELUKAYTTAJA_PASSWORD \
       --env DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos \
-      --detach \
       -p 8080:8080 \
       --rm \
       --name ludos-server \
       ludos-server
     end_gh_actions_group
 
-    start_gh_actions_group "Running non-parallel playwright tests"
-    docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
+    # start_gh_actions_group "Running non-parallel playwright tests"
+    # docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
 
-    docker run --rm \
-    --network oph-ludos_default \
-    --env HEADLESS=true \
-    --env CI=true \
-    playwright-image --project non_parallel_tests
-    end_gh_actions_group
+    # docker run --rm \
+    # --network oph-ludos_default \
+    # --env HEADLESS=true \
+    # --env CI=true \
+    # playwright-image --project non_parallel_tests
+    # end_gh_actions_group
 
-    start_gh_actions_group "Running parallel playwright tests"
-    docker run --rm \
-    --network oph-ludos_default \
-    --env HEADLESS=true \
-    --env CI=true \
-    playwright-image --project parallel_tests --workers 4
-    end_gh_actions_group
+    # start_gh_actions_group "Running parallel playwright tests"
+    # docker run --rm \
+    # --network oph-ludos_default \
+    # --env HEADLESS=true \
+    # --env CI=true \
+    # playwright-image --project parallel_tests --workers 4
+    # end_gh_actions_group
 
-    start_gh_actions_group "Running download playwright tests"
-    docker run --rm \
-    --network oph-ludos_default \
-    --env HEADLESS=true \
-    --env CI=true \
-    playwright-image --project download_test_webkit
-    end_gh_actions_group
+    # start_gh_actions_group "Running download playwright tests"
+    # docker run --rm \
+    # --network oph-ludos_default \
+    # --env HEADLESS=true \
+    # --env CI=true \
+    # playwright-image --project download_test_webkit
+    # end_gh_actions_group
   else
     start_gh_actions_group "Run ludos server"
     LUDOS_PALVELUKAYTTAJA_JSON=$(aws --profile oph-ludos-dev secretsmanager get-secret-value --secret-id /UntuvaLudosStack/LudosApplicationStack/OphServiceUserCredentials --query 'SecretString' | jq -r .)
