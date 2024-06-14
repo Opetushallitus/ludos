@@ -65,5 +65,5 @@ jobs:
       - name: Run 03-run-playwright-tests.sh
         run: ./deploy-scripts/03-run-playwright-tests.sh
         env:
-          ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
-          ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
