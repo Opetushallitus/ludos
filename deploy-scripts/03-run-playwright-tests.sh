@@ -52,7 +52,7 @@ function main {
     start_gh_actions_group "Running non-parallel playwright tests"
     docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
 
-    docker run -it --rm \
+    docker run --rm \
     --network oph-ludos_default \
     --env HEADLESS=true \
     --env CI=true \
@@ -60,7 +60,7 @@ function main {
     end_gh_actions_group
 
     start_gh_actions_group "Running parallel playwright tests"
-    docker run -it --rm \
+    docker run --rm \
     --network oph-ludos_default \
     --env HEADLESS=true \
     --env CI=true \
@@ -68,7 +68,7 @@ function main {
     end_gh_actions_group
 
     start_gh_actions_group "Running download playwright tests"
-    docker run -it --rm \
+    docker run --rm \
     --network oph-ludos_default \
     --env HEADLESS=true \
     --env CI=true \
