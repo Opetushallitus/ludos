@@ -65,6 +65,12 @@ export default defineConfig({
       testDir: 'non_parallel_tests',
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup']
+    },
+    {
+      name: 'download_test_webkit',
+      testDir: 'download_test_webkit',
+      use: { browserName: 'webkit' },
+      dependencies: ['setup']
     }
   ]
 })

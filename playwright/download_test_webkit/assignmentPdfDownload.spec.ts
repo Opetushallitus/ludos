@@ -1,10 +1,10 @@
 import test from '@playwright/test'
 import { Exam } from 'web/src/types'
-import { loginTestGroup, Role, setTeachingLanguage } from '../../helpers'
-import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
-import { AssignmentContentModel } from '../../models/AssignmentContentModel'
-import { assertPDFDownload } from '../../assertPdfDownload'
-import { AssignmentFormModel } from '../../models/AssignmentFormModel'
+import { loginTestGroup, Role, setTeachingLanguage } from '../helpers'
+import { AssignmentContentListModel } from '../models/AssignmentContentListModel'
+import { AssignmentContentModel } from '../models/AssignmentContentModel'
+import { assertPDFDownload } from '../assertPdfDownload'
+import { AssignmentFormModel } from '../models/AssignmentFormModel'
 
 const fileTitle = (exam: Exam) => `Testitehtävä ${exam} PDF download`
 const expectedFileTitle = (exam: Exam, lang: string) => `${fileTitle(exam)} nimi ${lang}`
