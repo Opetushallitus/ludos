@@ -48,3 +48,22 @@ jobs:
         run: ./deploy-scripts/02-run-server-tests.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  playwright_tests:
+    permissions:
+      id-token: write
+      contents: read
+    needs: ['build']
+    name: 03-run-playwright-tests.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
+      - name: Run 03-run-playwright-tests.sh
+        run: ./deploy-scripts/03-run-playwright-tests.sh
+        env:
+          ludos-palvelukayttaja-username: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          ludos-palvelukayttaja-password: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}

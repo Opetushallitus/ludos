@@ -186,3 +186,7 @@ function log {
   >&2 echo -e "${timestamp} ${level} ${message}"
 }
 
+function get_playwright_version {
+  cd "$repo/playwright"
+  npm list --package-lock-only --json "@playwright/test" | jq --raw-output '.dependencies."@playwright/test".version'
+}
