@@ -1,5 +1,3 @@
-
-
 ARG PLAYWRIGHT_VERSION
 FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal
 
@@ -8,8 +6,16 @@ ADD playwright/package-lock.json playwright/package-lock.json
 
 ENV RUN_LOCAL_TESTS_IN_UI_MODE $RUN_LOCAL_TESTS_IN_UI_MODE
 
+ADD tsconfig.base.json tsconfig.base.json
+
+COPY playwright/ /playwright/
 RUN cd playwright && npm ci && cd ..
 
-ADD . .
+COPY web/ /web/
+RUN cd web && npm ci && cd ..
+
+ADD scripts scripts
+
+ADD run_playwright_tests_in_container.sh run_playwright_tests_in_container.sh
 
 ENTRYPOINT ["./run_playwright_tests_in_container.sh"]
