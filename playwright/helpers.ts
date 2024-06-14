@@ -109,6 +109,7 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
   }
 
   for (const option of optionIds) {
+    await page.getByTestId(`${dropdownTestId}-open`).scrollIntoViewIfNeeded()
     await page.getByTestId(`${dropdownTestId}-open`).click()
     await page.getByTestId(`${dropdownTestId}-option-${option}`).click()
   }
