@@ -30,6 +30,7 @@ check_env_files() {
 
 if ! check_env_files; then
     echo "Secrets not found, logging in to AWS SSO.."
+    unset -f aws ## SSO Login does not work in container
     aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login
 
     echo "running fetch-secrets.sh..."
