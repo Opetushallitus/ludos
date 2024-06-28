@@ -10,7 +10,7 @@ function main () {
 
   if [[ -z "${GITHUB_TOKEN+''}" ]]; then
     echo "You must set github pat to GITHUB_TOKEN env variable and export it"
-    echo "Go to github settings and find developer settings in the bottom (its kinda hidden)"
+    echo "Go to github: Your profile -> settings and find developer settings in the bottom (its kinda hidden)"
     echo "Then create classic token that has read:packages"
     echo "NO SOUP FOR YOU"
     exit 1
