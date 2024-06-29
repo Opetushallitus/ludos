@@ -41,7 +41,7 @@ function main {
       --env SPRING_PROFILES_ACTIVE=local \
       --env LUDOS_PALVELUKAYTTAJA_USERNAME \
       --env LUDOS_PALVELUKAYTTAJA_PASSWORD \
-      --env DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos \
+      --env DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
       -p 8080:8080 \
       --rm \
       --name ludos-server \
