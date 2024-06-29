@@ -45,6 +45,7 @@ function main {
       -p 8080:8080 \
       --rm \
       --name ludos-server \
+      --detach \
       ludos-server
     end_gh_actions_group
 
