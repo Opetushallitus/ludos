@@ -9,7 +9,6 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
 
 
 function cleanup {
-    docker stop ludos-server
     docker compose down
 }
 
