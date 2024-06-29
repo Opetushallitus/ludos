@@ -49,15 +49,16 @@ function main {
       ludos-server
     end_gh_actions_group
 
-    # start_gh_actions_group "Running non-parallel playwright tests"
-    # docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
+    sleep 30
+    start_gh_actions_group "Running non-parallel playwright tests"
+    docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
 
-    # docker run --rm \
-    # --network oph-ludos_default \
-    # --env HEADLESS=true \
-    # --env CI=true \
-    # playwright-image --project non_parallel_tests
-    # end_gh_actions_group
+    docker run --rm \
+     --network oph-ludos_default \
+     --env HEADLESS=true \
+     --env CI=true \
+     playwright-image --project non_parallel_tests
+    end_gh_actions_group
 
     # start_gh_actions_group "Running parallel playwright tests"
     # docker run --rm \
