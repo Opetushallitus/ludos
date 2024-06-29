@@ -37,19 +37,12 @@ function main {
   start_gh_actions_group "Run ludos server"
     LUDOS_TAG="$github_image_tag"
     export LUDOS_TAG
-    docker compose run \
-      --env SPRING_PROFILES_ACTIVE=local \
-      --env LUDOS_PALVELUKAYTTAJA_USERNAME \
-      --env LUDOS_PALVELUKAYTTAJA_PASSWORD \
-      --env DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
-      -p 8080:8080 \
-      --rm \
-      --name ludos-server \
-      --detach \
-      ludos-server
+
+    SPRING_PROFILES_ACTIVE=local \
+    DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
+    docker compose up --wait ludos
     end_gh_actions_group
 
-    sleep 30
     start_gh_actions_group "Running non-parallel playwright tests"
     docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
 

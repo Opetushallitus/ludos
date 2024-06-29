@@ -1,6 +1,17 @@
 version: '3'
 name: oph-ludos
 services:
+
+  ludos:
+    extends:
+      service: ludos-server
+    environment:
+      - SPRING_PROFILES_ACTIVE
+      - DB_URL
+      - LUDOS_PALVELUKAYTTAJA_USERNAME
+      - LUDOS_PALVELUKAYTTAJA_PASSWORD
+      - GITHUB_TOKEN
+
   ludos-server:
     build:
       secrets:
@@ -14,6 +25,7 @@ services:
     depends_on:
       ludos-db:
         condition: service_healthy
+
   ludos-db:
     image: 'postgres:15.2'
     environment:
