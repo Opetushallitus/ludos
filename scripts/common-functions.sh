@@ -75,19 +75,6 @@ function configure_aws_credentials {
   }
 }
 
-function is_aws_configured {
-  if [[ (-z "${AWS_SECRET_ACCESS_KEY:-}") && (-z "${AWS_PROFILE:-}") ]]; then
-    fatal "AWS credentials not configured, call configure_aws_credentials in the script before getting a secret"
-  fi
-}
-
-function get_secret {
-  local secret_id=$1
-
-  is_aws_configured
-  aws secretsmanager get-secret-value --secret-id "$secret_id" --query SecretString --output text
-}
-
 function use_correct_node_version {
   export NVM_DIR="${NVM_DIR:-$HOME/.cache/nvm}"
   set +o errexit
