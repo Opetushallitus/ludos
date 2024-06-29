@@ -11,6 +11,7 @@ services:
       - LUDOS_PALVELUKAYTTAJA_USERNAME
       - LUDOS_PALVELUKAYTTAJA_PASSWORD
       - GITHUB_TOKEN
+    container_name: ludos-server
 
   ludos-server:
     build:
