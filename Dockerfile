@@ -32,6 +32,8 @@ RUN --mount=type=secret,id=github_token,required=true \
 
 FROM amazoncorretto:17-alpine3.17
 
+RUN apk add curl
+
 WORKDIR /ludos-server
 COPY --from=server-build /ludos-build/build/libs/ludos.jar .
 
