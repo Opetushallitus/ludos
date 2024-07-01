@@ -9,7 +9,7 @@ readonly COMMON_FUNCTIONS_SOURCED="true"
 
 readonly revision="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 readonly repo="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-readonly NODE_VERSION="v20.11.0"
+NODE_VERSION="$(cat "$repo/.nvmrc")" && readonly NODE_VERSION
 
 read -r -d '' AWS_CLI_DOCKERFILE <<EOF || true
 FROM public.ecr.aws/aws-cli/aws-cli:2.10.1
