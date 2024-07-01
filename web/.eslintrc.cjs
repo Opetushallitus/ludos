@@ -1,6 +1,6 @@
 const eslintConfig = {
   plugins: ['prettier', 'react-hooks', 'jsx-a11y'],
-  extends: ['plugin:prettier/recommended', "plugin:jsx-a11y/recommended", "plugin:@tanstack/eslint-plugin-query/recommended"],
+  extends: ['plugin:prettier/recommended', "plugin:jsx-a11y/recommended", "plugin:@tanstack/eslint-plugin-query/recommended", 'plugin:@typescript-eslint/recommended-type-checked'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
