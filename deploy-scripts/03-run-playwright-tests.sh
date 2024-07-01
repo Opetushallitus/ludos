@@ -60,13 +60,13 @@ function main {
      playwright-image --project parallel_tests --workers 4
     end_gh_actions_group
 
-    # start_gh_actions_group "Running download playwright tests"
-    # docker run --rm \
-    # --network oph-ludos_default \
-    # --env HEADLESS=true \
-    # --env CI=true \
-    # playwright-image --project download_test_webkit
-    # end_gh_actions_group
+    start_gh_actions_group "Running download playwright tests"
+    docker run --rm \
+    --network oph-ludos_default \
+    --env HEADLESS=true \
+    --env CI=true \
+    playwright-image --project download_test_webkit
+    end_gh_actions_group
   else
     start_gh_actions_group "Run ludos server"
     LUDOS_PALVELUKAYTTAJA_JSON=$(aws --profile oph-ludos-dev secretsmanager get-secret-value --secret-id /UntuvaLudosStack/LudosApplicationStack/OphServiceUserCredentials --query 'SecretString' | jq -r .)
