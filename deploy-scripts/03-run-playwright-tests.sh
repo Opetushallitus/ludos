@@ -52,13 +52,13 @@ function main {
      playwright-image --project non_parallel_tests
     end_gh_actions_group
 
-    # start_gh_actions_group "Running parallel playwright tests"
-    # docker run --rm \
-    # --network oph-ludos_default \
-    # --env HEADLESS=true \
-    # --env CI=true \
-    # playwright-image --project parallel_tests --workers 4
-    # end_gh_actions_group
+    start_gh_actions_group "Running parallel playwright tests"
+    docker run --rm \
+     --network oph-ludos_default \
+     --env HEADLESS=true \
+     --env CI=true \
+     playwright-image --project parallel_tests --workers 4
+    end_gh_actions_group
 
     # start_gh_actions_group "Running download playwright tests"
     # docker run --rm \
