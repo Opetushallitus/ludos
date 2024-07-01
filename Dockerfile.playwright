@@ -18,4 +18,7 @@ ADD scripts scripts
 
 ADD run_playwright_tests_in_container.sh run_playwright_tests_in_container.sh
 
+COPY server/src/main/resources/fixtures /server/src/main/resources/fixtures
+COPY server/src/main/resources/backup_data /server/src/main/resources/backup_data
+
 ENTRYPOINT ["./run_playwright_tests_in_container.sh"]
