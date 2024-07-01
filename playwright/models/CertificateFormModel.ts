@@ -34,7 +34,7 @@ export class CertificateFormModel extends FormModel {
     await this.createNewCertificateButton.click()
   }
 
-  async submitCertificate(action: FormAction) {
+  submitCertificate(action: FormAction) {
     if (action === 'submit') {
       void this.submitButton.click()
     } else {

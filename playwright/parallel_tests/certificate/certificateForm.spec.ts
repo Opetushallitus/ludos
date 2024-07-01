@@ -25,7 +25,7 @@ async function createCertificate(
   await fillCertificateForm(form, formData)
   await form.assertNavigationBlockOnDirtyForm()
 
-  await form.submitCertificate(action)
+  form.submitCertificate(action)
 
   const responseFromClick = await page.waitForResponse(
     (response) => response.url().includes('/api/certificate') && response.ok()
