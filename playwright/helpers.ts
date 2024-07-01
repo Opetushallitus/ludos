@@ -108,7 +108,8 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
     await page.getByTestId(`${dropdownTestId}-reset-selected-options`).click()
   }
 
-  for (const option of optionIds) {
+  for await (const option of optionIds) {
+    await page.getByTestId(`${dropdownTestId}-open`).waitFor({state: 'attached'})
     await page.getByTestId(`${dropdownTestId}-open`).scrollIntoViewIfNeeded()
     await page.getByTestId(`${dropdownTestId}-open`).click()
     await page.getByTestId(`${dropdownTestId}-option-${option}`).click()
