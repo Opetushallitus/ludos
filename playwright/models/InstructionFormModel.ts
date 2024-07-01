@@ -240,7 +240,7 @@ export class InstructionFormModel extends FormModel {
         'attachments-metadata',
         JSON.stringify({
           name: currentAttachment.name,
-          language: currentAttachment.language!.toUpperCase(),
+          language: currentAttachment.language.toUpperCase(),
           fileKey: currentAttachment.fileKey
         })
       )

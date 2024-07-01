@@ -16,7 +16,7 @@ export async function fillCertificateForm(form: CertificateFormModel, inputs: An
   const isPuhvi = isPuhviCertificateValues(inputs)
   const isSukoOrLd = isSuko || isPuhvi
 
-  isLd && (await setSingleSelectDropdownOption(form.page, 'aineKoodiArvo', inputs.aineKoodiArvo!))
+  isLd && (await setSingleSelectDropdownOption(form.page, 'aineKoodiArvo', inputs.aineKoodiArvo))
   await form.nameFi.fill(inputs.nameFi)
   isSukoOrLd && (await form.descriptionFi.fill(inputs.descriptionFi))
   await selectAttachmentFile(form.page, inputs.attachmentFi.name!, form.attachmentInputFi)
@@ -60,10 +60,10 @@ export async function assertContentPage(
 
   if (isLd) {
     await expect(page.getByTestId('certificate-aine')).toHaveText(
-      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, inputs.aineKoodiArvo!)
+      await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, inputs.aineKoodiArvo)
     )
   } else {
-    await expect(page.getByText(inputs.descriptionFi!, { exact: true })).toBeVisible()
+    await expect(page.getByText(inputs.descriptionFi, { exact: true })).toBeVisible()
   }
 
   if (isPuhvi || isLd) {
