@@ -6,7 +6,7 @@ import { LayoutModel } from '../models/LayoutModel'
 
 loginTestGroup(test, Role.OPETTAJA)
 
-test.describe('feedback link', async () => {
+test.describe('feedback link', () => {
   async function assertFeedbackLink(
     page: Page,
     feedbackLink: Locator,
