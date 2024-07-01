@@ -41,21 +41,22 @@ function maybe_build_aws_cli {
   fi
 }
 
-function aws {
-  require_docker
-  maybe_build_aws_cli 1>&2 # output redirected to stderr so that if someone wants to use the stdout of the CLI command, it's possible
-  docker run \
-    --env AWS_PROFILE \
-    --env AWS_ACCESS_KEY_ID \
-    --env AWS_SECRET_ACCESS_KEY \
-    --env AWS_SESSION_TOKEN \
-    --env AWS_REGION \
-    --env AWS_DEFAULT_REGION \
-    --rm -i \
-    --pull=never \
-    --volume "${HOME}/.aws:/root/.aws" -v "$( pwd ):/aws" \
-    amazon/aws-cli:local \
-    "$@"
+function require_dev_aws_session {
+  info "Verifying that AWS session has not expired"
+  ## SSO Login does not work in container
+  aws sts get-caller-identity --profile=oph-ludos-dev 1>/dev/null || {
+    info "Session is expired"
+    aws --profile oph-ludos-dev sso login
+  }
+}
+
+function require_util_aws_session {
+  info "Verifying that AWS session has not expired"
+  ## SSO Login does not work in container
+  aws sts get-caller-identity --profile=oph-ludos-utility 1>/dev/null || {
+    info "Session is expired"
+    aws --profile oph-ludos-utility sso login
+  }
 }
 
 function configure_aws_credentials {
@@ -63,16 +64,17 @@ function configure_aws_credentials {
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+
+    aws sts get-caller-identity || {
+      fatal "Could not check that AWS credentials are working. Please log in with SSO: \"aws --profile oph-ludos-dev sso login\""
+    }
   else
+    require_dev_aws_session
     export AWS_PROFILE="oph-ludos-dev"
     info "Using AWS profile $AWS_PROFILE"
   fi
   export AWS_REGION="eu-west-1"
   export AWS_DEFAULT_REGION="$AWS_REGION"
-
-  aws sts get-caller-identity || {
-    fatal "Could not check that AWS credentials are working. Please log in with SSO: \"aws --profile oph-ludos-dev sso login\""
-  }
 }
 
 function use_correct_node_version {
