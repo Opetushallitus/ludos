@@ -20,5 +20,5 @@ export abstract class ContentModel {
     await this.page.goto(`/${this.exam.toLowerCase()}/${ContentTypePluralFi[this.contentType]}/${id}`)
   }
 
-  abstract assertAttachments(attachmentNames: string[]): Promise<void>
+  abstract assertAttachments(attachmentNames: string[]): void | Promise<void>
 }

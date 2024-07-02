@@ -13,7 +13,7 @@ export class AssignmentContentModel extends ContentModel {
     super(page, exam, ContentType.ASSIGNMENT)
   }
 
-  async assertAttachments(attachmentNames: string[]): Promise<void> {
+  assertAttachments(attachmentNames: string[]) {
     expect(attachmentNames).toHaveLength(0) // Koetehtävissä ei voi olla liitteitä
   }
 }
