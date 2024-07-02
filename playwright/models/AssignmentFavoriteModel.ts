@@ -65,7 +65,7 @@ export class AssignmentFavoriteModel extends BaseModel {
       .toBe(expectedCount)
   }
 
-  private async removeFavorite(assignmentCard: any, favoriteCountBefore: number) {
+  private async removeFavorite(assignmentCard: any) {
     await assignmentCard.getByTestId('suosikki').click()
     await assertSuccessNotification(this.page, 'assignment.notification.suosikki-poistettu')
     await expect(assignmentCard).toBeHidden()
@@ -80,7 +80,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     await assignmentCard.getByTestId('card-title').click()
     await expect(this.page.getByTestId('assignment-header')).toHaveText(assignment.nameFi)
     await this.page.goBack()
-    await this.removeFavorite(assignmentCard, favoriteCountBefore)
+    await this.removeFavorite(assignmentCard)
 
     await this.assertFavoriteCountIsEventually(favoriteCountBefore)
   }

@@ -72,8 +72,7 @@ export class AssignmentFormModel extends FormModel {
 
     if (!result.ok) {
       const errorText = await result.text()
-      // throw new Error(`Failed to create assignment: ${errorText}`)
-      return ''
+      throw new Error(`Failed to create assignment: ${errorText}`)
     }
 
     return await result.json()
