@@ -1,6 +1,6 @@
-import { expect, Page } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 import { BaseModel } from './BaseModel'
-import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
+import { AssignmentOut, ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { AssignmentFormModel } from './AssignmentFormModel'
 import { assertSuccessNotification } from '../helpers'
 import { LayoutModel } from './LayoutModel'
@@ -36,7 +36,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     await expect(this.page.getByTestId(`folder-${folderId}-card`)).toBeHidden()
   }
 
-  async prepAssignmentGoToAssignmentList(baseURL: string): Promise<[any, number]> {
+  async prepAssignmentGoToAssignmentList(baseURL: string): Promise<[AssignmentOut, number]> {
     const assignmentIn = this.form.testAssignmentIn('Suosikkitesti')
     const assignment = await this.form.assignmentApiCalls(this.page.context(), baseURL).create(assignmentIn)
 
@@ -65,13 +65,13 @@ export class AssignmentFavoriteModel extends BaseModel {
       .toBe(expectedCount)
   }
 
-  private async removeFavorite(assignmentCard: any) {
+  private async removeFavorite(assignmentCard: Locator) {
     await assignmentCard.getByTestId('suosikki').click()
     await assertSuccessNotification(this.page, 'assignment.notification.suosikki-poistettu')
     await expect(assignmentCard).toBeHidden()
   }
 
-  async assertFavoritesPage(assignment: any, favoriteCountBefore: number) {
+  async assertFavoritesPage(assignment: AssignmentOut, favoriteCountBefore: number) {
     await this.headerFavorites.click()
 
     const assignmentCard = this.page.getByTestId(`assignment-list-item-${assignment.id}`)
@@ -94,7 +94,7 @@ export class AssignmentFavoriteModel extends BaseModel {
       (response) => response.url().includes(`/api/assignment/favorites/${this.exam}/folder`) && response.ok()
     )
 
-    return await folderId.json()
+    return await folderId.json() as number
   }
 
   async goToFolderRootByBreadCrumb() {
@@ -124,7 +124,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     await this.addToFavoritesBtn.click()
   }
 
-  async testSettingAndUnsettingAsFavorite(assignment: any, favoriteCountBefore: number, isContentPage = false) {
+  async testSettingAndUnsettingAsFavorite(assignment: AssignmentOut, favoriteCountBefore: number, isContentPage = false) {
     const favoriteButtonLocator = this.page
       .getByTestId(isContentPage ? 'assignment-metadata' : `assignment-list-item-${assignment.id}`)
       .getByTestId('suosikki')
