@@ -6,7 +6,7 @@ import {
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../helpers'
-import { Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
+import { AssignmentIn, Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   CommonAssignmentFormType,
@@ -172,7 +172,7 @@ export async function fillAssignmentForm(form: AssignmentFormModel, formData: An
   } else if (isPuhviAssignmentFormType(formData)) {
     await fillPuhviAssignmentForm(form, formData)
   } else {
-    throw new Error(`Unknown form type: ${formData}`)
+    throw new Error(`Unknown form type: ${formData}`) // eslint-disable-line @typescript-eslint/restrict-template-expressions
   }
 }
 
@@ -263,7 +263,7 @@ export async function assertAssignmentContentPage(page: Page, formData: AnyAssig
   } else if (isPuhviAssignmentFormType(formData)) {
     await assertPuhviAssignmentContentPage(page, formData)
   } else {
-    throw new Error(`Unknown form type: ${formData}`)
+    throw new Error(`Unknown form type: ${formData}`) // eslint-disable-line @typescript-eslint/restrict-template-expressions
   }
 }
 
@@ -337,7 +337,7 @@ export async function assertPuhviAssignmentContentPage(page: Page, expectedFormD
 export const filterTestAssignmentName = (number: number, teachingLanguage: Language, exam: Exam) =>
   `Filter test name ${number} ${teachingLanguage.toUpperCase()} ${exam}`
 
-export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignmentIn: any) {
+export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignmentIn: AssignmentIn) {
   const newTabPagePromise: Promise<Page> = page.waitForEvent('popup')
   await linkTestId.click()
   const newTabPage = await newTabPagePromise
