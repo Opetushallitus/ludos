@@ -1,7 +1,17 @@
 import { BrowserContext, Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import { Exam } from 'web/src/types'
+import { AssignmentIn, AssignmentOut, ContentType, Exam, PublishState } from 'web/src/types'
 import { fetchWithSession, FormAction } from '../helpers'
+
+interface TestedAssignmentIn extends AssignmentIn {
+  assignmentTypeKoodiArvo?: string
+  oppimaara?: { oppimaaraKoodiArvo: string }
+  oppimaaraKielitarjontaKoodiArvo?: null
+  lukuvuosiKoodiArvos?: string[]
+  aiheKoodiArvos?: []
+  aineKoodiArvo?: string
+  tavoitetasoKoodiArvo?: null | []
+}
 
 export class AssignmentFormModel extends FormModel {
   constructor(
@@ -20,7 +30,7 @@ export class AssignmentFormModel extends FormModel {
     await this.createAssignmentButton.click()
   }
 
-  testAssignmentIn(assignmentNameBase: string) {
+  testAssignmentIn(assignmentNameBase: string): TestedAssignmentIn {
     const base = {
       exam: this.exam,
       nameFi: `${assignmentNameBase} nimi fi`,
@@ -29,8 +39,9 @@ export class AssignmentFormModel extends FormModel {
       contentSv: this.exam === Exam.SUKO ? [''] : [`${assignmentNameBase} sisältö sv`],
       instructionFi: `${assignmentNameBase} ohje fi`,
       instructionSv: this.exam === Exam.SUKO ? '' : `${assignmentNameBase} ohje sv`,
-      publishState: 'PUBLISHED',
-      laajaalainenOsaaminenKoodiArvos: []
+      publishState: PublishState.Published,
+      laajaalainenOsaaminenKoodiArvos: [],
+      contentType: ContentType.ASSIGNMENT,
     }
 
     if (this.exam === Exam.SUKO) {
@@ -62,12 +73,12 @@ export class AssignmentFormModel extends FormModel {
   }
   assignmentApiCalls(context: BrowserContext, baseURL: string) {
     return {
-      create: (assignment: any) => this.createAssignmentApiCall(context, baseURL, assignment),
-      update: (id: string, body: string) => this.updateAssignmentApiCall(context, baseURL, id, body)
+      create: (assignment: AssignmentIn) => this.createAssignmentApiCall(context, baseURL, assignment),
+      update: (id: number, body: string) => this.updateAssignmentApiCall(context, baseURL, id, body)
     }
   }
 
-  private async createAssignmentApiCall(context: BrowserContext, baseURL: string, assignment: any) {
+  private async createAssignmentApiCall(context: BrowserContext, baseURL: string, assignment: AssignmentIn): Promise<AssignmentOut> {
     const result = await fetchWithSession(context, `${baseURL}/api/assignment`, 'POST', JSON.stringify(assignment))
 
     if (!result.ok) {
@@ -75,10 +86,10 @@ export class AssignmentFormModel extends FormModel {
       throw new Error(`Failed to create assignment: ${errorText}`)
     }
 
-    return await result.json()
+    return await result.json() as AssignmentOut
   }
 
-  private async updateAssignmentApiCall(context: BrowserContext, baseURL: string, id: string, body: string) {
+  private async updateAssignmentApiCall(context: BrowserContext, baseURL: string, id: number, body: string) {
     return await fetchWithSession(context, `${baseURL}/api/assignment/${id}`, 'PUT', body)
   }
 

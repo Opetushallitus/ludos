@@ -54,15 +54,17 @@ export interface ContentBase {
   publishState: PublishState
 }
 
-export type ContentBaseOut = ContentBase & {
+interface ContentOutFields {
   id: number
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
   authorOid: string
   updaterOid: string
   updaterName: string | null
   version: number
 }
+
+export type ContentBaseOut = ContentBase & ContentOutFields
 
 export const isAssignment = (data: ContentBaseOut): data is AssignmentOut => data.contentType === ContentType.ASSIGNMENT
 export const isSukoAssignment = (assignment: ContentBaseOut): assignment is SukoAssignmentDtoOut =>
@@ -90,15 +92,17 @@ export const isLdCertificate = (data: ContentBaseOut): data is LdCertificateDtoO
 export const isPuhviCertificate = (data: ContentBaseOut): data is PuhviCertificateDtoOut =>
   data.exam === Exam.PUHVI && isCertificate(data)
 
-export type AssignmentOut = ContentBaseOut & {
-  nameFi: string
-  nameSv: string
-  contentFi: string[]
-  contentSv: string[]
+export interface Assignment {
   instructionFi: string
   instructionSv: string
+  contentFi: string[]
+  contentSv: string[]
   laajaalainenOsaaminenKoodiArvos: string[]
+  contentType: ContentType
 }
+
+export type AssignmentOut = ContentBaseOut & Assignment
+export type AssignmentIn = ContentBase & Assignment
 
 export type AssignmentCardOut = ContentBaseOut & {
   id: number
