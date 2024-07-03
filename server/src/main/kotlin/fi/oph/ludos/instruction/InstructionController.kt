@@ -47,7 +47,7 @@ class InstructionController(val service: InstructionService, private val objectM
         @RequestPart("new-attachments", required = false) newAttachments: List<MultipartFile>?,
         @RequestPart("new-attachments-metadata", required = false) newAttachmentsMetadata: List<Part>?,
         request: HttpServletRequest
-    ): Int? {
+    ): Int {
         val attachmentsMetadataDeserialized = deserializeAttachmentsMetadata(attachmentsMetadata)
         validateExistingAttachmentsMetadata(attachmentsMetadataDeserialized)
 
