@@ -67,3 +67,10 @@ jobs:
         env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+  lint:
+    name: 04-lint.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Run 04-lint.sh
+        run: ./deploy-scripts/04-lint.sh
