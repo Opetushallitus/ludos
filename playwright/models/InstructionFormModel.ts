@@ -71,15 +71,17 @@ export class InstructionFormModel extends FormModel {
 
     await this.assertNavigationBlockOnDirtyForm()
 
+    const clickResponse = this.page.waitForResponse(
+      (response) => response.url().includes('/api/instruction') && response.ok()
+    )
+
     if (action === 'submit') {
       void this.submitButton.click()
     } else {
       void this.draftButton.click()
     }
 
-    const response = await this.page.waitForResponse(
-      (response) => response.url().includes('/api/instruction') && response.ok()
-    )
+    const response = await clickResponse
     const responseData = await response.json()
     const instructionToUpdate = responseData.id
 
