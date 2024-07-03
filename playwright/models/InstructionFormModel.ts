@@ -279,12 +279,12 @@ export class InstructionFormModel extends FormModel {
       this.addAttachmentPartToFormData(formData, 'attachments', attachmentFixtureFilename)
     })
 
-    return await (await fetchWithSession(this.page.context(), `${baseURL}/api/instruction`, 'POST', formData)).json()
+    const response = await fetchWithSession(this.page.context(), `${baseURL}/api/instruction`, 'POST', formData)
+    return await response.json() as InstructionDtoOut
   }
 
   async getInstructionApiCall(baseURL: string, id: number) {
-    return await (
-      await fetchWithSession(this.page.context(), `${baseURL}/api/instruction/${this.exam}/${id}`, 'GET')
-    ).json()
+    const response = await fetchWithSession(this.page.context(), `${baseURL}/api/instruction/${this.exam}/${id}`, 'GET')
+    return await response.json() as InstructionDtoOut
   }
 }
