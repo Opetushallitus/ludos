@@ -1,6 +1,14 @@
 import { expect, Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import { AttachmentDtoOut, ContentType, Exam, KoodistoName, Language, PublishState } from 'web/src/types'
+import {
+  AttachmentDtoOut,
+  ContentType,
+  Exam,
+  InstructionDtoOut,
+  KoodistoName,
+  Language,
+  PublishState
+} from 'web/src/types'
 import { assertInstructionContentPage, getFileBlob } from '../examHelpers/instructionHelpers'
 import { EditorModel } from './EditorModel'
 import {
@@ -82,7 +90,7 @@ export class InstructionFormModel extends FormModel {
     }
 
     const response = await clickResponse
-    const responseData = await response.json()
+    const responseData = await response.json() as InstructionDtoOut
     const instructionToUpdate = responseData.id
 
     await assertSuccessNotification(this.page, expectedNotification)
