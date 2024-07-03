@@ -108,7 +108,7 @@ export type AssignmentCardOut = ContentBaseOut & {
   id: number
   exam: Exam
   publishState: PublishState
-  createdAt: string
+  createdAt: Date
   nameFi: string
   nameSv: string
 }
@@ -199,6 +199,21 @@ export type AttachmentDtoOut = {
 export type ImageDtoOut = {
   url: string
   fileName: string
+}
+
+interface CertificateAttachmentDtoOut {
+  fileKey: String
+  fileName: String
+  fileUploadDate: Date
+}
+
+interface Certificate extends ContentBase {
+  contentType: ContentType
+}
+
+export interface CertificateOut extends ContentBaseOut, Certificate {
+  attachmentFi: CertificateAttachmentDtoOut
+  attachmentSv: CertificateAttachmentDtoOut
 }
 
 export type CertificateDtoOut = ContentBaseOut & {

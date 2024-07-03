@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test'
 import { FormModel } from './FormModel'
-import { ContentType, Exam, PublishState } from 'web/src/types'
+import { CertificateOut, ContentType, Exam, PublishState } from 'web/src/types'
 import { fetchWithSession, FormAction } from '../helpers'
 import { ContentListModel } from './ContentListModel'
 import { AnyCertificateFormType, AttachmentFormType } from 'web/src/components/forms/schemas/certificateSchema'
@@ -103,9 +103,10 @@ export class CertificateFormModel extends FormModel {
     baseURL: string,
     certificateIn: AnyCertificateFormType,
     attachmentFixtureFilename: string
-  ) {
+  ): Promise<CertificateOut> {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)
-    return await (await fetchWithSession(this.page.context(), `${baseURL}/api/certificate`, 'POST', formData)).json()
+    const response = await fetchWithSession(this.page.context(), `${baseURL}/api/certificate`, 'POST', formData)
+    return await response.json() as CertificateOut
   }
 
   async updateCertificateApiCall(
@@ -113,10 +114,9 @@ export class CertificateFormModel extends FormModel {
     id: number,
     certificateIn: AnyCertificateFormType,
     attachmentFixtureFilename: string
-  ) {
+  ): Promise<number> {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)
-    return await (
-      await fetchWithSession(this.page.context(), `${baseURL}/api/certificate/${id}`, 'PUT', formData)
-    ).json()
+    const response = await fetchWithSession(this.page.context(), `${baseURL}/api/certificate/${id}`, 'PUT', formData)
+    return parseInt(await response.text())
   }
 }
