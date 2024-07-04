@@ -79,6 +79,7 @@ jobs:
     name: '05-deploy.sh'
     permissions:
       packages: read
+      id-token: write
     runs-on: "ubuntu-22.04"
     steps:
       - name: Fetch history for all branches and tags
