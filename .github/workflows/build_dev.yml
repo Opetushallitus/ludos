@@ -81,6 +81,10 @@ jobs:
       packages: read
     runs-on: "ubuntu-22.04"
     steps:
+      - name: Fetch history for all branches and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Deploy
         uses: ./.github/actions/deploy
         with:
