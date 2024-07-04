@@ -89,3 +89,5 @@ jobs:
         uses: ./.github/actions/deploy
         with:
           env: 'dev'
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
