@@ -27,10 +27,10 @@ function image_exists_locally {
 }
 
 function require_built_image {
-  if image_exists_locally "$image_tag"; then
-    info "$image_tag already exists locally"
+  if image_exists_locally "${github_image_tag}"; then
+    info "${github_image_tag} already exists locally"
   else
-    info "Pulling $image_tag because it does not exist locally"
-    docker pull "$image_tag"
+    info "Pulling ${github_image_tag} because it does not exist locally"
+    docker pull "${github_image_tag}"
   fi
 }

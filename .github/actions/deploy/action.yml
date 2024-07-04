@@ -1,0 +1,32 @@
+name: Deploy to environment
+description: Copy image to ECR and deploy CDK
+inputs:
+  env:
+    description: 'Environment for deployment'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Fetch history for all branches and tags
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3.2.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure utility AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::505953557276:role/ludos-gh-actions-ecr-push-role
+        aws-region: eu-west-1
+
+    - name: 05-deploy.sh
+      working-directory: ./
+      shell: bash
+      run: ./deploy-scripts/05-deploy-${{ inputs.env }}.sh
