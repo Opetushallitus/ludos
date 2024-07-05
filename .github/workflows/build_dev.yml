@@ -113,5 +113,5 @@ jobs:
       - uses: ./.github/actions/build_status
         with:
           environment: dev
-          status: ${{ steps.push_image.outcome == 'success' && 'success' || 'failure' }}
+          status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
