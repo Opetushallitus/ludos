@@ -1,0 +1,26 @@
+name: Build status
+description: Send build status to Jatkuvat Radiator
+inputs:
+  api_key:
+    description: Radiator API key for Ludos
+    required: true
+  environment:
+    description: Build environment ('dev', 'qa' or 'prod')
+    required: true
+  status:
+    description: Build status ('unknown', 'success', 'failure', 'cancelled', 'inProgress')
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Send in-progress status to radiator
+      shell: bash
+      working-directory: ./
+      run: |
+        curl \
+          -H "AUTH_TOKEN: ${{ inputs.api_key }}" \
+          -H "Content-Type: application/json" \
+          -X PUT \
+          https://radiator.continuous-services.services/api/v2/buildstatus/ludos/ludos-deploy-${{ inputs.env }} \
+          -d "{\"status\": \"${{ inputs.status }}\"}"
