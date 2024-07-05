@@ -90,6 +90,5 @@ jobs:
       - name: Push image
         uses: ./.github/actions/push_image
         with:
-          env: 'dev'
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}

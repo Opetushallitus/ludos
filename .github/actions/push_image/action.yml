@@ -1,9 +1,6 @@
 name: Push image
 description: Upload built image to AWS ECR
 inputs:
-  env:
-    description: 'Environment for deployment'
-    required: true
   username:
     description: ghcr.io username
     required: true
@@ -31,4 +28,4 @@ runs:
     - name: 05-push-image.sh
       working-directory: ./
       shell: bash
-      run: ./deploy-scripts/05-push-image-${{ inputs.env }}.sh
+      run: ./deploy-scripts/05-push-image.sh

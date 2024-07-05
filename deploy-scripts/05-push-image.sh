@@ -8,18 +8,18 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
 
 function main() {
-  parse_env_from_script_name 05-push-image
   setup
-
-  start_gh_actions_group "Deploying to ${ENV}"
   upload_image_to_ecr
 }
 
 function upload_image_to_ecr() {
-  require_built_image
+  start_gh_actions_group "Uploading image to util account"
 
+  require_built_image
   docker tag "${github_image_tag}" "${ecr_image_tag}"
   docker push "${ecr_image_tag}"
+
+  end_gh_actions_group
 }
 
 function setup() {
