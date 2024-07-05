@@ -20,6 +20,8 @@ jobs:
     name: 01-build.sh
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4.1.6
+
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status
         with:
@@ -27,13 +29,13 @@ jobs:
           status: inProgress
           api_key: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/checkout@v4.1.6
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run 01-build.sh
         run: ./deploy-scripts/01-build.sh
         env:
