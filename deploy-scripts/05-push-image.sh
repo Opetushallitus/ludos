@@ -8,7 +8,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
 
 function main() {
-  parse_env_from_script_name 05-deploy
+  parse_env_from_script_name 05-push-image
   setup
 
   start_gh_actions_group "Deploying to ${ENV}"

@@ -1,5 +1,5 @@
-name: Deploy to environment
-description: Copy image to ECR and deploy CDK
+name: Push image
+description: Upload built image to AWS ECR
 inputs:
   env:
     description: 'Environment for deployment'
@@ -28,7 +28,7 @@ runs:
         role-to-assume: arn:aws:iam::505953557276:role/ludos-gh-actions-ecr-push-role
         aws-region: eu-west-1
 
-    - name: 05-deploy.sh
+    - name: 05-push-image.sh
       working-directory: ./
       shell: bash
-      run: ./deploy-scripts/05-deploy-${{ inputs.env }}.sh
+      run: ./deploy-scripts/05-push-image-${{ inputs.env }}.sh
