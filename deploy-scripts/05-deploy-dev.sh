@@ -31,8 +31,13 @@ function setup() {
 }
 
 function get_ecr_login_credentials() {
-  aws --profile oph-ludos-utility \
-  ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 505953557276.dkr.ecr.eu-west-1.amazonaws.com
+  if [[ "${CI:-}" = "true" ]]; then
+    aws \
+      ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 505953557276.dkr.ecr.eu-west-1.amazonaws.com
+  else
+    aws --profile oph-ludos-utility \
+      ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 505953557276.dkr.ecr.eu-west-1.amazonaws.com
+  fi
 }
 
 main "$@"
