@@ -83,14 +83,21 @@ jobs:
       - uses: actions/checkout@v4.1.7
       - name: Run 04-lint.sh
         run: ./deploy-scripts/04-lint.sh
+  frontend_unit_tests:
+    name: 06-run-frontend-unittests.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Run 06-run-frontend-unittests.sh
+        run: ./deploy-scripts/06-run-frontend-unittests.sh
 
   push_image:
     name: 05-push-image.sh
-    needs: [lint, build, server_tests, playwright_tests]
+    needs: [lint, build, server_tests, playwright_tests, frontend_unit_tests]
     permissions:
       packages: read
       id-token: write
-    runs-on: "ubuntu-22.04"
+    runs-on: 'ubuntu-22.04'
     steps:
       - name: Fetch history for all branches and tags
         uses: actions/checkout@v4
@@ -107,7 +114,7 @@ jobs:
     needs: [push_image]
     if: always()
     continue-on-error: true
-    runs-on: "ubuntu-22.04"
+    runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4.1.6
       - uses: ./.github/actions/build_status
