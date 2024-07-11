@@ -18,13 +18,12 @@ RUN npm run build:ci
 FROM gradle:jdk17 as server-build
 
 WORKDIR /ludos-build
-COPY server/build.gradle.kts .
+COPY server/settings.gradle.kts server/build.gradle.kts .
 RUN --mount=type=secret,id=github_token,required=true \
   GITHUB_TOKEN=$(cat /run/secrets/github_token) \
   gradle --no-daemon dependencies --refresh-dependencies
 
 COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
-
 COPY server/src/ ./src/
 RUN --mount=type=secret,id=github_token,required=true \
   GITHUB_TOKEN=$(cat /run/secrets/github_token) \
