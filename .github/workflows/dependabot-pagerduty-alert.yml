@@ -1,0 +1,20 @@
+name: dependabot-pagerduty-alert
+
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  create-alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+        with:
+          ref: 'main'
+
+      - name: Send PagerDuty alert if PR created by dependabot
+        if: github.base_ref == 'main' && github.actor == 'dependabot[bot]'
+        run: |
+          ./scripts/post-pagerduty-alert.sh trigger ludos-github-action-dependabot "Dependabot created a new PR to ${{ github.repository }}"
+        env:
+          PAGERDUTY_ROUTING_KEY: ${{ secrets.PAGERDUTY_ROUTING_KEY }}
