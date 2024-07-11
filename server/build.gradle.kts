@@ -3,10 +3,10 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot")
-    id("io.spring.dependency-management")
-    kotlin("jvm")
-    kotlin("plugin.spring")
+    id("org.springframework.boot") version "3.3.1"
+    id("io.spring.dependency-management") version "1.1.6"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.spring") version "1.9.22"
 }
 
 group = "fi.oph"
@@ -26,31 +26,31 @@ repositories {
 dependencies {
     developmentOnly(Spring.boot.devTools)
     implementation("io.arrow-kt:arrow-core:1.2.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:_")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:_")
-    implementation("fi.vm.sade.java-utils:java-http:_")
-    implementation("io.github.cdimascio:dotenv-kotlin:_")
-    implementation("jakarta.servlet:jakarta.servlet-api:_")
-    implementation("ch.qos.logback:logback-access:_")
-    implementation("net.logstash.logback:logstash-logback-encoder:_")
-    implementation("org.flywaydb:flyway-core:_")
-    implementation("org.flywaydb:flyway-database-postgresql:_")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:_")
-    implementation("org.jsoup:jsoup:_")
-    implementation("org.springframework.security:spring-security-cas:_")
-    implementation("org.springframework:spring-test:_")
-    implementation("software.amazon.awssdk:cloudwatchlogs:_")
-    implementation("software.amazon.awssdk:s3:_")
-    implementation("software.amazon.awssdk:sso:_")
-    implementation("software.amazon.awssdk:ssooidc:_")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
+    implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    implementation("ch.qos.logback:logback-access:1.4.14")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("org.flywaydb:flyway-core:10.6.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.6.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
+    implementation("org.jsoup:jsoup:1.18.1")
+    implementation("org.springframework.security:spring-security-cas:6.3.1")
+    implementation("org.springframework:spring-test:6.1.11")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.26.19")
+    implementation("software.amazon.awssdk:s3:2.26.19")
+    implementation("software.amazon.awssdk:sso:2.26.19")
+    implementation("software.amazon.awssdk:ssooidc:2.26.19")
     implementation(Spring.boot.cache)
     implementation(Spring.boot.data.jpa)
     implementation(Spring.boot.security)
     implementation(Spring.boot.validation)
     implementation(Spring.boot.web)
     implementation(Spring.session.jdbc)
-    implementation("org.postgresql:postgresql:_")
-    testImplementation("org.reflections:reflections:_")
+    implementation("org.postgresql:postgresql:42.7.1")
+    testImplementation("org.reflections:reflections:0.10.2")
     testImplementation(Spring.boot.test)
     testImplementation(Spring.security.spring_security_test)
 }
