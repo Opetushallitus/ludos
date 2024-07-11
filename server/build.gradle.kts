@@ -34,7 +34,7 @@ dependencies {
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
     implementation("ch.qos.logback:logback-access:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("org.flywaydb:flyway-core:10.6.0")
+    implementation("org.flywaydb:flyway-core:10.15.2")
     implementation("org.flywaydb:flyway-database-postgresql:10.6.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
     implementation("org.jsoup:jsoup:1.18.1")
