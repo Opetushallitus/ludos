@@ -24,7 +24,8 @@ repositories {
 }
 
 dependencies {
-    developmentOnly(Spring.boot.devTools)
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
     implementation("io.arrow-kt:arrow-core:1.2.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
@@ -37,22 +38,22 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql:10.6.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
     implementation("org.jsoup:jsoup:1.18.1")
-    implementation("org.springframework.security:spring-security-cas:6.3.1")
-    implementation("org.springframework:spring-test:6.1.11")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.26.19")
     implementation("software.amazon.awssdk:s3:2.26.19")
     implementation("software.amazon.awssdk:sso:2.26.19")
     implementation("software.amazon.awssdk:ssooidc:2.26.19")
-    implementation(Spring.boot.cache)
-    implementation(Spring.boot.data.jpa)
-    implementation(Spring.boot.security)
-    implementation(Spring.boot.validation)
-    implementation(Spring.boot.web)
-    implementation(Spring.session.jdbc)
+    implementation("org.springframework.security:spring-security-cas:6.3.1")
+    implementation("org.springframework:spring-test:6.1.11")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.session:spring-session-jdbc")
     implementation("org.postgresql:postgresql:42.7.1")
     testImplementation("org.reflections:reflections:0.10.2")
-    testImplementation(Spring.boot.test)
-    testImplementation(Spring.security.spring_security_test)
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<KotlinCompile> {
