@@ -23,7 +23,7 @@
     "@tiptap/extension-color": "^2.2.0",
     "@tiptap/extension-document": "^2.2.0",
     "@tiptap/extension-heading": "^2.2.0",
-    "@tiptap/extension-history": "^2.2.0",
+    "@tiptap/extension-history": "^2.4.0",
     "@tiptap/extension-italic": "^2.2.0",
     "@tiptap/extension-link": "^2.2.0",
     "@tiptap/extension-list-item": "^2.2.0",
