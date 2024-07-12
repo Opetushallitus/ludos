@@ -30,9 +30,11 @@ function playwright_tests {
   docker run -it --rm \
   --network ludos_default \
   -v "$RESULTS_DIR":/playwright/playwright-results \
+  -v "$repo/playwright/snapshots":/playwright/snapshots \
   -v "$repo/playwright/parallel_tests":/playwright/parallel_tests \
   -v "$repo/playwright/non_parallel_tests":/playwright/non_parallel_tests \
   -v "$repo/playwright/assertPdfDownload.ts":/playwright/assertPdfDownload.ts \
+  -v "$repo/playwright/models":/playwright/models \
   --env HEADLESS=true \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+--env RUN_LOCAL_TESTS_IN_UI_MODE} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-p 127.0.0.1:9876:9876} \

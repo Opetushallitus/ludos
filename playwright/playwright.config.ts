@@ -5,6 +5,7 @@ import * as process from 'process'
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
+  snapshotDir: 'snapshots',
   timeout: 30 * 1000,
   expect: {
     /**
