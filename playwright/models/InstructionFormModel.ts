@@ -90,7 +90,7 @@ export class InstructionFormModel extends FormModel {
     }
 
     const response = await clickResponse
-    const responseData = await response.json() as InstructionDtoOut
+    const responseData = (await response.json()) as InstructionDtoOut
     const instructionToUpdate = responseData.id
 
     await assertSuccessNotification(this.page, expectedNotification)
@@ -280,11 +280,11 @@ export class InstructionFormModel extends FormModel {
     })
 
     const response = await fetchWithSession(this.page.context(), `${baseURL}/api/instruction`, 'POST', formData)
-    return await response.json() as InstructionDtoOut
+    return (await response.json()) as InstructionDtoOut
   }
 
   async getInstructionApiCall(baseURL: string, id: number) {
     const response = await fetchWithSession(this.page.context(), `${baseURL}/api/instruction/${this.exam}/${id}`, 'GET')
-    return await response.json() as InstructionDtoOut
+    return (await response.json()) as InstructionDtoOut
   }
 }

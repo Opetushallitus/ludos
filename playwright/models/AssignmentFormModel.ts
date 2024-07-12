@@ -30,6 +30,18 @@ export class AssignmentFormModel extends FormModel {
     await this.createAssignmentButton.click()
   }
 
+  async toggleItalics(editor: 'tehtavanOhje' | 'tehtavanSisalto') {
+    if (editor === 'tehtavanOhje') {
+      return await this.instructionFi.getByTestId('italic').click()
+    } else if (editor === 'tehtavanSisalto') {
+      return await this.page.getByTestId('contentFi-0').getByTestId('italic').click()
+    }
+    throw new Error('italics not found')
+  }
+  async fillTehtavanOhje(text: string) {
+    await this.instructionFi.locator('div[contenteditable="true"]').fill(text)
+  }
+
   testAssignmentIn(assignmentNameBase: string): TestedAssignmentIn {
     const base = {
       exam: this.exam,
@@ -41,7 +53,7 @@ export class AssignmentFormModel extends FormModel {
       instructionSv: this.exam === Exam.SUKO ? '' : `${assignmentNameBase} ohje sv`,
       publishState: PublishState.Published,
       laajaalainenOsaaminenKoodiArvos: [],
-      contentType: ContentType.ASSIGNMENT,
+      contentType: ContentType.ASSIGNMENT
     }
 
     if (this.exam === Exam.SUKO) {
@@ -78,7 +90,11 @@ export class AssignmentFormModel extends FormModel {
     }
   }
 
-  private async createAssignmentApiCall(context: BrowserContext, baseURL: string, assignment: AssignmentIn): Promise<AssignmentOut> {
+  private async createAssignmentApiCall(
+    context: BrowserContext,
+    baseURL: string,
+    assignment: AssignmentIn
+  ): Promise<AssignmentOut> {
     const result = await fetchWithSession(context, `${baseURL}/api/assignment`, 'POST', JSON.stringify(assignment))
 
     if (!result.ok) {
@@ -86,7 +102,7 @@ export class AssignmentFormModel extends FormModel {
       throw new Error(`Failed to create assignment: ${errorText}`)
     }
 
-    return await result.json() as AssignmentOut
+    return (await result.json()) as AssignmentOut
   }
 
   private async updateAssignmentApiCall(context: BrowserContext, baseURL: string, id: number, body: string) {
