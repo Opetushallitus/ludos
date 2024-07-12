@@ -1,4 +1,5 @@
 # Ludos
+
 Wiki: https://wiki.eduuni.fi/display/OPHPALV/LUDOS
 
 ## Käsitteet
@@ -6,7 +7,7 @@ Wiki: https://wiki.eduuni.fi/display/OPHPALV/LUDOS
 Keskeiset entiteetit, ja järjestelmät, joihin nämä tallennetaan.
 
 | käsite      | selite                                        | tunniste     | tallennuspaikka |
-|-------------|-----------------------------------------------|--------------|-----------------|
+| ----------- | --------------------------------------------- | ------------ | --------------- |
 | Koodisto    | Kooditus objekteille, esim tutkintonimikkeet  | id (tekstiä) | Koodistopalvelu |
 | Koodi       | Yksittäisen objektin koodi koodistossa        | id (tekstiä) | Koodistopalvelu |
 | Exam        | Koe tyyppi (SUKO / LD / PUHVI)                | -            | -               |
@@ -20,24 +21,25 @@ Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista 
 
 - PostgreSQL xx.xx -tietokanta
 - Palvelinteknologiat
-    - Kotlin (Java 17)
-    - Spring boot
-    - Flyway-migraatiotyökalu kannan skeeman rakentamiseen ja päivittämiseen kehityksessä ja tuotannossa
-    - Gradle buildaa
+  - Kotlin (Java 17)
+  - Spring boot
+  - Flyway-migraatiotyökalu kannan skeeman rakentamiseen ja päivittämiseen kehityksessä ja tuotannossa
+  - Gradle buildaa
 - Web-sovelluksen frontend-teknologiat
-    - yarn-työkalu riippuvuuksien hakuun
-    - Vite
-    - TypeScript
-    - React
-    - Tailwind
-    - Playwright e2e-testaukseen
-    - Vitest yksikkötestaukseen
-    - React-pdf pdf generointi
-    - Tiptap tekstieditori
+  - yarn-työkalu riippuvuuksien hakuun
+  - Vite
+  - TypeScript
+  - React
+  - Tailwind
+  - Playwright e2e-testaukseen
+  - Vitest yksikkötestaukseen
+  - React-pdf pdf generointi
+  - Tiptap tekstieditori
 
 ## Kehitystyökalut
 
 Minimissään tarvitset nämä:
+
 - JDK 17
 - Docker PostgreSQL:n
 - Node ^20.0.0
@@ -46,12 +48,12 @@ Minimissään tarvitset nämä:
 
 ## AWS-tunnusten konffaus
 
-1) Hanki käyttäjätunnukset OPH:n AWS:ään (oph-aws-sso). Käyttäjätunnuksen tulee kuulua LudosAdmins-ryhmään tai muuten omata AdministratorAccess-policy seuraavilla tileillä:
-   * oph-ludos-dev,     accountId = 782034763554
-   * oph-ludos-qa,      accountId = 260185049060
-   * oph-ludos-prod,    accountId = 072794607950
-   * oph-ludos-utility, accountId = 505953557276
-2) Asenna AWS CLI ja konffaa tilit siihen tiedostoon ~/.aws/config. Esimerkki:
+1. Hanki käyttäjätunnukset OPH:n AWS:ään (oph-aws-sso). Käyttäjätunnuksen tulee kuulua LudosAdmins-ryhmään tai muuten omata AdministratorAccess-policy seuraavilla tileillä:
+   - oph-ludos-dev, accountId = 782034763554
+   - oph-ludos-qa, accountId = 260185049060
+   - oph-ludos-prod, accountId = 072794607950
+   - oph-ludos-utility, accountId = 505953557276
+2. Asenna AWS CLI ja konffaa tilit siihen tiedostoon ~/.aws/config. Esimerkki:
 
 ```
 [sso-session oph-org-sso]
@@ -87,13 +89,13 @@ region = eu-west-1
 output = json
 ```
 
-3) Kirjaudu sisään: `aws --profile oph-ludos-dev sso login` 
-4) Testaa: `aws --profile oph-ludos-dev s3 ls` pitäisi listata bucketit
-
+3. Kirjaudu sisään: `aws --profile oph-ludos-dev sso login`
+4. Testaa: `aws --profile oph-ludos-dev s3 ls` pitäisi listata bucketit
 
 ## Ajaminen paikallisesti
 
 ### Oikotie kehitysympäristön käyynistykseen
+
 - aja projektin juuressa `./start-local.sh`
 
 ### Backend
@@ -101,36 +103,41 @@ output = json
 Käynnistä ensin PostgreSQL tietokanta Dockerissa projektin juuressa: `docker compose up`
 
 Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
+
 - `local` = devaus ja testaus osoitteessa localhost:8000 (vite) tai localhost:8080 (buildattu)
 - `untuva` = https://ludos.untuvaopintopolku.fi/ = AWS Fargatessa pyörivä Untuva-LUDOS
 - `qa` = https://ludos.testiopintopolku.fi/ = AWS Fargatessa pyörivä QA-LUDOS
 - `prod` = https://ludos.opintopolku.fi/ = AWS Fargatessa pyörivä Tuotanto-LUDOS
 
 Salaisuuksien hakeminen:
-1) luo `server/.env` ja `playwright/.env`, jossa tarvittavat salaisuudet serverin ajamiseen ja testaamiseen: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
+
+1. luo `server/.env` ja `playwright/.env`, jossa tarvittavat salaisuudet serverin ajamiseen ja testaamiseen: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
 
 Vaihtoehtoja backendin ajamiseen:
-1) Luo Spring Boot run configuration IDEAssa
+
+1. Luo Spring Boot run configuration IDEAssa
    ![image](https://github.com/Opetushallitus/ludos/assets/1202380/aa273728-0b41-4625-8d3f-1a6cf9c63079)
-2) Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
-3) `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
-4) `yarn build:docker:local` + `yarn run:docker` (profiili kovakoodattu `local`)
-5) `cd server && ./gradlew build -x test && LUDOS_PROFILES=local ../docker-build/run.sh`
-    * Tää buildaa myös frontendin, joka tarjoillaan osoitteesta https://localhost:8080/ spring
-      bootin kautta kuten tuotannossa.
-    * 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev:web` ois päällä, vaan on ajettava `yarn build:web` erikseen joka kerta.
-    * Fronttia devatessa onkin suositeltavaa ajaa `yarn dev:web` ja käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
+2. Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
+3. `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
+4. `yarn build:docker:local` + `yarn run:docker` (profiili kovakoodattu `local`)
+5. `cd server && ./gradlew build -x test && LUDOS_PROFILES=local ../docker-build/run.sh`
+   - Tää buildaa myös frontendin, joka tarjoillaan osoitteesta https://localhost:8080/ spring
+     bootin kautta kuten tuotannossa.
+   - 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev:web` ois päällä, vaan on ajettava `yarn build:web` erikseen joka kerta.
+   - Fronttia devatessa onkin suositeltavaa ajaa `yarn dev:web` ja käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
 
 Backend-testit ajetaan esim. komennolla `yarn test:server`.
 
 ### Frontend
 
 Vaihtoehtoja:
-1) `yarn dev:web` käynnistää viten porttiin 8000
-   * **HUOM!** CAS-autentikaatio ei toimi vite-portin 8000 kautta. Kirjaudu portissa 8080 tai mocklogin-endpointilla: http://localhost:8000/api/test/mocklogin/YLLAPITAJA
-2) `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
+
+1. `yarn dev:web` käynnistää viten porttiin 8000
+   - **HUOM!** CAS-autentikaatio ei toimi vite-portin 8000 kautta. Kirjaudu portissa 8080 tai mocklogin-endpointilla: http://localhost:8000/api/test/mocklogin/YLLAPITAJA
+2. `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
 
 ### Playwright e2e
+
 - Ympäristö
   - Varmista että .env tiedostot ovat ajantasalla (ks backend)
   - Lokaalissa backend pystyssä ja frontend käynnissä viten kautta: `yarn dev:web`
@@ -139,8 +146,8 @@ Vaihtoehtoja:
   - Komentoriviltä `yarn playwright`
   - Huom: CI:llä playwright ajetaan buildattua fronttia ja porttia 8080 vasten
 
-
 ## Skriptit `/scripts`
+
 - `fetch_secrets.sh` hakee AWS-secrets-managerista backendin tarvitsemat salaisuudet ja tallentaa ne `.env`-tiedostoihin
 - `update_backups.sh` kopio lokalisaatio ja koodisto palveluista Ludokseen tarvittavat datat `/server/src/main/resources/backup_data`-kansioon. Skripti ajautuu git on-push hookissa.
 - `localizations.ts` komentorivi wrapperi lokalisaatio palvelulle. Käyttohjeet: `yarn localizations`, sekä käyttö esimerkkejä: https://wiki.eduuni.fi/pages/viewpage.action?pageId=380016595
@@ -149,14 +156,12 @@ Vaihtoehtoja:
 
 ### Backend
 
-1) `cd server`
-2) `./gradlew refreshVersions` lisää saatavilla olevat uudemmat versiot versions.propertiesiin kommentteina
-3) Päivitä versiot muokkaamalla versions.properties-tiedostoa
-4) `./gradlew clean test --rerun-tasks`
+1. `cd server`
+2. `./gradlew clean test --rerun-tasks`
 
 ### Frontend
 
-1) `cd web`
-2) `yarn upgrade --latest`
-   * Jos major-päivitys rikkoi softan etkä ehdi/jaksa korjata, niin reverttaa ja aja ilman `--latest`
-3) `cd .. && yarn playwright`
+1. `cd web`
+2. `yarn upgrade --latest`
+   - Jos major-päivitys rikkoi softan etkä ehdi/jaksa korjata, niin reverttaa ja aja ilman `--latest`
+3. `cd .. && yarn playwright`
