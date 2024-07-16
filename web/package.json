@@ -30,7 +30,7 @@
     "@tiptap/extension-ordered-list": "^2.2.0",
     "@tiptap/extension-paragraph": "^2.2.0",
     "@tiptap/extension-text": "^2.2.0",
-    "@tiptap/extension-text-style": "^2.2.0",
+    "@tiptap/extension-text-style": "^2.5.1",
     "@tiptap/pm": "^2.2.0",
     "@tiptap/react": "^2.2.0",
     "html-react-parser": "^5.1.1",
