@@ -4,9 +4,35 @@ updates:
     directory: "/server"
     schedule:
       interval: "daily"
+    groups:
+       server-dependencies:
+          patterns:
+            - "*"
   - package-ecosystem: "npm"
     directories:
-      - "*"
+      - "/playwright"
+    groups:
+      playwright-dependencies:
+        patterns:
+          - "*"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directories:
+      - "/web"
+    groups:
+      web-dependencies:
+        patterns:
+          - "*"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directories:
+      - "/scripts"
+    groups:
+      scripts-dependencies:
+        patterns:
+          - "*"
     schedule:
       interval: "daily"
 
