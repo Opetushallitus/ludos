@@ -11,6 +11,8 @@ updates:
   - package-ecosystem: "npm"
     directories:
       - "/playwright"
+    ignore:
+    - dependency-name: 'eslint'
     groups:
       playwright-dependencies:
         patterns:
@@ -20,6 +22,8 @@ updates:
   - package-ecosystem: "npm"
     directories:
       - "/web"
+    ignore:
+    - dependency-name: 'eslint'
     groups:
       web-dependencies:
         patterns:
