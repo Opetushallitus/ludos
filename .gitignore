@@ -5,3 +5,11 @@
 .aws-cli.Dockerfile
 .aws-cli.Dockerfile.checksum
 playwright-results/
+
+!jest.config.js
+*.d.ts
+.package-lock.json.checksum
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out*

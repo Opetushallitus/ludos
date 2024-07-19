@@ -50,15 +50,6 @@ function require_dev_aws_session {
   }
 }
 
-function require_util_aws_session {
-  info "Verifying that AWS session has not expired"
-  ## SSO Login does not work in container
-  aws sts get-caller-identity --profile=oph-ludos-utility 1>/dev/null || {
-    info "Session is expired"
-    aws --profile oph-ludos-utility sso login
-  }
-}
-
 function configure_aws_credentials {
   if [[ "${CI:-}" = "true" ]]; then
     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
@@ -179,3 +170,55 @@ function get_playwright_version {
   cd "$repo/playwright"
   npm list --package-lock-only --json "@playwright/test" | jq --raw-output '.dependencies."@playwright/test".version'
 }
+
+function require_aws_session_for_untuva {
+    info "Verifying that AWS session has not expired"
+    ## SSO Login does not work in container
+    aws sts get-caller-identity --profile=oph-ludos-dev 1>/dev/null || {
+      info "Session is expired"
+      aws --profile oph-ludos-dev sso login
+    }
+    export AWS_PROFILE="oph-ludos-dev"
+    export AWS_REGION="eu-west-1"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    info "Using AWS profile $AWS_PROFILE"
+}
+function require_aws_session_for_qa {
+    info "Verifying that AWS session has not expired"
+    ## SSO Login does not work in container
+    aws sts get-caller-identity --profile=oph-ludos-qa 1>/dev/null || {
+      info "Session is expired"
+      aws --profile oph-ludos-dev sso login
+    }
+    export AWS_PROFILE="oph-ludos-qa"
+    export AWS_REGION="eu-west-1"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    info "Using AWS profile $AWS_PROFILE"
+}
+function require_aws_session_for_prod {
+    info "Verifying that AWS session has not expired"
+    ## SSO Login does not work in container
+    aws sts get-caller-identity --profile=oph-ludos-prod 1>/dev/null || {
+      info "Session is expired"
+      aws --profile oph-ludos-dev sso login
+    }
+    export AWS_PROFILE="oph-ludos-prod"
+    export AWS_REGION="eu-west-1"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    info "Using AWS profile $AWS_PROFILE"
+}
+
+function require_util_aws_session {
+  info "Verifying that AWS session has not expired"
+  ## SSO Login does not work in container
+  aws sts get-caller-identity --profile=oph-ludos-utility 1>/dev/null || {
+    info "Session is expired"
+    aws --profile oph-ludos-utility sso login
+  }
+  export AWS_REGION="eu-west-1"
+  export AWS_DEFAULT_REGION="$AWS_REGION"
+  export AWS_PROFILE="oph-ludos-utility"
+  info "Using AWS profile $AWS_PROFILE"
+}
+
+
