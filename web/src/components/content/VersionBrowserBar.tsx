@@ -25,17 +25,17 @@ export const VersionBrowserBar = ({
   const { contentTypePluralFi } = useParams<{ contentTypePluralFi: ContentTypePluralFi; id: string; version: string }>()
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
 
-  const currentIndex = dataList.findIndex((item) => item.version === data.version)
-  const hasNextVersion = currentIndex < dataList.length - 1
-  const hasPreviousVersion = currentIndex > 0
+  const currentVersion = data.version
+  const hasNextVersion = currentVersion < dataList.length
+  const hasPreviousVersion = currentVersion > 1
 
   const getPathForNavigate = (index: number) => {
-    const targetVersion = dataList?.at(index)
+    const targetVersion = dataList?.find((item) => item.version === index)
     if (!targetVersion) {
       return pageNotFoundPath
     }
 
-    return contentPagePath(targetVersion.exam, contentType!, targetVersion.id, targetVersion.version)
+    return contentPagePath(targetVersion.exam, contentType, targetVersion.id, targetVersion.version)
   }
 
   const onPickVersionClick = async () => {
@@ -50,13 +50,13 @@ export const VersionBrowserBar = ({
       <div className="flex gap-2">
         {t('version-control.versio')}
         <InternalLink
-          to={getPathForNavigate(currentIndex - 1)}
+          to={getPathForNavigate(currentVersion - 1)}
           disabled={!hasPreviousVersion}
           data-testid="previous-version">
           <Icon name="chevronLeft" color="text-green-primary" disabled={!hasPreviousVersion} />
         </InternalLink>
-        {data.version}
-        <InternalLink to={getPathForNavigate(currentIndex + 1)} disabled={!hasNextVersion} data-testid="next-version">
+        {currentVersion}
+        <InternalLink to={getPathForNavigate(currentVersion + 1)} disabled={!hasNextVersion} data-testid="next-version">
           <Icon name="chevronRight" color="text-green-primary" disabled={!hasNextVersion} />
         </InternalLink>
       </div>
