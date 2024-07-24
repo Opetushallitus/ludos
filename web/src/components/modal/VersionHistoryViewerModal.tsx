@@ -26,7 +26,8 @@ export const VersionHistoryViewerModal = ({
   const { t } = useLudosTranslation()
   const { dialogClasses, onCancel, onAnimEnd, modalRef } = useModal({ open, onClose })
 
-  const latestVersion = versionList.at(-1)?.version
+  const versionListLatestFirst = versionList.slice().sort((a, b) => b.version - a.version)
+  const latestVersion = versionListLatestFirst[0]?.version
 
   const update = async (data: ContentBaseOut) => {
     await restoreOldVersion(data)
@@ -56,7 +57,7 @@ export const VersionHistoryViewerModal = ({
               </tr>
             </thead>
             <tbody>
-              {versionList.reverse().map((item) => (
+              {versionListLatestFirst.map((item) => (
                 <tr className="even:bg-gray-bg" key={item.version} data-testid={`version-history-item-${item.version}`}>
                   <td className="pr-6 py-3 pl-3">{item.version}</td>
                   <td className="pr-6">{toLocaleDate(item.updatedAt)}</td>
