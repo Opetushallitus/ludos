@@ -6,8 +6,6 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/common-functions.sh"
 function main () {
   pushd "$repo"/server
 
-  "$repo"/scripts/build-web.sh
-
   if [[ -z "${GITHUB_TOKEN+''}" ]]; then
     echo "You must set github personal access token to GITHUB_TOKEN env variable and export it"
     echo "Go to github: Your profile -> settings and find developer settings in the bottom (its kinda hidden)"
