@@ -2,12 +2,13 @@ version: 2
 updates:
   - package-ecosystem: "gradle"
     directory: "/server"
-    schedule:
-      interval: "daily"
     groups:
        server-dependencies:
           patterns:
             - "*"
+    schedule:
+      interval: "daily"
+      time: "09:00"
   - package-ecosystem: "npm"
     directories:
       - "/playwright"
@@ -19,6 +20,7 @@ updates:
           - "*"
     schedule:
       interval: "daily"
+      time: "09:00"
   - package-ecosystem: "npm"
     directories:
       - "/web"
@@ -30,6 +32,7 @@ updates:
           - "*"
     schedule:
       interval: "daily"
+      time: "09:00"
   - package-ecosystem: "npm"
     directories:
       - "/scripts"
@@ -39,4 +42,5 @@ updates:
           - "*"
     schedule:
       interval: "daily"
+      time: "09:00"
 
