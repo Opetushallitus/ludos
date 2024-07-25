@@ -50,14 +50,11 @@ tmux new-session -d -s $session -c "$repo"
 
 tmux send-keys -t $session "./scripts/run-db.sh" C-m
 
-tmux split-window -h
-tmux send-keys -t $session:0.1 "./scripts/run-web.sh" C-m
+tmux split-window -v
+tmux send-keys -t $session:0.1 "./scripts/watch-web.sh" C-m
 
 tmux split-window -v
-tmux send-keys -t $session:0.2 "./scripts/watch-web.sh" C-m
-
-tmux split-window -v
-tmux send-keys -t $session:0.3 "./scripts/run-server.sh" C-m
+tmux send-keys -t $session:0.2 "./scripts/run-server.sh" C-m
 
 tmux select-layout -t $session tiled
 
