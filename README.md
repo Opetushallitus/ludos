@@ -25,7 +25,7 @@ Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista 
     - Flyway-migraatiotyökalu kannan skeeman rakentamiseen ja päivittämiseen kehityksessä ja tuotannossa
     - Gradle buildaa
 - Web-sovelluksen frontend-teknologiat
-    - yarn-työkalu riippuvuuksien hakuun
+    - npm-työkalu riippuvuuksien hakuun
     - Vite
     - TypeScript
     - React
@@ -41,7 +41,6 @@ Minimissään tarvitset nämä:
 - JDK 17
 - Docker PostgreSQL:n
 - Node ^20.0.0
-- Yarn ^1.22.0
 - Tarvittaessa tmux `start-local.sh`-skriptiä varten
 
 ## AWS-tunnusten konffaus
@@ -125,19 +124,8 @@ Backend-testit ajetaan esim. komennolla `yarn test:server`.
 
 ### Frontend
 
-Vaihtoehtoja:
-1) `yarn dev:web` käynnistää viten porttiin 8000
-   * **HUOM!** CAS-autentikaatio ei toimi vite-portin 8000 kautta. Kirjaudu portissa 8080 tai mocklogin-endpointilla: http://localhost:8000/api/test/mocklogin/YLLAPITAJA
-2) `yarn build:web` buildaa frontin server-kansion alle, ja backend tarjoilee sen portista 8080 samalla tavalla kuin tuotannossa.
-
 ### Playwright e2e
-- Ympäristö
-  - Varmista että .env tiedostot ovat ajantasalla (ks backend)
-  - Lokaalissa backend pystyssä ja frontend käynnissä viten kautta: `yarn dev:web`
-- Ajo
-  - vscoden testing näkymästä
-  - Komentoriviltä `yarn playwright`
-  - Huom: CI:llä playwright ajetaan buildattua fronttia ja porttia 8080 vasten
+- run-tests.sh
 
 
 ## Skriptit `/scripts`
