@@ -33,7 +33,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
     implementation("ch.qos.logback:logback-access:1.4.14")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("org.flywaydb:flyway-core:10.16.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.16.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
