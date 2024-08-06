@@ -148,3 +148,7 @@ Backend-testit ajetaan esim. komennolla `yarn test:server`.
 2) `yarn upgrade --latest`
    * Jos major-päivitys rikkoi softan etkä ehdi/jaksa korjata, niin reverttaa ja aja ilman `--latest`
 3) `cd .. && yarn playwright`
+
+## AWS Infrastructure
+
+![AWS](./docs/images/Ludos_AWS_setup.png)
