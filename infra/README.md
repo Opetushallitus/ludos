@@ -1,1 +1,0 @@
-Ks. tekninen dokumentaatio eduuni-wikissä: https://wiki.eduuni.fi/display/OPHPALV/LUDOS_tekninen+dokumentaatio (vaatii kirjautumisen)

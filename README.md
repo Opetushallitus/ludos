@@ -152,3 +152,8 @@ Backend-testit ajetaan esim. komennolla `yarn test:server`.
 ## AWS Infrastructure
 
 ![AWS](./docs/images/Ludos_AWS_setup.png)
+
+## Tekninen dokumentaatio
+
+eduuni-wikissä: https://wiki.eduuni.fi/display/OPHPALV/LUDOS_tekninen+dokumentaatio (vaatii kirjautumisen)
+
