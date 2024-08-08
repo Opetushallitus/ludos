@@ -5,8 +5,8 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 plugins {
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.spring") version "2.0.0"
+    kotlin("jvm") version "2.0.10"
+    kotlin("plugin.spring") version "2.0.10"
 }
 
 group = "fi.oph"
@@ -36,12 +36,12 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("org.flywaydb:flyway-core:10.17.0")
     implementation("org.flywaydb:flyway-database-postgresql:10.17.0")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.10")
     implementation("org.jsoup:jsoup:1.18.1")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.26.29")
-    implementation("software.amazon.awssdk:s3:2.26.29")
-    implementation("software.amazon.awssdk:sso:2.26.29")
-    implementation("software.amazon.awssdk:ssooidc:2.26.29")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.27.0")
+    implementation("software.amazon.awssdk:s3:2.27.0")
+    implementation("software.amazon.awssdk:sso:2.27.0")
+    implementation("software.amazon.awssdk:ssooidc:2.27.0")
     implementation("org.springframework.security:spring-security-cas:6.3.1")
     implementation("org.springframework:spring-test:6.1.11")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
