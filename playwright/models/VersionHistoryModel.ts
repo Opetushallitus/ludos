@@ -66,10 +66,8 @@ export class VersionHistoryModel {
     const updaters = this.versionHistoryModal.getByTestId('updater')
     await expect(updaters).toHaveCount(this.testVersionCount)
 
-    const updaterTexts = await updaters.allTextContents()
-
-    for(const text in updaterTexts) {
-      await expect(text).toBe('Ludos Mocklogin')
+    for(const updaterLocator of await updaters.all()) {
+      await expect(updaterLocator).toHaveText('Ludos Mocklogin')
     }
 
     await expect(this.versionHistoryItemLocator(this.testVersionCount + 1)).toBeHidden()
