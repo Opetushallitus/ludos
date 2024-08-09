@@ -12,22 +12,27 @@ import { CertificateFormModel } from '../models/CertificateFormModel'
 
 export async function fillCertificateForm(form: CertificateFormModel, inputs: AnyCertificateFormType) {
   const isSuko = isSukoCertificateValues(inputs)
-  const isLd = isLdCertificateValues(inputs)
   const isPuhvi = isPuhviCertificateValues(inputs)
   const isSukoOrLd = isSuko || isPuhvi
 
-  isLd && (await setSingleSelectDropdownOption(form.page, 'aineKoodiArvo', inputs.aineKoodiArvo))
+  if (isLdCertificateValues(inputs)) {
+    await setSingleSelectDropdownOption(form.page, 'aineKoodiArvo', inputs.aineKoodiArvo)
+  }
   await form.nameFi.fill(inputs.nameFi)
-  isSukoOrLd && (await form.descriptionFi.fill(inputs.descriptionFi))
+  if (isSukoOrLd) {
+    await form.descriptionFi.fill(inputs.descriptionFi)
+  }
   await selectAttachmentFile(form.page, inputs.attachmentFi.name!, form.attachmentInputFi)
 
-  if (isLd || isPuhvi) {
+  if (isLdCertificateValues(inputs) || isPuhviCertificateValues(inputs)) {
     await form.tabSv.click()
 
     await form.nameSv.fill(inputs.nameSv)
     await selectAttachmentFile(form.page, inputs.attachmentSv.name!, form.attachmentInputSv)
 
-    isPuhvi && (await form.descriptionSv.fill(inputs.descriptionSv))
+    if (isPuhviCertificateValues(inputs)) {
+      await form.descriptionSv.fill(inputs.descriptionSv)
+    }
   }
 }
 
@@ -52,13 +57,10 @@ export async function assertContentPage(
   inputs: AnyCertificateFormType,
   action: FormAction
 ) {
-  const isLd = isLdCertificateValues(inputs)
-  const isPuhvi = isPuhviCertificateValues(inputs)
-
   const header = page.getByTestId('assignment-header')
   await expect(header).toHaveText(inputs.nameFi)
 
-  if (isLd) {
+  if (isLdCertificateValues(inputs)) {
     await expect(page.getByTestId('certificate-aine')).toHaveText(
       await koodiLabel(KoodistoName.LUDOS_LUKIODIPLOMI_AINE, inputs.aineKoodiArvo)
     )
@@ -66,7 +68,7 @@ export async function assertContentPage(
     await expect(page.getByText(inputs.descriptionFi, { exact: true })).toBeVisible()
   }
 
-  if (isPuhvi || isLd) {
+  if (isPuhviCertificateValues(inputs) || isLdCertificateValues(inputs)) {
     const attachment = await page.getByTestId(inputs.attachmentFi.name!).allTextContents()
     expect(attachment[0]).toContain(inputs.attachmentSv.name)
   } else {
