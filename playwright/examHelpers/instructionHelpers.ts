@@ -62,8 +62,8 @@ export async function assertInstructionContentPage(
     await expect(updatedInstructionHeader).toHaveText(formData.nameFi)
   }
 
-  if (formData.shortDescriptionFi) {
-    exam !== Exam.LD && (await expect(page.getByText(formData.shortDescriptionFi, { exact: true })).toBeVisible())
+  if (formData.shortDescriptionFi && exam !== Exam.LD) {
+     await expect(page.getByText(formData.shortDescriptionFi, { exact: true })).toBeVisible()
   }
 
   if (formData.contentFi) {
