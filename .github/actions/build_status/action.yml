@@ -4,8 +4,8 @@ inputs:
   api_key:
     description: Radiator API key for Ludos
     required: true
-  environment:
-    description: Build environment ('dev', 'qa' or 'prod')
+  task:
+    description: Task name ('build-image', 'deploy-dev', 'deploy-qa', 'deploy-prod')
     required: true
   status:
     description: Build status ('unknown', 'success', 'failure', 'cancelled', 'inProgress')
@@ -22,5 +22,5 @@ runs:
           -H "AUTH_TOKEN: ${{ inputs.api_key }}" \
           -H "Content-Type: application/json" \
           -X PUT \
-          https://radiator.continuous-services.services/api/v2/buildstatus/ludos/ludos-deploy-${{ inputs.environment }} \
+          https://radiator.continuous-services.services/api/v2/buildstatus/ludos/ludos-${{ inputs.task }} \
           -d "{\"status\": \"${{ inputs.status }}\"}"
