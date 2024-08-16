@@ -27,12 +27,12 @@ async function waitForMatomoRequest(layout: LayoutModel) {
   )
 }
 
-test.describe.skipped('Matomo', () => {
+test.describe('Matomo', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, Role.YLLAPITAJA)
   })
 
-  test('should open on first page load and send requests after full cookie consent', async ({ page }) => {
+  test.skip('should open on first page load and send requests after full cookie consent', async ({ page }) => {
     const layout = new LayoutModel(page)
     await page.goto('/')
     void layout.acceptAllCookies()
@@ -46,13 +46,13 @@ test.describe.skipped('Matomo', () => {
     await expect(layout.consentModal).toBeHidden()
   })
 
-  test('should open on first page load and doesnt send requests after necessary cookie consent', async ({ page }) => {
+  test.skip('should open on first page load and doesnt send requests after necessary cookie consent', async ({ page }) => {
     const layout = new LayoutModel(page)
     await page.goto('/')
     await checkForMatomoAnalyticsRequest(layout, false)
   })
 
-  test('settings should open from footer link', async ({ page }) => {
+  test.skip('settings should open from footer link', async ({ page }) => {
     const layout = new LayoutModel(page)
     await page.goto('/')
 
