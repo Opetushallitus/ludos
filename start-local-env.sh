@@ -56,6 +56,9 @@ tmux send-keys -t $session:0.1 "./scripts/watch-web.sh" C-m
 tmux split-window -v
 tmux send-keys -t $session:0.2 "./scripts/run-server.sh" C-m
 
+tmux split-window -v
+tmux send-keys -t $session:0.3 "./scripts/run-frontend.sh" C-m
+
 tmux select-layout -t $session tiled
 
 tmux attach-session -t $session

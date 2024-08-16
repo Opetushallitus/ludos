@@ -26,7 +26,7 @@ type AssignmentContentProps = {
 
 export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
   const { t } = useLudosTranslation()
-  const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto(teachingLanguage)
+  const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
   const { data: favoriteIds, refetch: refetchFavoriteData } = useFetch<FavoriteIdsDtoOut>(
