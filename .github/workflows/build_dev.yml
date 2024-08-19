@@ -153,9 +153,6 @@ jobs:
           aws-region: eu-west-1
       - name: Deploy Untuva 
         run: ./deploy-scripts/07-deploy-untuva.sh
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
   deployment_status_completed:
     name: Send deployment status once deployment completed
