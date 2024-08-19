@@ -40,61 +40,60 @@ jobs:
         run: ./deploy-scripts/01-build.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # server_tests:
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   name: 02-run-server-tests.sh
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v4.1.6
-  #     - name: Configure untuva AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-  #         aws-region: eu-west-1
-  #     - name: Run 02-run-server-tests.sh
-  #       run: ./deploy-scripts/02-run-server-tests.sh
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # playwright_tests:
-  #   permissions:
-  #     id-token: write
-  #     contents: read
-  #   needs: ['build']
-  #   name: 03-run-playwright-tests.sh
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v4.1.6
-  #     - name: Configure untuva AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-  #         aws-region: eu-west-1
-  #     - name: Run 03-run-playwright-tests.sh
-  #       run: ./deploy-scripts/03-run-playwright-tests.sh
-  #       env:
-  #         LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
-  #         LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
-  # lint:
-  #   name: 04-lint.sh
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v4.1.7
-  #     - name: Run 04-lint.sh
-  #       run: ./deploy-scripts/04-lint.sh
-  # frontend_unit_tests:
-  #   name: 06-run-frontend-unittests.sh
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - uses: actions/checkout@v4.1.7
-  #     - name: Run 06-run-frontend-unittests.sh
-  #       run: ./deploy-scripts/06-run-frontend-unittests.sh
+  server_tests:
+    permissions:
+      id-token: write
+      contents: read
+    name: 02-run-server-tests.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
+      - name: Run 02-run-server-tests.sh
+        run: ./deploy-scripts/02-run-server-tests.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  playwright_tests:
+    permissions:
+      id-token: write
+      contents: read
+    needs: ['build']
+    name: 03-run-playwright-tests.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
+      - name: Run 03-run-playwright-tests.sh
+        run: ./deploy-scripts/03-run-playwright-tests.sh
+        env:
+          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+  lint:
+    name: 04-lint.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Run 04-lint.sh
+        run: ./deploy-scripts/04-lint.sh
+  frontend_unit_tests:
+    name: 06-run-frontend-unittests.sh
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Run 06-run-frontend-unittests.sh
+        run: ./deploy-scripts/06-run-frontend-unittests.sh
 
   push_image:
     name: 05-push-image.sh
-    needs: [build]
-    # needs: [lint, build, server_tests, playwright_tests, frontend_unit_tests]
+    needs: [lint, build, server_tests, playwright_tests, frontend_unit_tests]
     permissions:
       packages: read
       id-token: write
@@ -110,24 +109,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-  # build_status_completed:
-  #   name: Send build status
-  #   needs: [push_image]
-  #   if: always()
-  #   continue-on-error: true
-  #   runs-on: 'ubuntu-22.04'
-  #   steps:
-  #     - uses: actions/checkout@v4.1.6
-  #     - uses: ./.github/actions/build_status
-  #       with:
-  #         task: build-image
-  #         status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
-  #         api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-  #     - run: |
-  #         git config user.name github-actions
-  #         git config user.email github-actions@github.com
-  #         git tag --force green-dev
-  #         git push --force origin green-dev
+  build_status_completed:
+    name: Send build status
+    needs: [push_image]
+    if: always()
+    continue-on-error: true
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: ./.github/actions/build_status
+        with:
+          task: build-image
+          status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git tag --force green-dev
+          git push --force origin green-dev
 
   deploy_untuva:
     name: 07-deploy-untuva.sh
@@ -168,5 +167,5 @@ jobs:
       - uses: ./.github/actions/build_status
         with:
           task: deploy-dev
-          status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
+          status: ${{ needs.deploy_untuva.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
