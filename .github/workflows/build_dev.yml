@@ -127,3 +127,46 @@ jobs:
           git config user.email github-actions@github.com
           git tag --force green-dev
           git push --force origin green-dev
+
+  deploy_untuva:
+    name: 07-deploy-untuva.sh
+    needs: [push_image]
+    permissions:
+      packages: read
+      id-token: write
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - name: Send build status "in progress"
+        uses: ./.github/actions/build_status
+        with:
+          task: deploy-dev 
+          status: inProgress
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
+      - name: Fetch history for all branches and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
+      - name: Deploy Untuva 
+        run: ./deploy-scripts/07-deploy-untuva.sh
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+  build_status_completed:
+    name: Send build status once deploy completed
+    needs: [deploy_untuva]
+    if: always()
+    continue-on-error: true
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: ./.github/actions/build_status
+        with:
+          task: deploy-dev
+          status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
