@@ -31,5 +31,16 @@ export class GithubActionsStack extends cdk.Stack {
         'sts:AssumeRoleWithWebIdentity'
       )
     })
+
+    const cdkPolicyStatement = new iam.PolicyStatement({
+      actions: [ 'sts:AssumeRole', 'iam:PassRole'],
+      resources: [
+      "arn:aws:iam::*:role/cdk-readOnlyRole",
+      "arn:aws:iam::*:role/cdk-hnb659fds-deploy-role-*",
+      "arn:aws:iam::*:role/cdk-hnb659fds-file-publishing-*",
+      ]
+    })
+    this.githubActionsRole.addToPolicy(cdkPolicyStatement)
+
   }
 }
