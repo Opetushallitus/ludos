@@ -93,6 +93,7 @@ jobs:
 
   push_image:
     name: 05-push-image.sh
+    if: github.ref == 'refs/heads/main'
     needs: [lint, build, server_tests, playwright_tests, frontend_unit_tests]
     permissions:
       packages: read
@@ -112,7 +113,7 @@ jobs:
   build_status_completed:
     name: Send build status
     needs: [push_image]
-    if: always()
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
     continue-on-error: true
     runs-on: 'ubuntu-22.04'
     steps:
@@ -130,6 +131,7 @@ jobs:
 
   deploy_untuva:
     name: 07-deploy-untuva.sh
+    if: github.ref == 'refs/heads/main'
     needs: [push_image]
     permissions:
       packages: read
@@ -159,7 +161,7 @@ jobs:
   deployment_status_completed:
     name: Send deployment status
     needs: [deploy_untuva]
-    if: always()
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
     continue-on-error: true
     runs-on: 'ubuntu-22.04'
     steps:
