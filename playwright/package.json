@@ -4,11 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.46.0",
-    "@types/node": "22.1",
+    "@playwright/test": "^1.46.1",
+    "@types/node": "22.4",
     "@types/pdf-parse": "^1.1.4",
-    "@typescript-eslint/eslint-plugin": "^8.0.1",
-    "@typescript-eslint/parser": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
+    "@typescript-eslint/parser": "^8.2.0",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.0",
     "typescript": "^5.5.4"
