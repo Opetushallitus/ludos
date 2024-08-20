@@ -23,6 +23,7 @@ jobs:
       - uses: actions/checkout@v4.1.6
 
       - name: Send build status "in progress"
+        if: github.ref == 'refs/heads/main'
         uses: ./.github/actions/build_status
         with:
           task: build-image
