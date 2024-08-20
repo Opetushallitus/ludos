@@ -1,62 +1,9 @@
 name: Test pull request
 on:
   pull_request:
-
-env:
-  DOCKER_BUILDKIT: '1' # BuildKit is enabled by default starting in Docker v23, Ubuntu 22.04 has an older version
-
-defaults:
-  run:
-    shell: bash
+  merge_group:
 
 jobs:
-  server_tests:
-    permissions:
-      id-token: write
-      contents: read
-    name: 02-run-server-tests.sh
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - name: Configure untuva AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-          aws-region: eu-west-1
-      - name: Run 02-run-server-tests.sh
-        run: ./deploy-scripts/02-run-server-tests.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  playwright_tests:
-    permissions:
-      id-token: write
-      contents: read
-    name: 03-run-playwright-tests.sh
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - name: Configure untuva AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-          aws-region: eu-west-1
-      - name: Run 03-run-playwright-tests.sh
-        run: ./deploy-scripts/03-run-playwright-tests.sh
-        env:
-          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
-          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  lint:
-    name: 04-lint.sh
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - name: Run 04-lint.sh
-        run: ./deploy-scripts/04-lint.sh
-  frontend_unit_tests:
-    name: 06-run-frontend-unittests.sh
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4.1.7
-      - name: Run 06-run-frontend-unittests.sh
-        run: ./deploy-scripts/06-run-frontend-unittests.sh
+  build:
+    uses: ./.github/workflows/build_dev.yaml
+    secrets: inherit
