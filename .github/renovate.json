@@ -1,0 +1,78 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "onboarding": false,
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Ludos Renovate Dependency Dashboard",
+  "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
+  "username": "Ludos-Renovate[bot]",
+  "branchPrefix": "github-renovate/",
+  "platform": "github",
+  "platformAutomerge": true,
+  "forkProcessing": "disabled",
+  "autodiscoverFilter": [
+    "Opetushallitus/ludos"
+  ],
+  "prCreation": "immediate",
+  "ignoreTests": false,
+  "automergeType": "pr",
+  "repositories": [
+    "Opetushallitus/ludos"
+  ],
+  "enabledManagers": [
+    "nvm",
+    "npm",
+    "github-actions",
+    "dockerfile"
+  ],
+  "github-actions": {
+    "automerge": true
+  },
+  "dockerfile": {
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["*"],
+      "matchManagers": ["npm"],
+      "enabled": true,
+      "automerge": true,
+      "versioning": "node"
+    },
+    {
+      "groupName": "Renovate",
+      "matchDepNames": ["ghcr.io/renovatebot/base-image"]
+    },
+    {
+      "groupName": "Node",
+      "matchManagers": ["nvm", "npm"],
+      "matchPackageNames": ["@types/node", "node"],
+      "matchFileNames": [".nvmrc"]
+    },
+    {
+      "groupName": "React",
+      "matchManagers": ["npm"],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
+    },
+    {
+      "groupName": "Playwright",
+      "matchPackageNames": [
+        "playwright-chromium",
+        "@playwright/test",
+        "mcr.microsoft.com/playwright"
+      ]
+    },
+    {
+      "groupName": "AWS CDK",
+      "matchPackageNames": [
+        "aws-cdk",
+        "aws-cdk-lib"
+      ]
+    }
+  ],
+  "prConcurrentLimit": 10
+}
