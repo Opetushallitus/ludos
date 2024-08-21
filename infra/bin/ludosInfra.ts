@@ -45,7 +45,7 @@ if (envName === 'untuva' || envName === 'hahtuva') {
       allocatedStorage: 50
     },
     ludosApplicationImageTag: imageTag,
-    enableAccessFromGithubActions: false
+    enableAccessFromGithubActions: true
   })
 } else if (envName === 'prod') {
   new LudosStack(app, `ProdLudosStack`, {
@@ -57,7 +57,7 @@ if (envName === 'untuva' || envName === 'hahtuva') {
       allocatedStorage: 50
     },
     ludosApplicationImageTag: imageTag,
-    enableAccessFromGithubActions: false
+    enableAccessFromGithubActions: true
   })
 } else if (envName === 'utility') {
   new UtilityStack(app, `UtilityStack`, envParameters)
