@@ -1,0 +1,61 @@
+name: Deploy Qa
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to deploy
+        required: false
+        default: green-dev
+
+concurrency: deploy-qa 
+
+env:
+  DOCKER_BUILDKIT: '1' # BuildKit is enabled by default starting in Docker v23, Ubuntu 22.04 has an older version
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy_qa:
+    name: 08-deploy-qa.sh
+    needs: [push_image]
+    permissions:
+      packages: read
+      id-token: write
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - uses: actions/checkout@v4.1.6
+
+      - name: Send build status "in progress"
+        uses: ./.github/actions/build_status
+        with:
+          task: deploy-qa
+          status: inProgress
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
+      - name: Fetch history for all branches and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure qa AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-qa
+          aws-region: eu-west-1
+      - name: Deploy Qa
+        run: ./deploy-scripts/08-deploy-qa.sh
+
+  deployment_status_completed:
+    name: Send deployment status
+    needs: [deploy_qa]
+    if: always()
+    continue-on-error: true
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: ./.github/actions/build_status
+        with:
+          task: deploy-qa
+          status: ${{ needs.deploy_qa.result == 'success' && 'success' || 'failure' }}
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
