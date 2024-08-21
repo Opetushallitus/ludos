@@ -125,11 +125,6 @@ jobs:
           task: build-image
           status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-      - run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git tag --force green-dev
-          git push --force origin green-dev
 
   deploy_untuva:
     needs: [push_image]

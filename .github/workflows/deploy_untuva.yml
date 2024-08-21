@@ -20,6 +20,7 @@ jobs:
     permissions:
       packages: read
       id-token: write
+      contents: write
     runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4.1.6
