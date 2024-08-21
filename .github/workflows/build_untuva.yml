@@ -145,7 +145,7 @@ jobs:
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status
         with:
-          task: deploy-dev 
+          task: deploy-untuva
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
       - name: Fetch history for all branches and tags
@@ -170,6 +170,6 @@ jobs:
       - uses: actions/checkout@v4.1.6
       - uses: ./.github/actions/build_status
         with:
-          task: deploy-dev
+          task: deploy-untuva
           status: ${{ needs.deploy_untuva.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}

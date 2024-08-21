@@ -5,7 +5,7 @@ inputs:
     description: Radiator API key for Ludos
     required: true
   task:
-    description: Task name ('build-image', 'deploy-dev', 'deploy-qa', 'deploy-prod')
+    description: Task name ('build-image', 'deploy-untuva', 'deploy-qa', 'deploy-prod')
     required: true
   status:
     description: Build status ('unknown', 'success', 'failure', 'cancelled', 'inProgress')
