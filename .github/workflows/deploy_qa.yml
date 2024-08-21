@@ -8,6 +8,9 @@ on:
         required: false
         default: green-dev
 
+permissions:
+  contents: write
+
 concurrency: deploy-qa 
 
 env:
