@@ -21,7 +21,7 @@ jobs:
     name: 01-build.sh
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
@@ -49,7 +49,7 @@ jobs:
     name: 02-run-server-tests.sh
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -67,7 +67,7 @@ jobs:
     name: 03-run-playwright-tests.sh
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -119,7 +119,7 @@ jobs:
     continue-on-error: true
     runs-on: 'ubuntu-22.04'
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: ./.github/actions/build_status
         with:
           task: build-image
