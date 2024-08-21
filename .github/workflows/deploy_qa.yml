@@ -20,7 +20,6 @@ defaults:
 jobs:
   deploy_qa:
     name: 08-deploy-qa.sh
-    needs: [push_image]
     permissions:
       packages: read
       id-token: write
