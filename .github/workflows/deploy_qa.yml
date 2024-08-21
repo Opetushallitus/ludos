@@ -8,9 +8,6 @@ on:
         required: false
         default: green-dev
 
-permissions:
-  contents: write
-
 concurrency: deploy-qa 
 
 env:
@@ -26,6 +23,7 @@ jobs:
     permissions:
       packages: read
       id-token: write
+      contents: write
     runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4.1.6
