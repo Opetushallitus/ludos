@@ -13,7 +13,9 @@
     "nvm",
     "npm",
     "github-actions",
-    "dockerfile"
+    "dockerfile",
+    "gradle",
+    "gradle-wrapper"
   ],
   "github-actions": {
     "automerge": true
@@ -38,6 +40,10 @@
       "matchManagers": ["nvm", "npm"],
       "matchPackageNames": ["@types/node", "node"],
       "matchFileNames": [".nvmrc"]
+    },
+    {
+      "groupName": "Gradle",
+      "matchManagers": ["gradle", "gradle-wrapper"]
     },
     {
       "groupName": "React",
