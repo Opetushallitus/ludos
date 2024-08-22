@@ -1,0 +1,67 @@
+name: Deploy Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to deploy
+        required: false
+        default: green-qa
+
+concurrency: deploy-prod
+
+env:
+  DOCKER_BUILDKIT: '1' # BuildKit is enabled by default starting in Docker v23, Ubuntu 22.04 has an older version
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy_prod:
+    name: 09-deploy-prod.sh
+    permissions:
+      packages: read
+      id-token: write
+      contents: write
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - uses: actions/checkout@v4.1.6
+
+      - name: Send build status "in progress"
+        uses: ./.github/actions/build_status
+        with:
+          task: deploy-prod
+          status: inProgress
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
+      - name: Fetch history for all branches and tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure prod AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::072794607950:role/ludos-github-actions-role-prod
+          aws-region: eu-west-1
+      - name: Deploy Prod
+        run: ./deploy-scripts/09-deploy-prod.sh
+
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git tag --force green-prod
+          git push --force origin green-prod
+
+  deployment_status_completed:
+    name: Send deployment status
+    needs: [deploy_prod]
+    if: always()
+    continue-on-error: true
+    runs-on: 'ubuntu-22.04'
+    steps:
+      - uses: actions/checkout@v4.1.6
+      - uses: ./.github/actions/build_status
+        with:
+          task: deploy-prod
+          status: ${{ needs.deploy_prod.result == 'success' && 'success' || 'failure' }}
+          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
