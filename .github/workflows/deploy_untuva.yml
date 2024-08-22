@@ -1,14 +1,10 @@
-name: Deploy Qa
+name: Deploy Untuva
 
 on:
+  workflow_call:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: Branch to deploy
-        required: false
-        default: green-dev
 
-concurrency: deploy-qa 
+concurrency: deploy-untuva
 
 env:
   DOCKER_BUILDKIT: '1' # BuildKit is enabled by default starting in Docker v23, Ubuntu 22.04 has an older version
@@ -18,8 +14,9 @@ defaults:
     shell: bash
 
 jobs:
-  deploy_qa:
-    name: 08-deploy-qa.sh
+  deploy_untuva:
+    name: 07-deploy-untuva.sh
+    if: github.ref == 'refs/heads/main'
     permissions:
       packages: read
       id-token: write
@@ -31,37 +28,37 @@ jobs:
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status
         with:
-          task: deploy-qa
+          task: deploy-untuva
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
       - name: Fetch history for all branches and tags
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Configure qa AWS credentials
+      - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::260185049060:role/ludos-github-actions-role-qa
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
           aws-region: eu-west-1
-      - name: Deploy Qa
-        run: ./deploy-scripts/08-deploy-qa.sh
+      - name: Deploy Untuva
+        run: ./deploy-scripts/07-deploy-untuva.sh
 
       - run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git tag --force green-qa
-          git push --force origin green-qa
+          git tag --force green-dev
+          git push --force origin green-dev
 
   deployment_status_completed:
     name: Send deployment status
-    needs: [deploy_qa]
-    if: always()
+    needs: [deploy_untuva]
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
     continue-on-error: true
     runs-on: 'ubuntu-22.04'
     steps:
       - uses: actions/checkout@v4.1.7
       - uses: ./.github/actions/build_status
         with:
-          task: deploy-qa
-          status: ${{ needs.deploy_qa.result == 'success' && 'success' || 'failure' }}
+          task: deploy-untuva
+          status: ${{ needs.deploy_untuva.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}

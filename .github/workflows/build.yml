@@ -21,7 +21,7 @@ jobs:
     name: 01-build.sh
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
@@ -49,7 +49,7 @@ jobs:
     name: 02-run-server-tests.sh
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -67,7 +67,7 @@ jobs:
     name: 03-run-playwright-tests.sh
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -119,57 +119,14 @@ jobs:
     continue-on-error: true
     runs-on: 'ubuntu-22.04'
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: ./.github/actions/build_status
         with:
           task: build-image
           status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-      - run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git tag --force green-dev
-          git push --force origin green-dev
 
   deploy_untuva:
-    name: 07-deploy-untuva.sh
-    if: github.ref == 'refs/heads/main'
     needs: [push_image]
-    permissions:
-      packages: read
-      id-token: write
-    runs-on: 'ubuntu-22.04'
-    steps:
-      - uses: actions/checkout@v4.1.6
-
-      - name: Send build status "in progress"
-        uses: ./.github/actions/build_status
-        with:
-          task: deploy-untuva
-          status: inProgress
-          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-      - name: Fetch history for all branches and tags
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure untuva AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-          aws-region: eu-west-1
-      - name: Deploy Untuva 
-        run: ./deploy-scripts/07-deploy-untuva.sh
-
-  deployment_status_completed:
-    name: Send deployment status
-    needs: [deploy_untuva]
-    if: ${{ always() && github.ref == 'refs/heads/main' }}
-    continue-on-error: true
-    runs-on: 'ubuntu-22.04'
-    steps:
-      - uses: actions/checkout@v4.1.6
-      - uses: ./.github/actions/build_status
-        with:
-          task: deploy-untuva
-          status: ${{ needs.deploy_untuva.result == 'success' && 'success' || 'failure' }}
-          api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
+    uses: ./.github/workflows/deploy_untuva.yml
+    secrets: inherit
