@@ -17,19 +17,15 @@
     "gradle",
     "gradle-wrapper"
   ],
-  "github-actions": {
-    "automerge": true
-  },
-  "dockerfile": {
-    "automerge": true
-  },
+  "github-actions": {"automerge": true},
+  "dockerfile": {"automerge": true},
   "packageRules": [
     {
-      "matchPackagePatterns": ["*"],
       "matchManagers": ["npm"],
       "enabled": true,
       "automerge": true,
-      "versioning": "node"
+      "versioning": "node",
+      "matchPackageNames": ["*"]
     },
     {
       "groupName": "Renovate",
@@ -41,10 +37,7 @@
       "matchPackageNames": ["@types/node", "node"],
       "matchFileNames": [".nvmrc"]
     },
-    {
-      "groupName": "Gradle",
-      "matchManagers": ["gradle", "gradle-wrapper"]
-    },
+    {"groupName": "Gradle", "matchManagers": ["gradle", "gradle-wrapper"]},
     {
       "groupName": "React",
       "matchManagers": ["npm"],
@@ -63,17 +56,8 @@
         "mcr.microsoft.com/playwright"
       ]
     },
-    {
-      "groupName": "AWS CDK",
-      "matchPackageNames": [
-        "aws-cdk",
-        "aws-cdk-lib"
-      ]
-    },
-    {
-      "groupName": "tiptap",
-      "matchPackagePatterns": ["^@tiptap/"]
-    }
+    {"groupName": "AWS CDK", "matchPackageNames": ["aws-cdk", "aws-cdk-lib"]},
+    {"groupName": "tiptap", "matchPackageNames": ["/^@tiptap//"]}
   ],
   "prConcurrentLimit": 10
 }
