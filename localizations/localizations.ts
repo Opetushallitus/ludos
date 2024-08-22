@@ -886,10 +886,12 @@ const putCommand = command({
 const app = subcommands({
   name: 'localizations',
   description: `Manage LUDOS localizations.
+
+     First off, read the wiki page here: https://wiki.eduuni.fi/pages/viewpage.action?pageId=380016595
   
      Write operations to an environment require your virkailija credentials
      in ~/.oph-credentials.json format:
-     {"qa": {"username": "foo", "password: "bar"}}
+     {"qa": {"username": "foo", "password": "bar"}}
      
      For prod (and other accounts with MFA enabled), use the ludos_localizations service
      user, password can be found in utility Secrets Manager:

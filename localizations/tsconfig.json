@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true,
+    "moduleResolution": "Node",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "noEmit": true
+  },
+  "ts-node": {
+    "swc": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["localizationScripts/*.ts"]
+}
