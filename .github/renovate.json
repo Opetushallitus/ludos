@@ -1,28 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "onboarding": false,
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Ludos Renovate Dependency Dashboard",
   "gitAuthor": "ludos-renovate[bot] <178999943+ludos-renovate[bot]@users.noreply.github.com>",
-  "username": "Ludos-Renovate[bot]",
   "branchPrefix": "github-renovate/",
-  "platform": "github",
   "platformAutomerge": true,
   "forkProcessing": "disabled",
-  "autodiscoverFilter": [
-    "Opetushallitus/ludos"
-  ],
   "prCreation": "immediate",
   "ignoreTests": false,
   "automergeType": "pr",
-  "repositories": [
-    "Opetushallitus/ludos"
-  ],
   "enabledManagers": [
     "nvm",
     "npm",
     "github-actions",
-    "dockerfile"
+    "dockerfile",
+    "gradle",
+    "gradle-wrapper"
   ],
   "github-actions": {
     "automerge": true
@@ -49,6 +42,10 @@
       "matchFileNames": [".nvmrc"]
     },
     {
+      "groupName": "Gradle",
+      "matchManagers": ["gradle", "gradle-wrapper"]
+    },
+    {
       "groupName": "React",
       "matchManagers": ["npm"],
       "matchPackageNames": [
@@ -72,6 +69,10 @@
         "aws-cdk",
         "aws-cdk-lib"
       ]
+    },
+    {
+      "groupName": "tiptap",
+      "matchPackagePatterns": ["^@tiptap/"]
     }
   ],
   "prConcurrentLimit": 10
