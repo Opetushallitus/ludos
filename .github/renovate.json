@@ -69,6 +69,10 @@
         "aws-cdk",
         "aws-cdk-lib"
       ]
+    },
+    {
+      "groupName": "tiptap",
+      "matchPackagePatterns": ["^@tiptap/"]
     }
   ],
   "prConcurrentLimit": 10
