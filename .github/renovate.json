@@ -37,7 +37,6 @@
       "matchPackageNames": ["@types/node", "node"],
       "matchFileNames": [".nvmrc"]
     },
-    {"groupName": "Gradle", "matchManagers": ["gradle", "gradle-wrapper"]},
     {
       "groupName": "React",
       "matchManagers": ["npm"],
