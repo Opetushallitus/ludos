@@ -8,11 +8,11 @@ function main() {
 
   pushd ${repo}
   docker run \
-    -v ${repo}/.github/renovate.json:/usr/src/app/renovate.json \
-    -v ${repo}/scripts/renovate/config.js:/usr/src/app/config.js \
     -e RENOVATE_TOKEN=${TOKEN} \
     -e LOG_LEVEL=debug \
     -e RENOVATE_AUTODISCOVER=true \
+    -e RENOVATE_REPOSITORIES="Opetushallitus/ludos" \
+    -e RENOVATE_AUTODISCOVER_FILTER="Opetushallitus/ludos" \
     renovate/renovate --dry-run=lookup
   popd
 }
