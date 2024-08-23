@@ -38,7 +38,9 @@ export class AlarmStack extends cdk.Stack {
 
     this.alarmSnsTopic.addSubscription(new subscriptions.LambdaSubscription(slackNotifierLambda))
     this.alarmSnsTopic
-      .addSubscription(new subscriptions.UrlSubscription(this.pagerdutySecret.secretValue.toString()))
+      .addSubscription(new subscriptions.UrlSubscription(this.pagerdutySecret.secretValue.toString(), {
+        protocol: sns.SubscriptionProtocol.HTTPS
+      }))
     secretsmanager.Secret.fromSecretNameV2(this, 'SlackWebhookUrlSecret', slackWebhookUrlSecretName).grantRead(
       slackNotifierLambda
     )
