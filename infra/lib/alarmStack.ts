@@ -11,7 +11,7 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager'
 
 export class AlarmStack extends cdk.Stack {
   readonly alarmSnsTopic
-  readonly pagerdutyApiSecrets
+  readonly pagerdutySecret
 
   constructor(scope: Construct, id: string, props: CommonStackProps) {
     super(scope, id, props)
@@ -30,13 +30,15 @@ export class AlarmStack extends cdk.Stack {
       }
     })
 
-    this.pagerdutyApiSecrets = new Secret(this, 'pagerduty-events-api-secrets', {
-      secretName: '/pagerduty/events_api',
-      description: 'Secrets for creating Pagerduty alerts via Events API v2',
+    this.pagerdutySecret = new Secret(this, 'pagerduty-secret', {
+      secretName: '/pagerduty/even_url',
+      description: '',
       removalPolicy: RemovalPolicy.RETAIN,
     })
 
     this.alarmSnsTopic.addSubscription(new subscriptions.LambdaSubscription(slackNotifierLambda))
+    this.alarmSnsTopic
+      .addSubscription(new subscriptions.UrlSubscription(this.pagerdutySecret.secretValue.toString()))
     secretsmanager.Secret.fromSecretNameV2(this, 'SlackWebhookUrlSecret', slackWebhookUrlSecretName).grantRead(
       slackNotifierLambda
     )
