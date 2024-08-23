@@ -16,6 +16,7 @@ import { S3Stack } from './S3Stack'
 import { GithubActionsStack } from './githubActionsStack'
 import { BackupStack } from './backupStack'
 import { AlarmStack } from './alarmStack'
+import { SecretStack } from './secretStack'
 
 interface LudosStackProps extends EnvParameters {
   domain: string
@@ -51,6 +52,8 @@ export class LudosStack extends cdk.Stack {
       ...commonProps,
       vpc: vpcStack.vpc
     })
+
+    const secretStack = new SecretStack(this, 'SecretStack', commonProps)
 
     const alarmStack = new AlarmStack(this, 'AlarmStack', commonProps)
 
