@@ -21,7 +21,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : '50%',
+  workers: 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
@@ -65,7 +65,8 @@ export default defineConfig({
       name: 'non_parallel_tests',
       testDir: 'non_parallel_tests',
       use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup']
+      dependencies: ['setup'],
+      fullyParallel: false
     },
     {
       name: 'download_test_webkit',

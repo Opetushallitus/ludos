@@ -6,6 +6,8 @@ import { AssignmentContentListModel } from '../../models/AssignmentContentListMo
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
+test.describe.configure({ mode: 'serial' })
+
 test.describe('Assignment filter tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/api/test/empty')
