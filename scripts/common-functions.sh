@@ -221,4 +221,7 @@ function require_util_aws_session {
   info "Using AWS profile $AWS_PROFILE"
 }
 
-
+function get_secret {
+  local name="$1"
+  aws secretsmanager get-secret-value --secret-id "$name" --query "SecretString" --output text
+}

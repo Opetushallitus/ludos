@@ -24,8 +24,9 @@ function main {
 function deploy_untuva {
   require_util_aws_session
   image_tag=$(aws ecr describe-images --repository-name ludos | jq --raw-output ".imageDetails | sort_by(.imagePushedAt) | last | .imageTags[0]")
-
   require_aws_session_for_untuva
+  PAGERDUTY_ENDPOINT=$( get_secret "/pagerduty/event_url")
+  export PAGERDUTY_ENDPOINT
   IMAGE_TAG=$image_tag . "./cdk.sh" deploy --all
 }
 
@@ -36,6 +37,8 @@ function deploy_qa {
   task_image_tag=$(echo "$task_container_image_arn" | awk -F: '{print $2}')
 
   require_aws_session_for_qa
+  PAGERDUTY_ENDPOINT=$( get_secret "/pagerduty/event_url")
+  export PAGERDUTY_ENDPOINT
   IMAGE_TAG=$task_image_tag . "./cdk.sh" deploy --all
 }
 
@@ -46,6 +49,8 @@ function deploy_prod {
   task_image_tag=$(echo "$task_container_image_arn" | awk -F: '{print $2}')
 
   require_aws_session_for_prod
+  PAGERDUTY_ENDPOINT=$( get_secret "/pagerduty/event_url")
+  export PAGERDUTY_ENDPOINT
   IMAGE_TAG=$task_image_tag . "./cdk.sh" deploy --all
 }
 
