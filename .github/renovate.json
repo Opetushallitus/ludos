@@ -5,6 +5,7 @@
   "gitAuthor": "ludos-renovate[bot] <178999943+ludos-renovate[bot]@users.noreply.github.com>",
   "branchPrefix": "github-renovate/",
   "platformAutomerge": true,
+  "rebaseWhen": "behind-base-branch",
   "forkProcessing": "disabled",
   "prCreation": "immediate",
   "ignoreTests": false,
