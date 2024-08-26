@@ -18,6 +18,8 @@ function main {
 function deploy {
   pushd "$repo"/infra
 
+  PAGERDUTY_ENDPOINT=$( get_secret "/pagerduty/event_url")
+  export PAGERDUTY_ENDPOINT
   IMAGE_TAG="$revision" . "./cdk.sh" deploy --all
 
   popd
