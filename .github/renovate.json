@@ -30,7 +30,6 @@
       "enabled": true,
       "automerge": true,
       "matchUpdateTypes": ["major", "minor", "patch"],
-      "versioning": "node",
       "matchPackageNames": ["*"]
     },
     {
