@@ -25,21 +25,28 @@
       "matchManagers": ["npm"],
       "enabled": true,
       "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "versioning": "node",
       "matchPackageNames": ["*"]
     },
     {
       "groupName": "Renovate",
+      "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "matchDepNames": ["ghcr.io/renovatebot/base-image"]
     },
     {
       "groupName": "Node",
+      "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "matchManagers": ["nvm", "npm"],
       "matchPackageNames": ["@types/node", "node"],
       "matchFileNames": [".nvmrc"]
     },
     {
       "groupName": "React",
+      "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "matchManagers": ["npm"],
       "matchPackageNames": [
         "react",
@@ -50,14 +57,31 @@
     },
     {
       "groupName": "Playwright",
+      "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "matchPackageNames": [
         "playwright-chromium",
         "@playwright/test",
         "mcr.microsoft.com/playwright"
       ]
     },
-    {"groupName": "AWS CDK", "matchPackageNames": ["aws-cdk", "aws-cdk-lib"]},
-    {"groupName": "tiptap", "matchPackageNames": ["/^@tiptap//"]}
+    {
+      "groupName": "AWS CDK",
+      "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchPackageNames": [
+        "aws-cdk",
+        "aws-cdk-lib"
+      ]
+    },
+    {
+      "groupName": "tiptap",
+      "automerge": true,
+      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchPackageNames": [
+        "/^@tiptap//"
+      ]
+    }
   ],
   "prConcurrentLimit": 10
 }
