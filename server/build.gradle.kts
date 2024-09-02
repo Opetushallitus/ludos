@@ -30,7 +30,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.17.2")
     implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.2")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
     implementation("ch.qos.logback:logback-access:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
