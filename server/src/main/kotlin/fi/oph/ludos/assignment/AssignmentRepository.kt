@@ -420,8 +420,18 @@ class AssignmentRepository(
 
         val query =
             """
+    WITH latestVersions AS (
+    SELECT distinct (a.assignment_id) as assignmentIds
+    FROM suko_assignment a
+             INNER JOIN (SELECT assignment_id, MAX(assignment_version) AS max_version
+                         FROM suko_assignment
+                         GROUP BY assignment_id) latest_version
+                        ON a.assignment_id = latest_version.assignment_id
+                        AND a.assignment_version = latest_version.max_version
+    WHERE TRUE ${buildFilters(filters)})
+
     SELECT
-        (SELECT count(1) FROM suko_assignment a WHERE TRUE ${buildFilters(filters)}) AS filtered_assignment_count,
+        (SELECT count(assignmentIds) FROM latestVersions) AS filtered_assignment_count,
         ARRAY(SELECT DISTINCT ARRAY[suko_assignment_oppimaara_koodi_arvo, suko_assignment_oppimaara_kielitarjonta_koodi_arvo] as oppimaara_pairs
               FROM suko_assignment a WHERE TRUE ${buildFilters(filters.copy(oppimaara = null))}
               ORDER BY oppimaara_pairs) AS oppimaara_array,
@@ -464,8 +474,18 @@ class AssignmentRepository(
 
         val query =
             """
+    WITH latestVersions AS (
+    SELECT distinct (a.assignment_id) as assignmentIds
+    FROM ld_assignment a
+             INNER JOIN (SELECT assignment_id, MAX(assignment_version) AS max_version
+                         FROM ld_assignment
+                         GROUP BY assignment_id) latest_version
+                        ON a.assignment_id = latest_version.assignment_id
+                        AND a.assignment_version = latest_version.max_version
+    WHERE TRUE ${buildFilters(filters)})
+
     SELECT
-        (SELECT count(1) FROM ld_assignment a WHERE TRUE ${buildFilters(filters)}) AS filtered_assignment_count,
+        (SELECT count(assignmentIds) FROM latestVersions) AS filtered_assignment_count,
         ARRAY(SELECT DISTINCT ld_assignment_aine_koodi_arvo
               FROM ld_assignment a WHERE TRUE ${buildFilters(filters.copy(aine = null))}
               ORDER BY ld_assignment_aine_koodi_arvo) AS aine_array,
@@ -534,8 +554,18 @@ class AssignmentRepository(
         }
 
         val query = """
+    WITH latestVersions AS (
+    SELECT distinct (a.assignment_id) as assignmentIds
+    FROM puhvi_assignment a
+             INNER JOIN (SELECT assignment_id, MAX(assignment_version) AS max_version
+                         FROM puhvi_assignment
+                         GROUP BY assignment_id) latest_version
+                        ON a.assignment_id = latest_version.assignment_id
+                        AND a.assignment_version = latest_version.max_version
+    WHERE TRUE ${buildFilters(filters)})
+
     SELECT
-        (SELECT COUNT(1) FROM puhvi_assignment a WHERE TRUE ${buildFilters(filters)}) AS filtered_assignment_count,
+        (SELECT count(assignmentIds) FROM latestVersions) AS filtered_assignment_count,
         ARRAY(SELECT DISTINCT puhvi_assignment_assignment_type_koodi_arvo
               FROM puhvi_assignment a WHERE TRUE ${buildFilters(filters.copy(tehtavatyyppipuhvi = null))}
               ORDER BY puhvi_assignment_assignment_type_koodi_arvo) AS assignment_type_array,
