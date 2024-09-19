@@ -82,7 +82,7 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
 
           <Pagination
             page={filterValues.filterValues.sivu}
-            totalPages={data.totalPages!}
+            totalPages={data.totalPages}
             searchStringForNewFilterValue={filterValues.searchStringForNewFilterValue}
           />
         </>
