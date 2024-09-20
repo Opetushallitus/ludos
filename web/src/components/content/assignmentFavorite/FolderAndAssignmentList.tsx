@@ -1,9 +1,8 @@
 import { AssignmentFavoriteFolderCard } from './AssignmentFavoriteFolderCard'
-import { filterByTeachingLanguage } from '../list/assignment/AssignmentList'
 import { AssignmentCard } from '../list/assignment/AssignmentCard'
 import { favoriteIdsFromFavoriteCardFolders } from '../../../assignmentFavoriteFolderHelpers'
 import { InfoBox } from '../../InfoBox'
-import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
+import { AssignmentCardOut, Exam, FavoriteCardFolderDtoOut, Language } from '../../../types'
 import { useContext } from 'react'
 import { LudosContext } from '../../../contexts/LudosContext'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
@@ -13,6 +12,15 @@ type FolderAndAssignmentListProps = {
   favoriteCardFolders: FavoriteCardFolderDtoOut
   currentFavoriteCardFolder: FavoriteCardFolderDtoOut
   favoriteCardFoldersRefetch: () => void
+}
+
+const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: Language) => {
+  if (teachingLanguage === Language.FI) {
+    return data.nameFi !== ''
+  } else if (teachingLanguage === Language.SV) {
+    return data.nameSv !== ''
+  }
+  return true
 }
 
 export const FolderAndAssignmentList = ({

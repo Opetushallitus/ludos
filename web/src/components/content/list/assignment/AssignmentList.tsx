@@ -26,16 +26,6 @@ type AssignmentListProps = {
   filterValues: FilterValues
 }
 
-/* FIXME: Tässä bugi, älä käytä */
-export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: Language) => {
-  if (teachingLanguage === Language.FI) {
-    return data.nameFi !== ''
-  } else if (teachingLanguage === Language.SV) {
-    return data.nameSv !== ''
-  }
-  return true
-}
-
 export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
   const { lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
