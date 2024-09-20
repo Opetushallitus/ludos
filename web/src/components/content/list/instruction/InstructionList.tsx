@@ -81,7 +81,7 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
           )}
         </div>
         <div className="row gap-6">
-          <TeachingLanguageSelectWithLabel text={t('filter.ohjeet-kieli')} />
+          <TeachingLanguageSelectWithLabel exam={exam} text={t('filter.ohjeet-kieli')} />
 
           <ContentOrderFilter
             contentOrder={filterValues.jarjesta}

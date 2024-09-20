@@ -18,8 +18,6 @@ export const AssignmentListHeader = ({ exam, filterValues }: AssignmentListHeade
   const { isYllapitaja } = useUserDetails()
   const { t } = useLudosTranslation()
 
-  const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
-
   return (
     <div className="row my-5 flex-wrap justify-between">
       <div className="w-full md:w-[20%]">
@@ -33,7 +31,7 @@ export const AssignmentListHeader = ({ exam, filterValues }: AssignmentListHeade
         )}
       </div>
       <div className="row gap-6">
-        {shouldShowTeachingLanguageDropdown && <TeachingLanguageSelectWithLabel text={t('filter.koetehtavat-kieli')} />}
+        <TeachingLanguageSelectWithLabel exam={exam} text={t('filter.koetehtavat-kieli')} />
         <ContentOrderFilter
           contentOrder={filterValues.filterValues.jarjesta}
           setContentOrder={(contentOrder) => filterValues.setFilterValue('jarjesta', contentOrder, true)}

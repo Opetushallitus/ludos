@@ -21,6 +21,12 @@ import { InfoBox } from '../../../InfoBox'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
 import { AssignmentListHeader } from './AssignmentListHeader'
 
+type AssignmentListProps = {
+  exam: Exam
+  filterValues: FilterValues
+}
+
+/* FIXME: Tässä bugi, älä käytä */
 export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLanguage: Language) => {
   if (teachingLanguage === Language.FI) {
     return data.nameFi !== ''
@@ -28,11 +34,6 @@ export const filterByTeachingLanguage = (data: AssignmentCardOut, teachingLangua
     return data.nameSv !== ''
   }
   return true
-}
-
-type AssignmentListProps = {
-  exam: Exam
-  filterValues: FilterValues
 }
 
 export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
@@ -57,9 +58,6 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
     ['favoriteIds'],
     `${ContentTypeSingularEn.ASSIGNMENT}/favorites/${exam.toLocaleUpperCase()}`
   )
-
-  const languageOverrideIfSukoAssignment = exam === Exam.SUKO ? 'FI' : teachingLanguage
-
   const hasError = isError || isFavoriteIdsError
 
   if (hasError) {
@@ -81,17 +79,15 @@ export const AssignmentList = ({ exam, filterValues }: AssignmentListProps) => {
       {data && (
         <>
           <ul data-testid="card-list">
-            {data.content
-              .filter((val) => filterByTeachingLanguage(val, languageOverrideIfSukoAssignment))
-              .map((assignment, i) => (
-                <AssignmentCard
-                  teachingLanguage={languageOverrideIfSukoAssignment}
-                  assignmentCard={assignment}
-                  favoriteIds={favoriteIds}
-                  key={`${exam}-${contentType}-${i}`}
-                  refetchFavoriteIds={refetchFavoriteIds}
-                />
-              ))}
+            {data.content.map((assignment, i) => (
+              <AssignmentCard
+                teachingLanguage={exam === Exam.SUKO ? 'FI' : teachingLanguage}
+                assignmentCard={assignment}
+                favoriteIds={favoriteIds}
+                key={`${exam}-${contentType}-${i}`}
+                refetchFavoriteIds={refetchFavoriteIds}
+              />
+            ))}
           </ul>
 
           <Pagination

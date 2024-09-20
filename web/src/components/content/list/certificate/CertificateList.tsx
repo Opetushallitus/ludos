@@ -27,7 +27,6 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
   const { t, lt } = useLudosTranslation()
   const { teachingLanguage } = useContext(LudosContext)
 
-  const shouldShowTeachingLanguageDropdown = exam !== Exam.SUKO
   const singularActiveTab = ContentTypeSingularFi[contentType]
   const removeNullsFromFilterObj = removeEmpty<FiltersType>(filterValues)
 
@@ -52,9 +51,7 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
           )}
         </div>
         <div className="row gap-6">
-          {shouldShowTeachingLanguageDropdown && (
-            <TeachingLanguageSelectWithLabel text={t('filter.todistukset-kieli')} />
-          )}
+          <TeachingLanguageSelectWithLabel exam={exam} text={t('filter.todistukset-kieli')} />
 
           <ContentOrderFilter
             contentOrder={filterValues.jarjesta}

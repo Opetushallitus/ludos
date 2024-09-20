@@ -69,7 +69,7 @@ export const AssignmentFavoriteTopBar = ({
         </div>
 
         <div className="row gap-6 items-center">
-          {exam !== Exam.SUKO && <TeachingLanguageSelectWithLabel text={t('filter.koetehtavat-kieli')} />}
+          <TeachingLanguageSelectWithLabel exam={exam} text={t('filter.koetehtavat-kieli')} />
         </div>
       </div>
       {openAddNewFolderModal && (

@@ -41,7 +41,7 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
       {shouldShowTeachingLanguageDropdown && (
         <div>
           <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
-          <TeachingLanguageSelect />
+          <TeachingLanguageSelect exam={data.exam} />
         </div>
       )}
     </div>

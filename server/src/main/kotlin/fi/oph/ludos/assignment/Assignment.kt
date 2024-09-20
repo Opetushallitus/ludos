@@ -483,7 +483,8 @@ data class LdFilters(
     val lukuvuosi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val aine: String?,
-    override val sivu: Int = 1
+    override val sivu: Int = 1,
+    val kieli: Language = Language.FI
 ) : AssignmentBaseFilters
 
 data class PuhviFilters(
@@ -492,7 +493,8 @@ data class PuhviFilters(
     val tehtavatyyppipuhvi: String?,
     @field:Pattern(regexp = "^[0-9,]+\$")
     val lukuvuosi: String?,
-    override val sivu: Int = 1
+    override val sivu: Int = 1,
+    val kieli: Language = Language.FI
 ) : AssignmentBaseFilters
 
 @Target(AnnotationTarget.CLASS)

@@ -319,6 +319,8 @@ class AssignmentRepository(
             parameters.addValue("sukoAssignmentTypeKoodiArvo", values)
         }
 
+        queryBuilder.append(" AND assignment_name_fi <> ''")
+
         if (filters.oppimaara != null) {
             val oppimaaras = filters.oppimaara.split(",").map(Oppimaara::fromString)
 
@@ -512,6 +514,11 @@ class AssignmentRepository(
         queryBuilder.append(lukuvuosiFilterQuery)
         parameters.addValues(lukuvuosiFilterParameters.values)
 
+        if (filters.kieli == Language.FI)
+            queryBuilder.append(" AND assignment_name_fi <> ''")
+        else
+            queryBuilder.append(" AND assignment_name_sv <> ''")
+
         return Pair(queryBuilder.toString(), parameters)
     }
 
@@ -590,6 +597,11 @@ class AssignmentRepository(
         val (lukuvuosiFilterQuery, lukuvuosiFilterParameters) = lukuvuosiFilter(Exam.PUHVI, filters.lukuvuosi)
         queryBuilder.append(lukuvuosiFilterQuery)
         parameters.addValues(lukuvuosiFilterParameters.values)
+
+        if (filters.kieli == Language.FI)
+            queryBuilder.append(" AND assignment_name_fi <> ''")
+        else
+            queryBuilder.append(" AND assignment_name_sv <> ''")
 
         return Pair(queryBuilder.toString(), parameters)
     }

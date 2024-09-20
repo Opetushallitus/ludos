@@ -12,6 +12,7 @@ export type FiltersType = {
   aine: string | null
   tehtavatyyppipuhvi: string | null
   sivu: number
+  kieli: 'FI' | 'SV' | null
 }
 
 export type ParamsValue = number | string | string[] | null | boolean
@@ -31,8 +32,8 @@ export function useFilterValues(exam: Exam) {
 
   const filterValues = useMemo((): FiltersType => {
     const examKeyMap: Record<Exam, (keyof FiltersType)[]> = {
-      [Exam.LD]: ['aine', 'lukuvuosi'],
-      [Exam.PUHVI]: ['tehtavatyyppipuhvi', 'lukuvuosi'],
+      [Exam.LD]: ['aine', 'lukuvuosi', 'kieli'],
+      [Exam.PUHVI]: ['tehtavatyyppipuhvi', 'lukuvuosi', 'kieli'],
       [Exam.SUKO]: ['oppimaara', 'aihe', 'tavoitetaitotaso', 'tehtavatyyppisuko']
     }
 
@@ -47,7 +48,8 @@ export function useFilterValues(exam: Exam) {
       lukuvuosi: null,
       aine: null,
       tehtavatyyppipuhvi: null,
-      sivu: 1
+      sivu: 1,
+      kieli: null
     }
 
     urlParams.forEach((value, stringKey) => {
@@ -56,6 +58,8 @@ export function useFilterValues(exam: Exam) {
         currentParams[key] = value === 'asc' ? 'asc' : 'desc'
       } else if (key === 'sivu') {
         currentParams[key] = Number(value)
+      } else if (key === 'kieli') {
+        currentParams['kieli'] = parseLanguage(value)
       } else if (examKeyMap[exam]?.includes(key)) {
         currentParams[key] = value
       }
@@ -98,4 +102,11 @@ export function useFilterValues(exam: Exam) {
   const resetFilterValues = () => navigate({ search: '' }, { replace: true })
 
   return { filterValues, setFilterValue, searchStringForNewFilterValue, resetFilterValues }
+}
+
+function parseLanguage(lang: string): 'FI' | 'SV' | null {
+  if (lang === 'FI') return 'FI'
+  if (lang === 'SV') return 'SV'
+
+  return null
 }
