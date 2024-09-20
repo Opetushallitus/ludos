@@ -11,7 +11,7 @@ const eslintConfig = {
     project: './tsconfig.json'
   },
   rules: {
-    curly: 'error',
+    curly: ["error", "multi-line"],
     eqeqeq: 'error',
     'no-undef-init': 'error',
     'no-unneeded-ternary': 'error',
