@@ -29,7 +29,7 @@ RUN --mount=type=secret,id=github_token,required=true \
   GITHUB_TOKEN=$(cat /run/secrets/github_token) \
   gradle --no-daemon bootJar
 
-FROM amazoncorretto:22-alpine3.17
+FROM amazoncorretto:23-alpine3.17
 
 RUN apk add curl
 
