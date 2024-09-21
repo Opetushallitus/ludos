@@ -1,4 +1,4 @@
-FROM amazoncorretto:22-alpine3.17
+FROM amazoncorretto:23-alpine3.17
 
 # NOTE! gradle build must be done before docker build
 
