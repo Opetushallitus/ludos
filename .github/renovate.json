@@ -84,6 +84,11 @@
       "matchPackageNames": [
         "/^@tiptap//"
       ]
+    },
+    {
+      "groupName": "Spring Boot",
+      "matchPackageNames": ["org.springframework.boot"],
+      "enabled": false
     }
   ],
   "prConcurrentLimit": 10
