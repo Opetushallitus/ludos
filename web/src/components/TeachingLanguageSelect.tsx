@@ -29,8 +29,8 @@ export const TeachingLanguageSelect = ({ exam }: { exam: Exam }) => {
   )
 }
 
-export function TeachingLanguageSelectWithLabel({ exam, text }: { exam: Exam; text: string }) {
-  if (exam === Exam.SUKO) return null
+export function TeachingLanguageSelectWithLabel({ exam, text, displaySuko = false }: { exam: Exam; text: string, displaySuko?: boolean }) {
+  if (!displaySuko && exam === Exam.SUKO) return null
 
   return (
     <div className="flex flex-col gap-2 md:flex-row">
