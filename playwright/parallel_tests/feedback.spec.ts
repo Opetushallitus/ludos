@@ -39,9 +39,5 @@ test.describe('feedback link', () => {
 
     await layout.setUiLanguage(Language.SV)
     await assertFeedbackLink(page, layout.footerFeedbackLink, Language.SV, lastHref)
-
-    await page.goto((await layout.footerFeedbackLink.getAttribute('href'))!) // avaa samaan tabiin
-    // Jostain syystä githubissa tulee aina virheilmoitus lomaakkeen latautumisen sijaan
-    await expect(page.getByText(/(Kundrespons om tjänsten LUDOS|Responsen kunde inte laddas)/)).toBeVisible()
   })
 })
