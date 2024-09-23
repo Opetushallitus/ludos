@@ -16,7 +16,7 @@ export async function assertPDFDownload(
   const [download] = await Promise.all([page.waitForEvent('download'), buttonLocator.click()])
 
   const filename = download.suggestedFilename()
-  expect(filename).toBe(`${expectedFileTitle}.pdf`)
+  expect(filename.normalize('NFC')).toEqual(`${expectedFileTitle}.pdf`.normalize('NFC'))
 
   const tempPath = path.join(tempDir, filename)
   await download.saveAs(tempPath)
