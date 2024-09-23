@@ -89,6 +89,11 @@
       "groupName": "Spring Boot",
       "matchPackageNames": ["org.springframework.boot"],
       "enabled": false
+    },
+    {
+      "groupName": "logstash",
+      "matchPackageNames": ["net.logstash.logback"],
+      "enabled": false
     }
   ],
   "prConcurrentLimit": 10
