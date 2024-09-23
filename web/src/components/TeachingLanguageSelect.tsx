@@ -29,7 +29,15 @@ export const TeachingLanguageSelect = ({ exam }: { exam: Exam }) => {
   )
 }
 
-export function TeachingLanguageSelectWithLabel({ exam, text, displaySuko = false }: { exam: Exam; text: string, displaySuko?: boolean }) {
+export function TeachingLanguageSelectWithLabel({
+  exam,
+  text,
+  displaySuko = false
+}: {
+  exam: Exam
+  text: string
+  displaySuko?: boolean
+}) {
   if (!displaySuko && exam === Exam.SUKO) return null
 
   return (
