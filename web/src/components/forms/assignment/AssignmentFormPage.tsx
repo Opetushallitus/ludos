@@ -8,12 +8,17 @@ type AssignmentFormProps = {
   action: ContentFormAction
 }
 
+function parseExam(string: string): Exam | undefined {
+  return Object.values(Exam).find((e) => e === string)
+}
+
 const AssignmentFormPage = ({ action }: AssignmentFormProps) => {
   const matchUrl =
     action === ContentFormAction.uusi ? `/:exam/:contentType/${action}` : `/:exam/:contentType/${action}/:id`
   const match = useMatch(matchUrl)
-  const exam = match!.params.exam!.toUpperCase() as Exam
-
+  const maybeExam = match?.params.exam?.toUpperCase()
+  const exam = parseExam(maybeExam || '')
+  if (!exam) return
   const formProps = { action, id: action === ContentFormAction.muokkaus ? match!.params.id : undefined }
 
   return (
