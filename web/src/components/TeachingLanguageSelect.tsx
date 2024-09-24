@@ -1,19 +1,21 @@
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
-import { LudosSelect } from './ludosSelect/LudosSelect'
+import { LudosSelect, LudosSelectOption } from './ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from './ludosSelect/helpers'
 import { sortKooditByArvo } from '../hooks/useKoodisto'
 import { Exam, Language } from '../types'
 import { useContext } from 'react'
 import { LudosContext } from '../contexts/LudosContext'
-import { useFilterValues } from '../hooks/useFilterValues'
+import { parseLanguage, useFilterValues } from '../hooks/useFilterValues'
+import { SingleValue } from 'react-select'
 
 export const TeachingLanguageSelect = ({ exam }: { exam: Exam }) => {
   const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
   const { setFilterValue } = useFilterValues(exam)
   const { LANGUAGE_OPTIONS } = useLudosTranslation()
 
-  function onChange(opt: any) {
-    const lang = opt!.value as Language
+  function onChange(opt: SingleValue<LudosSelectOption>) {
+    const lang = parseLanguage(opt?.value || '')
+    if (!lang) return
     setTeachingLanguage(lang)
     setFilterValue('kieli', lang)
   }

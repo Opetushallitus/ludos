@@ -104,7 +104,7 @@ export function useFilterValues(exam: Exam) {
   return { filterValues, setFilterValue, searchStringForNewFilterValue, resetFilterValues }
 }
 
-function parseLanguage(lang: string): 'FI' | 'SV' | null {
+export function parseLanguage(lang: string): 'FI' | 'SV' | null {
   if (lang === 'FI') return 'FI'
   if (lang === 'SV') return 'SV'
 
