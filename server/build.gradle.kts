@@ -39,7 +39,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.20")
     implementation("org.jsoup:jsoup:1.18.1")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.28.8")
-    implementation("software.amazon.awssdk:s3:2.28.8")
+    implementation("software.amazon.awssdk:s3:2.28.9")
     implementation("software.amazon.awssdk:sso:2.28.8")
     implementation("software.amazon.awssdk:ssooidc:2.28.8")
     implementation("org.springframework.security:spring-security-cas:6.3.3")
