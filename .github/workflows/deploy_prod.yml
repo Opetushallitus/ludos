@@ -24,7 +24,7 @@ jobs:
       packages: read
       id-token: write
       contents: write
-    runs-on: 'ubuntu-22.04'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v4.2.0
 
@@ -57,7 +57,7 @@ jobs:
     needs: [deploy_prod]
     if: always()
     continue-on-error: true
-    runs-on: 'ubuntu-22.04'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v4.2.0
       - uses: ./.github/actions/build_status
