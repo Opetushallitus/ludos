@@ -19,7 +19,7 @@ jobs:
     permissions:
       packages: write
     name: 01-build.sh
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4.2.0
 
@@ -47,7 +47,7 @@ jobs:
       id-token: write
       contents: read
     name: 02-run-server-tests.sh
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4.2.0
       - name: Configure untuva AWS credentials
@@ -65,7 +65,7 @@ jobs:
       contents: read
     needs: ['build']
     name: 03-run-playwright-tests.sh
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4.2.0
       - name: Configure untuva AWS credentials
@@ -80,14 +80,14 @@ jobs:
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
   lint:
     name: 04-lint.sh
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4.2.0
       - name: Run 04-lint.sh
         run: ./deploy-scripts/04-lint.sh
   frontend_unit_tests:
     name: 06-run-frontend-unittests.sh
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4.2.0
       - name: Run 06-run-frontend-unittests.sh
@@ -100,7 +100,7 @@ jobs:
     permissions:
       packages: read
       id-token: write
-    runs-on: 'ubuntu-22.04'
+    runs-on: 'ubuntu-24.04'
     steps:
       - name: Fetch history for all branches and tags
         uses: actions/checkout@v4
@@ -117,7 +117,7 @@ jobs:
     needs: [push_image]
     if: ${{ always() && github.ref == 'refs/heads/main' }}
     continue-on-error: true
-    runs-on: 'ubuntu-22.04'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v4.2.0
       - uses: ./.github/actions/build_status
