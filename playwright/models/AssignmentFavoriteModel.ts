@@ -79,6 +79,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     await expect(assignmentCard).toBeVisible()
     await assignmentCard.getByTestId('card-title').click()
     await expect(this.page.getByTestId('assignment-header')).toHaveText(assignment.nameFi)
+    await expect(this.page.getByTestId('return')).toHaveText('assignment.palaa-suosikkeihin')
     await this.page.goBack()
     await this.removeFavorite(assignmentCard)
 
@@ -94,7 +95,7 @@ export class AssignmentFavoriteModel extends BaseModel {
       (response) => response.url().includes(`/api/assignment/favorites/${this.exam}/folder`) && response.ok()
     )
 
-    return await folderId.json() as number
+    return (await folderId.json()) as number
   }
 
   async goToFolderRootByBreadCrumb() {
@@ -124,7 +125,11 @@ export class AssignmentFavoriteModel extends BaseModel {
     await this.addToFavoritesBtn.click()
   }
 
-  async testSettingAndUnsettingAsFavorite(assignment: AssignmentOut, favoriteCountBefore: number, isContentPage = false) {
+  async testSettingAndUnsettingAsFavorite(
+    assignment: AssignmentOut,
+    favoriteCountBefore: number,
+    isContentPage = false
+  ) {
     const favoriteButtonLocator = this.page
       .getByTestId(isContentPage ? 'assignment-metadata' : `assignment-list-item-${assignment.id}`)
       .getByTestId('suosikki')

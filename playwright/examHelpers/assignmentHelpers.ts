@@ -277,6 +277,7 @@ async function assertCommonAssignmentContentPage(page: Page, expectedFormData: C
 
   await expect(page.getByTestId('assignment-header')).toHaveText(expectedFormData.nameFi)
   await expect(page.getByTestId('editor-instruction-FI-0')).toHaveText(expectedFormData.instructionFi)
+  await expect(page.getByTestId('return')).toHaveText('assignment.palaa')
 
   if (expectedFormData.contentFi) {
     for (const [i, content] of expectedFormData.contentFi.entries()) {

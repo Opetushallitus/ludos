@@ -64,6 +64,7 @@ export const useLudosTranslation = () => {
       [ContentType.INSTRUCTION]: t('instruction.palaa'),
       [ContentType.CERTIFICATE]: t('certificate.palaa')
     },
+    returnToFavorites: t('assignment.palaa-suosikkeihin'),
     contentErrorMessage: {
       [ContentType.ASSIGNMENT]: t('error.koetehtavan-lataus-epaonnistui'),
       [ContentType.INSTRUCTION]: t('error.ohjeen-lataus-epaonnistui'),

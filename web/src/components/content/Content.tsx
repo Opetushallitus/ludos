@@ -39,6 +39,16 @@ type ContentProps = {
   isPresentation: boolean
 }
 
+function cameFromSuosikitListing(state: unknown): boolean {
+  if (state == null || typeof state !== 'object') {
+    return false
+  }
+  if (!('returnLocation' in state) || typeof state.returnLocation !== 'string') {
+    return false
+  }
+  return state.returnLocation.includes('suosikit')
+}
+
 const Content = ({ exam, isPresentation }: ContentProps) => {
   const { lt, t } = useLudosTranslation()
   const navigate = useNavigate()
@@ -51,7 +61,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const { isYllapitaja } = useUserDetails()
   const { teachingLanguage } = useContext(LudosContext)
   const [openVersionViewerModal, setOpenVersionViewerModal] = useState(false)
-
+  const cameFromSuosikit = cameFromSuosikitListing(state)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
 
   const isVersionBrowser = !!version
@@ -201,7 +211,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
           {!isPresentation && (
             <div className="row mb-6">
               <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
-                {lt.returnTextByContentType[contentType]}
+                {cameFromSuosikit ? lt.returnToFavorites : lt.returnTextByContentType[contentType]}
               </Button>
             </div>
           )}
