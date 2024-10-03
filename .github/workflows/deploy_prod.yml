@@ -27,6 +27,8 @@ jobs:
     runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v4.2.0
+        with:
+          ref: ${{ inputs.branch }}
 
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status

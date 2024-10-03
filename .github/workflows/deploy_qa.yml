@@ -8,7 +8,7 @@ on:
         required: false
         default: green-dev
 
-concurrency: deploy-qa 
+concurrency: deploy-qa
 
 env:
   DOCKER_BUILDKIT: '1' # BuildKit is enabled by default starting in Docker v23, Ubuntu 22.04 has an older version
@@ -27,7 +27,8 @@ jobs:
     runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v4.2.0
-
+        with:
+          ref: ${{ inputs.branch }}
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status
         with:
