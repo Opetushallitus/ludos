@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20 as web-build
+FROM node:22 as web-build
 
 WORKDIR /ludos-web
 COPY web/package.json web/package-lock.json .
