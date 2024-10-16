@@ -6,24 +6,15 @@
   "branchPrefix": "github-renovate/",
   "automerge": true,
   "platformAutomerge": true,
-  "automergeSchedule": [
-    "at any time"
-  ],
+  "automergeSchedule": ["at any time"],
   "rebaseWhen": "behind-base-branch",
   "forkProcessing": "disabled",
   "prCreation": "immediate",
   "ignoreTests": false,
   "automergeType": "pr",
-  "enabledManagers": [
-    "nvm",
-    "npm",
-    "github-actions",
-    "dockerfile",
-    "gradle",
-    "gradle-wrapper"
-  ],
-  "github-actions": {"automerge": true},
-  "dockerfile": {"automerge": true},
+  "enabledManagers": ["nvm", "npm", "github-actions", "dockerfile", "gradle", "gradle-wrapper"],
+  "github-actions": { "automerge": true },
+  "dockerfile": { "automerge": true },
   "packageRules": [
     {
       "matchManagers": ["npm"],
@@ -51,39 +42,31 @@
       "automerge": true,
       "matchUpdateTypes": ["major", "minor", "patch"],
       "matchManagers": ["npm"],
-      "matchPackageNames": [
-        "react",
-        "react-dom",
-        "@types/react",
-        "@types/react-dom"
-      ]
+      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"]
     },
     {
       "groupName": "Playwright",
       "automerge": true,
       "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchPackageNames": [
-        "playwright-chromium",
-        "@playwright/test",
-        "mcr.microsoft.com/playwright"
-      ]
+      "matchPackageNames": ["playwright-chromium", "@playwright/test", "mcr.microsoft.com/playwright"]
+    },
+    {
+      "groupName": "eslint",
+      "automerge": true,
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchPackageNames": ["eslint"]
     },
     {
       "groupName": "AWS CDK",
       "automerge": true,
       "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchPackageNames": [
-        "aws-cdk",
-        "aws-cdk-lib"
-      ]
+      "matchPackageNames": ["aws-cdk", "aws-cdk-lib"]
     },
     {
       "groupName": "tiptap",
       "automerge": true,
       "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchPackageNames": [
-        "/^@tiptap//"
-      ]
+      "matchPackageNames": ["/^@tiptap//"]
     },
     {
       "groupName": "Spring Boot",
