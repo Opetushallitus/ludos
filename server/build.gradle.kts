@@ -41,7 +41,7 @@ dependencies {
     implementation("software.amazon.awssdk:cloudwatchlogs:2.28.29")
     implementation("software.amazon.awssdk:s3:2.28.28")
     implementation("software.amazon.awssdk:sso:2.28.28")
-    implementation("software.amazon.awssdk:ssooidc:2.28.28")
+    implementation("software.amazon.awssdk:ssooidc:2.28.29")
     implementation("org.springframework.security:spring-security-cas:6.3.4")
     implementation("org.springframework:spring-test:6.1.14")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
