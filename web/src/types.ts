@@ -1,3 +1,7 @@
+export type Features = {
+  tehtavaPalauteLinkki: boolean
+}
+
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'

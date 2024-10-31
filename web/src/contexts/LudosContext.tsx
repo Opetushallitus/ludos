@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { KoodistoName, Language, UserDetails } from '../types'
+import { Features, KoodistoName, Language, UserDetails } from '../types'
 import { KoodiDtoOut } from '../hooks/useKoodisto'
 
 export const defaultLanguage = Language.FI
@@ -9,6 +9,7 @@ export const ludosTeachingLanguageKey = 'ludosTeachingLanguage'
 export type LanguageKoodistoMap = Record<Language, Record<KoodistoName, Record<string, KoodiDtoOut>>>
 export type KoodistoMap = Record<KoodistoName, Record<string, KoodiDtoOut>>
 interface LudosContextValue {
+  features: Features
   koodistos: LanguageKoodistoMap
   userDetails?: UserDetails
   userFavoriteAssignmentCount: number
@@ -23,6 +24,7 @@ export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
 ) as unknown as KoodistoMap
 
 const placeholderValuesNotInUse: LudosContextValue = {
+  features: { tehtavaPalauteLinkki: false },
   koodistos: {
     [Language.FI]: defaultEmptyKoodistoMap,
     [Language.SV]: defaultEmptyKoodistoMap

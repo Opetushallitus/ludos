@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { defaultEmptyKoodistoMap, LudosContext } from './LudosContext'
 import { Roles, UserDetails } from '../types'
-import { getKoodistos, getUserDetailsRequest, getUserFavoriteCount } from '../request'
+import { getFeatures, getKoodistos, getUserDetailsRequest, getUserFavoriteCount } from '../request'
 import { useQuery } from '@tanstack/react-query'
 import { useSetLanguagesBasedOnUserDetails } from '../hooks/useSetLanguagesBasedOnUserDetails'
 
@@ -43,6 +43,12 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
     queryFn: getUserDetails
   })
 
+  const { data: features } = useQuery({
+    queryKey: ['features'],
+    queryFn: getFeatures,
+    initialData: { tehtavaPalauteLinkki: false }
+  })
+
   const { teachingLanguage, setTeachingLanguage, uiLanguage, setUiLanguage } = useSetLanguagesBasedOnUserDetails(
     userDetails,
     isSuccess
@@ -60,6 +66,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   return (
     <LudosContext.Provider
       value={{
+        features,
         koodistos,
         userDetails,
         userFavoriteAssignmentCount,
