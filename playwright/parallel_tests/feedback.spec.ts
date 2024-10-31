@@ -40,4 +40,31 @@ test.describe('feedback link', () => {
     await layout.setUiLanguage(Language.SV)
     await assertFeedbackLink(page, layout.footerFeedbackLink, Language.SV, lastHref)
   })
+
+  test('First Suko tehtävä feedback link works', async ({ page }) => {
+    await page.goto('/suko/koetehtavat')
+
+    const layout = new LayoutModel(page)
+    await layout.setUiLanguage(Language.FI)
+    await page.getByTestId('card-title').first().click()
+    await assertFeedbackLink(page, layout.tehtavaFeedbackLink, Language.FI, '/')
+  })
+
+  test('First lukiodiplomit feedback link works', async ({ page }) => {
+    await page.goto('/ld/koetehtavat')
+
+    const layout = new LayoutModel(page)
+    await layout.setUiLanguage(Language.FI)
+    await page.getByTestId('card-title').first().click()
+    await assertFeedbackLink(page, layout.tehtavaFeedbackLink, Language.FI, '/')
+  })
+
+  test('First puheviestintä feedback link works', async ({ page }) => {
+    await page.goto('/puhvi/koetehtavat')
+
+    const layout = new LayoutModel(page)
+    await layout.setUiLanguage(Language.FI)
+    await page.getByTestId('card-title').first().click()
+    await assertFeedbackLink(page, layout.tehtavaFeedbackLink, Language.FI, '/')
+  })
 })

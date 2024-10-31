@@ -12,6 +12,7 @@ export class LayoutModel {
     readonly headerPuhvi = page.getByTestId('nav-link-puhvi'),
     readonly footer = page.getByTestId('footer'),
     readonly footerFeedbackLink = footer.getByTestId('feedback-link'),
+    readonly tehtavaFeedbackLink = page.getByTestId('tehtava-feedback-link'),
     readonly consentModal = page.getByTestId('consent-modal'),
     readonly consentModalSettingsButton = consentModal.getByTestId('settings-button'),
     readonly consentModalAcceptSelectedButton = consentModal.getByTestId('accept-selected-button'),
