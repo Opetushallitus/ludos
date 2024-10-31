@@ -23,7 +23,7 @@ import { useUserDetails } from '../../hooks/useUserDetails'
 import { contentListPath, contentPagePath, editingFormPath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
 import { ContentError } from './ContentError'
 import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
@@ -33,6 +33,7 @@ import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { ListTabs } from '../ListTabs'
 import { ContentBreadcrumbs } from '../Breadcrumbs'
 import { getContentName } from '../../utils/assignmentUtils'
+import { FeedbackLink } from './FeedbackLink'
 
 type ContentProps = {
   exam: Exam
@@ -208,6 +209,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
               )}
             </div>
           </div>
+
+          <FeedbackLink />
+
           {!isPresentation && (
             <div className="row mb-6">
               <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
