@@ -37,3 +37,6 @@ ludos:
   service-user:
     username: ${LUDOS_PALVELUKAYTTAJA_USERNAME}
     password: ${LUDOS_PALVELUKAYTTAJA_PASSWORD}
+
+features:
+  tehtavaPalauteLinkki: false

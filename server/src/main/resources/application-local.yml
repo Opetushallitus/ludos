@@ -6,6 +6,9 @@ ludos:
   image-bucket-name: ludos-application-image-bucket-untuva
   local-dev-aws-profile: oph-ludos-dev
 
+features:
+  tehtavaPalauteLinkki: true
+
 server:
   servlet:
     session:
