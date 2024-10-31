@@ -9,6 +9,7 @@ RUN npm ci
 COPY web/tsconfig.json .
 COPY web/*.config.cjs .
 COPY web/vite.config.ts .
+COPY web/tailwind.config.ts .
 COPY web/index.html .
 COPY web/assets/ ./assets/
 COPY web/src/ ./src/
