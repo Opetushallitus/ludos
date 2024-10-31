@@ -1,8 +1,8 @@
-const { MOBILE_BREAKPOINT, LARGE_SCREEN_BREAKPOINT } = require('./src/constants.ts')
-const colors = require('./src/colors.ts')
+import colors from './src/colors'
+import { LARGE_SCREEN_BREAKPOINT, MOBILE_BREAKPOINT } from './src/constants'
 
 /** @type {import('tailwindcss').Config} */
-const tailwindConfig = {
+export default {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     colors: {
@@ -51,4 +51,3 @@ const tailwindConfig = {
   }
 }
 
-module.exports = tailwindConfig
