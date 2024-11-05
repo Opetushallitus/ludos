@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
@@ -39,4 +38,4 @@ ludos:
     password: ${LUDOS_PALVELUKAYTTAJA_PASSWORD}
 
 features:
-  tehtavaPalauteLinkki: false
+  tehtavaPalauteLinkki: true
