@@ -9,8 +9,6 @@ export const FeedbackLink = () => {
   const { t } = useLudosTranslation()
   const feedbackUrl = useFeedbackUrl()
 
-  if (!features.tehtavaPalauteLinkki) return null
-
   return (
     <div className="row mb-6">
       <ExternalLink url={feedbackUrl} data-testid="tehtava-feedback-link">

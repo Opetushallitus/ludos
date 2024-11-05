@@ -1,6 +1,4 @@
-export type Features = {
-  tehtavaPalauteLinkki: boolean
-}
+export type Features = {}
 
 export const ContentFormAction = {
   uusi: 'uusi',

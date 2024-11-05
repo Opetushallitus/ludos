@@ -1,10 +1,8 @@
 ludos:
-  appUrl: "https://ludos.testiopintopolku.fi"
-  opintopolkuHostname: "virkailija.testiopintopolku.fi"
+  appUrl: 'https://ludos.testiopintopolku.fi'
+  opintopolkuHostname: 'virkailija.testiopintopolku.fi'
   instruction-bucket-name: ludos-application-instruction-bucket-qa
   certificate-bucket-name: ludos-application-certificate-bucket-qa
   image-bucket-name: ludos-application-image-bucket-qa
 
 features:
-  tehtavaPalauteLinkki: true
-  

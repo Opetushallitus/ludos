@@ -1,20 +1,18 @@
 ludos:
-  appUrl: "http://localhost:8080"
-  opintopolkuHostname: "virkailija.untuvaopintopolku.fi"
+  appUrl: 'http://localhost:8080'
+  opintopolkuHostname: 'virkailija.untuvaopintopolku.fi'
   instruction-bucket-name: ludos-application-instruction-bucket-untuva
   certificate-bucket-name: ludos-application-certificate-bucket-untuva
   image-bucket-name: ludos-application-image-bucket-untuva
   local-dev-aws-profile: oph-ludos-dev
 
 features:
-  tehtavaPalauteLinkki: true
 
 server:
   servlet:
     session:
       cookie:
         secure: false
-
 #logging:
 # level:
 #   org:

@@ -46,7 +46,7 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
   const { data: features } = useQuery({
     queryKey: ['features'],
     queryFn: getFeatures,
-    initialData: { tehtavaPalauteLinkki: false }
+    initialData: {}
   })
 
   const { teachingLanguage, setTeachingLanguage, uiLanguage, setUiLanguage } = useSetLanguagesBasedOnUserDetails(

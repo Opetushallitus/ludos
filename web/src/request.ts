@@ -262,9 +262,7 @@ export async function getUserDetailsRequest(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
 
-const featuresSchema: ObjectSchema<Features> = Yup.object().shape({
-  tehtavaPalauteLinkki: Yup.boolean().required()
-})
+const featuresSchema: ObjectSchema<Features> = Yup.object().shape({})
 
 export async function getFeatures(): Promise<Features> {
   const featuresResponse = await doRequest(`${BASE_API_URL}/config/features`, 'GET')
