@@ -1,11 +1,9 @@
-import React, { useContext } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
+import React from 'react'
 import { ExternalLink } from '../ExternalLink'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useFeedbackUrl } from '../../hooks/useFeedbackUrl'
 
 export const FeedbackLink = () => {
-  const { features } = useContext(LudosContext)
   const { t } = useLudosTranslation()
   const feedbackUrl = useFeedbackUrl()
 
