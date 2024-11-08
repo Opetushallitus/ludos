@@ -38,7 +38,7 @@ export class GithubActionsStack extends cdk.Stack {
         'arn:aws:iam::*:role/cdk-readOnlyRole',
         'arn:aws:iam::*:role/cdk-hnb659fds-deploy-role-*',
         'arn:aws:iam::*:role/cdk-hnb659fds-file-publishing-*',
-        cdk.DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN
+        'arn:aws:iam::*:role/cdk-hnb659fds-lookup-role-*'
       ]
     })
     this.githubActionsRole.addToPolicy(cdkPolicyStatement)
