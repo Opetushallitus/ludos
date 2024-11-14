@@ -225,3 +225,13 @@ function get_secret {
   local name="$1"
   aws secretsmanager get-secret-value --secret-id "$name" --query "SecretString" --output text
 }
+
+function wait_until_port_is_listening {
+  require_command nc
+  local -r port="$1"
+
+  info "Waiting until port $port is listening"
+  while ! nc -z localhost "$port"; do
+    sleep 1
+  done
+}
