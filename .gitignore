@@ -5,6 +5,7 @@
 .aws-cli.Dockerfile
 .aws-cli.Dockerfile.checksum
 playwright-results/
+scripts/psql/state/*
 
 !jest.config.js
 *.d.ts
