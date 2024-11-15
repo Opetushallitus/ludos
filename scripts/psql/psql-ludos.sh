@@ -32,7 +32,7 @@ function main {
       docker-compose -f "${repo}/scripts/psql/docker-compose.yml" logs && exit 1
     }
     wait_until_port_is_listening "${SSH_TUNNEL_PORT}"
-    docker-compose logs
+    docker-compose -f "${repo}/scripts/psql/docker-compose.yml" logs
   }
 
   function stop_db_tunnel {
