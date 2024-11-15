@@ -235,3 +235,12 @@ function wait_until_port_is_listening {
     sleep 1
   done
 }
+
+function assert_env_var_is_set {
+  local var_name="$1"
+
+  if [[ -z "${!var_name+x}" || -z "${!var_name}" ]]; then
+    echo "Environment variable '$var_name' is either not set or empty, cannot continue."
+    return 1
+  fi
+}

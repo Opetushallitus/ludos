@@ -4,7 +4,7 @@ services:
   tunnel:
     build:
       context: ./
-      dockerfile: ./Dockerfile.psql-tunnel
+      dockerfile: ./Dockerfile.db-tunnel
     ports:
       - "127.0.0.1:40077:5432/tcp"
     healthcheck:
