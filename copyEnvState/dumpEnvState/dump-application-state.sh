@@ -31,6 +31,7 @@ function create_dump_directory {
   local export_root_dirname="${repo}/copyEnvState/dumpEnvState/source-app-state"
   mkdir -p "${export_root_dirname}"
   CURRENT_EXEC_DIR=$(mktemp -d "${export_root_dirname}/run-XXXXXX")
+  ln -n -f -s "${CURRENT_EXEC_DIR}" "${export_root_dirname}/latest-${ENV}-dump"
 }
 
 function dump_s3_buckets {
