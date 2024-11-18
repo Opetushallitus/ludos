@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 import 'zx/globals'
-import { ECSClient, UpdateServiceCommand, UpdateServiceRequest } from '@aws-sdk/client-ecs'
+import { ECSClient, UpdateServiceCommand, UpdateServiceRequest, waitUntilServicesStable } from '@aws-sdk/client-ecs'
 
 const client = new ECSClient({ region: 'eu-west-1' })
 
@@ -21,10 +21,17 @@ async function main() {
   const downServiceResponse = await client.send(takeDownServicesCommand)
   console.log(`desiredCount: ${downServiceResponse.service?.desiredCount}`)
   console.log('🧨 Polling for services to be taken down...')
-  const stableCommandDown = await $`aws ecs wait services-stable --cluster UntuvaCluster --service UntuvaService`
 
-  if (stableCommandDown.exitCode !== 0) {
-    throw new Error('failed to take down service')
+  const downPollResult = await waitUntilServicesStable(
+    { client, maxWaitTime: 500 },
+    {
+      cluster: 'UntuvaCluster',
+      services: ['UntuvaService']
+    }
+  )
+
+  if (downPollResult.state !== 'SUCCESS') {
+    throw new Error(`failed to take services down. Poll status ${downPollResult}`)
   }
   console.log('Succesfully taken down services')
 
@@ -34,10 +41,16 @@ async function main() {
   console.log(`desiredCount: ${upServiceResponse.service?.desiredCount}`)
 
   console.log('🚀 Polling for services to be brought back up...')
-  const stableCommandUp = await $`aws ecs wait services-stable --cluster UntuvaCluster --service UntuvaService`
+  const upPollResults = await waitUntilServicesStable(
+    { client, maxWaitTime: 500 },
+    {
+      cluster: 'UntuvaCluster',
+      services: ['UntuvaService']
+    }
+  )
 
-  if (stableCommandUp.exitCode !== 0) {
-    throw new Error('failed to bring services up')
+  if (upPollResults.state !== 'SUCCESS') {
+    throw new Error(`failed to bring services up. Poll status ${upPollResults}`)
   }
   console.log('Succesfully brought services up')
 }
