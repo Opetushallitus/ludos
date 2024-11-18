@@ -26,7 +26,7 @@ function create_tunnel {
   }
 
   function stop_db_tunnel {
-    echo "script is exiting, stopping tunnel"
+    echo "Stopping tunnel...."
     docker-compose -f "${repo}/scripts/psql/docker-compose.yml" down
   }
 

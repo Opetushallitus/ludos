@@ -32,10 +32,42 @@ function create_dump_directory {
   CURRENT_EXEC_DIR=$(mktemp -d "${repo}/scripts/psql/state/run-XXXXXX")
 }
 
+function dump_s3_buckets {
+  local S3_DIR="${CURRENT_EXEC_DIR}/s3"
+  echo "Dumping S3 ${ENV} to ${S3_DIR}"
+  mkdir -p "${S3_DIR}"
+
+  copy_bucket "s3://ludos-application-image-bucket-${ENV}" "${S3_DIR}/image"
+  copy_bucket "s3://ludos-application-instruction-bucket-${ENV}" "${S3_DIR}/instruction"
+  copy_bucket "s3://ludos-application-certificate-bucket-${ENV}" "${S3_DIR}/certificate"
+}
+
+function copy_bucket {
+  local FROM_BUCKET=${1}
+  local TO_DIRECTORY=${2}
+  echo "Copying S3 bucket ${FROM_BUCKET} to ${TO_DIRECTORY}"
+  mkdir -p "${TO_DIRECTORY}"
+
+  docker run --rm \
+    --mount type=bind,source="${TO_DIRECTORY},target=/tmp/${TO_DIRECTORY}" \
+    --mount type=bind,source="${HOME}/.aws,target=/root/.aws,readonly" \
+    -e AWS_PROFILE \
+    -e AWS_REGION \
+    -e AWS_DEFAULT_REGION \
+    amazon/aws-cli:2.21.3 \
+    s3 cp "${FROM_BUCKET}" "/tmp/${TO_DIRECTORY}" --recursive
+}
+
 function main() {
   initialize
+
+  ## Copy DB
   create_tunnel
   dump_database
+  stop_db_tunnel
+
+  ## Copy S3
+  dump_s3_buckets
 }
 
 main "$@"
