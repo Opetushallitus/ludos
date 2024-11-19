@@ -33,7 +33,7 @@ async function main() {
   if (downPollResult.state !== 'SUCCESS') {
     throw new Error(`failed to take services down. Poll status ${downPollResult}`)
   }
-  console.log('Succesfully taken down services')
+  console.log('Successfully taken down services')
 
   console.log('\nBring up services')
   const bringUpServicesCommand = new UpdateServiceCommand(upServicesRequest)
@@ -52,7 +52,7 @@ async function main() {
   if (upPollResults.state !== 'SUCCESS') {
     throw new Error(`failed to bring services up. Poll status ${upPollResults}`)
   }
-  console.log('Succesfully brought services up')
+  console.log('Successfully brought services up')
 }
 
 void main()
