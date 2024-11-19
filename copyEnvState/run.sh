@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -o errexit -o nounset -o pipefail
 
+readonly CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/common-functions.sh
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
+
 
 function initialize {
   configure_aws_credentials
@@ -13,6 +15,7 @@ function initialize {
 
 function backup_target_application_state {
   echo "Backing up current application state"
+  "${CURRENT_DIR}/dumpEnvState/dump-application-state-untuva.sh"
 }
 
 function copy_source_application_state {
@@ -28,7 +31,7 @@ function overwrite_target_database_state {
 }
 
 function shutdown_target_service {
-  echo "Shutting down target service ${ENV}"
+  echo "Shutting down target service"
     docker build -t copyenvstate:latest -f ./Dockerfile.copyEnvState .
     docker run \
       --rm \
