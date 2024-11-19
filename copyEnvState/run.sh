@@ -4,6 +4,10 @@ set -o errexit -o nounset -o pipefail
 readonly CURRENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/common-functions.sh
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
+# shellcheck source=scripts/psql/db-tunnel.sh
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/psql/db-tunnel.sh"
+# shellcheck source=scripts/psql/pg-functions.sh
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/psql/pg-functions.sh"
 
 
 function initialize {
@@ -20,6 +24,7 @@ function backup_target_application_state {
 
 function copy_source_application_state {
   echo "Copying application state"
+  "${CURRENT_DIR}/dumpEnvState/dump-application-state-qa.sh"
 }
 
 function overwrite_target_s3_state {
@@ -27,7 +32,31 @@ function overwrite_target_s3_state {
 }
 
 function overwrite_target_database_state {
-  echo "Overwriting database state in target DB"
+  export ENV="untuva"
+  echo "Overwriting ${ENV} database state in target DB"
+
+  eval "require_aws_session_for_${ENV}"
+  initialize_pg_credentials
+  create_tunnel
+
+  STORED_STATE_DIRECTORY="${CURRENT_DIR}/dumpEnvState/source-app-state/latest-qa-dump"
+
+  docker run --rm \
+      --net=host \
+      --mount type=bind,source="${STORED_STATE_DIRECTORY}/database",target=/tmp/dump_directory \
+      -e PGPASSWORD="${PGPASSWORD}" \
+      postgres:15 \
+      pg_restore \
+        -h 127.0.0.1 \
+        -p "${SSH_TUNNEL_PORT}" \
+        -U "${USERNAME}" \
+        -d "postgres" \
+        --verbose \
+        --clean --create --exit-on-error /tmp/dump_directory/db-dump.custom
+
+  echo "--------------------------------"
+  echo "DB state has been replaced in ${ENV}"
+  stop_db_tunnel
 }
 
 function shutdown_target_service {
