@@ -23,7 +23,7 @@ function dump_database {
     --net=host \
     --mount type=bind,source="${CURRENT_EXEC_DIR}/database",target=/tmp/dump_directory \
     -e PGPASSWORD="${PGPASSWORD}" \
-    postgres:17.1 \
+    postgres:15 \
     pg_dump -h 127.0.0.1 -p "${SSH_TUNNEL_PORT}" -U "${USERNAME}" -d "ludos" -b -Fc -f /tmp/dump_directory/db-dump.custom
 }
 
