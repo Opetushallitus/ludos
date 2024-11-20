@@ -11,20 +11,35 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/psql/pg-fun
 
 
 function initialize {
+  setup_target_and_source_env_variables
   configure_aws_credentials
 
   ## Make a backup before overwriting anything, just to be sure
   backup_target_application_state
 }
 
+function setup_target_and_source_env_variables {
+  parse_env_from_script_name "run" ## Setup "ENV" variable
+  export TARGET_ENVIRONMENT="${ENV}"
+
+  if [[ "${TARGET_ENVIRONMENT}" == "untuva" ]]; then
+    export SOURCE_ENVIRONMENT="qa"
+  elif [[ "${TARGET_ENVIRONMENT}" == "qa" ]]; then
+    export SOURCE_ENVIRONMENT="prod"
+  else
+    echo "Invalid target environment ${TARGET_ENVIRONMENT}"
+    exit 1
+  fi
+}
+
 function backup_target_application_state {
   echo "Backing up current application state"
-  "${CURRENT_DIR}/dumpEnvState/dump-application-state-untuva.sh"
+  "${CURRENT_DIR}/dumpEnvState/dump-application-state-${TARGET_ENVIRONMENT}.sh"
 }
 
 function copy_source_application_state {
   echo "Copying application state"
-  "${CURRENT_DIR}/dumpEnvState/dump-application-state-qa.sh"
+  "${CURRENT_DIR}/dumpEnvState/dump-application-state-${SOURCE_ENVIRONMENT}.sh"
 }
 
 function overwrite_target_s3_state {
@@ -32,14 +47,13 @@ function overwrite_target_s3_state {
 }
 
 function overwrite_target_database_state {
-  export ENV="untuva"
-  echo "Overwriting ${ENV} database state in target DB"
+  echo "Overwriting ${TARGET_ENVIRONMENT} database state in target DB"
 
-  eval "require_aws_session_for_${ENV}"
+  eval "require_aws_session_for_${TARGET_ENVIRONMENT}"
   initialize_pg_credentials
   create_tunnel
 
-  STORED_STATE_DIRECTORY="${CURRENT_DIR}/dumpEnvState/source-app-state/latest-qa-dump"
+  STORED_STATE_DIRECTORY="${CURRENT_DIR}/dumpEnvState/source-app-state/latest-${SOURCE_ENVIRONMENT}-dump"
 
   docker run --rm \
       --net=host \
@@ -55,7 +69,7 @@ function overwrite_target_database_state {
         --clean --create --exit-on-error /tmp/dump_directory/db-dump.custom
 
   echo "--------------------------------"
-  echo "DB state has been replaced in ${ENV}"
+  echo "DB state has been replaced in ${TARGET_ENVIRONMENT}"
   stop_db_tunnel
 }
 
@@ -72,7 +86,7 @@ function shutdown_target_service {
 }
 
 function start_up_target_service {
-  echo "Starting up target service ${ENV}"
+  echo "Starting up target service ${TARGET_ENVIRONMENT}"
 }
 
 
