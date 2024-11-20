@@ -38,7 +38,7 @@ async function takeServiceDown() {
   console.log('🧨 Polling for services to be taken down...')
   const allStopped = await pollForStoppedTasks()
   if (!allStopped) {
-    throw new Error('Tasks not stopped after 100 seconds')
+    throw new Error('Tasks not stopped in given time')
   }
   console.log('Successfully taken down services')
 }
