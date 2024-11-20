@@ -18,12 +18,12 @@ function initialize {
 
 function setup_target_and_source_env_variables {
   parse_env_from_script_name "copy-application-state-to" ## Setup "ENV" variable
-  export TARGET_ENVIRONMENT="${ENV}"
+  TARGET_ENVIRONMENT="${ENV}"
 
   if [[ "${TARGET_ENVIRONMENT}" == "untuva" ]]; then
-    export SOURCE_ENVIRONMENT="qa"
+    SOURCE_ENVIRONMENT="qa"
   elif [[ "${TARGET_ENVIRONMENT}" == "qa" ]]; then
-    export SOURCE_ENVIRONMENT="prod"
+    SOURCE_ENVIRONMENT="prod"
   else
     echo "Invalid target environment ${TARGET_ENVIRONMENT}"
     exit 1
@@ -42,6 +42,8 @@ function copy_source_application_state {
 
 function overwrite_target_s3_state {
   echo "Overwriting S3 state in target bucket"
+  eval "require_aws_session_for_$TARGET_ENVIRONMENT"
+
   copy_state_to_s3 image
   copy_state_to_s3 certificate
   copy_state_to_s3 instruction
@@ -59,7 +61,7 @@ function copy_state_to_s3 {
     -e AWS_REGION \
     -e AWS_DEFAULT_REGION \
     amazon/aws-cli:2.21.3 \
-    s3 sync "/tmp/${FROM_DIRECTORY}" "$TO_BUCKET" --recursive --delete
+    s3 sync "/tmp/${FROM_DIRECTORY}" "$TO_BUCKET" --delete
 }
 
 function overwrite_target_database_state {
@@ -91,18 +93,34 @@ function overwrite_target_database_state {
 
 function shutdown_target_service {
   echo "Shutting down target service"
-    docker build -t copyenvstate:latest -f "$CURRENT_DIR/Dockerfile.copyEnvState" "$CURRENT_DIR"
-    docker run \
-      --rm \
-      --mount type=bind,source="${HOME}/.aws,target=/root/.aws,readonly" \
-      -e AWS_PROFILE \
-      -e AWS_REGION \
-      -e AWS_DEFAULT_REGION \
-      copyenvstate:latest
+  eval "require_aws_session_for_$TARGET_ENVIRONMENT"
+
+  docker build -t copyenvstate:latest -f "$CURRENT_DIR/Dockerfile.copyEnvState" "$CURRENT_DIR"
+  docker run \
+    --rm \
+    --mount type=bind,source="${HOME}/.aws,target=/root/.aws,readonly" \
+    -e AWS_PROFILE \
+    -e AWS_REGION \
+    -e AWS_DEFAULT_REGION \
+    -e ENV="$TARGET_ENVIRONMENT" \
+    -e COMMAND=takeServiceDown \
+    copyenvstate:latest
 }
 
 function start_up_target_service {
   echo "Starting up target service ${TARGET_ENVIRONMENT}"
+  eval "require_aws_session_for_$TARGET_ENVIRONMENT"
+
+  docker build -t copyenvstate:latest -f "$CURRENT_DIR/Dockerfile.copyEnvState" "$CURRENT_DIR"
+  docker run \
+    --rm \
+    --mount type=bind,source="${HOME}/.aws,target=/root/.aws,readonly" \
+    -e AWS_PROFILE \
+    -e AWS_REGION \
+    -e AWS_DEFAULT_REGION \
+    -e ENV="$TARGET_ENVIRONMENT" \
+    -e COMMAND=bringServiceUp \
+    copyenvstate:latest
 }
 
 

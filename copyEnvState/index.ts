@@ -10,9 +10,23 @@ import {
 } from '@aws-sdk/client-ecs'
 import { setTimeout } from 'timers/promises'
 
+function getEnv() {
+  const env = process.env.ENV
+  if (!env) {
+    throw new Error('No ENV variable set')
+  }
+  return env
+}
+
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+const env = getEnv()
+
 const client = new ECSClient({ region: 'eu-west-1' })
-const cluster = 'UntuvaCluster'
-const service = 'UntuvaService'
+const cluster = `${capitalizeFirstLetter(env)}Cluster`
+const service = `${capitalizeFirstLetter(env)}Service`
 
 const takeDownServicesRequest: UpdateServiceRequest = {
   desiredCount: 0,
@@ -26,8 +40,15 @@ const upServicesRequest: UpdateServiceRequest = {
 }
 
 async function main() {
-  await takeServiceDown()
-  await bringServiceUp()
+  const command = process.env.COMMAND
+
+  if (command === 'takeServiceDown') {
+    return await takeServiceDown()
+  }
+  if (command === 'bringServiceUp') {
+    return await bringServiceUp()
+  }
+  throw new Error('Usable COMMAND env variables are: "takeServiceDown" or "bringServiceUp"')
 }
 
 async function takeServiceDown() {
@@ -53,8 +74,8 @@ async function bringServiceUp() {
   const upPollResults = await waitUntilServicesStable(
     { client, maxWaitTime: 500 },
     {
-      cluster: 'UntuvaCluster',
-      services: ['UntuvaService']
+      cluster,
+      services: [service]
     }
   )
 
@@ -78,7 +99,6 @@ async function pollForStoppedTasks() {
     throw new Error('No tasks with desired status "STOPPED"')
   }
   const allStopped = await poll(() => allTasksStopped(taskArns))
-  console.log({ allStopped })
   return allStopped
 }
 
@@ -102,7 +122,7 @@ async function allTasksStopped(taskArns: string[]) {
   console.log(`Fetching describe for tasks: ${taskArns.join(', ')}`)
   const { tasks } = await client.send(describeCommand)
   console.log(`Fetch success, Checking that all task are stopped`)
-  // console.log(statuses)
+
   if (!tasks) {
     throw new Error('Didnt find tasks for task Arns')
   }
