@@ -59,7 +59,7 @@ function copy_state_to_s3 {
     -e AWS_REGION \
     -e AWS_DEFAULT_REGION \
     amazon/aws-cli:2.21.3 \
-    s3 cp "/tmp/${FROM_DIRECTORY}" "$TO_BUCKET" --recursive
+    s3 sync "/tmp/${FROM_DIRECTORY}" "$TO_BUCKET" --recursive --delete
 }
 
 function overwrite_target_database_state {
