@@ -14,8 +14,6 @@ function initialize {
   setup_target_and_source_env_variables
   configure_aws_credentials
 
-  ## Make a backup before overwriting anything, just to be sure
-  backup_target_application_state
 }
 
 function setup_target_and_source_env_variables {
@@ -110,6 +108,10 @@ function start_up_target_service {
 
 function main {
   initialize
+
+
+  ## Make a backup before overwriting anything, just to be sure
+  backup_target_application_state
 
   copy_source_application_state
   shutdown_target_service
