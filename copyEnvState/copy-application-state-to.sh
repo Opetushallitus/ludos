@@ -44,6 +44,24 @@ function copy_source_application_state {
 
 function overwrite_target_s3_state {
   echo "Overwriting S3 state in target bucket"
+  copy_state_to_s3 image
+  copy_state_to_s3 certificate
+  copy_state_to_s3 instruction
+}
+
+function copy_state_to_s3 {
+  local FROM_DIRECTORY="$repo/copyEnvState/dumpEnvState/source-app-state/latest-qa-dump/s3/$1"
+  local TO_BUCKET="s3://ludos-application-$1-bucket-untuva"
+  echo "Copying dir ${FROM_DIRECTORY}" to S3 bucket "$TO_BUCKET"
+
+  docker run --rm \
+    --mount type=bind,source="${FROM_DIRECTORY},target=/tmp/${FROM_DIRECTORY},readonly" \
+    --mount type=bind,source="${HOME}/.aws,target=/root/.aws,readonly" \
+    -e AWS_PROFILE \
+    -e AWS_REGION \
+    -e AWS_DEFAULT_REGION \
+    amazon/aws-cli:2.21.3 \
+    s3 cp "/tmp/${FROM_DIRECTORY}" "$TO_BUCKET" --recursive
 }
 
 function overwrite_target_database_state {
@@ -75,7 +93,7 @@ function overwrite_target_database_state {
 
 function shutdown_target_service {
   echo "Shutting down target service"
-    docker build -t copyenvstate:latest -f ./Dockerfile.copyEnvState .
+    docker build -t copyenvstate:latest -f "$CURRENT_DIR/Dockerfile.copyEnvState" "$CURRENT_DIR"
     docker run \
       --rm \
       --mount type=bind,source="${HOME}/.aws,target=/root/.aws,readonly" \
