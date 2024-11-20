@@ -48,8 +48,8 @@ function overwrite_target_s3_state {
 }
 
 function copy_state_to_s3 {
-  local FROM_DIRECTORY="$repo/copyEnvState/dumpEnvState/source-app-state/latest-qa-dump/s3/$1"
-  local TO_BUCKET="s3://ludos-application-$1-bucket-untuva"
+  local FROM_DIRECTORY="$repo/copyEnvState/dumpEnvState/source-app-state/latest-$SOURCE_ENVIRONMENT-dump/s3/$1"
+  local TO_BUCKET="s3://ludos-application-$1-bucket-$TARGET_ENVIRONMENT"
   echo "Copying dir ${FROM_DIRECTORY}" to S3 bucket "$TO_BUCKET"
 
   docker run --rm \
