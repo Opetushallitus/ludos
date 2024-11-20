@@ -1,5 +1,3 @@
-#!/usr/bin/env zx
-import 'zx/globals'
 import {
   ECSClient,
   UpdateServiceCommand,
