@@ -19,7 +19,7 @@ function initialize {
 }
 
 function setup_target_and_source_env_variables {
-  parse_env_from_script_name "run" ## Setup "ENV" variable
+  parse_env_from_script_name "copy-application-state-to" ## Setup "ENV" variable
   export TARGET_ENVIRONMENT="${ENV}"
 
   if [[ "${TARGET_ENVIRONMENT}" == "untuva" ]]; then
