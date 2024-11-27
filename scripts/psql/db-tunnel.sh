@@ -18,16 +18,16 @@ function create_tunnel {
   }
 
   function start_db_tunnel {
-    docker-compose -f "${repo}/scripts/psql/docker-compose.yml" up --build --detach --wait || {
-      docker-compose -f "${repo}/scripts/psql/docker-compose.yml" logs && exit 1
+    docker compose -f "${repo}/scripts/psql/docker-compose.yml" up --build --detach --wait || {
+      docker compose -f "${repo}/scripts/psql/docker-compose.yml" logs && exit 1
     }
     wait_until_port_is_listening "${SSH_TUNNEL_PORT}"
-    docker-compose -f "${repo}/scripts/psql/docker-compose.yml" logs
+    docker compose -f "${repo}/scripts/psql/docker-compose.yml" logs
   }
 
   function stop_db_tunnel {
     echo "Stopping tunnel...."
-    docker-compose -f "${repo}/scripts/psql/docker-compose.yml" down
+    docker compose -f "${repo}/scripts/psql/docker-compose.yml" down
   }
 
   eval "require_aws_session_for_${ENV}"
