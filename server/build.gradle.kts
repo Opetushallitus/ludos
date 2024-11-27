@@ -38,7 +38,7 @@ dependencies {
     implementation("org.flywaydb:flyway-database-postgresql:11.0.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.0")
     implementation("org.jsoup:jsoup:1.18.2")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.29.22")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.29.23")
     implementation("software.amazon.awssdk:s3:2.29.22")
     implementation("software.amazon.awssdk:sso:2.29.22")
     implementation("software.amazon.awssdk:ssooidc:2.29.22")
