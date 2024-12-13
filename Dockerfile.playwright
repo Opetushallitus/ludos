@@ -4,8 +4,6 @@ FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal
 ADD playwright/package.json playwright/package.json
 ADD playwright/package-lock.json playwright/package-lock.json
 
-ENV RUN_LOCAL_TESTS_IN_UI_MODE $RUN_LOCAL_TESTS_IN_UI_MODE
-
 ADD tsconfig.base.json tsconfig.base.json
 
 COPY playwright/ /playwright/

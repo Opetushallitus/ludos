@@ -27,7 +27,7 @@ function playwright_tests {
 
   docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
 
-  docker run -it --rm \
+  docker run -it \
   --network ludos_default \
   -v "$RESULTS_DIR":/playwright/playwright-results \
   -v "$repo/playwright/snapshots":/playwright/snapshots \
