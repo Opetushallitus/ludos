@@ -5,6 +5,10 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts/common-functions.sh"
 
 
+function stop() {
+  docker kill ludos-tests
+}
+trap stop EXIT
 
 function server_tests {
   pushd server
@@ -39,6 +43,7 @@ function playwright_tests {
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+--env RUN_LOCAL_TESTS_IN_UI_MODE} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-p 127.0.0.1:9876:9876} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-t -i} \
+  --name ludos-tests \
   playwright-image "$@"
 }
 
