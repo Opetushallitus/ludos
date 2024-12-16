@@ -1,12 +1,11 @@
+import { z } from 'zod'
 import { InstructionFormType } from './components/forms/schemas/instructionSchema'
 import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, Features, ImageDtoOut } from './types'
+import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, ImageDtoOut } from './types'
 import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
 import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
 import { LanguageKoodistoMap } from './contexts/LudosContext'
 import { getCookie } from 'typescript-cookie'
-import * as Yup from 'yup'
-import { ObjectSchema } from 'yup'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {
@@ -262,11 +261,14 @@ export async function getUserDetailsRequest(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
 
-const featuresSchema: ObjectSchema<Features> = Yup.object().shape({})
+export const featuresSchema = z.object({
+  additionalSvContentForKertominen: z.boolean()
+})
+export type Features = z.infer<typeof featuresSchema>;
 
 export async function getFeatures(): Promise<Features> {
   const featuresResponse = await doRequest(`${BASE_API_URL}/config/features`, 'GET')
-  return featuresSchema.validateSync(await featuresResponse.json(), { strict: true })
+  return featuresSchema.parse(await featuresResponse.json())
 }
 
 export async function uploadImage(file: File): Promise<ImageDtoOut> {

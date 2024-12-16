@@ -46,8 +46,7 @@
     "react-select": "^5.8.0",
     "tailwind-merge": "^2.5.4",
     "typescript-cookie": "^1.0.6",
-    "yup": "^1.4.0",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.51.14",

@@ -6,3 +6,4 @@ ludos:
   image-bucket-name: ludos-application-image-bucket-untuva
 
 features:
+  additionalSvContentForKertominen: true

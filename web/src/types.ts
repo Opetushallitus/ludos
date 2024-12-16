@@ -1,5 +1,3 @@
-export type Features = {}
-
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'
