@@ -23,10 +23,12 @@
     "skipLibCheck": true,
     "noEmit": true,
 
-    "baseUrl": "./",
     "paths": {
-      "web/*": ["./web/*"]
+      "web/*": ["../web/*"]
     }
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*",
+    "../web/**/*.ts"
+  ]
 }
