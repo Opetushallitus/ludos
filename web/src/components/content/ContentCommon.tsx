@@ -22,7 +22,7 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
   const shouldShowTeachingLanguageDropdown =
     data.contentType === ContentType.INSTRUCTION ||
     (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
+    data.contentType === ContentType.ASSIGNMENT
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">

@@ -68,7 +68,7 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
   const isVersionBrowser = !!version
 
   const teachingLanguageOverride =
-    exam === Exam.SUKO && (contentType === ContentType.ASSIGNMENT || contentType === ContentType.CERTIFICATE)
+    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE
       ? Language.FI
       : teachingLanguage
 

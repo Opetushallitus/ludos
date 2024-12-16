@@ -92,7 +92,6 @@ data class SukoAssignmentDtoIn(
     @field:Size(max = 0)
     override val instructionSv: String,
     override val contentFi: List<String>,
-    @field:EmptyContentField
     override val contentSv: List<String>,
     override val publishState: PublishState,
     override val laajaalainenOsaaminenKoodiArvos: List<String>,

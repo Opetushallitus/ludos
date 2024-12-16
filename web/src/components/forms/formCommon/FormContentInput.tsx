@@ -2,19 +2,20 @@ import { TextInput } from '../../TextInput'
 import { FormError } from './FormErrors'
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
 import { LanguageTabs } from '../../LanguageTabs'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { TipTap } from './editor/TipTap'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
 import { Exam, Language } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { LudosContext } from '../../../contexts/LudosContext'
 
 interface Field {
   id: string
   content?: string
 }
 
-const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
+const ArrayContentField = ({ fieldName, overridingLabel }: { fieldName: string, overridingLabel?: string }) => {
   const { t } = useLudosTranslation()
   const {
     watch,
@@ -59,7 +60,7 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
               <TipTap
                 onContentChange={(newContent) => handleContentChange(newContent, index)}
                 content={field.value || ''}
-                label={t('form.tehtavansisalto')}
+                label={overridingLabel || t('form.tehtavansisalto')}
                 dataTestId={`${fieldName}-${index}`}
                 key={index}
                 fieldError={!!errors[fieldName]}
@@ -102,7 +103,11 @@ const ArrayContentField = ({ fieldName }: { fieldName: string }) => {
   )
 }
 
-export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boolean }) => {
+interface FormContentInputProps {
+  formDataIsLoaded: boolean
+}
+
+export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
 
@@ -112,6 +117,7 @@ export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boole
     setValue,
     formState: { errors }
   } = useFormContext()
+  const { features } = useContext(LudosContext)
 
   const currentExam = watch('exam')
 
@@ -129,6 +135,9 @@ export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boole
 
   const watchInstructionFi = watch('instructionFi')
   const watchInstructionSv = watch('instructionSv')
+  const watchAssignmentTypeKoodiArvo = watch("assignmentTypeKoodiArvo")
+
+  const showAdditionalContentSv = features.additionalSvContentForKertominen && currentExam === Exam.SUKO && watchAssignmentTypeKoodiArvo && watchAssignmentTypeKoodiArvo === "002" 
 
   return (
     <>
@@ -159,6 +168,9 @@ export const FormContentInput = ({ formDataIsLoaded }: { formDataIsLoaded: boole
         />
 
         <ArrayContentField fieldName="contentFi" />
+        { showAdditionalContentSv &&
+          <ArrayContentField fieldName="contentSv" overridingLabel={t('form.tehtavansisaltoruotsiksi')} />
+        }
       </div>
 
       {currentExam !== Exam.SUKO && (
