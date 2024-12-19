@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 import { Exam } from 'web/src/types'
 import { checkListAfterFilteringWithProvidedContent } from '../../filterHelpers'
-import { loginTestGroup, Role } from '../../helpers'
+import { loginTestGroup, resetDatabase, Role } from '../../helpers'
 import { CertificateContentListModel } from '../../models/CertificateContentListModel'
 
 const bodyTextByExam = {
@@ -14,7 +14,7 @@ const checkListAfterFilteringWithProvidedExam = checkListAfterFilteringWithProvi
 loginTestGroup(test, Role.YLLAPITAJA)
 test.describe('Certificate filter tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/api/test/empty')
+    await resetDatabase(page)
     await page.goto('/api/test/seedCertificates')
   })
 

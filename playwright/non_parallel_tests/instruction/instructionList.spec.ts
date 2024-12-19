@@ -3,6 +3,7 @@ import { Exam } from 'web/src/types'
 import { checkListAfterFilteringWithProvidedContent } from '../../filterHelpers'
 import {
   loginTestGroup,
+  resetDatabase,
   Role,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
@@ -25,7 +26,7 @@ const assertLanguageChange = async (page: Page, expectedSvText: string) => {
 loginTestGroup(test, Role.YLLAPITAJA)
 test.describe('Instruction filter tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/api/test/empty')
+    await resetDatabase(page)
     await page.goto('/api/test/seedInstructions')
   })
 

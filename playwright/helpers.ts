@@ -182,3 +182,8 @@ export async function selectAttachmentFile(page: Page, file: string, locator: Lo
 
   await expect(page.getByTestId(file).first()).toHaveText(`${file}${canBeOpened ? 'open_in_new' : ''}${formattedDate}`)
 }
+
+/* Clear, delete, drop, truncate database from assignments, certificates and instructions */
+export async function resetDatabase(page: Page) {
+  await page.goto('/api/test/empty')
+}
