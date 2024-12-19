@@ -42,7 +42,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.29.34")
     implementation("software.amazon.awssdk:sso:2.29.34")
     implementation("software.amazon.awssdk:ssooidc:2.29.34")
-    implementation("org.springframework.security:spring-security-cas:6.4.1")
+    implementation("org.springframework.security:spring-security-cas:6.4.2")
     implementation("org.springframework:spring-test:6.1.15")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
