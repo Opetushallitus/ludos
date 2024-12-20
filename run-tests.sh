@@ -4,9 +4,10 @@ set -o errexit -o nounset -o pipefail
 # shellcheck source=../scripts/common-functions.sh
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts/common-functions.sh"
 
+CONTAINER_NAME=ludos-tests-$(openssl rand -hex 4)
 
 function stop() {
-  docker kill ludos-tests
+  docker kill "$CONTAINER_NAME"
 }
 trap stop EXIT
 
@@ -43,7 +44,7 @@ function playwright_tests {
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+--env RUN_LOCAL_TESTS_IN_UI_MODE} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-p 127.0.0.1:9876:9876} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-t -i} \
-  --name ludos-tests \
+  --name "$CONTAINER_NAME" \
   playwright-image "$@"
 }
 

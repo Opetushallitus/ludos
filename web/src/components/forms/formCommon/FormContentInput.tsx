@@ -107,6 +107,33 @@ interface FormContentInputProps {
   formDataIsLoaded: boolean
 }
 
+const SwedishContent = () => {
+  const { t } = useLudosTranslation()
+  const {
+    setValue, control, watch,
+    formState: { errors }
+  } = useFormContext()
+  const fieldName = 'contentSv[0]'
+  const watchedContent = watch(fieldName)
+  return (
+    <div>
+      <Controller
+        control={control}
+        render={() => {
+          return (<TipTap
+            onContentChange={(newContent) => setValue(fieldName, newContent)}
+            content={watchedContent}
+            dataTestId={'swedish-content'}
+            label={t('form.tehtavansisaltoruotsiksi')}
+
+            fieldError={!!errors[fieldName]}
+          />)
+        }} name={fieldName} />
+      <FormError error={errors[fieldName]?.message as string} name={fieldName} />
+    </div>
+  )
+}
+
 export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
@@ -168,9 +195,7 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         />
 
         <ArrayContentField fieldName="contentFi" />
-        { showAdditionalContentSv &&
-          <ArrayContentField fieldName="contentSv" overridingLabel={t('form.tehtavansisaltoruotsiksi')} />
-        }
+        { showAdditionalContentSv && <SwedishContent /> }
       </div>
 
       {currentExam !== Exam.SUKO && (
