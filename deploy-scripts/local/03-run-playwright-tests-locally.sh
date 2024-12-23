@@ -8,7 +8,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../../scripts/common-f
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../deploy-functions.sh"
 
 function main() {
-  require_dev_aws_session
+  require_aws_session_for_env dev
 
   LUDOS_PALVELUKAYTTAJA_JSON=$(aws --profile oph-ludos-dev secretsmanager get-secret-value --secret-id /UntuvaLudosStack/LudosApplicationStack/OphServiceUserCredentials --query 'SecretString' | jq -r .)
   export LUDOS_PALVELUKAYTTAJA_USERNAME="$(echo "$LUDOS_PALVELUKAYTTAJA_JSON" | jq -r .username)"

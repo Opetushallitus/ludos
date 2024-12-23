@@ -6,48 +6,41 @@ if [ -n "${COMMON_FUNCTIONS_SOURCED:-}" ]; then
   return
 fi
 readonly COMMON_FUNCTIONS_SOURCED="true"
+readonly aws_cli_version="2.22.13"
 
 readonly revision="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 readonly repo="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 NODE_VERSION="$(cat "$repo/.nvmrc")" && readonly NODE_VERSION
 
-read -r -d '' AWS_CLI_DOCKERFILE <<EOF || true
-FROM public.ecr.aws/aws-cli/aws-cli:2.10.1
-EOF
-
-function maybe_build_aws_cli {
-  local aws_cli_dockerfile_temp="$repo/.aws-cli.Dockerfile"
-  echo "$AWS_CLI_DOCKERFILE" > "$aws_cli_dockerfile_temp"
-
-  require_command shasum
-  local -r checksum_file="$aws_cli_dockerfile_temp.checksum"
-
-  function build_aws_cli {
-    echo "$AWS_CLI_DOCKERFILE" | docker build --tag "amazon/aws-cli:local" -
-    shasum "$aws_cli_dockerfile_temp" > "$checksum_file"
-  }
-
-  if [ ! $(docker images -q amazon/aws-cli:local) ]; then
-    echo "no amazon/aws-cli:local image found; running docker build"
-    build_aws_cli
-  elif [ ! -f "$checksum_file" ]; then
-    echo "no checksum for aws cli dockerfile; running docker build"
-    build_aws_cli
-  elif ! shasum --check "$checksum_file"; then
-    info "aws cli dockerfile seems to have changed, running docker build"
-    build_aws_cli
-  else
-    info "aws cli dockerfile doesn't seem to have changed, skipping docker build"
-  fi
+function docker_run_with_aws_env {
+  docker run \
+    --env AWS_PROFILE \
+    --env AWS_REGION \
+    --env AWS_DEFAULT_REGION \
+    --env AWS_ACCESS_KEY_ID \
+    --env AWS_SECRET_ACCESS_KEY \
+    --env AWS_SESSION_TOKEN \
+    --env BROWSER=/usr/bin/echo \
+    --volume "$HOME/.aws:/root/.aws" \
+    "$@"
 }
 
-function require_dev_aws_session {
-  info "Verifying that AWS session has not expired"
-  ## SSO Login does not work in container
-  aws sts get-caller-identity --profile=oph-ludos-dev 1>/dev/null || {
-    info "Session is expired"
-    aws --profile oph-ludos-dev sso login
-  }
+function aws {
+  docker_run_with_aws_env \
+    --rm -i "amazon/aws-cli:$aws_cli_version" "$@"
+}
+
+function require_aws_session_for_env {
+    local PROFILE="oph-ludos-${1}"
+    info "Verifying that AWS session has not expired"
+
+    aws sts get-caller-identity --profile="${PROFILE}" 1>/dev/null || {
+      info "Session is expired for profile ${PROFILE}"
+      aws --profile "${PROFILE}" sso login --sso-session oph-federation --use-device-code | while read -r line; do echo $line; if echo $line | grep user_code; then open $line; fi; done
+    }
+    export AWS_PROFILE="${PROFILE}"
+    export AWS_REGION="eu-west-1"
+    info "Using AWS profile $AWS_PROFILE"
 }
 
 function configure_aws_credentials {
@@ -60,7 +53,7 @@ function configure_aws_credentials {
       fatal "Could not check that AWS credentials are working. Please log in with SSO: \"aws --profile oph-ludos-dev sso login\""
     }
   else
-    require_dev_aws_session
+    require_aws_session_for_env dev
     export AWS_PROFILE="oph-ludos-dev"
     info "Using AWS profile $AWS_PROFILE"
   fi
@@ -169,56 +162,6 @@ function log {
 function get_playwright_version {
   cd "$repo/playwright"
   npm list --package-lock-only --json "@playwright/test" | jq --raw-output '.dependencies."@playwright/test".version'
-}
-
-function require_aws_session_for_untuva {
-    info "Verifying that AWS session has not expired"
-    ## SSO Login does not work in container
-    aws sts get-caller-identity --profile=oph-ludos-dev 1>/dev/null || {
-      info "Session is expired"
-      aws --profile oph-ludos-dev sso login
-    }
-    export AWS_PROFILE="oph-ludos-dev"
-    export AWS_REGION="eu-west-1"
-    export AWS_DEFAULT_REGION="$AWS_REGION"
-    info "Using AWS profile $AWS_PROFILE"
-}
-function require_aws_session_for_qa {
-    info "Verifying that AWS session has not expired"
-    ## SSO Login does not work in container
-    aws sts get-caller-identity --profile=oph-ludos-qa 1>/dev/null || {
-      info "Session is expired"
-      aws --profile oph-ludos-dev sso login
-    }
-    export AWS_PROFILE="oph-ludos-qa"
-    export AWS_REGION="eu-west-1"
-    export AWS_DEFAULT_REGION="$AWS_REGION"
-    info "Using AWS profile $AWS_PROFILE"
-}
-function require_aws_session_for_prod {
-    info "Verifying that AWS session has not expired"
-    ## SSO Login does not work in container
-    aws sts get-caller-identity --profile=oph-ludos-prod 1>/dev/null || {
-      info "Session is expired"
-      aws --profile oph-ludos-dev sso login
-    }
-    export AWS_PROFILE="oph-ludos-prod"
-    export AWS_REGION="eu-west-1"
-    export AWS_DEFAULT_REGION="$AWS_REGION"
-    info "Using AWS profile $AWS_PROFILE"
-}
-
-function require_util_aws_session {
-  info "Verifying that AWS session has not expired"
-  ## SSO Login does not work in container
-  aws sts get-caller-identity --profile=oph-ludos-utility 1>/dev/null || {
-    info "Session is expired"
-    aws --profile oph-ludos-utility sso login
-  }
-  export AWS_REGION="eu-west-1"
-  export AWS_DEFAULT_REGION="$AWS_REGION"
-  export AWS_PROFILE="oph-ludos-utility"
-  info "Using AWS profile $AWS_PROFILE"
 }
 
 function get_secret {
