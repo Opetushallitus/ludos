@@ -40,7 +40,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.29.42")
     implementation("software.amazon.awssdk:s3:2.29.42")
-    implementation("software.amazon.awssdk:sso:2.29.41")
+    implementation("software.amazon.awssdk:sso:2.29.42")
     implementation("software.amazon.awssdk:ssooidc:2.29.42")
     implementation("org.springframework.security:spring-security-cas:6.4.2")
     implementation("org.springframework:spring-test:6.1.15")
