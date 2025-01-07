@@ -35,7 +35,7 @@ dependencies {
     implementation("ch.qos.logback:logback-access:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("org.flywaydb:flyway-core:11.1.1")
-    implementation("org.flywaydb:flyway-database-postgresql:11.1.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.1.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.0")
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.29.46")
