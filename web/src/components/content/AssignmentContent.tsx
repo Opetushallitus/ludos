@@ -11,12 +11,13 @@ import {
 } from '../../types'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { useFetch } from '../../hooks/useFetch'
 import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { LudosContext } from '../../contexts/LudosContext'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -25,6 +26,7 @@ type AssignmentContentProps = {
 }
 
 export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
+  const { features } = useContext(LudosContext)
   const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
@@ -42,6 +44,15 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
     await setFavoriteFolders({ data, favoriteAction: isFavorite ? FavoriteAction.EDIT : FavoriteAction.ADD })
     setIsFavoriteModalOpen(false)
   }
+
+  const showFinnishInstruction =
+    features.additionalSvContentForKertominen &&
+    isSukoAssignment(assignment) &&
+    assignment.assignmentTypeKoodiArvo === '002'
+  console.log(showFinnishInstruction)
+  const instructionContent = teachingLanguage === Language.FI ? assignment.instructionFi : assignment.instructionSv
+
+  const instructionToShow = showFinnishInstruction ? assignment.instructionFi : instructionContent
 
   return (
     <>
@@ -115,10 +126,7 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
         </div>
       )}
 
-      <ContentInstruction
-        teachingLanguage={teachingLanguage}
-        content={teachingLanguage === Language.FI ? assignment.instructionFi : assignment.instructionSv}
-      />
+      <ContentInstruction teachingLanguage={teachingLanguage} content={instructionToShow} />
 
       <div className="mb-4 border-b border-gray-separator" />
 
