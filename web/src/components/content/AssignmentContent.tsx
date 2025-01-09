@@ -18,11 +18,22 @@ import { useFetch } from '../../hooks/useFetch'
 import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { LudosContext } from '../../contexts/LudosContext'
+import { Features } from '../../request'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
   teachingLanguage: Language
   isPresentation: boolean
+}
+
+export function getInstructionToShow(assignment: AssignmentOut, teachingLanguage: Language, features: Features) : string {
+  const showFinnishInstruction =
+    features.additionalSvContentForKertominen &&
+    isSukoAssignment(assignment) &&
+    assignment.assignmentTypeKoodiArvo === '002'
+
+  const instructionContent = teachingLanguage === Language.FI ? assignment.instructionFi : assignment.instructionSv
+  return showFinnishInstruction ? assignment.instructionFi : instructionContent
 }
 
 export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
@@ -45,14 +56,8 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
     setIsFavoriteModalOpen(false)
   }
 
-  const showFinnishInstruction =
-    features.additionalSvContentForKertominen &&
-    isSukoAssignment(assignment) &&
-    assignment.assignmentTypeKoodiArvo === '002'
-  console.log(showFinnishInstruction)
-  const instructionContent = teachingLanguage === Language.FI ? assignment.instructionFi : assignment.instructionSv
+  const instructionToShow = getInstructionToShow(assignment, teachingLanguage, features)
 
-  const instructionToShow = showFinnishInstruction ? assignment.instructionFi : instructionContent
 
   return (
     <>

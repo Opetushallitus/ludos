@@ -6,8 +6,8 @@ import { getContentName } from '../../../utils/assignmentUtils'
 import { Spinner } from '../../Spinner'
 import { fetchData } from '../../../request'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import PdfGenerator from './PdfGenerator'
 
-const PdfGenerator = React.lazy(() => import('./PdfGenerator'))
 
 type PdfDownloadButtonProps = {
   exam: Exam
