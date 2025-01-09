@@ -19,7 +19,7 @@ const convertContentAndInstructionToReactPdf = (
   features: Features
 ) => {
   try {
-    const { contentFi, contentSv, instructionFi, instructionSv, exam } = assignment
+    const { contentFi, contentSv, instructionFi, instructionSv } = assignment
     const content = language === Language.FI ? contentFi : contentSv
     const instruction = getInstructionToShow(assignment, language, features)  ? instructionFi : instructionSv
 
