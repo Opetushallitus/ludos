@@ -107,9 +107,11 @@ interface FormContentInputProps {
   formDataIsLoaded: boolean
 }
 
-const SwedishContent = () => {
+const SwedishContent = (props: { exam: any; assignmentTypeKoodiarvo: any }) => {
   const { t } = useLudosTranslation()
   const { features } = useContext(LudosContext)
+  const { exam, assignmentTypeKoodiarvo } = props
+  const isKertomistehtava = exam === Exam.SUKO && assignmentTypeKoodiarvo === '002'
   const {
     setValue,
     control,
@@ -118,6 +120,7 @@ const SwedishContent = () => {
   } = useFormContext()
 
   if (!features.additionalSvContentForKertominen) return null
+  if (!isKertomistehtava) return null
 
   const fieldName = 'contentSv[0]'
   const watchedContent = watch(fieldName)
@@ -172,9 +175,6 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
   const watchInstructionSv = watch('instructionSv')
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
-  const showAdditionalContentSv =
-    currentExam === Exam.SUKO && watchAssignmentTypeKoodiArvo && watchAssignmentTypeKoodiArvo === '002'
-
   return (
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
@@ -204,7 +204,7 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         />
 
         <ArrayContentField fieldName="contentFi" />
-        {showAdditionalContentSv && <SwedishContent />}
+        <SwedishContent exam={currentExam} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
       </div>
 
       {currentExam !== Exam.SUKO && (
