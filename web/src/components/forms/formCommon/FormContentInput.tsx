@@ -15,7 +15,7 @@ interface Field {
   content?: string
 }
 
-const ArrayContentField = ({ fieldName, overridingLabel }: { fieldName: string, overridingLabel?: string }) => {
+const ArrayContentField = ({ fieldName, overridingLabel }: { fieldName: string; overridingLabel?: string }) => {
   const { t } = useLudosTranslation()
   const {
     watch,
@@ -110,7 +110,9 @@ interface FormContentInputProps {
 const SwedishContent = () => {
   const { t } = useLudosTranslation()
   const {
-    setValue, control, watch,
+    setValue,
+    control,
+    watch,
     formState: { errors }
   } = useFormContext()
   const fieldName = 'contentSv[0]'
@@ -120,15 +122,18 @@ const SwedishContent = () => {
       <Controller
         control={control}
         render={() => {
-          return (<TipTap
-            onContentChange={(newContent) => setValue(fieldName, newContent)}
-            content={watchedContent}
-            dataTestId={'swedish-content'}
-            label={t('form.tehtavansisaltoruotsiksi')}
-
-            fieldError={!!errors[fieldName]}
-          />)
-        }} name={fieldName} />
+          return (
+            <TipTap
+              onContentChange={(newContent) => setValue(fieldName, newContent)}
+              content={watchedContent}
+              dataTestId={'swedish-content'}
+              label={t('form.tehtavansisaltoruotsiksi')}
+              fieldError={!!errors[fieldName]}
+            />
+          )
+        }}
+        name={fieldName}
+      />
       <FormError error={errors[fieldName]?.message as string} name={fieldName} />
     </div>
   )
@@ -162,9 +167,13 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
 
   const watchInstructionFi = watch('instructionFi')
   const watchInstructionSv = watch('instructionSv')
-  const watchAssignmentTypeKoodiArvo = watch("assignmentTypeKoodiArvo")
+  const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
-  const showAdditionalContentSv = features.additionalSvContentForKertominen && currentExam === Exam.SUKO && watchAssignmentTypeKoodiArvo && watchAssignmentTypeKoodiArvo === "002" 
+  const showAdditionalContentSv =
+    features.additionalSvContentForKertominen &&
+    currentExam === Exam.SUKO &&
+    watchAssignmentTypeKoodiArvo &&
+    watchAssignmentTypeKoodiArvo === '002'
 
   return (
     <>
@@ -195,7 +204,7 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         />
 
         <ArrayContentField fieldName="contentFi" />
-        { showAdditionalContentSv && <SwedishContent /> }
+        {showAdditionalContentSv && <SwedishContent />}
       </div>
 
       {currentExam !== Exam.SUKO && (
