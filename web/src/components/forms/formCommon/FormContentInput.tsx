@@ -109,12 +109,16 @@ interface FormContentInputProps {
 
 const SwedishContent = () => {
   const { t } = useLudosTranslation()
+  const { features } = useContext(LudosContext)
   const {
     setValue,
     control,
     watch,
     formState: { errors }
   } = useFormContext()
+
+  if (!features.additionalSvContentForKertominen) return null
+
   const fieldName = 'contentSv[0]'
   const watchedContent = watch(fieldName)
   return (
@@ -149,7 +153,6 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
     setValue,
     formState: { errors }
   } = useFormContext()
-  const { features } = useContext(LudosContext)
 
   const currentExam = watch('exam')
 
@@ -170,10 +173,7 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
   const showAdditionalContentSv =
-    features.additionalSvContentForKertominen &&
-    currentExam === Exam.SUKO &&
-    watchAssignmentTypeKoodiArvo &&
-    watchAssignmentTypeKoodiArvo === '002'
+    currentExam === Exam.SUKO && watchAssignmentTypeKoodiArvo && watchAssignmentTypeKoodiArvo === '002'
 
   return (
     <>
