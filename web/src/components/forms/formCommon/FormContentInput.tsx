@@ -169,10 +169,8 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
 
   const assignmentNameError = errors.nameRequired?.message as string
   const nameFiError = errors.nameFi?.message as string
-  const nameSvError = errors.nameSv?.message as string
 
   const watchInstructionFi = watch('instructionFi')
-  const watchInstructionSv = watch('instructionSv')
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
   return (
@@ -207,28 +205,51 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         <SwedishContent exam={currentExam} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
       </div>
 
-      {currentExam !== Exam.SUKO && (
-        <div className={`${activeTab === 'SV' ? '' : 'hidden'}`}>
-          <TextInput
-            id="nameSv"
-            register={register}
-            deps={['nameRequired']}
-            error={nameSvError || assignmentNameError}
-            required>
-            {t('form.tehtavannimi')}
-          </TextInput>
-
-          <TipTap
-            onContentChange={handleContentChange}
-            content={watchInstructionSv}
-            label={t('form.tehtavan_ohje')}
-            dataTestId="editor-instruction-sv"
-            key={`instruction-fi-${formDataIsLoaded ? 'loaded' : 'not-loaded'}`}
-          />
-
-          <ArrayContentField fieldName="contentSv" />
-        </div>
-      )}
+      {currentExam !== Exam.SUKO && <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded />}
     </>
+  )
+}
+
+interface TabState {
+  isActive: boolean
+  formDataIsLoaded: boolean
+}
+
+const SwedishTab = (props: TabState) => {
+  const { t } = useLudosTranslation()
+  const { register, watch, formState, setValue } = useFormContext()
+  const { isActive, formDataIsLoaded } = props
+
+  const watchInstructionSv = watch('instructionSv')
+  const assignmentNameError = formState.errors.nameRequired?.message as string
+  const nameSvError = formState.errors.nameSv?.message as string
+
+  const handleContentChange = (newContent: string) => {
+    if (isActive) {
+      setValue('instructionSv', newContent, { shouldDirty: true })
+    }
+  }
+
+  return (
+    <div className={`${isActive ? '' : 'hidden'}`}>
+      <TextInput
+        id="nameSv"
+        register={register}
+        deps={['nameRequired']}
+        error={nameSvError || assignmentNameError}
+        required>
+        {t('form.tehtavannimi')}
+      </TextInput>
+
+      <TipTap
+        onContentChange={handleContentChange}
+        content={watchInstructionSv}
+        label={t('form.tehtavan_ohje')}
+        dataTestId="editor-instruction-sv"
+        key={`instruction-fi-${formDataIsLoaded ? 'loaded' : 'not-loaded'}`}
+      />
+
+      <ArrayContentField fieldName="contentSv" />
+    </div>
   )
 }
