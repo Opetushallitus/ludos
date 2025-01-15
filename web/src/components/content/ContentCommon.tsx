@@ -19,10 +19,13 @@ type ContentHeaderProps = {
 export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
   const { t, lt } = useLudosTranslation()
 
+  const isKertomisTehtava = data.assignmentTypeKoodiArvo === '002'
+
   const shouldShowTeachingLanguageDropdown =
     data.contentType === ContentType.INSTRUCTION ||
     (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    data.contentType === ContentType.ASSIGNMENT
+    (data.contentType === ContentType.ASSIGNMENT &&
+      (data.exam !== Exam.SUKO || isKertomisTehtava))
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">

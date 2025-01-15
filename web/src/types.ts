@@ -52,6 +52,7 @@ export interface ContentBase {
   exam: Exam
   contentType: ContentType
   publishState: PublishState
+  assignmentTypeKoodiArvo?: string
 }
 
 interface ContentOutFields {
