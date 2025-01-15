@@ -107,11 +107,9 @@ interface FormContentInputProps {
   formDataIsLoaded: boolean
 }
 
-const SwedishContent = (props: { isSuko: boolean; assignmentTypeKoodiarvo: any }) => {
+const SwedishContent = ({ isKertomistehtava }: { isKertomistehtava: boolean }) => {
   const { t } = useLudosTranslation()
   const { features } = useContext(LudosContext)
-  const { isSuko, assignmentTypeKoodiarvo } = props
-  const isKertomistehtava = isSuko && assignmentTypeKoodiarvo === '002'
   const {
     setValue,
     control,
@@ -148,14 +146,17 @@ const SwedishContent = (props: { isSuko: boolean; assignmentTypeKoodiarvo: any }
 
 export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { t } = useLudosTranslation()
+  const { watch } = useFormContext()
+
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
+  const isKertomistehtava = watchAssignmentTypeKoodiArvo === '002'
 
   return (
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
       <div>
         <FinnishTab isActive={true} isSuko={true} formDataIsLoaded={formDataIsLoaded} />
-        <SwedishContent isSuko={true} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
+        <SwedishContent isKertomistehtava={isKertomistehtava} />
       </div>
     </>
   )
