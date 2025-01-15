@@ -148,10 +148,15 @@ const SwedishContent = (props: { isSuko: boolean; assignmentTypeKoodiarvo: any }
 
 export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { t } = useLudosTranslation()
+  const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
+
   return (
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
-      <FinnishTab isActive={true} isSuko={true} formDataIsLoaded={formDataIsLoaded} />
+      <div>
+        <FinnishTab isActive={true} isSuko={true} formDataIsLoaded={formDataIsLoaded} />
+        <SwedishContent isSuko={true} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
+      </div>
     </>
   )
 }
@@ -160,6 +165,10 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
   const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
 
+  function isActive(): boolean {
+    return activeTab === Language.FI
+  }
+
   return (
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
@@ -167,8 +176,13 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <FinnishTab isActive={activeTab === Language.FI} isSuko={false} formDataIsLoaded={formDataIsLoaded} />
-      <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded={formDataIsLoaded} />
+      <div className={`${isActive() ? '' : 'hidden'}`}>
+        <FinnishTab isActive={isActive()} isSuko={false} formDataIsLoaded={formDataIsLoaded} />
+      </div>
+
+      <div className={`${activeTab === Language.SV ? '' : 'hidden'}`}>
+        <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded={formDataIsLoaded} />
+      </div>
     </>
   )
 }
@@ -185,13 +199,12 @@ interface TabStateFI extends TabState {
 const FinnishTab = (props: TabStateFI) => {
   const { t } = useLudosTranslation()
   const { register, watch, formState, setValue } = useFormContext()
-  const { isActive, formDataIsLoaded, isSuko } = props
+  const { isActive, formDataIsLoaded } = props
 
   const assignmentNameError = formState.errors.nameRequired?.message as string
   const nameFiError = formState.errors.nameFi?.message as string
 
   const watchInstructionFi = watch('instructionFi')
-  const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
   const handleContentChange = (newContent: string) => {
     if (isActive) {
@@ -200,7 +213,7 @@ const FinnishTab = (props: TabStateFI) => {
   }
 
   return (
-    <div className={`${isActive || isSuko ? '' : 'hidden'}`}>
+    <>
       <TextInput
         id="nameFi"
         register={register}
@@ -219,8 +232,7 @@ const FinnishTab = (props: TabStateFI) => {
       />
 
       <ArrayContentField fieldName="contentFi" />
-      <SwedishContent isSuko={isSuko} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
-    </div>
+    </>
   )
 }
 
@@ -240,7 +252,7 @@ const SwedishTab = (props: TabState) => {
   }
 
   return (
-    <div className={`${isActive ? '' : 'hidden'}`}>
+    <>
       <TextInput
         id="nameSv"
         register={register}
@@ -259,6 +271,6 @@ const SwedishTab = (props: TabState) => {
       />
 
       <ArrayContentField fieldName="contentSv" />
-    </div>
+    </>
   )
 }
