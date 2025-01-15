@@ -107,11 +107,11 @@ interface FormContentInputProps {
   formDataIsLoaded: boolean
 }
 
-const SwedishContent = (props: { exam: any; assignmentTypeKoodiarvo: any }) => {
+const SwedishContent = (props: { isSuko: boolean; assignmentTypeKoodiarvo: any }) => {
   const { t } = useLudosTranslation()
   const { features } = useContext(LudosContext)
-  const { exam, assignmentTypeKoodiarvo } = props
-  const isKertomistehtava = exam === Exam.SUKO && assignmentTypeKoodiarvo === '002'
+  const { isSuko, assignmentTypeKoodiarvo } = props
+  const isKertomistehtava = isSuko && assignmentTypeKoodiarvo === '002'
   const {
     setValue,
     control,
@@ -149,29 +149,8 @@ const SwedishContent = (props: { exam: any; assignmentTypeKoodiarvo: any }) => {
 export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
-
-  const {
-    watch,
-    register,
-    setValue,
-    formState: { errors }
-  } = useFormContext()
-
+  const { watch } = useFormContext()
   const currentExam = watch('exam')
-
-  const handleContentChange = (newContent: string) => {
-    if (activeTab === Language.FI) {
-      setValue('instructionFi', newContent, { shouldDirty: true })
-    } else if (activeTab === Language.SV) {
-      setValue('instructionSv', newContent, { shouldDirty: true })
-    }
-  }
-
-  const assignmentNameError = errors.nameRequired?.message as string
-  const nameFiError = errors.nameFi?.message as string
-
-  const watchInstructionFi = watch('instructionFi')
-  const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
   return (
     <>
@@ -183,29 +162,15 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         </div>
       )}
 
-      <div className={`${activeTab === 'FI' || currentExam === Exam.SUKO ? '' : 'hidden'}`}>
-        <TextInput
-          id="nameFi"
-          register={register}
-          deps={['nameRequired']}
-          error={nameFiError || assignmentNameError}
-          required>
-          {t('form.tehtavannimi')}
-        </TextInput>
+      <FinnishTab
+        isActive={activeTab === Language.FI}
+        isSuko={currentExam === Exam.SUKO}
+        formDataIsLoaded={formDataIsLoaded}
+      />
 
-        <TipTap
-          onContentChange={handleContentChange}
-          content={watchInstructionFi}
-          label={t('form.tehtavan_ohje')}
-          dataTestId="editor-instruction-fi"
-          key={`instruction-fi-${formDataIsLoaded ? 'loaded' : 'not-loaded'}`}
-        />
-
-        <ArrayContentField fieldName="contentFi" />
-        <SwedishContent exam={currentExam} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
-      </div>
-
-      {currentExam !== Exam.SUKO && <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded />}
+      {currentExam !== Exam.SUKO && (
+        <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded={formDataIsLoaded} />
+      )}
     </>
   )
 }
@@ -213,6 +178,52 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
 interface TabState {
   isActive: boolean
   formDataIsLoaded: boolean
+}
+
+interface TabStateFI extends TabState {
+  isSuko: boolean
+}
+
+const FinnishTab = (props: TabStateFI) => {
+  const { t } = useLudosTranslation()
+  const { register, watch, formState, setValue } = useFormContext()
+  const { isActive, formDataIsLoaded, isSuko } = props
+
+  const assignmentNameError = formState.errors.nameRequired?.message as string
+  const nameFiError = formState.errors.nameFi?.message as string
+
+  const watchInstructionFi = watch('instructionFi')
+  const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
+
+  const handleContentChange = (newContent: string) => {
+    if (isActive) {
+      setValue('instructionFi', newContent, { shouldDirty: true })
+    }
+  }
+
+  return (
+    <div className={`${isActive || isSuko ? '' : 'hidden'}`}>
+      <TextInput
+        id="nameFi"
+        register={register}
+        deps={['nameRequired']}
+        error={nameFiError || assignmentNameError}
+        required>
+        {t('form.tehtavannimi')}
+      </TextInput>
+
+      <TipTap
+        onContentChange={handleContentChange}
+        content={watchInstructionFi}
+        label={t('form.tehtavan_ohje')}
+        dataTestId="editor-instruction-fi"
+        key={`instruction-fi-${formDataIsLoaded ? 'loaded' : 'not-loaded'}`}
+      />
+
+      <ArrayContentField fieldName="contentFi" />
+      <SwedishContent isSuko={isSuko} assignmentTypeKoodiarvo={watchAssignmentTypeKoodiArvo} />
+    </div>
+  )
 }
 
 const SwedishTab = (props: TabState) => {
