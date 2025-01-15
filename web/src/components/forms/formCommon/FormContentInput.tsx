@@ -146,31 +146,29 @@ const SwedishContent = (props: { isSuko: boolean; assignmentTypeKoodiarvo: any }
   )
 }
 
+export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
+  const { t } = useLudosTranslation()
+  return (
+    <>
+      <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+      <FinnishTab isActive={true} isSuko={true} formDataIsLoaded={formDataIsLoaded} />
+    </>
+  )
+}
+
 export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
-  const { watch } = useFormContext()
-  const currentExam = watch('exam')
 
   return (
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+      <div className="mb-6">
+        <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
 
-      {currentExam !== Exam.SUKO && (
-        <div className="mb-6">
-          <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        </div>
-      )}
-
-      <FinnishTab
-        isActive={activeTab === Language.FI}
-        isSuko={currentExam === Exam.SUKO}
-        formDataIsLoaded={formDataIsLoaded}
-      />
-
-      {currentExam !== Exam.SUKO && (
-        <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded={formDataIsLoaded} />
-      )}
+      <FinnishTab isActive={activeTab === Language.FI} isSuko={false} formDataIsLoaded={formDataIsLoaded} />
+      <SwedishTab isActive={activeTab === Language.SV} formDataIsLoaded={formDataIsLoaded} />
     </>
   )
 }

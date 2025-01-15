@@ -4,7 +4,7 @@ import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
 import { ContentFormAction, Exam, Oppimaara } from '../../../types'
 import { sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
-import { FormContentInput } from '../formCommon/FormContentInput'
+import { SukoFormContentInput } from '../formCommon/FormContentInput'
 import { FormHeader } from '../formCommon/FormHeader'
 import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
 import { LudosSelect } from '../../ludosSelect/LudosSelect'
@@ -159,7 +159,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput formDataIsLoaded={isLoaded} />
+          <SukoFormContentInput formDataIsLoaded={isLoaded} />
         </form>
       </FormProvider>
 
