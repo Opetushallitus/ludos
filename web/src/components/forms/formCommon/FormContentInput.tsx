@@ -155,7 +155,7 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
     <>
       <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
       <div>
-        <FinnishTab isActive={true} isSuko={true} formDataIsLoaded={formDataIsLoaded} />
+        <FinnishTab isActive={true} formDataIsLoaded={formDataIsLoaded} />
         <SwedishContent isKertomistehtava={isKertomistehtava} />
       </div>
     </>
@@ -178,7 +178,7 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
       </div>
 
       <div className={`${isActive() ? '' : 'hidden'}`}>
-        <FinnishTab isActive={isActive()} isSuko={false} formDataIsLoaded={formDataIsLoaded} />
+        <FinnishTab isActive={isActive()} formDataIsLoaded={formDataIsLoaded} />
       </div>
 
       <div className={`${activeTab === Language.SV ? '' : 'hidden'}`}>
@@ -193,11 +193,7 @@ interface TabState {
   formDataIsLoaded: boolean
 }
 
-interface TabStateFI extends TabState {
-  isSuko: boolean
-}
-
-const FinnishTab = (props: TabStateFI) => {
+const FinnishTab = (props: TabState) => {
   const { t } = useLudosTranslation()
   const { register, watch, formState, setValue } = useFormContext()
   const { isActive, formDataIsLoaded } = props
