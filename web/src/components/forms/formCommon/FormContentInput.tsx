@@ -144,8 +144,13 @@ const SwedishContent = ({ isKertomistehtava }: { isKertomistehtava: boolean }) =
   )
 }
 
-export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
+const SisaltoSubHeader = () => {
   const { t } = useLudosTranslation()
+
+  return <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+}
+
+export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const { watch } = useFormContext()
 
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
@@ -153,7 +158,7 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
 
   return (
     <>
-      <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+      <SisaltoSubHeader />
       <div>
         <FinnishTab isActive={true} formDataIsLoaded={formDataIsLoaded} />
         <SwedishContent isKertomistehtava={isKertomistehtava} />
@@ -163,7 +168,6 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
 }
 
 export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
-  const { t } = useLudosTranslation()
   const [activeTab, setActiveTab] = useState<Language>('FI')
 
   function isActive(): boolean {
@@ -172,7 +176,7 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
 
   return (
     <>
-      <div className="mb-2 text-lg font-semibold">{t('form.sisalto')}</div>
+      <SisaltoSubHeader />
       <div className="mb-6">
         <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
