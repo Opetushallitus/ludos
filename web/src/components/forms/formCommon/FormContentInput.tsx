@@ -170,10 +170,6 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
 export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) => {
   const [activeTab, setActiveTab] = useState<Language>('FI')
 
-  function isActive(): boolean {
-    return activeTab === Language.FI
-  }
-
   return (
     <>
       <SisaltoSubHeader />
@@ -181,8 +177,8 @@ export const FormContentInput = ({ formDataIsLoaded }: FormContentInputProps) =>
         <LanguageTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
-      <div className={`${isActive() ? '' : 'hidden'}`}>
-        <FinnishTab isActive={isActive()} formDataIsLoaded={formDataIsLoaded} />
+      <div className={`${activeTab === Language.FI ? '' : 'hidden'}`}>
+        <FinnishTab isActive={activeTab === Language.FI} formDataIsLoaded={formDataIsLoaded} />
       </div>
 
       <div className={`${activeTab === Language.SV ? '' : 'hidden'}`}>
