@@ -6,7 +6,9 @@ import {
   isInstruction,
   isSukoAssignment,
   isSukoCertificate,
-  Language
+  Language,
+  Oppimaara,
+  SukoAssignmentDtoOut
 } from '../types'
 
 // Removes key-value pairs with null or undefined values from an object
@@ -39,6 +41,14 @@ export function isSukoKertomisTehtavaButNotAFinnishOrASwedish(data: ContentBaseO
     return false
   }
 
+  return isKertomisTehtavaButNotAFinnishOrASwedish(data)
+}
+
+type OppimaaraTehtavatyyppi = Pick<SukoAssignmentDtoOut, 'assignmentTypeKoodiArvo'> & {
+  oppimaara: Pick<Oppimaara, 'oppimaaraKoodiArvo'>
+}
+
+export function isKertomisTehtavaButNotAFinnishOrASwedish(data: OppimaaraTehtavatyyppi): boolean {
   // 002 is the code for Kertomistehtävä
   if (data.assignmentTypeKoodiArvo !== '002') {
     return false

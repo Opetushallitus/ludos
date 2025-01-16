@@ -15,11 +15,13 @@ import {
   koodistoSelectOptions,
   oppimaaraSelectOptions
 } from '../../ludosSelect/helpers'
-import { useCallback } from 'react'
+import { useCallback, useContext } from 'react'
 import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 import { InfoBox } from '../../InfoBox'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { isKertomisTehtavaButNotAFinnishOrASwedish } from '../../../utils/assignmentUtils'
+import { LudosContext } from '../../../contexts/LudosContext'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -29,6 +31,7 @@ type SukoAssignmentFormProps = {
 export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useLudosTranslation()
   const { koodistos, sortKooditAlphabetically, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
+  const { features } = useContext(LudosContext)
 
   const {
     methods,
@@ -73,6 +76,29 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     })
   }, [koodistos.oppiaineetjaoppimaaratlops2021])
 
+  function isMultiLanguageInputRequired() {
+    const assignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
+    const oppimaaraKoodiArvo = watch('oppimaara.oppimaaraKoodiArvo')
+
+    return isKertomisTehtavaButNotAFinnishOrASwedish({
+      assignmentTypeKoodiArvo: assignmentTypeKoodiArvo,
+      oppimaara: {
+        oppimaaraKoodiArvo: oppimaaraKoodiArvo
+      }
+    })
+  }
+
+  function getOldHeaderDescription() {
+    return action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')
+  }
+
+  function getHeaderDescription() {
+    if (action === ContentFormAction.muokkaus) return t('form.muokkauskuvaus')
+    if (isMultiLanguageInputRequired()) return t('form.kuvauskoetehtava')
+
+    return t('form.lisaauusitehtavakuvaus')
+  }
+
   if (defaultValueError) {
     return <InfoBox type="error" i18nKey={t('error.sisallon-lataaminen-epaonnistui')} />
   }
@@ -81,7 +107,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     <>
       <FormHeader
         heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
-        description={action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')}
+        description={features.additionalSvContentForKertominen ? getHeaderDescription() : getOldHeaderDescription()}
       />
       <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
