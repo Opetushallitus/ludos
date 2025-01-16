@@ -1,5 +1,6 @@
 import {
   ContentBaseOut,
+  Exam,
   isAssignment,
   isCertificate,
   isInstruction,
@@ -31,4 +32,29 @@ export const getContentName = (data: ContentBaseOut, teachingLanguage: Language)
   } else {
     throw Error(`Data has unknown type: ${typeof data}`)
   }
+}
+
+export function isSukoKertomisTehtavaButNotAFinnishOrASwedish(data: ContentBaseOut): boolean {
+  if (!isSukoAssignment(data)) {
+    return false
+  }
+  // SUKO is the code for Suullinen kielitaito
+  if (data.exam !== Exam.SUKO) {
+    return false
+  }
+
+  // 002 is the code for Kertomistehtävä
+  if (data.assignmentTypeKoodiArvo !== '002') {
+    return false
+  }
+
+  if (data.oppimaara.oppimaaraKoodiArvo === 'TKRUA1') {
+    return false
+  }
+
+  if (data.oppimaara.oppimaaraKoodiArvo === 'TKFIA1') {
+    return false
+  }
+
+  return true
 }
