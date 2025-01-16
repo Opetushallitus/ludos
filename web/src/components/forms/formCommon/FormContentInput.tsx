@@ -9,6 +9,7 @@ import { Icon } from '../../Icon'
 import { Exam, Language } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { LudosContext } from '../../../contexts/LudosContext'
+import { FINNISH_A, KERTOMISTEHTAVA, SWEDISH_A } from '../../../utils/assignmentUtils'
 
 interface Field {
   id: string
@@ -107,7 +108,7 @@ interface FormContentInputProps {
   formDataIsLoaded: boolean
 }
 
-const SwedishContent = ({ isKertomistehtava }: { isKertomistehtava: boolean }) => {
+const SwedishContent = () => {
   const { t } = useLudosTranslation()
   const { features } = useContext(LudosContext)
   const {
@@ -118,7 +119,6 @@ const SwedishContent = ({ isKertomistehtava }: { isKertomistehtava: boolean }) =
   } = useFormContext()
 
   if (!features.additionalSvContentForKertominen) return null
-  if (!isKertomistehtava) return null
 
   const fieldName = 'contentSv[0]'
   const watchedContent = watch(fieldName)
@@ -154,14 +154,19 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
   const { watch } = useFormContext()
 
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
-  const isKertomistehtava = watchAssignmentTypeKoodiArvo === '002'
+  const isKertomistehtava = watchAssignmentTypeKoodiArvo === KERTOMISTEHTAVA
+
+  const watchOppimaara = watch('oppimaara')
+  const oppimaaraKoodiArvo = watchOppimaara?.oppimaaraKoodiArvo
+  const isAFinnishOrASwedishAssignment = oppimaaraKoodiArvo === SWEDISH_A || oppimaaraKoodiArvo === FINNISH_A
+  const showSwedishContent = isKertomistehtava && !isAFinnishOrASwedishAssignment
 
   return (
     <>
       <SisaltoSubHeader />
       <div>
         <FinnishTab isActive={true} formDataIsLoaded={formDataIsLoaded} />
-        <SwedishContent isKertomistehtava={isKertomistehtava} />
+        { showSwedishContent && <SwedishContent /> }
       </div>
     </>
   )

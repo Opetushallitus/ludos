@@ -1,6 +1,5 @@
 import {
   ContentBaseOut,
-  Exam,
   isAssignment,
   isCertificate,
   isInstruction,
@@ -10,6 +9,10 @@ import {
   Oppimaara,
   SukoAssignmentDtoOut
 } from '../types'
+
+export const SWEDISH_A = 'TKRUA1'
+export const FINNISH_A = 'TKFIA1'
+export const KERTOMISTEHTAVA = '002'
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
@@ -50,15 +53,15 @@ type OppimaaraTehtavatyyppi = Pick<SukoAssignmentDtoOut, 'assignmentTypeKoodiArv
 
 export function isKertomisTehtavaButNotAFinnishOrASwedish(data: OppimaaraTehtavatyyppi): boolean {
   // 002 is the code for Kertomistehtävä
-  if (data.assignmentTypeKoodiArvo !== '002') {
+  if (data.assignmentTypeKoodiArvo !== KERTOMISTEHTAVA) {
     return false
   }
 
-  if (data.oppimaara.oppimaaraKoodiArvo === 'TKRUA1') {
+  if (data.oppimaara.oppimaaraKoodiArvo === SWEDISH_A) {
     return false
   }
 
-  if (data.oppimaara.oppimaaraKoodiArvo === 'TKFIA1') {
+  if (data.oppimaara.oppimaaraKoodiArvo === FINNISH_A) {
     return false
   }
 
