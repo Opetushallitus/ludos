@@ -38,10 +38,6 @@ export function isSukoKertomisTehtavaButNotAFinnishOrASwedish(data: ContentBaseO
   if (!isSukoAssignment(data)) {
     return false
   }
-  // SUKO is the code for Suullinen kielitaito
-  if (data.exam !== Exam.SUKO) {
-    return false
-  }
 
   // 002 is the code for Kertomistehtävä
   if (data.assignmentTypeKoodiArvo !== '002') {
