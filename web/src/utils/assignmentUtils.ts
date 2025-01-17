@@ -39,17 +39,27 @@ export const getContentName = (data: ContentBaseOut, teachingLanguage: Language)
   }
 }
 
-export function isSukoKertomisTehtavaButNotAFinnishOrASwedish(data: ContentBaseOut): boolean {
+export function isSukoKertomisTehtavaAndFinnishOrASwedishLevelA(data: ContentBaseOut): boolean {
   if (!isSukoAssignment(data)) {
     return false
   }
 
-  return isKertomisTehtavaButNotAFinnishOrASwedish(data)
+  if (data.assignmentTypeKoodiArvo !== KERTOMISTEHTAVA) {
+    return false
+  }
+
+  return isFinnishOrASwedishLevelA(data)
 }
 
-type OppimaaraTehtavatyyppi = Pick<SukoAssignmentDtoOut, 'assignmentTypeKoodiArvo'> & {
+type OppimaaraKoodiArvo = {
   oppimaara: Pick<Oppimaara, 'oppimaaraKoodiArvo'>
 }
+
+export function isFinnishOrASwedishLevelA(data: OppimaaraKoodiArvo): boolean {
+  return data.oppimaara.oppimaaraKoodiArvo === FINNISH_A || data.oppimaara.oppimaaraKoodiArvo === SWEDISH_A
+}
+
+type OppimaaraTehtavatyyppi = Pick<SukoAssignmentDtoOut, 'assignmentTypeKoodiArvo'> & OppimaaraKoodiArvo
 
 export function isKertomisTehtavaButNotAFinnishOrASwedish(data: OppimaaraTehtavatyyppi): boolean {
   // 002 is the code for Kertomistehtävä
@@ -57,13 +67,5 @@ export function isKertomisTehtavaButNotAFinnishOrASwedish(data: OppimaaraTehtava
     return false
   }
 
-  if (data.oppimaara.oppimaaraKoodiArvo === SWEDISH_A) {
-    return false
-  }
-
-  if (data.oppimaara.oppimaaraKoodiArvo === FINNISH_A) {
-    return false
-  }
-
-  return true
+  return !isFinnishOrASwedishLevelA(data)
 }
