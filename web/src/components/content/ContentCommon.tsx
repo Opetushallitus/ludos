@@ -8,7 +8,7 @@ import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
 import { esitysnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
-import { lazy, Suspense } from 'react'
+import { lazy, ReactElement, Suspense } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
@@ -16,15 +16,26 @@ type ContentHeaderProps = {
   isPresentation: boolean
 }
 
-export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
-  const { lt } = useLudosTranslation()
-
+export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement  {
   const isKertomisTehtava = data.assignmentTypeKoodiArvo === '002'
 
-  const shouldShowTeachingLanguageDropdown =
-    data.contentType === ContentType.INSTRUCTION ||
-    (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    (data.contentType === ContentType.ASSIGNMENT && (data.exam !== Exam.SUKO || isKertomisTehtava))
+  if (data.contentType === ContentType.INSTRUCTION) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  if (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  if (data.contentType === ContentType.ASSIGNMENT && (data.exam !== Exam.SUKO || isKertomisTehtava)) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation })
+}
+
+export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+  const { lt } = useLudosTranslation()
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
@@ -32,14 +43,26 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
         data={data}
         teachingLanguage={teachingLanguage}
         isPresentation={isPresentation}
-        createdAt={data.createdAt} />
+        createdAt={data.createdAt}
+      />
 
-      {shouldShowTeachingLanguageDropdown && (
-        <div>
-          <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
-          <TeachingLanguageSelect exam={data.exam} />
-        </div>
-      )}
+      <div>
+        <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
+        <TeachingLanguageSelect exam={data.exam} />
+      </div>
+    </div>
+  )
+}
+
+export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+  return (
+    <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
+      <AssignmentTitle
+        data={data}
+        teachingLanguage={teachingLanguage}
+        isPresentation={isPresentation}
+        createdAt={data.createdAt}
+      />
     </div>
   )
 }
