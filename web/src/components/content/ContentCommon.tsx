@@ -24,8 +24,7 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
   const shouldShowTeachingLanguageDropdown =
     data.contentType === ContentType.INSTRUCTION ||
     (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    (data.contentType === ContentType.ASSIGNMENT &&
-      (data.exam !== Exam.SUKO || isKertomisTehtava))
+    (data.contentType === ContentType.ASSIGNMENT && (data.exam !== Exam.SUKO || isKertomisTehtava))
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
@@ -159,12 +158,15 @@ type RenderContentProps = {
 }
 
 const RenderContent = ({ content, customKey }: RenderContentProps) => {
-if (Array.isArray(content)) {
-  return <> {
-    content.map((it, i) => (
-      <TipTap key={`${customKey}-${i}`} content={it} editable={false} dataTestId={`${customKey}-${i}`} />
-    ))
-    }</>
+  if (Array.isArray(content)) {
+    return (
+      <>
+        {' '}
+        {content.map((it, i) => (
+          <TipTap key={`${customKey}-${i}`} content={it} editable={false} dataTestId={`${customKey}-${i}`} />
+        ))}
+      </>
+    )
   }
   return <TipTap key={customKey} content={content} editable={false} dataTestId={`${customKey}-0`} />
 }
