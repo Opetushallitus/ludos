@@ -17,7 +17,7 @@ type ContentHeaderProps = {
 }
 
 export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
-  const { t, lt } = useLudosTranslation()
+  const { lt } = useLudosTranslation()
 
   const isKertomisTehtava = data.assignmentTypeKoodiArvo === '002'
 
@@ -28,24 +28,45 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
-      <div className="flex flex-col">
-        {!isPresentation && (
-          <div className="row my-1">
-            <p>{toLocaleDate(data.createdAt)}</p>
-          </div>
-        )}
-        <div className="row">
-          <h2 className="w-full break-normal" data-testid="assignment-header">
-            {getContentName(data, teachingLanguage) || t('form.nimeton')}
-          </h2>
-        </div>
-      </div>
+      <AssignmentTitle
+        data={data}
+        teachingLanguage={teachingLanguage}
+        isPresentation={isPresentation}
+        createdAt={data.createdAt} />
+
       {shouldShowTeachingLanguageDropdown && (
         <div>
           <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
           <TeachingLanguageSelect exam={data.exam} />
         </div>
       )}
+    </div>
+  )
+}
+
+interface AssignmentTitleProps {
+  data: ContentBaseOut
+  teachingLanguage: Language
+  createdAt: string | Date
+  isPresentation: boolean
+}
+
+const AssignmentTitle = (props: AssignmentTitleProps) => {
+  const { t } = useLudosTranslation()
+  const { data, teachingLanguage, createdAt, isPresentation } = props
+
+  return (
+    <div className="flex flex-col">
+      {!isPresentation && (
+        <div className="row my-1">
+          <p>{toLocaleDate(createdAt)}</p>
+        </div>
+      )}
+      <div className="row">
+        <h2 className="w-full break-normal" data-testid="assignment-header">
+          {getContentName(data, teachingLanguage) || t('form.nimeton')}
+        </h2>
+      </div>
     </div>
   )
 }
