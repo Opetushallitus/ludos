@@ -27,7 +27,7 @@ export type AssignmentTextContent = Pick<
 >
 
 function createKertominenFormDataForOppimaaraKoodiarvo(oppimaaraKoodiArvo: string): SukoAssignmentFormType {
-  let formData = createAssignmentFormDataByExam[Exam.SUKO]
+  const formData = createAssignmentFormDataByExam[Exam.SUKO]
   formData.oppimaara.oppimaaraKoodiArvo = oppimaaraKoodiArvo
   formData.assignmentTypeKoodiArvo = KERTOMISTEHTAVA
   return formData
@@ -42,7 +42,7 @@ export function createASuomiKertominenFormData(): SukoAssignmentFormType {
 }
 
 export function createKertominenFormData(): SukoAssignmentFormType {
-  let formData = createAssignmentFormDataByExam[Exam.SUKO]
+  const formData = createAssignmentFormDataByExam[Exam.SUKO]
   formData.assignmentTypeKoodiArvo = KERTOMISTEHTAVA
   return formData
 }
