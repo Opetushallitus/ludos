@@ -10,7 +10,7 @@ import {
 import {
   assertAssignmentContentPage,
   contentIdFromContentPage, createARuotsiKertominenFormData, createASuomiKertominenFormData,
-  createFormData, createKertominenFormData,
+  createFormData, createBiologyKertominenFormData,
   fillAssignmentForm,
   fillAssignmentType,
   fillLdAssignmentForm
@@ -266,8 +266,10 @@ test.describe('Kertomistehtava shows "Swedish content"-field', () => {
   test("if SUKO test with Kertominen as the assignment type, show swedish content field", async ({ page}) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     await form.initializeTest()
-    const formData = createKertominenFormData()
+    const formData = createBiologyKertominenFormData()
     await fillAssignmentForm(form, formData)
     await expect(form.contentSv).toBeVisible()
+    await form.submitButton.click()
+    await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(1)
   })
 })

@@ -12,6 +12,7 @@ import {
 
 export const SWEDISH_A = 'TKRUA1'
 export const FINNISH_A = 'TKFIA1'
+export const BIOLOGY = 'BI'
 export const KERTOMISTEHTAVA = '002'
 
 // Removes key-value pairs with null or undefined values from an object

@@ -19,7 +19,7 @@ import {
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
-import { FINNISH_A, KERTOMISTEHTAVA, SWEDISH_A } from 'web/src/utils/assignmentUtils'
+import { BIOLOGY, FINNISH_A, KERTOMISTEHTAVA, SWEDISH_A } from 'web/src/utils/assignmentUtils'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
@@ -39,6 +39,10 @@ export function createARuotsiKertominenFormData(): SukoAssignmentFormType {
 
 export function createASuomiKertominenFormData(): SukoAssignmentFormType {
   return createKertominenFormDataForOppimaaraKoodiarvo(FINNISH_A)
+}
+
+export function createBiologyKertominenFormData(): SukoAssignmentFormType {
+  return createKertominenFormDataForOppimaaraKoodiarvo(BIOLOGY)
 }
 
 export function createKertominenFormData(): SukoAssignmentFormType {
