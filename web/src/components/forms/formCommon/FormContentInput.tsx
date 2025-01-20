@@ -9,7 +9,9 @@ import { Icon } from '../../Icon'
 import { Exam, Language } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { LudosContext } from '../../../contexts/LudosContext'
-import { FINNISH_A, KERTOMISTEHTAVA, SWEDISH_A } from '../../../utils/assignmentUtils'
+import {
+  isKertomisTehtavaButNotAFinnishOrASwedish,
+} from '../../../utils/assignmentUtils'
 
 interface Field {
   id: string
@@ -154,12 +156,16 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
   const { watch } = useFormContext()
 
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
-  const isKertomistehtava = watchAssignmentTypeKoodiArvo === KERTOMISTEHTAVA
 
   const watchOppimaara = watch('oppimaara')
   const oppimaaraKoodiArvo = watchOppimaara?.oppimaaraKoodiArvo
-  const isAFinnishOrASwedishAssignment = oppimaaraKoodiArvo === SWEDISH_A || oppimaaraKoodiArvo === FINNISH_A
-  const showSwedishContent = isKertomistehtava && !isAFinnishOrASwedishAssignment
+
+  const showSwedishContent = isKertomisTehtavaButNotAFinnishOrASwedish({
+    assignmentTypeKoodiArvo: watchAssignmentTypeKoodiArvo,
+    oppimaara: {
+      oppimaaraKoodiArvo
+    }
+  })
 
   return (
     <>
