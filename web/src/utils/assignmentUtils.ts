@@ -10,9 +10,9 @@ import {
   SukoAssignmentDtoOut
 } from '../types'
 
-const SWEDISH_A = 'TKRUA1'
-const FINNISH_A = 'TKFIA1'
-const KERTOMISTEHTAVA = '002'
+export const SWEDISH_A = 'TKRUA1'
+export const FINNISH_A = 'TKFIA1'
+export const KERTOMISTEHTAVA = '002'
 
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
