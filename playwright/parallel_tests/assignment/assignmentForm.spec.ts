@@ -9,8 +9,11 @@ import {
 } from '../../helpers'
 import {
   assertAssignmentContentPage,
-  contentIdFromContentPage, createARuotsiKertominenFormData, createASuomiKertominenFormData,
-  createFormData, createBiologyKertominenFormData,
+  contentIdFromContentPage,
+  createARuotsiKertominenFormData,
+  createASuomiKertominenFormData,
+  createBiologyKertominenFormData,
+  createFormData,
   fillAssignmentForm,
   fillAssignmentType,
   fillLdAssignmentForm
@@ -255,6 +258,10 @@ test.describe('Kertomistehtava shows "Swedish content"-field', () => {
     const formData = createARuotsiKertominenFormData()
     await fillAssignmentForm(form, formData)
     await expect(form.contentSv).toBeHidden()
+    await form.submitButton.click()
+    await page.getByTestId('assignment-header').waitFor({ state: 'visible' })
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(0)
   })
   test("if SUKO test with Kertominen as the assignment type but the subject is A suomi, don't show swedish content field", async ({ page}) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
@@ -262,6 +269,10 @@ test.describe('Kertomistehtava shows "Swedish content"-field', () => {
     const formData = createASuomiKertominenFormData()
     await fillAssignmentForm(form, formData)
     await expect(form.contentSv).toBeHidden()
+    await form.submitButton.click()
+    await page.getByTestId('assignment-header').waitFor({ state: 'visible' })
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(0)
   })
   test("if SUKO test with Kertominen as the assignment type, show swedish content field", async ({ page}) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
