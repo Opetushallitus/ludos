@@ -19,7 +19,8 @@ export class AssignmentFormModel extends FormModel {
     readonly exam: Exam,
     readonly createAssignmentButton = page.getByTestId('create-koetehtava-button'),
     readonly formErrorMsgOppimaara = page.getByTestId('error-message-oppimaara'),
-    readonly formErrorMsgLukuvuosi = page.getByTestId('error-message-lukuvuosiKoodiArvos')
+    readonly formErrorMsgLukuvuosi = page.getByTestId('error-message-lukuvuosiKoodiArvos'),
+    readonly contentSv = page.getByTestId('swedish-content')
   ) {
     super(page, exam)
   }

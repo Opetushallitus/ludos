@@ -9,8 +9,8 @@ import {
 } from '../../helpers'
 import {
   assertAssignmentContentPage,
-  contentIdFromContentPage,
-  createFormData,
+  contentIdFromContentPage, createARuotsiKertominenFormData, createASuomiKertominenFormData,
+  createFormData, createKertominenFormData,
   fillAssignmentForm,
   fillAssignmentType,
   fillLdAssignmentForm
@@ -245,5 +245,29 @@ Object.values(Exam).forEach((exam) => {
       await form.submitButton.click()
       await testNameField(form)
     })
+  })
+})
+
+test.describe('Kertomistehtava shows "Swedish content"-field', () => {
+  test("if SUKO test with Kertominen as the assignment type but the subject is A ruotsi, don't show swedish content field", async ({ page}) => {
+    const form = new AssignmentFormModel(page, Exam.SUKO)
+    await form.initializeTest()
+    const formData = createARuotsiKertominenFormData()
+    await fillAssignmentForm(form, formData)
+    await expect(form.contentSv).toBeHidden()
+  })
+  test("if SUKO test with Kertominen as the assignment type but the subject is A suomi, don't show swedish content field", async ({ page}) => {
+    const form = new AssignmentFormModel(page, Exam.SUKO)
+    await form.initializeTest()
+    const formData = createASuomiKertominenFormData()
+    await fillAssignmentForm(form, formData)
+    await expect(form.contentSv).toBeHidden()
+  })
+  test("if SUKO test with Kertominen as the assignment type, show swedish content field", async ({ page}) => {
+    const form = new AssignmentFormModel(page, Exam.SUKO)
+    await form.initializeTest()
+    const formData = createKertominenFormData()
+    await fillAssignmentForm(form, formData)
+    await expect(form.contentSv).toBeVisible()
   })
 })
