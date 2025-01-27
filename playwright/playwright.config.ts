@@ -6,8 +6,6 @@ import * as process from 'process'
  */
 function getBaseURL() {
   if (process.env.CI) return 'http://ludos-server:8080'
-  if (process.env.RUN_LOCAL_TESTS_IN_UI_MODE) return 'http://127.0.0.1:8080'
-
   return 'http://server:8080'
 }
 
