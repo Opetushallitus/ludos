@@ -1,6 +1,6 @@
 import { Icon } from '../Icon'
 import { ContentBaseOut, ContentType, Exam, Language } from '../../types'
-import { getContentName, isSukoKertomisTehtavaAndFinnishOrASwedishLevelA } from '../../utils/assignmentUtils'
+import { getContentName, isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { TipTap } from '../forms/formCommon/editor/TipTap'
@@ -17,10 +17,8 @@ type ContentHeaderProps = {
 }
 
 export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement {
-  const isKertomisTehtava = data.assignmentTypeKoodiArvo === '002'
-
-  if (isSukoKertomisTehtavaAndFinnishOrASwedishLevelA(data)) {
-    return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation })
+  if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
   }
 
   if (data.contentType === ContentType.INSTRUCTION) {
@@ -31,7 +29,7 @@ export function ContentHeader({ data, teachingLanguage, isPresentation }: Conten
     return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
   }
 
-  if (data.contentType === ContentType.ASSIGNMENT && (data.exam !== Exam.SUKO || isKertomisTehtava)) {
+  if (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO) {
     return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
   }
 

@@ -20,7 +20,7 @@ import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 import { InfoBox } from '../../InfoBox'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { isKertomisTehtavaButNotAFinnishOrASwedish } from '../../../utils/assignmentUtils'
+import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
 import { LudosContext } from '../../../contexts/LudosContext'
 
 type SukoAssignmentFormProps = {
@@ -53,7 +53,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   } = methods
 
   const currentNameFi = watch('nameFi')
-  const currentOppimaara: Oppimaara = watch('oppimaara')
+  const currentOppimaara = watch('oppimaara')
   const currentTavoitetaso = watch('tavoitetasoKoodiArvo')
   const currentAihe = watch('aiheKoodiArvos')
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
@@ -78,13 +78,10 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
 
   function isMultiLanguageInputRequired() {
     const assignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
-    const oppimaaraKoodiArvo = watch('oppimaara.oppimaaraKoodiArvo')
 
-    return isKertomisTehtavaButNotAFinnishOrASwedish({
+    return isKertomisTehtavaAndSpecificOppimaara({
       assignmentTypeKoodiArvo: assignmentTypeKoodiArvo,
-      oppimaara: {
-        oppimaaraKoodiArvo: oppimaaraKoodiArvo
-      }
+      oppimaara: currentOppimaara
     })
   }
 

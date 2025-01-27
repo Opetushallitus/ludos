@@ -9,9 +9,7 @@ import { Icon } from '../../Icon'
 import { Exam, Language } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { LudosContext } from '../../../contexts/LudosContext'
-import {
-  isKertomisTehtavaButNotAFinnishOrASwedish,
-} from '../../../utils/assignmentUtils'
+import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
 
 interface Field {
   id: string
@@ -158,13 +156,10 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
   const watchAssignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
 
   const watchOppimaara = watch('oppimaara')
-  const oppimaaraKoodiArvo = watchOppimaara?.oppimaaraKoodiArvo
 
-  const showSwedishContent = isKertomisTehtavaButNotAFinnishOrASwedish({
+  const showSwedishContent = isKertomisTehtavaAndSpecificOppimaara({
     assignmentTypeKoodiArvo: watchAssignmentTypeKoodiArvo,
-    oppimaara: {
-      oppimaaraKoodiArvo
-    }
+    oppimaara: watchOppimaara
   })
 
   return (
@@ -172,7 +167,7 @@ export const SukoFormContentInput = ({ formDataIsLoaded }: FormContentInputProps
       <SisaltoSubHeader />
       <div>
         <FinnishTab isActive={true} formDataIsLoaded={formDataIsLoaded} />
-        { showSwedishContent && <SwedishContent /> }
+        {showSwedishContent && <SwedishContent />}
       </div>
     </>
   )

@@ -15,6 +15,12 @@ export const FINNISH_A = 'TKFIA1'
 export const BIOLOGY = 'BI'
 export const KERTOMISTEHTAVA = '002'
 
+const espanjaAOppimaara = 'VKA1.EA'
+const ranskaAOppimaara = 'VKA1.RA'
+const saksaAOppimaara = 'VKA1.SA'
+const venajaAOppimaara = 'VKA1.VE'
+const englantiAOppimaara = 'VKENA1'
+
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
 export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
@@ -40,7 +46,7 @@ export const getContentName = (data: ContentBaseOut, teachingLanguage: Language)
   }
 }
 
-export function isSukoKertomisTehtavaAndFinnishOrASwedishLevelA(data: ContentBaseOut): boolean {
+export function isSukoKertomisTehtavaAndSpecificOppimaara(data: ContentBaseOut): boolean {
   if (!isSukoAssignment(data)) {
     return false
   }
@@ -48,25 +54,41 @@ export function isSukoKertomisTehtavaAndFinnishOrASwedishLevelA(data: ContentBas
   if (data.assignmentTypeKoodiArvo !== KERTOMISTEHTAVA) {
     return false
   }
+  if (!data.oppimaara) {
+    return false
+  }
+  const { kielitarjontaKoodiArvo, oppimaaraKoodiArvo } = data.oppimaara
+  const koodiArvo = kielitarjontaKoodiArvo ? [oppimaaraKoodiArvo, kielitarjontaKoodiArvo].join('.') : oppimaaraKoodiArvo
 
-  return isFinnishOrASwedishLevelA(data)
+  return isSpecificOppimaara(koodiArvo)
 }
 
-type OppimaaraKoodiArvo = {
-  oppimaara: Pick<Oppimaara, 'oppimaaraKoodiArvo'>
+function isSpecificOppimaara(oppimaaraKoodiarvo: string) {
+  const supportedOppimaaras = [
+    espanjaAOppimaara,
+    ranskaAOppimaara,
+    saksaAOppimaara,
+    venajaAOppimaara,
+    englantiAOppimaara
+  ]
+  return supportedOppimaaras.includes(oppimaaraKoodiarvo)
 }
 
-export function isFinnishOrASwedishLevelA(data: OppimaaraKoodiArvo): boolean {
-  return data.oppimaara.oppimaaraKoodiArvo === FINNISH_A || data.oppimaara.oppimaaraKoodiArvo === SWEDISH_A
-}
-
-type OppimaaraTehtavatyyppi = Pick<SukoAssignmentDtoOut, 'assignmentTypeKoodiArvo'> & OppimaaraKoodiArvo
-
-export function isKertomisTehtavaButNotAFinnishOrASwedish(data: OppimaaraTehtavatyyppi): boolean {
+export function isKertomisTehtavaAndSpecificOppimaara(data: OppimaaraTehtavatyyppi) {
   // 002 is the code for Kertomistehtävä
   if (data.assignmentTypeKoodiArvo !== KERTOMISTEHTAVA) {
     return false
   }
-
-  return !isFinnishOrASwedishLevelA(data)
+  if (!data.oppimaara) {
+    return false
+  }
+  const { kielitarjontaKoodiArvo, oppimaaraKoodiArvo } = data.oppimaara
+  const koodiArvo = kielitarjontaKoodiArvo ? [oppimaaraKoodiArvo, kielitarjontaKoodiArvo].join('.') : oppimaaraKoodiArvo
+  return isSpecificOppimaara(koodiArvo)
 }
+
+type OppimaaraKoodiArvo = {
+  oppimaara: Pick<Oppimaara, 'oppimaaraKoodiArvo' | 'kielitarjontaKoodiArvo'>
+}
+
+type OppimaaraTehtavatyyppi = Pick<SukoAssignmentDtoOut, 'assignmentTypeKoodiArvo'> & OppimaaraKoodiArvo
