@@ -26,14 +26,17 @@ type AssignmentContentProps = {
   isPresentation: boolean
 }
 
-export function getInstructionToShow(assignment: AssignmentOut, teachingLanguage: Language, features: Features) : string {
-  const showFinnishInstruction =
-    features.additionalSvContentForKertominen &&
-    isSukoAssignment(assignment) &&
-    assignment.assignmentTypeKoodiArvo === '002'
+export function getInstructionToShow(
+  assignment: AssignmentOut,
+  teachingLanguage: Language,
+  features: Features
+): string {
+  const showFinnishInstruction = isSukoAssignment(assignment)
 
-  const instructionContent = teachingLanguage === Language.FI ? assignment.instructionFi : assignment.instructionSv
-  return showFinnishInstruction ? assignment.instructionFi : instructionContent
+  const instructionContent =
+    teachingLanguage === Language.FI || showFinnishInstruction ? assignment.instructionFi : assignment.instructionSv
+  return instructionContent
+}
 }
 
 export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
