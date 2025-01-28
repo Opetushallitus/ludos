@@ -41,7 +41,7 @@ export function createASuomiKertominenFormData(): SukoAssignmentFormType {
   return createKertominenFormDataForOppimaaraKoodiarvo(FINNISH_A)
 }
 
-export function createBiologyKertominenFormData(): SukoAssignmentFormType {
+export function createASaksaKertominenFormData(): SukoAssignmentFormType {
   return createKertominenFormDataForOppimaaraKoodiarvo(saksaAOppimaara)
 }
 

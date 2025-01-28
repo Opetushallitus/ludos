@@ -5,14 +5,15 @@ import {
   loginTestGroup,
   Role,
   setMultiSelectDropdownOptions,
-  setSingleSelectDropdownOption
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
 } from '../../helpers'
 import {
   assertAssignmentContentPage,
   contentIdFromContentPage,
   createARuotsiKertominenFormData,
   createASuomiKertominenFormData,
-  createBiologyKertominenFormData,
+  createASaksaKertominenFormData,
   createFormData,
   fillAssignmentForm,
   fillAssignmentType,
@@ -283,10 +284,23 @@ test.describe('Kertomistehtava shows "Swedish content"-field', () => {
   }) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     await form.initializeTest()
-    const formData = createBiologyKertominenFormData()
+    const formData = createASaksaKertominenFormData()
     await fillAssignmentForm(form, formData)
     await expect(form.contentSv).toBeVisible()
+    await form.contentSv.getByRole('textbox').fill('berätta om söta taxar')
     await form.submitButton.click()
-    await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(1)
+    await setTeachingLanguage(page, 'SV')
+    await expect(page.getByText('Testisisältö SUKO')).toBeHidden()
+    await expect(page.getByText('berätta om söta taxar')).toBeVisible()
+
+    await test.step('changed swedish language should not affect tehtavas that are not in the specified oppimääräs', async () => {
+      const form = new AssignmentFormModel(page, Exam.SUKO)
+      await form.initializeTest()
+      const formData = createASuomiKertominenFormData()
+      await fillAssignmentForm(form, formData)
+      await expect(form.contentSv).toBeHidden()
+      await form.submitButton.click()
+      await expect(page.getByText('Testisisältö SUKO')).toBeVisible()
+    })
   })
 })
