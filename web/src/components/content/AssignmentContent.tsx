@@ -19,6 +19,7 @@ import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteTogg
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { LudosContext } from '../../contexts/LudosContext'
 import { Features } from '../../request'
+import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -37,6 +38,15 @@ export function getInstructionToShow(
     teachingLanguage === Language.FI || showFinnishInstruction ? assignment.instructionFi : assignment.instructionSv
   return instructionContent
 }
+
+function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): Language {
+  if (isSukoKertomisTehtavaAndSpecificOppimaara(assignment)) {
+    return teachingLanguage
+  }
+  if (isSukoAssignment(assignment)) {
+    return 'FI'
+  }
+  return teachingLanguage
 }
 
 export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
@@ -58,9 +68,9 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
     await setFavoriteFolders({ data, favoriteAction: isFavorite ? FavoriteAction.EDIT : FavoriteAction.ADD })
     setIsFavoriteModalOpen(false)
   }
+  const contentLang = getContentLang(assignment, teachingLanguage)
 
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage, features)
-
 
   return (
     <>
@@ -126,7 +136,7 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
             }}
             pdfData={{
               baseOut: assignment,
-              language: teachingLanguage,
+              language: contentLang,
               contentType: ContentType.ASSIGNMENT
             }}
             disabled={!favoriteIds}
@@ -140,7 +150,7 @@ export const AssignmentContent = ({ assignment, teachingLanguage, isPresentation
 
       <ContentContent
         teachingLanguage={teachingLanguage}
-        content={teachingLanguage === Language.FI ? assignment.contentFi : assignment.contentSv}
+        content={contentLang === Language.FI ? assignment.contentFi : assignment.contentSv}
       />
 
       {isFavoriteModalOpen && favoriteIds && (
