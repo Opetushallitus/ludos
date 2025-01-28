@@ -19,7 +19,7 @@ import {
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
-import { BIOLOGY, FINNISH_A, KERTOMISTEHTAVA, saksaAOppimaara, SWEDISH_A } from 'web/src/utils/assignmentUtils'
+import { FINNISH_A, KERTOMISTEHTAVA, saksaAOppimaara, SWEDISH_A } from 'web/src/utils/assignmentUtils'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,

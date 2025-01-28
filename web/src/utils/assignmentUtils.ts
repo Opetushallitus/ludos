@@ -12,7 +12,6 @@ import {
 
 export const SWEDISH_A = 'TKRUA1'
 export const FINNISH_A = 'TKFIA1'
-export const BIOLOGY = 'BI'
 export const KERTOMISTEHTAVA = '002'
 
 const espanjaAOppimaara = 'VKA1.EA'
