@@ -252,7 +252,9 @@ Object.values(Exam).forEach((exam) => {
 })
 
 test.describe('Kertomistehtava shows "Swedish content"-field', () => {
-  test("if SUKO test with Kertominen as the assignment type but the subject is A ruotsi, don't show swedish content field", async ({ page}) => {
+  test("if SUKO test with Kertominen as the assignment type but the subject is A ruotsi, don't show swedish content field", async ({
+    page
+  }) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     await form.initializeTest()
     const formData = createARuotsiKertominenFormData()
@@ -263,7 +265,9 @@ test.describe('Kertomistehtava shows "Swedish content"-field', () => {
     await page.waitForLoadState('networkidle')
     await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(0)
   })
-  test("if SUKO test with Kertominen as the assignment type but the subject is A suomi, don't show swedish content field", async ({ page}) => {
+  test("if SUKO test with Kertominen as the assignment type but the subject is A suomi, don't show swedish content field", async ({
+    page
+  }) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     await form.initializeTest()
     const formData = createASuomiKertominenFormData()
@@ -274,7 +278,9 @@ test.describe('Kertomistehtava shows "Swedish content"-field', () => {
     await page.waitForLoadState('networkidle')
     await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(0)
   })
-  test("if SUKO test with Kertominen as the assignment type, show swedish content field", async ({ page}) => {
+  test('if SUKO test with Kertominen as the assignment type and oppimaara is Saksa A, show swedish content field', async ({
+    page
+  }) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     await form.initializeTest()
     const formData = createBiologyKertominenFormData()

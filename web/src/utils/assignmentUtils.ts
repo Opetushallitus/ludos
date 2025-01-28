@@ -17,7 +17,7 @@ export const KERTOMISTEHTAVA = '002'
 
 const espanjaAOppimaara = 'VKA1.EA'
 const ranskaAOppimaara = 'VKA1.RA'
-const saksaAOppimaara = 'VKA1.SA'
+export const saksaAOppimaara = 'VKA1.SA'
 const venajaAOppimaara = 'VKA1.VE'
 const englantiAOppimaara = 'VKENA1'
 
