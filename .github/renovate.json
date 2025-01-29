@@ -52,6 +52,11 @@
       "groupName": "jackson xml parser version 2.18.0",
       "matchPackageNames": ["com.fasterxml.jackson.module"],
       "allowedVersions": "!/2.18.0/"
+    },
+    {
+      "groupName": "Vite",
+      "matchPackageNames": ["vite"],
+      "matchUpdateTypes": ["minor", "patch"]
     }
   ],
   "prConcurrentLimit": 10
