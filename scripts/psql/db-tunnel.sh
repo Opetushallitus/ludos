@@ -30,7 +30,7 @@ function create_tunnel {
     docker compose -f "${repo}/scripts/psql/docker-compose.yml" down
   }
 
-  eval "require_aws_session_for_${ENV}"
+  eval "require_aws_session_for_env ${ENV}"
   start_db_tunnel
   trap stop_db_tunnel EXIT
   wait_for_pg_isready
