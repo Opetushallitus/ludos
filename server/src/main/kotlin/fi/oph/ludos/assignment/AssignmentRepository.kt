@@ -1058,7 +1058,7 @@ class AssignmentRepository(
             WHERE a.assignment_publish_state <> 'DELETED' AND fav.assignment_id IS NOT NULL $andIsPublishedIfOpettaja;
         """.trimIndent()
 
-        return jdbcTemplate.queryForObject(sql, Int::class.java, userOid)
+        return jdbcTemplate.queryForObject(sql, Int::class.java, userOid)!!
     }
 
     fun favoriteTableNamesByExam(exam: Exam) = when (exam) {

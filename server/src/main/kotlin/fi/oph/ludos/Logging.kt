@@ -1,6 +1,6 @@
 package fi.oph.ludos
 
-import ch.qos.logback.access.spi.IAccessEvent
+import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.access.tomcat.LogbackValve
 import com.fasterxml.jackson.core.JsonGenerator
 import fi.oph.ludos.auth.Kayttajatiedot

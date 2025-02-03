@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot") version "3.3.2"
+    id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.spring") version "2.1.10"
@@ -32,10 +32,11 @@ dependencies {
     implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.0")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    implementation("ch.qos.logback:logback-access:1.4.14")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("org.flywaydb:flyway-core:11.3.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.3.0")
+    implementation("ch.qos.logback.access:logback-access-common:2.0.6")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.30.9")
