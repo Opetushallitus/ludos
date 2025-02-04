@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1@sha256:93bfd3b68c109427185cd78b4779fc82b484b0b7618e36d0f104d4d801e66d25
 
-FROM node:23@sha256:3b73c4b366d490f76908dda253bb4516bbb3398948fd880d8682c5ef16427eca as web-build
+FROM node:23@sha256:73236efc6d24b792e476251b7bc7b000f45314d0e084dcd6af3d0a54489ad489 as web-build
 
 WORKDIR /ludos-web
 COPY web/package.json web/package-lock.json .
