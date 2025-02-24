@@ -20,10 +20,6 @@ type ContentHeaderProps = {
 export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement {
   const { features } = useContext(LudosContext)
 
-  if (!features.additionalSvContentForKertominen) {
-    return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation })
-  }
-
   if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
     return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
   }

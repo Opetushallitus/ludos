@@ -6,4 +6,3 @@ ludos:
   image-bucket-name: ludos-application-image-bucket-qa
 
 features:
-  additionalSvContentForKertominen: true

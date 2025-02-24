@@ -118,8 +118,6 @@ const SwedishContent = () => {
     formState: { errors }
   } = useFormContext()
 
-  if (!features.additionalSvContentForKertominen) return null
-
   const fieldName = 'contentSv[0]'
   const watchedContent = watch(fieldName)
   return (

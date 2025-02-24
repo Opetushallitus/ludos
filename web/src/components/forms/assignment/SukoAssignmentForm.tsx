@@ -85,10 +85,6 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     })
   }
 
-  function getOldHeaderDescription() {
-    return action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')
-  }
-
   function getHeaderDescription() {
     if (action === ContentFormAction.muokkaus) return t('form.muokkauskuvaus')
     if (isMultiLanguageInputRequired()) return t('form.kuvauskoetehtava')
@@ -104,7 +100,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     <>
       <FormHeader
         heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
-        description={features.additionalSvContentForKertominen ? getHeaderDescription() : getOldHeaderDescription()}
+        description={getHeaderDescription()}
       />
       <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
