@@ -30,7 +30,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
     implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.5.0")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
     implementation("org.flywaydb:flyway-core:11.3.4")
     implementation("org.flywaydb:flyway-database-postgresql:11.3.4")
