@@ -39,7 +39,7 @@ dependencies {
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.10")
     implementation("org.jsoup:jsoup:1.19.1")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.30.35")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.30.36")
     implementation("software.amazon.awssdk:s3:2.30.35")
     implementation("software.amazon.awssdk:sso:2.30.35")
     implementation("software.amazon.awssdk:ssooidc:2.30.35")
