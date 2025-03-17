@@ -9,7 +9,6 @@ import { Button } from '../Button'
 import { esitysnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
 import { lazy, ReactElement, Suspense, useContext } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
@@ -18,7 +17,6 @@ type ContentHeaderProps = {
 }
 
 export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement {
-  const { features } = useContext(LudosContext)
 
   if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
     return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
