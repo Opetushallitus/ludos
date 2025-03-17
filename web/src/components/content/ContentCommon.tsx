@@ -152,7 +152,7 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
   const { t } = useLudosTranslation()
 
   return (
-    <div className="row mt-3 w-full flex-wrap gap-3">
+    <div data-testid="content-action-row" className="row mt-3 w-full flex-wrap gap-3">
       <ContentActionButton
         contentAction={{
           actionName: 'esitysnakyma',
