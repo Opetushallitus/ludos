@@ -76,6 +76,7 @@
     font-weight: 400 700;
     font-style: italic;
 }
+@page { size: auto;  margin: 0; }
 
 :root {
     font-family: 'Open Sans Variable', 'Open Sans', sans-serif;
