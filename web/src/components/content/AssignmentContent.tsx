@@ -11,13 +11,14 @@ import {
 } from '../../types'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useContext, useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { useFetch } from '../../hooks/useFetch'
 import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
+import { LudosContext } from '../../contexts/LudosContext'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -52,13 +53,16 @@ export const AssignmentContentWithoutFavorites = (
 
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
+  const { features } = useContext(LudosContext)
 
   return (
     <>
-      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact" data-testid="assignment-metadata">
-        <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
-        { contentAction }
-      </div>
+      { (features.tulostusnakyma || !isPresentation) &&
+        (<div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact" data-testid="assignment-metadata">
+          <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
+          { contentAction }
+        </div>)
+      }
 
       <ContentInstruction teachingLanguage={teachingLanguage} content={instructionToShow} />
       <div className="mb-4 border-b border-gray-separator" />
