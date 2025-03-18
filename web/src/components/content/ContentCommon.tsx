@@ -49,7 +49,7 @@ export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPr
         createdAt={data.createdAt}
       />
 
-      <div>
+      <div className="print:hidden">
         <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
         <TeachingLanguageSelect exam={data.exam} />
       </div>
