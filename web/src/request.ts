@@ -261,7 +261,7 @@ export async function getUserDetailsRequest(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
 
-export const featuresSchema = z.object({})
+export const featuresSchema = z.object({ tulostusnakyma: z.boolean() })
 export type Features = z.infer<typeof featuresSchema>
 
 export async function getFeatures(): Promise<Features> {
