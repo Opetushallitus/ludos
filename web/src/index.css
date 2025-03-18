@@ -62,6 +62,12 @@
     input[type='radio'], input[type='checkbox'] {
         @apply accent-green-primary
     }
+
+    @media print {
+        .print-color-adjust-exact {
+            print-color-adjust: exact !important;
+        }
+    }
 }
 
 @font-face {

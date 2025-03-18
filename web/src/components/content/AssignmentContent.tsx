@@ -55,7 +55,7 @@ export const AssignmentContentWithoutFavorites = (
 
   return (
     <>
-      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light" data-testid="assignment-metadata">
+      <div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact" data-testid="assignment-metadata">
         <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
         { contentAction }
       </div>
