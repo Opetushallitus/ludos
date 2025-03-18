@@ -6,9 +6,10 @@ import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslat
 import { TipTap } from '../forms/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
-import { esitysnakymaKey } from '../LudosRoutes'
+import { esitysnakymaKey, tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
 import { lazy, ReactElement, Suspense, useContext } from 'react'
+import { LudosContext } from '../../contexts/LudosContext'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
@@ -150,6 +151,21 @@ type ContentActionRowProps = {
 
 export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
   const { t } = useLudosTranslation()
+  const { features } = useContext(LudosContext)
+
+  function getLinkKeyAndText(): { text: string, link: string } {
+    if (features.tulostusnakyma) {
+      return {
+        text: t('assignment.tulostusnakyma'),
+        link: tulostusnakymaKey
+      }
+    } else {
+      return {
+        text: t('assignment.katselunakyma'),
+        link: esitysnakymaKey
+      }
+    }
+  }
 
   return (
     <div data-testid="content-action-row" className="row mt-3 w-full flex-wrap gap-3">
@@ -157,8 +173,7 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
         contentAction={{
           actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
-          text: t('assignment.katselunakyma'),
-          link: esitysnakymaKey
+          ...getLinkKeyAndText()
         }}
         disabled={disabled}
         key="uusi-valilehti"

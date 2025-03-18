@@ -2,9 +2,10 @@ import { Icon } from '../../../Icon'
 import { InternalLink } from '../../../InternalLink'
 import { ContentAction, useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
-import { esitysnakymaKey } from '../../../LudosRoutes'
+import { esitysnakymaKey, tulostusnakymaKey } from '../../../LudosRoutes'
 import { AssignmentCardOut, ContentTypePluralFi, Language } from '../../../../types'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useContext } from 'react'
+import { LudosContext } from '../../../../contexts/LudosContext'
 
 type AssignmentCardContentActionButtonProps = {
   assignment: AssignmentCardOut
@@ -79,6 +80,21 @@ export const AssignmentCardContentActions = ({
   moveFolderAction
 }: AssignmentCardContentActionsProps) => {
   const { t } = useLudosTranslation()
+  const { features } = useContext(LudosContext)
+
+  function getLinkKeyAndText(): { text: string, link: string } {
+    if (features.tulostusnakyma) {
+      return {
+        text: t('assignment.tulostusnakyma'),
+        link: tulostusnakymaKey
+      }
+    } else {
+      return {
+        text: t('assignment.katselunakyma'),
+        link: esitysnakymaKey
+      }
+    }
+  }
 
   return (
     <div className="flex w-full flex-wrap items-center justify-evenly gap-3 pr-2 md:w-5/12 md:justify-end">
@@ -87,8 +103,7 @@ export const AssignmentCardContentActions = ({
         contentAction={{
           actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
-          text: t('assignment.katselunakyma'),
-          link: esitysnakymaKey
+          ...getLinkKeyAndText()
         }}
         key="uusi-valilehti"
       />
