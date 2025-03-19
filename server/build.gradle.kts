@@ -44,7 +44,7 @@ dependencies {
     implementation("software.amazon.awssdk:sso:2.31.3")
     implementation("software.amazon.awssdk:ssooidc:2.31.3")
     implementation("org.springframework.security:spring-security-cas:6.4.4")
-    implementation("org.springframework:spring-test:6.2.4")
+    implementation("org.springframework:spring-test:6.2.5")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
