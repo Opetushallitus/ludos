@@ -1,4 +1,4 @@
-import { AssignmentOut, Exam, Language } from '../../../types'
+import { AssignmentOut, Language } from '../../../types'
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import { pdfStyles } from './pdfStyles'
 import { convertHtmlToReactPdf } from './HtmlToReactPdf'
@@ -16,12 +16,11 @@ type AssignmentPdfProps = {
 const convertContentAndInstructionToReactPdf = (
   assignment: AssignmentOut,
   language: Language,
-  features: Features
 ) => {
   try {
     const { contentFi, contentSv, instructionFi, instructionSv } = assignment
     const content = language === Language.FI ? contentFi : contentSv
-    const instruction = getInstructionToShow(assignment, language, features)  ? instructionFi : instructionSv
+    const instruction = getInstructionToShow(assignment, language)  ? instructionFi : instructionSv
 
     return { content: content.map(convertHtmlToReactPdf), instruction: convertHtmlToReactPdf(instruction) }
   } catch (e) {
@@ -33,8 +32,8 @@ const convertContentAndInstructionToReactPdf = (
   }
 }
 
-const AssignmentPdf = ({ title, assignment, teachingLanguage, features }: AssignmentPdfProps) => {
-  const reactHtmlContent = convertContentAndInstructionToReactPdf(assignment, teachingLanguage, features)
+const AssignmentPdf = ({ title, assignment, teachingLanguage }: AssignmentPdfProps) => {
+  const reactHtmlContent = convertContentAndInstructionToReactPdf(assignment, teachingLanguage)
 
   if (!reactHtmlContent) {
     return null
