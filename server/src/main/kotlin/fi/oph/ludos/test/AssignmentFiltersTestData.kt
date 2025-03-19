@@ -45,9 +45,9 @@ object AssignmentFiltersTestData {
         (1..n).map { i ->
             SukoAssignmentDtoIn(
                 nameFi = "Filter test name $i FI SUKO",
-                nameSv = "Filter test name $i SV SUKO",
+                nameSv = "",
                 instructionFi = "Test Instruction",
-                instructionSv = "Test Instruction",
+                instructionSv = "",
                 contentFi = listOf("Test content $i FI"),
                 contentSv = listOf("Test content $i SV"),
                 publishState = PublishState.PUBLISHED,

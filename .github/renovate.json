@@ -1,5 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices"],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Ludos Renovate Dependency Dashboard",
   "gitAuthor": "ludos-renovate[bot] <178999943+ludos-renovate[bot]@users.noreply.github.com>",
@@ -12,6 +13,8 @@
   "prCreation": "immediate",
   "ignoreTests": false,
   "automergeType": "pr",
+  "separateMajorMinor": true,
+  "separateMultipleMajor": true,
   "enabledManagers": ["nvm", "npm", "github-actions", "dockerfile", "gradle", "gradle-wrapper"],
   "github-actions": { "automerge": true },
   "dockerfile": { "automerge": true },
@@ -30,39 +33,6 @@
       "matchDepNames": ["ghcr.io/renovatebot/base-image"]
     },
     {
-      "groupName": "Node",
-      "automerge": true,
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchManagers": ["nvm", "npm"],
-      "matchPackageNames": ["@types/node", "node"],
-      "matchFileNames": [".nvmrc"]
-    },
-    {
-      "groupName": "React",
-      "automerge": true,
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"]
-    },
-    {
-      "groupName": "Playwright",
-      "automerge": true,
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchPackageNames": ["playwright-chromium", "@playwright/test", "mcr.microsoft.com/playwright"]
-    },
-    {
-      "groupName": "eslint",
-      "automerge": true,
-      "matchUpdateTypes": ["minor", "patch"],
-      "matchPackageNames": ["eslint"]
-    },
-    {
-      "groupName": "AWS CDK",
-      "automerge": true,
-      "matchUpdateTypes": ["major", "minor", "patch"],
-      "matchPackageNames": ["aws-cdk", "aws-cdk-lib"]
-    },
-    {
       "groupName": "tiptap",
       "automerge": true,
       "matchUpdateTypes": ["major", "minor", "patch"],
@@ -79,9 +49,9 @@
       "enabled": false
     },
     {
-      "groupName": "jackson xml parser version 2.18.0",
-      "matchPackageNames": ["com.fasterxml.jackson.module"],
-      "allowedVersions": "!/2.18.0/"
+      "groupName": "Vite",
+      "matchPackageNames": ["vite"],
+      "matchUpdateTypes": ["minor", "patch"]
     }
   ],
   "prConcurrentLimit": 10

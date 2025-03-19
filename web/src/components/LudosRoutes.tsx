@@ -26,6 +26,7 @@ export const puhviKey = Exam.PUHVI.toLowerCase()
 export const ldKey = Exam.LD.toLowerCase()
 export const suosikitKey = 'suosikit'
 export const esitysnakymaKey = 'esitysnakyma'
+export const tulostusnakymaKey = 'tulostusnakyma'
 export const uudelleenkirjautuminenOnnistuiPath = '/uudelleenkirjautuminen-onnistui'
 
 export const frontpagePath = () => '/'
@@ -46,6 +47,7 @@ export const favoritesPagePath = (exam: Exam = Exam.SUKO) => `/${suosikitKey}/${
 export const pageNotFoundPath = '/sivua-ei-loydy'
 
 const Content = lazy(() => import('./content/Content'))
+const PrintContent = lazy(() => import('./content/PrintContent'))
 const AssignmentForm = lazy(() => import('./forms/assignment/AssignmentFormPage'))
 const InstructionForm = lazy(() => import('./forms/InstructionForm'))
 const CertificateForm = lazy(() => import('./forms/certificate/CertificateFormPage'))
@@ -197,6 +199,16 @@ function examRoute(exam: Exam): RouteObject {
           <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
             <SpinnerSuspense>
               <Content exam={exam} isPresentation={true} />
+            </SpinnerSuspense>
+          </Layout>
+        )
+      },
+      {
+        path: `:contentTypePluralFi/:id/${tulostusnakymaKey}`,
+        element: (
+          <Layout header={<></>} footer={<Footer isPresentation={true} />}>
+            <SpinnerSuspense>
+              <PrintContent exam={exam} />
             </SpinnerSuspense>
           </Layout>
         )

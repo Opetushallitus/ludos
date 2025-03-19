@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role, setMultiSelectDropdownOptions } from '../../helpers'
+import { loginTestGroup, resetDatabase, Role, setMultiSelectDropdownOptions } from '../../helpers'
 import { filterTestAssignmentName } from '../../examHelpers/assignmentHelpers'
 import { Exam, Language } from 'web/src/types'
 import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
@@ -10,7 +10,7 @@ test.describe.configure({ mode: 'serial' })
 
 test.describe('Assignment filter tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/api/test/empty')
+    await resetDatabase(page)
     await page.goto('/api/test/seedAssignmentsForFilterTest')
   })
 

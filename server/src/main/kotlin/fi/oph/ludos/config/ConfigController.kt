@@ -20,16 +20,18 @@ class ConfigController(val features: Features) {
     @ResponseBody
     @PreAuthorize("permitAll()")
     fun getFeatures(): ResponseEntity<FeaturesResponse> {
-        return ResponseEntity.ok(FeaturesResponse())
+        return ResponseEntity.ok(FeaturesResponse(features.tulostusnakyma))
     }
 }
 
 // Data class cannot be empty. Make dummy property as a placeholder until we get more featureflags
 data class FeaturesResponse(
-    val dummy: Unit = Unit
+    val tulostusnakyma: Boolean
 )
 
 @Component
 @Configuration
 class Features(
+    @Value("\${features.tulostusnakyma}")
+    var tulostusnakyma: Boolean
 )

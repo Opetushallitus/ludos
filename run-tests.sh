@@ -4,7 +4,12 @@ set -o errexit -o nounset -o pipefail
 # shellcheck source=../scripts/common-functions.sh
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts/common-functions.sh"
 
+CONTAINER_NAME=ludos-tests-$(openssl rand -hex 4)
 
+function stop() {
+  docker kill "$CONTAINER_NAME"
+}
+trap stop EXIT
 
 function server_tests {
   pushd server
@@ -27,7 +32,7 @@ function playwright_tests {
 
   docker build -t playwright-image -f Dockerfile.playwright --build-arg="PLAYWRIGHT_VERSION=$(get_playwright_version)" .
 
-  docker run -it --rm \
+  docker run -it \
   --network ludos_default \
   -v "$RESULTS_DIR":/playwright/playwright-results \
   -v "$repo/playwright/snapshots":/playwright/snapshots \
@@ -39,6 +44,7 @@ function playwright_tests {
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+--env RUN_LOCAL_TESTS_IN_UI_MODE} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-p 127.0.0.1:9876:9876} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+-t -i} \
+  --name "$CONTAINER_NAME" \
   playwright-image "$@"
 }
 

@@ -3,7 +3,7 @@ import { loginTestGroup, Role } from '../../helpers'
 import { Exam } from 'web/src/types'
 
 import { LayoutModel } from '../../models/LayoutModel'
-import { AssignmentFormModel } from 'playwright/models/AssignmentFormModel'
+import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
