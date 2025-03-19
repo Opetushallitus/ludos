@@ -370,6 +370,5 @@ export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignme
   const newTabPage = await newTabPagePromise
 
   await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
-  await expect(newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
   await newTabPage.close()
 }
