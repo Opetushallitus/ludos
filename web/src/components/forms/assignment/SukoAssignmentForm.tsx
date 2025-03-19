@@ -4,7 +4,7 @@ import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
 import { ContentFormAction, Exam, Oppimaara } from '../../../types'
 import { sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
 import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
-import { FormContentInput } from '../formCommon/FormContentInput'
+import { SukoFormContentInput } from '../formCommon/FormContentInput'
 import { FormHeader } from '../formCommon/FormHeader'
 import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
 import { LudosSelect } from '../../ludosSelect/LudosSelect'
@@ -15,11 +15,13 @@ import {
   koodistoSelectOptions,
   oppimaaraSelectOptions
 } from '../../ludosSelect/helpers'
-import { useCallback } from 'react'
+import { useCallback, useContext } from 'react'
 import { BlockNavigation } from '../../BlockNavigation'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
 import { InfoBox } from '../../InfoBox'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
+import { LudosContext } from '../../../contexts/LudosContext'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -29,6 +31,7 @@ type SukoAssignmentFormProps = {
 export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   const { t } = useLudosTranslation()
   const { koodistos, sortKooditAlphabetically, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
+  const { features } = useContext(LudosContext)
 
   const {
     methods,
@@ -50,7 +53,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   } = methods
 
   const currentNameFi = watch('nameFi')
-  const currentOppimaara: Oppimaara = watch('oppimaara')
+  const currentOppimaara = watch('oppimaara')
   const currentTavoitetaso = watch('tavoitetasoKoodiArvo')
   const currentAihe = watch('aiheKoodiArvos')
   const currentLaajaalainenOsaaminen = watch('laajaalainenOsaaminenKoodiArvos')
@@ -73,6 +76,22 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     })
   }, [koodistos.oppiaineetjaoppimaaratlops2021])
 
+  function isMultiLanguageInputRequired() {
+    const assignmentTypeKoodiArvo = watch('assignmentTypeKoodiArvo')
+
+    return isKertomisTehtavaAndSpecificOppimaara({
+      assignmentTypeKoodiArvo: assignmentTypeKoodiArvo,
+      oppimaara: currentOppimaara
+    })
+  }
+
+  function getHeaderDescription() {
+    if (action === ContentFormAction.muokkaus) return t('form.muokkauskuvaus')
+    if (isMultiLanguageInputRequired()) return t('form.kuvauskoetehtava')
+
+    return t('form.lisaauusitehtavakuvaus')
+  }
+
   if (defaultValueError) {
     return <InfoBox type="error" i18nKey={t('error.sisallon-lataaminen-epaonnistui')} />
   }
@@ -81,7 +100,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
     <>
       <FormHeader
         heading={action === ContentFormAction.uusi ? t('form.otsikkokoetehtava') : currentNameFi}
-        description={action === ContentFormAction.uusi ? t('form.kuvauskoetehtava') : t('form.muokkauskuvaus')}
+        description={getHeaderDescription()}
       />
       <BlockNavigation shouldBlock={methods.formState.isDirty && !isSubmitting} />
       <FormProvider {...methods}>
@@ -159,7 +178,7 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
             />
           </fieldset>
 
-          <FormContentInput formDataIsLoaded={isLoaded} />
+          <SukoFormContentInput formDataIsLoaded={isLoaded} />
         </form>
       </FormProvider>
 

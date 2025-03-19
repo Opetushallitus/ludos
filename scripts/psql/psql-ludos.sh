@@ -12,7 +12,7 @@ function initialize {
   require_command psql
   assert_psqlrc
   parse_env_from_script_name "psql-ludos"
-  eval "require_aws_session_for_${ENV}"
+  require_aws_session_for_env ${ENV}
   initialize_pg_credentials
 }
 

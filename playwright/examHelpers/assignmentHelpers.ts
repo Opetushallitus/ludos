@@ -19,11 +19,37 @@ import {
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
+import { FINNISH_A, KERTOMISTEHTAVA, saksaAOppimaara, SWEDISH_A } from 'web/src/utils/assignmentUtils'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
   'nameFi' | 'nameSv' | 'instructionFi' | 'instructionSv' | 'contentFi' | 'contentSv'
 >
+
+function createKertominenFormDataForOppimaaraKoodiarvo(oppimaaraKoodiArvo: string): SukoAssignmentFormType {
+  const formData = createAssignmentFormDataByExam[Exam.SUKO]
+  formData.oppimaara.oppimaaraKoodiArvo = oppimaaraKoodiArvo
+  formData.assignmentTypeKoodiArvo = KERTOMISTEHTAVA
+  return formData
+}
+
+export function createARuotsiKertominenFormData(): SukoAssignmentFormType {
+  return createKertominenFormDataForOppimaaraKoodiarvo(SWEDISH_A)
+}
+
+export function createASuomiKertominenFormData(): SukoAssignmentFormType {
+  return createKertominenFormDataForOppimaaraKoodiarvo(FINNISH_A)
+}
+
+export function createASaksaKertominenFormData(): SukoAssignmentFormType {
+  return createKertominenFormDataForOppimaaraKoodiarvo(saksaAOppimaara)
+}
+
+export function createKertominenFormData(): SukoAssignmentFormType {
+  const formData = createAssignmentFormDataByExam[Exam.SUKO]
+  formData.assignmentTypeKoodiArvo = KERTOMISTEHTAVA
+  return formData
+}
 
 const createAssignmentFormDataByExam = {
   [Exam.SUKO]: {
@@ -344,6 +370,5 @@ export async function testEsitysNakyma(page: Page, linkTestId: Locator, assignme
   const newTabPage = await newTabPagePromise
 
   await expect(newTabPage.getByTestId('assignment-header')).toHaveText(assignmentIn.nameFi)
-  await expect(newTabPage.getByTestId('assignment-metadata')).not.toBeVisible()
   await newTabPage.close()
 }

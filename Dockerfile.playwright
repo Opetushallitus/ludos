@@ -4,10 +4,6 @@ FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal
 ADD playwright/package.json playwright/package.json
 ADD playwright/package-lock.json playwright/package-lock.json
 
-ENV RUN_LOCAL_TESTS_IN_UI_MODE $RUN_LOCAL_TESTS_IN_UI_MODE
-
-ADD tsconfig.base.json tsconfig.base.json
-
 COPY playwright/ /playwright/
 RUN cd playwright && npm ci && cd ..
 
@@ -16,9 +12,9 @@ RUN cd web && npm ci && cd ..
 
 ADD scripts scripts
 
-ADD run_playwright_tests_in_container.sh run_playwright_tests_in_container.sh
+ADD playwright-dockerfile-entrypoint.sh playwright-dockerfile-entrypoint.sh
 
 COPY server/src/main/resources/fixtures /server/src/main/resources/fixtures
 COPY server/src/main/resources/backup_data /server/src/main/resources/backup_data
 
-ENTRYPOINT ["./run_playwright_tests_in_container.sh"]
+ENTRYPOINT ["./playwright-dockerfile-entrypoint.sh"]

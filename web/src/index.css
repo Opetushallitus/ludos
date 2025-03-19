@@ -62,6 +62,12 @@
     input[type='radio'], input[type='checkbox'] {
         @apply accent-green-primary
     }
+
+    @media print {
+        .print-color-adjust-exact {
+            print-color-adjust: exact !important;
+        }
+    }
 }
 
 @font-face {
@@ -76,6 +82,7 @@
     font-weight: 400 700;
     font-style: italic;
 }
+@page { size: auto;  margin: 0; }
 
 :root {
     font-family: 'Open Sans Variable', 'Open Sans', sans-serif;

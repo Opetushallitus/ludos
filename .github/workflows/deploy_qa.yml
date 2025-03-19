@@ -26,7 +26,7 @@ jobs:
       contents: write
     runs-on: 'ubuntu-24.04'
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ inputs.branch }}
       - name: Send build status "in progress"
@@ -36,11 +36,11 @@ jobs:
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
       - name: Fetch history for all branches and tags
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 0
       - name: Configure qa AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
           role-to-assume: arn:aws:iam::260185049060:role/ludos-github-actions-role-qa
           aws-region: eu-west-1
@@ -60,7 +60,7 @@ jobs:
     continue-on-error: true
     runs-on: 'ubuntu-24.04'
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/build_status
         with:
           task: deploy-qa

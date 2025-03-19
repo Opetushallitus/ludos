@@ -1,5 +1,3 @@
-export type Features = {}
-
 export const ContentFormAction = {
   uusi: 'uusi',
   muokkaus: 'muokkaus'
@@ -54,6 +52,7 @@ export interface ContentBase {
   exam: Exam
   contentType: ContentType
   publishState: PublishState
+  assignmentTypeKoodiArvo?: string
 }
 
 interface ContentOutFields {

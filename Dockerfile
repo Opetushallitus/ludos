@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1@sha256:4c68376a702446fc3c79af22de146a148bc3367e73c25a5803d453b6b3f722fb
 
-FROM node:23 as web-build
+FROM node:23@sha256:680ce90faed12b9d3b9343690c0e06262099c64189e5f48ec5f98be5182609da as web-build
 
 WORKDIR /ludos-web
 COPY web/package.json web/package-lock.json .
@@ -16,7 +16,7 @@ COPY web/src/ ./src/
 RUN npm run build:ci
 
 
-FROM gradle:jdk17 as server-build
+FROM gradle:jdk17@sha256:d7ceb3073cb5a062df210269cff5be93b7667cb321b19a69f6a7ecb56a26afde as server-build
 
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts .
@@ -30,7 +30,7 @@ RUN --mount=type=secret,id=github_token,required=true \
   GITHUB_TOKEN=$(cat /run/secrets/github_token) \
   gradle --no-daemon bootJar
 
-FROM amazoncorretto:23-alpine3.17
+FROM amazoncorretto:23-alpine3.17@sha256:867be16c84d99f8f71b23bea74e358af4612862fa8695e0640888af2b02ce41c
 
 RUN apk add curl
 

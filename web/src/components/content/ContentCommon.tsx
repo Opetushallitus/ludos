@@ -1,14 +1,15 @@
 import { Icon } from '../Icon'
 import { ContentBaseOut, ContentType, Exam, Language } from '../../types'
-import { getContentName } from '../../utils/assignmentUtils'
+import { getContentName, isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { TipTap } from '../forms/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
-import { esitysnakymaKey } from '../LudosRoutes'
+import { esitysnakymaKey, tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
-import { lazy, Suspense } from 'react'
+import { lazy, ReactElement, Suspense, useContext } from 'react'
+import { LudosContext } from '../../contexts/LudosContext'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
@@ -16,34 +17,83 @@ type ContentHeaderProps = {
   isPresentation: boolean
 }
 
-export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
-  const { t, lt } = useLudosTranslation()
+export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement {
 
-  const shouldShowTeachingLanguageDropdown =
-    data.contentType === ContentType.INSTRUCTION ||
-    (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) ||
-    (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO)
+  if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  if (data.contentType === ContentType.INSTRUCTION) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  if (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  if (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO) {
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+  }
+
+  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation })
+}
+
+export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+  const { lt } = useLudosTranslation()
 
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
-      <div className="flex flex-col">
-        {!isPresentation && (
-          <div className="row my-1">
-            <p>{toLocaleDate(data.createdAt)}</p>
-          </div>
-        )}
-        <div className="row">
-          <h2 className="w-full break-normal" data-testid="assignment-header">
-            {getContentName(data, teachingLanguage) || t('form.nimeton')}
-          </h2>
-        </div>
+      <AssignmentTitle
+        data={data}
+        teachingLanguage={teachingLanguage}
+        isPresentation={isPresentation}
+        createdAt={data.createdAt}
+      />
+
+      <div className="print:hidden">
+        <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
+        <TeachingLanguageSelect exam={data.exam} />
       </div>
-      {shouldShowTeachingLanguageDropdown && (
-        <div>
-          <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
-          <TeachingLanguageSelect exam={data.exam} />
+    </div>
+  )
+}
+
+export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+  return (
+    <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
+      <AssignmentTitle
+        data={data}
+        teachingLanguage={teachingLanguage}
+        isPresentation={isPresentation}
+        createdAt={data.createdAt}
+      />
+    </div>
+  )
+}
+
+interface AssignmentTitleProps {
+  data: ContentBaseOut
+  teachingLanguage: Language
+  createdAt: string | Date
+  isPresentation: boolean
+}
+
+const AssignmentTitle = (props: AssignmentTitleProps) => {
+  const { t } = useLudosTranslation()
+  const { data, teachingLanguage, createdAt, isPresentation } = props
+
+  return (
+    <div className="flex flex-col">
+      {!isPresentation && (
+        <div className="row my-1">
+          <p>{toLocaleDate(createdAt)}</p>
         </div>
       )}
+      <div className="row">
+        <h2 className="w-full break-normal" data-testid="assignment-header">
+          {getContentName(data, teachingLanguage) || t('form.nimeton')}
+        </h2>
+      </div>
     </div>
   )
 }
@@ -101,15 +151,29 @@ type ContentActionRowProps = {
 
 export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
   const { t } = useLudosTranslation()
+  const { features } = useContext(LudosContext)
+
+  function getLinkKeyAndText(): { text: string, link: string } {
+    if (features.tulostusnakyma) {
+      return {
+        text: t('assignment.tulostusnakyma'),
+        link: tulostusnakymaKey
+      }
+    } else {
+      return {
+        text: t('assignment.katselunakyma'),
+        link: esitysnakymaKey
+      }
+    }
+  }
 
   return (
-    <div className="row mt-3 w-full flex-wrap gap-3">
+    <div data-testid="content-action-row" className="row mt-3 w-full flex-wrap gap-3">
       <ContentActionButton
         contentAction={{
           actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
-          text: t('assignment.katselunakyma'),
-          link: esitysnakymaKey
+          ...getLinkKeyAndText()
         }}
         disabled={disabled}
         key="uusi-valilehti"
@@ -156,12 +220,15 @@ type RenderContentProps = {
 }
 
 const RenderContent = ({ content, customKey }: RenderContentProps) => {
-if (Array.isArray(content)) {
-  return <> {
-    content.map((it, i) => (
-      <TipTap key={`${customKey}-${i}`} content={it} editable={false} dataTestId={`${customKey}-${i}`} />
-    ))
-    }</>
+  if (Array.isArray(content)) {
+    return (
+      <>
+        {' '}
+        {content.map((it, i) => (
+          <TipTap key={`${customKey}-${i}`} content={it} editable={false} dataTestId={`${customKey}-${i}`} />
+        ))}
+      </>
+    )
   }
   return <TipTap key={customKey} content={content} editable={false} dataTestId={`${customKey}-0`} />
 }

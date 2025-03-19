@@ -59,10 +59,10 @@ class InstructionRepository(
     fun createInstruction(
         instruction: Instruction,
         attachments: List<InstructionAttachmentIn>,
-        insertInstructionRow: (version: Int) -> Long
+        insertInstructionRow: (version: Int) -> Long?
     ) = transactionTemplate.execute { _ ->
         val instructionVersion = INITIAL_VERSION_NUMBER
-        val id = insertInstructionRow(instructionVersion)
+        val id = insertInstructionRow(instructionVersion) ?: return@execute null
 
         val attachmentWithInstructionVersion = { metadata: InstructionAttachmentMetadataDtoIn ->
             metadata.copy(instructionVersion = instructionVersion)

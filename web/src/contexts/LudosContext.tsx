@@ -1,6 +1,7 @@
 import { createContext } from 'react'
-import { Features, KoodistoName, Language, UserDetails } from '../types'
+import { KoodistoName, Language, UserDetails } from '../types'
 import { KoodiDtoOut } from '../hooks/useKoodisto'
+import { Features } from '../request'
 
 export const defaultLanguage = Language.FI
 export const ludosUILanguageKey = 'ludosUILanguage'
@@ -24,7 +25,7 @@ export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
 ) as unknown as KoodistoMap
 
 const placeholderValuesNotInUse: LudosContextValue = {
-  features: {},
+  features: { tulostusnakyma: false },
   koodistos: {
     [Language.FI]: defaultEmptyKoodistoMap,
     [Language.SV]: defaultEmptyKoodistoMap

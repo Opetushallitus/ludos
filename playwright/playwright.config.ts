@@ -4,6 +4,11 @@ import * as process from 'process'
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
+function getBaseURL() {
+  if (process.env.CI) return 'http://ludos-server:8080'
+  return 'http://server:8080'
+}
+
 export default defineConfig({
   snapshotDir: 'snapshots',
   timeout: 30 * 1000,
@@ -21,7 +26,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: 1,
+  workers: process.env.CI ? 1 : '50%',
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
@@ -40,7 +45,7 @@ export default defineConfig({
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: process.env.CI ? 'http://ludos-server:8080' : 'http://server:8080',
+    baseURL: getBaseURL(),
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
