@@ -67,8 +67,8 @@ interface ContentOutFields {
 
 export type ContentBaseOut = ContentBase & ContentOutFields
 
-export const isAssignment = (data: ContentBaseOut): data is AssignmentOut => data.contentType === ContentType.ASSIGNMENT
-export const isSukoAssignment = (assignment: ContentBaseOut): assignment is SukoAssignmentDtoOut =>
+export const isAssignment = (data: ContentBase): data is AssignmentOut => data.contentType === ContentType.ASSIGNMENT
+export const isSukoAssignment = (assignment: ContentBase): assignment is SukoAssignmentDtoOut =>
   assignment.exam === Exam.SUKO && isAssignment(assignment)
 export const isLdAssignment = (data: ContentBaseOut): data is LdAssignmentDtoOut =>
   data.exam === Exam.LD && isAssignment(data)

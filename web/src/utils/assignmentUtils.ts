@@ -1,4 +1,5 @@
 import {
+  ContentBase,
   ContentBaseOut,
   isAssignment,
   isCertificate,
@@ -45,7 +46,7 @@ export const getContentName = (data: ContentBaseOut, teachingLanguage: Language)
   }
 }
 
-export function isSukoKertomisTehtavaAndSpecificOppimaara(data: ContentBaseOut): boolean {
+export function isSukoKertomisTehtavaAndSpecificOppimaara(data: ContentBase): boolean {
   if (!isSukoAssignment(data)) {
     return false
   }

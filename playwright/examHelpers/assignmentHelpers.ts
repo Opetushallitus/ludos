@@ -6,7 +6,7 @@ import {
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../helpers'
-import { AssignmentIn, Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
+import { AssignmentIn, ContentType, Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
 import {
   AnyAssignmentFormType,
   CommonAssignmentFormType,
@@ -19,7 +19,7 @@ import {
 } from 'web/src/components/forms/schemas/assignmentSchema'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
-import { FINNISH_A, KERTOMISTEHTAVA, saksaAOppimaara, SWEDISH_A } from 'web/src/utils/assignmentUtils'
+import { FINNISH_A, isSukoKertomisTehtavaAndSpecificOppimaara, KERTOMISTEHTAVA, saksaAOppimaara, SWEDISH_A } from 'web/src/utils/assignmentUtils'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
@@ -166,8 +166,31 @@ async function fillCommonAssignmentFields(form: AssignmentFormModel, formData: P
     }
   }
 
+  function hasAssignmentTypeKoodiArvo(x: Partial<AnyAssignmentFormType>): x is { assignmentTypeKoodiArvo: string  } {
+    return 'assignmentTypeKoodiArvo' in x && typeof x.assignmentTypeKoodiArvo === 'string'
+  }
+
+  function hasOppimaara(x: Partial<AnyAssignmentFormType>): x is { oppimaara: Oppimaara } {
+    return 'oppimaara' in x && typeof x.oppimaara === 'object' &&
+      'oppimaaraKoodiArvo' in x.oppimaara && typeof x.oppimaara.oppimaaraKoodiArvo === 'string' &&
+      'kielitarjontaKoodiArvo' in x.oppimaara
+  }
+
+  const isKertomistehtavaHelper = {
+    oppimaara: hasOppimaara(formData) ? formData.oppimaara : undefined,
+    nameFi: formData.nameFi || '',
+    nameSv: formData.nameSv || '',
+    exam: form.exam,
+    contentType: ContentType.ASSIGNMENT,
+    publishState: formData.publishState || PublishState.Draft,
+    assignmentTypeKoodiArvo: hasAssignmentTypeKoodiArvo(formData) ? formData.assignmentTypeKoodiArvo : undefined
+  }
+
   if (form.exam === Exam.SUKO) {
     await expect(form.tabSv).toBeHidden()
+    if (isSukoKertomisTehtavaAndSpecificOppimaara(isKertomistehtavaHelper) && formData.contentSv) {
+      await form.contentSv.locator('div[contenteditable="true"]').fill(formData.contentSv.join('\n'))
+    }
   } else {
     if (formData.nameSv) {
       await form.tabSv.click()
