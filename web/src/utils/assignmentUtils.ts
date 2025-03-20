@@ -21,6 +21,13 @@ export const saksaAOppimaara = 'VKA1.SA'
 const venajaAOppimaara = 'VKA1.VE'
 const englantiAOppimaara = 'VKENA1'
 
+export const oppimaara: {[key: string]: string} = {
+  FINNISH_A,
+  SWEDISH_A,
+  SPANISH_A: espanjaAOppimaara,
+  GERMAN_A: saksaAOppimaara,
+} as const
+
 // Removes key-value pairs with null or undefined values from an object
 // src https://stackoverflow.com/questions/286141/remove-blank-attributes-from-an-object-in-javascript
 export function removeEmpty<T extends Record<string, unknown>>(obj: T): any {
