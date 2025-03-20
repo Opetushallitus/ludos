@@ -4,6 +4,7 @@ import { loginTestGroup, Role } from '../../helpers'
 import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
+import { baseTest, BaseTestFixtures, defaultSukoFormData } from '../fixtures/suko'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
@@ -29,3 +30,19 @@ test.describe('Presentation view', () => {
     await testEsitysNakyma(page, esitysnakymaCardLocator, assignmentIn)
   })
 })
+
+const printViewTest = baseTest.extend<BaseTestFixtures>({
+  formData: async ({}, use) => {
+    await use({
+      ...defaultSukoFormData,
+      nameFi: `Tulostusnäkymä: ${defaultSukoFormData.nameFi}`
+    })
+  },
+})
+
+printViewTest('Print view', async ({ sukoAssignmentPrintView }) => {
+  await test.step('metadata is visible', async () => {
+    await expect(sukoAssignmentPrintView.metadata).toBeVisible()
+  })
+})
+

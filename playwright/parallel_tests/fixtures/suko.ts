@@ -7,6 +7,7 @@ import { tavoitetaso } from './tavoitetaso'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
 import fs from 'fs'
 import path from 'path'
+import { PrintContentModel } from '../../models/PrintContentModel'
 
 const aihe = {
   '004': { name: 'kestävä tulevaisuus', code: '004' },
@@ -35,6 +36,7 @@ export interface BaseTestFixtures {
   newSukoAssignment: AssignmentFormModel
   filledSukoAssignment: AssignmentFormModel
   publishedSukoAssignment: AssignmentContentModel
+  sukoAssignmentPrintView: PrintContentModel
 }
 
 export const baseTest = test.extend<BaseTestFixtures>({
@@ -57,5 +59,14 @@ export const baseTest = test.extend<BaseTestFixtures>({
     await expect(content.header).toHaveText(formData.nameFi)
     await expect(content.publishState).toHaveText("state.julkaistu")
     await use(content);
+  },
+  sukoAssignmentPrintView: async ({ publishedSukoAssignment, formData  }, use) => {
+    const printView = await publishedSukoAssignment.openPrintViewInNewWindow()
+    await expect(printView.header).toHaveText(formData.nameFi)
+
+    await use(printView)
+
+    await publishedSukoAssignment.page.bringToFront()
+    await printView.page.close()
   },
 })
