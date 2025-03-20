@@ -153,14 +153,16 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
   const { t } = useLudosTranslation()
   const { features } = useContext(LudosContext)
 
-  function getLinkKeyAndText(): { text: string, link: string } {
+  function getLinkKeyAndText(): { actionName: string, text: string, link: string } {
     if (features.tulostusnakyma) {
       return {
+        actionName: 'tulostusnakyma',
         text: t('assignment.tulostusnakyma'),
         link: tulostusnakymaKey
       }
     } else {
       return {
+        actionName: 'esitysnakyma',
         text: t('assignment.katselunakyma'),
         link: esitysnakymaKey
       }
@@ -171,7 +173,6 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
     <div data-testid="content-action-row" className="row mt-3 w-full flex-wrap gap-3">
       <ContentActionButton
         contentAction={{
-          actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
           ...getLinkKeyAndText()
         }}
