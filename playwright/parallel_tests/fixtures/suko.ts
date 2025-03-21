@@ -37,6 +37,7 @@ export interface BaseTestFixtures {
   filledSukoAssignment: AssignmentFormModel
   publishedSukoAssignment: AssignmentContentModel
   sukoAssignmentPrintView: PrintContentModel
+  printedSukoAssignment: Buffer
 }
 
 export const baseTest = test.extend<BaseTestFixtures>({
@@ -69,4 +70,8 @@ export const baseTest = test.extend<BaseTestFixtures>({
     await publishedSukoAssignment.page.bringToFront()
     await printView.page.close()
   },
+  printedSukoAssignment: async ({ sukoAssignmentPrintView }, use) => {
+    const pdfBuffer = await sukoAssignmentPrintView.page.pdf()
+    await use(pdfBuffer)
+  }
 })

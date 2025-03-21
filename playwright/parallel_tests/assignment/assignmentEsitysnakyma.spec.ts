@@ -40,7 +40,7 @@ const printViewTest = baseTest.extend<BaseTestFixtures>({
   },
 })
 
-printViewTest('Print view', async ({ sukoAssignmentPrintView, formData }) => {
+printViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedSukoAssignment, browser }) => {
   await test.step('header has correct assignment name', async () => {
     await expect(sukoAssignmentPrintView.header).toHaveText(formData.nameFi)
   })
@@ -61,6 +61,27 @@ printViewTest('Print view', async ({ sukoAssignmentPrintView, formData }) => {
 
   await test.step('has print button', async () => {
     await expect(sukoAssignmentPrintView.printButton).toBeVisible()
+  })
+
+  await test.step('printed PDF looks correct', async () => {
+    const base64Pdf = printedSukoAssignment.toString('base64')
+    const dataUrl = `data:application/pdf;base64,${base64Pdf}`
+    const pdfPage = await browser.newPage()
+
+    /* Embed base64 encoded PDF to an empty HTML page */
+    await pdfPage.setContent(`
+      <html lang="fi">
+        <head><title>Print view</title></head>
+        <body><object id="pdf-object" data="${dataUrl}" style="height:100%; width:100%;" /> </body>
+      </html>`
+    )
+    await pdfPage.waitForLoadState('domcontentloaded')
+    await pdfPage.bringToFront()
+    await expect(pdfPage.locator('#pdf-object')).toBeVisible()
+
+    const opts = { animations: 'disabled', maxDiffPixelRatio: 0.05 } as const
+    await expect(async () => { await expect(pdfPage).toHaveScreenshot('printed-suko-assignment.png', opts) }).toPass()
+    await pdfPage.close()
   })
 })
 
