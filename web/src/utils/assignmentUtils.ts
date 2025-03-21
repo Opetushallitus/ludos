@@ -21,11 +21,11 @@ export const saksaAOppimaara = 'VKA1.SA'
 const venajaAOppimaara = 'VKA1.VE'
 const englantiAOppimaara = 'VKENA1'
 
-export const oppimaara: {[key: string]: string} = {
+export const oppimaara: { [key: string]: string } = {
   FINNISH_A,
   SWEDISH_A,
   SPANISH_A: espanjaAOppimaara,
-  GERMAN_A: saksaAOppimaara,
+  GERMAN_A: saksaAOppimaara
 } as const
 
 // Removes key-value pairs with null or undefined values from an object
