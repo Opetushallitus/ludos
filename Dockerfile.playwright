@@ -1,5 +1,5 @@
 ARG PLAYWRIGHT_VERSION
-FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal
+FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
 
 ADD playwright/package.json playwright/package.json
 ADD playwright/package-lock.json playwright/package-lock.json
