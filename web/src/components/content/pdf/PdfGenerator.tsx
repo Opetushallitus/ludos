@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { usePDF } from '@react-pdf/renderer'
 import AssignmentPdf from './AssignmentPdf'
 import { AssignmentOut, Language } from '../../../types'
 import { getContentName } from '../../../utils/assignmentUtils'
 import { useNotification } from '../../../contexts/NotificationContext'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { LudosContext } from '../../../contexts/LudosContext'
 
 type LazyPdfGeneratorProps = {
   assignmentOut: AssignmentOut
@@ -15,6 +16,7 @@ type LazyPdfGeneratorProps = {
 const PdfGenerator = ({ assignmentOut, language, onGenerated }: LazyPdfGeneratorProps) => {
   const { t } = useLudosTranslation()
   const { setNotification } = useNotification()
+  const { features } = useContext(LudosContext)
 
   const [instance] = usePDF({
     document: (
@@ -22,6 +24,7 @@ const PdfGenerator = ({ assignmentOut, language, onGenerated }: LazyPdfGenerator
         title={getContentName(assignmentOut, language) || t('form.nimeton')}
         assignment={assignmentOut}
         teachingLanguage={language}
+        features={features}
       />
     )
   })

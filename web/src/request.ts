@@ -261,10 +261,8 @@ export async function getUserDetailsRequest(): Promise<Response> {
   return await doRequest(`${BASE_API_URL}/auth/user`, 'GET')
 }
 
-export const featuresSchema = z.object({
-  additionalSvContentForKertominen: z.boolean()
-})
-export type Features = z.infer<typeof featuresSchema>;
+export const featuresSchema = z.object({ tulostusnakyma: z.boolean() })
+export type Features = z.infer<typeof featuresSchema>
 
 export async function getFeatures(): Promise<Features> {
   const featuresResponse = await doRequest(`${BASE_API_URL}/config/features`, 'GET')

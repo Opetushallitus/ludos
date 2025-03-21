@@ -5,11 +5,15 @@ import {
   loginTestGroup,
   Role,
   setMultiSelectDropdownOptions,
-  setSingleSelectDropdownOption
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
 } from '../../helpers'
 import {
   assertAssignmentContentPage,
   contentIdFromContentPage,
+  createARuotsiKertominenFormData,
+  createASuomiKertominenFormData,
+  createASaksaKertominenFormData,
   createFormData,
   fillAssignmentForm,
   fillAssignmentType,
@@ -244,6 +248,59 @@ Object.values(Exam).forEach((exam) => {
 
       await form.submitButton.click()
       await testNameField(form)
+    })
+  })
+})
+
+test.describe('Kertomistehtava shows "Swedish content"-field', () => {
+  test("if SUKO test with Kertominen as the assignment type but the subject is A ruotsi, don't show swedish content field", async ({
+    page
+  }) => {
+    const form = new AssignmentFormModel(page, Exam.SUKO)
+    await form.initializeTest()
+    const formData = createARuotsiKertominenFormData()
+    await fillAssignmentForm(form, formData)
+    await expect(form.contentSv).toBeHidden()
+    await form.submitButton.click()
+    await page.getByTestId('assignment-header').waitFor({ state: 'visible' })
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(0)
+  })
+  test("if SUKO test with Kertominen as the assignment type but the subject is A suomi, don't show swedish content field", async ({
+    page
+  }) => {
+    const form = new AssignmentFormModel(page, Exam.SUKO)
+    await form.initializeTest()
+    const formData = createASuomiKertominenFormData()
+    await fillAssignmentForm(form, formData)
+    await expect(form.contentSv).toBeHidden()
+    await form.submitButton.click()
+    await page.getByTestId('assignment-header').waitFor({ state: 'visible' })
+    await page.waitForLoadState('networkidle')
+    await expect(page.locator('#teachingLanguageDropdown')).toHaveCount(0)
+  })
+  test('if SUKO test with Kertominen as the assignment type and oppimaara is Saksa A, show swedish content field', async ({
+    page
+  }) => {
+    const form = new AssignmentFormModel(page, Exam.SUKO)
+    await form.initializeTest()
+    const formData = createASaksaKertominenFormData()
+    await fillAssignmentForm(form, formData)
+    await expect(form.contentSv).toBeVisible()
+    await form.contentSv.getByRole('textbox').fill('berätta om söta taxar')
+    await form.submitButton.click()
+    await setTeachingLanguage(page, 'SV')
+    await expect(page.getByText('Testisisältö SUKO')).toBeHidden()
+    await expect(page.getByText('berätta om söta taxar')).toBeVisible()
+
+    await test.step('changed swedish language should not affect tehtavas that are not in the specified oppimääräs', async () => {
+      const form = new AssignmentFormModel(page, Exam.SUKO)
+      await form.initializeTest()
+      const formData = createASuomiKertominenFormData()
+      await fillAssignmentForm(form, formData)
+      await expect(form.contentSv).toBeHidden()
+      await form.submitButton.click()
+      await expect(page.getByText('Testisisältö SUKO')).toBeVisible()
     })
   })
 })

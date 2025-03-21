@@ -6,7 +6,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/common-functions.sh"
 function main () {
   pushd "$repo"/web
   npm_ci_if_package_lock_has_changed
-  npm run watch
+  npx vite build --watch --config vite-local.config.ts
   popd
 }
 

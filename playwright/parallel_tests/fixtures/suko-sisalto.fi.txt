@@ -1,0 +1,16 @@
+Tietokoneohjelmisto yrittää ennustaa mahdollisimman tarkasti, mitä ruokaa minäkin päivänä ostetaan. Esimerkiksi Stockmann on onnistunut leikkaamaan ohjelmiston avulla hävikkiään huomattavasti. Hyvä koodi vähentää myös kotien hukkaruokaa.
+
+Lähikaupan pasta bolognese -valmisateriaan on liimattu tarra: “Tästä tuotteesta -30%, huomioi päiväys”. Ellei bolognese käy kaupaksi päivän aikana, se menee roskiin. Sata grammaa nautaa lihotettiin, teurastettiin, jauhettiin, keitettiin, paketoitiin, kuljetettiin ja yritettiin myydä – turhaan.
+
+Haaskuu johtuu siitä, että kysyntä ja tarjonta eivät tällä kertaa kohdanneet.
+
+Kymmenen vuoden ikään ehtineen kasvuyrityksen Relexin pääkonttorissa Helsingin Ilmalassa koodataan ohjelmistoa, joka yrittää puristaa hävikin minimiin. Mitä paremmin ohjelma toimii, sitä enemmän tuottaja, jalostaja, myyjä, asiakas ja ympäristö kiittävät.
+
+
+Fragen an deine Partnerin/deinen Partner:
+
+- Verschwendest du je Lebensmittel zu Hause?
+- Was kann man tun um das Verschwenden von Lebensmitteln zu vermeiden?
+- Kennst du Softwares, die dir z.B. Zeit oder Geld sparen? Welche?
+
+Quelle: Yle (31.8.2016) http://yle.fi/uutiset/suomalainen_kasvuyritys_taistelee_maailman_ruokahavikkia_vastaan__vahennysta_jopa_40_prosenttia/9123595

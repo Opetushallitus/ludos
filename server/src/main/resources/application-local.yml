@@ -7,7 +7,7 @@ ludos:
   local-dev-aws-profile: oph-ludos-dev
 
 features:
-  additionalSvContentForKertominen: true
+  tulostusnakyma: true
 
 server:
   servlet:

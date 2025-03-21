@@ -65,11 +65,12 @@ class Config : WebMvcConfigurer {
             throw IllegalStateException("index.html not found")
         }
     }
+    private final val logger: org.slf4j.Logger = LoggerFactory.getLogger(javaClass)
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
         registry
             .addResourceHandler("/assets/**")
-            .addResourceLocations("classpath:/static/**")
+            .addResourceLocations("classpath:/static/")
             .setCacheControl(
                 // Kaikki /assetit sisältävät hashin, joka hoitaa cache-bustauksen: voi siis kakuttaa loputtomiin
                 CacheControl.maxAge(Duration.ofDays(365)).sMaxAge(Duration.ofDays(365)).cachePublic().immutable()
@@ -89,7 +90,7 @@ class Config : WebMvcConfigurer {
         // Palauta index.html kaikista tuntemattomista poluista, frontin SPA-router näyttää oikean sivun tai 404
         registry
             .addResourceHandler("/**")
-            .addResourceLocations("classpath:/static/**")
+            .addResourceLocations("classpath:/static/**/")
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource) = indexHtml

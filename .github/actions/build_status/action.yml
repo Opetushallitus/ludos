@@ -22,5 +22,5 @@ runs:
           -H "AUTH_TOKEN: ${{ inputs.api_key }}" \
           -H "Content-Type: application/json" \
           -X PUT \
-          https://radiator.continuous-services.services/api/v2/buildstatus/ludos/ludos-${{ inputs.task }} \
+          https://radiator.continuous-services.services/api/v2/buildstatus/ludos/${{ inputs.task }} \
           -d "{\"status\": \"${{ inputs.status }}\"}"

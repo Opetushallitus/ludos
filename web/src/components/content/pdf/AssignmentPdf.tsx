@@ -3,20 +3,24 @@ import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 import { pdfStyles } from './pdfStyles'
 import { convertHtmlToReactPdf } from './HtmlToReactPdf'
 import logo from '../../../../assets/oph_fin_vaaka.png'
+import { Features } from '../../../request'
+import { getInstructionToShow } from '../AssignmentContent'
 
 type AssignmentPdfProps = {
   title: string
   assignment: AssignmentOut
   teachingLanguage: Language
+  features: Features
 }
 
 const convertContentAndInstructionToReactPdf = (
-  { contentFi, contentSv, instructionFi, instructionSv }: AssignmentOut,
-  language: Language
+  assignment: AssignmentOut,
+  language: Language,
 ) => {
   try {
+    const { contentFi, contentSv, instructionFi, instructionSv } = assignment
     const content = language === Language.FI ? contentFi : contentSv
-    const instruction = language === Language.FI ? instructionFi : instructionSv
+    const instruction = getInstructionToShow(assignment, language)  ? instructionFi : instructionSv
 
     return { content: content.map(convertHtmlToReactPdf), instruction: convertHtmlToReactPdf(instruction) }
   } catch (e) {

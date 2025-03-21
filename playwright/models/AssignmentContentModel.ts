@@ -1,6 +1,7 @@
 import { expect, Page } from '@playwright/test'
 import { ContentModel } from './ContentModel'
 import { ContentType, Exam } from 'web/src/types'
+import { PrintContentModel } from './PrintContentModel'
 
 export class AssignmentContentModel extends ContentModel {
   constructor(
@@ -8,9 +9,22 @@ export class AssignmentContentModel extends ContentModel {
     readonly exam: Exam,
     readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-FI'),
     readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-SV'),
+    readonly tulostusnakyma = page.getByTestId('tulostusnakyma'),
     readonly metadata = page.getByTestId('assignment-metadata')
   ) {
     super(page, exam, ContentType.ASSIGNMENT)
+  }
+
+  async openPrintViewInNewWindow(): Promise<PrintContentModel> {
+    const newPagePromise: Promise<Page> = this.page.waitForEvent('popup')
+    await this.tulostusnakyma.click()
+    const openedPage = await newPagePromise
+    await openedPage.bringToFront()
+
+    const printContentModel = new PrintContentModel(openedPage, this.exam)
+    await expect(printContentModel.container).toBeVisible()
+
+    return printContentModel
   }
 
   assertAttachments(attachmentNames: string[]) {

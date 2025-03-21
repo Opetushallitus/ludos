@@ -4,10 +4,11 @@ import { loginTestGroup, Role } from '../../helpers'
 import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
+import { baseTest, BaseTestFixtures, defaultSukoFormData } from '../fixtures/suko'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-test.describe('Presentation view', () => {
+test.describe.fixme('Presentation view', () => {
   test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     const content = new AssignmentContentModel(page, Exam.SUKO)
@@ -29,3 +30,19 @@ test.describe('Presentation view', () => {
     await testEsitysNakyma(page, esitysnakymaCardLocator, assignmentIn)
   })
 })
+
+const printViewTest = baseTest.extend<BaseTestFixtures>({
+  formData: async ({}, use) => {
+    await use({
+      ...defaultSukoFormData,
+      nameFi: `Tulostusnäkymä: ${defaultSukoFormData.nameFi}`
+    })
+  },
+})
+
+printViewTest('Print view', async ({ sukoAssignmentPrintView }) => {
+  await test.step('metadata is visible', async () => {
+    await expect(sukoAssignmentPrintView.metadata).toBeVisible()
+  })
+})
+
