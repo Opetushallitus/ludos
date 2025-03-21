@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, Locator, test } from '@playwright/test'
 import { testEsitysNakyma } from '../../examHelpers/assignmentHelpers'
 import { loginTestGroup, Role } from '../../helpers'
 import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
@@ -40,9 +40,36 @@ const printViewTest = baseTest.extend<BaseTestFixtures>({
   },
 })
 
-printViewTest('Print view', async ({ sukoAssignmentPrintView }) => {
-  await test.step('metadata is visible', async () => {
+printViewTest('Print view', async ({ sukoAssignmentPrintView, formData }) => {
+  await test.step('header has correct assignment name', async () => {
+    await expect(sukoAssignmentPrintView.header).toHaveText(formData.nameFi)
+  })
+  await test.step('has correct metadata fields', async () => {
     await expect(sukoAssignmentPrintView.metadata).toBeVisible()
+    await expect(sukoAssignmentPrintView.oppimaara).toContainText('saksan kieli')
+    await expect(sukoAssignmentPrintView.tehtavatyyppi).toContainText('Kertominen')
+    await expect(sukoAssignmentPrintView.laajaAlainenOsaaminen).toContainText('Eettisyys ja ympäristöosaaminen')
+  })
+
+  await test.step('has correct finnish instructions', async () => {
+    await expect(sukoAssignmentPrintView.instructionFi).toContainText(formData.instructionFi)
+  })
+
+  await test.step('has correct finnish content', async () => {
+    expect(await getNormalizedInnerTexts(sukoAssignmentPrintView.contentFi)).toContain(normalizeWhitespace(formData.contentFi[0]))
+  })
+
+  await test.step('has print button', async () => {
+    await expect(sukoAssignmentPrintView.printButton).toBeVisible()
   })
 })
+
+async function getNormalizedInnerTexts(locator: Locator): Promise<string> {
+  const text = (await locator.allInnerTexts()).join(' ')
+  return normalizeWhitespace(text)
+}
+
+function normalizeWhitespace(text: string): string {
+  return text.replace(/\s+/g, ' ')
+}
 
