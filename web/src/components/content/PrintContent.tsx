@@ -39,15 +39,9 @@ const Content = ({ exam }: ContentProps) => {
   const isVersionBrowser = !!version
 
   const teachingLanguageOverride =
-    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE
-      ? Language.FI
-      : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE ? Language.FI : teachingLanguage
 
-  const {
-    data,
-    isFetching,
-    error,
-  } = useFetch<ContentBaseOut>(
+  const { data, isFetching, error } = useFetch<ContentBaseOut>(
     ['content'],
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
@@ -76,7 +70,8 @@ const Content = ({ exam }: ContentProps) => {
                 <AssignmentContentWithoutFavorites
                   assignment={data}
                   isPresentation={false}
-                  teachingLanguage={teachingLanguage} />
+                  teachingLanguage={teachingLanguage}
+                />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (
@@ -93,7 +88,6 @@ const Content = ({ exam }: ContentProps) => {
           </div>
 
           <FeedbackLink />
-
         </div>
       </div>
     </div>
