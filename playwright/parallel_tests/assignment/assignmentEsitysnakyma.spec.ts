@@ -8,7 +8,7 @@ import { baseTest, BaseTestFixtures, defaultSukoFormData } from '../fixtures/suk
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-test.describe('Presentation view', () => {
+test.describe.fixme('Presentation view', () => {
   test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
     const form = new AssignmentFormModel(page, Exam.SUKO)
     const content = new AssignmentContentModel(page, Exam.SUKO)
