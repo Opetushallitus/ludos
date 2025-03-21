@@ -21,6 +21,7 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { ContentError } from './ContentError'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { FeedbackLink } from './FeedbackLink'
+import { PrintButton } from './PrintButton'
 
 type ContentProps = {
   exam: Exam
@@ -87,6 +88,7 @@ const Content = ({ exam }: ContentProps) => {
             </div>
           </div>
 
+          <PrintButton />
           <FeedbackLink />
         </div>
       </div>
