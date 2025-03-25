@@ -1,7 +1,7 @@
 package fi.oph.ludos.config
 
 import fi.oph.ludos.Constants
-import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.ResponseEntity
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/config")
-@RequireAtLeastYllapitajaRole
+@RequireAtLeastOpettajaRole
 class ConfigController(val features: Features) {
     @GetMapping("/features", produces = ["application/json"])
     @ResponseBody
