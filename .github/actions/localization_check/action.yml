@@ -10,7 +10,7 @@ runs:
   steps:
     - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
       with:
-        node-version: v20.11.0
+        node-version: 20.19.0
         cache: npm
     - name: npm install
       working-directory: ./scripts
