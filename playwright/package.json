@@ -6,7 +6,7 @@
   "devDependencies": {
     "@playwright/test": "1.51.1",
     "@types/node": "22.13.14",
-    "@types/pdf-parse": "1.1.4",
+    "@types/pdf-parse": "1.1.5",
     "@typescript-eslint/eslint-plugin": "8.29.0",
     "@typescript-eslint/parser": "8.29.0",
     "dotenv": "16.4.7",
