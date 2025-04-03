@@ -53,16 +53,15 @@ export const AssignmentContentWithoutFavorites = (
 
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
-  const { features } = useContext(LudosContext)
 
   return (
     <>
-      { (features.tulostusnakyma || !isPresentation) &&
-        (<div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact" data-testid="assignment-metadata">
-          <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
-          { contentAction }
-        </div>)
-      }
+      <div
+        className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact"
+        data-testid="assignment-metadata">
+        <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
+        {contentAction}
+      </div>
 
       <ContentInstruction teachingLanguage={teachingLanguage} content={instructionToShow} />
       <div className="mb-4 border-b border-gray-separator" />
