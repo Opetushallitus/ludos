@@ -8,7 +8,7 @@ import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
 import { tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
-import { lazy, ReactElement, Suspense } from 'react'
+import { ReactElement } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
@@ -138,16 +138,13 @@ function ContentActionButton({
   }
 }
 
-const PDFDownloadButton = lazy(() => import('./pdf/PdfDownloadButton'))
-
 type ContentActionRowProps = {
   isFavorite?: boolean
   disabled?: boolean
   onFavoriteClick?: () => void
-  pdfData?: { baseOut: ContentBaseOut; language: Language; contentType: ContentType }
 }
 
-export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
+export function ContentActionRow({ isFavorite, disabled, onFavoriteClick }: ContentActionRowProps) {
   const { t } = useLudosTranslation()
 
   return (
@@ -162,17 +159,6 @@ export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfDat
         disabled={disabled}
         key="uusi-valilehti"
       />
-      {pdfData && (
-        <Suspense
-          fallback={
-            <Button variant="buttonGhost" customClass="p-0 flex items-center" disabled>
-              <Icon name="pdf" color="text-green-primary" />
-              <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
-            </Button>
-          }>
-          <PDFDownloadButton exam={pdfData.baseOut.exam} contentId={pdfData.baseOut.id} language={pdfData.language} />
-        </Suspense>
-      )}
       {isFavorite !== undefined && (
         <ContentActionButton
           contentAction={{

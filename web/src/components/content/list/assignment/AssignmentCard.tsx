@@ -147,7 +147,6 @@ export const AssignmentCard = ({
               onClick: () => (isFavorite ? unFavorite(assignmentCard) : setIsFavoriteModalOpen(true)),
               isDisabled: !favoriteIds
             }}
-            language={teachingLanguage}
             moveFolderAction={moveFolderAction}
           />
         </div>
