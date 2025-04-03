@@ -3,8 +3,7 @@ import { InternalLink } from '../../../InternalLink'
 import { ContentAction, useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
 import { tulostusnakymaKey } from '../../../LudosRoutes'
-import { AssignmentCardOut, ContentTypePluralFi, Language } from '../../../../types'
-import { lazy, Suspense } from 'react'
+import { AssignmentCardOut, ContentTypePluralFi } from '../../../../types'
 
 type AssignmentCardContentActionButtonProps = {
   assignment: AssignmentCardOut
@@ -52,8 +51,6 @@ function AssignmentCardContentActionButton({
   }
 }
 
-const PdfDownloadButton = lazy(() => import('../../pdf/PdfDownloadButton'))
-
 type FavoriteActionProps = {
   isFavorite: boolean
   onClick: () => void
@@ -67,14 +64,12 @@ type MoveFolderActionProps = {
 
 type AssignmentCardContentActionsProps = {
   assignment: AssignmentCardOut
-  language: Language
   favoriteAction: FavoriteActionProps
   moveFolderAction?: MoveFolderActionProps
 }
 
 export const AssignmentCardContentActions = ({
   assignment,
-  language,
   favoriteAction,
   moveFolderAction
 }: AssignmentCardContentActionsProps) => {
@@ -92,15 +87,6 @@ export const AssignmentCardContentActions = ({
         }}
         key="uusi-valilehti"
       />
-      <Suspense
-        fallback={
-          <Button variant="buttonGhost" customClass="p-0 flex items-center pr-3" disabled>
-            <Icon name="pdf" color="text-green-primary" />
-            <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
-          </Button>
-        }>
-        <PdfDownloadButton exam={assignment.exam} contentId={assignment.id} language={language} />
-      </Suspense>
       <AssignmentCardContentActionButton
         assignment={assignment}
         contentAction={{

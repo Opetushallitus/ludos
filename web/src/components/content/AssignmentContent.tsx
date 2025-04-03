@@ -1,6 +1,5 @@
 import {
   AssignmentOut,
-  ContentType,
   ContentTypeSingularEn,
   FavoriteAction,
   FavoriteIdsDtoOut,
@@ -11,14 +10,13 @@ import {
 } from '../../types'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { ReactNode, useContext, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { useFetch } from '../../hooks/useFetch'
 import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
-import { LudosContext } from '../../contexts/LudosContext'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -84,7 +82,6 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresen
 
   const { setFavoriteFolders, unFavorite } = useSetFavoriteFolders(refetchFavoriteData)
   const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
-  const contentLang = getContentLang(assignment, teachingLanguage)
 
   const onSetFavoriteFoldersAction = async (data: FavoriteToggleModalFormType) => {
     await setFavoriteFolders({ data, favoriteAction: isFavorite ? FavoriteAction.EDIT : FavoriteAction.ADD })
@@ -96,11 +93,6 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresen
       isFavorite={isFavorite}
       onFavoriteClick={() => {
         isFavorite ? unFavorite(assignment) : setIsFavoriteModalOpen(true)
-      }}
-      pdfData={{
-        baseOut: assignment,
-        language: contentLang,
-        contentType: ContentType.ASSIGNMENT
       }}
       disabled={!favoriteIds}
     />
