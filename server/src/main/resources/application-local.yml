@@ -7,7 +7,6 @@ ludos:
   local-dev-aws-profile: oph-ludos-dev
 
 features:
-  tulostusnakyma: true
 
 server:
   servlet:

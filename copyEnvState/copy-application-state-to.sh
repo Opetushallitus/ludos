@@ -42,7 +42,7 @@ function copy_source_application_state {
 
 function overwrite_target_s3_state {
   echo "Overwriting S3 state in target bucket"
-  eval "require_aws_session_for_$TARGET_ENVIRONMENT"
+  require_aws_session_for_env "$TARGET_ENVIRONMENT"
 
   copy_state_to_s3 image
   copy_state_to_s3 certificate
@@ -67,7 +67,7 @@ function copy_state_to_s3 {
 function overwrite_target_database_state {
   echo "Overwriting ${TARGET_ENVIRONMENT} database state in target DB"
 
-  eval "require_aws_session_for_${TARGET_ENVIRONMENT}"
+  require_aws_session_for_env "$TARGET_ENVIRONMENT"
   initialize_pg_credentials
   create_tunnel
 
@@ -93,7 +93,7 @@ function overwrite_target_database_state {
 
 function shutdown_target_service {
   echo "Shutting down target service"
-  eval "require_aws_session_for_$TARGET_ENVIRONMENT"
+  require_aws_session_for_env "$TARGET_ENVIRONMENT"
 
   docker build -t copyenvstate:latest -f "$CURRENT_DIR/Dockerfile.copyEnvState" "$CURRENT_DIR"
   docker run \
@@ -109,7 +109,7 @@ function shutdown_target_service {
 
 function start_up_target_service {
   echo "Starting up target service ${TARGET_ENVIRONMENT}"
-  eval "require_aws_session_for_$TARGET_ENVIRONMENT"
+  require_aws_session_for_env "$TARGET_ENVIRONMENT"
 
   docker build -t copyenvstate:latest -f "$CURRENT_DIR/Dockerfile.copyEnvState" "$CURRENT_DIR"
   docker run \

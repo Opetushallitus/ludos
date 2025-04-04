@@ -37,7 +37,6 @@ import { FeedbackLink } from './FeedbackLink'
 
 type ContentProps = {
   exam: Exam
-  isPresentation: boolean
 }
 
 function cameFromSuosikitListing(state: unknown): boolean {
@@ -50,7 +49,7 @@ function cameFromSuosikitListing(state: unknown): boolean {
   return state.returnLocation.includes('suosikit')
 }
 
-const Content = ({ exam, isPresentation }: ContentProps) => {
+const Content = ({ exam }: ContentProps) => {
   const { lt, t } = useLudosTranslation()
   const navigate = useNavigate()
   const { contentTypePluralFi, id, version } = useParams<{
@@ -141,9 +140,9 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} isPresentation={isPresentation} />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
 
-              {!isPresentation && isYllapitaja && (
+              {isYllapitaja && (
                 <div className="row">
                   <StateTag state={data.publishState} />
                   <InternalLink
@@ -193,7 +192,6 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
                 <AssignmentContent
                   assignment={data}
                   teachingLanguage={teachingLanguageOverride}
-                  isPresentation={isPresentation}
                 />
               )}
 
@@ -212,15 +210,13 @@ const Content = ({ exam, isPresentation }: ContentProps) => {
 
           <FeedbackLink />
 
-          {!isPresentation && (
-            <div className="row mb-6">
-              <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
-                {cameFromSuosikit ? lt.returnToFavorites : lt.returnTextByContentType[contentType]}
-              </Button>
-            </div>
-          )}
+          <div className="row mb-6">
+            <Button variant="buttonSecondary" onClick={handleNavigation} data-testid="return">
+              {cameFromSuosikit ? lt.returnToFavorites : lt.returnTextByContentType[contentType]}
+            </Button>
+          </div>
         </div>
-        {!isPresentation && <div className="hidden w-3/12 flex-col border-l border-gray-separator md:flex" />}
+        <div className="hidden w-3/12 flex-col border-l border-gray-separator md:flex" />
       </div>
     </div>
   )

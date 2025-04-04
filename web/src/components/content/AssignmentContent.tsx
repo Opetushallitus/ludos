@@ -1,6 +1,5 @@
 import {
   AssignmentOut,
-  ContentType,
   ContentTypeSingularEn,
   FavoriteAction,
   FavoriteIdsDtoOut,
@@ -11,19 +10,17 @@ import {
 } from '../../types'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { ReactNode, useContext, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { useFetch } from '../../hooks/useFetch'
 import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
-import { LudosContext } from '../../contexts/LudosContext'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
   teachingLanguage: Language
-  isPresentation: boolean
 }
 
 export function getInstructionToShow(
@@ -48,21 +45,20 @@ function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): 
 type AssignmentContentWithoutFavoritesProps = { contentAction?: ReactNode | undefined } & AssignmentContentProps
 
 export const AssignmentContentWithoutFavorites = (
-  { assignment, teachingLanguage, isPresentation, contentAction }:
+  { assignment, teachingLanguage, contentAction }:
   AssignmentContentWithoutFavoritesProps) => {
 
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
-  const { features } = useContext(LudosContext)
 
   return (
     <>
-      { (features.tulostusnakyma || !isPresentation) &&
-        (<div className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact" data-testid="assignment-metadata">
-          <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
-          { contentAction }
-        </div>)
-      }
+      <div
+        className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact"
+        data-testid="assignment-metadata">
+        <AssignmentMetadata assignment={assignment} />
+        {contentAction}
+      </div>
 
       <ContentInstruction teachingLanguage={teachingLanguage} content={instructionToShow} />
       <div className="mb-4 border-b border-gray-separator" />
@@ -74,7 +70,7 @@ export const AssignmentContentWithoutFavorites = (
   )
 }
 
-const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
+const AssignmentContentWithFavorites = ({ assignment, teachingLanguage }: AssignmentContentProps) => {
   const { t } = useLudosTranslation()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
@@ -85,7 +81,6 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresen
 
   const { setFavoriteFolders, unFavorite } = useSetFavoriteFolders(refetchFavoriteData)
   const isFavorite = (favoriteIds && favoriteIds?.folderIdsByAssignmentId[assignment.id] !== undefined) || false
-  const contentLang = getContentLang(assignment, teachingLanguage)
 
   const onSetFavoriteFoldersAction = async (data: FavoriteToggleModalFormType) => {
     await setFavoriteFolders({ data, favoriteAction: isFavorite ? FavoriteAction.EDIT : FavoriteAction.ADD })
@@ -98,11 +93,6 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresen
       onFavoriteClick={() => {
         isFavorite ? unFavorite(assignment) : setIsFavoriteModalOpen(true)
       }}
-      pdfData={{
-        baseOut: assignment,
-        language: contentLang,
-        contentType: ContentType.ASSIGNMENT
-      }}
       disabled={!favoriteIds}
     />
   )
@@ -112,7 +102,6 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresen
       <AssignmentContentWithoutFavorites
         assignment={assignment}
         teachingLanguage={teachingLanguage}
-        isPresentation={isPresentation}
         contentAction={action} />
 
       {isFavoriteModalOpen && favoriteIds && (
@@ -135,12 +124,9 @@ export { AssignmentContentWithFavorites as AssignmentContent }
 
 interface AssignmentMetadataProps {
   assignment: AssignmentOut,
-  isPresentation: boolean,
 }
 
-export const AssignmentMetadata = ({assignment, isPresentation}: AssignmentMetadataProps) => {
-
-  if (isPresentation) return null
+export const AssignmentMetadata = ({assignment}: AssignmentMetadataProps) => {
 
   const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()

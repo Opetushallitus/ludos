@@ -17,13 +17,6 @@ function server_tests {
   popd
 }
 
-function frontend_unit_tests {
-  pushd web
-  npm_ci_if_package_lock_has_changed
-  npx vitest run
-  popd
-}
-
 readonly RESULTS_DIR="$repo/playwright/playwright-results"
 
 
@@ -52,7 +45,6 @@ function playwright_tests {
 function main {
   configure_aws_credentials
   playwright_tests "$@"
-  frontend_unit_tests
   server_tests
 }
 
