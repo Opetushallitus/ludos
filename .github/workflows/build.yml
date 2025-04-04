@@ -85,18 +85,11 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Run 04-lint.sh
         run: ./deploy-scripts/04-lint.sh
-  frontend_unit_tests:
-    name: 06-run-frontend-unittests.sh
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Run 06-run-frontend-unittests.sh
-        run: ./deploy-scripts/06-run-frontend-unittests.sh
 
   push_image:
     name: 05-push-image.sh
     if: github.ref == 'refs/heads/main'
-    needs: [lint, build, server_tests, playwright_tests, frontend_unit_tests]
+    needs: [lint, build, server_tests, playwright_tests]
     permissions:
       packages: read
       id-token: write

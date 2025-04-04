@@ -31,8 +31,6 @@ Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista 
     - React
     - Tailwind
     - Playwright e2e-testaukseen
-    - Vitest yksikkötestaukseen
-    - React-pdf pdf generointi
     - Tiptap tekstieditori
 
 ## Kehitystyökalut

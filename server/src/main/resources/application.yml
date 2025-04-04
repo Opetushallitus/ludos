@@ -38,4 +38,3 @@ ludos:
     password: ${LUDOS_PALVELUKAYTTAJA_PASSWORD}
 
 features:
-  tulostusnakyma: false

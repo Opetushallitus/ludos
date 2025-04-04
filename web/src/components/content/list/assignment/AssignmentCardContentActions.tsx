@@ -2,10 +2,8 @@ import { Icon } from '../../../Icon'
 import { InternalLink } from '../../../InternalLink'
 import { ContentAction, useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { Button } from '../../../Button'
-import { esitysnakymaKey, tulostusnakymaKey } from '../../../LudosRoutes'
-import { AssignmentCardOut, ContentTypePluralFi, Language } from '../../../../types'
-import { lazy, Suspense, useContext } from 'react'
-import { LudosContext } from '../../../../contexts/LudosContext'
+import { tulostusnakymaKey } from '../../../LudosRoutes'
+import { AssignmentCardOut, ContentTypePluralFi } from '../../../../types'
 
 type AssignmentCardContentActionButtonProps = {
   assignment: AssignmentCardOut
@@ -53,8 +51,6 @@ function AssignmentCardContentActionButton({
   }
 }
 
-const PdfDownloadButton = lazy(() => import('../../pdf/PdfDownloadButton'))
-
 type FavoriteActionProps = {
   isFavorite: boolean
   onClick: () => void
@@ -68,33 +64,16 @@ type MoveFolderActionProps = {
 
 type AssignmentCardContentActionsProps = {
   assignment: AssignmentCardOut
-  language: Language
   favoriteAction: FavoriteActionProps
   moveFolderAction?: MoveFolderActionProps
 }
 
 export const AssignmentCardContentActions = ({
   assignment,
-  language,
   favoriteAction,
   moveFolderAction
 }: AssignmentCardContentActionsProps) => {
   const { t } = useLudosTranslation()
-  const { features } = useContext(LudosContext)
-
-  function getLinkKeyAndText(): { text: string, link: string } {
-    if (features.tulostusnakyma) {
-      return {
-        text: t('assignment.tulostusnakyma'),
-        link: tulostusnakymaKey
-      }
-    } else {
-      return {
-        text: t('assignment.katselunakyma'),
-        link: esitysnakymaKey
-      }
-    }
-  }
 
   return (
     <div className="flex w-full flex-wrap items-center justify-evenly gap-3 pr-2 md:w-5/12 md:justify-end">
@@ -103,19 +82,11 @@ export const AssignmentCardContentActions = ({
         contentAction={{
           actionName: 'esitysnakyma',
           iconName: 'uusi-valilehti',
-          ...getLinkKeyAndText()
+          text: t('assignment.tulostusnakyma'),
+          link: tulostusnakymaKey
         }}
         key="uusi-valilehti"
       />
-      <Suspense
-        fallback={
-          <Button variant="buttonGhost" customClass="p-0 flex items-center pr-3" disabled>
-            <Icon name="pdf" color="text-green-primary" />
-            <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
-          </Button>
-        }>
-        <PdfDownloadButton exam={assignment.exam} contentId={assignment.id} language={language} />
-      </Suspense>
       <AssignmentCardContentActionButton
         assignment={assignment}
         contentAction={{

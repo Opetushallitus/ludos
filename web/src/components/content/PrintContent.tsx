@@ -35,7 +35,6 @@ const Content = ({ exam }: ContentProps) => {
   }>()
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
-  const isPresentation = true
 
   const isVersionBrowser = !!version
 
@@ -60,17 +59,16 @@ const Content = ({ exam }: ContentProps) => {
   }
 
   return (
-    <div className="min-h-[80vh] mt-5" data-testid="print-content">
+    <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
       <div className="row">
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} isPresentation={isPresentation} />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
                 <AssignmentContentWithoutFavorites
                   assignment={data}
-                  isPresentation={false}
                   teachingLanguage={teachingLanguage}
                 />
               )}

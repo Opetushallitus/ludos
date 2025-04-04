@@ -6,39 +6,36 @@ import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslat
 import { TipTap } from '../forms/formCommon/editor/TipTap'
 import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
-import { esitysnakymaKey, tulostusnakymaKey } from '../LudosRoutes'
+import { tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
-import { lazy, ReactElement, Suspense, useContext } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
+import { ReactElement } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut
-  isPresentation: boolean
 }
 
-export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement {
-
+export function ContentHeader({ data, teachingLanguage }: ContentHeaderProps): ReactElement {
   if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
   if (data.contentType === ContentType.INSTRUCTION) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
   if (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
   if (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
-  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation })
+  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage })
 }
 
-export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+export function ContentHeaderWithLanguageSelector({ data, teachingLanguage }: ContentHeaderProps) {
   const { lt } = useLudosTranslation()
 
   return (
@@ -46,7 +43,6 @@ export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPr
       <AssignmentTitle
         data={data}
         teachingLanguage={teachingLanguage}
-        isPresentation={isPresentation}
         createdAt={data.createdAt}
       />
 
@@ -58,13 +54,12 @@ export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPr
   )
 }
 
-export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage }: ContentHeaderProps) {
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
       <AssignmentTitle
         data={data}
         teachingLanguage={teachingLanguage}
-        isPresentation={isPresentation}
         createdAt={data.createdAt}
       />
     </div>
@@ -75,20 +70,19 @@ interface AssignmentTitleProps {
   data: ContentBaseOut
   teachingLanguage: Language
   createdAt: string | Date
-  isPresentation: boolean
 }
 
 const AssignmentTitle = (props: AssignmentTitleProps) => {
   const { t } = useLudosTranslation()
-  const { data, teachingLanguage, createdAt, isPresentation } = props
+  const { data, teachingLanguage, createdAt } = props
 
   return (
     <div className="flex flex-col">
-      {!isPresentation && (
-        <div className="row my-1">
-          <p>{toLocaleDate(createdAt)}</p>
-        </div>
-      )}
+
+      <div className="row my-1 create-date">
+        <p>{toLocaleDate(createdAt)}</p>
+      </div>
+
       <div className="row">
         <h2 className="w-full break-normal" data-testid="assignment-header">
           {getContentName(data, teachingLanguage) || t('form.nimeton')}
@@ -140,56 +134,27 @@ function ContentActionButton({
   }
 }
 
-const PDFDownloadButton = lazy(() => import('./pdf/PdfDownloadButton'))
-
 type ContentActionRowProps = {
   isFavorite?: boolean
   disabled?: boolean
   onFavoriteClick?: () => void
-  pdfData?: { baseOut: ContentBaseOut; language: Language; contentType: ContentType }
 }
 
-export function ContentActionRow({ isFavorite, disabled, onFavoriteClick, pdfData }: ContentActionRowProps) {
+export function ContentActionRow({ isFavorite, disabled, onFavoriteClick }: ContentActionRowProps) {
   const { t } = useLudosTranslation()
-  const { features } = useContext(LudosContext)
-
-  function getLinkKeyAndText(): { actionName: string, text: string, link: string } {
-    if (features.tulostusnakyma) {
-      return {
-        actionName: 'tulostusnakyma',
-        text: t('assignment.tulostusnakyma'),
-        link: tulostusnakymaKey
-      }
-    } else {
-      return {
-        actionName: 'esitysnakyma',
-        text: t('assignment.katselunakyma'),
-        link: esitysnakymaKey
-      }
-    }
-  }
 
   return (
     <div data-testid="content-action-row" className="row mt-3 w-full flex-wrap gap-3">
       <ContentActionButton
         contentAction={{
           iconName: 'uusi-valilehti',
-          ...getLinkKeyAndText()
+          actionName: 'tulostusnakyma',
+          text: t('assignment.tulostusnakyma'),
+          link: tulostusnakymaKey
         }}
         disabled={disabled}
         key="uusi-valilehti"
       />
-      {pdfData && (
-        <Suspense
-          fallback={
-            <Button variant="buttonGhost" customClass="p-0 flex items-center" disabled>
-              <Icon name="pdf" color="text-green-primary" />
-              <span className="ml-1 text-xs text-green-primary">{t('assignment.lataapdf')}</span>
-            </Button>
-          }>
-          <PDFDownloadButton exam={pdfData.baseOut.exam} contentId={pdfData.baseOut.id} language={pdfData.language} />
-        </Suspense>
-      )}
       {isFavorite !== undefined && (
         <ContentActionButton
           contentAction={{
