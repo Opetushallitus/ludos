@@ -69,6 +69,12 @@
         }
     }
 
+    .print-content {
+        .create-date {
+            display: none;
+        }
+    }
+
     @media print {
         html, body {
             height: 98%;

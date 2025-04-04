@@ -13,30 +13,29 @@ import { ReactElement } from 'react'
 type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut
-  isPresentation: boolean
 }
 
-export function ContentHeader({ data, teachingLanguage, isPresentation }: ContentHeaderProps): ReactElement {
+export function ContentHeader({ data, teachingLanguage }: ContentHeaderProps): ReactElement {
   if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
   if (data.contentType === ContentType.INSTRUCTION) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
   if (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
   if (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
   }
 
-  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation })
+  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage })
 }
 
-export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+export function ContentHeaderWithLanguageSelector({ data, teachingLanguage }: ContentHeaderProps) {
   const { lt } = useLudosTranslation()
 
   return (
@@ -44,7 +43,6 @@ export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPr
       <AssignmentTitle
         data={data}
         teachingLanguage={teachingLanguage}
-        isPresentation={isPresentation}
         createdAt={data.createdAt}
       />
 
@@ -56,13 +54,12 @@ export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, isPr
   )
 }
 
-export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, isPresentation }: ContentHeaderProps) {
+export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage }: ContentHeaderProps) {
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
       <AssignmentTitle
         data={data}
         teachingLanguage={teachingLanguage}
-        isPresentation={isPresentation}
         createdAt={data.createdAt}
       />
     </div>
@@ -73,20 +70,19 @@ interface AssignmentTitleProps {
   data: ContentBaseOut
   teachingLanguage: Language
   createdAt: string | Date
-  isPresentation: boolean
 }
 
 const AssignmentTitle = (props: AssignmentTitleProps) => {
   const { t } = useLudosTranslation()
-  const { data, teachingLanguage, createdAt, isPresentation } = props
+  const { data, teachingLanguage, createdAt } = props
 
   return (
     <div className="flex flex-col">
-      {!isPresentation && (
-        <div className="row my-1">
-          <p>{toLocaleDate(createdAt)}</p>
-        </div>
-      )}
+
+      <div className="row my-1 create-date">
+        <p>{toLocaleDate(createdAt)}</p>
+      </div>
+
       <div className="row">
         <h2 className="w-full break-normal" data-testid="assignment-header">
           {getContentName(data, teachingLanguage) || t('form.nimeton')}
