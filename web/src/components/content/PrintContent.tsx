@@ -59,7 +59,7 @@ const Content = ({ exam }: ContentProps) => {
   }
 
   return (
-    <div className="min-h-[80vh] mt-5" data-testid="print-content">
+    <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
       <div className="row">
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
