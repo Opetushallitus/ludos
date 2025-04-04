@@ -37,7 +37,6 @@ import { FeedbackLink } from './FeedbackLink'
 
 type ContentProps = {
   exam: Exam
-  isPresentation: boolean
 }
 
 function cameFromSuosikitListing(state: unknown): boolean {
@@ -141,7 +140,7 @@ const Content = ({ exam }: ContentProps) => {
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} isPresentation={false} />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
 
               {isYllapitaja && (
                 <div className="row">
@@ -193,7 +192,6 @@ const Content = ({ exam }: ContentProps) => {
                 <AssignmentContent
                   assignment={data}
                   teachingLanguage={teachingLanguageOverride}
-                  isPresentation={false}
                 />
               )}
 

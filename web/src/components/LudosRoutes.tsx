@@ -186,7 +186,7 @@ function examRoute(exam: Exam): RouteObject {
         element: (
           <Layout>
             <SpinnerSuspense>
-              <Content exam={exam} isPresentation={false} />
+              <Content exam={exam} />
             </SpinnerSuspense>
           </Layout>
         )
@@ -209,7 +209,7 @@ function examRoute(exam: Exam): RouteObject {
             element: (
               <Layout>
                 <SpinnerSuspense>
-                  <Content exam={exam} isPresentation={false} />
+                  <Content exam={exam} />
                 </SpinnerSuspense>
               </Layout>
             )
