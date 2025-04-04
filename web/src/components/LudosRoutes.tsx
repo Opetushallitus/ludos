@@ -12,7 +12,6 @@ import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from './Spinner'
 import { Frontpage } from './frontpage/Frontpage'
-import { PresentationHeader } from './header/PresentationHeader'
 import { Footer } from './Footer'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
@@ -25,7 +24,6 @@ export const sukoKey = Exam.SUKO.toLowerCase()
 export const puhviKey = Exam.PUHVI.toLowerCase()
 export const ldKey = Exam.LD.toLowerCase()
 export const suosikitKey = 'suosikit'
-export const esitysnakymaKey = 'esitysnakyma'
 export const tulostusnakymaKey = 'tulostusnakyma'
 export const uudelleenkirjautuminenOnnistuiPath = '/uudelleenkirjautuminen-onnistui'
 
@@ -189,16 +187,6 @@ function examRoute(exam: Exam): RouteObject {
           <Layout>
             <SpinnerSuspense>
               <Content exam={exam} isPresentation={false} />
-            </SpinnerSuspense>
-          </Layout>
-        )
-      },
-      {
-        path: `:contentTypePluralFi/:id/${esitysnakymaKey}`,
-        element: (
-          <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
-            <SpinnerSuspense>
-              <Content exam={exam} isPresentation={true} />
             </SpinnerSuspense>
           </Layout>
         )
