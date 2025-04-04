@@ -21,7 +21,6 @@ import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmen
 type AssignmentContentProps = {
   assignment: AssignmentOut
   teachingLanguage: Language
-  isPresentation: boolean
 }
 
 export function getInstructionToShow(
@@ -46,7 +45,7 @@ function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): 
 type AssignmentContentWithoutFavoritesProps = { contentAction?: ReactNode | undefined } & AssignmentContentProps
 
 export const AssignmentContentWithoutFavorites = (
-  { assignment, teachingLanguage, isPresentation, contentAction }:
+  { assignment, teachingLanguage, contentAction }:
   AssignmentContentWithoutFavoritesProps) => {
 
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
@@ -57,7 +56,7 @@ export const AssignmentContentWithoutFavorites = (
       <div
         className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact"
         data-testid="assignment-metadata">
-        <AssignmentMetadata assignment={assignment} isPresentation={isPresentation} />
+        <AssignmentMetadata assignment={assignment} />
         {contentAction}
       </div>
 
@@ -71,7 +70,7 @@ export const AssignmentContentWithoutFavorites = (
   )
 }
 
-const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresentation }: AssignmentContentProps) => {
+const AssignmentContentWithFavorites = ({ assignment, teachingLanguage }: AssignmentContentProps) => {
   const { t } = useLudosTranslation()
   const [isFavoriteModalOpen, setIsFavoriteModalOpen] = useState(false)
 
@@ -103,7 +102,6 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage, isPresen
       <AssignmentContentWithoutFavorites
         assignment={assignment}
         teachingLanguage={teachingLanguage}
-        isPresentation={isPresentation}
         contentAction={action} />
 
       {isFavoriteModalOpen && favoriteIds && (
@@ -126,12 +124,9 @@ export { AssignmentContentWithFavorites as AssignmentContent }
 
 interface AssignmentMetadataProps {
   assignment: AssignmentOut,
-  isPresentation: boolean,
 }
 
-export const AssignmentMetadata = ({assignment, isPresentation}: AssignmentMetadataProps) => {
-
-  if (isPresentation) return null
+export const AssignmentMetadata = ({assignment}: AssignmentMetadataProps) => {
 
   const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
