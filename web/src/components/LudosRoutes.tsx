@@ -12,7 +12,7 @@ import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from './Spinner'
 import { Frontpage } from './frontpage/Frontpage'
-import { Footer } from './Footer'
+import { PrintFooter } from './Footer'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
@@ -194,7 +194,7 @@ function examRoute(exam: Exam): RouteObject {
       {
         path: `:contentTypePluralFi/:id/${tulostusnakymaKey}`,
         element: (
-          <Layout header={<></>} footer={<Footer isPresentation={true} />}>
+          <Layout header={<></>} footer={<PrintFooter />}>
             <SpinnerSuspense>
               <PrintContent exam={exam} />
             </SpinnerSuspense>
