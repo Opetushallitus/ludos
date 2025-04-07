@@ -21,6 +21,7 @@ import { LudosContext } from '../../contexts/LudosContext'
 import { ContentError } from './ContentError'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { FeedbackLink } from './FeedbackLink'
+import { PrintButton } from './PrintButton'
 
 type ContentProps = {
   exam: Exam
@@ -34,20 +35,13 @@ const Content = ({ exam }: ContentProps) => {
   }>()
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
-  const isPresentation = true
 
   const isVersionBrowser = !!version
 
   const teachingLanguageOverride =
-    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE
-      ? Language.FI
-      : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE ? Language.FI : teachingLanguage
 
-  const {
-    data,
-    isFetching,
-    error,
-  } = useFetch<ContentBaseOut>(
+  const { data, isFetching, error } = useFetch<ContentBaseOut>(
     ['content'],
     `${ContentTypeSingularEn[contentType!]}/${exam}/${id}${isVersionBrowser ? `/${version}` : ''}`
   )
@@ -65,18 +59,18 @@ const Content = ({ exam }: ContentProps) => {
   }
 
   return (
-    <div className="min-h-[80vh] mt-5" data-testid="print-content">
+    <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
       <div className="row">
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} isPresentation={isPresentation} />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
                 <AssignmentContentWithoutFavorites
                   assignment={data}
-                  isPresentation={false}
-                  teachingLanguage={teachingLanguage} />
+                  teachingLanguage={teachingLanguage}
+                />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (
@@ -92,8 +86,8 @@ const Content = ({ exam }: ContentProps) => {
             </div>
           </div>
 
+          <PrintButton />
           <FeedbackLink />
-
         </div>
       </div>
     </div>

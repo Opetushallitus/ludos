@@ -10,7 +10,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../../scripts/psql/pg-
 
 function initialize {
   parse_env_from_script_name "dump-application-state"
-  eval "require_aws_session_for_${ENV}"
+  require_aws_session_for_env "${ENV}"
   initialize_pg_credentials
   create_dump_directory
 }

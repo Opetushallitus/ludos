@@ -12,8 +12,7 @@ import { useUserDetails } from '../hooks/useUserDetails'
 import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import { Spinner } from './Spinner'
 import { Frontpage } from './frontpage/Frontpage'
-import { PresentationHeader } from './header/PresentationHeader'
-import { Footer } from './Footer'
+import { PrintFooter } from './Footer'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
@@ -25,7 +24,6 @@ export const sukoKey = Exam.SUKO.toLowerCase()
 export const puhviKey = Exam.PUHVI.toLowerCase()
 export const ldKey = Exam.LD.toLowerCase()
 export const suosikitKey = 'suosikit'
-export const esitysnakymaKey = 'esitysnakyma'
 export const tulostusnakymaKey = 'tulostusnakyma'
 export const uudelleenkirjautuminenOnnistuiPath = '/uudelleenkirjautuminen-onnistui'
 
@@ -188,17 +186,7 @@ function examRoute(exam: Exam): RouteObject {
         element: (
           <Layout>
             <SpinnerSuspense>
-              <Content exam={exam} isPresentation={false} />
-            </SpinnerSuspense>
-          </Layout>
-        )
-      },
-      {
-        path: `:contentTypePluralFi/:id/${esitysnakymaKey}`,
-        element: (
-          <Layout header={<PresentationHeader />} footer={<Footer isPresentation={true} />}>
-            <SpinnerSuspense>
-              <Content exam={exam} isPresentation={true} />
+              <Content exam={exam} />
             </SpinnerSuspense>
           </Layout>
         )
@@ -206,7 +194,7 @@ function examRoute(exam: Exam): RouteObject {
       {
         path: `:contentTypePluralFi/:id/${tulostusnakymaKey}`,
         element: (
-          <Layout header={<></>} footer={<Footer isPresentation={true} />}>
+          <Layout header={<></>} footer={<PrintFooter />}>
             <SpinnerSuspense>
               <PrintContent exam={exam} />
             </SpinnerSuspense>
@@ -221,7 +209,7 @@ function examRoute(exam: Exam): RouteObject {
             element: (
               <Layout>
                 <SpinnerSuspense>
-                  <Content exam={exam} isPresentation={false} />
+                  <Content exam={exam} />
                 </SpinnerSuspense>
               </Layout>
             )

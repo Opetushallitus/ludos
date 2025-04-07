@@ -7,8 +7,6 @@ export class AssignmentContentModel extends ContentModel {
   constructor(
     readonly page: Page,
     readonly exam: Exam,
-    readonly downloadPdfButtonFi = page.getByTestId('pdf-download-button-FI'),
-    readonly downloadPdfButtonSv = page.getByTestId('pdf-download-button-SV'),
     readonly tulostusnakyma = page.getByTestId('tulostusnakyma'),
     readonly metadata = page.getByTestId('assignment-metadata')
   ) {

@@ -25,7 +25,7 @@ export const defaultEmptyKoodistoMap: KoodistoMap = Object.fromEntries(
 ) as unknown as KoodistoMap
 
 const placeholderValuesNotInUse: LudosContextValue = {
-  features: { tulostusnakyma: false },
+  features: {},
   koodistos: {
     [Language.FI]: defaultEmptyKoodistoMap,
     [Language.SV]: defaultEmptyKoodistoMap

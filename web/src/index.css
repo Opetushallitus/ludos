@@ -63,7 +63,25 @@
         @apply accent-green-primary
     }
 
+    @media not print {
+        .main-grid {
+            @apply grid-rows-[6rem,1fr,7rem]
+        }
+    }
+
+    .print-content {
+        .create-date {
+            display: none;
+        }
+    }
+
     @media print {
+        html, body {
+            height: 98%;
+        }
+        .main-grid {
+            @apply mt-1
+        }
         .print-color-adjust-exact {
             print-color-adjust: exact !important;
         }
