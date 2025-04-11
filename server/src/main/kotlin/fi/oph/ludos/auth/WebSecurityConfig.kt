@@ -1,6 +1,7 @@
 package fi.oph.ludos.auth
 
 import fi.oph.ludos.test.TestController
+import fi.oph.ludos.auth.CspManager
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -31,6 +32,7 @@ import java.util.function.Supplier
 @EnableMethodSecurity
 class WebSecurityConfiguration {
     val logger: Logger = LoggerFactory.getLogger(WebSecurityConfiguration::class.java)
+
 
     @Bean
     fun singleSignOutFilter(): SingleSignOutFilter = SingleSignOutFilter().apply {
@@ -86,9 +88,10 @@ class WebSecurityConfiguration {
             it.authenticationEntryPoint(authenticationEntryPoint)
         }
         http.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
+
         http.headers {
             it.contentSecurityPolicy { csp ->
-                csp.policyDirectives("default-src 'self'; script-src 'self'")
+                csp.policyDirectives(CspManager.makeCSPString())
             }
         }
 
