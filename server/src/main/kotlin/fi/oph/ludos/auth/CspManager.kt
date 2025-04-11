@@ -9,7 +9,7 @@ object CspManager {
 
     fun makeCSPString(): String = """
     default-src $defaultSrc;
-    sript-src $scriptSrc;
+    script-src $scriptSrc;
     img-src $imgSrc;
     style-src $styleSrc;
     script-src-elem $scriptSrcElem;
