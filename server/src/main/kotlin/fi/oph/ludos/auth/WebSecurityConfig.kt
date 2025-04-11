@@ -50,6 +50,7 @@ class WebSecurityConfiguration {
             it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
         }
 
+
         http.addFilterAfter(SpaCsrfTokenRequestHandler.CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
 
         val requestCache = HttpSessionRequestCache()
@@ -85,6 +86,11 @@ class WebSecurityConfiguration {
             it.authenticationEntryPoint(authenticationEntryPoint)
         }
         http.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
+        http.headers {
+            it.contentSecurityPolicy { csp ->
+                csp.policyDirectives("default-src 'self'; script-src 'self'")
+            }
+        }
 
         return http.build()
     }
