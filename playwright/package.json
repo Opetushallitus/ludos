@@ -9,7 +9,7 @@
     "@types/pdf-parse": "1.1.5",
     "@typescript-eslint/eslint-plugin": "8.29.1",
     "@typescript-eslint/parser": "8.29.1",
-    "dotenv": "16.4.7",
+    "dotenv": "16.5.0",
     "eslint": "8.57.1",
     "typescript": "5.8.3"
   },
