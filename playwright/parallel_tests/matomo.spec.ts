@@ -27,7 +27,7 @@ async function waitForMatomoRequest(layout: LayoutModel) {
   )
 }
 
-test.describe.skipped('Matomo', () => {
+test.describe('Matomo', () => {
   test.beforeEach(async ({ page }) => {
     await login(page, Role.YLLAPITAJA)
   })
