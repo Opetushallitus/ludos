@@ -5,7 +5,7 @@ object CspManager {
     private const val scriptSrc: String = "'self'"
     private const val imgSrc: String = "'self'"
     private const val styleSrc: String = "'self' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='"
-    private const val scriptSrcElem: String = "'self' 'unsafe-inline' analytiikka.opintopolku.fi"
+    private const val scriptSrcElem: String = "'self' analytiikka.opintopolku.fi 'sha256-dsoLSEwvlqmLY1LL4xCztZmZTHKz0BHcn1xegAQKlIQ='"
 
     fun makeCSPString(): String = """
     default-src $defaultSrc;
