@@ -49,7 +49,7 @@
     "@iconify/icons-ic": "^1.2.13",
     "@iconify/icons-material-symbols": "^1.2.58",
     "@tanstack/eslint-plugin-query": "5.73.3",
-    "@types/node": "22.13.14",
+    "@types/node": "22.14.1",
     "@types/react": "18.3.20",
     "@types/react-dom": "18.3.6",
     "@typescript-eslint/parser": "8.30.1",
