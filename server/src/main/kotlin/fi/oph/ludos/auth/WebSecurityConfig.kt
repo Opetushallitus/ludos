@@ -1,7 +1,6 @@
 package fi.oph.ludos.auth
 
 import fi.oph.ludos.test.TestController
-import fi.oph.ludos.auth.CspManager
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -23,9 +22,30 @@ import org.springframework.security.web.csrf.*
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.util.StringUtils
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 import java.util.function.Supplier
+
+@Configuration
+class CorsConfig {
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val config = CorsConfiguration().apply {
+            allowedOrigins = emptyList()
+            allowedMethods = emptyList()
+            allowedHeaders = emptyList()
+        }
+
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", config)
+        }
+    }
+}
+
 
 @Configuration
 @EnableWebSecurity
@@ -45,7 +65,8 @@ class WebSecurityConfiguration {
         authenticationEntryPoint: AuthenticationEntryPoint,
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
-        casConfig: CasConfig
+        casConfig: CasConfig,
+        corsConfigurationSource: CorsConfigurationSource,
     ): SecurityFilterChain {
         http.csrf {
             it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -93,6 +114,10 @@ class WebSecurityConfiguration {
             it.contentSecurityPolicy { csp ->
                 csp.policyDirectives(CspManager.makeCSPString())
             }
+        }
+
+        http.cors {
+            it.configurationSource(corsConfigurationSource)
         }
 
         return http.build()
