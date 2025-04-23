@@ -26,7 +26,7 @@ repositories {
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    implementation("io.arrow-kt:arrow-core:2.0.1")
+    implementation("io.arrow-kt:arrow-core:2.1.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
     implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
