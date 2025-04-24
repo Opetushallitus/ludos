@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.apereo.cas.client.session.SingleSignOutFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.cas.web.CasAuthenticationFilter
@@ -32,11 +33,14 @@ import java.util.function.Supplier
 @Configuration
 class CorsConfig {
 
+    @Value("\${ludos.appUrl}")
+    lateinit var appUrl: String
+
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration().apply {
-            allowedOrigins = emptyList()
-            allowedMethods = emptyList()
+            allowedOrigins = listOf(appUrl)
+            allowedMethods = listOf("*")
             allowedHeaders = emptyList()
         }
 
