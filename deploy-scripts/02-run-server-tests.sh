@@ -19,7 +19,8 @@ function main {
   end_gh_actions_group
 
   start_gh_actions_group "Running gradle server tests"
-  docker build --secret id=github_token,env=GITHUB_TOKEN --target server-build --tag server-stage .
+
+  docker compose -f ./docker-compose.yaml build ludos-server-stage
   pushd server
   if running_on_gh_actions; then
     docker run --env SPRING_PROFILES_ACTIVE=local \
