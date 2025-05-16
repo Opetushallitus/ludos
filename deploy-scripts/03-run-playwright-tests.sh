@@ -38,7 +38,7 @@ function main {
 
   SPRING_PROFILES_ACTIVE=local \
   DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
-  docker compose up --wait ludos
+  docker_compose up --wait ludos
   end_gh_actions_group
 
   start_gh_actions_group "Running non-parallel playwright tests"

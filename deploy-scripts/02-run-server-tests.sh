@@ -15,12 +15,12 @@ function main {
   configure_aws_credentials
 
   start_gh_actions_group "Start DB for tests"
-  docker compose up ludos-db --detach
+  docker_compose up ludos-db --detach
   end_gh_actions_group
 
   start_gh_actions_group "Running gradle server tests"
 
-  docker compose -f ./docker-compose.yaml build ludos-server-stage
+  docker_compose -f ./docker-compose.yaml build ludos-server-stage
   pushd server
   if running_on_gh_actions; then
     docker run --env SPRING_PROFILES_ACTIVE=local \
