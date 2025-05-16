@@ -15,10 +15,9 @@ services:
   ludos-server:
     build:
       cache_from:
-        - type=local,src=./server-compose-cache
-
+        - type=gha
       cache_to:
-        - type=local,dest=./server-compose-cache
+        - type=gha
       secrets:
         - github_token
     image: ${LUDOS_TAG}
