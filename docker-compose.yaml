@@ -1,7 +1,6 @@
 version: '3'
 name: oph-ludos
 services:
-
   ludos:
     extends:
       service: ludos-server
@@ -15,6 +14,11 @@ services:
 
   ludos-server:
     build:
+      cache_from:
+        - type=local,src=./server-compose-cache
+
+      cache_to:
+        - type=local,dest=./server-compose-cache
       secrets:
         - github_token
     image: ${LUDOS_TAG}
@@ -26,6 +30,16 @@ services:
     depends_on:
       ludos-db:
         condition: service_healthy
+
+  ludos-server-stage:
+    build:
+      cache_from:
+        - type=local,src=./server-compose-cache
+      secrets:
+        - github_token
+      target: server-build
+    image: server-stage
+    pull_policy: missing
 
   ludos-db:
     image: 'postgres:15.2'
