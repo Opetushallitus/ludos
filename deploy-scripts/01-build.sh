@@ -24,7 +24,7 @@ function main {
   # fi
 
   export LUDOS_TAG
-  docker buildx bake -f ./docker-compose.yaml ludos-server
+  docker buildx bake --load -f ./docker-compose.yaml ludos-server
   tags_to_push+=("$github_image_tag")
 
   end_gh_actions_group
