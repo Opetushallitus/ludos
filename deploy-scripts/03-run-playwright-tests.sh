@@ -37,7 +37,7 @@ function main {
   export LUDOS_TAG
 
 
-  docker buildx bake --load -f ./docker-compose.yaml ludos
+  docker buildx bake --set "*.cache-to=" --load -f ./docker-compose.yaml ludos
 
   SPRING_PROFILES_ACTIVE=local \
   DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
