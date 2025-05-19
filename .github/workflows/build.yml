@@ -26,8 +26,8 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: server-compose-cache
-          key: ${{ runner.os }}-docker-cache-${{ hashFiles('**/web/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-docker-cache
+          key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-docker-server-cache
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
@@ -62,8 +62,8 @@ jobs:
       - uses: actions/cache/restore@v4
         with:
           path: server-compose-cache
-          key: ${{ runner.os }}-docker-cache-${{ hashFiles('**/web/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-docker-cache
+          key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-docker-server-cache
 
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
@@ -88,8 +88,8 @@ jobs:
       - uses: actions/cache/restore@v4
         with:
           path: server-compose-cache
-          key: ${{ runner.os }}-docker-cache-${{ hashFiles('**/web/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-docker-cache
+          key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-docker-server-cache
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
