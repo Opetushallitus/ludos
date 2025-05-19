@@ -1,13 +1,5 @@
 name: Push image
 description: Upload built image to AWS ECR
-inputs:
-  username:
-    description: ghcr.io username
-    required: true
-  password:
-    description: ghcr.io password
-    required: true
-
 
 runs:
   using: composite

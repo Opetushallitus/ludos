@@ -116,6 +116,8 @@ jobs:
           path: server-compose-cache
           key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
           restore-keys: ${{ runner.os }}-docker-server-cache
+      - name: Push image
+        uses: ./.github/actions/push_image
 
   build_status_completed:
     name: Send build status
