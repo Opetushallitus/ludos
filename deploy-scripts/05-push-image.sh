@@ -15,7 +15,7 @@ function main() {
 function upload_image_to_ecr() {
   start_gh_actions_group "Uploading image to util account"
 
-  export LUDOS_TAG="$github_image_tag"
+  export LUDOS_TAG="$ecr_image_tag"
   docker buildx bake --set "*.cache-to=" --load -f ./docker-compose.yaml ludos-server
   docker push "${ecr_image_tag}"
 
