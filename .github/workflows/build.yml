@@ -27,6 +27,7 @@ jobs:
         with:
           path: server-compose-cache
           key: ${{ runner.os }}-docker-cache-${{ hashFiles('**/web/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-docker-cache
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
