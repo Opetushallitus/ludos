@@ -33,7 +33,7 @@ function main {
   end_gh_actions_group
 
   start_gh_actions_group "Run ludos server"
-  LUDOS_TAG="$github_image_tag"
+  LUDOS_TAG="ludos-$revision"
   export LUDOS_TAG
 
 
