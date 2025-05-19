@@ -23,12 +23,10 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: docker/setup-buildx-action@v3
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
-          path: /server-compose-cache
+          path: server-compose-cache
           key: ${{ runner.os }}-docker-cache
-          restore-keys: |
-            ${{ runner.os }}-docker-cache
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
@@ -60,12 +58,11 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: docker/setup-buildx-action@v3
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
-          path: /server-compose-cache
+          path: server-compose-cache
           key: ${{ runner.os }}-docker-cache
-          restore-keys: |
-            ${{ runner.os }}-docker-cache
+
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
@@ -86,12 +83,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: docker/setup-buildx-action@v3
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
-          path: /server-compose-cache
+          path: server-compose-cache
           key: ${{ runner.os }}-docker-cache
-          restore-keys: |
-            ${{ runner.os }}-docker-cache
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
         with:
