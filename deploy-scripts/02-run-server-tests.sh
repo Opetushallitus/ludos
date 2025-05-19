@@ -20,7 +20,7 @@ function main {
 
   start_gh_actions_group "Running gradle server tests"
 
-  docker_compose -f ./docker-compose.yaml build ludos-server-stage
+  docker buildx bake -f ./docker-compose.yaml ludos-server-stage
   pushd server
   if running_on_gh_actions; then
     docker run --env SPRING_PROFILES_ACTIVE=local \

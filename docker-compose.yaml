@@ -39,6 +39,8 @@ services:
       secrets:
         - github_token
       target: server-build
+      context: .
+      dockerfile: Dockerfile
     image: server-stage
     pull_policy: missing
 
