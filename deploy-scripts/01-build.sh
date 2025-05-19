@@ -14,11 +14,7 @@ function main {
 
   cd "$repo"
 
-  local tags_to_push=()
-
-  start_gh_actions_group "Building $github_image_tag"
-
-  LUDOS_TAG="$github_image_tag"
+  LUDOS_TAG="ludos-$revision"
   # if !running_on_gh_actions; then
   #   LUDOS_TAG=ludos-server:local
   # fi
@@ -27,7 +23,6 @@ function main {
   docker buildx bake --load -f ./docker-compose.yaml ludos-server
 
   end_gh_actions_group
-
 }
 
 main

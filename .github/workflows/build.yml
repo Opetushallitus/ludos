@@ -7,9 +7,6 @@ on:
 
 concurrency: build-${{ github.ref }}
 
-env:
-  DOCKER_BUILDKIT: '1' # BuildKit is enabled by default starting in Docker v23, Ubuntu 22.04 has an older version
-
 defaults:
   run:
     shell: bash
@@ -36,14 +33,6 @@ jobs:
           task: build-image
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
-
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run 01-build.sh
         run: ./deploy-scripts/01-build.sh
@@ -127,12 +116,6 @@ jobs:
           path: server-compose-cache
           key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
           restore-keys: ${{ runner.os }}-docker-server-cache
-
-      - name: Push image
-        uses: ./.github/actions/push_image
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
 
   build_status_completed:
     name: Send build status
