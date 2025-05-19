@@ -17,7 +17,7 @@ services:
       cache_from:
         - type=local,src=server-compose-cache
       cache_to:
-        - type=local,dest=server-compose-cache
+        - type=local,dest=server-compose-cache,mode=max
       secrets:
         - github_token
       context: .
