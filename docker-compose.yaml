@@ -15,11 +15,13 @@ services:
   ludos-server:
     build:
       cache_from:
-        - type=gha
+        - type=local,src=server-compose-cache
       cache_to:
-        - type=gha
+        - type=local,dest=server-compose-cache
       secrets:
         - github_token
+      context: .
+      dockerfile: Dockerfile
     image: ${LUDOS_TAG}
     pull_policy: missing
     ports:
@@ -33,7 +35,7 @@ services:
   ludos-server-stage:
     build:
       cache_from:
-        - type=local,src=./server-compose-cache
+        - type=local,src=server-compose-cache
       secrets:
         - github_token
       target: server-build

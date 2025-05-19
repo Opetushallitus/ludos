@@ -44,7 +44,7 @@ function main {
     for tag in "${tags_to_push[@]}"
     do
       info "docker push $tag"
-      docker push "$tag"
+      # docker push "$tag"
     done
     end_gh_actions_group
   else
