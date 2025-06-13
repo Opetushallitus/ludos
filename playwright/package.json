@@ -10,7 +10,7 @@
     "@typescript-eslint/eslint-plugin": "8.30.1",
     "@typescript-eslint/parser": "8.30.1",
     "dotenv": "16.5.0",
-    "eslint": "8.57.1",
+    "eslint": "9.29.0",
     "typescript": "5.8.3"
   },
   "scripts": {
