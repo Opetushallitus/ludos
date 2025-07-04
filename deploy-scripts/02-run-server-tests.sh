@@ -18,9 +18,11 @@ function main {
   docker_compose up ludos-db --detach
   end_gh_actions_group
 
-  start_gh_actions_group "Running gradle server tests"
-
+  start_gh_actions_group "Building gradle server tests"
   docker buildx bake --load -f ./docker-compose.yaml ludos-server-stage
+  end_gh_actions_group
+
+  start_gh_actions_group "Running gradle server tests"
   pushd server
   if running_on_gh_actions; then
     docker run --env SPRING_PROFILES_ACTIVE=local \
