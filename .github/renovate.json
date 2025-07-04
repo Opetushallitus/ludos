@@ -13,6 +13,7 @@
   "prCreation": "immediate",
   "ignoreTests": false,
   "automergeType": "pr",
+  "lockFileMaintenance": { "enabled": true },
   "separateMajorMinor": true,
   "separateMultipleMajor": true,
   "enabledManagers": ["nvm", "npm", "github-actions", "dockerfile", "gradle", "gradle-wrapper"],
