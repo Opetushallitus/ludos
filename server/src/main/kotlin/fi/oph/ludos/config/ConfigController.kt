@@ -24,7 +24,7 @@ class ConfigController(val features: Features) {
     }
 }
 
-// Data class cannot be empty. Make dummy property as a placeholder until we get more feature flags
+// Data class cannot be empty. Make dummy property as a placeholder until we get more featureflags
 data class FeaturesResponse(
     val dummy: Unit = Unit
 )
