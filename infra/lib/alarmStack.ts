@@ -1,11 +1,11 @@
-import { CommonStackProps } from '../types'
 import * as cdk from 'aws-cdk-lib'
-import { Construct } from 'constructs'
-import * as sns from 'aws-cdk-lib/aws-sns'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
-import * as path from 'path'
-import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions'
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
+import * as sns from 'aws-cdk-lib/aws-sns'
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions'
+import { Construct } from 'constructs'
+import * as path from 'path'
+import { CommonStackProps } from '../types'
 
 export class AlarmStack extends cdk.Stack {
   readonly alarmSnsTopic

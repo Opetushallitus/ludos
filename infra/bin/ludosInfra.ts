@@ -2,10 +2,10 @@
 import 'source-map-support/register'
 import * as cdk from 'aws-cdk-lib'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
-import { LudosStack } from '../lib/ludosStack'
-import { getEnvParameters } from '../lib/envParameters'
-import { UtilityStack } from '../lib/utilityStack'
 import { EnvName, validateEnvName } from '../lib/accounts'
+import { getEnvParameters } from '../lib/envParameters'
+import { LudosStack } from '../lib/ludosStack'
+import { UtilityStack } from '../lib/utilityStack'
 
 const app = new cdk.App()
 

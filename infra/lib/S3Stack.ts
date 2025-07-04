@@ -1,11 +1,11 @@
-import * as cdk from 'aws-cdk-lib/core'
-import { RemovalPolicy } from 'aws-cdk-lib/core'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { BucketAccessControl, ObjectOwnership } from 'aws-cdk-lib/aws-s3'
+import * as cdk from 'aws-cdk-lib/core'
+import { RemovalPolicy } from 'aws-cdk-lib/core'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
-import { BackupStack } from './backupStack'
 import { capitalize } from '../utils'
+import { BackupStack } from './backupStack'
 
 interface S3StackProps extends CommonStackProps {
   backupStack: BackupStack
