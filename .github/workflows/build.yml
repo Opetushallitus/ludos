@@ -68,6 +68,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: read
     needs: ['build']
     name: 03-run-playwright-tests.sh
     runs-on: ubuntu-24.04
