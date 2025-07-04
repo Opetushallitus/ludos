@@ -42,6 +42,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: read
     name: 02-run-server-tests.sh
     runs-on: ubuntu-24.04
     steps:
