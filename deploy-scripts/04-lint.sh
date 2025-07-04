@@ -23,6 +23,12 @@ function main {
     npm_ci_if_package_lock_has_changed
     npm run lint
     popd
+
+    pushd infra
+    npm_ci_if_package_lock_has_changed
+    npm run lint
+    popd
+
     end_gh_actions_group
 }
 
