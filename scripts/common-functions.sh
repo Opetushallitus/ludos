@@ -179,11 +179,6 @@ function wait_until_port_is_listening {
   done
 }
 
-function docker_compose {
-  DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose "$@"
-
-}
-
 function assert_env_var_is_set {
   local var_name="$1"
 

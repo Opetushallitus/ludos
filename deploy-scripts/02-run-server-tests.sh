@@ -13,7 +13,7 @@ function test-server {
   require_docker_compose
 
   start_gh_actions_group "Start DB for tests"
-  docker_compose up ludos-db --detach
+  docker compose up ludos-db --detach
   end_gh_actions_group
 
   start_gh_actions_group "Building gradle server tests"
