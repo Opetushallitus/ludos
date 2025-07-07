@@ -15,7 +15,6 @@ function playwright-test {
   pushd "$repo"
   require_command docker
   require_docker_compose
-  configure_aws_credentials
   trap cleanup EXIT
 
   start_gh_actions_group "Start service for tests"
@@ -27,11 +26,9 @@ function playwright-test {
   export LUDOS_TAG
 
 
-  docker compose -f ./docker-compose.yaml build ludos
-
   SPRING_PROFILES_ACTIVE=local \
   DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
-  docker_compose up --wait ludos
+  docker compose up --wait ludos
   end_gh_actions_group
 
   start_gh_actions_group "Running non-parallel playwright tests"
