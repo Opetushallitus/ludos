@@ -5,9 +5,9 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
 
 # shellcheck source=./deploy-functions.sh
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
+source "$repo/deploy-scripts/deploy-functions.sh"
 
-function main() {
+function push-image() {
   setup
   upload_image_to_ecr
 }
@@ -15,19 +15,19 @@ function main() {
 function upload_image_to_ecr() {
   start_gh_actions_group "Uploading image to util account"
 
-  export LUDOS_TAG="$ecr_image_tag"
-  docker buildx bake --set "*.cache-to=" --load -f ./docker-compose.yaml ludos-server
-  docker push "${ecr_image_tag}"
+  docker tag "ludos-$revision" "$ecr_image_tag"
+  docker push "$ecr_image_tag"
 
   end_gh_actions_group
 }
 
 function setup() {
-  cd "${repo}"
+  pushd "${repo}"
   require_command docker
   require_docker_compose
   configure_aws_credentials
   get_ecr_login_credentials
+  popd
 }
 
 function get_ecr_login_credentials() {
@@ -39,5 +39,3 @@ function get_ecr_login_credentials() {
       ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 505953557276.dkr.ecr.eu-west-1.amazonaws.com
   fi
 }
-
-main "$@"

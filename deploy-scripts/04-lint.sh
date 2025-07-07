@@ -5,10 +5,10 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
 
 # shellcheck source=./deploy-functions.sh
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
+source "$repo/deploy-scripts/deploy-functions.sh"
 
-function main {
-    cd "$repo"
+function lint {
+    pushd "$repo"
     use_correct_node_version
 
     start_gh_actions_group "Lint web"
@@ -30,6 +30,5 @@ function main {
     popd
 
     end_gh_actions_group
+    popd
 }
-
-main "$@"

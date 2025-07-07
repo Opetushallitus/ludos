@@ -14,10 +14,6 @@ services:
 
   ludos-server:
     build:
-      cache_from:
-        - type=local,src=server-compose-cache
-      cache_to:
-        - type=local,dest=server-compose-cache,mode=max
       secrets:
         - github_token
       context: .
@@ -34,8 +30,6 @@ services:
 
   ludos-server-stage:
     build:
-      cache_from:
-        - type=local,src=server-compose-cache
       secrets:
         - github_token
       target: server-build

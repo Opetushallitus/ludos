@@ -5,24 +5,14 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
 
 # shellcheck source=./deploy-functions.sh
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
-
+source "$repo/deploy-scripts/deploy-functions.sh"
 
 function cleanup {
     docker compose down
 }
 
-function playwright_test {
-  docker run -it --rm \
-    --network oph-ludos_default \
-    --env HEADLESS=true \
-    --env CI=true \
-    playwright-image "$@"
-}
-
-
-function main {
-  cd "$repo"
+function playwright-test {
+  pushd "$repo"
   require_command docker
   require_docker_compose
   configure_aws_credentials
@@ -37,7 +27,7 @@ function main {
   export LUDOS_TAG
 
 
-  docker buildx bake --set "*.cache-to=" --load -f ./docker-compose.yaml ludos
+  docker compose -f ./docker-compose.yaml build ludos
 
   SPRING_PROFILES_ACTIVE=local \
   DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
@@ -73,6 +63,5 @@ function main {
   start_gh_actions_group "Stop service for tests"
   cleanup
   end_gh_actions_group
+  popd
 }
-
-main

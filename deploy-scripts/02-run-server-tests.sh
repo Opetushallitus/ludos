@@ -5,11 +5,10 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
 
 # shellcheck source=./deploy-functions.sh
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
+source "$repo/deploy-scripts/deploy-functions.sh"
 
-
-function main {
-  cd "$repo"
+function test-server {
+  pushd "$repo"
   require_command docker
   require_docker_compose
   configure_aws_credentials
@@ -19,7 +18,7 @@ function main {
   end_gh_actions_group
 
   start_gh_actions_group "Building gradle server tests"
-  docker buildx bake --load -f ./docker-compose.yaml ludos-server-stage
+  docker compose -f ./docker-compose.yaml build ludos-server-stage
   end_gh_actions_group
 
   start_gh_actions_group "Running gradle server tests"
@@ -50,6 +49,5 @@ function main {
   start_gh_actions_group "Stop DB for tests"
   docker compose down ludos-db
   end_gh_actions_group
+  popd
 }
-
-main

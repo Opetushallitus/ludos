@@ -14,17 +14,13 @@ defaults:
 jobs:
   build:
     permissions:
+      id-token: write
+      contents: read
       packages: write
     name: 01-build.sh
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
-      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: server-compose-cache
-          key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-docker-server-cache
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
@@ -34,86 +30,18 @@ jobs:
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
 
+      - name: Configure untuva AWS credentials
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
+        with:
+          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
+          aws-region: eu-west-1
+
       - name: Run 01-build.sh
         run: ./deploy-scripts/01-build.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  server_tests:
-    permissions:
-      id-token: write
-      contents: read
-      packages: read
-    name: 02-run-server-tests.sh
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
-
-      - name: Configure untuva AWS credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-        with:
-          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-          aws-region: eu-west-1
-      - name: Run 02-run-server-tests.sh
-        run: ./deploy-scripts/02-run-server-tests.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  playwright_tests:
-    permissions:
-      id-token: write
-      contents: read
-      packages: read
-    needs: ['build']
-    name: 03-run-playwright-tests.sh
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3
-
-      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: server-compose-cache
-          key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-docker-server-cache
-      - name: Configure untuva AWS credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4
-        with:
-          role-to-assume: arn:aws:iam::782034763554:role/ludos-github-actions-role-untuva
-          aws-region: eu-west-1
-      - name: Run 03-run-playwright-tests.sh
-        run: ./deploy-scripts/03-run-playwright-tests.sh
-        env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
-  lint:
-    name: 04-lint.sh
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Run 04-lint.sh
-        run: ./deploy-scripts/04-lint.sh
-
-  push_image:
-    name: 05-push-image.sh
-    if: github.ref == 'refs/heads/main'
-    needs: [lint, build, server_tests, playwright_tests]
-    permissions:
-      packages: read
-      id-token: write
-    runs-on: 'ubuntu-24.04'
-    steps:
-      - name: Fetch history for all branches and tags
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4
-        with:
-          path: server-compose-cache
-          key: ${{ runner.os }}-docker-server-cache-${{ hashFiles('**/web/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-docker-server-cache
-      - name: Push image
-        uses: ./.github/actions/push_image
 
   build_status_completed:
     name: Send build status
