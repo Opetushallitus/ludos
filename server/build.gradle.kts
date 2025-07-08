@@ -23,6 +23,10 @@ repositories {
     }
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
