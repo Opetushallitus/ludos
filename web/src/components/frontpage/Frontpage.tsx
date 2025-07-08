@@ -1,7 +1,7 @@
-import { NavigationBoxes } from './FrontpageNavigationBoxes'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useUserDetails } from '../../hooks/useUserDetails'
 import { etusivuKey } from '../LudosRoutes'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { NavigationBoxes } from './FrontpageNavigationBoxes'
 
 export const Frontpage = () => {
   const { t } = useLudosTranslation()

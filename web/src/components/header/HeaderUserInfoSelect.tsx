@@ -1,11 +1,11 @@
+import { useState } from 'react'
+import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../hooks/useUserDetails'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
 import { HeaderApplicationMenu } from './HeaderApplicationMenu'
 import { HeaderLogoutButton } from './HeaderLogoutButton'
-import { useState } from 'react'
-import { useDropdownCloseOnBlur } from '../../hooks/useDropdownCloseOnBlur'
-import { useUserDetails } from '../../hooks/useUserDetails'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const HeaderUserInfoSelect = () => {
   const { lt } = useLudosTranslation()
@@ -20,7 +20,8 @@ export const HeaderUserInfoSelect = () => {
         className="flex items-center text-green-primary"
         data-testid="user-menu-expand"
         onClick={() => setShowMenu(!showMenu)}
-        variant="buttonGhost">
+        variant="buttonGhost"
+      >
         {`${firstNames} ${lastName}`}
         <Icon name="laajenna" color="text-black" size="lg" />
       </Button>

@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { useDropdownCloseOnBlur } from '../../../hooks/useDropdownCloseOnBlur'
-import { Button } from '../../Button'
-import { Icon } from '../../Icon'
-import { TextInputModal } from '../../modal/TextInputModal'
-import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
-import { AssignmentFavoriteMoveFolderModal } from '../../modal/AssignmentFavoriteMoveFolderModal'
-import { deleteFavoriteFolder, SessionExpiredFetchError, updateFavoriteFolder } from '../../../request'
+import { useNavigate } from 'react-router-dom'
 import { findParentFolder } from '../../../assignmentFavoriteFolderHelpers'
 import { useNotification } from '../../../contexts/NotificationContext'
-import { useNavigate } from 'react-router-dom'
-import { favoritesPagePath } from '../../LudosRoutes'
-import { DeleteModal } from '../../modal/DeleteModal'
+import { useDropdownCloseOnBlur } from '../../../hooks/useDropdownCloseOnBlur'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { deleteFavoriteFolder, SessionExpiredFetchError, updateFavoriteFolder } from '../../../request'
+import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
+import { Button } from '../../Button'
+import { Icon } from '../../Icon'
+import { favoritesPagePath } from '../../LudosRoutes'
+import { AssignmentFavoriteMoveFolderModal } from '../../modal/AssignmentFavoriteMoveFolderModal'
+import { DeleteModal } from '../../modal/DeleteModal'
+import { TextInputModal } from '../../modal/TextInputModal'
 
 type AssignmentFavoriteFolderDropdownMenuProps = {
   exam: Exam
@@ -93,20 +93,23 @@ export const AssignmentFavoriteFolderDropdownMenu = ({
         customClass="p-0"
         id="menu-button"
         data-testid="folder-action-menu-btn"
-        aria-expanded={showActionMenu}>
+        aria-expanded={showActionMenu}
+      >
         <Icon name="kolme-pistetta" color="text-green-primary" customClass="text-[2rem] mt-2" />
       </Button>
       {showActionMenu && (
         <div
           className="absolute right-10 top-10 z-10 py-2 w-56 origin-top-right bg-white rounded-md border border-gray-border shadow-lg"
           role="menu"
-          aria-labelledby="menu-button">
+          aria-labelledby="menu-button"
+        >
           <Button
             variant="buttonGhost"
             tabIndex={0}
             customClass="w-full text-left"
             data-testid="move-folder-btn"
-            onClick={() => setModalStates({ ...modalStates, openMoveToFolderModal: true })}>
+            onClick={() => setModalStates({ ...modalStates, openMoveToFolderModal: true })}
+          >
             <span className="text-green-primary">{t('favorite.folder.siirra-kansio')}</span>
           </Button>
           <div className="border-t border-gray-separator" />
@@ -115,7 +118,8 @@ export const AssignmentFavoriteFolderDropdownMenu = ({
             tabIndex={0}
             customClass="w-full text-left"
             data-testid="delete-folder-btn"
-            onClick={() => setModalStates({ ...modalStates, openDeleteFolderModal: true })}>
+            onClick={() => setModalStates({ ...modalStates, openDeleteFolderModal: true })}
+          >
             <span className="text-green-primary">{t('favorite.folder.poista-kansio')}</span>
           </Button>
           <div className="border-t border-gray-separator" />
@@ -124,7 +128,8 @@ export const AssignmentFavoriteFolderDropdownMenu = ({
             tabIndex={0}
             customClass="w-full text-left"
             data-testid="rename-folder-btn"
-            onClick={() => setModalStates({ ...modalStates, openRenameFolderModal: true })}>
+            onClick={() => setModalStates({ ...modalStates, openRenameFolderModal: true })}
+          >
             <span className="text-green-primary">{t('favorite.folder.nimea-uudelleen')}</span>
           </Button>
         </div>
@@ -154,7 +159,8 @@ export const AssignmentFavoriteFolderDropdownMenu = ({
           modalTitle={t('favorite.folder.poista-kansio')}
           open
           onClose={() => setModalStates((curr) => ({ ...curr, openDeleteFolderModal: false }))}
-          onDeleteAction={handleDeleteFolder}>
+          onDeleteAction={handleDeleteFolder}
+        >
           <div className="h-[10vh] p-6">
             <p>{t('favorite.folder.poista-kansio-leipateksti')}</p>
           </div>

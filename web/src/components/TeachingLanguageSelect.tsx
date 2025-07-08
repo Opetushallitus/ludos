@@ -1,12 +1,12 @@
-import { useLudosTranslation } from '../hooks/useLudosTranslation'
-import { LudosSelect, LudosSelectOption } from './ludosSelect/LudosSelect'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from './ludosSelect/helpers'
-import { sortKooditByArvo } from '../hooks/useKoodisto'
-import { Exam } from '../types'
 import { useContext } from 'react'
+import { SingleValue } from 'react-select'
 import { LudosContext } from '../contexts/LudosContext'
 import { parseLanguage, useFilterValues } from '../hooks/useFilterValues'
-import { SingleValue } from 'react-select'
+import { sortKooditByArvo } from '../hooks/useKoodisto'
+import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { Exam } from '../types'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from './ludosSelect/helpers'
+import { LudosSelect, LudosSelectOption } from './ludosSelect/LudosSelect'
 
 export const TeachingLanguageSelect = ({ exam }: { exam: Exam }) => {
   const { teachingLanguage, setTeachingLanguage } = useContext(LudosContext)
@@ -15,7 +15,9 @@ export const TeachingLanguageSelect = ({ exam }: { exam: Exam }) => {
 
   function onChange(opt: SingleValue<LudosSelectOption>) {
     const lang = parseLanguage(opt?.value || '')
-    if (!lang) return
+    if (!lang) {
+      return
+    }
     setTeachingLanguage(lang)
     setFilterValue('kieli', lang)
   }
@@ -40,7 +42,9 @@ export function TeachingLanguageSelectWithLabel({
   text: string
   displaySuko?: boolean
 }) {
-  if (!displaySuko && exam === Exam.SUKO) return null
+  if (!displaySuko && exam === Exam.SUKO) {
+    return null
+  }
 
   return (
     <div className="flex flex-col gap-2 md:flex-row">

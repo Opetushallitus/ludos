@@ -1,8 +1,8 @@
-import { ContentOrder } from '../../../types'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { LudosSelect } from '../../ludosSelect/LudosSelect'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
 import { sortKooditByArvo } from '../../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ContentOrder } from '../../../types'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../ludosSelect/helpers'
+import { LudosSelect } from '../../ludosSelect/LudosSelect'
 
 type ContentOrderFilterProps = {
   contentOrder: ContentOrder

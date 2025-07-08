@@ -1,6 +1,6 @@
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { ErrorMessages, ErrorMessagesType } from '../../../types'
 import { MIN_NAME_LENGTH } from '../schemas/schemaCommon'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 
 export const FormError = ({ error, name }: { error?: string; name: string }) => {
   const { t } = useLudosTranslation()

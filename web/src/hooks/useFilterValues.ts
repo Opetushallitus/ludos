@@ -105,8 +105,12 @@ export function useFilterValues(exam: Exam) {
 }
 
 export function parseLanguage(lang: string): 'FI' | 'SV' | null {
-  if (lang === 'FI') return 'FI'
-  if (lang === 'SV') return 'SV'
+  if (lang === 'FI') {
+    return 'FI'
+  }
+  if (lang === 'SV') {
+    return 'SV'
+  }
 
   return null
 }

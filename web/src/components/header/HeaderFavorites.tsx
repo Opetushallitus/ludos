@@ -1,12 +1,12 @@
 import React from 'react'
-import { buttonClasses } from '../Button'
-import { Icon } from '../Icon'
-import { favoritesPagePath } from '../LudosRoutes'
-import { InternalLink } from '../InternalLink'
-import { twMerge } from 'tailwind-merge'
 import { useLocation } from 'react-router-dom'
+import { twMerge } from 'tailwind-merge'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { Exam } from '../../types'
+import { buttonClasses } from '../Button'
+import { Icon } from '../Icon'
+import { InternalLink } from '../InternalLink'
+import { favoritesPagePath } from '../LudosRoutes'
 
 const toLower = (str: string) => str.toLowerCase()
 
@@ -30,7 +30,8 @@ export const HeaderFavorites = ({ userFavoriteAssignmentCount, isMobile }: Heade
         'flex justify-center gap-1 border-l border-green-primary pt-1 pb-0 pr-2'
       )}
       to={favoritesPagePath(exam)}
-      data-testid="header-favorites">
+      data-testid="header-favorites"
+    >
       {isMobile ? null : <span className="text-green-primary">{t('favorite.suosikit')}</span>}
       <div className="relative">
         <Icon

@@ -1,13 +1,13 @@
-import { InternalLink } from '../../../InternalLink'
-import { buttonClasses } from '../../../Button'
-import { uusiKey } from '../../../LudosRoutes'
+import { FilterValues } from '../../../../hooks/useFilterValues'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
 import { ContentTypeSingularFi, Exam } from '../../../../types'
 import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
-import { ContentOrderFilter } from '../ContentOrderFilter'
-import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
-import { FilterValues } from '../../../../hooks/useFilterValues'
+import { buttonClasses } from '../../../Button'
+import { InternalLink } from '../../../InternalLink'
+import { uusiKey } from '../../../LudosRoutes'
 import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
+import { ContentOrderFilter } from '../ContentOrderFilter'
 
 type AssignmentListHeaderProps = {
   exam: Exam
@@ -25,7 +25,8 @@ export const AssignmentListHeader = ({ exam, filterValues }: AssignmentListHeade
           <InternalLink
             className={buttonClasses('buttonPrimary')}
             to={`${location.pathname}/${uusiKey}`}
-            data-testid={`create-${ContentTypeSingularFi.ASSIGNMENT}-button`}>
+            data-testid={`create-${ContentTypeSingularFi.ASSIGNMENT}-button`}
+          >
             {preventLineBreaksFromSpace(t('button.lisaakoetehtava'))}
           </InternalLink>
         )}

@@ -1,11 +1,11 @@
+import { ReactNode, useRef } from 'react'
 import logo from '../../assets/oph_fin_vaaka.png'
-import { ExternalLink } from './ExternalLink'
 import { OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
-import { ConsentModal, ConsentModalHandles } from './modal/ConsentModal'
 import { Button } from './Button'
-import { ReactNode, useRef } from 'react'
+import { ExternalLink } from './ExternalLink'
+import { ConsentModal, ConsentModalHandles } from './modal/ConsentModal'
 
 export const PrintFooter = () => {
   return (
@@ -38,7 +38,8 @@ export const Footer = () => {
           variant="buttonGhost"
           className={'text-green-primary hover:underline'}
           onClick={() => consentModalRef.current?.setIsOpen(true)}
-          data-testid="privacy-settings-button">
+          data-testid="privacy-settings-button"
+        >
           {t('consent.title')}
         </Button>
       </div>
@@ -50,7 +51,8 @@ const FooterContainer = ({ children }: { children: ReactNode }) => {
   return (
     <div
       className="row flex-wrap items-center text-xs mt-5 py-4 px-10 border-t-2 border-gray-separator"
-      data-testid="footer">
+      data-testid="footer"
+    >
       {children}
     </div>
   )

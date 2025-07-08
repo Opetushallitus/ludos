@@ -1,3 +1,8 @@
+import { ReactNode, useState } from 'react'
+import { useFetch } from '../../hooks/useFetch'
+import { useKoodisto } from '../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
 import {
   AssignmentOut,
   ContentTypeSingularEn,
@@ -8,28 +13,22 @@ import {
   isSukoAssignment,
   Language
 } from '../../types'
-import { useKoodisto } from '../../hooks/useKoodisto'
-import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
-import { ReactNode, useState } from 'react'
-import { useSetFavoriteFolders } from '../../hooks/useSetFavoriteFolders'
-import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
-import { useFetch } from '../../hooks/useFetch'
-import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
+import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
+import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
+import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
   teachingLanguage: Language
 }
 
-export function getInstructionToShow(
-  assignment: AssignmentOut,
-  teachingLanguage: Language,
-): string {
+export function getInstructionToShow(assignment: AssignmentOut, teachingLanguage: Language): string {
   const showFinnishInstruction = isSukoAssignment(assignment)
 
-  return teachingLanguage === Language.FI || showFinnishInstruction ? assignment.instructionFi : assignment.instructionSv
+  return teachingLanguage === Language.FI || showFinnishInstruction
+    ? assignment.instructionFi
+    : assignment.instructionSv
 }
 
 function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): Language {
@@ -44,10 +43,11 @@ function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): 
 
 type AssignmentContentWithoutFavoritesProps = { contentAction?: ReactNode | undefined } & AssignmentContentProps
 
-export const AssignmentContentWithoutFavorites = (
-  { assignment, teachingLanguage, contentAction }:
-  AssignmentContentWithoutFavoritesProps) => {
-
+export const AssignmentContentWithoutFavorites = ({
+  assignment,
+  teachingLanguage,
+  contentAction
+}: AssignmentContentWithoutFavoritesProps) => {
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
 
@@ -55,7 +55,8 @@ export const AssignmentContentWithoutFavorites = (
     <>
       <div
         className="my-3 bg-gray-bg px-3 pb-3 pt-2 border border-gray-light print-color-adjust-exact"
-        data-testid="assignment-metadata">
+        data-testid="assignment-metadata"
+      >
         <AssignmentMetadata assignment={assignment} />
         {contentAction}
       </div>
@@ -102,7 +103,8 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage }: Assign
       <AssignmentContentWithoutFavorites
         assignment={assignment}
         teachingLanguage={teachingLanguage}
-        contentAction={action} />
+        contentAction={action}
+      />
 
       {isFavoriteModalOpen && favoriteIds && (
         <SetFavoriteFoldersModal
@@ -123,11 +125,10 @@ const AssignmentContentWithFavorites = ({ assignment, teachingLanguage }: Assign
 export { AssignmentContentWithFavorites as AssignmentContent }
 
 interface AssignmentMetadataProps {
-  assignment: AssignmentOut,
+  assignment: AssignmentOut
 }
 
-export const AssignmentMetadata = ({assignment}: AssignmentMetadataProps) => {
-
+export const AssignmentMetadata = ({ assignment }: AssignmentMetadataProps) => {
   const { t } = useLudosTranslation()
   const { getKoodisLabel, getKoodiLabel, getOppimaaraLabel } = useKoodisto()
 
@@ -142,14 +143,14 @@ export const AssignmentMetadata = ({assignment}: AssignmentMetadataProps) => {
           <li>
             <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>
             <span data-testid="suko-tehtavatyyppi">
-                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
-                  </span>
+              {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppisuko')}
+            </span>
           </li>
           <li>
             <span className="pr-1 font-semibold">{t('assignment.aihe')}:</span>
             <span data-testid="suko-aihe">
-                    {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}
-                  </span>
+              {assignment.aiheKoodiArvos.length > 0 ? getKoodisLabel(assignment.aiheKoodiArvos, 'aihesuko') : '-'}
+            </span>
           </li>
         </>
       )}
@@ -158,16 +159,16 @@ export const AssignmentMetadata = ({assignment}: AssignmentMetadataProps) => {
           <li>
             <span className="pr-1 font-semibold">{t('assignment.tehtavatyyppi')}:</span>
             <span data-testid="puhvi-tehtavatyyppi">
-                    {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi')}
-                  </span>
+              {getKoodiLabel(assignment.assignmentTypeKoodiArvo, 'tehtavatyyppipuhvi')}
+            </span>
           </li>
         )}
         {(isLdAssignment(assignment) || isPuhviAssignment(assignment)) && (
           <li>
             <span className="pr-1 font-semibold">{t('assignment.lukuvuosi')}:</span>
             <span data-testid="ld-puhvi-lukuvuosi">
-                    {getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi')}
-                  </span>
+              {getKoodisLabel(assignment.lukuvuosiKoodiArvos, 'ludoslukuvuosi')}
+            </span>
           </li>
         )}
         {isLdAssignment(assignment) && (
@@ -179,8 +180,8 @@ export const AssignmentMetadata = ({assignment}: AssignmentMetadataProps) => {
         <li>
           <span className="pr-1 font-semibold">{t('assignment.laajaalainenosaaminen')}:</span>
           <span data-testid="laajaalainenosaaminen">
-                  {getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')}
-                </span>
+            {getKoodisLabel(assignment.laajaalainenOsaaminenKoodiArvos, 'laajaalainenosaaminenlops2021')}
+          </span>
         </li>
       </>
     </ul>

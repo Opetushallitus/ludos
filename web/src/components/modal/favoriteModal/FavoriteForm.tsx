@@ -1,19 +1,19 @@
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { FAVORITE_ROOT_FOLDER_ID } from '../../../constants'
-import { AddToFavoriteOptions, AssignmentCardOut, FavoriteIdsDtoOut } from '../../../types'
-import { twJoin } from 'tailwind-merge'
-import { TextInput } from '../../TextInput'
-import { FormError } from '../../forms/formCommon/FormErrors'
-import { Button } from '../../Button'
-import {
-  favoriteToggleModalFormDefaultValues,
-  favoriteToggleModalFormSchema,
-  FavoriteToggleModalFormType
-} from './favoriteToggleModalFormSchema'
-import { createFavoriteFolder } from '../../../request'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { twJoin } from 'tailwind-merge'
+import { FAVORITE_ROOT_FOLDER_ID } from '../../../constants'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { createFavoriteFolder } from '../../../request'
+import { AddToFavoriteOptions, AssignmentCardOut, FavoriteIdsDtoOut } from '../../../types'
+import { Button } from '../../Button'
+import { FormError } from '../../forms/formCommon/FormErrors'
+import { TextInput } from '../../TextInput'
 import { FavoriteFolderCheckboxes } from './FavoriteFolderCheckboxes'
+import {
+  FavoriteToggleModalFormType,
+  favoriteToggleModalFormDefaultValues,
+  favoriteToggleModalFormSchema
+} from './favoriteToggleModalFormSchema'
 
 type FavoriteFormProps = {
   isFavorite: boolean
@@ -124,7 +124,8 @@ export const FavoriteForm = ({
                       </fieldset>
                       {type === AddToFavoriteOptions.FOLDER && (
                         <div
-                          className={twJoin('pl-6', watchAddOptions === AddToFavoriteOptions.FOLDER ? '' : 'hidden')}>
+                          className={twJoin('pl-6', watchAddOptions === AddToFavoriteOptions.FOLDER ? '' : 'hidden')}
+                        >
                           <FavoriteFolderCheckboxes folders={[favoriteIds.rootFolder]} prefix={`root-${i}`} />
                         </div>
                       )}

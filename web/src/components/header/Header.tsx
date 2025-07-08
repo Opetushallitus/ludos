@@ -1,10 +1,10 @@
-import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { IS_MOBILE_QUERY } from '../../constants'
-import { HeaderMobile } from './HeaderMobile'
-import { HeaderDesktop } from './HeaderDesktop'
-import { contentListPath, etusivuKey, examPath, frontpagePath, ldKey, puhviKey, sukoKey } from '../LudosRoutes'
-import { ContentType, Exam } from '../../types'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { ContentType, Exam } from '../../types'
+import { contentListPath, etusivuKey, examPath, frontpagePath, ldKey, puhviKey, sukoKey } from '../LudosRoutes'
+import { HeaderDesktop } from './HeaderDesktop'
+import { HeaderMobile } from './HeaderMobile'
 
 export interface HeaderPage {
   key: string

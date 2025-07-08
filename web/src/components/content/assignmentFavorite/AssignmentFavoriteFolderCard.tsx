@@ -18,7 +18,8 @@ export const AssignmentFavoriteFolderCard = ({
 }: AssignmentFavoriteFolderCardProps) => (
   <div
     className="row justify-between items-center border-2 border-gray-light h-14 rounded px-3 my-3"
-    data-testid={`folder-${currentFavoriteCardFolder.id}-card`}>
+    data-testid={`folder-${currentFavoriteCardFolder.id}-card`}
+  >
     <div className="flex items-center gap-2">
       <Icon name="kansio" color="text-black" size="lg" />
       <InternalLink to={`/suosikit/${exam.toLowerCase()}/${currentFavoriteCardFolder.id}`} data-testid="link">

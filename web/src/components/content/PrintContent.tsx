@@ -1,4 +1,7 @@
+import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
+import { LudosContext } from '../../contexts/LudosContext'
+import { useFetch } from '../../hooks/useFetch'
 import {
   ContentBaseOut,
   ContentType,
@@ -11,16 +14,13 @@ import {
   isInstruction,
   Language
 } from '../../types'
-import { useFetch } from '../../hooks/useFetch'
-import { ContentHeader } from './ContentCommon'
+import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { AssignmentContentWithoutFavorites } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
-import { InstructionContent } from './InstructionsContent'
-import React, { useContext } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
+import { ContentHeader } from './ContentCommon'
 import { ContentError } from './ContentError'
-import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { FeedbackLink } from './FeedbackLink'
+import { InstructionContent } from './InstructionsContent'
 import { PrintButton } from './PrintButton'
 
 type ContentProps = {
@@ -67,10 +67,7 @@ const Content = ({ exam }: ContentProps) => {
               <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
-                <AssignmentContentWithoutFavorites
-                  assignment={data}
-                  teachingLanguage={teachingLanguage}
-                />
+                <AssignmentContentWithoutFavorites assignment={data} teachingLanguage={teachingLanguage} />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (

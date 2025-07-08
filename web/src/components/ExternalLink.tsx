@@ -1,6 +1,6 @@
 import { HTMLAttributes, ReactNode } from 'react'
-import { Icon } from './Icon'
 import { twMerge } from 'tailwind-merge'
+import { Icon } from './Icon'
 
 interface ExternalLinkProps extends HTMLAttributes<HTMLAnchorElement> {
   url: string
@@ -25,7 +25,8 @@ export const ExternalLink = ({
     href={url}
     target={openInNewTab ? '_blank' : '_self'}
     rel="noopener noreferrer"
-    {...props}>
+    {...props}
+  >
     <span className="row items-center gap-1">
       {children}
       {openInNewTab && !hideIcon && <Icon name="uusi-valilehti" color={textColor} size="base" />}

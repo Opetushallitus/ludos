@@ -1,10 +1,10 @@
-import { Button } from '../../Button'
-import { Icon } from '../../Icon'
-import { PublishState } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { ExternalLink } from '../../ExternalLink'
-import { uudelleenkirjautuminenOnnistuiPath } from '../../LudosRoutes'
 import { SessionExpiredFetchError } from '../../../request'
+import { PublishState } from '../../../types'
+import { Button } from '../../Button'
+import { ExternalLink } from '../../ExternalLink'
+import { Icon } from '../../Icon'
+import { uudelleenkirjautuminenOnnistuiPath } from '../../LudosRoutes'
 
 type FormButtonRowProps = {
   actions: {
@@ -60,7 +60,8 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
             className="underline"
             textColor="text-red-primary"
             url={uudelleenkirjautuminenOnnistuiPath}
-            data-testid="link">
+            data-testid="link"
+          >
             {t('notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki')}
           </ExternalLink>
         </div>
@@ -86,7 +87,8 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
             variant="buttonDanger"
             onClick={actions.onDeleteClick}
             disabled={disableSubmit}
-            data-testid="form-delete">
+            data-testid="form-delete"
+          >
             {t('form.button.poista')}
           </Button>
         )}
@@ -97,7 +99,8 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
           onClick={actions.onCancelClick}
           customClass="w-full md:w-auto"
           disabled={disableSubmit}
-          data-testid="form-cancel">
+          data-testid="form-cancel"
+        >
           {t('button.peruuta')}
         </Button>
         <Button
@@ -105,7 +108,8 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
           customClass="w-full md:w-auto"
           disabled={disableSubmit}
           onClick={actions.onSaveDraftClick}
-          data-testid="form-draft">
+          data-testid="form-draft"
+        >
           {draftButtonText()}
         </Button>
         <Button
@@ -113,7 +117,8 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
           onClick={actions.onSubmitClick}
           customClass="w-full md:w-auto"
           disabled={disableSubmit}
-          data-testid="form-submit">
+          data-testid="form-submit"
+        >
           {submitButtonText()}
         </Button>
       </div>

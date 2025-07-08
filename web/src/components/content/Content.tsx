@@ -1,5 +1,10 @@
+import React, { useCallback, useContext, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Button } from '../Button'
+import { LudosContext } from '../../contexts/LudosContext'
+import { useFetch } from '../../hooks/useFetch'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../hooks/useUserDetails'
+import { restoreOldContentVersion } from '../../request'
 import {
   ContentBaseOut,
   ContentType,
@@ -12,28 +17,23 @@ import {
   isInstruction,
   Language
 } from '../../types'
-import { useFetch } from '../../hooks/useFetch'
-import { ContentHeader } from './ContentCommon'
-import { StateTag } from '../StateTag'
+import { getContentName } from '../../utils/assignmentUtils'
+import { ContentBreadcrumbs } from '../Breadcrumbs'
+import { Button } from '../Button'
 import { Icon } from '../Icon'
+import { InternalLink } from '../InternalLink'
+import { ListTabs } from '../ListTabs'
+import { contentListPath, contentPagePath, editingFormPath } from '../LudosRoutes'
+import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
+import { PageLoadingIndicator } from '../PageLoadingIndicator'
+import { StateTag } from '../StateTag'
 import { AssignmentContent } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
-import { InstructionContent } from './InstructionsContent'
-import { useUserDetails } from '../../hooks/useUserDetails'
-import { contentListPath, contentPagePath, editingFormPath } from '../LudosRoutes'
-import { InternalLink } from '../InternalLink'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import React, { useCallback, useContext, useState } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
+import { ContentHeader } from './ContentCommon'
 import { ContentError } from './ContentError'
-import { VersionHistoryViewerModal } from '../modal/VersionHistoryViewerModal'
-import { VersionBrowserBar } from './VersionBrowserBar'
-import { restoreOldContentVersion } from '../../request'
-import { PageLoadingIndicator } from '../PageLoadingIndicator'
-import { ListTabs } from '../ListTabs'
-import { ContentBreadcrumbs } from '../Breadcrumbs'
-import { getContentName } from '../../utils/assignmentUtils'
 import { FeedbackLink } from './FeedbackLink'
+import { InstructionContent } from './InstructionsContent'
+import { VersionBrowserBar } from './VersionBrowserBar'
 
 type ContentProps = {
   exam: Exam
@@ -67,9 +67,7 @@ const Content = ({ exam }: ContentProps) => {
   const isVersionBrowser = !!version
 
   const teachingLanguageOverride =
-    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE
-      ? Language.FI
-      : teachingLanguage
+    exam === Exam.SUKO && contentType === ContentType.CERTIFICATE ? Language.FI : teachingLanguage
 
   const {
     data,
@@ -149,7 +147,8 @@ const Content = ({ exam }: ContentProps) => {
                     className="row ml-3 gap-1 hover:cursor-pointer hover:underline"
                     to={editingFormPath(data)}
                     state={state}
-                    data-testid="edit-content-btn">
+                    data-testid="edit-content-btn"
+                  >
                     <Icon name="muokkaa" color="text-green-primary" />
                     <p className="text-green-primary">{t('assignment.muokkaa')}</p>
                   </InternalLink>
@@ -163,7 +162,8 @@ const Content = ({ exam }: ContentProps) => {
                       customClass="p-0 ml-3"
                       disabled={!versionList}
                       onClick={() => setOpenVersionViewerModal(true)}
-                      data-testid="version-history-btn">
+                      data-testid="version-history-btn"
+                    >
                       <span className="row my-auto gap-1">
                         <Icon name="undo" color="text-green-primary" />
                         <p className="text-green-primary">{t('version-control.muokkaushistoria')}</p>
@@ -189,10 +189,7 @@ const Content = ({ exam }: ContentProps) => {
               )}
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
-                <AssignmentContent
-                  assignment={data}
-                  teachingLanguage={teachingLanguageOverride}
-                />
+                <AssignmentContent assignment={data} teachingLanguage={teachingLanguageOverride} />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (

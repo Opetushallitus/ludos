@@ -1,6 +1,6 @@
-import { koodi, KoodiDtoOut, oppimaaraLabel } from '../../hooks/useKoodisto'
-import { LudosSelectOption } from './LudosSelect'
+import { KoodiDtoOut, koodi, oppimaaraLabel } from '../../hooks/useKoodisto'
 import { KoodistoName, Oppimaara, oppimaaraId } from '../../types'
+import { LudosSelectOption } from './LudosSelect'
 
 export function koodistoSelectOptions(koodiList: KoodiDtoOut[]): LudosSelectOption[] {
   return koodiList.flatMap((k) => ({ value: k.koodiArvo, label: k.nimi }))
@@ -74,10 +74,7 @@ export function oppimaaraSelectOptions(
     label: oppimaaraLabel(o.oppimaaraKoodiArvoLabel, o.kielitarjontaKoodiArvoLabel)
   })
 
-  return oppimaaras
-    .map(addLabelsToOppimaara)
-    .sort(sortOppimaarasWithLabels)
-    .map(selectOptionFromOppimaaraWithLabels)
+  return oppimaaras.map(addLabelsToOppimaara).sort(sortOppimaarasWithLabels).map(selectOptionFromOppimaaraWithLabels)
 }
 export function currentOppimaaraSelectOption(
   selectedOppimaaraOption: Oppimaara | undefined,

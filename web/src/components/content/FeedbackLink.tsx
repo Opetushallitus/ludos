@@ -1,7 +1,7 @@
 import React from 'react'
-import { ExternalLink } from '../ExternalLink'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useFeedbackUrl } from '../../hooks/useFeedbackUrl'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { ExternalLink } from '../ExternalLink'
 
 export const FeedbackLink = () => {
   const { t } = useLudosTranslation()

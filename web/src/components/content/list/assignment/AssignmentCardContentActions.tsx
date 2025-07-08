@@ -1,9 +1,9 @@
+import { ContentAction, useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { AssignmentCardOut, ContentTypePluralFi } from '../../../../types'
+import { Button } from '../../../Button'
 import { Icon } from '../../../Icon'
 import { InternalLink } from '../../../InternalLink'
-import { ContentAction, useLudosTranslation } from '../../../../hooks/useLudosTranslation'
-import { Button } from '../../../Button'
 import { tulostusnakymaKey } from '../../../LudosRoutes'
-import { AssignmentCardOut, ContentTypePluralFi } from '../../../../types'
 
 type AssignmentCardContentActionButtonProps = {
   assignment: AssignmentCardOut
@@ -44,7 +44,8 @@ function AssignmentCardContentActionButton({
         customClass="p-0 flex items-center"
         onClick={onClickHandler}
         disabled={isDisabled}
-        data-testid={actionName}>
+        data-testid={actionName}
+      >
         {children}
       </Button>
     )

@@ -42,7 +42,7 @@ export function useModal({ open, onClose }: { open: boolean; onClose: () => void
     } else {
       current?.close()
     }
-  }, [open, onClose])
+  }, [open])
 
   return {
     modalRef,

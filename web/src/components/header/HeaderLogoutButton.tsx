@@ -1,7 +1,7 @@
-import { Icon } from '../Icon'
-import { ExternalLink } from '../ExternalLink'
 import { LOGOUT_URL } from '../../constants'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { ExternalLink } from '../ExternalLink'
+import { Icon } from '../Icon'
 
 export const HeaderLogoutButton = () => {
   const { t } = useLudosTranslation()

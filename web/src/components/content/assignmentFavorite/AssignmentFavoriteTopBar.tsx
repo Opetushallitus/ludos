@@ -1,15 +1,15 @@
+import { useState } from 'react'
+import { useNotification } from '../../../contexts/NotificationContext'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { createFavoriteFolder } from '../../../request'
+import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
 import { FavoriteFolderBreadcrumbs } from '../../Breadcrumbs'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { TextInputModal } from '../../modal/TextInputModal'
-import { useState } from 'react'
-import { createFavoriteFolder } from '../../../request'
-import { useNotification } from '../../../contexts/NotificationContext'
-import { AssignmentFavoriteFolderDropdownMenu } from './AssignmentFavoriteFolderDropdownMenu'
 import { FolderList } from '../../modal/AssignmentFavoriteMoveFolderModal'
+import { TextInputModal } from '../../modal/TextInputModal'
 import { TeachingLanguageSelectWithLabel } from '../../TeachingLanguageSelect'
+import { AssignmentFavoriteFolderDropdownMenu } from './AssignmentFavoriteFolderDropdownMenu'
 
 type AssignmentFavoriteTopBarProps = {
   exam: Exam
@@ -60,7 +60,8 @@ export const AssignmentFavoriteTopBar = ({
           <Button
             variant="buttonPrimary"
             onClick={() => setOpenAddNewFolderModal(true)}
-            data-testid="add-new-folder-btn">
+            data-testid="add-new-folder-btn"
+          >
             <span className="flex items-center">
               <Icon name="lisää" color="text-white" size="lg" />
               <span className="pl-1">{t('favorite.lisaa-kansio')}</span>

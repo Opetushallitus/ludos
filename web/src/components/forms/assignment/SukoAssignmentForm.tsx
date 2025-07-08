@@ -1,13 +1,14 @@
-import { FieldLabel } from '../../FieldLabel'
+import { useCallback, useContext } from 'react'
 import { FormProvider } from 'react-hook-form'
-import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
-import { ContentFormAction, Exam, Oppimaara } from '../../../types'
-import { sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
-import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
-import { SukoFormContentInput } from '../formCommon/FormContentInput'
-import { FormHeader } from '../formCommon/FormHeader'
+import { LudosContext } from '../../../contexts/LudosContext'
 import { useAssignmentForm } from '../../../hooks/useAssignmentForm'
-import { LudosSelect } from '../../ludosSelect/LudosSelect'
+import { sortKooditByArvo, useKoodisto } from '../../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ContentFormAction, Exam, Oppimaara } from '../../../types'
+import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
+import { BlockNavigation } from '../../BlockNavigation'
+import { FieldLabel } from '../../FieldLabel'
+import { InfoBox } from '../../InfoBox'
 import {
   currentKoodistoSelectOption,
   currentKoodistoSelectOptions,
@@ -15,13 +16,12 @@ import {
   koodistoSelectOptions,
   oppimaaraSelectOptions
 } from '../../ludosSelect/helpers'
-import { useCallback, useContext } from 'react'
-import { BlockNavigation } from '../../BlockNavigation'
+import { LudosSelect } from '../../ludosSelect/LudosSelect'
+import { AssignmentTypeField } from '../formCommon/AssignmentTypeRadio'
+import { SukoFormContentInput } from '../formCommon/FormContentInput'
+import { FormHeader } from '../formCommon/FormHeader'
+import { SukoAssignmentFormType } from '../schemas/assignmentSchema'
 import { AssignmentFormButtonRow } from './AssignmentFormButtonRow'
-import { InfoBox } from '../../InfoBox'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
-import { LudosContext } from '../../../contexts/LudosContext'
 
 type SukoAssignmentFormProps = {
   action: ContentFormAction
@@ -86,8 +86,12 @@ export const SukoAssignmentForm = ({ action, id }: SukoAssignmentFormProps) => {
   }
 
   function getHeaderDescription() {
-    if (action === ContentFormAction.muokkaus) return t('form.muokkauskuvaus')
-    if (isMultiLanguageInputRequired()) return t('form.kuvauskoetehtava')
+    if (action === ContentFormAction.muokkaus) {
+      return t('form.muokkauskuvaus')
+    }
+    if (isMultiLanguageInputRequired()) {
+      return t('form.kuvauskoetehtava')
+    }
 
     return t('form.lisaauusitehtavakuvaus')
   }

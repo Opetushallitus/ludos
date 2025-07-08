@@ -1,11 +1,11 @@
-import { HeaderUiLanguageDropdown } from './HeaderUiLanguageDropdown'
 import { useContext } from 'react'
 import { LudosContext } from '../../contexts/LudosContext'
-import { HeaderFavorites } from './HeaderFavorites'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
+import { HeaderFavorites } from './HeaderFavorites'
+import { HeaderUiLanguageDropdown } from './HeaderUiLanguageDropdown'
 import { HeaderUserInfoSelect } from './HeaderUserInfoSelect'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type HeaderDesktopProps = {
   pages: HeaderPage[]
@@ -42,7 +42,8 @@ export const HeaderDesktop = ({ pages }: HeaderDesktopProps) => {
                       isActive ? ' border-b-5 border-b-green-primary text-green-primary' : ''
                     }`
                   }
-                  data-testid={`nav-link-${key}`}>
+                  data-testid={`nav-link-${key}`}
+                >
                   {localizationText}
                 </InternalNavLink>
               </li>

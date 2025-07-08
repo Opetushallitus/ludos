@@ -1,7 +1,7 @@
 import { Control, Controller, FieldError } from 'react-hook-form'
-import { FormError } from './FormErrors'
 import { KoodiDtoOut } from '../../../hooks/useKoodisto'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { FormError } from './FormErrors'
 
 interface AssignmentTypeFieldProps {
   control: Control<any>

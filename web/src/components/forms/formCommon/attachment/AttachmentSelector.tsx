@@ -1,8 +1,8 @@
-import { AttachmentFileDetailView } from './AttachmentFileDetailView'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
 import { AttachmentData, ContentType, Exam, Language } from '../../../../types'
 import { FileSelector } from '../../../FileSelector'
 import { FormError } from '../FormErrors'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { AttachmentFileDetailView } from './AttachmentFileDetailView'
 
 interface AttachmentSelectorProps {
   name: string

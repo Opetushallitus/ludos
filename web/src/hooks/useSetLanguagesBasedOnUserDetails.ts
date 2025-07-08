@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { BusinessLanguage, Language, UserDetails } from '../types'
 import { defaultLanguage, ludosTeachingLanguageKey, ludosUILanguageKey } from '../contexts/LudosContext'
+import { BusinessLanguage, Language, UserDetails } from '../types'
 import { useLudosTranslation } from './useLudosTranslation'
 
 export function useSetLanguagesBasedOnUserDetails(userDetails: UserDetails, isSuccess: boolean) {
@@ -26,7 +26,7 @@ export function useSetLanguagesBasedOnUserDetails(userDetails: UserDetails, isSu
         localStorage.setItem(ludosTeachingLanguageKey, validBusinessLanguageOrDefault)
       }
     }
-  }, [userDetails, isSuccess, i18n, setTeachingLanguageState])
+  }, [userDetails, isSuccess, i18n])
 
   const setTeachingLanguage = (lang: Language) => {
     setTeachingLanguageState(lang)

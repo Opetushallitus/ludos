@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Button } from '../Button'
-import { useModal } from './useModal'
-import styles from './modal.module.css'
-import { ModalHeader } from './ModalHeader'
 import { useInputAutoFocus } from '../../hooks/useInputAutoFocus'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Button } from '../Button'
+import { ModalHeader } from './ModalHeader'
+import styles from './modal.module.css'
+import { useModal } from './useModal'
 
 interface ModalProps {
   modalTitle: string
@@ -44,7 +44,8 @@ export const TextInputModal = ({
       onCancel={onCancel}
       onClick={onClick}
       onAnimationEnd={onAnimEnd}
-      aria-modal="true">
+      aria-modal="true"
+    >
       <div className={styles['modal__container']}>
         <ModalHeader modalTitle={modalTitle} onClick={onClose} />
 
@@ -78,7 +79,8 @@ export const TextInputModal = ({
             variant="buttonPrimary"
             onClick={handleSubmitText}
             disabled={text.length === 0}
-            data-testid="modal-button-add">
+            data-testid="modal-button-add"
+          >
             {t('common.lisaa')}
           </Button>
         </div>

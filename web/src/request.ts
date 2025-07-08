@@ -1,11 +1,11 @@
-import { z } from 'zod'
-import { InstructionFormType } from './components/forms/schemas/instructionSchema'
-import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
-import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, ImageDtoOut } from './types'
-import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
-import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
-import { LanguageKoodistoMap } from './contexts/LudosContext'
 import { getCookie } from 'typescript-cookie'
+import { z } from 'zod'
+import { CommonCertificateFormType } from './components/forms/schemas/certificateSchema'
+import { InstructionFormType } from './components/forms/schemas/instructionSchema'
+import { FavoriteToggleModalFormType } from './components/modal/favoriteModal/favoriteToggleModalFormSchema'
+import { ASSIGNMENT_URL, BASE_API_URL, CERTIFICATE_URL, INSTRUCTION_URL } from './constants'
+import { LanguageKoodistoMap } from './contexts/LudosContext'
+import { AttachmentData, ContentType, ContentTypeSingularEn, Exam, ImageDtoOut } from './types'
 
 export class SessionExpiredFetchError extends Error {
   constructor() {

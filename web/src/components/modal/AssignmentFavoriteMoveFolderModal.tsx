@@ -1,12 +1,12 @@
-import styles from './modal.module.css'
-import { useModal } from './useModal'
-import { ModalHeader } from './ModalHeader'
-import { FavoriteCardFolderDtoOut } from '../../types'
+import { useState } from 'react'
 import { makeFlatListFromFolder } from '../../assignmentFavoriteFolderHelpers'
 import { FAVORITE_ROOT_FOLDER_ID } from '../../constants'
-import { useState } from 'react'
-import { Button } from '../Button'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { FavoriteCardFolderDtoOut } from '../../types'
+import { Button } from '../Button'
+import { ModalHeader } from './ModalHeader'
+import styles from './modal.module.css'
+import { useModal } from './useModal'
 
 export type FolderList = { id: number; name: string }[]
 
@@ -36,7 +36,8 @@ export const AssignmentFavoriteMoveFolderModal = ({
       onCancel={onCancel}
       onClick={onClick}
       onAnimationEnd={onAnimEnd}
-      aria-modal="true">
+      aria-modal="true"
+    >
       <div className={styles['modal__container']}>
         <ModalHeader modalTitle={t('favorite.folder.siirra-kansioon')} onClick={onClose} />
 
@@ -57,7 +58,8 @@ export const AssignmentFavoriteMoveFolderModal = ({
             variant="buttonPrimary"
             onClick={() => onSubmit(selectedFolderId)}
             disabled={selectedFolderId === folder.id}
-            data-testid="modal-button-add-to-favorites">
+            data-testid="modal-button-add-to-favorites"
+          >
             {t('favorite.folder.siirra-kansioon')}
           </Button>
         </div>

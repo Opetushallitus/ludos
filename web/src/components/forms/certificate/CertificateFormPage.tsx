@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useMatch } from 'react-router-dom'
-import { ContentFormAction, ContentTypeSingularEn, Exam } from '../../../types'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { fetchDataOrReload } from '../../../request'
+import { ContentFormAction, ContentTypeSingularEn, Exam } from '../../../types'
+import { InfoBox } from '../../InfoBox'
+import { Spinner } from '../../Spinner'
 import {
   AnyCertificateFormType,
   defaultValuesByExam,
@@ -9,12 +12,9 @@ import {
   isPuhviCertificateValues,
   isSukoCertificateValues
 } from '../schemas/certificateSchema'
-import { Spinner } from '../../Spinner'
-import { SukoCertificateForm } from './SukoCertificateForm'
 import { LdCertificateForm } from './LdCertificateForm'
 import { PuhviCertificateForm } from './PuhviCertificateForm'
-import { InfoBox } from '../../InfoBox'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { SukoCertificateForm } from './SukoCertificateForm'
 
 type CertificateFormProps = {
   action: ContentFormAction

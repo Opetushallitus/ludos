@@ -1,8 +1,8 @@
+import { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { Icons } from '../components/Icon'
 import { AddToFavoriteOptions, ContentOrder, ContentType, Exam, FavoriteAction, Language, PublishState } from '../types'
 import { KoodiDtoOut } from './useKoodisto'
-import { TFunction } from 'i18next'
 
 export type ContentAction = {
   actionName: string

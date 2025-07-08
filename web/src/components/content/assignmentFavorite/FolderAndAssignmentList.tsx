@@ -1,11 +1,11 @@
-import { AssignmentFavoriteFolderCard } from './AssignmentFavoriteFolderCard'
-import { AssignmentCard } from '../list/assignment/AssignmentCard'
-import { favoriteIdsFromFavoriteCardFolders } from '../../../assignmentFavoriteFolderHelpers'
-import { InfoBox } from '../../InfoBox'
-import { AssignmentCardOut, Exam, FavoriteCardFolderDtoOut, Language } from '../../../types'
 import { useContext } from 'react'
+import { favoriteIdsFromFavoriteCardFolders } from '../../../assignmentFavoriteFolderHelpers'
 import { LudosContext } from '../../../contexts/LudosContext'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { AssignmentCardOut, Exam, FavoriteCardFolderDtoOut, Language } from '../../../types'
+import { InfoBox } from '../../InfoBox'
+import { AssignmentCard } from '../list/assignment/AssignmentCard'
+import { AssignmentFavoriteFolderCard } from './AssignmentFavoriteFolderCard'
 
 type FolderAndAssignmentListProps = {
   exam: Exam

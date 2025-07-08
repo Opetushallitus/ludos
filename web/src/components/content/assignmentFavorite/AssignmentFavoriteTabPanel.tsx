@@ -1,9 +1,9 @@
-import { AssignmentFavoriteTopBar } from './AssignmentFavoriteTopBar'
 import { findCurrentData, findFolderPathTo } from '../../../assignmentFavoriteFolderHelpers'
-import { InfoBox } from '../../InfoBox'
-import { FolderAndAssignmentList } from './FolderAndAssignmentList'
-import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { Exam, FavoriteCardFolderDtoOut } from '../../../types'
+import { InfoBox } from '../../InfoBox'
+import { AssignmentFavoriteTopBar } from './AssignmentFavoriteTopBar'
+import { FolderAndAssignmentList } from './FolderAndAssignmentList'
 
 type AssignmentFavoriteTapPanelProps = {
   exam: Exam

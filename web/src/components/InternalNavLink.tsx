@@ -16,7 +16,8 @@ export const InternalNavLink = ({ navigateTo, ...props }: InternalNavLinkProps) 
           navigate(navigateTo, { replace: props.replace })
         }
       }}
-      {...props}>
+      {...props}
+    >
       {props.children}
     </NavLink>
   )

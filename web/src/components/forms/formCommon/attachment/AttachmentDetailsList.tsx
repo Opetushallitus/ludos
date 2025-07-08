@@ -1,11 +1,11 @@
-import { FileDetails, Language } from '../../../../types'
-import { ExternalLink } from '../../../ExternalLink'
-import { toLocaleDate } from '../../../../utils/formatUtils'
-import { Icon } from '../../../Icon'
 import { useState } from 'react'
-import { DeleteModal } from '../../../modal/DeleteModal'
-import { Button } from '../../../Button'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { FileDetails, Language } from '../../../../types'
+import { toLocaleDate } from '../../../../utils/formatUtils'
+import { Button } from '../../../Button'
+import { ExternalLink } from '../../../ExternalLink'
+import { Icon } from '../../../Icon'
+import { DeleteModal } from '../../../modal/DeleteModal'
 
 type AttachmentDetailsListProps = {
   attachmentDownloadUrlPrefix: string
@@ -39,7 +39,8 @@ export const AttachmentDetailsList = ({
           {attachment.fileKey ? (
             <ExternalLink
               className="col-span-4 text-green-primary"
-              url={`${attachmentDownloadUrlPrefix}/${attachment.fileKey}`}>
+              url={`${attachmentDownloadUrlPrefix}/${attachment.fileKey}`}
+            >
               {attachment.fileName}
             </ExternalLink>
           ) : (
@@ -57,7 +58,8 @@ export const AttachmentDetailsList = ({
               variant="buttonGhost"
               onClick={() => setIndexToDelete(index)}
               customClass="p-0 hover:cursor-pointer hover:bg-white"
-              data-testid={`delete-attachment-icon-${index}`}>
+              data-testid={`delete-attachment-icon-${index}`}
+            >
               <Icon name="poista" color="text-black" customClass="hover:bg-gray-secondary" size="sm" />
             </Button>
           )}
@@ -68,7 +70,8 @@ export const AttachmentDetailsList = ({
         modalTitle={t('file.ohje-poista-liite')}
         open={indexToDelete !== null}
         onDeleteAction={handleDeleteClick}
-        onClose={() => setIndexToDelete(null)}>
+        onClose={() => setIndexToDelete(null)}
+      >
         <div className="h-[15vh] p-6">
           <p>
             {t('file.ohje-poista-liite-teksti', {

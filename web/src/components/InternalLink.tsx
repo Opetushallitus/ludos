@@ -13,7 +13,8 @@ export const InternalLink = ({ className, disabled, children, ...props }: Intern
       className
     )}
     aria-disabled={disabled}
-    {...props}>
+    {...props}
+  >
     {children}
   </Link>
 )

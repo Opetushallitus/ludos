@@ -1,10 +1,10 @@
-import { Exam, InstructionDtoOut, Language, LdInstructionDtoOut, SukoOrPuhviInstructionDtoOut } from '../../types'
-import { ContentContent } from './ContentCommon'
-import { ExternalLink } from '../ExternalLink'
-import { INSTRUCTION_URL } from '../../constants'
 import { Fragment } from 'react'
+import { INSTRUCTION_URL } from '../../constants'
 import { useKoodisto } from '../../hooks/useKoodisto'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Exam, InstructionDtoOut, Language, LdInstructionDtoOut, SukoOrPuhviInstructionDtoOut } from '../../types'
+import { ExternalLink } from '../ExternalLink'
+import { ContentContent } from './ContentCommon'
 
 type InstructionContentProps = {
   instruction: SukoOrPuhviInstructionDtoOut | LdInstructionDtoOut
@@ -61,7 +61,8 @@ export const InstructionContent = ({ instruction, teachingLanguage, isVersionBro
               <ExternalLink
                 className="text-green-primary"
                 url={`${INSTRUCTION_URL}/${instruction.exam}/attachment/${attachment.fileKey}${isVersionBrowser ? `/${instruction.version}` : ''}`}
-                data-testid="attachment-link">
+                data-testid="attachment-link"
+              >
                 {attachment.name}
               </ExternalLink>
               {index !== instruction.attachments.length - 1 && (

@@ -1,6 +1,12 @@
-import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useContext, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useMatch, useNavigate } from 'react-router-dom'
+import { LudosContext } from '../../contexts/LudosContext'
+import { useBlockFormCloseOrRefresh } from '../../hooks/useBlockFormCloseOrRefresh'
+import { useFormSubmission } from '../../hooks/useFormSubmission'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { createInstruction, createNewVersionOfInstruction, fetchDataOrReload } from '../../request'
 import {
   AttachmentData,
   AttachmentDtoOut,
@@ -12,24 +18,18 @@ import {
   Language,
   PublishState
 } from '../../types'
-import { createInstruction, createNewVersionOfInstruction, fetchDataOrReload } from '../../request'
-import { useContext, useState } from 'react'
-import { LanguageTabs } from '../LanguageTabs'
-import { instructionDefaultValues, InstructionFormType, instructionSchema } from './schemas/instructionSchema'
-import { TextInput } from '../TextInput'
-import { FormHeader } from './formCommon/FormHeader'
-import { FormButtonRow } from './formCommon/FormButtonRow'
-import { AttachmentSelector } from './formCommon/attachment/AttachmentSelector'
-import { FormError } from './formCommon/FormErrors'
-import { TipTap } from './formCommon/editor/TipTap'
-import { DeleteModal } from '../modal/DeleteModal'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { LudosContext } from '../../contexts/LudosContext'
-import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { BlockNavigation } from '../BlockNavigation'
-import { useBlockFormCloseOrRefresh } from '../../hooks/useBlockFormCloseOrRefresh'
-import { useFormSubmission } from '../../hooks/useFormSubmission'
 import { InfoBox } from '../InfoBox'
+import { LanguageTabs } from '../LanguageTabs'
+import { DeleteModal } from '../modal/DeleteModal'
+import { TextInput } from '../TextInput'
+import { AttachmentSelector } from './formCommon/attachment/AttachmentSelector'
+import { TipTap } from './formCommon/editor/TipTap'
+import { FormAineDropdown } from './formCommon/FormAineDropdown'
+import { FormButtonRow } from './formCommon/FormButtonRow'
+import { FormError } from './formCommon/FormErrors'
+import { FormHeader } from './formCommon/FormHeader'
+import { InstructionFormType, instructionDefaultValues, instructionSchema } from './schemas/instructionSchema'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -242,7 +242,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               register={register}
               deps={['nameRequired']}
               error={nameFiError || instructionNameError}
-              required>
+              required
+            >
               {t('form.ohjeennimi')}
             </TextInput>
 
@@ -285,7 +286,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
               register={register}
               deps={['nameRequired']}
               error={nameSvError || instructionNameError}
-              required>
+              required
+            >
               {t('form.ohjeennimi')}
             </TextInput>
 
@@ -344,7 +346,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
         modalTitle={lt.contentDeleteModalTitle.INSTRUCTION}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitInstruction(PublishState.Deleted)}
-        onClose={() => setIsDeleteModalOpen(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
         <div className="h-[15vh] p-6">
           <p>{lt.contentDeleteModalText.INSTRUCTION(uiLanguage === Language.FI ? watchNameFi : watchNameSv)}</p>
         </div>

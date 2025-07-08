@@ -1,11 +1,11 @@
-import { Icon } from './Icon'
 import { useTranslation } from 'react-i18next'
-import { InternalLink } from './InternalLink'
-import { SearchStringForNewFilterValue } from '../hooks/useFilterValues'
 import { twMerge } from 'tailwind-merge'
-import { useMediaQuery } from '../hooks/useMediaQuery'
 import { IS_MOBILE_QUERY } from '../constants'
+import { SearchStringForNewFilterValue } from '../hooks/useFilterValues'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { Icon } from './Icon'
+import { InternalLink } from './InternalLink'
 
 const FIRST_PAGE = 1
 const START_ELLIPSIS_THRESHOLD = 1
@@ -36,7 +36,8 @@ export const Pagination = ({ page, totalPages, searchStringForNewFilterValue }: 
         className="row my-auto font-semibold pr-10"
         to={searchStringForNewFilterValue('sivu', page - 1)}
         disabled={prevDisabled}
-        data-testid="previous-page">
+        data-testid="previous-page"
+      >
         <Icon name="chevronLeft" color={prevDisabled ? 'text-gray-secondary' : 'text-green-primary'} size="lg" />
         {!isMobile && t('pagination.link.edellinen-sivu')}
       </InternalLink>
@@ -66,7 +67,8 @@ export const Pagination = ({ page, totalPages, searchStringForNewFilterValue }: 
         className="row my-auto font-semibold pl-10"
         disabled={nextDisabled}
         to={searchStringForNewFilterValue('sivu', page + 1)}
-        data-testid="next-page">
+        data-testid="next-page"
+      >
         {!isMobile && t('pagination.link.seuraava-sivu')}
         <Icon name="chevronRight" color={nextDisabled ? 'text-gray-secondary' : 'text-green-primary'} size="lg" />
       </InternalLink>
@@ -120,7 +122,8 @@ const PageLink = ({
       currentPage === number ? 'bg-green-primary text-white' : 'text-green-primary'
     )}
     to={searchStringForNewFilterValue('sivu', number)}
-    data-testid={`page-button-${number}`}>
+    data-testid={`page-button-${number}`}
+  >
     {number}
   </InternalLink>
 )

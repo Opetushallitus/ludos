@@ -28,7 +28,8 @@ export default {
       }
     },
     screens: {
-      'md': MOBILE_BREAKPOINT, 'lg': LARGE_SCREEN_BREAKPOINT
+      md: MOBILE_BREAKPOINT,
+      lg: LARGE_SCREEN_BREAKPOINT
     },
     fontSize: {
       xss: ['11px', '21px'],
@@ -50,4 +51,3 @@ export default {
     }
   }
 }
-

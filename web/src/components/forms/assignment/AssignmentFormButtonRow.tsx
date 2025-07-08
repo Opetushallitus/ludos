@@ -1,11 +1,11 @@
-import { Language, PublishState } from '../../../types'
-import { FormButtonRow } from '../formCommon/FormButtonRow'
-import { DeleteModal } from '../../modal/DeleteModal'
-import { useNavigate } from 'react-router-dom'
 import { useContext } from 'react'
+import { UseFormReturn } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { LudosContext } from '../../../contexts/LudosContext'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { UseFormReturn } from 'react-hook-form'
+import { Language, PublishState } from '../../../types'
+import { DeleteModal } from '../../modal/DeleteModal'
+import { FormButtonRow } from '../formCommon/FormButtonRow'
 import { AnyAssignmentFormType } from '../schemas/assignmentSchema'
 
 type AssignmentFormButtonRowProps<T extends AnyAssignmentFormType> = {
@@ -56,9 +56,12 @@ export const AssignmentFormButtonRow = <T extends AnyAssignmentFormType>({
         modalTitle={lt.contentDeleteModalTitle.ASSIGNMENT}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitAssignment(PublishState.Deleted)}
-        onClose={() => setIsDeleteModalOpen(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
         <div className="h-[15vh] p-6">
-          <p>{lt.contentDeleteModalText.ASSIGNMENT(uiLanguage === Language.FI ? getValues().nameFi : getValues().nameSv)}</p>
+          <p>
+            {lt.contentDeleteModalText.ASSIGNMENT(uiLanguage === Language.FI ? getValues().nameFi : getValues().nameSv)}
+          </p>
         </div>
       </DeleteModal>
     </>

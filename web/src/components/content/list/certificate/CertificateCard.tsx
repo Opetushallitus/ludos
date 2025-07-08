@@ -1,12 +1,12 @@
-import { ContentBaseOut, isLdCertificate, isPuhviCertificate, isSukoCertificate, Language } from '../../../../types'
-import { InternalLink } from '../../../InternalLink'
-import { StateTag } from '../../../StateTag'
-import { Icon } from '../../../Icon'
-import { toLocaleDate } from '../../../../utils/formatUtils'
-import { PdfViewerLinkTag } from '../../../PdfViewerLinkTag'
-import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { muokkausKey } from '../../../LudosRoutes'
 import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
+import { ContentBaseOut, isLdCertificate, isPuhviCertificate, isSukoCertificate, Language } from '../../../../types'
+import { toLocaleDate } from '../../../../utils/formatUtils'
+import { Icon } from '../../../Icon'
+import { InternalLink } from '../../../InternalLink'
+import { muokkausKey } from '../../../LudosRoutes'
+import { PdfViewerLinkTag } from '../../../PdfViewerLinkTag'
+import { StateTag } from '../../../StateTag'
 
 const getFileKey = (certificate: ContentBaseOut, language: Language) => {
   if (isSukoCertificate(certificate)) {
@@ -53,7 +53,8 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
   return (
     <li
       className="w-[17.5rem] rounded-md border border-t-4 border-gray-light border-t-green-primary flex flex-col"
-      data-testid={`certificate-${certificate.id}`}>
+      data-testid={`certificate-${certificate.id}`}
+    >
       <div className="text-center flex-1 px-2 break-words">
         <InternalLink className="text-sm font-semibold text-green-primary" to={`${certificate.id}`}>
           {getCertificateName()}
@@ -62,7 +63,8 @@ export const CertificateCard = ({ certificate, teachingLanguage }: CertificateCa
           <InternalLink
             className="p-0 ml-2"
             to={`${muokkausKey}/${certificate.id}`}
-            data-testid={`certificate-${certificate.id}-edit`}>
+            data-testid={`certificate-${certificate.id}-edit`}
+          >
             <Icon name="muokkaa" color="text-green-primary" />
           </InternalLink>
         )}

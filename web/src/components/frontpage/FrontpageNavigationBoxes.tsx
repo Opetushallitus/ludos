@@ -1,8 +1,8 @@
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { ContentType, ContentTypePluralFi, Exam } from '../../types'
 import { Icon } from '../Icon'
 import { InternalLink } from '../InternalLink'
 import { contentListPath } from '../LudosRoutes'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 export const NavigationBoxes = () => {
   const { lt } = useLudosTranslation()
@@ -21,7 +21,8 @@ export const NavigationBoxes = () => {
                 className="boxBorder flex h-20 w-full cursor-pointer rounded-md"
                 to={contentListPath(exam, contentType)}
                 data-testid={`nav-box-${ContentTypePluralFi[contentType]}`}
-                key={i}>
+                key={i}
+              >
                 <span className="row my-auto ml-3 gap-2">
                   <Icon name={ContentTypePluralFi[contentType]} color="text-green-primary" customClass="mt-0.5" />
                   <p className="text-green-primary">{lt.buttonTextByContentType[contentType]}</p>

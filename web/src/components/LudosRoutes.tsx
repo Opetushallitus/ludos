@@ -1,4 +1,4 @@
-import { Layout } from './layout/Layout'
+import { lazy, ReactElement, ReactNode, Suspense } from 'react'
 import {
   createBrowserRouter,
   isRouteErrorResponse,
@@ -7,15 +7,15 @@ import {
   RouteObject,
   useRouteError
 } from 'react-router-dom'
-import { ContentBaseOut, ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
-import { useUserDetails } from '../hooks/useUserDetails'
-import { lazy, ReactElement, ReactNode, Suspense } from 'react'
-import { Spinner } from './Spinner'
-import { Frontpage } from './frontpage/Frontpage'
-import { PrintFooter } from './Footer'
-import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
-import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { useUserDetails } from '../hooks/useUserDetails'
+import { ContentBaseOut, ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
+import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
+import { PrintFooter } from './Footer'
+import { Frontpage } from './frontpage/Frontpage'
+import { Layout } from './layout/Layout'
+import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
+import { Spinner } from './Spinner'
 
 export const etusivuKey = 'etusivu'
 export const uusiKey: ContentFormAction = ContentFormAction.uusi

@@ -1,5 +1,5 @@
-import { ErrorMessages, Exam, PublishState } from '../../../types'
 import { z } from 'zod'
+import { ErrorMessages, Exam, PublishState } from '../../../types'
 import { examEnumZodType, inputNotEmptyValidation, nameValidation, publishStateEnumZodType } from './schemaCommon'
 
 export const isSukoCertificateValues = (values: AnyCertificateFormType): values is SukoCertificateFormType =>

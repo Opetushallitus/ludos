@@ -1,8 +1,8 @@
-import { Button } from './Button'
-import { Language } from '../types'
-import { Icon } from './Icon'
 import { twMerge } from 'tailwind-merge'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { Language } from '../types'
+import { Button } from './Button'
+import { Icon } from './Icon'
 
 type LanguageTabsProps = {
   activeTab: string
@@ -28,7 +28,8 @@ export const LanguageTabs = ({ activeTab, setActiveTab, fiErrors, svErrors }: La
             onClick={() => setActiveTab(option)}
             key={i}
             aria-expanded={activeTab === option}
-            data-testid={`tab-${option}`}>
+            data-testid={`tab-${option}`}
+          >
             {(option === 'FI' && fiErrors) || (option === 'SV' && svErrors) ? (
               <Icon name="virhe" color="text-red-primary" customClass="mr-2" />
             ) : null}
