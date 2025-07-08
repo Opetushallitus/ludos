@@ -1,4 +1,7 @@
 {
+  "files": {
+    "includes": ["**/*.ts"]
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -13,7 +16,6 @@
     "useEditorconfig": true
   },
   "linter": {
-    "includes": ["**/*.ts"],
     "rules": {
       "recommended": false,
       "complexity": { "noUselessTypeConstraint": "error" },

@@ -1,4 +1,7 @@
 {
+  "files": {
+    "includes": ["**/*.ts"]
+  },
   "formatter": {
     "enabled": true,
     "includes": ["**/*.ts"],
@@ -15,7 +18,6 @@
   },
   "linter": {
     "enabled": true,
-    "includes": ["**/*.ts"],
     "rules": {
       "recommended": false,
       "complexity": {
