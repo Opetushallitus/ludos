@@ -32,7 +32,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:2.1.1")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
     implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
