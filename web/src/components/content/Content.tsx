@@ -138,7 +138,7 @@ const Content = ({ exam }: ContentProps) => {
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} lt={lt} />
 
               {isYllapitaja && (
                 <div className="row">
