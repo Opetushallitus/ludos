@@ -1,9 +1,9 @@
-import { loginTestGroup, Role } from '../../helpers'
 import { test } from '@playwright/test'
 import { AttachmentDtoOut, Exam, InstructionDtoOut } from 'web/src/types'
-import { VersionHistoryModel } from '../../models/VersionHistoryModel'
+import { loginTestGroup, Role } from '../../helpers'
 import { InstructionContentModel } from '../../models/InstructionContentModel'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
+import { VersionHistoryModel } from '../../models/VersionHistoryModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {

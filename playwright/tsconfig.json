@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
 
     "useDefineForClassFields": true,
     "allowJs": false,
@@ -27,8 +23,5 @@
       "web/*": ["../web/*"]
     }
   },
-  "include": [
-    "**/*",
-    "../web/**/*.ts"
-  ]
+  "include": ["**/*", "../web/**/*.ts"]
 }

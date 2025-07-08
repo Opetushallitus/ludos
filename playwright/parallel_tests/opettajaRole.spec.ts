@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../helpers'
 import { ContentType, ContentTypePluralFi } from 'web/src/types'
+import { loginTestGroup, Role } from '../helpers'
 
 const pages = ['suko', 'puhvi', 'ld']
 

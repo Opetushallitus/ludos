@@ -1,7 +1,7 @@
-import { BrowserContext, expect, Locator, Page, test as importedTest } from '@playwright/test'
-import { Exam, KoodistoName, Language } from 'web/src/types'
+import { BrowserContext, expect, test as importedTest, Locator, Page } from '@playwright/test'
 import { promises as fsPromises } from 'fs'
 import path from 'path'
+import { Exam, KoodistoName, Language } from 'web/src/types'
 
 export type FormAction = 'submit' | 'draft' | 'cancel' | 'delete'
 
@@ -109,7 +109,7 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
   }
 
   for await (const option of optionIds) {
-    await page.getByTestId(`${dropdownTestId}-open`).waitFor({state: 'attached'})
+    await page.getByTestId(`${dropdownTestId}-open`).waitFor({ state: 'attached' })
     await page.getByTestId(`${dropdownTestId}-open`).scrollIntoViewIfNeeded()
     await page.getByTestId(`${dropdownTestId}-open`).click()
     await page.getByTestId(`${dropdownTestId}-option-${option}`).click()

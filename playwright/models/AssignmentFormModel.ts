@@ -1,7 +1,7 @@
 import { BrowserContext, Page } from '@playwright/test'
-import { FormModel } from './FormModel'
 import { AssignmentIn, AssignmentOut, ContentType, Exam, PublishState } from 'web/src/types'
-import { fetchWithSession, FormAction } from '../helpers'
+import { FormAction, fetchWithSession } from '../helpers'
+import { FormModel } from './FormModel'
 
 interface TestedAssignmentIn extends AssignmentIn {
   assignmentTypeKoodiArvo?: string

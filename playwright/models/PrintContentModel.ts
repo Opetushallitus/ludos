@@ -14,7 +14,6 @@ export class PrintContentModel {
     readonly laajaAlainenOsaaminen = container.getByTestId('laajaalainenosaaminen'),
     readonly instructionFi = container.getByTestId('editor-instruction-FI-0'),
     readonly contentFi = container.getByTestId('editor-content-FI-0'),
-    readonly printButton = container.locator('#print-button'),
-  ) {
-  }
+    readonly printButton = container.locator('#print-button')
+  ) {}
 }

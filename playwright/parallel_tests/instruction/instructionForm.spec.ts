@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
+import { ContentType, Exam } from 'web/src/types'
 import { initializeInstructionTest, updateAttachments } from '../../examHelpers/instructionHelpers'
 import { assertSuccessNotification, loginTestGroup, Role } from '../../helpers'
-import { ContentType, Exam } from 'web/src/types'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 
 async function createAndUpdatePublishedInstruction(form: InstructionFormModel) {

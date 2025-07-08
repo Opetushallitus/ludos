@@ -4,13 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@biomejs/biome": "^2.1.0",
     "@playwright/test": "1.53.2",
     "@types/node": "22.15.33",
     "@types/pdf-parse": "1.1.5",
-    "@typescript-eslint/eslint-plugin": "8.30.1",
-    "@typescript-eslint/parser": "8.30.1",
     "dotenv": "16.5.0",
-    "eslint": "8.57.1",
     "typescript": "5.8.3"
   },
   "scripts": {
@@ -18,8 +16,8 @@
     "test:ci": "bash -c 'npm run test:parallel_tests \"$@\" && npm run test:non_parallel_tests \"$@\"' --",
     "test:parallel_tests": "npx playwright test --project parallel_tests --workers 4",
     "test:non_parallel_tests": "npx playwright test --project non_parallel_tests --workers 1",
-    "lint": "tsc --noEmit && eslint **/*.ts",
-    "lint:fix": "eslint --fix **/*.ts"
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
   },
   "dependencies": {
     "pdf-parse": "^1.1.1"

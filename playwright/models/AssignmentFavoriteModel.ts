@@ -1,8 +1,8 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { BaseModel } from './BaseModel'
 import { AssignmentOut, ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
-import { AssignmentFormModel } from './AssignmentFormModel'
 import { assertSuccessNotification } from '../helpers'
+import { AssignmentFormModel } from './AssignmentFormModel'
+import { BaseModel } from './BaseModel'
 import { LayoutModel } from './LayoutModel'
 
 export class AssignmentFavoriteModel extends BaseModel {

@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test'
 import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { setSingleSelectDropdownOption } from '../helpers'
-import { ContentTypeTabModel } from './ContentTypeTabModel'
 import { BaseModel } from './BaseModel'
+import { ContentTypeTabModel } from './ContentTypeTabModel'
 
 export class ContentListModel extends BaseModel {
   constructor(

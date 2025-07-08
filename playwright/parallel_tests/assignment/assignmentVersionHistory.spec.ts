@@ -1,10 +1,10 @@
-import { loginTestGroup, Role } from '../../helpers'
 import { test } from '@playwright/test'
 import { Exam } from 'web/src/types'
+import { loginTestGroup, Role } from '../../helpers'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
-import { VersionHistoryModel } from '../../models/VersionHistoryModel'
-import { FormModel } from '../../models/FormModel'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
+import { FormModel } from '../../models/FormModel'
+import { VersionHistoryModel } from '../../models/VersionHistoryModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 Object.values(Exam).forEach((exam) => {
