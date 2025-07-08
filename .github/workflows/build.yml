@@ -54,7 +54,7 @@ jobs:
       - uses: ./.github/actions/build_status
         with:
           task: build-image
-          status: ${{ needs.push_image.result == 'success' && 'success' || 'failure' }}
+          status: ${{ needs.build.result == 'success' && 'success' || 'failure' }}
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
 
   deploy_untuva:
