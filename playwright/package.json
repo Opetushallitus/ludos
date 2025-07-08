@@ -8,7 +8,7 @@
     "@playwright/test": "1.53.2",
     "@types/node": "22.15.33",
     "@types/pdf-parse": "1.1.5",
-    "dotenv": "16.5.0",
+    "dotenv": "16.6.1",
     "typescript": "5.8.3"
   },
   "scripts": {
