@@ -16,7 +16,7 @@
     "test:ci": "bash -c 'npm run test:parallel_tests \"$@\" && npm run test:non_parallel_tests \"$@\"' --",
     "test:parallel_tests": "npx playwright test --project parallel_tests --workers 4",
     "test:non_parallel_tests": "npx playwright test --project non_parallel_tests --workers 1",
-    "lint": "biome check",
+    "lint": "tsc --noEmit && biome check",
     "lint:fix": "biome check --write"
   },
   "dependencies": {
