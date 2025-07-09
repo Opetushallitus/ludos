@@ -37,8 +37,7 @@ jobs:
           aws-region: eu-west-1
 
       - name: Run lint-build-test.sh and push-image.sh
-        run: ./deploy-scripts/lint-build-test.sh
-        run: ./deploy-scripts/push-image.sh
+        run: ./deploy-scripts/lint-build-test.sh && ./deploy-scripts/push-image.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
