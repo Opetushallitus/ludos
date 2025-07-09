@@ -12,12 +12,12 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  lintbuildtestpush:
     permissions:
       id-token: write
       contents: read
       packages: write
-    name: 01-build.sh
+    name: lint-build-test.sh and push-image.sh
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -36,8 +36,9 @@ jobs:
           role-to-assume: arn:aws:iam::505953557276:role/ludos-gh-actions-ecr-push-role
           aws-region: eu-west-1
 
-      - name: Run 01-build.sh
-        run: ./deploy-scripts/01-build.sh
+      - name: Run lint-build-test.sh and push-image.sh
+        run: ./deploy-scripts/lint-build-test.sh
+        run: ./deploy-scripts/push-image.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}

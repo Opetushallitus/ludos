@@ -4,6 +4,19 @@ on:
   merge_group:
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-    secrets: inherit
+  lintbuildtest:
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    name: lint-build-test.sh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run lint-build-test.sh
+        run: ./deploy-scripts/lint-build-test.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}

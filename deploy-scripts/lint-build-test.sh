@@ -16,15 +16,11 @@ source "$repo/deploy-scripts/02-run-server-tests.sh"
 # shellcheck source=./03-run-playwright-tests.sh
 source "$repo/deploy-scripts/03-run-playwright-tests.sh"
 
-# shellcheck source=./05-push-image.sh
-source "$repo/deploy-scripts/05-push-image.sh"
-
 function main {
   lint
   build
   test-server
   playwright-test
-  push-image
 }
 
 function build {
