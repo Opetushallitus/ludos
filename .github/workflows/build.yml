@@ -45,7 +45,7 @@ jobs:
 
   build_status_completed:
     name: Send build status
-    needs: [build]
+    needs: [lintbuildtestpush]
     if: ${{ always() && github.ref == 'refs/heads/main' }}
     continue-on-error: true
     runs-on: 'ubuntu-24.04'
@@ -58,6 +58,6 @@ jobs:
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
 
   deploy_untuva:
-    needs: [build]
+    needs: [lintbuildtestpush]
     uses: ./.github/workflows/deploy_untuva.yml
     secrets: inherit
