@@ -7,7 +7,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 # shellcheck source=./deploy-functions.sh
 source "$repo/deploy-scripts/deploy-functions.sh"
 
-function push-image() {
+function main() {
   setup
   upload_image_to_ecr
 }
@@ -39,3 +39,5 @@ function get_ecr_login_credentials() {
       ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 505953557276.dkr.ecr.eu-west-1.amazonaws.com
   fi
 }
+
+main
