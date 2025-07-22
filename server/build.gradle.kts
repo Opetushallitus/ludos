@@ -30,7 +30,7 @@ dependencyLocking {
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.3"))
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.3")
 
     implementation("io.arrow-kt:arrow-core:2.1.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
