@@ -49,7 +49,7 @@
     "@biomejs/biome": "2.1.2",
     "@iconify/icons-ic": "1.2.13",
     "@iconify/icons-material-symbols": "1.2.58",
-    "@types/node": "22.16.2",
+    "@types/node": "22.16.5",
     "@types/react": "18.3.23",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "4.6.0",
