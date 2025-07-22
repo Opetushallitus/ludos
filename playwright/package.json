@@ -5,7 +5,7 @@
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
-    "@playwright/test": "1.53.2",
+    "@playwright/test": "1.54.1",
     "@types/node": "22.16.5",
     "@types/pdf-parse": "1.1.5",
     "dotenv": "17.1.0",
