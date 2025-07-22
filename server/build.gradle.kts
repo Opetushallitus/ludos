@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.springframework.boot") version "3.5.3"
-    id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.0"
     kotlin("plugin.spring") version "2.2.0"
 }
@@ -29,6 +28,8 @@ dependencyLocking {
 }
 
 dependencies {
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.3"))
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     implementation("io.arrow-kt:arrow-core:2.1.2")
