@@ -1,4 +1,4 @@
-FROM node:22-bookworm@sha256:d38bdc98e1be70113c21f5c1b3069b30a75cfd2f494c5c82454b0fd2e7955809
+FROM node:22-bookworm@sha256:263acfc82e6c90dc5f80a937868a7ede7f205f1e0a1eecd94b254e3497829dbb
 
 RUN curl \
     "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_arm64/session-manager-plugin.deb" \
