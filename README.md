@@ -1,6 +1,9 @@
 # Ludos
 Wiki: https://wiki.eduuni.fi/display/OPHPALV/LUDOS
 
+## Trivy
+https://trivy.util.yleiskayttoiset.opintopolku.fi/muut.html
+
 ## Käsitteet
 
 Keskeiset entiteetit, ja järjestelmät, joihin nämä tallennetaan.
