@@ -20,7 +20,7 @@ jobs:
     name: lint-build-test.sh and push-image.sh
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
       - name: Send build status "in progress"
         if: github.ref == 'refs/heads/main'
@@ -53,7 +53,7 @@ jobs:
     continue-on-error: true
     runs-on: 'ubuntu-24.04'
     steps:
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - uses: ./.github/actions/build_status
         with:
           task: build-image
