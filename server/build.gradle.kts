@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.springframework.boot") version "3.5.4"
     kotlin("jvm") version "2.2.0"
-    kotlin("plugin.spring") version "2.2.0"
+    kotlin("plugin.spring") version "2.2.10"
 }
 
 group = "fi.oph"
@@ -43,7 +43,7 @@ dependencies {
     implementation("ch.qos.logback.access:logback-access-common:2.0.6")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
     implementation("org.jsoup:jsoup:1.21.1")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.32.22")
     implementation("software.amazon.awssdk:s3:2.32.22")
