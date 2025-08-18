@@ -1,3 +1,5 @@
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
@@ -70,15 +72,35 @@ kotlin {
     }
 }
 
+val bootJar = tasks.named<BootJar>("bootJar")
+
 val pathToStatic = "server/build/resources/main/static"
 
 val linkJar = tasks.register("linkJar") {
-    mustRunAfter(tasks.withType<BootJar>())
+    dependsOn(bootJar)
+    mustRunAfter(bootJar)
+
+    // Use providers to resolve paths lazily and safely.
+    val libsDir = layout.buildDirectory.dir("libs")
+    val bootArchive = bootJar.flatMap { it.archiveFile }
 
     doLast {
-        exec {
-            workingDir("build/libs")
-            commandLine("ln", "-vf", "ludos-${version}.jar", "ludos.jar")
+        val libs = libsDir.get().asFile.toPath()
+        val targetJar = bootArchive.get().asFile.toPath()        // e.g. ludos-<version>.jar
+        val linkPath = libs.resolve("ludos.jar")
+
+        // Clean up any previous link/file.
+        Files.deleteIfExists(linkPath)
+
+        // Try to create a symlink; if not supported (e.g. Windows without privileges), fall back to copying.
+        try {
+            // Relative target keeps the symlink stable if the folder moves.
+            val relativeTarget = libs.relativize(targetJar)
+            Files.createSymbolicLink(linkPath, relativeTarget)
+            logger.lifecycle("Created symlink: {} → {}", linkPath.fileName, relativeTarget)
+        } catch (ex: Exception) {
+            Files.copy(targetJar, linkPath, StandardCopyOption.REPLACE_EXISTING)
+            logger.lifecycle("Symlinks unavailable; copied {} to {}", targetJar.fileName, linkPath.fileName)
         }
     }
 }
