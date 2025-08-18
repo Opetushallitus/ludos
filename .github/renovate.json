@@ -20,12 +20,8 @@
   "github-actions": { "automerge": true },
   "dockerfile": { "automerge": true },
   "postUpgradeTasks": {
-    "commands": [
-      "pushd server && ./gradlew dependencies --write-locks && popd"
-    ],
-    "fileFilters": [
-      "gradle.lockfile"
-    ],
+    "commands": ["cd server && ./gradlew dependencies --write-locks"],
+    "fileFilters": ["gradle.lockfile", "server/gradle.lockfile"],
     "executionMode": "branch"
   },
   "packageRules": [

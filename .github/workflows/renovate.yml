@@ -29,4 +29,4 @@ jobs:
           LOG_LEVEL: 'debug'
           RENOVATE_REPOSITORIES: 'Opetushallitus/ludos'
           RENOVATE_AUTODISCOVER_FILTER: 'Opetushallitus/ludos'
-          RENOVATE_ALLOWED_COMMANDS: 'pushd server && ./gradlew dependencies --write-locks && popd'
+          RENOVATE_ALLOWED_COMMANDS: 'cd server && ./gradlew dependencies --write-locks'
