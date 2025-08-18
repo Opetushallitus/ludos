@@ -27,7 +27,7 @@ dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.4"))
 
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.4")
-    implementation("org.apache.httpcomponents:httpclient:4.5")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.0")
     implementation("io.arrow-kt:arrow-core:2.1.2")
