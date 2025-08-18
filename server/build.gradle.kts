@@ -17,12 +17,6 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
-    maven(url = "https://maven.pkg.github.com/Opetushallitus/java-utils") {
-        credentials {
-            username = "does-not-matter"
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
 }
 
 dependencyLocking {
@@ -33,11 +27,12 @@ dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.4"))
 
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.4")
-
+    implementation("org.apache.httpcomponents:httpclient:4.5")
+    implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
+    implementation("org.apache.commons:commons-lang3:3.0")
     implementation("io.arrow-kt:arrow-core:2.1.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
-    implementation("fi.vm.sade.java-utils:java-http:1.0.0-SNAPSHOT")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
     implementation("org.flywaydb:flyway-core:11.11.1")
@@ -63,6 +58,12 @@ dependencies {
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
+
+    testCompileOnly("org.projectlombok:lombok:1.18.38")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 }
 
 kotlin {
@@ -77,8 +78,8 @@ val bootJar = tasks.named<BootJar>("bootJar")
 val pathToStatic = "server/build/resources/main/static"
 
 val linkJar = tasks.register("linkJar") {
-    dependsOn(bootJar)
-    mustRunAfter(bootJar)
+   dependsOn(bootJar)
+   mustRunAfter(bootJar)
 
     // Use providers to resolve paths lazily and safely.
     val libsDir = layout.buildDirectory.dir("libs")

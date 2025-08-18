@@ -2,8 +2,8 @@ package fi.oph.ludos.auth
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fi.vm.sade.javautils.http.OphHttpClient
-import fi.vm.sade.javautils.http.auth.CasAuthenticator
+import httputils.OphHttpClient
+import httputils.auth.CasAuthenticator
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Value
 

@@ -9,13 +9,10 @@ services:
       - DB_URL
       - LUDOS_PALVELUKAYTTAJA_USERNAME
       - LUDOS_PALVELUKAYTTAJA_PASSWORD
-      - GITHUB_TOKEN
     container_name: ludos-server
 
   ludos-server:
     build:
-      secrets:
-        - github_token
       context: .
       dockerfile: Dockerfile
     image: ${LUDOS_TAG}
@@ -30,8 +27,6 @@ services:
 
   ludos-server-stage:
     build:
-      secrets:
-        - github_token
       target: server-build
       context: .
       dockerfile: Dockerfile
@@ -52,9 +47,3 @@ services:
       retries: 5
     ports:
       - '127.0.0.1:5432:5432'
-
-secrets:
-  # For downloading packages from Github Packages Maven registry
-  # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
-  github_token:
-    environment: GITHUB_TOKEN

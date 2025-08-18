@@ -17,6 +17,5 @@ jobs:
       - name: Run lint-build-test.sh
         run: ./deploy-scripts/lint-build-test.sh
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
