@@ -19,6 +19,15 @@
   "enabledManagers": ["nvm", "npm", "github-actions", "dockerfile", "gradle", "gradle-wrapper"],
   "github-actions": { "automerge": true },
   "dockerfile": { "automerge": true },
+  "postUpgradeTasks": {
+    "commands": [
+      "pushd server && ./gradlew dependencies --write-locks && popd"
+    ],
+    "fileFilters": [
+      "gradle.lockfile"
+    ],
+    "executionMode": "branch"
+  },
   "packageRules": [
     {
       "matchManagers": ["npm"],
