@@ -6,7 +6,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/common-functions.sh"
 function main () {
   pushd "$repo"/server
 
-  docker compose -f "$repo"/docker-compose-run-server.yaml up
+  docker compose -f "$repo"/docker-compose-run-server.yaml up --watch
 
   popd
 }
