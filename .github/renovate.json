@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices"],
+  "extends": ["config:best-practices", "npm:unpublishSafe"],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Ludos Renovate Dependency Dashboard",
   "gitAuthor": "ludos-renovate[bot] <178999943+ludos-renovate[bot]@users.noreply.github.com>",
@@ -24,6 +24,8 @@
     "fileFilters": ["gradle.lockfile", "server/gradle.lockfile"],
     "executionMode": "branch"
   },
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
   "packageRules": [
     {
       "matchManagers": ["npm"],
