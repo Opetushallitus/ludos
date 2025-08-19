@@ -2,7 +2,6 @@ package httputils.auth;
 
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -10,7 +9,6 @@ import org.apache.http.cookie.Cookie;
 
 @Slf4j
 @Getter
-@Setter
 public class CasAuthenticator implements Authenticator {
 
     private static final String CAS_SECURITY_TICKET = "CasSecurityTicket";
@@ -37,17 +35,6 @@ public class CasAuthenticator implements Authenticator {
         sessionCookieName = builder.sessionCookieName;
         casServiceSessionInitUrl = builder.casServiceSessionInitUrl;
         addSpringSecSuffix = builder.addSpringSecSuffix;
-    }
-
-    public CasAuthenticator(String webCasUrl, String username, String password, String casServiceUrl,
-                            String casServiceSessionInitUrl, boolean addSpringSecSuffix, String sessionCookieName) {
-        this.webCasUrl = webCasUrl;
-        this.username = username;
-        this.password = password;
-        this.casServiceUrl = casServiceUrl;
-        this.casServiceSessionInitUrl = casServiceSessionInitUrl;
-        this.addSpringSecSuffix = addSpringSecSuffix;
-        this.sessionCookieName = sessionCookieName;
     }
 
     @Override
@@ -80,11 +67,6 @@ public class CasAuthenticator implements Authenticator {
         setKayttajaHeaders(req, getUsername(), getUsername());
         log.debug("set serviceAsAUser ticket to header, service: " + getCasServiceUrl() + ", ticket: " + getServiceAsAUserTicket() + ", currentUser: " + getUsername() + ", callAsUser: " + getUsername());
         return true;
-    }
-
-    @Override
-    public String getUrlPrefix() {
-        return getCasServiceUrl();
     }
 
     private void checkNotNull(String value, String name) {
@@ -135,21 +117,6 @@ public class CasAuthenticator implements Authenticator {
                 url = url.replace("/j_spring_cas_security_check", "");
             }
             this.casServiceUrl = url;
-            return this;
-        }
-
-        public Builder casServiceSessionInitUrl(String casServiceSessionInitUrl) {
-            this.casServiceSessionInitUrl = casServiceSessionInitUrl;
-            return this;
-        }
-
-        public Builder sessionCookieName(String sessionCookieName) {
-            this.sessionCookieName = sessionCookieName;
-            return this;
-        }
-
-        public Builder addSpringSecSuffix(boolean addSpringSecSuffix) {
-            this.addSpringSecSuffix = addSpringSecSuffix;
             return this;
         }
 

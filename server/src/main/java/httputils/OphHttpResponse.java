@@ -2,7 +2,7 @@ package httputils;
 
 /**
  * Provides user interface to handle errorous status codes from server and expected status codes.
- * @param <T> Expected type of the object returned at the end of a succesful server request.
+ * @param <T> Expected type of the object returned at the end of a successful server request.
  */
 public interface OphHttpResponse<T> {
     /**

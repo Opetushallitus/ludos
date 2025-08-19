@@ -15,18 +15,11 @@ public interface Authenticator {
             return false;
         }
 
-        @Override
-        public String getUrlPrefix() {
-            return "";
-        }
-
 
     };
 
     void clearSession();
 
     boolean authenticate(HttpUriRequest request, CookieStore cookieStore);
-
-    String getUrlPrefix();
 
 }

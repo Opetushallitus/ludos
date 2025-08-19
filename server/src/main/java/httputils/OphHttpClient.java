@@ -3,7 +3,6 @@ package httputils;
 import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 
 import httputils.auth.Authenticator;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.ConnectionReuseStrategy;
@@ -20,7 +19,6 @@ import org.apache.http.config.SocketConfig;
 import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
-import org.apache.http.impl.NoConnectionReuseStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -42,11 +40,8 @@ import java.util.concurrent.TimeUnit;
  * CAS supporting REST client.
  * See OphHttpResponseImplTest for usage.
  */
-@Getter
 @Slf4j
 public class OphHttpClient {
-    private static final int MAX_CACHE_ENTRIES = 20; // max = 20 * 10MB = 200MB
-    private static final int MAX_OBJECT_SIZE = 10 * 1024 * 1024; // 10MB (oppilaitosnumero-koodisto is ~7,5MB)
     private static final String CSRF = "CachingRestClient";
 
     private static class Headers {
@@ -126,7 +121,7 @@ public class OphHttpClient {
         // just got new valid ticket, but still got cas login page.. something wrong with the system, target service didn't process the request/ticket correctly?
         if (retry && wasJustAuthenticated && (isRedirCas || wasRedirCas)) {
             throw new RuntimeException("Just got new valid ticket, but still got cas login page.. something wrong with the system, target service didn't process the request/ticket correctly?\n"
-                    + logUtil.info(request, response, isRedirCas, wasRedirCas, retry));
+                    + logUtil.info(request, response, isRedirCas, wasRedirCas, true));
         }
 
         // authentication: was redirected to cas OR http 401 -> get ticket and retry once (but do it only once, hence 'retry')
@@ -221,65 +216,6 @@ public class OphHttpClient {
             cacheConfig = null;
         }
 
-        /**
-         * Set cache config. Setting this enables http request caching.
-         */
-        public Builder cache(CacheConfig.Builder cacheConfigBuilder) {
-            this.cacheConfig = cacheConfigBuilder.build();
-            return this;
-        }
-
-        /**
-         * Enables http request caching with default configuration.
-         */
-        public Builder useDefaultCache() {
-            this.cacheConfig = customCacheConfig()
-                    .setMaxCacheEntries(MAX_CACHE_ENTRIES)
-                    .setMaxObjectSize(MAX_OBJECT_SIZE)
-                    .build();
-            return this;
-        }
-
-        /**
-         * Convenience method for creating custom cache configuration
-         */
-        public static CacheConfig.Builder customCacheConfig() {
-            return CacheConfig.custom();
-        }
-
-
-        /**
-         * Set connection timeout.
-         * @param timeout The time given to create connection before timing out.
-         */
-        public Builder timeoutMs(int timeout) {
-            this.connectionTimeoutMs = timeout;
-            return this;
-        }
-
-        /**
-         * Set socket timeout. Note this is between packets not requests.
-         * @param socketTimeoutMs The time to wait for a package before connection timeout
-         */
-        public Builder setSocketTimeoutMs(int socketTimeoutMs) {
-            this.socketTimeoutMs = socketTimeoutMs;
-            return this;
-        }
-
-        public Builder connectionTTLSec(long time) {
-            this.connectionTTLSec = time;
-            return this;
-        }
-
-        public Builder disableUrlLogging() {
-            allowUrlLogging = false;
-            return this;
-        }
-
-        public Builder disableConnectionReuse() {
-            reuseStrategy = new NoConnectionReuseStrategy();
-            return this;
-        }
 
         public Builder authenticator(Authenticator authenticator) {
             if (authenticator == null) throw new NullPointerException("Authenticator == null");
@@ -302,11 +238,11 @@ public class OphHttpClient {
                     URI locationURI = super.getLocationURI(request, response, context);
                     String uri = locationURI.toString();
                     if (CasUtil.isCasUrl(uri)) {
-                        log.debug("Set redirected_to_cas=true, url: " + uri);
+                        log.debug("Set redirected_to_cas=true, url: {}", uri);
                         context.setAttribute(CasUtil.getCasAttributeName(), "true");
                         context.setAttribute(HttpClientContext.REDIRECT_LOCATIONS, new RedirectLocations());
                     } else { // when redirecting back to service _from_ cas
-                        log.debug("Set redirected_to_cas=false, url: " + uri);
+                        log.debug("Set redirected_to_cas=false, url: {}", uri);
                         context.removeAttribute(CasUtil.getCasAttributeName());
                     }
                     return locationURI;

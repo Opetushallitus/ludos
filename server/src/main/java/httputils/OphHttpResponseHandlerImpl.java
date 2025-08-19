@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,14 +34,6 @@ public class OphHttpResponseHandlerImpl<T> implements OphHttpResponseHandler<T> 
         return this.notExpectedStatusCodeHandling(true);
     }
 
-    @Override
-    public void ignoreResponse() {
-        if (this.allowedStatusCodes.stream().noneMatch(status -> status == this.response.getStatusLine().getStatusCode()) ) {
-            notExpectedStatusCodeHandling(false);
-        }
-        this.close();
-    }
-
     private Optional<T> notExpectedStatusCodeHandling(boolean acceptEmptyResponse) {
         try {
             // Handled error code received
@@ -59,22 +50,6 @@ public class OphHttpResponseHandlerImpl<T> implements OphHttpResponseHandler<T> 
                 return Optional.empty();
             }
             throw e;
-        }
-    }
-
-    @Override
-    public void consumeStreamWith(Consumer<InputStream> handler) {
-        if (this.allowedStatusCodes.stream().anyMatch(status -> status == this.response.getStatusLine().getStatusCode()) ) {
-            try (InputStream inputStream = this.response.getEntity().getContent()) {
-                handler.accept(inputStream);
-            } catch (IOException ioe) {
-                throw new RuntimeException(ioe);
-            } finally {
-                this.close();
-            }
-        }
-        else {
-            this.notExpectedStatusCodeHandling(false);
         }
     }
 

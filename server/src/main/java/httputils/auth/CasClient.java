@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -77,7 +78,7 @@ public final class CasClient {
                 .setConnectionTimeToLive(60, TimeUnit.SECONDS)
                 .setDefaultCookieStore(httpCookieStore)
                 .build();
-         CloseableHttpResponse response = (CloseableHttpResponse) client.execute(httpGet)) {
+         CloseableHttpResponse response =  client.execute(httpGet)) {
       for (Cookie cookie : httpCookieStore.getCookies()) {
         if (cookieName.equals(cookie.getName())) {
           return cookie;
@@ -102,7 +103,7 @@ public final class CasClient {
 
     HttpPost httpPost = new HttpPost(server + "/" + ticketGrantingTicket);
     setRequiredHeaders(httpPost);
-    final List<NameValuePair> params = new ArrayList<NameValuePair>();
+    final List<NameValuePair> params = new ArrayList<>();
     params.add(new BasicNameValuePair("service", service));
     httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 
@@ -122,11 +123,11 @@ public final class CasClient {
   }
 
   private static String getTicketGrantingTicket(final String server, final String username, final String password, HttpClient client) throws UnsupportedEncodingException {
-    logger.debug("getTicketGrantingTicket: server:'{}', user:'{}'", new Object[]{server, username});
+    logger.debug("getTicketGrantingTicket: server:'{}', user:'{}'", server, username);
 
     HttpPost httpPost = new HttpPost(server);
     setRequiredHeaders(httpPost);
-    final List<NameValuePair> params = new ArrayList<NameValuePair>();
+    final List<NameValuePair> params = new ArrayList<>();
     params.add(new BasicNameValuePair("username", username));
     params.add(new BasicNameValuePair("password", password));
     httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
@@ -135,7 +136,7 @@ public final class CasClient {
       switch (response.getStatusLine().getStatusCode()) {
         case 201: {
           Header[] locationHeaders = response.getHeaders("Location");
-          logger.debug("locationHeader: " + locationHeaders);
+          logger.debug("locationHeader: " + Arrays.toString(locationHeaders));
           if (locationHeaders != null && locationHeaders.length == 1) {
             Header responseLocation = locationHeaders[0];
             String ticket = StringUtils.substringAfterLast(responseLocation.getValue(), "/");
