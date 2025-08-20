@@ -1,18 +1,18 @@
-import { ContentFormAction, ContentType, ContentTypeSingularEn, Exam, PublishState } from '../types'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { createAssignment, createNewVersionOfAssignment, fetchDataOrReload } from '../request'
 import { FieldPath, PathValue, useForm } from 'react-hook-form'
+import { useLocation } from 'react-router-dom'
+import { MultiValue } from 'react-select'
 import {
   assignmentDefaultValuesByExam,
   assignmentSchemaByExam,
   CommonAssignmentFormType
 } from '../components/forms/schemas/assignmentSchema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { MultiValue } from 'react-select'
 import { LudosSelectOption } from '../components/ludosSelect/LudosSelect'
-import { useFormSubmission } from './useFormSubmission'
+import { createAssignment, createNewVersionOfAssignment, fetchDataOrReload } from '../request'
+import { ContentFormAction, ContentType, ContentTypeSingularEn, Exam, PublishState } from '../types'
 import { useBlockFormCloseOrRefresh } from './useBlockFormCloseOrRefresh'
+import { useFormSubmission } from './useFormSubmission'
 
 export function useAssignmentForm<T extends CommonAssignmentFormType>(
   exam: Exam,

@@ -3,8 +3,8 @@ import { Exam } from 'web/src/types'
 import { checkListAfterFilteringWithProvidedContent } from '../../filterHelpers'
 import {
   loginTestGroup,
-  resetDatabase,
   Role,
+  resetDatabase,
   setMultiSelectDropdownOptions,
   setSingleSelectDropdownOption,
   setTeachingLanguage

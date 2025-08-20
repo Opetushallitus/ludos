@@ -1,13 +1,13 @@
-import { ContentType, ContentTypeSingularEn, Exam, FavoriteCardFolderDtoOut } from '../../../types'
 import { useParams } from 'react-router-dom'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { useFetch } from '../../../hooks/useFetch'
-import { InfoBox } from '../../InfoBox'
 import { findCurrentData } from '../../../assignmentFavoriteFolderHelpers'
-import { PageLoadingIndicator } from '../../PageLoadingIndicator'
-import { PageNotFound } from '../../LudosRoutes'
-import { AssignmentFavoriteTabPanel } from './AssignmentFavoriteTabPanel'
+import { useFetch } from '../../../hooks/useFetch'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ContentType, ContentTypeSingularEn, Exam, FavoriteCardFolderDtoOut } from '../../../types'
+import { InfoBox } from '../../InfoBox'
 import { ListTabs } from '../../ListTabs'
+import { PageNotFound } from '../../LudosRoutes'
+import { PageLoadingIndicator } from '../../PageLoadingIndicator'
+import { AssignmentFavoriteTabPanel } from './AssignmentFavoriteTabPanel'
 
 export const AssignmentFavorite = () => {
   const { t, lt } = useLudosTranslation()

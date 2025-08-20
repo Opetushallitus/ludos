@@ -1,5 +1,5 @@
-import { fetchDataOrReload } from '../request'
 import { QueryClient, useQuery } from '@tanstack/react-query'
+import { fetchDataOrReload } from '../request'
 
 export const queryClient = new QueryClient({
   defaultOptions: {

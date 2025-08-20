@@ -1,4 +1,5 @@
 import test, { expect } from '@playwright/test'
+import { Exam, ImageAlignOption, ImageSizeOption } from 'web/src/types'
 import {
   assertFailureNotification,
   assertSuccessNotification,
@@ -6,10 +7,9 @@ import {
   loginTestGroup,
   Role
 } from '../../helpers'
-import { Exam, ImageAlignOption, ImageSizeOption } from 'web/src/types'
+import { InstructionContentModel } from '../../models/InstructionContentModel'
 import { InstructionFormModel } from '../../models/InstructionFormModel'
 import { LayoutModel } from '../../models/LayoutModel'
-import { InstructionContentModel } from '../../models/InstructionContentModel'
 
 const imageAltText = 'Kuvassa on punainen laatikko'
 

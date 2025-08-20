@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
-import { Icon } from './Icon'
-import { Button } from './Button'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
-import { ExternalLink } from './ExternalLink'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { Button } from './Button'
+import { ExternalLink } from './ExternalLink'
+import { Icon } from './Icon'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -44,7 +44,8 @@ export const Notification = () => {
             'flex fixed top-[7.4rem] right-[10vw] p-5 gap-1 rounded text-white w-auto z-50 text-sm flex-nowrap',
             notification.type === NotificationEnum.success ? 'bg-green-primary' : 'bg-red-primary'
           )}
-          data-testid={`notification-${notification.type}`}>
+          data-testid={`notification-${notification.type}`}
+        >
           {notification.type === NotificationEnum.success ? (
             <Icon name="onnistunut" color="text-white" />
           ) : (

@@ -1,8 +1,8 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { BaseModel } from './BaseModel'
 import { AssignmentOut, ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
-import { AssignmentFormModel } from './AssignmentFormModel'
 import { assertSuccessNotification } from '../helpers'
+import { AssignmentFormModel } from './AssignmentFormModel'
+import { BaseModel } from './BaseModel'
 import { LayoutModel } from './LayoutModel'
 
 export class AssignmentFavoriteModel extends BaseModel {
@@ -41,7 +41,7 @@ export class AssignmentFavoriteModel extends BaseModel {
     const assignment = await this.form.assignmentApiCalls(this.page.context(), baseURL).create(assignmentIn)
 
     await this.page.goto(`/${this.exam.toLowerCase()}/${ContentTypePluralFi[ContentType.ASSIGNMENT]}`)
-    await this.page.getByTestId('card-list').locator('li').isVisible()
+    await this.page.getByTestId('card-list').locator('li').first().isVisible()
 
     const favoriteCountBefore = await this.favoritesCount()
 
@@ -134,7 +134,7 @@ export class AssignmentFavoriteModel extends BaseModel {
       .getByTestId(isContentPage ? 'assignment-metadata' : `assignment-list-item-${assignment.id}`)
       .getByTestId('suosikki')
 
-    await expect(favoriteButtonLocator.locator('span')).toHaveText('favorite.lisaa-suosikiksi')
+    await expect(favoriteButtonLocator.locator('>span')).toHaveText('favorite.lisaa-suosikiksi')
     await favoriteButtonLocator.click()
     await this.addToFavoritesBtn.click()
     await assertSuccessNotification(this.page, 'assignment.notification.suosikki-lisatty')

@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
+import { Language } from 'web/src/types'
 import { login, Role, setTeachingLanguage } from '../helpers'
 import { LayoutModel } from '../models/LayoutModel'
-import { Language } from 'web/src/types'
 
 async function assertUiLanguage(page: Page, language: Language) {
   await expect(page.getByTestId('nav-link-etusivu')).toHaveText(language === Language.FI ? 'Etusivu' : 'Hem')

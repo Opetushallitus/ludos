@@ -1,5 +1,5 @@
-import { Icon } from '../Icon'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Icon } from '../Icon'
 
 export const ModalHeader = ({ modalTitle, onClick }: { modalTitle: string; onClick?: () => void }) => {
   const { t } = useLudosTranslation()

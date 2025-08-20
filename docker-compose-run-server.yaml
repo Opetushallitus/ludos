@@ -1,15 +1,20 @@
-version: "3"
+version: '3'
 services:
   server:
     image: amazoncorretto:17-alpine3.17
     working_dir: /ludos
+    build: .
     command: server/gradlew bootRun -p server bootRun
     volumes:
       - ./web:/ludos/web
       - ./server:/ludos/server
     environment:
       - SPRING_PROFILES_ACTIVE=local
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos 
+      - DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos
     ports:
-      - "8080:8080"
+      - '8080:8080'
+    develop:
+      watch:
+        - action: restart
+          path: ./server/src
+          target: ./ludos/server/src

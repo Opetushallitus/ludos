@@ -1,26 +1,5 @@
 import { expect, Locator, test } from '@playwright/test'
 import {
-  assertInputValues,
-  assertSuccessNotification,
-  loginTestGroup,
-  Role,
-  setMultiSelectDropdownOptions,
-  setSingleSelectDropdownOption,
-  setTeachingLanguage
-} from '../../helpers'
-import {
-  assertAssignmentContentPage,
-  contentIdFromContentPage,
-  createARuotsiKertominenFormData,
-  createASuomiKertominenFormData,
-  createASaksaKertominenFormData,
-  createFormData,
-  fillAssignmentForm,
-  fillAssignmentType,
-  fillLdAssignmentForm
-} from '../../examHelpers/assignmentHelpers'
-import { ContentType, Exam, Language, oppimaaraId } from 'web/src/types'
-import {
   AnyAssignmentFormType,
   isLdAssignmentFormType,
   isPuhviAssignmentFormType,
@@ -29,6 +8,27 @@ import {
   PuhviAssignmentFormType,
   SukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
+import { ContentType, Exam, Language, oppimaaraId } from 'web/src/types'
+import {
+  assertAssignmentContentPage,
+  contentIdFromContentPage,
+  createARuotsiKertominenFormData,
+  createASaksaKertominenFormData,
+  createASuomiKertominenFormData,
+  createFormData,
+  fillAssignmentForm,
+  fillAssignmentType,
+  fillLdAssignmentForm
+} from '../../examHelpers/assignmentHelpers'
+import {
+  assertInputValues,
+  assertSuccessNotification,
+  loginTestGroup,
+  Role,
+  setMultiSelectDropdownOptions,
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
+} from '../../helpers'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 
 async function navigateToAssignmentUpdateFormAndAssertDataLoaded(

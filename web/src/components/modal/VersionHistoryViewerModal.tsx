@@ -1,13 +1,13 @@
-import { useModal } from './useModal'
-import styles from './modal.module.css'
-import { ModalHeader } from './ModalHeader'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { ContentBaseOut, ContentType } from '../../types'
 import { toLocaleDate } from '../../utils/formatUtils'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
-import { contentPagePath } from '../LudosRoutes'
 import { InternalLink } from '../InternalLink'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { contentPagePath } from '../LudosRoutes'
+import { ModalHeader } from './ModalHeader'
+import styles from './modal.module.css'
+import { useModal } from './useModal'
 
 type ModalProps = {
   open: boolean
@@ -42,7 +42,8 @@ export const VersionHistoryViewerModal = ({
       onCancel={onCancel}
       onAnimationEnd={onAnimEnd}
       aria-modal="true"
-      data-testid="version-history-modal">
+      data-testid="version-history-modal"
+    >
       <div className={styles['modal__container']}>
         <ModalHeader modalTitle={t('version-control.muokkaushistoria')} onClick={onClose} />
 
@@ -72,7 +73,8 @@ export const VersionHistoryViewerModal = ({
                         <InternalLink
                           to={contentPagePath(item.exam, contentType, item.id, item.version)}
                           onClick={() => onClose()}
-                          data-testid="show">
+                          data-testid="show"
+                        >
                           <span className="row my-auto gap-1">
                             <Icon name="katsele" color="text-green-primary" />
                             <p className="text-green-primary">{t('version-control.nayta')}</p>
@@ -82,7 +84,8 @@ export const VersionHistoryViewerModal = ({
                           variant="buttonGhost"
                           customClass="p-0"
                           onClick={() => update(item)}
-                          data-testid="restore">
+                          data-testid="restore"
+                        >
                           <span className="row my-auto gap-1">
                             <Icon name="palauta" color="text-green-primary" />
                             <p className="text-green-primary">{t('version-control.palauta')}</p>

@@ -10,10 +10,10 @@ import Select, {
 } from 'react-select'
 import { Icon } from '../Icon'
 import './ludosSelect.css'
-import { Button } from '../Button'
 import { useState } from 'react'
-import { FormError } from '../forms/formCommon/FormErrors'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Button } from '../Button'
+import { FormError } from '../forms/formCommon/FormErrors'
 
 export type LudosSelectOption = {
   value: string
@@ -78,7 +78,8 @@ export function LudosSelect<
           <Button
             variant="buttonPrimary"
             onClick={() => setIsOpen(!isOpen)}
-            data-testid={`${props.selectProps.name}-multi-select-ready-button`}>
+            data-testid={`${props.selectProps.name}-multi-select-ready-button`}
+          >
             {t('button.valmis')}
           </Button>
         </div>

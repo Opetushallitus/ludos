@@ -1,17 +1,17 @@
 import { useCallback } from 'react'
+import { SingleValue } from 'react-select'
 import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
-import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
 import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
-import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { AssignmentFilterOptions, Exam, Oppimaara, oppimaaraFromId } from '../../../../types'
+import { Button } from '../../../Button'
 import {
   currentKoodistoSelectOption,
   currentOppimaaraSelectOption,
   koodistoSelectOptions,
   oppimaaraSelectOptions
 } from '../../../ludosSelect/helpers'
-import { SingleValue } from 'react-select'
-import { Button } from '../../../Button'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 
 type AssignmentFiltersProps = {
   exam: Exam

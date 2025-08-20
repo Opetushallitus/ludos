@@ -1,8 +1,8 @@
 import { expect, Page } from '@playwright/test'
 import { ContentType, Exam, Language } from 'web/src/types'
-import { ContentListModel } from './ContentListModel'
-import { setSingleSelectDropdownOption } from '../helpers'
 import { filterTestAssignmentName } from '../examHelpers/assignmentHelpers'
+import { setSingleSelectDropdownOption } from '../helpers'
+import { ContentListModel } from './ContentListModel'
 
 export class AssignmentContentListModel extends ContentListModel {
   constructor(

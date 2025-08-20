@@ -1,9 +1,9 @@
-import { Spinner } from '../../../Spinner'
-import { AttachmentData, ContentType, Exam, FileDetails, Language } from '../../../../types'
-import { AttachmentDetails } from './AttachmentDetails'
-import { AttachmentDetailsList } from './AttachmentDetailsList'
 import { CERTIFICATE_URL, INSTRUCTION_URL } from '../../../../constants'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { AttachmentData, ContentType, Exam, FileDetails, Language } from '../../../../types'
+import { Spinner } from '../../../Spinner'
+import { AttachmentDetails } from './AttachmentDetails'
+import { AttachmentDetailsList } from './AttachmentDetailsList'
 
 interface AttachmentFileDetailViewProps {
   exam: Exam

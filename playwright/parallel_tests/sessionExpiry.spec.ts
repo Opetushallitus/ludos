@@ -1,11 +1,11 @@
 import { expect, Page, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../helpers'
 import { ContentTypePluralFi, ContentTypeSingularEn, Exam } from 'web/src/types'
 import { createFormData, fillAssignmentForm } from '../examHelpers/assignmentHelpers'
 import { fillCertificateForm } from '../examHelpers/certificateHelpers'
-import { InstructionFormModel } from '../models/InstructionFormModel'
-import { CertificateFormModel } from '../models/CertificateFormModel'
+import { loginTestGroup, Role } from '../helpers'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
+import { CertificateFormModel } from '../models/CertificateFormModel'
+import { InstructionFormModel } from '../models/InstructionFormModel'
 
 async function assertSessionExpiryFormErrorMessage(page: Page) {
   const formErrorMessageLocator = page.getByTestId('session-expired-error-message')

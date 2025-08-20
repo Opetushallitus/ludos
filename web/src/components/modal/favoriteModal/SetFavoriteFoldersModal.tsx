@@ -1,11 +1,11 @@
+import { twMerge } from 'tailwind-merge'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { AssignmentCardOut, FavoriteIdsDtoOut } from '../../../types'
+import { ModalHeader } from '../ModalHeader'
 import styles from '../modal.module.css'
 import { useModal } from '../useModal'
-import { ModalHeader } from '../ModalHeader'
-import { AssignmentCardOut, FavoriteIdsDtoOut } from '../../../types'
-import { FavoriteToggleModalFormType } from './favoriteToggleModalFormSchema'
 import { FavoriteForm } from './FavoriteForm'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { twMerge } from 'tailwind-merge'
+import { FavoriteToggleModalFormType } from './favoriteToggleModalFormSchema'
 
 type SetFavoriteFoldersModalProps = {
   isFavorite: boolean
@@ -37,7 +37,8 @@ export const SetFavoriteFoldersModal = ({
       onCancel={onCancel}
       onClick={onClick}
       onAnimationEnd={onAnimEnd}
-      aria-modal="true">
+      aria-modal="true"
+    >
       <div className={twMerge(styles['modal__container'], 'w-[30vw]')}>
         <ModalHeader
           modalTitle={isFavorite ? t('favorite.muokkaa-suosikkeja') : t('favorite.lisaa-suosikiksi')}

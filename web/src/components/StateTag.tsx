@@ -1,6 +1,6 @@
-import { PublishState } from '../types'
 import { twMerge } from 'tailwind-merge'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { PublishState } from '../types'
 
 type TagAttributes = {
   localizationKey: string

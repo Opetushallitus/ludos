@@ -65,7 +65,7 @@ export default defineConfig({
       testDir: 'parallel_tests',
       use: {
         ...devices['Desktop Chrome'],
-        channel: 'chromium',
+        channel: 'chromium'
       },
       dependencies: ['setup']
     },

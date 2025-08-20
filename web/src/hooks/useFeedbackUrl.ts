@@ -1,7 +1,7 @@
 import { useContext } from 'react'
-import { LudosContext } from '../contexts/LudosContext'
-import { FEEDBACK_BASE_URL } from '../constants'
 import { useLocation } from 'react-router-dom'
+import { FEEDBACK_BASE_URL } from '../constants'
+import { LudosContext } from '../contexts/LudosContext'
 
 export const useFeedbackUrl = (errorMessage?: string) => {
   const { uiLanguage } = useContext(LudosContext)

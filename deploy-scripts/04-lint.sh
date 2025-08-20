@@ -5,10 +5,10 @@ set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-functions.sh"
 
 # shellcheck source=./deploy-functions.sh
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/deploy-functions.sh"
+source "$repo/deploy-scripts/deploy-functions.sh"
 
-function main {
-    cd "$repo"
+function lint {
+    pushd "$repo"
     use_correct_node_version
 
     start_gh_actions_group "Lint web"
@@ -23,7 +23,12 @@ function main {
     npm_ci_if_package_lock_has_changed
     npm run lint
     popd
-    end_gh_actions_group
-}
 
-main "$@"
+    pushd infra
+    npm_ci_if_package_lock_has_changed
+    npm run lint
+    popd
+
+    end_gh_actions_group
+    popd
+}

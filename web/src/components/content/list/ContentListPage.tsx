@@ -1,11 +1,11 @@
 import { useParams } from 'react-router-dom'
-import { ContentType, ContentTypeByContentTypePluralFi, ContentTypePluralFi, Exam } from '../../../types'
-import { AssignmentList } from './assignment/AssignmentList'
 import { useFilterValues } from '../../../hooks/useFilterValues'
-import { InstructionList } from './instruction/InstructionList'
-import { CertificateList } from './certificate/CertificateList'
-import { ListTabs } from '../../ListTabs'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ContentType, ContentTypeByContentTypePluralFi, ContentTypePluralFi, Exam } from '../../../types'
+import { ListTabs } from '../../ListTabs'
+import { AssignmentList } from './assignment/AssignmentList'
+import { CertificateList } from './certificate/CertificateList'
+import { InstructionList } from './instruction/InstructionList'
 
 type ContentListPageProps = {
   exam: Exam

@@ -1,5 +1,5 @@
-import { FavoriteCardFolderDtoOut, FavoriteIdsDtoOut } from './types'
 import { FolderList } from './components/modal/AssignmentFavoriteMoveFolderModal'
+import { FavoriteCardFolderDtoOut, FavoriteIdsDtoOut } from './types'
 
 export function findCurrentData(
   currentFolderId?: string,

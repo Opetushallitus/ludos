@@ -1,9 +1,9 @@
 import { useContext } from 'react'
+import { LudosContext } from '../../contexts/LudosContext'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useUserDetails } from '../../hooks/useUserDetails'
-import { LudosContext } from '../../contexts/LudosContext'
-import { LudosSelect } from '../ludosSelect/LudosSelect'
 import { currentKoodistoSelectOption, koodistoSelectOptions } from '../ludosSelect/helpers'
+import { LudosSelect } from '../ludosSelect/LudosSelect'
 
 export const HeaderUiLanguageDropdown = () => {
   const { uiLanguage, setUiLanguage } = useContext(LudosContext)

@@ -1,7 +1,6 @@
 version: '3'
 name: oph-ludos
 services:
-
   ludos:
     extends:
       service: ludos-server
@@ -10,22 +9,29 @@ services:
       - DB_URL
       - LUDOS_PALVELUKAYTTAJA_USERNAME
       - LUDOS_PALVELUKAYTTAJA_PASSWORD
-      - GITHUB_TOKEN
     container_name: ludos-server
 
   ludos-server:
     build:
-      secrets:
-        - github_token
+      context: .
+      dockerfile: Dockerfile
     image: ${LUDOS_TAG}
     pull_policy: missing
     ports:
       - '127.0.0.1:8080:8080'
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:8080/api/health-check || exit 1" ]
+      test: ['CMD-SHELL', 'curl http://localhost:8080/api/health-check || exit 1']
     depends_on:
       ludos-db:
         condition: service_healthy
+
+  ludos-server-stage:
+    build:
+      target: server-build
+      context: .
+      dockerfile: Dockerfile
+    image: server-stage
+    pull_policy: missing
 
   ludos-db:
     image: 'postgres:15.2'
@@ -41,9 +47,3 @@ services:
       retries: 5
     ports:
       - '127.0.0.1:5432:5432'
-
-secrets:
-  # For downloading packages from Github Packages Maven registry
-  # https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
-  github_token:
-    environment: GITHUB_TOKEN

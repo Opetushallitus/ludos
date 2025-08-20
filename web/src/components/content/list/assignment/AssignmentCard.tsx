@@ -1,4 +1,9 @@
-import { Icon } from '../../../Icon'
+import { useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { useKoodisto } from '../../../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { useSetFavoriteFolders } from '../../../../hooks/useSetFavoriteFolders'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
 import {
   AssignmentCardOut,
   ContentType,
@@ -9,19 +14,14 @@ import {
   isSukoAssignment,
   Language
 } from '../../../../types'
-import { StateTag } from '../../../StateTag'
-import { InternalLink } from '../../../InternalLink'
 import { toLocaleDate } from '../../../../utils/formatUtils'
-import { useKoodisto } from '../../../../hooks/useKoodisto'
-import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { useState } from 'react'
-import { useSetFavoriteFolders } from '../../../../hooks/useSetFavoriteFolders'
+import { Icon } from '../../../Icon'
+import { InternalLink } from '../../../InternalLink'
 import { contentPagePath, editingFormPath, suosikitKey } from '../../../LudosRoutes'
-import { AssignmentCardContentActions } from './AssignmentCardContentActions'
-import { SetFavoriteFoldersModal } from '../../../modal/favoriteModal/SetFavoriteFoldersModal'
-import { useLocation } from 'react-router-dom'
 import { FavoriteToggleModalFormType } from '../../../modal/favoriteModal/favoriteToggleModalFormSchema'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { SetFavoriteFoldersModal } from '../../../modal/favoriteModal/SetFavoriteFoldersModal'
+import { StateTag } from '../../../StateTag'
+import { AssignmentCardContentActions } from './AssignmentCardContentActions'
 
 type AssignmentCardProps = {
   teachingLanguage: Language
@@ -66,13 +66,15 @@ export const AssignmentCard = ({
     <>
       <li
         className="my-2 rounded-lg border-2 border-gray-light"
-        data-testid={`assignment-list-item-${assignmentCard.id.toString()}`}>
+        data-testid={`assignment-list-item-${assignmentCard.id.toString()}`}
+      >
         <div className="flex w-full flex-wrap items-center gap-3 pl-2 pt-2">
           <InternalLink
             className="text-lg font-semibold text-green-primary"
             to={contentPagePath(assignmentCard.exam, ContentType.ASSIGNMENT, assignmentCard.id)}
             state={{ returnLocation }}
-            data-testid="card-title">
+            data-testid="card-title"
+          >
             {(teachingLanguage === Language.FI ? assignmentCard.nameFi : assignmentCard.nameSv) || t('form.nimeton')}
           </InternalLink>
           {isYllapitaja && (
@@ -81,7 +83,8 @@ export const AssignmentCard = ({
               <InternalLink
                 to={editingFormPath(assignmentCard)}
                 state={{ returnLocation }}
-                data-testid={`assignment-${assignmentCard.id.toString()}-edit`}>
+                data-testid={`assignment-${assignmentCard.id.toString()}-edit`}
+              >
                 <Icon name="muokkaa" color="text-green-primary" />
               </InternalLink>
             </>

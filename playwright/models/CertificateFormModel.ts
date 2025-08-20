@@ -1,10 +1,10 @@
 import { Page } from '@playwright/test'
-import { FormModel } from './FormModel'
-import { CertificateOut, ContentType, Exam, PublishState } from 'web/src/types'
-import { fetchWithSession, FormAction } from '../helpers'
-import { ContentListModel } from './ContentListModel'
 import { AnyCertificateFormType, AttachmentFormType } from 'web/src/components/forms/schemas/certificateSchema'
+import { CertificateOut, ContentType, Exam, PublishState } from 'web/src/types'
 import { getFileBlob } from '../examHelpers/instructionHelpers'
+import { FormAction, fetchWithSession } from '../helpers'
+import { ContentListModel } from './ContentListModel'
+import { FormModel } from './FormModel'
 
 export class CertificateFormModel extends FormModel {
   constructor(
@@ -106,7 +106,7 @@ export class CertificateFormModel extends FormModel {
   ): Promise<CertificateOut> {
     const formData = this.prepareCertificateFormData(certificateIn, attachmentFixtureFilename)
     const response = await fetchWithSession(this.page.context(), `${baseURL}/api/certificate`, 'POST', formData)
-    return await response.json() as CertificateOut
+    return (await response.json()) as CertificateOut
   }
 
   async updateCertificateApiCall(

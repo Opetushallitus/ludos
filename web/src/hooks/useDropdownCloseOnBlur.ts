@@ -15,7 +15,7 @@ export function useDropdownCloseOnBlur<T>(desiredState: T, setExpansion: (state:
     return () => {
       document.removeEventListener('click', handleOutsideClick)
     }
-  }, [desiredState, dropdownRef, setExpansion])
+  }, [desiredState, setExpansion])
 
   return dropdownRef
 }

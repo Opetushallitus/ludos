@@ -1,7 +1,7 @@
 import { expect, Page, test } from '@playwright/test'
 import { Exam } from 'web/src/types'
 import { checkListAfterFilteringWithProvidedContent } from '../../filterHelpers'
-import { loginTestGroup, resetDatabase, Role } from '../../helpers'
+import { loginTestGroup, Role, resetDatabase } from '../../helpers'
 import { CertificateContentListModel } from '../../models/CertificateContentListModel'
 
 const bodyTextByExam = {

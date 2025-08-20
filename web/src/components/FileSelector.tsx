@@ -1,7 +1,7 @@
-import { Button } from './Button'
 import { ChangeEvent, HTMLAttributes, useRef, useState } from 'react'
-import { Spinner } from './Spinner'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
+import { Button } from './Button'
+import { Spinner } from './Spinner'
 
 const maxSizeInMiB = 5
 const maxSizeInBytes = maxSizeInMiB * 1024 * 1024

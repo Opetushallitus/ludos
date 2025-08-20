@@ -1,15 +1,15 @@
-import { TextInput } from '../../TextInput'
-import { FormError } from './FormErrors'
-import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
-import { LanguageTabs } from '../../LanguageTabs'
 import { useContext, useEffect, useState } from 'react'
-import { TipTap } from './editor/TipTap'
+import { Controller, useFieldArray, useFormContext } from 'react-hook-form'
+import { LudosContext } from '../../../contexts/LudosContext'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { Exam, Language } from '../../../types'
+import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
 import { Button } from '../../Button'
 import { Icon } from '../../Icon'
-import { Exam, Language } from '../../../types'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { LudosContext } from '../../../contexts/LudosContext'
-import { isKertomisTehtavaAndSpecificOppimaara } from '../../../utils/assignmentUtils'
+import { LanguageTabs } from '../../LanguageTabs'
+import { TextInput } from '../../TextInput'
+import { TipTap } from './editor/TipTap'
+import { FormError } from './FormErrors'
 
 interface Field {
   id: string
@@ -77,7 +77,8 @@ const ArrayContentField = ({ fieldName, overridingLabel }: { fieldName: string; 
                 variant="buttonGhost"
                 customClass="p-1"
                 onClick={() => removeField(index)}
-                data-testid={`${fieldName}-delete-content-field-${index}`}>
+                data-testid={`${fieldName}-delete-content-field-${index}`}
+              >
                 <span className="row my-auto ml-3 gap-1">
                   <Icon name="poista" color="text-green-primary" />
                   <p className="text-green-primary">{t('form.poista-kentta')}</p>
@@ -93,7 +94,8 @@ const ArrayContentField = ({ fieldName, overridingLabel }: { fieldName: string; 
           variant="buttonGhost"
           customClass="p-1 mt-1"
           onClick={addNewField}
-          data-testid={`${fieldName}-add-content-field`}>
+          data-testid={`${fieldName}-add-content-field`}
+        >
           <span className="row my-auto gap-1">
             <Icon name="lisää" color="text-green-primary" />
             <p className="text-green-primary">{t('form.lisaa-kentta')}</p>
@@ -220,7 +222,8 @@ const FinnishTab = (props: TabState) => {
         register={register}
         deps={['nameRequired']}
         error={nameFiError || assignmentNameError}
-        required>
+        required
+      >
         {t('form.tehtavannimi')}
       </TextInput>
 
@@ -259,7 +262,8 @@ const SwedishTab = (props: TabState) => {
         register={register}
         deps={['nameRequired']}
         error={nameSvError || assignmentNameError}
-        required>
+        required
+      >
         {t('form.tehtavannimi')}
       </TextInput>
 

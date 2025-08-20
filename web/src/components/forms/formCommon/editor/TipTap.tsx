@@ -1,16 +1,16 @@
-import { EditorContent, mergeAttributes, useEditor } from '@tiptap/react'
+import Blockquote from '@tiptap/extension-blockquote'
+import Bold from '@tiptap/extension-bold'
+import BulletList from '@tiptap/extension-bullet-list'
 import Document from '@tiptap/extension-document'
+import Heading from '@tiptap/extension-heading'
+import History from '@tiptap/extension-history'
+import Italic from '@tiptap/extension-italic'
+import Link from '@tiptap/extension-link'
+import ListItem from '@tiptap/extension-list-item'
+import OrderedList from '@tiptap/extension-ordered-list'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
-import Heading from '@tiptap/extension-heading'
-import Link from '@tiptap/extension-link'
-import BulletList from '@tiptap/extension-bullet-list'
-import Blockquote from '@tiptap/extension-blockquote'
-import OrderedList from '@tiptap/extension-ordered-list'
-import ListItem from '@tiptap/extension-list-item'
-import Bold from '@tiptap/extension-bold'
-import Italic from '@tiptap/extension-italic'
-import History from '@tiptap/extension-history'
+import { EditorContent, mergeAttributes, useEditor } from '@tiptap/react'
 import LudosImage from './LudosImage'
 import { TipTapToolBar } from './TipTapToolBar'
 import './tiptapStyles.css'
@@ -114,7 +114,8 @@ export const TipTap = ({
           <legend className="font-semibold">{label}</legend>
           <div
             className={twMerge('mt-2 border border-gray-border max-w-[80vw]', fieldError && 'border-red-primary')}
-            data-testid={dataTestId}>
+            data-testid={dataTestId}
+          >
             <TipTapToolBar editor={editor} />
             <EditorContent editor={editor} />
           </div>

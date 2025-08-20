@@ -1,11 +1,11 @@
-import { ContentType, ContentTypePluralFi, Exam } from '../types'
+import { ReactNode } from 'react'
+import { NavLink } from 'react-router-dom'
+import { twMerge } from 'tailwind-merge'
+import { IS_MOBILE_QUERY } from '../constants'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import { IS_MOBILE_QUERY } from '../constants'
-import { twMerge } from 'tailwind-merge'
-import { NavLink } from 'react-router-dom'
+import { ContentType, ContentTypePluralFi, Exam } from '../types'
 import { contentListPath, favoritesPagePath } from './LudosRoutes'
-import { ReactNode } from 'react'
 
 type TabsProps = {
   exam?: Exam
@@ -29,7 +29,8 @@ export const ListTabs = ({ exam }: TabsProps) => {
               <NavLink
                 to={contentListPath(exam, contentType)}
                 className={linkClass}
-                data-testid={`tab-${ContentTypePluralFi[contentType]}`}>
+                data-testid={`tab-${ContentTypePluralFi[contentType]}`}
+              >
                 {lt.tabTextByContentType[contentType]}
               </NavLink>
             </LinkWrapper>

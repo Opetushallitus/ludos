@@ -1,17 +1,17 @@
 import { FormProvider } from 'react-hook-form'
-import { SukoCertificateFormType } from '../schemas/certificateSchema'
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { useNavigate } from 'react-router-dom'
+import { useCertificateAttachmentHandler } from '../../../hooks/useCertificateAttachmentHandler'
+import { useCertificateForm } from '../../../hooks/useCertificateForm'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { ContentFormAction, ContentType, Exam, Language, PublishState } from '../../../types'
 import { BlockNavigation } from '../../BlockNavigation'
-import { FormHeader } from '../formCommon/FormHeader'
-import { TextInput } from '../../TextInput'
+import { DeleteModal } from '../../modal/DeleteModal'
 import { TextAreaInput } from '../../TextAreaInput'
+import { TextInput } from '../../TextInput'
 import { AttachmentSelector } from '../formCommon/attachment/AttachmentSelector'
 import { FormButtonRow } from '../formCommon/FormButtonRow'
-import { DeleteModal } from '../../modal/DeleteModal'
-import { useCertificateForm } from '../../../hooks/useCertificateForm'
-import { useCertificateAttachmentHandler } from '../../../hooks/useCertificateAttachmentHandler'
+import { FormHeader } from '../formCommon/FormHeader'
+import { SukoCertificateFormType } from '../schemas/certificateSchema'
 
 export const SukoCertificateForm = ({
   action,
@@ -106,7 +106,8 @@ export const SukoCertificateForm = ({
         modalTitle={lt.contentDeleteModalTitle.CERTIFICATE}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitCertificate(PublishState.Deleted, newAttachmentFi, null)}
-        onClose={() => setIsDeleteModalOpen(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
         <div className="h-[15vh] p-6">
           <p>{lt.contentDeleteModalText.CERTIFICATE(watchNameFi)}</p>
         </div>

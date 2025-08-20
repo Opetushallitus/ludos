@@ -1,14 +1,14 @@
 import * as cdk from 'aws-cdk-lib'
 import { aws_cloudwatch_actions, Duration, Tags } from 'aws-cdk-lib'
-import * as rds from 'aws-cdk-lib/aws-rds'
-import { DatabaseInstanceProps } from 'aws-cdk-lib/aws-rds'
-import * as ec2 from 'aws-cdk-lib/aws-ec2'
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
-import { Construct } from 'constructs'
-import { CommonStackProps } from '../types'
 import { BackupPlan, BackupResource } from 'aws-cdk-lib/aws-backup'
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch'
+import * as ec2 from 'aws-cdk-lib/aws-ec2'
+import * as rds from 'aws-cdk-lib/aws-rds'
+import { DatabaseInstanceProps } from 'aws-cdk-lib/aws-rds'
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import * as sns from 'aws-cdk-lib/aws-sns'
+import { Construct } from 'constructs'
+import { CommonStackProps } from '../types'
 
 const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
 

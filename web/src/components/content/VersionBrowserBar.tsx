@@ -1,10 +1,10 @@
-import { ContentBaseOut, ContentTypeByContentTypePluralFi, ContentTypePluralFi } from '../../types'
 import { useParams } from 'react-router-dom'
-import { contentPagePath, pageNotFoundPath } from '../LudosRoutes'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { ContentBaseOut, ContentTypeByContentTypePluralFi, ContentTypePluralFi } from '../../types'
 import { Button } from '../Button'
 import { Icon } from '../Icon'
 import { InternalLink } from '../InternalLink'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { contentPagePath, pageNotFoundPath } from '../LudosRoutes'
 
 type VersionBrowserBarProps = {
   data: ContentBaseOut
@@ -52,7 +52,8 @@ export const VersionBrowserBar = ({
         <InternalLink
           to={getPathForNavigate(currentVersion - 1)}
           disabled={!hasPreviousVersion}
-          data-testid="previous-version">
+          data-testid="previous-version"
+        >
           <Icon name="chevronLeft" color="text-green-primary" disabled={!hasPreviousVersion} />
         </InternalLink>
         {currentVersion}
@@ -65,7 +66,8 @@ export const VersionBrowserBar = ({
         customClass="p-0"
         onClick={onPickVersionClick}
         disabled={!hasNextVersion}
-        data-testid="restore-version">
+        data-testid="restore-version"
+      >
         <span className="row my-auto gap-1">
           <Icon name="palauta" color="text-green-primary" />
           <p className="text-green-primary">{t('version-control.palauta-tama-versio')}</p>
@@ -75,7 +77,8 @@ export const VersionBrowserBar = ({
         variant="buttonGhost"
         customClass="p-0"
         onClick={openVersionBrowserClick}
-        data-testid="open-version-browser">
+        data-testid="open-version-browser"
+      >
         <span className="row my-auto gap-1">
           <Icon name="versiohistoria" color="text-green-primary" />
           <p className="text-green-primary">{t('version-control.muokkaushistoria')}</p>
@@ -86,7 +89,8 @@ export const VersionBrowserBar = ({
           variant="buttonGhost"
           customClass="p-0"
           onClick={stopVersionBrowsing}
-          data-testid="stop-version-browsing">
+          data-testid="stop-version-browsing"
+        >
           <span className="row my-auto gap-1">
             <Icon name="sulje" color="text-green-primary" />
           </span>

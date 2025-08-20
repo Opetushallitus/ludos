@@ -1,12 +1,12 @@
-import React, { forwardRef, ForwardRefRenderFunction, useEffect, useImperativeHandle, useState } from 'react'
-import styles from './modal.module.css'
-import { Button } from '../Button'
-import { useModal } from './useModal'
-import { ModalHeader } from './ModalHeader'
-import { ExternalLink } from '../ExternalLink'
-import { TIETOSUOJA_SELOSTE_URL } from '../../constants'
+import React, { ForwardRefRenderFunction, forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie'
+import { TIETOSUOJA_SELOSTE_URL } from '../../constants'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Button } from '../Button'
+import { ExternalLink } from '../ExternalLink'
+import { ModalHeader } from './ModalHeader'
+import styles from './modal.module.css'
+import { useModal } from './useModal'
 
 const CONSENT_MODEL_SHOWN_COOKIE_NAME = 'ludosConsentModalShown'
 const MATOMO_CONSENT_COOKIE_NAME = 'mtm_consent'
@@ -112,7 +112,8 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
       }}
       onAnimationEnd={onAnimEnd}
       aria-modal="true"
-      data-testid="consent-modal">
+      data-testid="consent-modal"
+    >
       <div className={styles['modal__container']}>
         <ModalHeader modalTitle={t('consent.title')} />
 
@@ -148,7 +149,8 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
           <Button
             variant="buttonSecondary"
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            data-testid="settings-button">
+            data-testid="settings-button"
+          >
             {isSettingsOpen ? t('consent.modal.hide-settings') : t('consent.modal.show-settings')}
           </Button>
           {isSettingsOpen && (

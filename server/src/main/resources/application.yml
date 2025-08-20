@@ -26,6 +26,8 @@ logging:
 server:
   compression:
     enabled: true
+  tomcat:
+    max-part-count: 50
   servlet:
     session:
       cookie:

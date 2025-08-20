@@ -1,3 +1,7 @@
+import { useContext } from 'react'
+import { LudosContext } from '../../contexts/LudosContext'
+import { useKoodisto } from '../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import {
   AttachmentDtoOut,
   ContentBaseOut,
@@ -12,10 +16,6 @@ import {
   SukoCertificateDtoOut
 } from '../../types'
 import { AttachmentFileDetailView } from '../forms/formCommon/attachment/AttachmentFileDetailView'
-import { useKoodisto } from '../../hooks/useKoodisto'
-import { LudosContext } from '../../contexts/LudosContext'
-import { useContext } from 'react'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type CertificateContentProps = {
   certificate: ContentBaseOut

@@ -1,11 +1,11 @@
 import { ReactNode } from 'react'
-import { Header } from '../header/Header'
-import { Footer } from '../Footer'
-import { Notification } from '../Notification'
-import { useMediaQuery } from '../../hooks/useMediaQuery'
-import { IS_MOBILE_QUERY } from '../../constants'
 import { twMerge } from 'tailwind-merge'
+import { IS_MOBILE_QUERY } from '../../constants'
 import { useMatomoTracking } from '../../hooks/useMatomoTracking'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { Footer } from '../Footer'
+import { Header } from '../header/Header'
+import { Notification } from '../Notification'
 
 interface TLayout {
   header?: ReactNode

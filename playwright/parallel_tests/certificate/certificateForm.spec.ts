@@ -1,4 +1,7 @@
 import { BrowserContext, expect, test } from '@playwright/test'
+import { isLdCertificateValues, isPuhviCertificateValues } from 'web/src/components/forms/schemas/certificateSchema'
+import { ContentType, Exam } from 'web/src/types'
+import { assertContentPage, fillCertificateForm } from '../../examHelpers/certificateHelpers'
 import {
   assertSuccessNotification,
   FormAction,
@@ -7,10 +10,7 @@ import {
   selectAttachmentFile,
   setSingleSelectDropdownOption
 } from '../../helpers'
-import { ContentType, Exam } from 'web/src/types'
-import { assertContentPage, fillCertificateForm } from '../../examHelpers/certificateHelpers'
 import { CertificateFormModel } from '../../models/CertificateFormModel'
-import { isLdCertificateValues, isPuhviCertificateValues } from 'web/src/components/forms/schemas/certificateSchema'
 
 async function createCertificate(
   form: CertificateFormModel,

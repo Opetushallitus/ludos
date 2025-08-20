@@ -1,50 +1,47 @@
-import { Icon } from '../Icon'
+import { ReactElement } from 'react'
+import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { ContentBaseOut, ContentType, Exam, Language } from '../../types'
 import { getContentName, isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
 import { toLocaleDate } from '../../utils/formatUtils'
-import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { TipTap } from '../forms/formCommon/editor/TipTap'
-import { InternalLink } from '../InternalLink'
 import { Button } from '../Button'
+import { TipTap } from '../forms/formCommon/editor/TipTap'
+import { Icon } from '../Icon'
+import { InternalLink } from '../InternalLink'
 import { tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
-import { ReactElement } from 'react'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut
+  lt: ReturnType<typeof useLudosTranslation>['lt']
 }
 
 export function ContentHeader({ data, teachingLanguage }: ContentHeaderProps): ReactElement {
+  const { lt } = useLudosTranslation()
+
   if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
   }
 
   if (data.contentType === ContentType.INSTRUCTION) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
   }
 
   if (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
   }
 
   if (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage })
+    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
   }
 
-  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage })
+  return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, lt })
 }
 
-export function ContentHeaderWithLanguageSelector({ data, teachingLanguage }: ContentHeaderProps) {
-  const { lt } = useLudosTranslation()
-
+export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt }: ContentHeaderProps) {
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
-      <AssignmentTitle
-        data={data}
-        teachingLanguage={teachingLanguage}
-        createdAt={data.createdAt}
-      />
+      <AssignmentTitle data={data} teachingLanguage={teachingLanguage} createdAt={data.createdAt} />
 
       <div className="print:hidden">
         <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
@@ -57,11 +54,7 @@ export function ContentHeaderWithLanguageSelector({ data, teachingLanguage }: Co
 export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage }: ContentHeaderProps) {
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
-      <AssignmentTitle
-        data={data}
-        teachingLanguage={teachingLanguage}
-        createdAt={data.createdAt}
-      />
+      <AssignmentTitle data={data} teachingLanguage={teachingLanguage} createdAt={data.createdAt} />
     </div>
   )
 }
@@ -78,7 +71,6 @@ const AssignmentTitle = (props: AssignmentTitleProps) => {
 
   return (
     <div className="flex flex-col">
-
       <div className="row my-1 create-date">
         <p>{toLocaleDate(createdAt)}</p>
       </div>
@@ -127,7 +119,8 @@ function ContentActionButton({
         customClass="p-0 flex items-center pr-3"
         onClick={() => onClickHandler?.(actionName)}
         disabled={disabled}
-        data-testid={actionName}>
+        data-testid={actionName}
+      >
         {children}
       </Button>
     )

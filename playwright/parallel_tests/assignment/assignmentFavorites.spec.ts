@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../../helpers'
 import { Exam } from 'web/src/types'
-import { FormModel } from '../../models/FormModel'
+import { loginTestGroup, Role } from '../../helpers'
 import { AssignmentFavoriteModel } from '../../models/AssignmentFavoriteModel'
+import { FormModel } from '../../models/FormModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 test.describe.configure({ mode: 'serial' })
-Object.values(Exam).forEach(async (exam) => {
+Object.values(Exam).forEach((exam) => {
   test.describe('Assignment favorites', () => {
     test.beforeEach(async ({ page }) => await new FormModel(page, exam).showKeys())
 

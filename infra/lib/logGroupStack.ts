@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib'
-import * as ecs from 'aws-cdk-lib/aws-ecs'
 import * as ec2 from 'aws-cdk-lib/aws-ec2'
+import * as ecs from 'aws-cdk-lib/aws-ecs'
 import * as logs from 'aws-cdk-lib/aws-logs'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'

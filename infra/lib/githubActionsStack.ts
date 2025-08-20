@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
+import * as iam from 'aws-cdk-lib/aws-iam'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
-import * as iam from 'aws-cdk-lib/aws-iam'
 
 export const GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST = [
   '6938fd4d98bab03faadb97b34396831e3780aea1',

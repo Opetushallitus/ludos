@@ -1,8 +1,8 @@
-import { useModal } from './useModal'
-import { Icon } from '../Icon'
-import { Button } from '../Button'
-import styles from './modal.module.css'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Button } from '../Button'
+import { Icon } from '../Icon'
+import styles from './modal.module.css'
+import { useModal } from './useModal'
 
 type BlockNavigationModalProps = {
   open: boolean
@@ -22,7 +22,8 @@ export const BlockNavigationModal = ({ open, onProceed, onClose }: BlockNavigati
       onCancel={onCancel}
       onAnimationEnd={onAnimEnd}
       aria-modal="true"
-      data-testid="block-navigation-modal">
+      data-testid="block-navigation-modal"
+    >
       <div className={styles['modal__container']}>
         <div className="row justify-between bg-green-primary p-2">
           <h2 className="text-base text-white" id="modal-title">

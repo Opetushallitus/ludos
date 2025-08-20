@@ -1,6 +1,4 @@
 import { BrowserContext, expect, Page } from '@playwright/test'
-import { KoodistoName } from 'web/src/types'
-import { FormAction, koodiLabel, selectAttachmentFile, setSingleSelectDropdownOption } from '../helpers'
 import {
   AnyCertificateFormType,
   AttachmentFormType,
@@ -8,6 +6,8 @@ import {
   isPuhviCertificateValues,
   isSukoCertificateValues
 } from 'web/src/components/forms/schemas/certificateSchema'
+import { KoodistoName } from 'web/src/types'
+import { FormAction, koodiLabel, selectAttachmentFile, setSingleSelectDropdownOption } from '../helpers'
 import { CertificateFormModel } from '../models/CertificateFormModel'
 
 export async function fillCertificateForm(form: CertificateFormModel, inputs: AnyCertificateFormType) {

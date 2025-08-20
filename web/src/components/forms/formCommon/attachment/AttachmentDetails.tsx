@@ -1,6 +1,6 @@
-import { ExternalLink } from '../../../ExternalLink'
-import { toLocaleDate } from '../../../../utils/formatUtils'
 import { FileDetails } from '../../../../types'
+import { toLocaleDate } from '../../../../utils/formatUtils'
+import { ExternalLink } from '../../../ExternalLink'
 
 type AttachmentDetailsProps = {
   attachmentDownloadUrlPrefix: string
@@ -12,7 +12,8 @@ export const AttachmentDetails = ({ attachmentDownloadUrlPrefix, fileDetails }: 
     {fileDetails.fileKey ? (
       <ExternalLink
         className="col-span-4 break-all text-green-primary"
-        url={`${attachmentDownloadUrlPrefix}/${fileDetails.fileKey}`}>
+        url={`${attachmentDownloadUrlPrefix}/${fileDetails.fileKey}`}
+      >
         {fileDetails.fileName}
       </ExternalLink>
     ) : (

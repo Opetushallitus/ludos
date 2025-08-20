@@ -1,20 +1,20 @@
-import { useFetch } from '../../../../hooks/useFetch'
-import { ContentOut, ContentType, ContentTypeSingularEn, ContentTypeSingularFi, Exam } from '../../../../types'
-import { CertificateCard } from './CertificateCard'
-import { InternalLink } from '../../../InternalLink'
-import { buttonClasses } from '../../../Button'
-import { uusiKey } from '../../../LudosRoutes'
-import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
-import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
-import { ContentOrderFilter } from '../ContentOrderFilter'
-import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
-import { removeEmpty } from '../../../../utils/assignmentUtils'
 import { useContext } from 'react'
 import { LudosContext } from '../../../../contexts/LudosContext'
-import { InfoBox } from '../../../InfoBox'
+import { useFetch } from '../../../../hooks/useFetch'
+import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
+import { ContentOut, ContentType, ContentTypeSingularEn, ContentTypeSingularFi, Exam } from '../../../../types'
+import { removeEmpty } from '../../../../utils/assignmentUtils'
+import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
+import { buttonClasses } from '../../../Button'
+import { InfoBox } from '../../../InfoBox'
+import { InternalLink } from '../../../InternalLink'
+import { uusiKey } from '../../../LudosRoutes'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
+import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
+import { ContentOrderFilter } from '../ContentOrderFilter'
+import { CertificateCard } from './CertificateCard'
 
 type CertificateListProps = {
   exam: Exam
@@ -45,7 +45,8 @@ export const CertificateList = ({ exam, filterValues: { filterValues, setFilterV
             <InternalLink
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
-              data-testid={`create-${singularActiveTab}-button`}>
+              data-testid={`create-${singularActiveTab}-button`}
+            >
               {preventLineBreaksFromSpace(t('button.lisaatodistus'))}
             </InternalLink>
           )}

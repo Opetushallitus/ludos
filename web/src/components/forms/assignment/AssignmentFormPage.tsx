@@ -1,8 +1,8 @@
 import { useMatch } from 'react-router-dom'
 import { ContentFormAction, Exam } from '../../../types'
-import { SukoAssignmentForm } from './SukoAssignmentForm'
-import { PuhviAssignmentForm } from './PuhviAssignmentForm'
 import { LdAssignmentForm } from './LdAssignmentForm'
+import { PuhviAssignmentForm } from './PuhviAssignmentForm'
+import { SukoAssignmentForm } from './SukoAssignmentForm'
 
 type AssignmentFormProps = {
   action: ContentFormAction
@@ -18,7 +18,9 @@ const AssignmentFormPage = ({ action }: AssignmentFormProps) => {
   const match = useMatch(matchUrl)
   const maybeExam = match?.params.exam?.toUpperCase()
   const exam = parseExam(maybeExam || '')
-  if (!exam) return
+  if (!exam) {
+    return
+  }
   const formProps = { action, id: action === ContentFormAction.muokkaus ? match!.params.id : undefined }
 
   return (

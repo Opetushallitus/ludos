@@ -1,6 +1,6 @@
 import { expect, Locator, Page, test } from '@playwright/test'
-import { loginTestGroup, Role } from '../helpers'
 import { Exam, Language } from 'web/src/types'
+import { loginTestGroup, Role } from '../helpers'
 import { CertificateContentListModel } from '../models/CertificateContentListModel'
 import { LayoutModel } from '../models/LayoutModel'
 

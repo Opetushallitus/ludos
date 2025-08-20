@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test'
-import pdf from 'pdf-parse'
 import fs from 'fs'
 import path from 'path'
+import pdf from 'pdf-parse'
 
 export async function assertPDFDownload(
   page: Page,

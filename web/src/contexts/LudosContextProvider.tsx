@@ -1,9 +1,9 @@
-import { ReactNode } from 'react'
-import { defaultEmptyKoodistoMap, LudosContext } from './LudosContext'
-import { Roles, UserDetails } from '../types'
-import { getFeatures, getKoodistos, getUserDetailsRequest, getUserFavoriteCount } from '../request'
 import { useQuery } from '@tanstack/react-query'
+import { ReactNode } from 'react'
 import { useSetLanguagesBasedOnUserDetails } from '../hooks/useSetLanguagesBasedOnUserDetails'
+import { getFeatures, getKoodistos, getUserDetailsRequest, getUserFavoriteCount } from '../request'
+import { Roles, UserDetails } from '../types'
+import { defaultEmptyKoodistoMap, LudosContext } from './LudosContext'
 
 export const FAVORITE_COUNT_QUERY_KEY = ['favoriteAssignmentCount']
 
@@ -74,7 +74,8 @@ export const LudosContextProvider = ({ children }: LudosContextProviderProps) =>
         setTeachingLanguage,
         uiLanguage,
         setUiLanguage
-      }}>
+      }}
+    >
       {children}
     </LudosContext.Provider>
   )

@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 services:
   server:
     image: amazoncorretto:17-alpine3.17
@@ -9,7 +9,6 @@ services:
       - ./server:/ludos/server
     environment:
       - SPRING_PROFILES_ACTIVE=local
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos 
+      - DB_URL=jdbc:postgresql://host.docker.internal:5432/ludos
     ports:
-      - "8080:8080"
+      - '8080:8080'

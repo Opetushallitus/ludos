@@ -1,6 +1,8 @@
+import { config } from 'dotenv'
 import { LayoutModel } from '../../models/LayoutModel'
 
-require('dotenv').config({ path: '.env' })
+config({ path: '.env' })
+
 import { expect, test } from '@playwright/test'
 
 const casLoginUrl =

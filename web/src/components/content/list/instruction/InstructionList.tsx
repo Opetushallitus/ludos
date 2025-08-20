@@ -1,4 +1,11 @@
+import { useCallback, useContext } from 'react'
+import { SingleValue } from 'react-select'
+import { LudosContext } from '../../../../contexts/LudosContext'
 import { useFetch } from '../../../../hooks/useFetch'
+import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
+import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
+import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../../../hooks/useUserDetails'
 import {
   AssignmentOut,
   ContentType,
@@ -9,25 +16,18 @@ import {
   InstructionsOut,
   Language
 } from '../../../../types'
-import { FiltersType, FilterValues } from '../../../../hooks/useFilterValues'
-import { InstructionCard } from './InstructionCard'
 import { removeEmpty } from '../../../../utils/assignmentUtils'
-import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
-import { InternalLink } from '../../../InternalLink'
-import { buttonClasses } from '../../../Button'
-import { uusiKey } from '../../../LudosRoutes'
 import { preventLineBreaksFromSpace } from '../../../../utils/formatUtils'
-import { ContentOrderFilter } from '../ContentOrderFilter'
-import { useUserDetails } from '../../../../hooks/useUserDetails'
-import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
-import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../../ludosSelect/helpers'
-import { koodisOrDefaultLabel, useKoodisto } from '../../../../hooks/useKoodisto'
-import { useCallback, useContext } from 'react'
-import { SingleValue } from 'react-select'
-import { LudosContext } from '../../../../contexts/LudosContext'
+import { buttonClasses } from '../../../Button'
 import { InfoBox } from '../../../InfoBox'
-import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { InternalLink } from '../../../InternalLink'
+import { uusiKey } from '../../../LudosRoutes'
+import { currentKoodistoSelectOption, koodistoSelectOptions } from '../../../ludosSelect/helpers'
+import { LudosSelect, LudosSelectOption } from '../../../ludosSelect/LudosSelect'
 import { PageLoadingIndicator } from '../../../PageLoadingIndicator'
+import { TeachingLanguageSelectWithLabel } from '../../../TeachingLanguageSelect'
+import { ContentOrderFilter } from '../ContentOrderFilter'
+import { InstructionCard } from './InstructionCard'
 
 const filterByTeachingLanguage = (data: AssignmentOut | InstructionDtoOut, teachingLanguage: Language) => {
   if (teachingLanguage === Language.FI) {
@@ -75,7 +75,8 @@ export const InstructionList = ({ exam, filterValues: { filterValues, setFilterV
             <InternalLink
               className={buttonClasses('buttonPrimary')}
               to={`${location.pathname}/${uusiKey}`}
-              data-testid={`create-${ContentTypeSingularFi.INSTRUCTION}-button`}>
+              data-testid={`create-${ContentTypeSingularFi.INSTRUCTION}-button`}
+            >
               {preventLineBreaksFromSpace(t('button.lisaaohje'))}
             </InternalLink>
           )}

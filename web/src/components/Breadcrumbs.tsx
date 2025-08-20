@@ -1,10 +1,10 @@
-import { InternalLink } from './InternalLink'
+import { useParams } from 'react-router-dom'
 import { FAVORITE_ROOT_FOLDER_ID } from '../constants'
-import { FolderList } from './modal/AssignmentFavoriteMoveFolderModal'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { ContentTypeByContentTypePluralFi, ContentTypePluralFi, Exam } from '../types'
+import { InternalLink } from './InternalLink'
 import { contentListPath, examPath, favoritesPagePath, frontpagePath } from './LudosRoutes'
-import { useParams } from 'react-router-dom'
+import { FolderList } from './modal/AssignmentFavoriteMoveFolderModal'
 
 const BreadcrumbItem = ({ last, name, index, path }: { last: boolean; name: string; path: string; index: number }) => (
   <div className="text-sm">

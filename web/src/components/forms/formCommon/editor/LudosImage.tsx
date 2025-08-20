@@ -6,8 +6,8 @@ import { twMerge } from 'tailwind-merge'
 import './tiptapStyles.css'
 import { mergeAttributes, Node } from '@tiptap/core'
 import i18n from 'i18next'
-import { ImageAlignOption, ImageSizeOption } from '../../../../types'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { ImageAlignOption, ImageSizeOption } from '../../../../types'
 
 const sizeOptions: ImageSizeOption[] = ['original', 'large', 'small']
 

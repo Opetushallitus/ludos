@@ -1,0 +1,45 @@
+{
+  "files": {
+    "includes": ["**/*.ts"]
+  },
+  "formatter": {
+    "enabled": true,
+    "includes": ["**/*.ts"],
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "auto",
+    "useEditorconfig": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false,
+      "complexity": {
+        "noUselessTernary": "error",
+        "noUselessUndefinedInitialization": "error"
+      },
+      "style": { "useBlockStatements": "error", "useTemplate": "error" },
+      "suspicious": { "noDoubleEquals": "error", "noVar": "error" }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "none",
+      "semicolons": "asNeeded",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "single",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    }
+  },
+  "html": { "formatter": { "selfCloseVoidElements": "always" } }
+}

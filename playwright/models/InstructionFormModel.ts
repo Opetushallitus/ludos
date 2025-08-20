@@ -1,5 +1,4 @@
 import { expect, Page } from '@playwright/test'
-import { FormModel } from './FormModel'
 import {
   AttachmentDtoOut,
   ContentType,
@@ -10,17 +9,18 @@ import {
   PublishState
 } from 'web/src/types'
 import { assertInstructionContentPage, getFileBlob } from '../examHelpers/instructionHelpers'
-import { EditorModel } from './EditorModel'
 import {
   assertSuccessNotification,
   createFilePathToFixtures,
-  fetchWithSession,
   FormAction,
+  fetchWithSession,
   koodiLabel,
   setSingleSelectDropdownOption,
   setTeachingLanguage
 } from '../helpers'
 import { ContentListModel } from './ContentListModel'
+import { EditorModel } from './EditorModel'
+import { FormModel } from './FormModel'
 import { InstructionContentModel } from './InstructionContentModel'
 
 export type InstructionFormData = {

@@ -1,6 +1,6 @@
 import { expect, Page } from '@playwright/test'
-import { ContentModel } from './ContentModel'
 import { ContentType, Exam } from 'web/src/types'
+import { ContentModel } from './ContentModel'
 
 export class CertificateContentModel extends ContentModel {
   constructor(

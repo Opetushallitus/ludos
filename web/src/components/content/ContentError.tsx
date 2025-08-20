@@ -1,8 +1,8 @@
-import { ContentType } from '../../types'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { NonOkResponseFetchError } from '../../request'
+import { ContentType } from '../../types'
 import { Icon } from '../Icon'
 import { PageNotFound } from '../LudosRoutes'
-import { NonOkResponseFetchError } from '../../request'
 
 type ContentErrorProps = {
   contentType: ContentType

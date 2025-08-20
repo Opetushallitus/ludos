@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { NavigateOptions, useNavigate } from 'react-router-dom'
-import { ContentType, Exam, NonDeletedPublishState, PublishState } from '../types'
-import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
-import { useLudosTranslation } from './useLudosTranslation'
-import { contentListPath, contentPagePath, uudelleenkirjautuminenOnnistuiPath } from '../components/LudosRoutes'
 import { ExternalLink } from '../components/ExternalLink'
+import { contentListPath, contentPagePath, uudelleenkirjautuminenOnnistuiPath } from '../components/LudosRoutes'
+import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { SessionExpiredFetchError } from '../request'
+import { ContentType, Exam, NonDeletedPublishState, PublishState } from '../types'
+import { useLudosTranslation } from './useLudosTranslation'
 
 export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate: boolean) => {
   const { t, lt } = useLudosTranslation()
@@ -53,7 +53,8 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
             className="underline"
             textColor="text-white"
             url={uudelleenkirjautuminenOnnistuiPath}
-            data-testid="link">
+            data-testid="link"
+          >
             {t('notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki')}
           </ExternalLink>
         ) : undefined

@@ -1,10 +1,10 @@
 import { expect, Locator, test } from '@playwright/test'
+import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
 import { testEsitysNakyma } from '../../examHelpers/assignmentHelpers'
 import { loginTestGroup, Role } from '../../helpers'
-import { ContentType, ContentTypePluralFi, Exam } from 'web/src/types'
-import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
-import { baseTest, BaseTestFixtures, defaultSukoFormData } from '../fixtures/suko'
+import { AssignmentFormModel } from '../../models/AssignmentFormModel'
+import { BaseTestFixtures, baseTest, defaultSukoFormData } from '../fixtures/suko'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
@@ -37,7 +37,7 @@ const printViewTest = baseTest.extend<BaseTestFixtures>({
       ...defaultSukoFormData,
       nameFi: `Tulostusnäkymä: ${defaultSukoFormData.nameFi}`
     })
-  },
+  }
 })
 
 printViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedSukoAssignment, browser }) => {
@@ -56,7 +56,9 @@ printViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedS
   })
 
   await test.step('has correct finnish content', async () => {
-    expect(await getNormalizedInnerTexts(sukoAssignmentPrintView.contentFi)).toContain(normalizeWhitespace(formData.contentFi[0]))
+    expect(await getNormalizedInnerTexts(sukoAssignmentPrintView.contentFi)).toContain(
+      normalizeWhitespace(formData.contentFi[0])
+    )
   })
 
   await test.step('has print button', async () => {
@@ -73,14 +75,15 @@ printViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedS
       <html lang="fi">
         <head><title>Print view</title></head>
         <body><object id="pdf-object" data="${dataUrl}" style="height:100%; width:100%;" /> </body>
-      </html>`
-    )
+      </html>`)
     await pdfPage.waitForLoadState('domcontentloaded')
     await pdfPage.bringToFront()
     await expect(pdfPage.locator('#pdf-object')).toBeVisible()
 
     const opts = { animations: 'disabled', maxDiffPixelRatio: 0.05 } as const
-    await expect(async () => { await expect(pdfPage).toHaveScreenshot('printed-suko-assignment.png', opts) }).toPass()
+    await expect(async () => {
+      await expect(pdfPage).toHaveScreenshot('printed-suko-assignment.png', opts)
+    }).toPass()
     await pdfPage.close()
   })
 })
@@ -93,4 +96,3 @@ async function getNormalizedInnerTexts(locator: Locator): Promise<string> {
 function normalizeWhitespace(text: string): string {
   return text.replace(/\s+/g, ' ')
 }
-

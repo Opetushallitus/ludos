@@ -1,9 +1,8 @@
 import test, { expect } from '@playwright/test'
-import { loginTestGroup, Role } from '../../helpers'
 import { Exam } from 'web/src/types'
-
-import { LayoutModel } from '../../models/LayoutModel'
+import { loginTestGroup, Role } from '../../helpers'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
+import { LayoutModel } from '../../models/LayoutModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 

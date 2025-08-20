@@ -1,5 +1,43 @@
+import add from '@iconify/icons-ic/add'
+import check from '@iconify/icons-ic/check'
+import chevronLeft from '@iconify/icons-ic/chevron-left'
+import chevronRight from '@iconify/icons-ic/chevron-right'
+import close from '@iconify/icons-ic/close'
+import deleteIcon from '@iconify/icons-ic/delete'
+import edit from '@iconify/icons-ic/edit'
+import error from '@iconify/icons-ic/error'
+import expandMore from '@iconify/icons-ic/expand-more'
+import formatBold from '@iconify/icons-ic/format-bold'
+import formatItalic from '@iconify/icons-ic/format-italic'
+import formatListBulleted from '@iconify/icons-ic/format-list-bulleted'
+import formatListNumbered from '@iconify/icons-ic/format-list-numbered'
+import formatQuote from '@iconify/icons-ic/format-quote'
+import history from '@iconify/icons-ic/history'
+import image from '@iconify/icons-ic/image'
+import keyboardReturn from '@iconify/icons-ic/keyboard-return'
+import link from '@iconify/icons-ic/link'
+import moreHoriz from '@iconify/icons-ic/more-horiz'
+import openInNew from '@iconify/icons-ic/open-in-new'
+import outlineAssignment from '@iconify/icons-ic/outline-assignment'
+import outlineCheckCircle from '@iconify/icons-ic/outline-check-circle'
+import outlineFavorite from '@iconify/icons-ic/outline-favorite'
+import outlineFavoriteBorder from '@iconify/icons-ic/outline-favorite-border'
+import outlineFolder from '@iconify/icons-ic/outline-folder'
+import outlineHelpOutline from '@iconify/icons-ic/outline-help-outline'
+import outlineInfo from '@iconify/icons-ic/outline-info'
+import outlineLogout from '@iconify/icons-ic/outline-logout'
+import outlinePictureAsPdf from '@iconify/icons-ic/outline-picture-as-pdf'
+import outlineVerified from '@iconify/icons-ic/outline-verified'
+import outlineVisibility from '@iconify/icons-ic/outline-visibility'
+import redo from '@iconify/icons-ic/redo'
+import undo from '@iconify/icons-ic/undo'
+import formatH1 from '@iconify/icons-material-symbols/format-h1'
+import formatH2 from '@iconify/icons-material-symbols/format-h2'
+import formatH3 from '@iconify/icons-material-symbols/format-h3'
+import formatH4 from '@iconify/icons-material-symbols/format-h4'
+import formatParagraph from '@iconify/icons-material-symbols/format-paragraph'
+import type { IconifyIcon } from '@iconify/types'
 import { twMerge } from 'tailwind-merge'
-import 'iconify-icon'
 
 type IconProps = {
   name: Icons
@@ -53,45 +91,45 @@ export type Icons =
 // icons from https://icon-sets.iconify.design/
 // ic = google material icons
 // material-symbols-light
-const icons: Record<Icons, string> = {
-  ['koetehtavat']: 'ic:outline-assignment',
-  ['ohjeet']: 'ic:outline-help-outline',
-  ['todistukset']: 'ic:outline-verified',
-  ['sulje']: 'ic:close',
-  ['poista']: 'ic:delete',
-  ['muokkaa']: 'ic:edit',
-  ['onnistunut']: 'ic:outline-check-circle',
-  ['check']: 'ic:check',
-  ['virhe']: 'ic:error',
-  ['lisää']: 'ic:add',
-  ['uusi-valilehti']: 'ic:open-in-new',
-  ['laajenna']: 'ic:expand-more',
-  ['pdf']: 'ic:outline-picture-as-pdf',
-  ['undo']: 'ic:undo',
-  ['redo']: 'ic:redo',
-  ['kuva']: 'ic:image',
-  ['lihavointi']: 'ic:format-bold',
-  ['kursiivi']: 'ic:format-italic',
-  ['paragraph']: 'ic:format-paragraph',
-  ['h1']: 'material-symbols:format-h1',
-  ['h2']: 'material-symbols:format-h2',
-  ['h3']: 'material-symbols:format-h3',
-  ['h4']: 'material-symbols:format-h4',
-  ['bulletList']: 'ic:format-list-bulleted',
-  ['orderedList']: 'ic:format-list-numbered',
-  ['blockQuote']: 'ic:format-quote',
-  ['link']: 'ic:link',
-  ['suosikki-border']: 'ic:outline-favorite-border',
-  ['suosikki']: 'ic:outline-favorite',
-  ['chevronLeft']: 'ic:chevron-left',
-  ['chevronRight']: 'ic:chevron-right',
-  ['logout']: 'ic:outline-logout',
-  ['versiohistoria']: 'ic:history',
-  ['palauta']: 'ic:keyboard-return',
-  ['katsele']: 'ic:outline-visibility',
-  ['info']: 'ic:outline-info',
-  ['kansio']: 'ic:outline-folder',
-  ['kolme-pistetta']: 'ic:more-horiz'
+const icons: Record<Icons, IconifyIcon> = {
+  ['koetehtavat']: outlineAssignment,
+  ['ohjeet']: outlineHelpOutline,
+  ['todistukset']: outlineVerified,
+  ['sulje']: close,
+  ['poista']: deleteIcon,
+  ['muokkaa']: edit,
+  ['onnistunut']: outlineCheckCircle,
+  ['check']: check,
+  ['virhe']: error,
+  ['lisää']: add,
+  ['uusi-valilehti']: openInNew,
+  ['laajenna']: expandMore,
+  ['pdf']: outlinePictureAsPdf,
+  ['undo']: undo,
+  ['redo']: redo,
+  ['kuva']: image,
+  ['lihavointi']: formatBold,
+  ['kursiivi']: formatItalic,
+  ['paragraph']: formatParagraph,
+  ['h1']: formatH1,
+  ['h2']: formatH2,
+  ['h3']: formatH3,
+  ['h4']: formatH4,
+  ['bulletList']: formatListBulleted,
+  ['orderedList']: formatListNumbered,
+  ['blockQuote']: formatQuote,
+  ['link']: link,
+  ['suosikki-border']: outlineFavoriteBorder,
+  ['suosikki']: outlineFavorite,
+  ['chevronLeft']: chevronLeft,
+  ['chevronRight']: chevronRight,
+  ['logout']: outlineLogout,
+  ['versiohistoria']: history,
+  ['palauta']: keyboardReturn,
+  ['katsele']: outlineVisibility,
+  ['info']: outlineInfo,
+  ['kansio']: outlineFolder,
+  ['kolme-pistetta']: moreHoriz
 }
 
 export const Icon = ({ name, color, disabled = false, size, dataTestId, customClass }: IconProps) => {
@@ -105,7 +143,14 @@ export const Icon = ({ name, color, disabled = false, size, dataTestId, customCl
 
   return (
     <i className={className} data-testid={dataTestId}>
-      <iconify-icon icon={icons[name]}></iconify-icon>
+      <span className="inline-block align-top">
+        <svg
+          className="block mx-auto w-[1em] h-[1em]"
+          dangerouslySetInnerHTML={{ __html: icons[name]?.body }}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox={`0 0 ${outlineAssignment.width} ${outlineAssignment.height}`}
+        />
+      </span>
     </i>
   )
 }

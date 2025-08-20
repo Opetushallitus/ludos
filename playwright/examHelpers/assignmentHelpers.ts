@@ -1,13 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
 import {
-  FormAction,
-  koodiLabel,
-  setMultiSelectDropdownOptions,
-  setSingleSelectDropdownOption,
-  setTeachingLanguage
-} from '../helpers'
-import { AssignmentIn, ContentType, Exam, KoodistoName, Language, Oppimaara, oppimaaraId, PublishState } from 'web/src/types'
-import {
   AnyAssignmentFormType,
   CommonAssignmentFormType,
   isLdAssignmentFormType,
@@ -17,9 +9,32 @@ import {
   PuhviAssignmentFormType,
   SukoAssignmentFormType
 } from 'web/src/components/forms/schemas/assignmentSchema'
+import {
+  AssignmentIn,
+  ContentType,
+  Exam,
+  KoodistoName,
+  Language,
+  Oppimaara,
+  oppimaaraId,
+  PublishState
+} from 'web/src/types'
+import {
+  FINNISH_A,
+  isSukoKertomisTehtavaAndSpecificOppimaara,
+  KERTOMISTEHTAVA,
+  SWEDISH_A,
+  saksaAOppimaara
+} from 'web/src/utils/assignmentUtils'
 import { preventLineBreaksFromHyphen } from 'web/src/utils/formatUtils'
+import {
+  FormAction,
+  koodiLabel,
+  setMultiSelectDropdownOptions,
+  setSingleSelectDropdownOption,
+  setTeachingLanguage
+} from '../helpers'
 import { AssignmentFormModel } from '../models/AssignmentFormModel'
-import { FINNISH_A, isSukoKertomisTehtavaAndSpecificOppimaara, KERTOMISTEHTAVA, saksaAOppimaara, SWEDISH_A } from 'web/src/utils/assignmentUtils'
 
 export type AssignmentTextContent = Pick<
   CommonAssignmentFormType,
@@ -166,14 +181,18 @@ async function fillCommonAssignmentFields(form: AssignmentFormModel, formData: P
     }
   }
 
-  function hasAssignmentTypeKoodiArvo(x: Partial<AnyAssignmentFormType>): x is { assignmentTypeKoodiArvo: string  } {
+  function hasAssignmentTypeKoodiArvo(x: Partial<AnyAssignmentFormType>): x is { assignmentTypeKoodiArvo: string } {
     return 'assignmentTypeKoodiArvo' in x && typeof x.assignmentTypeKoodiArvo === 'string'
   }
 
   function hasOppimaara(x: Partial<AnyAssignmentFormType>): x is { oppimaara: Oppimaara } {
-    return 'oppimaara' in x && typeof x.oppimaara === 'object' &&
-      'oppimaaraKoodiArvo' in x.oppimaara && typeof x.oppimaara.oppimaaraKoodiArvo === 'string' &&
+    return (
+      'oppimaara' in x &&
+      typeof x.oppimaara === 'object' &&
+      'oppimaaraKoodiArvo' in x.oppimaara &&
+      typeof x.oppimaara.oppimaaraKoodiArvo === 'string' &&
       'kielitarjontaKoodiArvo' in x.oppimaara
+    )
   }
 
   const isKertomistehtavaHelper = {

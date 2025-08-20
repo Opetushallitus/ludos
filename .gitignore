@@ -6,6 +6,7 @@
 .aws-cli.Dockerfile.checksum
 playwright-results/
 copyEnvState/dumpEnvState/source-app-state/*
+server-compose-cache/*
 
 !jest.config.js
 *.d.ts

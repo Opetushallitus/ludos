@@ -1,8 +1,8 @@
 import { ChangeEvent, HTMLAttributes, RefObject } from 'react'
 import { useNotification } from '../../../../contexts/NotificationContext'
-import { ImageDtoOut } from '../../../../types'
-import { uploadImage } from '../../../../request'
 import { useLudosTranslation } from '../../../../hooks/useLudosTranslation'
+import { uploadImage } from '../../../../request'
+import { ImageDtoOut } from '../../../../types'
 
 const maxSizeInMiB = 5
 const maxSizeInBytes = maxSizeInMiB * 1024 * 1024

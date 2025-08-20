@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.apereo.cas.client.session.SingleSignOutFilter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.cas.web.CasAuthenticationFilter
@@ -22,15 +23,40 @@ import org.springframework.security.web.csrf.*
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.util.StringUtils
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 import java.util.function.Supplier
+
+@Configuration
+class CorsConfig {
+
+    @Value("\${ludos.appUrl}")
+    lateinit var appUrl: String
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val config = CorsConfiguration().apply {
+            allowedOrigins = listOf(appUrl)
+            allowedMethods = listOf("*")
+            allowedHeaders = emptyList()
+        }
+
+        return UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", config)
+        }
+    }
+}
+
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class WebSecurityConfiguration {
     val logger: Logger = LoggerFactory.getLogger(WebSecurityConfiguration::class.java)
+
 
     @Bean
     fun singleSignOutFilter(): SingleSignOutFilter = SingleSignOutFilter().apply {
@@ -43,12 +69,14 @@ class WebSecurityConfiguration {
         authenticationEntryPoint: AuthenticationEntryPoint,
         singleSignOutFilter: SingleSignOutFilter,
         casAuthenticationFilter: CasAuthenticationFilter,
-        casConfig: CasConfig
+        casConfig: CasConfig,
+        corsConfigurationSource: CorsConfigurationSource,
     ): SecurityFilterChain {
         http.csrf {
             it.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             it.csrfTokenRequestHandler(SpaCsrfTokenRequestHandler())
         }
+
 
         http.addFilterAfter(SpaCsrfTokenRequestHandler.CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
 
@@ -85,6 +113,16 @@ class WebSecurityConfiguration {
             it.authenticationEntryPoint(authenticationEntryPoint)
         }
         http.addFilterBefore(singleSignOutFilter, CasAuthenticationFilter::class.java)
+
+        http.headers {
+            it.contentSecurityPolicy { csp ->
+                csp.policyDirectives(CspManager.makeCSPString())
+            }
+        }
+
+        http.cors {
+            it.configurationSource(corsConfigurationSource)
+        }
 
         return http.build()
     }

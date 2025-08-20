@@ -1,15 +1,15 @@
 import { useContext, useState } from 'react'
-import { Button } from '../Button'
 import { useTranslation } from 'react-i18next'
-import { useUserDetails } from '../../hooks/useUserDetails'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { HeaderFavorites } from './HeaderFavorites'
 import { LudosContext } from '../../contexts/LudosContext'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { useUserDetails } from '../../hooks/useUserDetails'
+import { Language } from '../../types'
+import { Button } from '../Button'
 import { InternalNavLink } from '../InternalNavLink'
 import { HeaderPage } from './Header'
 import { HeaderApplicationMenu } from './HeaderApplicationMenu'
+import { HeaderFavorites } from './HeaderFavorites'
 import { HeaderLogoutButton } from './HeaderLogoutButton'
-import { Language } from '../../types'
 
 export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
   const { LANGUAGE_DROPDOWN, t, lt } = useLudosTranslation()
@@ -47,7 +47,8 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                         isActive ? ' border-green-primary text-black' : ' border-white text-green-primary'
                       }`
                     }
-                    data-testid={`nav-link-${key}`}>
+                    data-testid={`nav-link-${key}`}
+                  >
                     {localizationText}
                   </InternalNavLink>
                 ))}
@@ -59,7 +60,8 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                         uiLanguage === Language.FI ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
-                      onClick={() => setUiLanguage(Language.FI)}>
+                      onClick={() => setUiLanguage(Language.FI)}
+                    >
                       {LANGUAGE_DROPDOWN.FI.nimi}
                     </Button>
                     <Button
@@ -67,7 +69,8 @@ export const HeaderMobile = ({ pages }: { pages: HeaderPage[] }) => {
                         uiLanguage === Language.SV ? ' border-l-5 border-green-primary' : ''
                       }`}
                       variant="buttonGhost"
-                      onClick={() => setUiLanguage(Language.SV)}>
+                      onClick={() => setUiLanguage(Language.SV)}
+                    >
                       {LANGUAGE_DROPDOWN.SV.nimi}
                     </Button>
                   </div>
@@ -94,7 +97,8 @@ function Header(props: { onClick: () => void }) {
         <button
           className="flex flex-col items-center justify-center rounded-md p-2"
           onClick={props.onClick}
-          aria-label={t('aria-label.header.avaa-valikko-nappi')}>
+          aria-label={t('aria-label.header.avaa-valikko-nappi')}
+        >
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>
           <span className="mb-1 h-[2px] w-6 bg-white"></span>

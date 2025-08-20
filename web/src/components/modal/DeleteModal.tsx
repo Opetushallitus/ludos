@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react'
-import styles from './modal.module.css'
-import { Button } from '../Button'
-import { useModal } from './useModal'
-import { ModalHeader } from './ModalHeader'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Button } from '../Button'
+import { ModalHeader } from './ModalHeader'
+import styles from './modal.module.css'
+import { useModal } from './useModal'
 
 interface ModalProps {
   modalTitle: string
@@ -25,7 +25,8 @@ export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, childre
       onCancel={onCancel}
       onClick={onClick}
       onAnimationEnd={onAnimEnd}
-      aria-modal="true">
+      aria-modal="true"
+    >
       <div className={styles['modal__container']}>
         <ModalHeader modalTitle={modalTitle} onClick={onClose} />
 

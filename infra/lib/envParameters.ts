@@ -1,9 +1,9 @@
-import { NumberOfAvailabilityZones } from '../types'
 import { Environment } from 'aws-cdk-lib'
-import { VpcParameters } from './vpcStack'
+import { NumberOfAvailabilityZones } from '../types'
 import { capitalize } from '../utils'
 import * as accounts from './accounts'
 import { EnvName } from './accounts'
+import { VpcParameters } from './vpcStack'
 
 export interface EnvParameters {
   env: Environment

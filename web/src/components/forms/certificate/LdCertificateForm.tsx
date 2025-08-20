@@ -1,18 +1,18 @@
-import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
-import { useNavigate } from 'react-router-dom'
-import { ContentFormAction, ContentType, Exam, Language, PublishState } from '../../../types'
-import { LdCertificateFormType } from '../schemas/certificateSchema'
 import { FormProvider } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { useCertificateAttachmentHandler } from '../../../hooks/useCertificateAttachmentHandler'
+import { useCertificateForm } from '../../../hooks/useCertificateForm'
+import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
+import { ContentFormAction, ContentType, Exam, Language, PublishState } from '../../../types'
 import { BlockNavigation } from '../../BlockNavigation'
-import { FormHeader } from '../formCommon/FormHeader'
-import { FormAineDropdown } from '../formCommon/FormAineDropdown'
 import { LanguageTabs } from '../../LanguageTabs'
+import { DeleteModal } from '../../modal/DeleteModal'
 import { TextInput } from '../../TextInput'
 import { AttachmentSelector } from '../formCommon/attachment/AttachmentSelector'
+import { FormAineDropdown } from '../formCommon/FormAineDropdown'
 import { FormButtonRow } from '../formCommon/FormButtonRow'
-import { DeleteModal } from '../../modal/DeleteModal'
-import { useCertificateForm } from '../../../hooks/useCertificateForm'
-import { useCertificateAttachmentHandler } from '../../../hooks/useCertificateAttachmentHandler'
+import { FormHeader } from '../formCommon/FormHeader'
+import { LdCertificateFormType } from '../schemas/certificateSchema'
 
 export const LdCertificateForm = ({
   action,
@@ -145,7 +145,8 @@ export const LdCertificateForm = ({
         modalTitle={lt.contentDeleteModalTitle.CERTIFICATE}
         open={isDeleteModalOpen}
         onDeleteAction={() => submitCertificate(PublishState.Deleted, newAttachmentFi, newAttachmentSv)}
-        onClose={() => setIsDeleteModalOpen(false)}>
+        onClose={() => setIsDeleteModalOpen(false)}
+      >
         <div className="h-[15vh] p-6">
           <p>{lt.contentDeleteModalText.CERTIFICATE(watchNameFi)}</p>
         </div>

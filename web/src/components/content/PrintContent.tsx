@@ -1,4 +1,8 @@
+import React, { useContext } from 'react'
 import { useParams } from 'react-router-dom'
+import { LudosContext } from '../../contexts/LudosContext'
+import { useFetch } from '../../hooks/useFetch'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import {
   ContentBaseOut,
   ContentType,
@@ -11,16 +15,13 @@ import {
   isInstruction,
   Language
 } from '../../types'
-import { useFetch } from '../../hooks/useFetch'
-import { ContentHeader } from './ContentCommon'
+import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { AssignmentContentWithoutFavorites } from './AssignmentContent'
 import { CertificateContent } from './CertificateContent'
-import { InstructionContent } from './InstructionsContent'
-import React, { useContext } from 'react'
-import { LudosContext } from '../../contexts/LudosContext'
+import { ContentHeader } from './ContentCommon'
 import { ContentError } from './ContentError'
-import { PageLoadingIndicator } from '../PageLoadingIndicator'
 import { FeedbackLink } from './FeedbackLink'
+import { InstructionContent } from './InstructionsContent'
 import { PrintButton } from './PrintButton'
 
 type ContentProps = {
@@ -35,6 +36,7 @@ const Content = ({ exam }: ContentProps) => {
   }>()
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
+  const { lt } = useLudosTranslation()
 
   const isVersionBrowser = !!version
 
@@ -64,13 +66,10 @@ const Content = ({ exam }: ContentProps) => {
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} />
+              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} lt={lt} />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
-                <AssignmentContentWithoutFavorites
-                  assignment={data}
-                  teachingLanguage={teachingLanguage}
-                />
+                <AssignmentContentWithoutFavorites assignment={data} teachingLanguage={teachingLanguage} />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (

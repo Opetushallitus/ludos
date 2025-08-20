@@ -66,7 +66,7 @@ export class VersionHistoryModel {
     const updaters = this.versionHistoryModal.getByTestId('updater')
     await expect(updaters).toHaveCount(this.testVersionCount)
 
-    for(const updaterLocator of await updaters.all()) {
+    for (const updaterLocator of await updaters.all()) {
       await expect(updaterLocator).toHaveText('Ludos Mocklogin')
     }
 

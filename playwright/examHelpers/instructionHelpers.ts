@@ -1,4 +1,6 @@
 import { expect, Page } from '@playwright/test'
+import * as fs from 'fs'
+import { Exam, KoodistoName, Language } from 'web/src/types'
 import {
   assertSuccessNotification,
   createFilePathToFixtures,
@@ -6,10 +8,8 @@ import {
   koodiLabel,
   setTeachingLanguage
 } from '../helpers'
-import { Exam, KoodistoName, Language } from 'web/src/types'
 import { InstructionFormData, InstructionFormModel } from '../models/InstructionFormModel'
 import { LayoutModel } from '../models/LayoutModel'
-import * as fs from 'fs'
 
 export function getFileBlob(filename: string) {
   const filePath = createFilePathToFixtures(filename)
@@ -63,7 +63,7 @@ export async function assertInstructionContentPage(
   }
 
   if (formData.shortDescriptionFi && exam !== Exam.LD) {
-     await expect(page.getByText(formData.shortDescriptionFi, { exact: true })).toBeVisible()
+    await expect(page.getByText(formData.shortDescriptionFi, { exact: true })).toBeVisible()
   }
 
   if (formData.contentFi) {
