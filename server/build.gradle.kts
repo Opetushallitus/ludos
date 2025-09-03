@@ -32,7 +32,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.18.0")
     implementation("io.arrow-kt:arrow-core:2.1.2")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
     implementation("org.flywaydb:flyway-core:11.11.2")
