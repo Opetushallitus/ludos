@@ -20,6 +20,12 @@ jobs:
         with:
           private_key: ${{ secrets.PRIVATE_KEY }}
           app_id: ${{ secrets.APP_ID }}
+      - name: Setup Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@a447f09147d00e00ae2a82ad5ef51ca89352da80 # v43.0.9
         with:
