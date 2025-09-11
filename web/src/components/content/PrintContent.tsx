@@ -66,7 +66,11 @@ const Content = ({ exam }: ContentProps) => {
         <div className="col w-full pr-5 md:w-9/12">
           <div className="row pb-3 print:pb-0">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={{...data, displayOphLogo: true}} lt={lt} />
+              <ContentHeader
+                teachingLanguage={teachingLanguageOverride}
+                data={{ ...data, displayOphLogo: true }}
+                lt={lt}
+              />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
                 <AssignmentContentWithoutFavorites assignment={data} teachingLanguage={teachingLanguage} />

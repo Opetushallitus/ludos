@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import logo from '../../../assets/oph_fin_vaaka.png'
 import { ContentAction, useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { ContentBaseOut, ContentType, Exam, Language } from '../../types'
 import { getContentName, isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmentUtils'
@@ -9,7 +10,6 @@ import { Icon } from '../Icon'
 import { InternalLink } from '../InternalLink'
 import { tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
-import logo from '../../../assets/oph_fin_vaaka.png'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
@@ -68,7 +68,7 @@ interface AssignmentTitleProps {
 
 const AssignmentTitle = (props: AssignmentTitleProps) => {
   const { t } = useLudosTranslation()
-  const { data, teachingLanguage, createdAt} = props
+  const { data, teachingLanguage, createdAt } = props
   const { displayOphLogo } = data
 
   const Logo = displayOphLogo ? <img className="h-12 ml-auto mr-4" src={logo} alt="Opetushallituksen logo" /> : <></>
@@ -83,7 +83,7 @@ const AssignmentTitle = (props: AssignmentTitleProps) => {
         <h2 className="w-full break-normal" data-testid="assignment-header">
           {getContentName(data, teachingLanguage) || t('form.nimeton')}
         </h2>
-        { Logo }
+        {Logo}
       </div>
     </div>
   )
