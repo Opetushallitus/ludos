@@ -9,10 +9,11 @@ import { Icon } from '../Icon'
 import { InternalLink } from '../InternalLink'
 import { tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
+import logo from '../../../assets/oph_fin_vaaka.png'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
-  data: ContentBaseOut
+  data: ContentBaseOut & { displayOphLogo?: boolean }
   lt: ReturnType<typeof useLudosTranslation>['lt']
 }
 
@@ -60,25 +61,29 @@ export function ContentHeaderWithoutLanguageSelector({ data, teachingLanguage }:
 }
 
 interface AssignmentTitleProps {
-  data: ContentBaseOut
+  data: ContentHeaderProps['data']
   teachingLanguage: Language
   createdAt: string | Date
 }
 
 const AssignmentTitle = (props: AssignmentTitleProps) => {
   const { t } = useLudosTranslation()
-  const { data, teachingLanguage, createdAt } = props
+  const { data, teachingLanguage, createdAt} = props
+  const { displayOphLogo } = data
+
+  const Logo = displayOphLogo ? <img className="h-12 ml-auto mr-4" src={logo} alt="Opetushallituksen logo" /> : <></>
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full">
       <div className="row my-1 create-date">
         <p>{toLocaleDate(createdAt)}</p>
       </div>
 
-      <div className="row">
+      <div className="row items-center gap-2">
         <h2 className="w-full break-normal" data-testid="assignment-header">
           {getContentName(data, teachingLanguage) || t('form.nimeton')}
         </h2>
+        { Logo }
       </div>
     </div>
   )

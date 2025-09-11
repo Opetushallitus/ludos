@@ -11,7 +11,6 @@ import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { useUserDetails } from '../hooks/useUserDetails'
 import { ContentBaseOut, ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
-import { PrintFooter } from './Footer'
 import { Frontpage } from './frontpage/Frontpage'
 import { Layout } from './layout/Layout'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
@@ -194,7 +193,7 @@ function examRoute(exam: Exam): RouteObject {
       {
         path: `:contentTypePluralFi/:id/${tulostusnakymaKey}`,
         element: (
-          <Layout header={<></>} footer={<PrintFooter />}>
+          <Layout header={<></>} footer={<></>}>
             <SpinnerSuspense>
               <PrintContent exam={exam} />
             </SpinnerSuspense>
