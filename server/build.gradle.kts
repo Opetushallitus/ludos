@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("org.springframework.boot") version "3.5.5"
     kotlin("jvm") version "2.2.20"
-    kotlin("plugin.spring") version "2.2.10"
+    kotlin("plugin.spring") version "2.2.20"
 }
 
 group = "fi.oph"
