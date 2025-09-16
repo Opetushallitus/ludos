@@ -6,7 +6,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
     "@playwright/test": "1.55.0",
-    "@types/node": "22.18.2",
+    "@types/node": "22.18.3",
     "@types/pdf-parse": "1.1.5",
     "dotenv": "17.2.2",
     "typescript": "5.9.2"
