@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.5.5"
+    id("org.springframework.boot") version "3.5.6"
     kotlin("jvm") version "2.2.20"
     kotlin("plugin.spring") version "2.2.20"
 }
@@ -24,9 +24,9 @@ dependencyLocking {
 }
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.5"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.5")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.18.0")
