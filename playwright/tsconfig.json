@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": false,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
 
     "skipLibCheck": true,
