@@ -1,6 +1,8 @@
+const tailwindcss = require("@tailwindcss/postcss")
+
 const postcssConfig = {
   plugins: {
-    tailwindcss: {},
+    '@tailwindcss/postcss': {},
     autoprefixer: {}
   }
 }
