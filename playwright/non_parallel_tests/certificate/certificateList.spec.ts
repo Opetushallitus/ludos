@@ -53,7 +53,7 @@ test.describe('Certificate filter tests', () => {
       const checkPdfDownload = async () =>
         await checkPdfDownloadIconWorks(
           page,
-          content.content.map((c: any) => c.id),
+          content.content.map((c: { id: number }) => c.id),
           headless
         )
 
