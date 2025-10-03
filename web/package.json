@@ -50,7 +50,7 @@
     "@iconify/icons-ic": "1.2.13",
     "@iconify/icons-material-symbols": "1.2.58",
     "@types/node": "22.18.7",
-    "@types/react": "18.3.24",
+    "@types/react": "18.3.25",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "5.0.4",
     "autoprefixer": "10.4.21",
