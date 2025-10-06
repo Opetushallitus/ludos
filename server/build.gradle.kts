@@ -23,6 +23,17 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("org.bouncycastle:bcprov-jdk15on"))
+            .using(module("org.bouncycastle:bcprov-jdk18on:1.79"))
+        substitute(module("org.bouncycastle:bcpkix-jdk15on"))
+            .using(module("org.bouncycastle:bcpkix-jdk18on:1.79"))
+        substitute(module("org.bouncycastle:bcutil-jdk15on"))
+            .using(module("org.bouncycastle:bcutil-jdk18on:1.79"))
+    }
+}
+
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
 
