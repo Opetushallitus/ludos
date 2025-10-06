@@ -47,6 +47,9 @@ dependencies {
     implementation("software.amazon.awssdk:sso:2.34.9")
     implementation("software.amazon.awssdk:ssooidc:2.34.9")
     implementation("org.springframework.security:spring-security-cas:6.5.5")
+    implementation("com.nimbusds", "nimbus-jose-jwt").version {
+        strictly("9.37.4")
+    }
     implementation("org.springframework:spring-test:6.2.11")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
