@@ -61,7 +61,7 @@ dependencies {
     implementation("com.nimbusds", "nimbus-jose-jwt").version {
         strictly("9.37.4")
     }
-    implementation("org.springframework:spring-test:6.2.11")
+    implementation("org.springframework:spring-test:6.2.12")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
