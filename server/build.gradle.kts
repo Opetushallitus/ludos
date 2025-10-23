@@ -57,7 +57,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.35.10")
     implementation("software.amazon.awssdk:sso:2.35.10")
     implementation("software.amazon.awssdk:ssooidc:2.35.10")
-    implementation("org.springframework.security:spring-security-cas:6.5.5")
+    implementation("org.springframework.security:spring-security-cas:6.5.6")
     implementation("com.nimbusds", "nimbus-jose-jwt").version {
         strictly("9.37.4")
     }
