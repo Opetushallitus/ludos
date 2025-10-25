@@ -20,6 +20,6 @@
     "lint:fix": "biome check --write"
   },
   "dependencies": {
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^2.0.0"
   }
 }
