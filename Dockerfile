@@ -16,7 +16,7 @@ COPY web/src/ ./src/
 RUN npm run build:ci
 
 
-FROM gradle:jdk17@sha256:ea24a69916fbe8840f85a0a7df253cd3c3d821adda1f6023ee10dcbe471c85d5 AS server-build
+FROM gradle:jdk17@sha256:818a501f25a2dfd8df040c329c6f40a87db2c1c3048db897e3bf6184af315b98 AS server-build
 
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts .
