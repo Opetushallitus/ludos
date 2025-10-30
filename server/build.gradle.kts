@@ -61,6 +61,9 @@ dependencies {
     implementation("com.nimbusds", "nimbus-jose-jwt").version {
         strictly("9.37.4")
     }
+    implementation("ch.qos.logback", "logback-core").version {
+        strictly("1.5.19")
+    }
     implementation("org.springframework:spring-test:6.2.12")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
