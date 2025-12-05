@@ -2,13 +2,9 @@
 set -o errexit -o nounset -o pipefail
 source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts/common-functions.sh"
 
-SERVER_ENV="$(dirname "$0")/../ludos/server/.env"
-PLAYWRIGHT_ENV="$(dirname "$0")/../ludos/playwright/.env"
-FETCH_SECRETS_SCRIPT="$(dirname "$0")/../ludos/scripts/fetch_secrets.sh"
-
 function stop() {
-  docker compose -f docker-compose-db.yaml down --remove-orphans || true
-  docker compose -f docker-compose-run-server.yaml down --remove-orphans || true
+  cd "$repo"
+  docker compose down || true
 }
 trap stop EXIT
 
@@ -20,27 +16,8 @@ popd
 
 scripts/update_backups.sh --if-stale
 
-check_env_files() {
-    if [[ ! -f "$SERVER_ENV" ]] || [[ ! -f "$PLAYWRIGHT_ENV" ]]; then
-        return 1
-    else
-        return 0
-    fi
-}
 
-if ! check_env_files; then
-    echo "Secrets not found, logging in to AWS SSO.."
-    require_aws_session_for_env dev
-    require_aws_session_for_env utility
-
-    echo "running fetch-secrets.sh..."
-    bash "$FETCH_SECRETS_SCRIPT"
-
-    if ! check_env_files; then
-        echo "Failed to fetch secrets. Please check the fetch_secrets.sh script and your AWS credentials."
-        exit 1
-    fi
-fi
+open http://localhost:8080/api/test/mocklogin/YLLAPITAJA
 
 session="ludos"
 
