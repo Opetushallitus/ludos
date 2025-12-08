@@ -133,14 +133,16 @@ class AssignmentRepository(
     }
 
     val mapPuhviResultSet: (ResultSet, Int) -> PuhviAssignmentDtoOut = { rs: ResultSet, _: Int ->
+        val contentFi = rs.getKotlinList<String>("assignment_content_fi")
+        val contentSv = rs.getKotlinList<String>("assignment_content_sv")
         PuhviAssignmentDtoOut(
             id = rs.getInt("assignment_id"),
             nameFi = rs.getString("assignment_name_fi"),
             nameSv = rs.getString("assignment_name_sv"),
             instructionFi = rs.getString("assignment_instruction_fi"),
             instructionSv = rs.getString("assignment_instruction_sv"),
-            contentFi = rs.getKotlinList("assignment_content_fi"),
-            contentSv = rs.getKotlinList("assignment_content_sv"),
+            contentFi = contentFi,
+            contentSv = contentSv,
             publishState = PublishState.valueOf(rs.getString("assignment_publish_state")),
             createdAt = rs.getTimestamp("assignment_created_at"),
             updatedAt = rs.getTimestamp("assignment_updated_at"),
@@ -151,6 +153,8 @@ class AssignmentRepository(
             version = rs.getInt("assignment_version"),
             assignmentTypeKoodiArvo = rs.getString("puhvi_assignment_assignment_type_koodi_arvo"),
             lukuvuosiKoodiArvos = rs.getKotlinList<String>("puhvi_assignment_lukuvuosi_koodi_arvos"),
+            linksFi = extractLinksFromHtmlContent(contentFi),
+            linksSv = extractLinksFromHtmlContent(contentSv)
         )
     }
 
