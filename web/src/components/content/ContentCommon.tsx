@@ -105,9 +105,7 @@ export function ContentHeaderWithLanguageSelector({
                 onChange={onToggleQRCodes}
                 className="w-4 h-4 cursor-pointer"
               />
-              <span className="text-sm">
-                {teachingLanguage === 'FI' ? 'Näytä QR-koodit' : 'Visa QR-koder'}
-              </span>
+              <span className="text-sm">{lt.contentPageQrCodeCheckboxLabel}</span>
             </label>
           </div>
         )}
