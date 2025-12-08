@@ -62,7 +62,12 @@ const Content = ({ exam }: ContentProps) => {
     return null
   }
 
-  const isPuhviAssignmentWithLinks = isAssignment(data) && isPuhviAssignment(data)
+  const isPuhviAssignmentWithLinks =
+    isAssignment(data) &&
+    isPuhviAssignment(data) &&
+    (teachingLanguage === Language.FI
+      ? data.linksFi && data.linksFi.length > 0
+      : data.linksSv && data.linksSv.length > 0)
 
   return (
     <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
