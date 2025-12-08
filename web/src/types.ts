@@ -170,6 +170,8 @@ export type LdAssignmentDtoOut = AssignmentCardOut & {
 export type PuhviAssignmentDtoOut = AssignmentCardOut & {
   assignmentTypeKoodiArvo: string
   lukuvuosiKoodiArvos: string[]
+  linksFi: string[]
+  linksSv: string[]
 }
 
 export type InstructionDtoOut = ContentBaseOut & {

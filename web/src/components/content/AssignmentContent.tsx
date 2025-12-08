@@ -17,6 +17,7 @@ import { isSukoKertomisTehtavaAndSpecificOppimaara } from '../../utils/assignmen
 import { FavoriteToggleModalFormType } from '../modal/favoriteModal/favoriteToggleModalFormSchema'
 import { SetFavoriteFoldersModal } from '../modal/favoriteModal/SetFavoriteFoldersModal'
 import { ContentActionRow, ContentContent, ContentInstruction } from './ContentCommon'
+import { PuhviLinksQRCodes } from './PuhviLinksQRCodes'
 
 type AssignmentContentProps = {
   assignment: AssignmentOut
@@ -41,12 +42,18 @@ function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): 
   return teachingLanguage
 }
 
-type AssignmentContentWithoutFavoritesProps = { contentAction?: ReactNode | undefined } & AssignmentContentProps
+type AssignmentContentWithoutFavoritesProps = {
+  contentAction?: ReactNode | undefined
+  showQRCodes?: boolean
+  isPrintPreview?: boolean
+} & AssignmentContentProps
 
 export const AssignmentContentWithoutFavorites = ({
   assignment,
   teachingLanguage,
-  contentAction
+  contentAction,
+  showQRCodes = false,
+  isPrintPreview = false
 }: AssignmentContentWithoutFavoritesProps) => {
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
@@ -67,6 +74,15 @@ export const AssignmentContentWithoutFavorites = ({
         teachingLanguage={teachingLanguage}
         content={contentLang === Language.FI ? assignment.contentFi : assignment.contentSv}
       />
+
+      {isPuhviAssignment(assignment) && (
+        <PuhviLinksQRCodes
+          assignment={assignment}
+          teachingLanguage={teachingLanguage}
+          showQRCodes={showQRCodes}
+          isPrintPreview={isPrintPreview}
+        />
+      )}
     </>
   )
 }
