@@ -143,6 +143,8 @@ export const useLudosTranslation = () => {
       [ContentType.INSTRUCTION]: t('filter.ohjeet-kieli'),
       [ContentType.CERTIFICATE]: t('filter.todistukset-kieli')
     },
+    contentPageQrCodeCheckboxLabel: t('filter.qr-koodi-tulosta-checkbox'),
+    contentPageQrCodeLinksSubtitle: t('subtitle.qr-koodi-otsikko'),
     tiptapImageSizeOptions: {
       original: t('file.koko.alkuperainen'),
       large: t('file.koko.suuri'),

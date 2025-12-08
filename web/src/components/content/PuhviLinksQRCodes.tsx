@@ -1,5 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react'
 import { Language, PuhviAssignmentDtoOut } from '../../types'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 
 type PuhviLinksQRCodesProps = {
   assignment: PuhviAssignmentDtoOut
@@ -14,13 +15,12 @@ export const PuhviLinksQRCodes = ({
   showQRCodes = true,
   isPrintPreview = false
 }: PuhviLinksQRCodesProps) => {
-  // Get links based on teaching language
+
+  const { lt } = useLudosTranslation()
+
   const links = teachingLanguage === Language.FI ? assignment.linksFi : assignment.linksSv
 
-  // Don't render anything if there are no links
-  if (!links || links.length === 0) {
-    return null
-  }
+  if (!links || links.length === 0) return null
 
   // In print preview: only show if checkbox is checked
   // In regular view: always render but hide on screen (show when printing)
@@ -28,15 +28,13 @@ export const PuhviLinksQRCodes = ({
     return null
   }
 
-  const title = teachingLanguage === Language.FI ? 'QR-koodit linkeille' : 'QR-koder för länkar'
-
   // If in print preview, show on screen when enabled
   // If in regular view, hide on screen but show when printing
   const visibilityClass = isPrintPreview ? '' : 'hidden print:block'
 
   return (
     <div className={`mt-6 border-t border-gray-separator pt-4 ${visibilityClass}`}>
-      <h3 className="font-semibold text-lg mb-3">{title}</h3>
+      <h3 className="font-semibold text-lg mb-3">{lt.contentPageQrCodeLinksSubtitle}</h3>
       <div className="grid grid-cols-2 gap-4">
         {links.map((link, index) => (
           <div key={index} className="flex flex-col items-center border border-gray-light p-3">
