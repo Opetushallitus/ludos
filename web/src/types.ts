@@ -174,6 +174,10 @@ export type PuhviAssignmentDtoOut = AssignmentCardOut & {
   linksSv: string[]
 }
 
+export type FeatureFlags = {
+  qrCodesForLinks: boolean
+}
+
 export type InstructionDtoOut = ContentBaseOut & {
   nameFi: string
   nameSv: string

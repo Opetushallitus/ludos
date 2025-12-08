@@ -2,8 +2,7 @@ package fi.oph.ludos.config
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
@@ -20,16 +19,16 @@ class ConfigController(val features: Features) {
     @ResponseBody
     @PreAuthorize("permitAll()")
     fun getFeatures(): ResponseEntity<FeaturesResponse> {
-        return ResponseEntity.ok(FeaturesResponse())
+        return ResponseEntity.ok(FeaturesResponse(qrCodesForLinks = features.qrCodesForLinks))
     }
 }
 
-// Data class cannot be empty. Make dummy property as a placeholder until we get more featureflags
 data class FeaturesResponse(
-    val dummy: Unit = Unit
+    val qrCodesForLinks: Boolean
 )
 
 @Component
-@Configuration
+@ConfigurationProperties(prefix = "features")
 class Features(
+    var qrCodesForLinks: Boolean = false
 )

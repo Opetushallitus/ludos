@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LudosContext } from '../../contexts/LudosContext'
 import { useFetch } from '../../hooks/useFetch'
+import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import {
   ContentBaseOut,
@@ -38,6 +39,7 @@ const Content = ({ exam }: ContentProps) => {
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
   const { lt, t } = useLudosTranslation()
+  const { qrCodesForLinks } = useFeatureFlags()
   const [showQRCodes, setShowQRCodes] = useState(true)
 
   const isVersionBrowser = !!version
@@ -63,6 +65,7 @@ const Content = ({ exam }: ContentProps) => {
   }
 
   const isPuhviAssignmentWithLinks =
+    qrCodesForLinks &&
     isAssignment(data) &&
     isPuhviAssignment(data) &&
     (teachingLanguage === Language.FI
