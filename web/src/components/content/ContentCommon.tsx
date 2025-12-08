@@ -15,38 +15,102 @@ type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut & { displayOphLogo?: boolean }
   lt: ReturnType<typeof useLudosTranslation>['lt']
+  showQRCodesCheckbox?: boolean
+  showQRCodes?: boolean
+  onToggleQRCodes?: () => void
 }
 
-export function ContentHeader({ data, teachingLanguage }: ContentHeaderProps): ReactElement {
+export function ContentHeader({
+  data,
+  teachingLanguage,
+  showQRCodesCheckbox,
+  showQRCodes,
+  onToggleQRCodes
+}: ContentHeaderProps): ReactElement {
   const { lt } = useLudosTranslation()
 
   if (isSukoKertomisTehtavaAndSpecificOppimaara(data)) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
+    return ContentHeaderWithLanguageSelector({
+      data,
+      teachingLanguage,
+      lt,
+      showQRCodesCheckbox,
+      showQRCodes,
+      onToggleQRCodes
+    })
   }
 
   if (data.contentType === ContentType.INSTRUCTION) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
+    return ContentHeaderWithLanguageSelector({
+      data,
+      teachingLanguage,
+      lt,
+      showQRCodesCheckbox,
+      showQRCodes,
+      onToggleQRCodes
+    })
   }
 
   if (data.contentType === ContentType.CERTIFICATE && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
+    return ContentHeaderWithLanguageSelector({
+      data,
+      teachingLanguage,
+      lt,
+      showQRCodesCheckbox,
+      showQRCodes,
+      onToggleQRCodes
+    })
   }
 
   if (data.contentType === ContentType.ASSIGNMENT && data.exam !== Exam.SUKO) {
-    return ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt })
+    return ContentHeaderWithLanguageSelector({
+      data,
+      teachingLanguage,
+      lt,
+      showQRCodesCheckbox,
+      showQRCodes,
+      onToggleQRCodes
+    })
   }
 
   return ContentHeaderWithoutLanguageSelector({ data, teachingLanguage, lt })
 }
 
-export function ContentHeaderWithLanguageSelector({ data, teachingLanguage, lt }: ContentHeaderProps) {
+export function ContentHeaderWithLanguageSelector({
+  data,
+  teachingLanguage,
+  lt,
+  showQRCodesCheckbox,
+  showQRCodes,
+  onToggleQRCodes
+}: ContentHeaderProps) {
+  const { t } = useLudosTranslation()
+
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
       <AssignmentTitle data={data} teachingLanguage={teachingLanguage} createdAt={data.createdAt} />
 
-      <div className="print:hidden">
-        <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
-        <TeachingLanguageSelect exam={data.exam} />
+      <div className="print:hidden flex items-end gap-4">
+        <div>
+          <p>{lt.contentPageLanguageDropdownLabel[data.contentType]}</p>
+          <TeachingLanguageSelect exam={data.exam} />
+        </div>
+
+        {showQRCodesCheckbox && (
+          <div>
+            <label className="flex items-center gap-2 cursor-pointer mb-1">
+              <input
+                type="checkbox"
+                checked={showQRCodes}
+                onChange={onToggleQRCodes}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <span className="text-sm">
+                {teachingLanguage === 'FI' ? 'Näytä QR-koodit' : 'Visa QR-koder'}
+              </span>
+            </label>
+          </div>
+        )}
       </div>
     </div>
   )

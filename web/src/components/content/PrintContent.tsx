@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LudosContext } from '../../contexts/LudosContext'
 import { useFetch } from '../../hooks/useFetch'
@@ -13,6 +13,7 @@ import {
   isAssignment,
   isCertificate,
   isInstruction,
+  isPuhviAssignment,
   Language
 } from '../../types'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
@@ -36,7 +37,8 @@ const Content = ({ exam }: ContentProps) => {
   }>()
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
-  const { lt } = useLudosTranslation()
+  const { lt, t } = useLudosTranslation()
+  const [showQRCodes, setShowQRCodes] = useState(true)
 
   const isVersionBrowser = !!version
 
@@ -60,6 +62,8 @@ const Content = ({ exam }: ContentProps) => {
     return null
   }
 
+  const isPuhviAssignmentWithLinks = isAssignment(data) && isPuhviAssignment(data)
+
   return (
     <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
       <div className="row">
@@ -70,10 +74,18 @@ const Content = ({ exam }: ContentProps) => {
                 teachingLanguage={teachingLanguageOverride}
                 data={{ ...data, displayOphLogo: true }}
                 lt={lt}
+                showQRCodesCheckbox={isPuhviAssignmentWithLinks}
+                showQRCodes={showQRCodes}
+                onToggleQRCodes={() => setShowQRCodes(!showQRCodes)}
               />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
-                <AssignmentContentWithoutFavorites assignment={data} teachingLanguage={teachingLanguage} />
+                <AssignmentContentWithoutFavorites
+                  assignment={data}
+                  teachingLanguage={teachingLanguage}
+                  showQRCodes={showQRCodes}
+                  isPrintPreview={true}
+                />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (
