@@ -9,12 +9,7 @@ type QRCodeCheckboxProps = {
   onToggleQRCodes: () => void
 }
 
-export const QRCodeCheckbox = ({
-  data,
-  teachingLanguage,
-  showQRCodes,
-  onToggleQRCodes
-}: QRCodeCheckboxProps) => {
+export const QRCodeCheckbox = ({ data, teachingLanguage, showQRCodes, onToggleQRCodes }: QRCodeCheckboxProps) => {
   const { lt } = useLudosTranslation()
   const { qrCodesForLinks } = useFeatureFlags()
   const { isPrintPreview } = data
@@ -31,9 +26,8 @@ export const QRCodeCheckbox = ({
     return null
   }
 
-  const selectedLanguageContentContainsLinks = (teachingLanguage === Language.FI
-    ? data.linksFi && data.linksFi.length > 0
-    : data.linksSv && data.linksSv.length > 0)
+  const selectedLanguageContentContainsLinks =
+    teachingLanguage === Language.FI ? data.linksFi && data.linksFi.length > 0 : data.linksSv && data.linksSv.length > 0
 
   if (!selectedLanguageContentContainsLinks) {
     return null
@@ -42,12 +36,7 @@ export const QRCodeCheckbox = ({
   return (
     <div>
       <label className="flex items-center gap-2 cursor-pointer mb-1">
-        <input
-          type="checkbox"
-          checked={showQRCodes}
-          onChange={onToggleQRCodes}
-          className="w-4 h-4 cursor-pointer"
-        />
+        <input type="checkbox" checked={showQRCodes} onChange={onToggleQRCodes} className="w-4 h-4 cursor-pointer" />
         <span className="text-sm">{lt.contentPageQrCodeCheckboxLabel}</span>
       </label>
     </div>

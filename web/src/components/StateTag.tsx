@@ -26,7 +26,10 @@ export const StateTag = ({ state }: { state: PublishState }) => {
   }
 
   return (
-    <div className={twMerge('w-20 rounded-sm text-center text-xs flex justify-center items-center', tagAttributes.variant)} data-testid="publish-state">
+    <div
+      className={twMerge('w-20 rounded-sm text-center text-xs flex justify-center items-center', tagAttributes.variant)}
+      data-testid="publish-state"
+    >
       <div>{tagAttributes.localizationKey}</div>
     </div>
   )

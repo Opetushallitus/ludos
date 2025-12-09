@@ -9,11 +9,7 @@ type PuhviLinksQRCodesProps = {
   showQRCodes?: boolean
 }
 
-export const PuhviLinksQRCodes = ({
-  assignment,
-  teachingLanguage,
-  showQRCodes = true,
-}: PuhviLinksQRCodesProps) => {
+export const PuhviLinksQRCodes = ({ assignment, teachingLanguage, showQRCodes = true }: PuhviLinksQRCodesProps) => {
   const { qrCodesForLinks } = useFeatureFlags()
   const { lt } = useLudosTranslation()
 

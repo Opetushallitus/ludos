@@ -51,7 +51,7 @@ export const AssignmentContentWithoutFavorites = ({
   assignment,
   teachingLanguage,
   contentAction,
-  showQRCodes = false,
+  showQRCodes = false
 }: AssignmentContentWithoutFavoritesProps) => {
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
@@ -74,11 +74,7 @@ export const AssignmentContentWithoutFavorites = ({
       />
 
       {isPuhviAssignment(assignment) && (
-        <PuhviLinksQRCodes
-          assignment={assignment}
-          teachingLanguage={teachingLanguage}
-          showQRCodes={showQRCodes}
-        />
+        <PuhviLinksQRCodes assignment={assignment} teachingLanguage={teachingLanguage} showQRCodes={showQRCodes} />
       )}
     </>
   )
