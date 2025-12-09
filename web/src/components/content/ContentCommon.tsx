@@ -14,7 +14,7 @@ import { QRCodeCheckbox } from './QRCodeCheckbox'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
-  data: ContentBaseOut & { displayOphLogo?: boolean }
+  data: ContentBaseOut & { isPrintPreview?: boolean }
   lt: ReturnType<typeof useLudosTranslation>['lt']
   showQRCodes?: boolean
   onToggleQRCodes?: () => void
@@ -116,9 +116,9 @@ interface AssignmentTitleProps {
 const AssignmentTitle = (props: AssignmentTitleProps) => {
   const { t } = useLudosTranslation()
   const { data, teachingLanguage, createdAt } = props
-  const { displayOphLogo } = data
+  const { isPrintPreview } = data
 
-  const Logo = displayOphLogo ? <img className="h-12 ml-auto mr-4" src={logo} alt="Opetushallituksen logo" /> : <></>
+  const Logo = isPrintPreview ? <img className="h-12 ml-auto mr-4" src={logo} alt="Opetushallituksen logo" /> : <></>
 
   return (
     <div className="flex flex-col w-full">

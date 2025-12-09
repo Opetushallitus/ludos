@@ -1,9 +1,9 @@
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
-import { ContentBaseOut, isAssignment, isPuhviAssignment, Language } from '../../types'
+import { ContentBaseOut, isPuhviAssignment, Language } from '../../types'
 
 type QRCodeCheckboxProps = {
-  data: ContentBaseOut
+  data: ContentBaseOut & { isPrintPreview?: boolean }
   teachingLanguage: Language
   showQRCodes: boolean
   onToggleQRCodes: () => void
@@ -17,8 +17,13 @@ export const QRCodeCheckbox = ({
 }: QRCodeCheckboxProps) => {
   const { lt } = useLudosTranslation()
   const { qrCodesForLinks } = useFeatureFlags()
+  const { isPrintPreview } = data
 
   if (!qrCodesForLinks) {
+    return null
+  }
+
+  if (!isPrintPreview) {
     return null
   }
 

@@ -69,7 +69,7 @@ const Content = ({ exam }: ContentProps) => {
             <div className="col min-h-[40vh] w-full">
               <ContentHeader
                 teachingLanguage={teachingLanguageOverride}
-                data={{ ...data, displayOphLogo: true }}
+                data={{ ...data, isPrintPreview: true }}
                 lt={lt}
                 showQRCodes={showQRCodes}
                 onToggleQRCodes={() => setShowQRCodes(!showQRCodes)}
