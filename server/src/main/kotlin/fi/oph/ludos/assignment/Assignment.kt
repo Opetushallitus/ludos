@@ -18,14 +18,12 @@ import java.sql.Timestamp
 import kotlin.reflect.KClass
 
 fun extractLinksFromHtmlContent(htmlContentList: List<String>): List<String> {
-    val links = mutableSetOf<String>()
-    htmlContentList.forEach { htmlContent ->
+    return htmlContentList.flatMap { htmlContent ->
         val doc = Jsoup.parse(htmlContent)
-        doc.select("a[href]").forEach { element ->
-            element.attr("href").takeIf { it.isNotBlank() }?.let { links.add(it) }
+        doc.select("a[href]").mapNotNull { element ->
+            element.attr("href").takeIf { it.isNotBlank() }
         }
-    }
-    return links.toList()
+    }.distinct()
 }
 
 @ValidOppimaara
