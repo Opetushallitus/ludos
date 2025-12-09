@@ -20,6 +20,9 @@ services:
         - path: ./server
           target: /ludos-build/server
           action: sync
+        - path: ./web
+          target: /ludos-web/web
+          action: sync
         - path: .
           action: rebuild
     image: ${LUDOS_TAG}
