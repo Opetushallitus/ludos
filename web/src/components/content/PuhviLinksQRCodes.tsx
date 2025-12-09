@@ -38,7 +38,7 @@ export const PuhviLinksQRCodes = ({
       <div className="grid grid-cols-2 gap-4">
         {links.map((link, index) => (
           <div key={index} className="flex flex-col items-center border border-gray-light p-3">
-            <QRCodeSVG value={link} size={120} level="M" includeMargin={true} />
+            <QRCodeSVG value={link} size={120} level="H" marginSize={4} />
             <p className="text-xs mt-2 text-center break-all max-w-full">{link}</p>
           </div>
         ))}
