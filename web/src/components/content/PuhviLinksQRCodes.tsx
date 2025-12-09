@@ -7,17 +7,19 @@ type PuhviLinksQRCodesProps = {
   assignment: PuhviAssignmentDtoOut
   teachingLanguage: Language
   showQRCodes?: boolean
-  isPrintPreview?: boolean
 }
 
 export const PuhviLinksQRCodes = ({
   assignment,
   teachingLanguage,
   showQRCodes = true,
-  isPrintPreview = false
 }: PuhviLinksQRCodesProps) => {
   const { qrCodesForLinks } = useFeatureFlags()
   const { lt } = useLudosTranslation()
+
+  if (!showQRCodes) {
+    return null
+  }
 
   // Don't render if feature flag is disabled
   if (!qrCodesForLinks) {
@@ -30,18 +32,8 @@ export const PuhviLinksQRCodes = ({
     return null
   }
 
-  // In print preview: only show if checkbox is checked
-  // In regular view: always render but hide on screen (show when printing)
-  if (isPrintPreview && !showQRCodes) {
-    return null
-  }
-
-  // If in print preview, show on screen when enabled
-  // If in regular view, hide on screen but show when printing
-  const visibilityClass = isPrintPreview ? '' : 'hidden print:block'
-
   return (
-    <div className={`mt-6 border-t border-gray-separator pt-4 ${visibilityClass}`}>
+    <div className={`mt-6 border-t border-gray-separator pt-4`}>
       <h3 className="font-semibold text-lg mb-3">{lt.contentPageQrCodeLinksSubtitle}</h3>
       <div className="grid grid-cols-2 gap-4">
         {links.map((link, index) => (

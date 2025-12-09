@@ -92,7 +92,6 @@ const Content = ({ exam }: ContentProps) => {
                   assignment={data}
                   teachingLanguage={teachingLanguage}
                   showQRCodes={showQRCodes}
-                  isPrintPreview={true}
                 />
               )}
 

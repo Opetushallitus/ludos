@@ -45,7 +45,6 @@ function getContentLang(assignment: AssignmentOut, teachingLanguage: Language): 
 type AssignmentContentWithoutFavoritesProps = {
   contentAction?: ReactNode | undefined
   showQRCodes?: boolean
-  isPrintPreview?: boolean
 } & AssignmentContentProps
 
 export const AssignmentContentWithoutFavorites = ({
@@ -53,7 +52,6 @@ export const AssignmentContentWithoutFavorites = ({
   teachingLanguage,
   contentAction,
   showQRCodes = false,
-  isPrintPreview = false
 }: AssignmentContentWithoutFavoritesProps) => {
   const instructionToShow = getInstructionToShow(assignment, teachingLanguage)
   const contentLang = getContentLang(assignment, teachingLanguage)
@@ -80,7 +78,6 @@ export const AssignmentContentWithoutFavorites = ({
           assignment={assignment}
           teachingLanguage={teachingLanguage}
           showQRCodes={showQRCodes}
-          isPrintPreview={isPrintPreview}
         />
       )}
     </>
