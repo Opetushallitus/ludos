@@ -10,7 +10,8 @@ function main () {
   pushd "$repo"
   DB_URL=jdbc:postgresql://ludos-db:5432/ludos \
   SPRING_PROFILES_ACTIVE=local \
-    docker compose up --build ludos
+    docker compose up --build ludos --watch
+
   popd
 }
 
