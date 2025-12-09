@@ -18,15 +18,19 @@ export const QRCodeCheckbox = ({
   const { lt } = useLudosTranslation()
   const { qrCodesForLinks } = useFeatureFlags()
 
-  const isPuhviAssignmentWithLinks =
-    qrCodesForLinks &&
-    isAssignment(data) &&
-    isPuhviAssignment(data) &&
-    (teachingLanguage === Language.FI
-      ? data.linksFi && data.linksFi.length > 0
-      : data.linksSv && data.linksSv.length > 0)
+  if (!qrCodesForLinks) {
+    return null
+  }
 
-  if (!isPuhviAssignmentWithLinks) {
+  if (!isPuhviAssignment(data)) {
+    return null
+  }
+
+  const selectedLanguageContentContainsLinks = (teachingLanguage === Language.FI
+    ? data.linksFi && data.linksFi.length > 0
+    : data.linksSv && data.linksSv.length > 0)
+
+  if (!selectedLanguageContentContainsLinks) {
     return null
   }
 
