@@ -1,7 +1,7 @@
 import { QRCodeSVG } from 'qrcode.react'
-import { Language, PuhviAssignmentDtoOut } from '../../types'
-import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { useFeatureFlags } from '../../hooks/useFeatureFlags'
+import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Language, PuhviAssignmentDtoOut } from '../../types'
 
 type PuhviLinksQRCodesProps = {
   assignment: PuhviAssignmentDtoOut
@@ -20,11 +20,15 @@ export const PuhviLinksQRCodes = ({
   const { lt } = useLudosTranslation()
 
   // Don't render if feature flag is disabled
-  if (!qrCodesForLinks) return null
+  if (!qrCodesForLinks) {
+    return null
+  }
 
   const links = teachingLanguage === Language.FI ? assignment.linksFi : assignment.linksSv
 
-  if (!links || links.length === 0) return null
+  if (!links || links.length === 0) {
+    return null
+  }
 
   // In print preview: only show if checkbox is checked
   // In regular view: always render but hide on screen (show when printing)
