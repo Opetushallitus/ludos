@@ -143,7 +143,7 @@ export const Icon = ({ name, color, disabled = false, size, dataTestId, customCl
 
   return (
     <i className={className} data-testid={dataTestId}>
-      <span className="inline-block align-top">
+      <span className="inline-block align-top m-auto">
         <svg
           className="block mx-auto w-[1em] h-[1em]"
           dangerouslySetInnerHTML={{ __html: icons[name]?.body }}
