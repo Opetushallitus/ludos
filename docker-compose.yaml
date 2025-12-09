@@ -15,6 +15,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    develop:
+      watch:
+        - path: ./server
+          target: /ludos-build/server
+          action: sync
+        - path: .
+          action: rebuild
     image: ${LUDOS_TAG}
     pull_policy: missing
     ports:
