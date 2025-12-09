@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LudosContext } from '../../contexts/LudosContext'
-import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { useFetch } from '../../hooks/useFetch'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import {
@@ -14,7 +13,6 @@ import {
   isAssignment,
   isCertificate,
   isInstruction,
-  isPuhviAssignment,
   Language
 } from '../../types'
 import { PageLoadingIndicator } from '../PageLoadingIndicator'
@@ -38,8 +36,7 @@ const Content = ({ exam }: ContentProps) => {
   }>()
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
-  const { lt, t } = useLudosTranslation()
-  const { qrCodesForLinks } = useFeatureFlags()
+  const { lt } = useLudosTranslation()
   const [showQRCodes, setShowQRCodes] = useState(true)
 
   const isVersionBrowser = !!version
@@ -64,14 +61,6 @@ const Content = ({ exam }: ContentProps) => {
     return null
   }
 
-  const isPuhviAssignmentWithLinks =
-    qrCodesForLinks &&
-    isAssignment(data) &&
-    isPuhviAssignment(data) &&
-    (teachingLanguage === Language.FI
-      ? data.linksFi && data.linksFi.length > 0
-      : data.linksSv && data.linksSv.length > 0)
-
   return (
     <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
       <div className="row">
@@ -82,7 +71,6 @@ const Content = ({ exam }: ContentProps) => {
                 teachingLanguage={teachingLanguageOverride}
                 data={{ ...data, displayOphLogo: true }}
                 lt={lt}
-                showQRCodesCheckbox={isPuhviAssignmentWithLinks}
                 showQRCodes={showQRCodes}
                 onToggleQRCodes={() => setShowQRCodes(!showQRCodes)}
               />

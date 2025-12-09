@@ -10,12 +10,12 @@ import { Icon } from '../Icon'
 import { InternalLink } from '../InternalLink'
 import { tulostusnakymaKey } from '../LudosRoutes'
 import { TeachingLanguageSelect } from '../TeachingLanguageSelect'
+import { QRCodeCheckbox } from './QRCodeCheckbox'
 
 type ContentHeaderProps = {
   teachingLanguage: Language
   data: ContentBaseOut & { displayOphLogo?: boolean }
   lt: ReturnType<typeof useLudosTranslation>['lt']
-  showQRCodesCheckbox?: boolean
   showQRCodes?: boolean
   onToggleQRCodes?: () => void
 }
@@ -23,7 +23,6 @@ type ContentHeaderProps = {
 export function ContentHeader({
   data,
   teachingLanguage,
-  showQRCodesCheckbox,
   showQRCodes,
   onToggleQRCodes
 }: ContentHeaderProps): ReactElement {
@@ -34,7 +33,6 @@ export function ContentHeader({
       data,
       teachingLanguage,
       lt,
-      showQRCodesCheckbox,
       showQRCodes,
       onToggleQRCodes
     })
@@ -45,7 +43,6 @@ export function ContentHeader({
       data,
       teachingLanguage,
       lt,
-      showQRCodesCheckbox,
       showQRCodes,
       onToggleQRCodes
     })
@@ -56,7 +53,6 @@ export function ContentHeader({
       data,
       teachingLanguage,
       lt,
-      showQRCodesCheckbox,
       showQRCodes,
       onToggleQRCodes
     })
@@ -67,7 +63,6 @@ export function ContentHeader({
       data,
       teachingLanguage,
       lt,
-      showQRCodesCheckbox,
       showQRCodes,
       onToggleQRCodes
     })
@@ -80,12 +75,9 @@ export function ContentHeaderWithLanguageSelector({
   data,
   teachingLanguage,
   lt,
-  showQRCodesCheckbox,
   showQRCodes,
   onToggleQRCodes
 }: ContentHeaderProps) {
-  const { t } = useLudosTranslation()
-
   return (
     <div data-testid="content-common" className="row mb-3 flex-wrap items-center justify-between">
       <AssignmentTitle data={data} teachingLanguage={teachingLanguage} createdAt={data.createdAt} />
@@ -96,19 +88,12 @@ export function ContentHeaderWithLanguageSelector({
           <TeachingLanguageSelect exam={data.exam} />
         </div>
 
-        {showQRCodesCheckbox && (
-          <div>
-            <label className="flex items-center gap-2 cursor-pointer mb-1">
-              <input
-                type="checkbox"
-                checked={showQRCodes}
-                onChange={onToggleQRCodes}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <span className="text-sm">{lt.contentPageQrCodeCheckboxLabel}</span>
-            </label>
-          </div>
-        )}
+        <QRCodeCheckbox
+          data={data}
+          teachingLanguage={teachingLanguage}
+          showQRCodes={showQRCodes ?? true}
+          onToggleQRCodes={onToggleQRCodes ?? (() => {})}
+        />
       </div>
     </div>
   )
