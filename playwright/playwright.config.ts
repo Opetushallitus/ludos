@@ -5,8 +5,7 @@ import * as process from 'process'
  * See https://playwright.dev/docs/test-configuration.
  */
 function getBaseURL() {
-  if (process.env.CI) return 'http://ludos-server:8080'
-  return 'http://server:8080'
+  return 'http://ludos-server:8080'
 }
 
 export default defineConfig({
