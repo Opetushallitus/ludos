@@ -29,7 +29,7 @@ export const PuhviLinksQRCodes = ({ assignment, teachingLanguage, showQRCodes = 
   }
 
   return (
-    <div className={`mt-6 border-t border-gray-separator pt-4`}>
+    <div className={`mt-6 border-t border-gray-separator pt-4`} data-testid={'qr-code-container'}>
       <h3 className="font-semibold text-lg mb-3">{lt.contentPageQrCodeLinksSubtitle}</h3>
       <div className="grid grid-cols-2 gap-4">
         {links.map((link, index) => (

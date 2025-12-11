@@ -5,6 +5,7 @@ import { loginTestGroup, Role } from '../../helpers'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 import { BaseTestFixtures, baseTest, defaultSukoFormData } from '../fixtures/suko'
+import { basePuhviTest } from '../fixtures/puhvi'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
@@ -31,7 +32,7 @@ test.describe.fixme('Presentation view', () => {
   })
 })
 
-const printViewTest = baseTest.extend<BaseTestFixtures>({
+const sukoPrintViewTest = baseTest.extend<BaseTestFixtures>({
   formData: async ({}, use) => {
     await use({
       ...defaultSukoFormData,
@@ -40,7 +41,7 @@ const printViewTest = baseTest.extend<BaseTestFixtures>({
   }
 })
 
-printViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedSukoAssignment, browser }) => {
+sukoPrintViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedSukoAssignment, browser }) => {
   await test.step('header has correct assignment name', async () => {
     await expect(sukoAssignmentPrintView.header).toHaveText(formData.nameFi)
   })
@@ -85,6 +86,20 @@ printViewTest('Print view', async ({ sukoAssignmentPrintView, formData, printedS
       await expect(pdfPage).toHaveScreenshot('printed-suko-assignment.png', opts)
     }).toPass()
     await pdfPage.close()
+  })
+})
+
+basePuhviTest('Puhvi qr code print view', async ({ puhviAssignmentPrintView, formData, printedPuhviAssignment, browser }) => {
+  await test.step('header has correct assignment name', async () => {
+    await expect(puhviAssignmentPrintView.header).toHaveText(formData.nameFi)
+  })
+
+  await test.step('Tulostusnäkymä contains QR codes', async () => {
+    await puhviAssignmentPrintView.page.getByTestId('qr-code-checkbox').locator('input').check()
+
+    await expect(async () => {
+      await expect(puhviAssignmentPrintView.page.getByTestId('qr-code-container')).toHaveScreenshot('puhvi-qr-codes.png')
+    }).toPass()
   })
 })
 

@@ -34,7 +34,7 @@ export const QRCodeCheckbox = ({ data, teachingLanguage, showQRCodes, onToggleQR
   }
 
   return (
-    <div>
+    <div data-testid={'qr-code-checkbox'}>
       <label className="flex items-center gap-2 cursor-pointer mb-1">
         <input type="checkbox" checked={showQRCodes} onChange={onToggleQRCodes} className="w-4 h-4 cursor-pointer" />
         <span className="text-sm">{lt.contentPageQrCodeCheckboxLabel}</span>
