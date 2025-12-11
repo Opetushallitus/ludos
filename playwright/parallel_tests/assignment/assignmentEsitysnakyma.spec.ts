@@ -4,8 +4,8 @@ import { testEsitysNakyma } from '../../examHelpers/assignmentHelpers'
 import { loginTestGroup, Role } from '../../helpers'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
-import { BaseTestFixtures, baseTest, defaultSukoFormData } from '../fixtures/suko'
 import { basePuhviTest } from '../fixtures/puhvi'
+import { BaseTestFixtures, baseTest, defaultSukoFormData } from '../fixtures/suko'
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
@@ -99,31 +99,36 @@ async function pdfBase64StringToWebPage(browser: Browser, base64Pdf: string, vie
   return pdfPage
 }
 
-basePuhviTest('Puhvi qr code print view', async ({ puhviAssignmentPrintView, formData, printedPuhviAssignment, browser }) => {
-  await test.step('header has correct assignment name', async () => {
-    await expect(puhviAssignmentPrintView.header).toHaveText(formData.nameFi)
-  })
+basePuhviTest(
+  'Puhvi qr code print view',
+  async ({ puhviAssignmentPrintView, formData, printedPuhviAssignment, browser }) => {
+    await test.step('header has correct assignment name', async () => {
+      await expect(puhviAssignmentPrintView.header).toHaveText(formData.nameFi)
+    })
 
-  await test.step('Tulostusnäkymä contains QR codes', async () => {
-    await puhviAssignmentPrintView.page.getByTestId('qr-code-checkbox').locator('input').check()
+    await test.step('Tulostusnäkymä contains QR codes', async () => {
+      await puhviAssignmentPrintView.page.getByTestId('qr-code-checkbox').locator('input').check()
 
-    await expect(async () => {
-      await expect(puhviAssignmentPrintView.page.getByTestId('qr-code-container')).toHaveScreenshot('puhvi-qr-codes.png')
-    }).toPass()
-  })
+      await expect(async () => {
+        await expect(puhviAssignmentPrintView.page.getByTestId('qr-code-container')).toHaveScreenshot(
+          'puhvi-qr-codes.png'
+        )
+      }).toPass()
+    })
 
-  await test.step('printed PDF looks correct', async () => {
-    const base64Pdf = printedPuhviAssignment.toString('base64')
-    const pdfPage = await pdfBase64StringToWebPage(browser, base64Pdf, { width: 1024, height: 1024 })
+    await test.step('printed PDF looks correct', async () => {
+      const base64Pdf = printedPuhviAssignment.toString('base64')
+      const pdfPage = await pdfBase64StringToWebPage(browser, base64Pdf, { width: 1024, height: 1024 })
 
-    const opts = { animations: 'disabled', maxDiffPixelRatio: 0.05, fullPage: true } as const
-    await pdfPage.waitForTimeout(5000)
-    await expect(async () => {
-      await expect(pdfPage).toHaveScreenshot('printed-puhvi-assignment.png', opts)
-    }).toPass()
-    await pdfPage.close()
-  })
-})
+      const opts = { animations: 'disabled', maxDiffPixelRatio: 0.05, fullPage: true } as const
+      await pdfPage.waitForTimeout(5000)
+      await expect(async () => {
+        await expect(pdfPage).toHaveScreenshot('printed-puhvi-assignment.png', opts)
+      }).toPass()
+      await pdfPage.close()
+    })
+  }
+)
 
 async function getNormalizedInnerTexts(locator: Locator): Promise<string> {
   const text = (await locator.allInnerTexts()).join(' ')

@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { Exam } from 'web/src/types'
+import { fillPuhviAssignmentForm } from '../../examHelpers/assignmentHelpers'
 import { AssignmentContentModel } from '../../models/AssignmentContentModel'
 import { AssignmentFormModel } from '../../models/AssignmentFormModel'
 import { PrintContentModel } from '../../models/PrintContentModel'
-import { fillPuhviAssignmentForm } from '../../examHelpers/assignmentHelpers'
 
 const laajaAlainenOsaaminen = {
   '05': { name: 'Eettisyys ja ympäristöosaaminen', code: '05' }
@@ -15,7 +15,10 @@ export const defaultPuhviFormData = {
   laajaalainenOsaaminenKoodiArvos: [laajaAlainenOsaaminen['05'].code],
   assignmentTypeKoodiArvo: '002',
   lukuvuosiKoodiArvos: ['20202021'],
-  tehtavanSisalto: [{ text: 'koira', url: 'www.koira.com' }, { text: 'kissa', url: 'www.kissa.com' }]
+  tehtavanSisalto: [
+    { text: 'koira', url: 'www.koira.com' },
+    { text: 'kissa', url: 'www.kissa.com' }
+  ]
 }
 
 export interface BasePuhviTestFixtures {
@@ -25,7 +28,7 @@ export interface BasePuhviTestFixtures {
   publishedPuhviAssignment: AssignmentContentModel
   puhviAssignmentPrintView: PrintContentModel
   printedPuhviAssignment: Buffer
-  tehtavanSisalto: { text: string, url: string }
+  tehtavanSisalto: { text: string; url: string }
 }
 
 export const basePuhviTest = test.extend<BasePuhviTestFixtures>({
@@ -40,7 +43,7 @@ export const basePuhviTest = test.extend<BasePuhviTestFixtures>({
   filledPuhviAssignment: async ({ newPuhviAssignment, formData, page }, use) => {
     await fillPuhviAssignmentForm(newPuhviAssignment, formData)
 
-    async function createTiptapLinks(links: { text: string, url: string }[]) {
+    async function createTiptapLinks(links: { text: string; url: string }[]) {
       await page.getByTestId(`contentFi-0`).locator('div[contenteditable="true"]').click()
       for (const link of links) {
         await page.getByTestId(`contentFi-0`).getByTestId('link').click()
