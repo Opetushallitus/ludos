@@ -88,12 +88,14 @@ export function ContentHeaderWithLanguageSelector({
           <TeachingLanguageSelect exam={data.exam} />
         </div>
 
-        <QRCodeCheckbox
-          data={data}
-          teachingLanguage={teachingLanguage}
-          showQRCodes={showQRCodes ?? true}
-          onToggleQRCodes={onToggleQRCodes ?? (() => {})}
-        />
+        {onToggleQRCodes && (
+          <QRCodeCheckbox
+            data={data}
+            teachingLanguage={teachingLanguage}
+            showQRCodes={showQRCodes ?? true}
+            onToggleQRCodes={onToggleQRCodes}
+          />
+        )}
       </div>
     </div>
   )
@@ -171,8 +173,7 @@ function ContentActionButton({
         customClass="p-0 flex items-center pr-3"
         onClick={() => onClickHandler?.(actionName)}
         disabled={disabled}
-        data-testid={actionName}
-      >
+        data-testid={actionName}>
         {children}
       </Button>
     )
