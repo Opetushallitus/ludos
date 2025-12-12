@@ -173,7 +173,8 @@ function ContentActionButton({
         customClass="p-0 flex items-center pr-3"
         onClick={() => onClickHandler?.(actionName)}
         disabled={disabled}
-        data-testid={actionName}>
+        data-testid={actionName}
+      >
         {children}
       </Button>
     )
