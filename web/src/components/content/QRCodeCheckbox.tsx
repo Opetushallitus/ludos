@@ -27,7 +27,7 @@ export const QRCodeCheckbox = ({ data, teachingLanguage, showQRCodes, onToggleQR
   }
 
   const selectedLanguageContentContainsLinks =
-    teachingLanguage === Language.FI ? data.linksFi && data.linksFi.length > 0 : data.linksSv && data.linksSv.length > 0
+    teachingLanguage === Language.FI ? data.linksFi.length > 0 : data.linksSv.length > 0
 
   if (!selectedLanguageContentContainsLinks) {
     return null
