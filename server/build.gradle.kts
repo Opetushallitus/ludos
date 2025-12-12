@@ -49,7 +49,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:11.15.0")
     implementation("org.flywaydb:flyway-database-postgresql:11.15.0")
     implementation("ch.qos.logback.access:logback-access-common:2.0.6")
-    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
     implementation("org.jsoup:jsoup:1.21.2")
