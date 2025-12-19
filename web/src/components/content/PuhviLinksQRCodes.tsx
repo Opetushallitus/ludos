@@ -1,5 +1,4 @@
 import { QRCodeSVG } from 'qrcode.react'
-import { useFeatureFlags } from '../../hooks/useFeatureFlags'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
 import { Language, PuhviAssignmentDtoOut } from '../../types'
 
@@ -10,15 +9,9 @@ type PuhviLinksQRCodesProps = {
 }
 
 export const PuhviLinksQRCodes = ({ assignment, teachingLanguage, showQRCodes = true }: PuhviLinksQRCodesProps) => {
-  const { qrCodesForLinks } = useFeatureFlags()
   const { lt } = useLudosTranslation()
 
   if (!showQRCodes) {
-    return null
-  }
-
-  // Don't render if feature flag is disabled
-  if (!qrCodesForLinks) {
     return null
   }
 
