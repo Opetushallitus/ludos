@@ -29,7 +29,7 @@ Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista 
 
 - PostgreSQL xx.xx -tietokanta
 - Palvelinteknologiat
-  - Kotlin (Java 17)
+  - Kotlin (Java 25)
   - Spring boot
   - Flyway-migraatiotyökalu kannan skeeman rakentamiseen ja päivittämiseen kehityksessä ja tuotannossa
   - Gradle buildaa
@@ -46,7 +46,7 @@ Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista 
 
 Minimissään tarvitset nämä:
 
-- JDK 17
+- JDK 25
 - Docker PostgreSQL:n
 - Node ^20.0.0
 - Tarvittaessa tmux `start-local.sh`-skriptiä varten

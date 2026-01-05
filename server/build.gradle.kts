@@ -13,7 +13,7 @@ plugins {
 
 group = "fi.oph"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_25
 
 repositories {
     mavenCentral()
@@ -89,7 +89,7 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(listOf("-Xjsr305=strict"))
-        jvmTarget = JvmTarget.fromTarget("17")
+        jvmTarget = JvmTarget.fromTarget("25")
     }
 }
 
