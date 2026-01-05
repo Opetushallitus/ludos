@@ -16,7 +16,7 @@ COPY web/src/ ./src/
 RUN npm run build:ci
 
 
-FROM gradle:jdk25 AS server-build
+FROM gradle:jdk25@sha256:3dec978fd14b3dc1083dfbeedfab9dd9da3d23bbb1a5d1e8b618b88e1ea3d35d AS server-build
 
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts .
@@ -26,7 +26,7 @@ COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
 COPY server/src/ ./src/
 RUN gradle --no-daemon bootJar
 
-FROM amazoncorretto:25-alpine
+FROM amazoncorretto:25-alpine@sha256:e3818f93bee840c1593492ba5335ceb214ffe4a37a8275e49d23aab6f66b9f6a
 
 RUN apk add curl
 
