@@ -11,13 +11,13 @@
     "lint:fix": "biome check --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.1",
-    "@types/node": "22.18.12",
+    "@biomejs/biome": "2.3.11",
+    "@types/node": "24.10.4",
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "aws-cdk": "2.1031.0",
-    "aws-cdk-lib": "2.221.0",
+    "aws-cdk": "2.1100.1",
+    "aws-cdk-lib": "2.233.0",
     "constructs": "^10.3.0",
     "source-map-support": "^0.5.21",
     "tsx": "^4.20.3"

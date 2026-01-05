@@ -30,11 +30,11 @@ dependencyLocking {
 configurations.all {
     resolutionStrategy.dependencySubstitution {
         substitute(module("org.bouncycastle:bcprov-jdk15on"))
-            .using(module("org.bouncycastle:bcprov-jdk18on:1.82"))
+            .using(module("org.bouncycastle:bcprov-jdk18on:1.83"))
         substitute(module("org.bouncycastle:bcpkix-jdk15on"))
-            .using(module("org.bouncycastle:bcpkix-jdk18on:1.82"))
+            .using(module("org.bouncycastle:bcpkix-jdk18on:1.83"))
         substitute(module("org.bouncycastle:bcutil-jdk15on"))
-            .using(module("org.bouncycastle:bcutil-jdk18on:1.82"))
+            .using(module("org.bouncycastle:bcutil-jdk18on:1.83"))
     }
 }
 
@@ -44,24 +44,24 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
-    implementation("org.apache.commons:commons-lang3:3.19.0")
-    implementation("io.arrow-kt:arrow-core:2.1.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("io.arrow-kt:arrow-core:2.2.1")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    implementation("org.flywaydb:flyway-core:11.15.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.15.0")
-    implementation("ch.qos.logback.access:logback-access-common:2.0.6")
+    implementation("org.flywaydb:flyway-core:11.20.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.20.0")
+    implementation("ch.qos.logback.access:logback-access-common:2.0.7")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
-    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.7")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
-    implementation("org.jsoup:jsoup:1.21.2")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.36.3")
-    implementation("software.amazon.awssdk:s3:2.36.3")
-    implementation("software.amazon.awssdk:sso:2.36.3")
-    implementation("software.amazon.awssdk:ssooidc:2.36.3")
-    implementation("org.springframework.security:spring-security-cas:6.5.6")
+    implementation("org.jsoup:jsoup:1.22.1")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.41.1")
+    implementation("software.amazon.awssdk:s3:2.41.1")
+    implementation("software.amazon.awssdk:sso:2.41.1")
+    implementation("software.amazon.awssdk:ssooidc:2.41.1")
+    implementation("org.springframework.security:spring-security-cas:6.5.7")
     implementation("com.nimbusds", "nimbus-jose-jwt").version {
         strictly("9.37.4")
     }
@@ -71,7 +71,7 @@ dependencies {
     implementation("org.apache.tomcat.embed", "tomcat-embed-core").version {
         strictly("10.1.47")
     }
-    implementation("org.springframework:spring-test:6.2.12")
+    implementation("org.springframework:spring-test:6.2.15")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
