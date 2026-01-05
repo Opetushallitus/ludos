@@ -71,7 +71,7 @@ dependencies {
     implementation("org.apache.tomcat.embed", "tomcat-embed-core").version {
         strictly("10.1.47")
     }
-    implementation("org.springframework:spring-test:6.2.15")
+    implementation("org.springframework:spring-test:7.0.2")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
