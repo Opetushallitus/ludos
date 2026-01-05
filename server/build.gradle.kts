@@ -3,7 +3,6 @@ import java.nio.file.StandardCopyOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.springframework.boot") version "3.5.7"
@@ -13,7 +12,12 @@ plugins {
 
 group = "fi.oph"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_25
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -89,7 +93,6 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(listOf("-Xjsr305=strict"))
-        jvmTarget = JvmTarget.fromTarget("25")
     }
 }
 
