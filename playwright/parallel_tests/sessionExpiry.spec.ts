@@ -21,8 +21,11 @@ async function assertSessionExpiryFormErrorMessage(page: Page) {
 
 async function clearCookiesAndSubmit(page: Page, contentType: string) {
   await page.context().clearCookies()
+  const responsePromise = page.waitForResponse(
+    (response) => response.url().includes(`/api/${contentType}`) && response.status() === 302
+  )
   void page.getByTestId('form-submit').click()
-  await page.waitForResponse((response) => response.url().includes(`/api/${contentType}`) && response.status() === 302)
+  await responsePromise
 }
 
 Object.values(Exam).forEach((exam) => {
@@ -36,10 +39,11 @@ Object.values(Exam).forEach((exam) => {
     test('should redirect refresh the browser on session expiry', async ({ page }) => {
       await page.context().clearCookies()
 
-      void page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
-      await page.waitForResponse(
+      const responsePromise = page.waitForResponse(
         (response) => response.url().includes(`/api/${ContentTypeSingularEn.ASSIGNMENT}`) && response.status() === 302
       )
+      void page.getByTestId(`nav-link-${exam.toLowerCase()}`).click()
+      await responsePromise
 
       await page.waitForResponse(
         (resp) => {
