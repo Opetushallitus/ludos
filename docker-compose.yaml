@@ -65,11 +65,6 @@ services:
     environment:
       RUN_LOCAL_TESTS_IN_UI_MODE: ${RUN_LOCAL_TESTS_IN_UI_MODE:-}
     volumes:
-      - ./playwright/playwright-results:/playwright/playwright-results
-      - ./playwright/snapshots:/playwright/snapshots
-      - ./playwright/parallel_tests:/playwright/parallel_tests
-      - ./playwright/non_parallel_tests:/playwright/non_parallel_tests
-      - ./playwright/assertPdfDownload.ts:/playwright/assertPdfDownload.ts
-      - ./playwright/models:/playwright/models
+      - ./playwright:/playwright
     ports:
       - '127.0.0.1:9876:9876'
