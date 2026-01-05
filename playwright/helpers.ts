@@ -1,5 +1,5 @@
+import { readFileSync } from 'node:fs'
 import { BrowserContext, expect, test as importedTest, Locator, Page } from '@playwright/test'
-import { promises as fsPromises } from 'fs'
 import path from 'path'
 import { Exam, KoodistoName, Language } from 'web/src/types'
 
@@ -65,7 +65,7 @@ export async function fetchWithSession(
 
 const koodistoCache: { [key in KoodistoName]?: object[] } = {}
 
-async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
+function readKoodistoFile(koodistoName: KoodistoName): object[] {
   const koodistoFilePath = path.join(
     __dirname,
     '..',
@@ -76,24 +76,31 @@ async function readKoodistoFile(koodistoName: KoodistoName): Promise<object[]> {
     'backup_data',
     `koodisto_${koodistoName}.json`
   )
-  return JSON.parse(await fsPromises.readFile(koodistoFilePath, { encoding: 'utf-8' }))
+  return JSON.parse(readFileSync(koodistoFilePath, { encoding: 'utf-8' }))
 }
 
-export async function koodiNimi(
+function getKoodistoCache(koodistoName: KoodistoName) {
+  if (!Boolean(koodistoCache[koodistoName])) {
+    koodistoCache[koodistoName] = readKoodistoFile(koodistoName)
+  }
+
+  return koodistoCache[koodistoName]
+}
+
+export function koodiNimi(
   koodistoName: KoodistoName,
   koodiArvo: string,
   language: Language = Language.FI
 ): Promise<string> {
-  let koodisto = koodistoCache[koodistoName]
-  if (!koodisto) {
-    koodistoCache[koodistoName] = await readKoodistoFile(koodistoName)
-    koodisto = koodistoCache[koodistoName]
-  }
-  const koodi: any = koodisto?.find((k: any) => k['koodiArvo'] === koodiArvo)
+  const koodisto = getKoodistoCache(koodistoName)
+  const koodi = koodisto?.find((k) => 'koodiArvo' in k && k['koodiArvo'] === koodiArvo)
   if (!koodi) {
     throw new Error(`Could not find koodiArvo ${koodiArvo} from koodisto ${koodistoName}`)
   } else {
-    const koodiMetadata = koodi['metadata'].find((m: any) => m['kieli'] === language.toUpperCase())
+    const koodiMetadata =
+      'metadata' in koodi &&
+      Array.isArray(koodi['metadata']) &&
+      koodi['metadata'].find((m) => m['kieli'] === language.toUpperCase())
     if (!koodiMetadata) {
       const errorMessage = `Could not find language ${language} for koodiArvo ${koodiArvo} in koodisto ${koodistoName}`
       throw new Error(errorMessage)
