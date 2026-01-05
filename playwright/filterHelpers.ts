@@ -16,7 +16,7 @@ export const checkListAfterFilteringWithProvidedContent =
   (page: Page, exam: Exam) =>
   async (expectedNumbersInCards: number[], contentSpecificAssert?: () => Promise<void>): Promise<void> => {
     await expect(page.getByTestId('card-list')).toBeVisible()
-    
+
     if (expectedNumbersInCards.length > 0) {
       await expect(page.getByTestId('card-list').locator('li').first()).toBeVisible()
     }

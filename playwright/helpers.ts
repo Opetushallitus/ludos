@@ -97,7 +97,10 @@ export function koodiNimi(
   if (!koodi) {
     throw new Error(`Could not find koodiArvo ${koodiArvo} from koodisto ${koodistoName}`)
   } else {
-    const koodiMetadata = 'metadata' in koodi && Array.isArray(koodi['metadata']) && koodi['metadata'].find((m) => m['kieli'] === language.toUpperCase())
+    const koodiMetadata =
+      'metadata' in koodi &&
+      Array.isArray(koodi['metadata']) &&
+      koodi['metadata'].find((m) => m['kieli'] === language.toUpperCase())
     if (!koodiMetadata) {
       const errorMessage = `Could not find language ${language} for koodiArvo ${koodiArvo} in koodisto ${koodistoName}`
       throw new Error(errorMessage)
