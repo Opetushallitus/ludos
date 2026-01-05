@@ -3,17 +3,21 @@ import java.nio.file.StandardCopyOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.springframework.boot") version "3.5.4"
-    kotlin("jvm") version "2.2.10"
-    kotlin("plugin.spring") version "2.2.10"
+    id("org.springframework.boot") version "3.5.7"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.spring") version "2.3.0"
 }
 
 group = "fi.oph"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -23,53 +27,72 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
-dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.4"))
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("org.bouncycastle:bcprov-jdk15on"))
+            .using(module("org.bouncycastle:bcprov-jdk18on:1.82"))
+        substitute(module("org.bouncycastle:bcpkix-jdk15on"))
+            .using(module("org.bouncycastle:bcpkix-jdk18on:1.82"))
+        substitute(module("org.bouncycastle:bcutil-jdk15on"))
+            .using(module("org.bouncycastle:bcutil-jdk18on:1.82"))
+    }
+}
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.4")
+dependencies {
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
+
+    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
-    implementation("org.apache.commons:commons-lang3:3.18.0")
+    implementation("org.apache.commons:commons-lang3:3.19.0")
     implementation("io.arrow-kt:arrow-core:2.1.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.0")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    implementation("org.flywaydb:flyway-core:11.11.2")
-    implementation("org.flywaydb:flyway-database-postgresql:11.11.2")
+    implementation("org.flywaydb:flyway-core:11.15.0")
+    implementation("org.flywaydb:flyway-database-postgresql:11.15.0")
     implementation("ch.qos.logback.access:logback-access-common:2.0.6")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.10")
-    implementation("org.jsoup:jsoup:1.21.1")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.32.29")
-    implementation("software.amazon.awssdk:s3:2.32.29")
-    implementation("software.amazon.awssdk:sso:2.32.29")
-    implementation("software.amazon.awssdk:ssooidc:2.32.29")
-    implementation("org.springframework.security:spring-security-cas:6.5.3")
-    implementation("org.springframework:spring-test:6.2.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    implementation("org.jsoup:jsoup:1.21.2")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.36.3")
+    implementation("software.amazon.awssdk:s3:2.36.3")
+    implementation("software.amazon.awssdk:sso:2.36.3")
+    implementation("software.amazon.awssdk:ssooidc:2.36.3")
+    implementation("org.springframework.security:spring-security-cas:6.5.6")
+    implementation("com.nimbusds", "nimbus-jose-jwt").version {
+        strictly("9.37.4")
+    }
+    implementation("ch.qos.logback", "logback-core").version {
+        strictly("1.5.19")
+    }
+    implementation("org.apache.tomcat.embed", "tomcat-embed-core").version {
+        strictly("10.1.47")
+    }
+    implementation("org.springframework:spring-test:6.2.12")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.session:spring-session-jdbc")
-    implementation("org.postgresql:postgresql:42.7.7")
+    implementation("org.postgresql:postgresql:42.7.8")
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
 
-    testCompileOnly("org.projectlombok:lombok:1.18.38")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
+    testCompileOnly("org.projectlombok:lombok:1.18.42")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(listOf("-Xjsr305=strict"))
-        jvmTarget = JvmTarget.fromTarget("17")
     }
 }
 

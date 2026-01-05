@@ -7,14 +7,6 @@ import { Button } from './Button'
 import { ExternalLink } from './ExternalLink'
 import { ConsentModal, ConsentModalHandles } from './modal/ConsentModal'
 
-export const PrintFooter = () => {
-  return (
-    <FooterContainer>
-      <OphWebsiteLink />
-    </FooterContainer>
-  )
-}
-
 export const Footer = () => {
   const { t } = useLudosTranslation()
   const feedbackUrl = useFeedbackUrl()

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { LudosContext } from '../../contexts/LudosContext'
 import { useFetch } from '../../hooks/useFetch'
@@ -37,6 +37,7 @@ const Content = ({ exam }: ContentProps) => {
   const { teachingLanguage } = useContext(LudosContext)
   const contentType = ContentTypeByContentTypePluralFi[contentTypePluralFi!]
   const { lt } = useLudosTranslation()
+  const [showQRCodes, setShowQRCodes] = useState(true)
 
   const isVersionBrowser = !!version
 
@@ -64,12 +65,22 @@ const Content = ({ exam }: ContentProps) => {
     <div className="min-h-[80vh] mt-5 print-content" data-testid="print-content">
       <div className="row">
         <div className="col w-full pr-5 md:w-9/12">
-          <div className="row pb-3">
+          <div className="row pb-3 print:pb-0">
             <div className="col min-h-[40vh] w-full">
-              <ContentHeader teachingLanguage={teachingLanguageOverride} data={data} lt={lt} />
+              <ContentHeader
+                teachingLanguage={teachingLanguageOverride}
+                data={{ ...data, isPrintPreview: true }}
+                lt={lt}
+                showQRCodes={showQRCodes}
+                onToggleQRCodes={() => setShowQRCodes(!showQRCodes)}
+              />
 
               {contentType === ContentType.ASSIGNMENT && isAssignment(data) && (
-                <AssignmentContentWithoutFavorites assignment={data} teachingLanguage={teachingLanguage} />
+                <AssignmentContentWithoutFavorites
+                  assignment={data}
+                  teachingLanguage={teachingLanguage}
+                  showQRCodes={showQRCodes}
+                />
               )}
 
               {contentType === ContentType.CERTIFICATE && isCertificate(data) && (

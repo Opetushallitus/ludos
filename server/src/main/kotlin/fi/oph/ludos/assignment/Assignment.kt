@@ -13,8 +13,18 @@ import jakarta.validation.*
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
+import org.jsoup.Jsoup
 import java.sql.Timestamp
 import kotlin.reflect.KClass
+
+fun extractLinksFromHtmlContent(htmlContentList: List<String>): List<String> {
+    return htmlContentList.flatMap { htmlContent ->
+        val doc = Jsoup.parse(htmlContent)
+        doc.select("a[href]").mapNotNull { element ->
+            element.attr("href").takeIf { it.isNotBlank() }
+        }
+    }.distinct()
+}
 
 @ValidOppimaara
 data class Oppimaara(
@@ -307,6 +317,8 @@ data class PuhviAssignmentDtoOut(
     override val version: Int,
     override val assignmentTypeKoodiArvo: String,
     override val lukuvuosiKoodiArvos: List<String>,
+    val linksFi: List<String> = extractLinksFromHtmlContent(emptyList()),
+    val linksSv: List<String> = extractLinksFromHtmlContent(emptyList()),
     override val exam: Exam = Exam.PUHVI
 ) : AssignmentOut, PuhviAssignmentMetadata {
     constructor(assignment: PuhviAssignmentDtoIn, out: ContentOutFieldsImpl) : this(
@@ -326,7 +338,9 @@ data class PuhviAssignmentDtoOut(
         updaterName = out.updaterName,
         version = out.version,
         assignmentTypeKoodiArvo = assignment.assignmentTypeKoodiArvo,
-        lukuvuosiKoodiArvos = assignment.lukuvuosiKoodiArvos
+        lukuvuosiKoodiArvos = assignment.lukuvuosiKoodiArvos,
+        linksFi = extractLinksFromHtmlContent(assignment.contentFi),
+        linksSv = extractLinksFromHtmlContent(assignment.contentSv)
     )
 }
 

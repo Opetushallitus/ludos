@@ -79,6 +79,9 @@
         html, body {
             height: 98%;
         }
+        header {
+            border-style: none;
+        }
         .main-grid {
             @apply mt-1
         }

@@ -21,10 +21,11 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
           app_id: ${{ secrets.APP_ID }}
       - name: Self-hosted Renovate
-        uses: renovatebot/github-action@b11417b9eaac3145fe9a8544cee66503724e32b6 # v43.0.8
+        uses: renovatebot/github-action@a3c115cd6676c8a5bc72f9715f108759e570daf5 # v43.0.19
         with:
           configurationFile: .github/renovate.json
           token: ${{ steps.app-token.outputs.token }}
+          renovate-version: 41-full
         env:
           LOG_LEVEL: 'debug'
           RENOVATE_REPOSITORIES: 'Opetushallitus/ludos'

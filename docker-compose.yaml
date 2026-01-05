@@ -15,6 +15,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    develop:
+      watch:
+        - path: ./server
+          target: /ludos-build/server
+          action: rebuild
+        - path: ./web
+          target: /ludos-web/web
+          action: rebuild
     image: ${LUDOS_TAG}
     pull_policy: missing
     ports:
@@ -47,3 +55,21 @@ services:
       retries: 5
     ports:
       - '127.0.0.1:5432:5432'
+
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile.playwright
+      args:
+        - PLAYWRIGHT_VERSION
+    environment:
+      RUN_LOCAL_TESTS_IN_UI_MODE: ${RUN_LOCAL_TESTS_IN_UI_MODE:-}
+    volumes:
+      - ./playwright/playwright-results:/playwright/playwright-results
+      - ./playwright/snapshots:/playwright/snapshots
+      - ./playwright/parallel_tests:/playwright/parallel_tests
+      - ./playwright/non_parallel_tests:/playwright/non_parallel_tests
+      - ./playwright/assertPdfDownload.ts:/playwright/assertPdfDownload.ts
+      - ./playwright/models:/playwright/models
+    ports:
+      - '127.0.0.1:9876:9876'
