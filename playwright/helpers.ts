@@ -116,16 +116,25 @@ export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: 
   }
 
   for await (const option of optionIds) {
-    await page.getByTestId(`${dropdownTestId}-open`).waitFor({ state: 'attached' })
-    await page.getByTestId(`${dropdownTestId}-open`).scrollIntoViewIfNeeded()
-    await page.getByTestId(`${dropdownTestId}-open`).click()
+    await expect(page.getByTestId('spinner')).not.toBeVisible()
+    await page.getByTestId(`${dropdownTestId}-open`).click({})
     await page.getByTestId(`${dropdownTestId}-option-${option}`).click()
   }
 }
 
 export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: string, optionId: string) {
+  await expect(page.getByTestId('spinner')).not.toBeVisible()
+
   await page.getByTestId(`${dropdownTestId}-open`).click()
   await page.getByTestId(`${dropdownTestId}-option-${optionId}`).click()
+}
+
+export async function setAssignmentType(page: Page, optionId: string) {
+  await expect(page.getByTestId('spinner')).not.toBeVisible()
+
+  await page.getByTestId('contentTypeFilter-open').waitFor({ state: 'visible' })
+  await page.getByTestId('contentTypeFilter-open').click()
+  await page.getByTestId(`contentTypeFilter-option-${optionId}`).click()
 }
 
 export async function setTeachingLanguage(page: Page, teachingLanguage: Language) {
