@@ -38,6 +38,7 @@ function playwright-test {
    --network oph-ludos_default \
    --env HEADLESS=true \
    --env CI=true \
+   -v ./playwright:/playwright \
    playwright-image --project non_parallel_tests
   end_gh_actions_group
 
@@ -46,6 +47,7 @@ function playwright-test {
    --network oph-ludos_default \
    --env HEADLESS=true \
    --env CI=true \
+   -v ./playwright:/playwright \
    playwright-image --project parallel_tests --workers 4
   end_gh_actions_group
 
@@ -54,6 +56,7 @@ function playwright-test {
   --network oph-ludos_default \
   --env HEADLESS=true \
   --env CI=true \
+  -v ./playwright:/playwright \
   playwright-image --project download_test_webkit
   end_gh_actions_group
 
