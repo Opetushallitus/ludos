@@ -21,6 +21,7 @@ export class AssignmentContentListModel extends ContentListModel {
   }
 
   async checkListAfterFiltering(expectedAssignmentTitleNumbers: number[]) {
+    await expect(this.page.locator('[role="status"]')).not.toBeVisible({ timeout: 10000 })
     await expect(
       this.page.getByRole('link', {
         name: filterTestAssignmentName(expectedAssignmentTitleNumbers[0], Language.FI, this.exam)
