@@ -3,17 +3,21 @@ import java.nio.file.StandardCopyOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("org.springframework.boot") version "3.5.7"
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.spring") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.spring") version "2.3.0"
 }
 
 group = "fi.oph"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -51,7 +55,7 @@ dependencies {
     implementation("ch.qos.logback.access:logback-access-common:2.0.6")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.6")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.21")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
     implementation("org.jsoup:jsoup:1.21.2")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.36.3")
     implementation("software.amazon.awssdk:s3:2.36.3")
@@ -89,7 +93,6 @@ dependencies {
 kotlin {
     compilerOptions {
         freeCompilerArgs.addAll(listOf("-Xjsr305=strict"))
-        jvmTarget = JvmTarget.fromTarget("17")
     }
 }
 
