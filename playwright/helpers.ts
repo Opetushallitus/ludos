@@ -111,7 +111,6 @@ export function koodiNimi(
 }
 
 export async function setMultiSelectDropdownOptions(page: Page, dropdownTestId: string, optionIds: string[]) {
-
   if (await page.getByTestId(`${dropdownTestId}-reset-selected-options`).isVisible()) {
     await page.getByTestId(`${dropdownTestId}-reset-selected-options`).click()
   }
@@ -133,7 +132,7 @@ export async function setSingleSelectDropdownOption(page: Page, dropdownTestId: 
 export async function setAssignmentType(page: Page, optionId: string) {
   await expect(page.getByTestId('spinner')).not.toBeVisible()
 
-  await page.getByTestId('contentTypeFilter-open').waitFor({state: 'visible'})
+  await page.getByTestId('contentTypeFilter-open').waitFor({ state: 'visible' })
   await page.getByTestId('contentTypeFilter-open').click()
   await page.getByTestId(`contentTypeFilter-option-${optionId}`).click()
 }

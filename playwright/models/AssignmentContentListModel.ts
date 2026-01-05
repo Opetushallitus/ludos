@@ -21,8 +21,9 @@ export class AssignmentContentListModel extends ContentListModel {
   }
 
   async checkListAfterFiltering(expectedAssignmentTitleNumbers: number[]) {
-
-    const expectedNames = expectedAssignmentTitleNumbers.map((number) => filterTestAssignmentName(number, Language.FI, this.exam))
+    const expectedNames = expectedAssignmentTitleNumbers.map((number) =>
+      filterTestAssignmentName(number, Language.FI, this.exam)
+    )
 
     const getAllNames = async () => {
       return await this.page.getByTestId('card-list').locator('li').getByTestId('card-title').allInnerTexts()

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { Exam, Language } from 'web/src/types'
 import { filterTestAssignmentName } from '../../examHelpers/assignmentHelpers'
-import { loginTestGroup, Role, resetDatabase, setMultiSelectDropdownOptions, setAssignmentType } from '../../helpers'
+import { loginTestGroup, Role, resetDatabase, setAssignmentType, setMultiSelectDropdownOptions } from '../../helpers'
 import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
