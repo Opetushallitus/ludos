@@ -20,6 +20,11 @@ jobs:
         with:
           private_key: ${{ secrets.PRIVATE_KEY }}
           app_id: ${{ secrets.APP_ID }}
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '25'
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@a3c115cd6676c8a5bc72f9715f108759e570daf5 # v43.0.19
         with:
