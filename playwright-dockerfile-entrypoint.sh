@@ -2,6 +2,7 @@
 
 function main {
   pushd playwright
+  npm ci
   npx playwright test --config=playwright.config.ts \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+--ui-port=9876} \
   ${RUN_LOCAL_TESTS_IN_UI_MODE:+--ui-host=0.0.0.0} "$@"
