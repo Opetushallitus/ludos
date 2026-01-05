@@ -259,6 +259,10 @@ Both services are accessed via service account credentials stored in AWS Secrets
 6. **Git hooks**: `.githooks/` directory is configured via `postinstall` script in package.json
 7. **Multi-stage builds**: Production Docker uses separate stages for web build, server build, and runtime
 
+## AI Agent instructions
+
+1. **Always run lint fix when you have modified source code, e.g. npm run lint:fix
+
 ## Useful Local URLs
 
 - Frontend (dev): http://localhost:8000
