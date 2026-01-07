@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot") version "3.5.7"
+    id("org.springframework.boot") version "4.0.1"
     kotlin("jvm") version "2.3.0"
     kotlin("plugin.spring") version "2.3.0"
 }
@@ -39,9 +39,9 @@ configurations.all {
 }
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.1"))
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.1")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.20.0")
