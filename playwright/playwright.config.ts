@@ -35,7 +35,9 @@ export default defineConfig({
         outputFolder: 'playwright-results/playwright-report/',
         open: 'never'
       }
-    ]
+    ],
+    // GitHub Actions reporter - shows test results in workflow summary
+    ...(process.env.CI ? [['github'] as const] : [])
   ],
   outputDir: 'playwright-results/test-results/',
 
