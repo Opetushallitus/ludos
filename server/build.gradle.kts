@@ -39,7 +39,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.9"))
 
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
