@@ -30,7 +30,7 @@ jobs:
         with:
           configurationFile: .github/renovate.json
           token: ${{ steps.app-token.outputs.token }}
-          renovate-version: 41-full
+          renovate-version: 42-full
         env:
           LOG_LEVEL: 'debug'
           RENOVATE_REPOSITORIES: 'Opetushallitus/ludos'
