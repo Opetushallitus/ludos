@@ -62,15 +62,9 @@ dependencies {
     implementation("software.amazon.awssdk:sso:2.41.1")
     implementation("software.amazon.awssdk:ssooidc:2.41.1")
     implementation("org.springframework.security:spring-security-cas:6.5.7")
-    implementation("com.nimbusds", "nimbus-jose-jwt").version {
-        strictly("9.37.4")
-    }
-    implementation("ch.qos.logback", "logback-core").version {
-        strictly("1.5.19")
-    }
-    implementation("org.apache.tomcat.embed", "tomcat-embed-core").version {
-        strictly("10.1.47")
-    }
+    implementation("com.nimbusds:nimbus-jose-jwt:9.37.4")
+    implementation("ch.qos.logback:logback-core:1.5.19")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.47")
     implementation("org.springframework:spring-test:6.2.15")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
