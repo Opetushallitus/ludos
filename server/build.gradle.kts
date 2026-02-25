@@ -6,8 +6,8 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     id("org.springframework.boot") version "3.5.7"
-    kotlin("jvm") version "2.3.0"
-    kotlin("plugin.spring") version "2.3.0"
+    kotlin("jvm") version "2.3.10"
+    kotlin("plugin.spring") version "2.3.10"
 }
 
 group = "fi.oph"
@@ -55,24 +55,24 @@ dependencies {
     implementation("ch.qos.logback.access:logback-access-common:2.0.7")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.7")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.10")
     implementation("org.jsoup:jsoup:1.22.1")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.41.15")
-    implementation("software.amazon.awssdk:s3:2.41.15")
-    implementation("software.amazon.awssdk:sso:2.41.15")
-    implementation("software.amazon.awssdk:ssooidc:2.41.15")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.41.29")
+    implementation("software.amazon.awssdk:s3:2.41.29")
+    implementation("software.amazon.awssdk:sso:2.41.29")
+    implementation("software.amazon.awssdk:ssooidc:2.41.29")
     implementation("org.springframework.security:spring-security-cas:6.5.7")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.37.4")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.48")
     implementation("ch.qos.logback:logback-core:1.5.19")
     implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.52")
-    implementation("org.springframework:spring-test:6.2.15")
+    implementation("org.springframework:spring-test:6.2.16")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.session:spring-session-jdbc")
-    implementation("org.postgresql:postgresql:42.7.9")
+    implementation("org.postgresql:postgresql:42.7.10")
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

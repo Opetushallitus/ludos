@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1@sha256:b6afd42430b15f2d2a4c5a02b919e98a525b785b1aaff16747d2f623364e39b6
 
-FROM node:24@sha256:b2b2184ba9b78c022e1d6a7924ec6fba577adf28f15c9d9c457730cc4ad3807a AS web-build
+FROM node:24@sha256:00e9195ebd49985a6da8921f419978d85dfe354589755192dc090425ce4da2f7 AS web-build
 
 WORKDIR /ludos-web
 COPY web/package.json web/package-lock.json ./
@@ -16,7 +16,7 @@ COPY web/src/ ./src/
 RUN npm run build:ci
 
 
-FROM gradle:jdk25@sha256:34ac44f5ffc170a7b26b3de5816baecd9e37b5f1e48a13fdbc3160633bb551d8 AS server-build
+FROM gradle:jdk25@sha256:54cd0e326acfaefb45322bd1e8a1ea1135e1b989c206af5dd6d88581f578eb51 AS server-build
 
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts .

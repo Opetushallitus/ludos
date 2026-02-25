@@ -24,6 +24,8 @@ jobs:
     runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status
@@ -31,10 +33,6 @@ jobs:
           task: deploy-untuva
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-      - name: Fetch history for all branches and tags
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-        with:
-          fetch-depth: 0
       - name: Configure untuva AWS credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5
         with:

@@ -6,11 +6,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@types/node": "24.10.4",
+    "@types/node": "24.10.13",
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "@aws-sdk/client-ecs": "^3.693.0",
+    "@aws-sdk/client-ecs": "^3.980.0",
     "tsx": "^4.19.2"
+  },
+  "overrides": {
+    "fast-xml-parser": "5.3.6"
   }
 }
