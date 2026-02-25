@@ -61,7 +61,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.41.34")
     implementation("software.amazon.awssdk:sso:2.41.34")
     implementation("software.amazon.awssdk:ssooidc:2.41.34")
-    implementation("org.springframework.security:spring-security-cas:6.5.7")
+    implementation("org.springframework.security:spring-security-cas:6.5.8")
     implementation("com.nimbusds:nimbus-jose-jwt:10.8")
     implementation("ch.qos.logback:logback-core:1.5.19")
     implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.52")
