@@ -5,18 +5,18 @@ on:
       - playwright-sharding
 
 jobs:
-  lint_only:
+  lint:
     permissions:
       id-token: write
       contents: read
       packages: write
-    name: lint-only.sh
+    name: lint
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run lint-only.sh
-        run: ./deploy-scripts/lint-only.sh
+      - name: Run lint.sh
+        run: ./deploy-scripts/lint.sh
         env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
@@ -59,7 +59,7 @@ jobs:
       contents: read
       packages: write
     name: Playwright parallel shard ${{ matrix.shard }}/4
-    needs: [lint_only, build, run_server_tests]
+    needs: [lint, build, run_server_tests]
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
