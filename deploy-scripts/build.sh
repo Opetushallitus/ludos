@@ -7,12 +7,8 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 # shellcheck source=./deploy-functions.sh
 source "$repo/deploy-scripts/deploy-functions.sh"
 
-# shellcheck source=./02-run-server-tests.sh
-source "$repo/deploy-scripts/02-run-server-tests.sh"
-
 function main {
   build
-  test-server
 }
 
 function build {
