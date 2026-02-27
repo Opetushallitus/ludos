@@ -5,18 +5,34 @@ on:
       - playwright-sharding
 
 jobs:
-  lint_build_server:
+  lint_only:
     permissions:
       id-token: write
       contents: read
       packages: write
-    name: lint-build-server-test.sh
+    name: lint-only.sh
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run lint-build-server-test.sh
-        run: ./deploy-scripts/lint-build-server-test.sh
+      - name: Run lint-only.sh
+        run: ./deploy-scripts/lint-only.sh
+        env:
+          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+
+  build_server_tests:
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    name: build-server-tests.sh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run build-server-tests.sh
+        run: ./deploy-scripts/build-server-tests.sh
         env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
@@ -27,7 +43,7 @@ jobs:
       contents: read
       packages: write
     name: Playwright parallel shard ${{ matrix.shard }}/4
-    needs: [lint_build_server]
+    needs: [lint_only, build_server_tests]
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
