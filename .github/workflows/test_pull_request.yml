@@ -4,26 +4,123 @@ on:
   merge_group:
 
 jobs:
-  lintbuildtest:
+  lint_build_server:
     permissions:
       id-token: write
       contents: read
       packages: write
-    name: lint-build-test.sh
+    name: lint-build-server-test.sh
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run lint-build-test.sh
-        run: ./deploy-scripts/lint-build-test.sh
+      - name: Run lint-build-server-test.sh
+        run: ./deploy-scripts/lint-build-server-test.sh
         env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+
+  playwright_parallel_shards:
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    name: Playwright parallel shard ${{ matrix.shard }}/4
+    needs: [lint_build_server]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run Playwright parallel shard
+        run: ./deploy-scripts/run-playwright-parallel-shard.sh ${{ matrix.shard }} 4
+        env:
+          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+
+      - name: Upload Playwright shard report
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: playwright-results-shard-${{ matrix.shard }}
+          path: playwright/playwright-results/
+          retention-days: 30
+
+  playwright_serial:
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    name: Playwright serial suites
+    needs: [lint_build_server]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run Playwright serial suites
+        run: ./deploy-scripts/run-playwright-serial.sh
+        env:
+          LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
+          LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+
+      - name: Upload Playwright serial report
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        if: ${{ always() && !cancelled() }}
+        with:
+          name: playwright-results-serial
+          path: playwright/playwright-results/
+          retention-days: 30
+
+  playwright_report_merge:
+    permissions:
+      contents: read
+    name: Playwright report merge
+    if: ${{ always() }}
+    needs: [playwright_parallel_shards, playwright_serial]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download all Playwright artifacts
+        uses: actions/download-artifact@9bc31d5bc22fd1f24245f7908e611a501f0f9b39 # v6.0.0
+        with:
+          pattern: playwright-results-*
+          path: playwright-merge-input
+
+      - name: Prepare merged blob directory
+        run: |
+          mkdir -p playwright/merged-blob-report
+          find playwright-merge-input -type f -path "*/blob-report/*.zip" -exec cp {} playwright/merged-blob-report/ \;
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: playwright/package-lock.json
+
+      - name: Merge Playwright reports
+        run: |
+          cd playwright
+          npm ci
+          npx playwright merge-reports --reporter html merged-blob-report
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
-          path: playwright/playwright-results/
+          path: playwright/playwright-report/
           retention-days: 30
+
+      - name: Fail if any Playwright dependency failed
+        if: >-
+          ${{
+            needs.playwright_parallel_shards.result != 'success' ||
+            needs.playwright_serial.result != 'success'
+          }}
+        run: exit 1

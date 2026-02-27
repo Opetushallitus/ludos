@@ -29,6 +29,16 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],
+    ...(process.env.CI
+      ? [
+          [
+            'blob',
+            {
+              outputDir: 'playwright-results/blob-report/'
+            }
+          ] as const
+        ]
+      : []),
     [
       'html',
       {
