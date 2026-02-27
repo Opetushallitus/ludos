@@ -1,6 +1,6 @@
 import { Trans } from 'react-i18next'
 import { twMerge } from 'tailwind-merge'
-import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
+import { FEEDBACK_EMAIL } from '../constants'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { ExternalLink } from './ExternalLink'
 import { Icon } from './Icon'
@@ -12,7 +12,6 @@ type InfoBoxProps = {
 
 export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
   const { t } = useLudosTranslation()
-  const feedbackUrl = useFeedbackUrl()
   const isError = type === 'error'
 
   return (
@@ -31,7 +30,13 @@ export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
       <p className="flex-grow">
         <Trans i18nKey={i18nKey} />
         {isError && (
-          <ExternalLink className="ml-1 underline" textColor="text-white" url={feedbackUrl}>
+          <ExternalLink
+            className="ml-1 underline"
+            textColor="text-white"
+            url={FEEDBACK_EMAIL}
+            hideIcon
+            openInNewTab={false}
+          >
             {t('notification.error.link.laheta-palautetta-virheesta')}
           </ExternalLink>
         )}

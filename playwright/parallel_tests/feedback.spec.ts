@@ -1,70 +1,45 @@
-import { expect, Locator, Page, test } from '@playwright/test'
-import { Exam, Language } from 'web/src/types'
+import { expect, test } from '@playwright/test'
+import { Exam } from 'web/src/types'
 import { loginTestGroup, Role } from '../helpers'
 import { CertificateContentListModel } from '../models/CertificateContentListModel'
 import { LayoutModel } from '../models/LayoutModel'
 
 loginTestGroup(test, Role.OPETTAJA)
 
-test.describe('feedback link', () => {
-  async function assertFeedbackLink(
-    page: Page,
-    feedbackLink: Locator,
-    expectedLanguage: Language,
-    lastHref: string
-  ): Promise<string> {
-    await expect(feedbackLink).toHaveAttribute('href', new RegExp(`.*ref=${encodeURIComponent(page.url())}.*`))
-    await expect(feedbackLink).toHaveAttribute('href', new RegExp(`.*language=${expectedLanguage.toLowerCase()}.*`))
-    const href = (await feedbackLink.getAttribute('href'))!
-    expect(href).not.toEqual(lastHref)
-    return href
-  }
+const FEEDBACK_EMAIL = 'mailto:lukio@oph.fi'
 
-  test('footer feedback link works', async ({ page }) => {
+test.describe('feedback link', () => {
+  test('footer feedback link points to email', async ({ page }) => {
     await page.goto('/')
     const layout = new LayoutModel(page)
-    let lastHref = await layout.footerFeedbackLink.getAttribute('href')
-    expect(lastHref).not.toBeFalsy()
+    await expect(layout.footerFeedbackLink).toHaveAttribute('href', FEEDBACK_EMAIL)
+  })
+
+  test('footer feedback link is visible on certificate content list page', async ({ page }) => {
     const puhviCertificateContentList = new CertificateContentListModel(page, Exam.PUHVI)
     await puhviCertificateContentList.goto()
-
-    await layout.setUiLanguage(Language.FI)
-    lastHref = await assertFeedbackLink(page, layout.footerFeedbackLink, Language.FI, lastHref!)
-
-    await puhviCertificateContentList.setOrder('asc')
-    lastHref = await assertFeedbackLink(page, layout.footerFeedbackLink, Language.FI, lastHref)
-
-    await puhviCertificateContentList.setOrder('desc')
-    lastHref = await assertFeedbackLink(page, layout.footerFeedbackLink, Language.FI, lastHref)
-
-    await layout.setUiLanguage(Language.SV)
-    await assertFeedbackLink(page, layout.footerFeedbackLink, Language.SV, lastHref)
+    const layout = new LayoutModel(page)
+    await expect(layout.footerFeedbackLink).toHaveAttribute('href', FEEDBACK_EMAIL)
   })
 
-  test('First Suko tehtävä feedback link works', async ({ page }) => {
+  test('First Suko tehtävä feedback link points to email', async ({ page }) => {
     await page.goto('/suko/koetehtavat')
-
     const layout = new LayoutModel(page)
-    await layout.setUiLanguage(Language.FI)
     await page.getByTestId('card-title').first().click()
-    await assertFeedbackLink(page, layout.tehtavaFeedbackLink, Language.FI, '/')
+    await expect(layout.tehtavaFeedbackLink).toHaveAttribute('href', FEEDBACK_EMAIL)
   })
 
-  test('First lukiodiplomit feedback link works', async ({ page }) => {
+  test('First lukiodiplomit feedback link points to email', async ({ page }) => {
     await page.goto('/ld/koetehtavat')
-
     const layout = new LayoutModel(page)
-    await layout.setUiLanguage(Language.FI)
     await page.getByTestId('card-title').first().click()
-    await assertFeedbackLink(page, layout.tehtavaFeedbackLink, Language.FI, '/')
+    await expect(layout.tehtavaFeedbackLink).toHaveAttribute('href', FEEDBACK_EMAIL)
   })
 
-  test('First puheviestintä feedback link works', async ({ page }) => {
+  test('First puheviestintä feedback link points to email', async ({ page }) => {
     await page.goto('/puhvi/koetehtavat')
-
     const layout = new LayoutModel(page)
-    await layout.setUiLanguage(Language.FI)
     await page.getByTestId('card-title').first().click()
-    await assertFeedbackLink(page, layout.tehtavaFeedbackLink, Language.FI, '/')
+    await expect(layout.tehtavaFeedbackLink).toHaveAttribute('href', FEEDBACK_EMAIL)
   })
 })

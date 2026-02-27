@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
+import { FEEDBACK_EMAIL } from '../constants'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
-import { useFeedbackUrl } from '../hooks/useFeedbackUrl'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { Button } from './Button'
 import { ExternalLink } from './ExternalLink'
@@ -12,7 +12,6 @@ const NOTIFICATION_TIMEOUT_MS = 5000
 export const Notification = () => {
   const { t } = useLudosTranslation()
   const { notification, setNotification } = useNotification()
-  const feedbackUrl = useFeedbackUrl(notification?.message)
   const hideNotification = useCallback(() => setNotification(null), [setNotification])
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -55,7 +54,13 @@ export const Notification = () => {
           {notification.type === NotificationEnum.error && (
             <>
               {notification.linkComponent || (
-                <ExternalLink className="underline" textColor="text-white" url={feedbackUrl}>
+                <ExternalLink
+                  className="underline"
+                  textColor="text-white"
+                  url={FEEDBACK_EMAIL}
+                  hideIcon
+                  openInNewTab={false}
+                >
                   {t('notification.error.link.laheta-palautetta-virheesta')}
                 </ExternalLink>
               )}
