@@ -10,7 +10,7 @@ source "$repo/deploy-scripts/03-run-playwright-tests.sh"
 function main {
   playwright_prepare_env
   trap 'playwright_cleanup; popd' EXIT
-  playwright_run_serial_suites
+  playwright_run_all_projects_shard 1 1
 }
 
 main "$@"

@@ -38,7 +38,7 @@ function playwright_prepare_env {
 function playwright_run_parallel_shard {
   local shard_index="$1"
   local shard_total="$2"
-  start_gh_actions_group "Running parallel playwright tests shard ${shard_index}/${shard_total}"
+  start_gh_actions_group "Running parallel_tests shard ${shard_index}/${shard_total}"
   docker run --rm \
    --network oph-ludos_default \
    --env HEADLESS=true \
@@ -48,31 +48,38 @@ function playwright_run_parallel_shard {
   end_gh_actions_group
 }
 
-function playwright_run_non_parallel_tests {
-  start_gh_actions_group "Running non-parallel playwright tests"
+function playwright_run_non_parallel_shard {
+  local shard_index="$1"
+  local shard_total="$2"
+  start_gh_actions_group "Running non_parallel_tests shard ${shard_index}/${shard_total}"
   docker run --rm \
    --network oph-ludos_default \
    --env HEADLESS=true \
    --env CI=true \
    -v ./playwright:/playwright \
-   playwright-image --project non_parallel_tests
+   playwright-image --project non_parallel_tests --workers 1 --shard "${shard_index}/${shard_total}"
   end_gh_actions_group
 }
 
-function playwright_run_download_test_webkit {
-  start_gh_actions_group "Running download playwright tests"
+function playwright_run_download_test_webkit_shard {
+  local shard_index="$1"
+  local shard_total="$2"
+  start_gh_actions_group "Running download_test_webkit shard ${shard_index}/${shard_total}"
   docker run --rm \
   --network oph-ludos_default \
   --env HEADLESS=true \
   --env CI=true \
   -v ./playwright:/playwright \
-  playwright-image --project download_test_webkit
+  playwright-image --project download_test_webkit --workers 1 --shard "${shard_index}/${shard_total}"
   end_gh_actions_group
 }
 
-function playwright_run_serial_suites {
-  playwright_run_non_parallel_tests
-  playwright_run_download_test_webkit
+function playwright_run_all_projects_shard {
+  local shard_index="$1"
+  local shard_total="$2"
+  playwright_run_parallel_shard "$shard_index" "$shard_total"
+  playwright_run_non_parallel_shard "$shard_index" "$shard_total"
+  playwright_run_download_test_webkit_shard "$shard_index" "$shard_total"
 }
 
 function playwright_cleanup {
@@ -84,7 +91,5 @@ function playwright_cleanup {
 function playwright-test {
   playwright_prepare_env
   trap 'playwright_cleanup; popd' EXIT
-  playwright_run_non_parallel_tests
-  playwright_run_parallel_shard 1 1
-  playwright_run_download_test_webkit
+  playwright_run_all_projects_shard 1 1
 }

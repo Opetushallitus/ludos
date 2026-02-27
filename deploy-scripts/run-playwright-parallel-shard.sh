@@ -13,7 +13,7 @@ function main {
 
   playwright_prepare_env
   trap 'playwright_cleanup; popd' EXIT
-  playwright_run_parallel_shard "$shard_index" "$shard_total"
+  playwright_run_all_projects_shard "$shard_index" "$shard_total"
 }
 
 main "$@"
