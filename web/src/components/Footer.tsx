@@ -1,9 +1,10 @@
 import { ReactNode, useRef } from 'react'
 import logo from '../../assets/oph_fin_vaaka.png'
-import { FEEDBACK_EMAIL, OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
+import { OPH_URL, TIETOSUOJA_SELOSTE_URL, virkailijanOpintopolkuUrl } from '../constants'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { Button } from './Button'
 import { ExternalLink } from './ExternalLink'
+import { FeedbackEmailLink } from './FeedbackEmailLink'
 import { ConsentModal, ConsentModalHandles } from './modal/ConsentModal'
 
 export const Footer = () => {
@@ -16,9 +17,7 @@ export const Footer = () => {
       <OphWebsiteLink />
 
       <div className="flex flex-wrap w-full md:w-2/3 justify-evenly gap-5 mt-3 text-center md:text-left">
-        <ExternalLink url={FEEDBACK_EMAIL} hideIcon openInNewTab={false} data-testid="feedback-link">
-          {t('footer.palaute')}
-        </ExternalLink>
+        <FeedbackEmailLink data-testid="feedback-link">{t('footer.palaute')}</FeedbackEmailLink>
         <ExternalLink url={t('footer.kayttoohjeet-url')} data-testid="kayttoohjeet-link">
           {t('footer.kayttoohjeet')}
         </ExternalLink>
