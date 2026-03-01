@@ -64,7 +64,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-cas:6.5.8")
     implementation("com.nimbusds:nimbus-jose-jwt:10.8")
     implementation("ch.qos.logback:logback-core:1.5.19")
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.52")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.18")
     implementation("org.springframework:spring-test:6.2.16")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
