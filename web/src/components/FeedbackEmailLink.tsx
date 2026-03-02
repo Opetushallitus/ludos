@@ -6,6 +6,7 @@ interface FeedbackEmailLinkProps {
   'data-testid'?: string
   className?: string
   textColor?: 'text-green-primary' | 'text-black' | 'text-white' | 'text-red-primary' | 'text-gray-secondary'
+  subject?: string
   children: ReactNode
 }
 
@@ -13,16 +14,20 @@ export const FeedbackEmailLink = ({
   'data-testid': testId,
   className,
   textColor,
+  subject,
   children
-}: FeedbackEmailLinkProps) => (
-  <ExternalLink
-    url={FEEDBACK_EMAIL}
-    hideIcon
-    openInNewTab={false}
-    data-testid={testId}
-    className={className}
-    textColor={textColor}
-  >
-    {children}
-  </ExternalLink>
-)
+}: FeedbackEmailLinkProps) => {
+  const url = subject ? `${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}` : FEEDBACK_EMAIL
+  return (
+    <ExternalLink
+      url={url}
+      hideIcon
+      openInNewTab={false}
+      data-testid={testId}
+      className={className}
+      textColor={textColor}
+    >
+      {children}
+    </ExternalLink>
+  )
+}

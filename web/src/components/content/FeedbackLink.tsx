@@ -4,10 +4,13 @@ import { FeedbackEmailLink } from '../FeedbackEmailLink'
 
 export const FeedbackLink = () => {
   const { t } = useLudosTranslation()
+  const subject = `Palautetta tehtävästä: ${window.location.href}`
 
   return (
     <div className="row mb-6 print:hidden">
-      <FeedbackEmailLink data-testid="tehtava-feedback-link">{t('tehtava.palaute')}</FeedbackEmailLink>
+      <FeedbackEmailLink subject={subject} data-testid="tehtava-feedback-link">
+        {t('tehtava.palaute')}
+      </FeedbackEmailLink>
     </div>
   )
 }
