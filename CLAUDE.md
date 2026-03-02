@@ -86,21 +86,20 @@ docker compose up    # Port 5432, user/password: oph/oph, database: ludos
 
 ### Testing
 
-E2E tests (Playwright):
-```bash
-# Ensure backend and database are running
-docker compose up ludos ludos-db
+E2E tests (Playwright) run inside Docker (base URL is hardcoded to `ludos-server:8080`).
+Requires AWS SSO login (`aws --profile oph-ludos-dev sso login`) before running.
 
-# Run tests
-yarn playwright
+```bash
+# Run all tests (builds playwright Docker image, then runs all E2E + server tests)
+./run-tests.sh
 
 # Results in: playwright-results/playwright-report/
 ```
 
-Run specific test:
+UI mode (select and run individual tests via browser):
 ```bash
-cd playwright
-npx playwright test parallel_tests/path/to/test.spec.ts
+./run-tests.sh --ui
+# Opens http://127.0.0.1:9876/ in browser
 ```
 
 ### Building & Docker
