@@ -4,18 +4,60 @@ on:
   merge_group:
 
 jobs:
-  lintbuildtest:
+  lint:
     permissions:
-      id-token: write
       contents: read
-      packages: write
-    name: lint-build-test.sh
+    name: lint.sh
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run lint-build-test.sh
-        run: ./deploy-scripts/lint-build-test.sh
+      - name: Run lint.sh
+        run: ./deploy-scripts/lint.sh
+
+  build:
+    permissions:
+      contents: read
+    name: build.sh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run build.sh
+        run: ./deploy-scripts/build.sh
+
+      - name: Save Docker image
+        run: docker save "ludos-$GITHUB_SHA" | gzip > /tmp/ludos-image.tar.gz
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: ludos-docker-image
+          path: /tmp/ludos-image.tar.gz
+          retention-days: 1
+
+  test:
+    needs: [lint, build]
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
+    name: test.sh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Download Docker image
+        uses: actions/download-artifact@fa0a91b85d4f404e444306234fb7f6299e43b280 # v4
+        with:
+          name: ludos-docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load < /tmp/ludos-image.tar.gz
+
+      - name: Run test.sh
+        run: ./deploy-scripts/test.sh
         env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
