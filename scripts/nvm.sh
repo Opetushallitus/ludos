@@ -3614,7 +3614,7 @@ nvm() {
       VERSION_PATH="$(nvm_version_path "${VERSION}")"
       if ! nvm_check_file_permissions "${VERSION_PATH}"; then
         nvm_err 'Cannot uninstall, incorrect permissions on installation folder.'
-        nvm_err 'This is usually caused by running `npm install -g` as root. Run the following commands as root to fix the permissions and then try again.'
+        nvm_err 'This is usually caused by running `npm install -g --ignore-scripts=true` as root. Run the following commands as root to fix the permissions and then try again.'
         nvm_err
         nvm_err "  chown -R $(whoami) \"$(nvm_sanitize_path "${VERSION_PATH}")\""
         nvm_err "  chmod -R u+w \"$(nvm_sanitize_path "${VERSION_PATH}")\""
@@ -4250,7 +4250,7 @@ nvm() {
 
       nvm_echo "Reinstalling global packages from ${VERSION}..."
       if [ -n "${INSTALLS}" ]; then
-        nvm_echo "${INSTALLS}" | command xargs npm install -g --quiet
+        nvm_echo "${INSTALLS}" | command xargs npm install -g --quiet --ignore-scripts=true
       else
         nvm_echo "No installed global packages found..."
       fi
@@ -4429,9 +4429,9 @@ nvm_install_default_packages() {
     return $EXIT_CODE
   fi
   nvm_echo "Installing default global packages from ${NVM_DIR}/default-packages..."
-  nvm_echo "npm install -g --quiet ${DEFAULT_PACKAGES}"
+  nvm_echo "npm install -g --quiet --ignore-scripts=true ${DEFAULT_PACKAGES}"
 
-  if ! nvm_echo "${DEFAULT_PACKAGES}" | command xargs npm install -g --quiet; then
+  if ! nvm_echo "${DEFAULT_PACKAGES}" | command xargs npm install -g --quiet --ignore-scripts=true; then
     nvm_err "Failed installing default packages. Please check if your default-packages file or a package in it has problems!"
     return 1
   fi

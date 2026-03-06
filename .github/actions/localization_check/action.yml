@@ -15,7 +15,7 @@ runs:
     - name: npm install
       working-directory: ./scripts
       shell: bash
-      run: npm ci
+      run: npm ci --ignore-scripts=true
     - name: Check for missing keys in untuva
       working-directory: ./scripts
       shell: bash

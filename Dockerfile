@@ -4,7 +4,7 @@ FROM node:24@sha256:3a09aa6354567619221ef6c45a5051b671f953f0a1924d1f819ffb236e52
 
 WORKDIR /ludos-web
 COPY web/package.json web/package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts=true
 
 COPY web/tsconfig.json .
 COPY web/*.config.cjs .

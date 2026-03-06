@@ -48,7 +48,7 @@ scripts/fetch_secrets.sh   # Creates server/.env and playwright/.env
 
 ```bash
 cd web
-npm ci                  # Install dependencies
+npm ci --ignore-scripts=true  # Install dependencies
 npm run dev            # Dev server at http://localhost:8000
 npm run lint           # TypeScript check + Biome lint
 npm run lint:fix       # Auto-fix with Biome

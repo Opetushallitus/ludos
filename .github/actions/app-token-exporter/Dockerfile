@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apk add jq && \
     apk add curl && \
-    npm i jsonwebtoken
+    npm i --ignore-scripts=true jsonwebtoken
 
 COPY jwt.js getAccessToken.sh ./
 
