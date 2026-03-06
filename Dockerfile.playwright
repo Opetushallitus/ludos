@@ -2,7 +2,7 @@ ARG PLAYWRIGHT_VERSION
 FROM mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble
 
 COPY web/ /web/
-RUN cd web && npm ci && cd ..
+RUN cd web && npm ci --ignore-scripts=true && cd ..
 
 ADD scripts scripts
 ADD playwright-dockerfile-entrypoint.sh playwright-dockerfile-entrypoint.sh

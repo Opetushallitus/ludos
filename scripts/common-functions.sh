@@ -75,7 +75,7 @@ function npm_ci_if_package_lock_has_changed {
   local -r checksum_file=".package-lock.json.checksum"
 
   function run_npm_ci {
-    npm ci
+    npm ci --ignore-scripts=true
     shasum package-lock.json > "$checksum_file"
   }
 
