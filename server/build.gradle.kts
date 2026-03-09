@@ -66,7 +66,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.5.32")
     implementation("ch.qos.logback:logback-core:1.5.32")
     implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.52")
-    implementation("org.springframework:spring-test:6.2.16")
+    implementation("org.springframework:spring-test:7.0.5")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
