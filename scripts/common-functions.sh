@@ -45,8 +45,26 @@ function require_aws_session_for_env {
       aws --profile "${PROFILE}" sso login --sso-session oph-federation --use-device-code | while read -r line; do echo $line; if echo $line | grep user_code; then open $line; fi; done
     }
     export AWS_PROFILE="${PROFILE}"
+    export AWS_SDK_LOAD_CONFIG=1
     export AWS_REGION="eu-west-1"
     info "Using AWS profile $AWS_PROFILE"
+}
+
+function export_profile_credentials_for_host_tools {
+    local profile="$1"
+
+    info "Exporting temporary credentials for host tools from profile ${profile}"
+
+    local credentials_json
+    credentials_json=$(aws configure export-credentials --profile "${profile}" --format process)
+
+    export AWS_ACCESS_KEY_ID="$(echo "$credentials_json" | jq --raw-output '.AccessKeyId')"
+    export AWS_SECRET_ACCESS_KEY="$(echo "$credentials_json" | jq --raw-output '.SecretAccessKey')"
+    export AWS_SESSION_TOKEN="$(echo "$credentials_json" | jq --raw-output '.SessionToken')"
+    export AWS_REGION="eu-west-1"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    unset AWS_SDK_LOAD_CONFIG
+    unset AWS_PROFILE
 }
 
 function parse_deploy_permission_mode_args {
@@ -121,14 +139,12 @@ function export_assume_role_credentials {
   local credentials_json
   credentials_json=$(aws sts assume-role --role-arn "$role_arn" --role-session-name "$session_name")
 
-  export AWS_ACCESS_KEY_ID
-  AWS_ACCESS_KEY_ID=$(echo "$credentials_json" | jq --raw-output '.Credentials.AccessKeyId')
-  export AWS_SECRET_ACCESS_KEY
-  AWS_SECRET_ACCESS_KEY=$(echo "$credentials_json" | jq --raw-output '.Credentials.SecretAccessKey')
-  export AWS_SESSION_TOKEN
-  AWS_SESSION_TOKEN=$(echo "$credentials_json" | jq --raw-output '.Credentials.SessionToken')
+  export AWS_ACCESS_KEY_ID="$(echo "$credentials_json" | jq --raw-output '.Credentials.AccessKeyId')"
+  export AWS_SECRET_ACCESS_KEY="$(echo "$credentials_json" | jq --raw-output '.Credentials.SecretAccessKey')"
+  export AWS_SESSION_TOKEN="$(echo "$credentials_json" | jq --raw-output '.Credentials.SessionToken')"
   export AWS_REGION="eu-west-1"
   export AWS_DEFAULT_REGION="$AWS_REGION"
+  unset AWS_SDK_LOAD_CONFIG
   unset AWS_PROFILE
 }
 
@@ -143,7 +159,7 @@ function use_local_deploy_aws_credentials {
 
   if [[ "${DEPLOY_PERMISSION_MODE}" == "full" ]]; then
     require_aws_session_for_env "$env_name"
-    export AWS_DEFAULT_REGION="$AWS_REGION"
+    export_profile_credentials_for_host_tools "oph-ludos-${env_name}"
     return
   fi
 
