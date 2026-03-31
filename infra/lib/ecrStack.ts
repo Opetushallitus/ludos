@@ -10,6 +10,15 @@ export class EcrStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: CommonStackProps) {
     super(scope, id, props)
 
+    const localDeveloperAssumer = new iam.PrincipalWithConditions(new iam.AccountPrincipal(props.env!.account!), {
+      ArnLike: {
+        'aws:PrincipalArn': [
+          `arn:aws:iam::${props.env!.account!}:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_*`,
+          `arn:aws:sts::${props.env!.account!}:assumed-role/AWSReservedSSO_AdministratorAccess_*/*`
+        ]
+      }
+    })
+
     const ludosRepo = new ecr.Repository(this, 'LudosRepository', {
       repositoryName: 'ludos',
       imageTagMutability: ecr.TagMutability.IMMUTABLE
@@ -42,8 +51,8 @@ export class EcrStack extends cdk.Stack {
     const restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
       roleName: 'ludos-restricted-ci-image-read-role',
       description:
-        'Restricted read role for the CI permission lane. Assumed by developers locally when simulating GitHub Actions image reads from the utility account.',
-      assumedBy: new iam.AccountRootPrincipal()
+        'Restricted read role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions image reads from the utility account.',
+      assumedBy: localDeveloperAssumer
     })
 
     restrictedDeployRole.addToPolicy(

@@ -21,6 +21,15 @@ export class GithubActionsStack extends cdk.Stack {
       thumbprintList: GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST
     })
 
+    const localDeveloperAssumer = new iam.PrincipalWithConditions(new iam.AccountPrincipal(props.env!.account!), {
+      ArnLike: {
+        'aws:PrincipalArn': [
+          `arn:aws:iam::${props.env!.account!}:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_*`,
+          `arn:aws:sts::${props.env!.account!}:assumed-role/AWSReservedSSO_AdministratorAccess_*/*`
+        ]
+      }
+    })
+
     this.githubActionsRole = new iam.Role(this, 'GithubActionsRole', {
       roleName: `ludos-github-actions-role-${props.envName}`,
       assumedBy: new iam.FederatedPrincipal(
@@ -94,8 +103,8 @@ export class GithubActionsStack extends cdk.Stack {
     this.restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
       roleName: 'ludos-restricted-ci-deploy-role',
       description:
-        'Restricted deploy role for the CI permission lane. Assumed by developers locally when simulating GitHub Actions AWS permissions.',
-      assumedBy: new iam.AccountRootPrincipal()
+        'Restricted deploy role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions AWS permissions.',
+      assumedBy: localDeveloperAssumer
     })
 
     this.restrictedDeployRole.addToPolicy(
