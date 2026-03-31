@@ -6,6 +6,7 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 
 function main {
   start_gh_actions_group "Setup"
+  parse_deploy_permission_mode_args "$@"
   parse_env_from_script_name "deploy"
   use_correct_node_version
   end_gh_actions_group
@@ -55,4 +56,4 @@ function deploy_prod {
 }
 
 
-main
+main "$@"

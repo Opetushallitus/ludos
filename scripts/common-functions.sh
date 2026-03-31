@@ -11,6 +11,8 @@ readonly aws_cli_version="2.22.13"
 readonly revision="${GITHUB_SHA:-$(git rev-parse HEAD)}"
 readonly repo="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 NODE_VERSION="$(cat "$repo/.nvmrc")" && readonly NODE_VERSION
+DEPLOY_PERMISSION_MODE="${DEPLOY_PERMISSION_MODE:-restricted}"
+declare -a DEPLOY_SCRIPT_ARGS=()
 
 function docker_run_with_aws_env {
   docker run \
@@ -41,6 +43,91 @@ function require_aws_session_for_env {
     export AWS_PROFILE="${PROFILE}"
     export AWS_REGION="eu-west-1"
     info "Using AWS profile $AWS_PROFILE"
+}
+
+function parse_deploy_permission_mode_args {
+  DEPLOY_PERMISSION_MODE="${DEPLOY_PERMISSION_MODE:-restricted}"
+  DEPLOY_SCRIPT_ARGS=()
+
+  while (($# > 0)); do
+    case "$1" in
+      --full-developer-permissions)
+        DEPLOY_PERMISSION_MODE="full"
+        ;;
+      *)
+        DEPLOY_SCRIPT_ARGS+=("$1")
+        ;;
+    esac
+    shift
+  done
+
+  export DEPLOY_PERMISSION_MODE
+}
+
+function restricted_deploy_role_arn_for_env {
+  local env_name="$1"
+
+  case "$env_name" in
+    untuva|hahtuva)
+      echo "arn:aws:iam::782034763554:role/ludos-restricted-deploy-role-untuva"
+      ;;
+    qa)
+      echo "arn:aws:iam::260185049060:role/ludos-restricted-deploy-role-qa"
+      ;;
+    prod)
+      echo "arn:aws:iam::072794607950:role/ludos-restricted-deploy-role-prod"
+      ;;
+    utility)
+      echo "arn:aws:iam::505953557276:role/ludos-restricted-deploy-role-utility"
+      ;;
+    *)
+      fatal "No restricted deploy role configured for environment ${env_name}"
+      ;;
+  esac
+}
+
+function export_assume_role_credentials {
+  local role_arn="$1"
+  local session_name="${2:-ludos-local-restricted-deploy}"
+
+  info "Assuming restricted deploy role ${role_arn}"
+
+  local credentials_json
+  credentials_json=$(aws sts assume-role --role-arn "$role_arn" --role-session-name "$session_name")
+
+  export AWS_ACCESS_KEY_ID
+  AWS_ACCESS_KEY_ID=$(echo "$credentials_json" | jq --raw-output '.Credentials.AccessKeyId')
+  export AWS_SECRET_ACCESS_KEY
+  AWS_SECRET_ACCESS_KEY=$(echo "$credentials_json" | jq --raw-output '.Credentials.SecretAccessKey')
+  export AWS_SESSION_TOKEN
+  AWS_SESSION_TOKEN=$(echo "$credentials_json" | jq --raw-output '.Credentials.SessionToken')
+  export AWS_REGION="eu-west-1"
+  export AWS_DEFAULT_REGION="$AWS_REGION"
+  unset AWS_PROFILE
+}
+
+function use_local_deploy_aws_credentials {
+  local env_name="$1"
+
+  if running_on_gh_actions; then
+    export AWS_REGION="eu-west-1"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    return
+  fi
+
+  if [[ "${DEPLOY_PERMISSION_MODE}" == "full" ]]; then
+    require_aws_session_for_env "$env_name"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    return
+  fi
+
+  local base_env="$env_name"
+  if [[ "$env_name" == "untuva" || "$env_name" == "hahtuva" ]]; then
+    base_env="dev"
+  fi
+
+  require_aws_session_for_env "$base_env"
+  export_assume_role_credentials "$(restricted_deploy_role_arn_for_env "$env_name")" "ludos-${env_name}-restricted-deploy"
 }
 
 function configure_aws_credentials {
