@@ -19,7 +19,7 @@ function main {
 function deploy_utility {
   use_local_deploy_aws_credentials utility
   local -a cdk_args=(deploy --all)
-  IMAGE_TAG=dummy . "./cdk.sh" "${cdk_args[@]}"
+  . "./cdk.sh" "${cdk_args[@]}"
 }
 
 main "$@"
