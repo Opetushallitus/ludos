@@ -36,6 +36,10 @@ function require_aws_session_for_env {
     local PROFILE="oph-ludos-${1}"
     info "Verifying that AWS session has not expired"
 
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+
     aws sts get-caller-identity --profile="${PROFILE}" 1>/dev/null || {
       info "Session is expired for profile ${PROFILE}"
       aws --profile "${PROFILE}" sso login --sso-session oph-federation --use-device-code | while read -r line; do echo $line; if echo $line | grep user_code; then open $line; fi; done

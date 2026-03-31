@@ -61,6 +61,16 @@ export class GithubActionsStack extends cdk.Stack {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('PowerUserAccess')]
     })
 
+    const bootstrapDeployRoleRegions = Array.from(new Set([props.env!.region!, 'us-east-1']))
+    for (const region of bootstrapDeployRoleRegions) {
+      const bootstrapDeployRole = iam.Role.fromRoleName(
+        this,
+        `BootstrapDeployRole${region.replace(/[^a-zA-Z0-9]/g, '')}`,
+        `cdk-hnb659fds-deploy-role-${props.env!.account!}-${region}`
+      )
+      restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
+    }
+
     restrictedCloudFormationExecutionRole.addToPolicy(
       new iam.PolicyStatement({
         actions: [
