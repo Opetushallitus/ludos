@@ -4,7 +4,11 @@ import * as iam from 'aws-cdk-lib/aws-iam'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
 import { accounts } from './accounts'
-import { GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST } from './githubActionsStack'
+import {
+  GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST,
+  RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
+  restrictedCiBoundaryStatements
+} from './githubActionsStack'
 
 export class EcrStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: CommonStackProps) {
@@ -48,11 +52,18 @@ export class EcrStack extends cdk.Stack {
 
     ludosRepo.grantPullPush(githubActionsPushRole)
 
+    const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
+      managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
+      description: 'Maximum permissions allowed for the restricted CI deploy lane.',
+      statements: restrictedCiBoundaryStatements()
+    })
+
     const restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
       roleName: 'ludos-restricted-ci-image-read-role',
       description:
         'Restricted read role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions image reads from the utility account.',
-      assumedBy: localDeveloperAssumer
+      assumedBy: localDeveloperAssumer,
+      permissionsBoundary: restrictedCiPermissionsBoundary
     })
 
     restrictedDeployRole.addToPolicy(

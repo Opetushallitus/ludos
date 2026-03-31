@@ -8,6 +8,66 @@ export const GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST = [
   '1c58a3a8518e8759bf075b76b750d4f2df264fcd'
 ]
 
+export const RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME = 'ludos-restricted-ci-permissions-boundary'
+
+const restrictedCiBoundaryActionPatterns = [
+  'acm:*',
+  'athena:*',
+  'backup:*',
+  'cloudformation:*',
+  'cloudfront:*',
+  'cloudwatch:*',
+  'ec2:*',
+  'ecr:BatchGetImage',
+  'ecr:Describe*',
+  'ecr:Get*',
+  'ecr:List*',
+  'ecs:*',
+  'elasticloadbalancing:*',
+  'events:*',
+  'glue:*',
+  'iam:AddClientIDToOpenIDConnectProvider',
+  'iam:AttachRolePolicy',
+  'iam:CreateOpenIDConnectProvider',
+  'iam:CreatePolicy',
+  'iam:CreateRole',
+  'iam:CreateServiceLinkedRole',
+  'iam:DeleteOpenIDConnectProvider',
+  'iam:DeletePolicy',
+  'iam:DeleteRole',
+  'iam:DeleteRolePolicy',
+  'iam:DetachRolePolicy',
+  'iam:Get*',
+  'iam:List*',
+  'iam:PassRole',
+  'iam:PutRolePolicy',
+  'iam:RemoveClientIDFromOpenIDConnectProvider',
+  'iam:Tag*',
+  'iam:Untag*',
+  'iam:UpdateAssumeRolePolicy',
+  'iam:UpdateOpenIDConnectProviderThumbprint',
+  'lambda:*',
+  'logs:*',
+  'rds:*',
+  'route53:*',
+  's3:*',
+  'secretsmanager:*',
+  'sns:*',
+  'ssm:GetParameter',
+  'ssm:GetParameters',
+  'sts:AssumeRole',
+  'sts:GetCallerIdentity'
+]
+
+export function restrictedCiBoundaryStatements() {
+  return [
+    new iam.PolicyStatement({
+      actions: restrictedCiBoundaryActionPatterns,
+      resources: ['*']
+    })
+  ]
+}
+
 export class GithubActionsStack extends cdk.Stack {
   public githubActionsRole: iam.Role
   public restrictedDeployRole: iam.Role
@@ -53,12 +113,18 @@ export class GithubActionsStack extends cdk.Stack {
     })
     this.githubActionsRole.addToPolicy(cdkPolicyStatement)
 
+    const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
+      managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
+      description: 'Maximum permissions allowed for the restricted CI deploy lane.',
+      statements: restrictedCiBoundaryStatements()
+    })
+
     const restrictedCloudFormationExecutionRole = new iam.Role(this, 'RestrictedCloudFormationExecutionRole', {
       roleName: 'ludos-restricted-ci-cfn-exec-role',
       description:
         'CloudFormation execution role for the restricted CI deploy lane. Assumed only by CloudFormation after the restricted CI deploy role is passed to it.',
       assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('PowerUserAccess')]
+      permissionsBoundary: restrictedCiPermissionsBoundary
     })
 
     const bootstrapDeployRoleRegions = Array.from(new Set([props.env!.region!, 'us-east-1']))
@@ -71,50 +137,16 @@ export class GithubActionsStack extends cdk.Stack {
       restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
     }
 
-    restrictedCloudFormationExecutionRole.addToPolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'iam:AddClientIDToOpenIDConnectProvider',
-          'iam:AttachRolePolicy',
-          'iam:CreateOpenIDConnectProvider',
-          'iam:CreatePolicy',
-          'iam:CreateRole',
-          'iam:CreateServiceLinkedRole',
-          'iam:DeleteOpenIDConnectProvider',
-          'iam:DeletePolicy',
-          'iam:DeleteRole',
-          'iam:DeleteRolePolicy',
-          'iam:DetachRolePolicy',
-          'iam:GetOpenIDConnectProvider',
-          'iam:GetPolicy',
-          'iam:GetPolicyVersion',
-          'iam:GetRole',
-          'iam:GetRolePolicy',
-          'iam:ListAttachedRolePolicies',
-          'iam:ListInstanceProfilesForRole',
-          'iam:ListPolicyVersions',
-          'iam:ListRolePolicies',
-          'iam:PassRole',
-          'iam:PutRolePolicy',
-          'iam:RemoveClientIDFromOpenIDConnectProvider',
-          'iam:TagOpenIDConnectProvider',
-          'iam:TagPolicy',
-          'iam:TagRole',
-          'iam:UntagOpenIDConnectProvider',
-          'iam:UntagPolicy',
-          'iam:UntagRole',
-          'iam:UpdateAssumeRolePolicy',
-          'iam:UpdateOpenIDConnectProviderThumbprint'
-        ],
-        resources: ['*']
-      })
-    )
+    for (const statement of restrictedCiBoundaryStatements()) {
+      restrictedCloudFormationExecutionRole.addToPolicy(statement)
+    }
 
     this.restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
       roleName: 'ludos-restricted-ci-deploy-role',
       description:
         'Restricted deploy role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions AWS permissions.',
-      assumedBy: localDeveloperAssumer
+      assumedBy: localDeveloperAssumer,
+      permissionsBoundary: restrictedCiPermissionsBoundary
     })
 
     this.restrictedDeployRole.addToPolicy(
