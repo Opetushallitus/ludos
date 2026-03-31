@@ -189,6 +189,7 @@ export class LudosApplicationStack extends cdk.Stack {
 
     fargateTaskDefinition.addToTaskRolePolicy(s3PolicyStatement)
     props.githubActionsStack?.githubActionsRole.addToPolicy(s3PolicyStatement)
+    props.githubActionsStack?.restrictedDeployRole.addToPolicy(s3PolicyStatement)
 
     this.setupAlarms(props, targetGroup, fargateService)
     this.setupCloudFrontLogAthena(cloudFrontLogBucket, props)

@@ -68,17 +68,20 @@ function restricted_deploy_role_arn_for_env {
   local env_name="$1"
 
   case "$env_name" in
+    dev)
+      echo "arn:aws:iam::782034763554:role/ludos-restricted-ci-deploy-role"
+      ;;
     untuva|hahtuva)
-      echo "arn:aws:iam::782034763554:role/ludos-restricted-deploy-role-untuva"
+      echo "arn:aws:iam::782034763554:role/ludos-restricted-ci-deploy-role"
       ;;
     qa)
-      echo "arn:aws:iam::260185049060:role/ludos-restricted-deploy-role-qa"
+      echo "arn:aws:iam::260185049060:role/ludos-restricted-ci-deploy-role"
       ;;
     prod)
-      echo "arn:aws:iam::072794607950:role/ludos-restricted-deploy-role-prod"
+      echo "arn:aws:iam::072794607950:role/ludos-restricted-ci-deploy-role"
       ;;
     utility)
-      echo "arn:aws:iam::505953557276:role/ludos-restricted-deploy-role-utility"
+      echo "arn:aws:iam::505953557276:role/ludos-restricted-ci-image-read-role"
       ;;
     *)
       fatal "No restricted deploy role configured for environment ${env_name}"
@@ -86,9 +89,28 @@ function restricted_deploy_role_arn_for_env {
   esac
 }
 
+function restricted_cloudformation_exec_role_arn_for_env {
+  local env_name="$1"
+
+  case "$env_name" in
+    dev|untuva|hahtuva)
+      echo "arn:aws:iam::782034763554:role/ludos-restricted-ci-cfn-exec-role"
+      ;;
+    qa)
+      echo "arn:aws:iam::260185049060:role/ludos-restricted-ci-cfn-exec-role"
+      ;;
+    prod)
+      echo "arn:aws:iam::072794607950:role/ludos-restricted-ci-cfn-exec-role"
+      ;;
+    *)
+      fatal "No restricted CloudFormation execution role configured for environment ${env_name}"
+      ;;
+  esac
+}
+
 function export_assume_role_credentials {
   local role_arn="$1"
-  local session_name="${2:-ludos-local-restricted-deploy}"
+  local session_name="${2:-ludos-restricted-ci-deploy}"
 
   info "Assuming restricted deploy role ${role_arn}"
 
@@ -128,6 +150,21 @@ function use_local_deploy_aws_credentials {
 
   require_aws_session_for_env "$base_env"
   export_assume_role_credentials "$(restricted_deploy_role_arn_for_env "$env_name")" "ludos-${env_name}-restricted-deploy"
+}
+
+function append_cdk_restricted_role_args {
+  local env_name="$1"
+  local array_name="$2"
+
+  if running_on_gh_actions || [[ "${DEPLOY_PERMISSION_MODE}" == "full" ]]; then
+    return
+  fi
+
+  local role_arn
+  role_arn="$(restricted_cloudformation_exec_role_arn_for_env "$env_name")"
+
+  local -n args_ref="$array_name"
+  args_ref+=(--role-arn "$role_arn")
 }
 
 function configure_aws_credentials {

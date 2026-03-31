@@ -38,5 +38,19 @@ export class EcrStack extends cdk.Stack {
     })
 
     ludosRepo.grantPullPush(githubActionsPushRole)
+
+    const restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
+      roleName: 'ludos-restricted-ci-image-read-role',
+      description:
+        'Restricted read role for the CI permission lane. Assumed by developers locally when simulating GitHub Actions image reads from the utility account.',
+      assumedBy: new iam.AccountRootPrincipal()
+    })
+
+    restrictedDeployRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['ecr:DescribeImages', 'ecr:ListImages'],
+        resources: [ludosRepo.repositoryArn]
+      })
+    )
   }
 }

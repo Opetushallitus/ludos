@@ -20,9 +20,12 @@ function main {
 function deploy {
   pushd "$repo"/infra
 
+  use_local_deploy_aws_credentials "$ENV"
   PAGERDUTY_ENDPOINT=$( get_secret "/pagerduty/event_url")
   export PAGERDUTY_ENDPOINT
-  IMAGE_TAG="$revision" . "./cdk.sh" deploy --all
+  local -a cdk_args=(deploy --all)
+  append_cdk_restricted_role_args "$ENV" cdk_args
+  IMAGE_TAG="$revision" . "./cdk.sh" "${cdk_args[@]}"
 
   popd
 }
