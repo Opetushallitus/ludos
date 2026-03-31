@@ -8,7 +8,13 @@ import { CommonStackProps } from '../types'
 export class SecretStack extends cdk.Stack {
   readonly pagerdutySecret
 
-  constructor(scope: Construct, id: string, props: CommonStackProps, githubActionsRole: Role, restrictedDeployRole?: IRole) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: CommonStackProps,
+    githubActionsRole: Role,
+    restrictedDeployRole?: IRole
+  ) {
     super(scope, id, props)
 
     this.pagerdutySecret = new Secret(this, 'pagerduty-secret', {
