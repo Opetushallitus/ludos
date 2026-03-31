@@ -5,6 +5,7 @@ import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
 import { accounts } from './accounts'
 import {
+  createRestrictedCiRoleAssumerPrincipal,
   GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST,
   RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
   restrictedCiBoundaryStatements
@@ -14,14 +15,7 @@ export class EcrStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: CommonStackProps) {
     super(scope, id, props)
 
-    const localDeveloperAssumer = new iam.PrincipalWithConditions(new iam.AccountPrincipal(props.env!.account!), {
-      ArnLike: {
-        'aws:PrincipalArn': [
-          `arn:aws:iam::${props.env!.account!}:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_*`,
-          `arn:aws:sts::${props.env!.account!}:assumed-role/AWSReservedSSO_AdministratorAccess_*/*`
-        ]
-      }
-    })
+    const restrictedCiRoleAssumer = createRestrictedCiRoleAssumerPrincipal(props.env!.account!)
 
     const ludosRepo = new ecr.Repository(this, 'LudosRepository', {
       repositoryName: 'ludos',
@@ -62,7 +56,7 @@ export class EcrStack extends cdk.Stack {
       roleName: 'ludos-restricted-ci-image-read-role',
       description:
         'Restricted read role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions image reads from the utility account.',
-      assumedBy: localDeveloperAssumer,
+      assumedBy: restrictedCiRoleAssumer,
       permissionsBoundary: restrictedCiPermissionsBoundary
     })
 

@@ -10,6 +10,25 @@ export const GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST = [
 
 export const RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME = 'ludos-restricted-ci-permissions-boundary'
 
+function awsIdentityCenterAdministratorRoleArnPattern(accountId: string) {
+  return `arn:aws:iam::${accountId}:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_*`
+}
+
+function awsIdentityCenterAdministratorAssumedRoleArnPattern(accountId: string) {
+  return `arn:aws:sts::${accountId}:assumed-role/AWSReservedSSO_AdministratorAccess_*/*`
+}
+
+export function createRestrictedCiRoleAssumerPrincipal(accountId: string) {
+  const identityCenterAdministratorRoleArn = awsIdentityCenterAdministratorRoleArnPattern(accountId)
+  const identityCenterAdministratorAssumedRoleArn = awsIdentityCenterAdministratorAssumedRoleArnPattern(accountId)
+
+  return new iam.PrincipalWithConditions(new iam.AccountPrincipal(accountId), {
+    ArnLike: {
+      'aws:PrincipalArn': [identityCenterAdministratorRoleArn, identityCenterAdministratorAssumedRoleArn]
+    }
+  })
+}
+
 const restrictedCiBoundaryActionPatterns = [
   'acm:*',
   'athena:*',
@@ -81,14 +100,7 @@ export class GithubActionsStack extends cdk.Stack {
       thumbprintList: GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST
     })
 
-    const localDeveloperAssumer = new iam.PrincipalWithConditions(new iam.AccountPrincipal(props.env!.account!), {
-      ArnLike: {
-        'aws:PrincipalArn': [
-          `arn:aws:iam::${props.env!.account!}:role/aws-reserved/sso.amazonaws.com/eu-west-1/AWSReservedSSO_AdministratorAccess_*`,
-          `arn:aws:sts::${props.env!.account!}:assumed-role/AWSReservedSSO_AdministratorAccess_*/*`
-        ]
-      }
-    })
+    const restrictedCiRoleAssumer = createRestrictedCiRoleAssumerPrincipal(props.env!.account!)
 
     this.githubActionsRole = new iam.Role(this, 'GithubActionsRole', {
       roleName: `ludos-github-actions-role-${props.envName}`,
@@ -145,7 +157,7 @@ export class GithubActionsStack extends cdk.Stack {
       roleName: 'ludos-restricted-ci-deploy-role',
       description:
         'Restricted deploy role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions AWS permissions.',
-      assumedBy: localDeveloperAssumer,
+      assumedBy: restrictedCiRoleAssumer,
       permissionsBoundary: restrictedCiPermissionsBoundary
     })
 
