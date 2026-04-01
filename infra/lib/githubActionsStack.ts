@@ -47,7 +47,6 @@ const restrictedCiBoundaryActionPatterns = [
   'glue:*',
   'iam:GetRole',
   'iam:GetRolePolicy',
-  'iam:ListInstanceProfilesForRole',
   'iam:ListRolePolicies',
   'iam:PassRole',
   'lambda:*',
