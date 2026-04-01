@@ -23,7 +23,7 @@ function main {
 }
 
 function deploy_untuva {
-  use_local_deploy_aws_credentials utility
+  use_local_image_read_aws_credentials utility
   image_tag=$(aws ecr describe-images --repository-name ludos | jq --raw-output ".imageDetails | sort_by(.imagePushedAt) | last | .imageTags[0]")
   use_local_deploy_aws_credentials untuva
   PAGERDUTY_ENDPOINT=$( get_secret "/pagerduty/event_url")

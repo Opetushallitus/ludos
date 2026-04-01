@@ -52,7 +52,77 @@ export class EcrStack extends cdk.Stack {
       statements: restrictedCiBoundaryStatements()
     })
 
-    const restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
+    const restrictedCloudFormationExecutionRole = new iam.Role(this, 'RestrictedCloudFormationExecutionRole', {
+      roleName: 'ludos-restricted-ci-cfn-exec-role',
+      description:
+        'CloudFormation execution role for the restricted CI deploy lane in the utility account. Assumed only by CloudFormation after the restricted CI deploy role is passed to it.',
+      assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
+      permissionsBoundary: restrictedCiPermissionsBoundary
+    })
+
+    const bootstrapDeployRole = iam.Role.fromRoleName(
+      this,
+      'BootstrapDeployRoleEuwest1',
+      `cdk-hnb659fds-deploy-role-${props.env!.account!}-${props.env!.region!}`
+    )
+    restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
+
+    for (const statement of restrictedCiBoundaryStatements()) {
+      restrictedCloudFormationExecutionRole.addToPolicy(statement)
+    }
+
+    const restrictedDeployRole = new iam.Role(this, 'RestrictedCiDeployRole', {
+      roleName: 'ludos-restricted-ci-deploy-role',
+      description:
+        'Restricted deploy role for the CI permission lane in the utility account. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions AWS permissions.',
+      assumedBy: restrictedCiRoleAssumer,
+      permissionsBoundary: restrictedCiPermissionsBoundary
+    })
+
+    restrictedDeployRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'cloudformation:CreateChangeSet',
+          'cloudformation:CreateStack',
+          'cloudformation:DeleteChangeSet',
+          'cloudformation:DeleteStack',
+          'cloudformation:DescribeChangeSet',
+          'cloudformation:DescribeStackEvents',
+          'cloudformation:DescribeStacks',
+          'cloudformation:ExecuteChangeSet',
+          'cloudformation:GetTemplate',
+          'cloudformation:GetTemplateSummary',
+          'cloudformation:RollbackStack',
+          'cloudformation:ContinueUpdateRollback',
+          'cloudformation:UpdateStack',
+          'iam:PassRole',
+          'ssm:GetParameter',
+          'ssm:GetParameters',
+          'sts:AssumeRole',
+          'sts:GetCallerIdentity'
+        ],
+        resources: ['*']
+      })
+    )
+
+    restrictedDeployRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: [
+          `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-file-publishing-role-${props.env?.account}-${props.env?.region}`,
+          `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-lookup-role-${props.env?.account}-${props.env?.region}`
+        ]
+      })
+    )
+
+    restrictedDeployRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [restrictedCloudFormationExecutionRole.roleArn]
+      })
+    )
+
+    const restrictedImageReadRole = new iam.Role(this, 'RestrictedDeployRole', {
       roleName: 'ludos-restricted-ci-image-read-role',
       description:
         'Restricted read role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions image reads from the utility account.',
@@ -60,7 +130,7 @@ export class EcrStack extends cdk.Stack {
       permissionsBoundary: restrictedCiPermissionsBoundary
     })
 
-    restrictedDeployRole.addToPolicy(
+    restrictedImageReadRole.addToPolicy(
       new iam.PolicyStatement({
         actions: ['ecr:DescribeImages', 'ecr:ListImages'],
         resources: [ludosRepo.repositoryArn]

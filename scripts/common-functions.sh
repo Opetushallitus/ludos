@@ -103,10 +103,23 @@ function restricted_deploy_role_arn_for_env {
       echo "arn:aws:iam::072794607950:role/ludos-restricted-ci-deploy-role"
       ;;
     utility)
-      echo "arn:aws:iam::505953557276:role/ludos-restricted-ci-image-read-role"
+      echo "arn:aws:iam::505953557276:role/ludos-restricted-ci-deploy-role"
       ;;
     *)
       fatal "No restricted deploy role configured for environment ${env_name}"
+      ;;
+  esac
+}
+
+function restricted_image_read_role_arn_for_env {
+  local env_name="$1"
+
+  case "$env_name" in
+    utility)
+      echo "arn:aws:iam::505953557276:role/ludos-restricted-ci-image-read-role"
+      ;;
+    *)
+      fatal "No restricted image read role configured for environment ${env_name}"
       ;;
   esac
 }
@@ -115,6 +128,9 @@ function restricted_cloudformation_exec_role_arn_for_env {
   local env_name="$1"
 
   case "$env_name" in
+    utility)
+      echo "arn:aws:iam::505953557276:role/ludos-restricted-ci-cfn-exec-role"
+      ;;
     dev|untuva|hahtuva)
       echo "arn:aws:iam::782034763554:role/ludos-restricted-ci-cfn-exec-role"
       ;;
@@ -170,6 +186,25 @@ function use_local_deploy_aws_credentials {
 
   require_aws_session_for_env "$base_env"
   export_assume_role_credentials "$(restricted_deploy_role_arn_for_env "$env_name")" "ludos-${env_name}-restricted-deploy"
+}
+
+function use_local_image_read_aws_credentials {
+  local env_name="$1"
+
+  if running_on_gh_actions; then
+    export AWS_REGION="eu-west-1"
+    export AWS_DEFAULT_REGION="$AWS_REGION"
+    return
+  fi
+
+  if [[ "${DEPLOY_PERMISSION_MODE}" == "full" ]]; then
+    require_aws_session_for_env "$env_name"
+    export_profile_credentials_for_host_tools "oph-ludos-${env_name}"
+    return
+  fi
+
+  require_aws_session_for_env "$env_name"
+  export_assume_role_credentials "$(restricted_image_read_role_arn_for_env "$env_name")" "ludos-${env_name}-restricted-image-read"
 }
 
 function append_cdk_restricted_role_args {

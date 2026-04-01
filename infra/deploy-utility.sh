@@ -19,6 +19,7 @@ function main {
 function deploy_utility {
   use_local_deploy_aws_credentials utility
   local -a cdk_args=(deploy --all)
+  append_cdk_restricted_role_args utility cdk_args
   . "./cdk.sh" "${cdk_args[@]}"
 }
 
