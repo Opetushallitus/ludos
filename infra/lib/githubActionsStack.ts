@@ -117,7 +117,6 @@ const restrictedCiBoundaryActionPatterns = [
   'ecr:TagResource',
   'ecr:UntagResource',
   'ecs:CreateCluster',
-  'ecs:CreateService',
   'ecs:DeregisterTaskDefinition',
   'ecs:Describe*',
   'ecs:List*',
@@ -126,7 +125,6 @@ const restrictedCiBoundaryActionPatterns = [
   'ecs:DeleteService',
   'ecs:TagResource',
   'ecs:UntagResource',
-  'ecs:UpdateService',
   'elasticloadbalancing:AddListenerCertificates',
   'elasticloadbalancing:AddTags',
   'elasticloadbalancing:Describe*',
@@ -251,6 +249,14 @@ function ludosTaskDefinitionArnPattern(props: CommonStackProps) {
   return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:task-definition/${props.envNameCapitalized}LudosStackLudosApplicationStackTaskDef*:*`
 }
 
+function ludosClusterArn(props: CommonStackProps) {
+  return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:cluster/${props.envNameCapitalized}Cluster`
+}
+
+function ludosServiceArn(props: CommonStackProps) {
+  return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:service/${props.envNameCapitalized}Cluster/${props.envNameCapitalized}Service`
+}
+
 export function restrictedCiBoundaryStatements(props: CommonStackProps) {
   return [
     new iam.PolicyStatement({
@@ -260,6 +266,15 @@ export function restrictedCiBoundaryStatements(props: CommonStackProps) {
     new iam.PolicyStatement({
       actions: ['ecs:RegisterTaskDefinition'],
       resources: [ludosTaskDefinitionArnPattern(props)]
+    }),
+    new iam.PolicyStatement({
+      actions: ['ecs:UpdateService'],
+      resources: [ludosServiceArn(props)],
+      conditions: {
+        ArnEquals: {
+          'ecs:cluster': ludosClusterArn(props)
+        }
+      }
     }),
     new iam.PolicyStatement({
       actions: ['ec2:RunInstances'],
