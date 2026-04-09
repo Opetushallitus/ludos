@@ -49,7 +49,7 @@ export class EcrStack extends cdk.Stack {
     const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
       managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
       description: 'Maximum permissions allowed for the restricted CI deploy lane.',
-      statements: restrictedCiBoundaryStatements()
+      statements: restrictedCiBoundaryStatements(props)
     })
 
     const restrictedCloudFormationExecutionRole = new iam.Role(this, 'RestrictedCloudFormationExecutionRole', {
@@ -67,7 +67,7 @@ export class EcrStack extends cdk.Stack {
     )
     restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
 
-    for (const statement of restrictedCiBoundaryStatements()) {
+    for (const statement of restrictedCiBoundaryStatements(props)) {
       restrictedCloudFormationExecutionRole.addToPolicy(statement)
     }
 

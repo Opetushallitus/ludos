@@ -124,7 +124,6 @@ const restrictedCiBoundaryActionPatterns = [
   'ecs:ListTagsForResource',
   'ecs:DeleteCluster',
   'ecs:DeleteService',
-  'ecs:RegisterTaskDefinition',
   'ecs:TagResource',
   'ecs:UntagResource',
   'ecs:UpdateService',
@@ -248,11 +247,19 @@ const restrictedCiBoundaryActionPatterns = [
   'sts:GetCallerIdentity'
 ]
 
-export function restrictedCiBoundaryStatements() {
+function ludosTaskDefinitionArnPattern(props: CommonStackProps) {
+  return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:task-definition/${props.envNameCapitalized}LudosStackLudosApplicationStackTaskDef*:*`
+}
+
+export function restrictedCiBoundaryStatements(props: CommonStackProps) {
   return [
     new iam.PolicyStatement({
       actions: restrictedCiBoundaryActionPatterns,
       resources: ['*']
+    }),
+    new iam.PolicyStatement({
+      actions: ['ecs:RegisterTaskDefinition'],
+      resources: [ludosTaskDefinitionArnPattern(props)]
     }),
     new iam.PolicyStatement({
       actions: ['ec2:RunInstances'],
@@ -307,7 +314,7 @@ export class GithubActionsStack extends cdk.Stack {
     const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
       managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
       description: 'Maximum permissions allowed for the restricted CI deploy lane.',
-      statements: restrictedCiBoundaryStatements()
+      statements: restrictedCiBoundaryStatements(props)
     })
 
     const restrictedCloudFormationExecutionRole = new iam.Role(this, 'RestrictedCloudFormationExecutionRole', {
@@ -328,7 +335,7 @@ export class GithubActionsStack extends cdk.Stack {
       restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
     }
 
-    for (const statement of restrictedCiBoundaryStatements()) {
+    for (const statement of restrictedCiBoundaryStatements(props)) {
       restrictedCloudFormationExecutionRole.addToPolicy(statement)
     }
 
