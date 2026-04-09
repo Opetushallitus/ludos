@@ -139,6 +139,7 @@ const restrictedCiBoundaryActionPatterns = [
   'glue:UntagResource',
   'glue:UpdateDatabase',
   'glue:UpdateTable',
+  'iam:GetRole',
   'iam:CreatePolicyVersion',
   'iam:DeletePolicyVersion',
   'iam:ListPolicyVersions',
@@ -284,6 +285,9 @@ export function restrictedCiBoundaryStatements(props: CommonStackProps) {
       conditions: {
         ArnEquals: {
           'ecs:cluster': ludosClusterArn(props)
+        },
+        ArnLike: {
+          'ecs:task-definition': ludosTaskDefinitionArnPattern(props)
         }
       }
     }),
