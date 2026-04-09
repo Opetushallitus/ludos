@@ -107,7 +107,6 @@ const restrictedCiBoundaryActionPatterns = [
   'ec2:ReleaseAddress',
   'ec2:ReplaceRoute',
   'ec2:RevokeSecurityGroupIngress',
-  'ec2:RunInstances',
   'ec2:TerminateInstances',
   'ecr:CreateRepository',
   'ecr:Describe*',
@@ -258,6 +257,15 @@ export function restrictedCiBoundaryStatements() {
     new iam.PolicyStatement({
       actions: restrictedCiBoundaryActionPatterns,
       resources: ['*']
+    }),
+    new iam.PolicyStatement({
+      actions: ['ec2:RunInstances'],
+      resources: ['*'],
+      conditions: {
+        StringEquals: {
+          'ec2:InstanceType': 't4g.nano'
+        }
+      }
     })
   ]
 }
