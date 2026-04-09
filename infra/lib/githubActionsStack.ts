@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
+import { accounts } from './accounts'
 
 export const GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST = [
   '6938fd4d98bab03faadb97b34396831e3780aea1',
@@ -105,17 +106,6 @@ const restrictedCiBoundaryActionPatterns = [
   'ec2:ReplaceRoute',
   'ec2:RevokeSecurityGroupIngress',
   'ec2:TerminateInstances',
-  'ecr:CreateRepository',
-  'ecr:Describe*',
-  'ecr:GetRepositoryPolicy',
-  'ecr:List*',
-  'ecr:ListTagsForResource',
-  'ecr:DeleteRepository',
-  'ecr:DeleteRepositoryPolicy',
-  'ecr:PutImageTagMutability',
-  'ecr:SetRepositoryPolicy',
-  'ecr:TagResource',
-  'ecr:UntagResource',
   'ecs:CreateCluster',
   'ecs:DeregisterTaskDefinition',
   'ecs:Describe*',
@@ -249,6 +239,10 @@ function ludosTaskDefinitionArnPattern(props: CommonStackProps) {
   return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:task-definition/${props.envNameCapitalized}LudosStackLudosApplicationStackTaskDef*:*`
 }
 
+function ludosRepositoryArn(props: CommonStackProps) {
+  return `arn:aws:ecr:${props.env!.region!}:${accounts.utility.id}:repository/ludos`
+}
+
 function ludosClusterArn(props: CommonStackProps) {
   return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:cluster/${props.envNameCapitalized}Cluster`
 }
@@ -266,6 +260,23 @@ export function restrictedCiBoundaryStatements(props: CommonStackProps) {
     new iam.PolicyStatement({
       actions: ['ecs:RegisterTaskDefinition'],
       resources: [ludosTaskDefinitionArnPattern(props)]
+    }),
+    new iam.PolicyStatement({
+      actions: [
+        'ecr:CreateRepository',
+        'ecr:DeleteRepository',
+        'ecr:DeleteRepositoryPolicy',
+        'ecr:DescribeImages',
+        'ecr:DescribeRepositories',
+        'ecr:GetRepositoryPolicy',
+        'ecr:ListImages',
+        'ecr:ListTagsForResource',
+        'ecr:PutImageTagMutability',
+        'ecr:SetRepositoryPolicy',
+        'ecr:TagResource',
+        'ecr:UntagResource'
+      ],
+      resources: [ludosRepositoryArn(props)]
     }),
     new iam.PolicyStatement({
       actions: ['ecs:UpdateService'],
