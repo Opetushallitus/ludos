@@ -186,7 +186,6 @@ const restrictedCiBoundaryActionPatterns = [
   'rds:CreateDBInstance',
   'rds:CreateDBParameterGroup',
   'rds:CreateDBSubnetGroup',
-  'rds:DeleteDBInstance',
   'rds:DeleteDBParameterGroup',
   'rds:DeleteDBSubnetGroup',
   'rds:ModifyDBInstance',
