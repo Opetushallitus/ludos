@@ -62,7 +62,6 @@ const restrictedCiBoundaryActionPatterns = [
   'ecr:UntagResource',
   'ecs:*',
   'elasticloadbalancing:*',
-  'events:*',
   'glue:CreateDatabase',
   'glue:CreateTable',
   'glue:DeleteDatabase',
