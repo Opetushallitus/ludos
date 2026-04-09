@@ -30,7 +30,12 @@ export function createRestrictedCiRoleAssumerPrincipal(accountId: string) {
 }
 
 const restrictedCiBoundaryActionPatterns = [
-  'acm:*',
+  'acm:AddTagsToCertificate',
+  'acm:DeleteCertificate',
+  'acm:DescribeCertificate',
+  'acm:ListTagsForCertificate',
+  'acm:RemoveTagsFromCertificate',
+  'acm:RequestCertificate',
   'athena:BatchGet*',
   'athena:Get*',
   'athena:List*',
