@@ -285,7 +285,6 @@ export function restrictedCiBoundaryStatements(props: CommonStackProps) {
 }
 
 export class GithubActionsStack extends cdk.Stack {
-  public githubActionsRole: iam.Role
   public restrictedDeployRole: iam.Role
 
   constructor(scope: Construct, id: string, props: CommonStackProps) {
@@ -298,28 +297,6 @@ export class GithubActionsStack extends cdk.Stack {
     })
 
     const restrictedCiRoleAssumer = createRestrictedCiRoleAssumerPrincipal(props.env!.account!)
-
-    this.githubActionsRole = new iam.Role(this, 'GithubActionsRole', {
-      roleName: `ludos-github-actions-role-${props.envName}`,
-      assumedBy: new iam.FederatedPrincipal(
-        githubActionsOidcProvider.attrArn,
-        {
-          StringEquals: { 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com' },
-          StringLike: { 'token.actions.githubusercontent.com:sub': 'repo:Opetushallitus/ludos:*' }
-        },
-        'sts:AssumeRoleWithWebIdentity'
-      )
-    })
-
-    const cdkPolicyStatement = new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: [
-        'arn:aws:iam::*:role/cdk-hnb659fds-deploy-role-*',
-        'arn:aws:iam::*:role/cdk-hnb659fds-file-publishing-*',
-        'arn:aws:iam::*:role/cdk-hnb659fds-lookup-role-*'
-      ]
-    })
-    this.githubActionsRole.addToPolicy(cdkPolicyStatement)
 
     const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
       managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,

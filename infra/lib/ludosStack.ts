@@ -57,7 +57,6 @@ export class LudosStack extends cdk.Stack {
       this,
       'SecretStack',
       commonProps,
-      githubActionsStack?.githubActionsRole!,
       githubActionsStack?.restrictedDeployRole
     )
 
