@@ -53,12 +53,7 @@ export class LudosStack extends cdk.Stack {
       vpc: vpcStack.vpc
     })
 
-    const secretStack = new SecretStack(
-      this,
-      'SecretStack',
-      commonProps,
-      githubActionsStack?.restrictedDeployRole
-    )
+    const secretStack = new SecretStack(this, 'SecretStack', commonProps, githubActionsStack?.restrictedDeployRole)
 
     const alarmStack = new AlarmStack(this, 'AlarmStack', commonProps)
 
