@@ -133,7 +133,7 @@ export class LudosApplicationStack extends cdk.Stack {
     const cloudFrontLogBucket = new s3.Bucket(this, 'CloudFrontLogBucket', {
       bucketName: `ludos-application-cloudfront-logs-${props.envName}`,
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
-      removalPolicy: props.productionGrade ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.RETAIN
     })
 
     const cloudFrontDistribution = new cf.Distribution(this, 'CloudFrontDistribution', {
@@ -350,7 +350,7 @@ export class LudosApplicationStack extends cdk.Stack {
     const athenaBucket = new s3.Bucket(this, 'AthenaBucket', {
       bucketName: `ludos-application-athena-${props.envName}`,
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
-      removalPolicy: RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.RETAIN
     })
     const workgroup = new athena.CfnWorkGroup(this, 'Workgroup', {
       name: 'cf_workgroup',
