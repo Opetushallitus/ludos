@@ -377,7 +377,6 @@ export class GithubActionsStack extends cdk.Stack {
           'ecs:DescribeTaskDefinition',
           'ecs:ListTaskDefinitions',
           'ssm:GetParameter',
-          'sts:AssumeRole',
           'sts:GetCallerIdentity'
         ],
         resources: ['*']

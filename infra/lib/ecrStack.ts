@@ -98,7 +98,6 @@ export class EcrStack extends cdk.Stack {
           'iam:PassRole',
           'ssm:GetParameter',
           'ssm:GetParameters',
-          'sts:AssumeRole',
           'sts:GetCallerIdentity'
         ],
         resources: ['*']
