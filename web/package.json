@@ -31,7 +31,7 @@
     "@tiptap/extension-text-style": "^3.0.0",
     "@tiptap/pm": "^3.0.0",
     "@tiptap/react": "^3.0.0",
-    "html-react-parser": "^5.1.12",
+    "html-react-parser": "^6.0.0",
     "i18next": "^25.0.0",
     "i18next-browser-languagedetector": "^8.0.0",
     "iconify-icon": "^3.0.0",
