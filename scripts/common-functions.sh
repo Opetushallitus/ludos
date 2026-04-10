@@ -211,7 +211,7 @@ function append_cdk_restricted_role_args {
   local env_name="$1"
   local array_name="$2"
 
-  if running_on_gh_actions || [[ "${DEPLOY_PERMISSION_MODE}" == "full" ]]; then
+  if [[ "${DEPLOY_PERMISSION_MODE}" == "full" ]]; then
     return
   fi
 
