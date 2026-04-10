@@ -396,7 +396,12 @@ export class GithubActionsStack extends cdk.Stack {
     this.restrictedDeployRole.addToPolicy(
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [restrictedCloudFormationExecutionRole.roleArn]
+        resources: [restrictedCloudFormationExecutionRole.roleArn],
+        conditions: {
+          StringEquals: {
+            'iam:PassedToService': 'cloudformation.amazonaws.com'
+          }
+        }
       })
     )
   }
