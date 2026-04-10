@@ -108,6 +108,7 @@ export class EcrStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         resources: [
+          `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-deploy-role-${props.env?.account}-${props.env?.region}`,
           `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-file-publishing-role-${props.env?.account}-${props.env?.region}`,
           `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-lookup-role-${props.env?.account}-${props.env?.region}`
         ]

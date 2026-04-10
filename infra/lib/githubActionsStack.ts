@@ -314,6 +314,7 @@ export class GithubActionsStack extends cdk.Stack {
     const cdkPolicyStatement = new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
       resources: [
+        'arn:aws:iam::*:role/cdk-hnb659fds-deploy-role-*',
         'arn:aws:iam::*:role/cdk-hnb659fds-file-publishing-*',
         'arn:aws:iam::*:role/cdk-hnb659fds-lookup-role-*'
       ]
@@ -351,8 +352,18 @@ export class GithubActionsStack extends cdk.Stack {
     this.restrictedDeployRole = new iam.Role(this, 'RestrictedDeployRole', {
       roleName: 'ludos-restricted-ci-deploy-role',
       description:
-        'Restricted deploy role for the CI permission lane. Assumed locally only via the AWS Identity Center AdministratorAccess role when simulating GitHub Actions AWS permissions.',
-      assumedBy: restrictedCiRoleAssumer,
+        'Restricted deploy role for the CI permission lane. Assumed either by GitHub Actions OIDC for CI deploys or locally via the AWS Identity Center AdministratorAccess role when simulating the same permissions.',
+      assumedBy: new iam.CompositePrincipal(
+        restrictedCiRoleAssumer,
+        new iam.FederatedPrincipal(
+          githubActionsOidcProvider.attrArn,
+          {
+            StringEquals: { 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com' },
+            StringLike: { 'token.actions.githubusercontent.com:sub': 'repo:Opetushallitus/ludos:*' }
+          },
+          'sts:AssumeRoleWithWebIdentity'
+        )
+      ),
       permissionsBoundary: restrictedCiPermissionsBoundary
     })
 
@@ -385,6 +396,7 @@ export class GithubActionsStack extends cdk.Stack {
       new iam.PolicyStatement({
         actions: ['sts:AssumeRole'],
         resources: [
+          `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-deploy-role-${props.env?.account}-*`,
           `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-file-publishing-role-${props.env?.account}-*`,
           `arn:aws:iam::${props.env?.account}:role/cdk-hnb659fds-lookup-role-${props.env?.account}-*`
         ]

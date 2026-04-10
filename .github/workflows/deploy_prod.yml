@@ -40,7 +40,7 @@ jobs:
       - name: Configure prod AWS credentials
         uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
         with:
-          role-to-assume: arn:aws:iam::072794607950:role/ludos-github-actions-role-prod
+          role-to-assume: arn:aws:iam::072794607950:role/ludos-restricted-ci-deploy-role
           aws-region: eu-west-1
       - name: Deploy Prod
         run: ./deploy-scripts/09-deploy-prod.sh
