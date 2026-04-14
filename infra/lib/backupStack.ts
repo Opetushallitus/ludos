@@ -1,7 +1,10 @@
 import * as cdk from 'aws-cdk-lib'
 import { BackupPlan, BackupPlanProps, BackupPlanRule, BackupResource } from 'aws-cdk-lib/aws-backup'
 import { Schedule } from 'aws-cdk-lib/aws-events'
+import * as events from 'aws-cdk-lib/aws-events'
+import * as targets from 'aws-cdk-lib/aws-events-targets'
 import * as iam from 'aws-cdk-lib/aws-iam'
+import * as logs from 'aws-cdk-lib/aws-logs'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
@@ -55,6 +58,25 @@ export class BackupStack extends cdk.Stack {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore')]
     })
+
+    if (props.envName === 'untuva' || props.envName === 'hahtuva') {
+      const backupEventsLogGroup = new logs.LogGroup(this, 'BackupEventsLogGroup', {
+        logGroupName: `/aws/events/${props.envName}/ludos-backup-jobs`,
+        retention: logs.RetentionDays.ONE_MONTH
+      })
+
+      new events.Rule(this, 'BackupJobStateChangeRule', {
+        description: 'Log terminal AWS Backup job state changes for dev environments',
+        eventPattern: {
+          source: ['aws.backup'],
+          detailType: ['Backup Job State Change'],
+          detail: {
+            state: ['COMPLETED', 'FAILED', 'EXPIRED', 'ABORTED']
+          }
+        },
+        targets: [new targets.CloudWatchLogGroup(backupEventsLogGroup)]
+      })
+    }
   }
 
   backupS3Buckets(buckets: s3.Bucket[]) {
