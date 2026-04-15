@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib'
 import { BackupPlan, BackupPlanProps, BackupPlanRule, BackupResource } from 'aws-cdk-lib/aws-backup'
-import { Schedule } from 'aws-cdk-lib/aws-events'
 import * as events from 'aws-cdk-lib/aws-events'
+import { Schedule } from 'aws-cdk-lib/aws-events'
 import * as targets from 'aws-cdk-lib/aws-events-targets'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as logs from 'aws-cdk-lib/aws-logs'
