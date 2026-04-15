@@ -274,12 +274,22 @@ export function restrictedCiBoundaryStatements(props: CommonStackProps) {
     }),
     new iam.PolicyStatement({
       actions: ['ec2:RunInstances'],
-      resources: ['*'],
+      resources: ['arn:aws:ec2:*:*:instance/*'],
       conditions: {
         StringEquals: {
           'ec2:InstanceType': 't4g.nano'
         }
       }
+    }),
+    new iam.PolicyStatement({
+      actions: ['ec2:RunInstances'],
+      resources: [
+        'arn:aws:ec2:*:*:network-interface/*',
+        'arn:aws:ec2:*:*:subnet/*',
+        'arn:aws:ec2:*:*:security-group/*',
+        'arn:aws:ec2:*:*:volume/*',
+        'arn:aws:ec2:*:*:image/*'
+      ]
     })
   ]
 }
