@@ -1,12 +1,16 @@
 import * as cdk from 'aws-cdk-lib'
-import { BackupPlan, BackupPlanProps, BackupPlanRule, BackupResource } from 'aws-cdk-lib/aws-backup'
+import { BackupPlan, BackupPlanProps, BackupPlanRule, BackupResource, BackupVaultEvents, CfnBackupVault } from 'aws-cdk-lib/aws-backup'
 import * as events from 'aws-cdk-lib/aws-events'
 import { Schedule } from 'aws-cdk-lib/aws-events'
 import * as targets from 'aws-cdk-lib/aws-events-targets'
 import * as iam from 'aws-cdk-lib/aws-iam'
+import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as logs from 'aws-cdk-lib/aws-logs'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as sns from 'aws-cdk-lib/aws-sns'
+import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions'
 import { Construct } from 'constructs'
+import * as path from 'path'
 import { CommonStackProps } from '../types'
 
 interface BackupStackProps extends CommonStackProps {}
@@ -66,6 +70,7 @@ export class BackupStack extends cdk.Stack {
       })
 
       new events.Rule(this, 'BackupJobStateChangeRule', {
+        ruleName: `${props.envNameCapitalized}BackupJobStateChange`,
         description: 'Log terminal AWS Backup job state changes for dev environments',
         eventPattern: {
           source: ['aws.backup'],
@@ -76,6 +81,32 @@ export class BackupStack extends cdk.Stack {
         },
         targets: [new targets.CloudWatchLogGroup(backupEventsLogGroup)]
       })
+
+      const backupNotificationsTopic = new sns.Topic(this, 'BackupNotificationsTopic')
+
+      const backupNotificationLogGroup = new logs.LogGroup(this, 'BackupNotificationLogGroup', {
+        logGroupName: `/ludos/${props.envName}/backup-notifications`,
+        retention: logs.RetentionDays.ONE_MONTH
+      })
+
+      const backupNotificationLoggerLambda = new lambda.Function(this, 'BackupNotificationLoggerLambda', {
+        functionName: `${props.envNameCapitalized}BackupNotificationLogger`,
+        runtime: lambda.Runtime.NODEJS_24_X,
+        handler: 'index.handler',
+        timeout: cdk.Duration.seconds(60),
+        code: lambda.Code.fromAsset(path.join(__dirname, 'lambdas/backupNotificationLoggerLambda')),
+        logGroup: backupNotificationLogGroup
+      })
+
+      backupNotificationsTopic.addSubscription(
+        new subscriptions.LambdaSubscription(backupNotificationLoggerLambda)
+      )
+
+      const backupVault = this.backupPlan.backupVault.node.defaultChild as CfnBackupVault
+      backupVault.notifications = {
+        backupVaultEvents: [BackupVaultEvents.S3_BACKUP_OBJECT_FAILED],
+        snsTopicArn: backupNotificationsTopic.topicArn
+      }
     }
   }
 
