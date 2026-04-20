@@ -114,7 +114,11 @@ export class BackupStack extends cdk.Stack {
 
       const backupVault = this.backupPlan.backupVault.node.defaultChild as CfnBackupVault
       backupVault.notifications = {
-        backupVaultEvents: [BackupVaultEvents.S3_BACKUP_OBJECT_FAILED],
+        backupVaultEvents: [
+          BackupVaultEvents.S3_BACKUP_OBJECT_FAILED,
+          BackupVaultEvents.BACKUP_JOB_FAILED,
+          BackupVaultEvents.BACKUP_JOB_STARTED
+        ],
         snsTopicArn: backupNotificationsTopic.topicArn
       }
     }
