@@ -201,6 +201,8 @@ const restrictedCiBoundaryActionPatterns = [
   'secretsmanager:UpdateSecret',
   'secretsmanager:UpdateSecretVersionStage',
   'serverlessrepo:CreateCloudFormationTemplate',
+  'serverlessrepo:Get*',
+  'serverlessrepo:List*',
   'sns:CreateTopic',
   'sns:DeleteTopic',
   'sns:Get*',
