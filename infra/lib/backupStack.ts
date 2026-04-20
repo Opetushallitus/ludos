@@ -20,8 +20,7 @@ import { Construct } from 'constructs'
 import * as path from 'path'
 import { CommonStackProps } from '../types'
 
-interface BackupStackProps extends CommonStackProps {
-}
+interface BackupStackProps extends CommonStackProps {}
 
 export class BackupStack extends cdk.Stack {
   public backupPlan: BackupPlan
@@ -72,7 +71,6 @@ export class BackupStack extends cdk.Stack {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore')]
     })
 
-
     const backupEventsLogGroup = new logs.LogGroup(this, 'BackupEventsLogGroup', {
       logGroupName: `/aws/events/${props.envName}/ludos-backup-jobs`,
       retention: logs.RetentionDays.ONE_MONTH
@@ -117,9 +115,7 @@ export class BackupStack extends cdk.Stack {
       logGroup: backupNotificationLogGroup
     })
 
-    backupNotificationsTopic.addSubscription(
-      new subscriptions.LambdaSubscription(backupNotificationLoggerLambda)
-    )
+    backupNotificationsTopic.addSubscription(new subscriptions.LambdaSubscription(backupNotificationLoggerLambda))
 
     const backupVault = this.backupPlan.backupVault.node.defaultChild as CfnBackupVault
     backupVault.notifications = {
@@ -130,7 +126,6 @@ export class BackupStack extends cdk.Stack {
       ],
       snsTopicArn: backupNotificationsTopic.topicArn
     }
-
   }
 
   backupS3Buckets(buckets: s3.Bucket[]) {
