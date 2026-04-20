@@ -40,10 +40,11 @@ test.describe('Certificate filter tests', () => {
   Object.values(Exam).forEach((exam) => {
     test(`${exam} list`, async ({ page, headless }) => {
       const list = new CertificateContentListModel(page, exam)
-      void list.goto()
-      const content = await page
-        .waitForResponse((response) => response.url().includes(`/api/certificate/${exam}`) && response.ok())
-        .then((response) => response.json())
+      const responsePromise = page.waitForResponse(
+        (response) => response.url().includes(`/api/certificate/${exam}`) && response.ok()
+      )
+      await list.goto()
+      const content = await responsePromise.then((response) => response.json())
 
       const checkList = checkListAfterFilteringWithProvidedExam(page, list.exam)
 

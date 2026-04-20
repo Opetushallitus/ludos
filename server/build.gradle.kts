@@ -6,8 +6,8 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     id("org.springframework.boot") version "3.5.7"
-    kotlin("jvm") version "2.3.0"
-    kotlin("plugin.spring") version "2.3.0"
+    kotlin("jvm") version "2.3.20"
+    kotlin("plugin.spring") version "2.3.20"
 }
 
 group = "fi.oph"
@@ -39,55 +39,50 @@ configurations.all {
 }
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.6"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.9"))
 
     developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.20.0")
-    implementation("io.arrow-kt:arrow-core:2.2.1")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
+    implementation("io.arrow-kt:arrow-core:2.2.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.2")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
     implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
-    implementation("org.flywaydb:flyway-core:11.20.0")
-    implementation("org.flywaydb:flyway-database-postgresql:11.20.0")
-    implementation("ch.qos.logback.access:logback-access-common:2.0.7")
+    implementation("org.flywaydb:flyway-core:11.20.3")
+    implementation("org.flywaydb:flyway-database-postgresql:11.20.3")
+    implementation("ch.qos.logback.access:logback-access-common:2.0.12")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
-    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.7")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    implementation("ch.qos.logback.access:logback-access-tomcat:2.0.12")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.20")
     implementation("org.jsoup:jsoup:1.22.1")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.41.1")
-    implementation("software.amazon.awssdk:s3:2.41.1")
-    implementation("software.amazon.awssdk:sso:2.41.1")
-    implementation("software.amazon.awssdk:ssooidc:2.41.1")
-    implementation("org.springframework.security:spring-security-cas:6.5.7")
-    implementation("com.nimbusds", "nimbus-jose-jwt").version {
-        strictly("9.37.4")
-    }
-    implementation("ch.qos.logback", "logback-core").version {
-        strictly("1.5.19")
-    }
-    implementation("org.apache.tomcat.embed", "tomcat-embed-core").version {
-        strictly("10.1.47")
-    }
-    implementation("org.springframework:spring-test:6.2.15")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.42.33")
+    implementation("software.amazon.awssdk:s3:2.42.33")
+    implementation("software.amazon.awssdk:sso:2.42.33")
+    implementation("software.amazon.awssdk:ssooidc:2.42.33")
+    implementation("org.springframework.security:spring-security-cas:6.5.9")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.9")
+    implementation("ch.qos.logback:logback-classic:1.5.32")
+    implementation("ch.qos.logback:logback-core:1.5.32")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.54")
+    implementation("org.springframework:spring-test:6.2.17")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.session:spring-session-jdbc")
-    implementation("org.postgresql:postgresql:42.7.8")
+    implementation("org.postgresql:postgresql:42.7.10")
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
-    compileOnly("org.projectlombok:lombok:1.18.42")
-    annotationProcessor("org.projectlombok:lombok:1.18.42")
+    compileOnly("org.projectlombok:lombok:1.18.44")
+    annotationProcessor("org.projectlombok:lombok:1.18.44")
 
-    testCompileOnly("org.projectlombok:lombok:1.18.42")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.42")
+    testCompileOnly("org.projectlombok:lombok:1.18.44")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.44")
 }
 
 kotlin {

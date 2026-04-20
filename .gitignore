@@ -17,3 +17,5 @@ server-compose-cache/*
 cdk.out*
 /logs
 *.iml
+
+server/bin/

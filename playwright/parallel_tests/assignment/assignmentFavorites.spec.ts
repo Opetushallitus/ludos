@@ -102,11 +102,8 @@ Object.values(Exam).forEach((exam) => {
       await favorite.goToExamTab()
 
       const folderId = await favorite.createFolder('rename me!')
-      await favorite.goToFolder(folderId)
 
-      await favorite.renameFolder('I am renamed!')
-
-      await favorite.goToFolderRootByBreadCrumb()
+      await favorite.renameFolder(folderId, 'I am renamed!')
 
       await expect(favorite.page.getByTestId(`folder-${folderId}-card`).getByTestId('link')).toContainText(
         'I am renamed!'

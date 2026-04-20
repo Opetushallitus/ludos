@@ -21,8 +21,6 @@ function getImageTagFromEnv() {
   throw new Error('Missing IMAGE_TAG env variable')
 }
 
-const imageTag = getImageTagFromEnv()
-
 if (envName === 'untuva' || envName === 'hahtuva') {
   new LudosStack(app, `${envParameters.envNameCapitalized}LudosStack`, {
     ...envParameters,
@@ -32,7 +30,7 @@ if (envName === 'untuva' || envName === 'hahtuva') {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.SMALL),
       allocatedStorage: 20
     },
-    ludosApplicationImageTag: imageTag,
+    ludosApplicationImageTag: getImageTagFromEnv(),
     enableAccessFromGithubActions: true
   })
 } else if (envName === 'qa') {
@@ -44,7 +42,7 @@ if (envName === 'untuva' || envName === 'hahtuva') {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.MEDIUM),
       allocatedStorage: 50
     },
-    ludosApplicationImageTag: imageTag,
+    ludosApplicationImageTag: getImageTagFromEnv(),
     enableAccessFromGithubActions: true
   })
 } else if (envName === 'prod') {
@@ -56,7 +54,7 @@ if (envName === 'untuva' || envName === 'hahtuva') {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE4_GRAVITON, ec2.InstanceSize.MEDIUM),
       allocatedStorage: 50
     },
-    ludosApplicationImageTag: imageTag,
+    ludosApplicationImageTag: getImageTagFromEnv(),
     enableAccessFromGithubActions: true
   })
 } else if (envName === 'utility') {

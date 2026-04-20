@@ -18,7 +18,7 @@ export class AlarmStack extends cdk.Stack {
     const slackWebhookUrlSecretName = `/${props.envNameCapitalized}LudosStack/LudosApplicationStack/SlackWebhookUrl`
 
     const slackNotifierLambda = new lambda.Function(this, 'SlackNotifierLambda', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_24_X,
       handler: 'index.handler',
       timeout: cdk.Duration.seconds(60),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambdas/slackNotifierLambda')),

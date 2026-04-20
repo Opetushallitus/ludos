@@ -65,7 +65,7 @@ export class DbStack extends cdk.Stack {
       credentials: rds.Credentials.fromSecret(this.masterPasswordSecret),
       multiAz: props.productionGrade,
       securityGroups: [this.dbSecurityGroup],
-      deletionProtection: props.productionGrade,
+      deletionProtection: true,
       allocatedStorage: defaultAllocatedStorage,
       storageType: rds.StorageType.GP3,
       storageEncrypted: true,
@@ -75,7 +75,7 @@ export class DbStack extends cdk.Stack {
       preferredMaintenanceWindow: 'Tue:02:00-Tue:04:00', // UTC time
       monitoringInterval: props.productionGrade ? cdk.Duration.seconds(10) : undefined,
       enablePerformanceInsights: props.productionGrade,
-      removalPolicy: props.productionGrade ? cdk.RemovalPolicy.SNAPSHOT : cdk.RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
       parameterGroup: rdsParameterGroup,
       ...props.databaseInstancePropOverrides
     })

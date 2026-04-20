@@ -9,28 +9,29 @@ import { BaseTestFixtures, baseTest, defaultSukoFormData } from '../fixtures/suk
 
 loginTestGroup(test, Role.YLLAPITAJA)
 
-test.describe.fixme('Presentation view', () => {
-  test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
-    const form = new AssignmentFormModel(page, Exam.SUKO)
-    const content = new AssignmentContentModel(page, Exam.SUKO)
-    const assignmentIn = form.testAssignmentIn('Esitysnäkymätesti')
+test.describe
+  .fixme('Presentation view', () => {
+    test('can navigate to presentation view from content and list', async ({ page, context, baseURL }) => {
+      const form = new AssignmentFormModel(page, Exam.SUKO)
+      const content = new AssignmentContentModel(page, Exam.SUKO)
+      const assignmentIn = form.testAssignmentIn('Esitysnäkymätesti')
 
-    const assignment = await form.assignmentApiCalls(context, baseURL!).create(assignmentIn)
-    await form.goToContentPage(ContentType.ASSIGNMENT, assignment.id)
+      const assignment = await form.assignmentApiCalls(context, baseURL!).create(assignmentIn)
+      await form.goToContentPage(ContentType.ASSIGNMENT, assignment.id)
 
-    await expect(form.formHeader).toHaveText(assignmentIn.nameFi)
-    await expect(content.metadata).toBeVisible()
+      await expect(form.formHeader).toHaveText(assignmentIn.nameFi)
+      await expect(content.metadata).toBeVisible()
 
-    const esitysnakymaContentLocator = content.metadata.getByTestId('esitysnakyma')
-    await testEsitysNakyma(page, esitysnakymaContentLocator, assignmentIn)
+      const esitysnakymaContentLocator = content.metadata.getByTestId('esitysnakyma')
+      await testEsitysNakyma(page, esitysnakymaContentLocator, assignmentIn)
 
-    const esitysnakymaCardLocator = page
-      .getByTestId(`assignment-list-item-${assignment.id}`)
-      .getByTestId('esitysnakyma')
-    await page.goto(`/suko/${ContentTypePluralFi.ASSIGNMENT}`)
-    await testEsitysNakyma(page, esitysnakymaCardLocator, assignmentIn)
+      const esitysnakymaCardLocator = page
+        .getByTestId(`assignment-list-item-${assignment.id}`)
+        .getByTestId('esitysnakyma')
+      await page.goto(`/suko/${ContentTypePluralFi.ASSIGNMENT}`)
+      await testEsitysNakyma(page, esitysnakymaCardLocator, assignmentIn)
+    })
   })
-})
 
 const sukoPrintViewTest = baseTest.extend<BaseTestFixtures>({
   formData: async ({}, use) => {

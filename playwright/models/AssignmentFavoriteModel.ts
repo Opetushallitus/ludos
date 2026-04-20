@@ -18,7 +18,6 @@ export class AssignmentFavoriteModel extends BaseModel {
     readonly modalButtonAdd = page.getByTestId('modal-button-add'),
     readonly modalButtonDelete = page.getByTestId('modal-button-delete'),
     readonly checkBoxFavoriteRoot = page.getByTestId('option-0'),
-    readonly folderActionMenuBtn = page.getByTestId('folder-action-menu-btn'),
     readonly moveFolderBtn = page.getByTestId('move-folder-btn'),
     readonly deleteFolderBtn = page.getByTestId('delete-folder-btn'),
     readonly renameFolderBtn = page.getByTestId('rename-folder-btn'),
@@ -143,8 +142,8 @@ export class AssignmentFavoriteModel extends BaseModel {
     await this.assertFavoritesPage(assignment, favoriteCountBefore)
   }
 
-  async renameFolder(newName: string) {
-    await this.folderActionMenuBtn.click()
+  async renameFolder(folderId: number, newName: string) {
+    await this.page.getByTestId(`folder-${folderId}-card`).getByTestId('folder-action-menu-btn').click()
     await this.renameFolderBtn.click()
     await this.renameFolderInput.fill(newName)
     await this.modalButtonAdd.click()

@@ -21,12 +21,18 @@ test('navigation links work', async ({ page }) => {
 
   await page.goto('/')
 
+  const headers = {
+    suko: `Suullinen kielitaito`,
+    ld: 'Lukiodiplomit',
+    puhvi: 'Puheviestintä'
+  }
+
   for (const exam of examsLowerCase) {
     const boxRow = page.getByTestId(`/${exam}`)
 
     for (const contentType of contentTypes) {
       await boxRow.getByTestId(`nav-box-${ContentTypePluralFi[contentType]}`).click()
-      expect(await page.locator('h2').getAttribute('data-testid')).toBe(`page-heading-${exam}`)
+      await expect(page.locator('h2')).toHaveText(headers[exam as keyof typeof headers])
       for (const contentType2 of contentTypes) {
         expect(
           await page.getByTestId(`tab-${ContentTypePluralFi[contentType2]}`).getAttribute('aria-current'),

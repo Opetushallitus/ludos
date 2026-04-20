@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { Exam, Language } from 'web/src/types'
 import { filterTestAssignmentName } from '../../examHelpers/assignmentHelpers'
-import { loginTestGroup, Role, resetDatabase, setMultiSelectDropdownOptions } from '../../helpers'
+import { loginTestGroup, Role, resetDatabase, setAssignmentType, setMultiSelectDropdownOptions } from '../../helpers'
 import { AssignmentContentListModel } from '../../models/AssignmentContentListModel'
 
 loginTestGroup(test, Role.YLLAPITAJA)
@@ -52,7 +52,7 @@ test.describe('Assignment filter tests', () => {
     await assertStartPage()
 
     await setMultiSelectDropdownOptions(page, 'oppimaaraFilter', ['VKA1'])
-    await setMultiSelectDropdownOptions(page, 'contentTypeFilter', ['003']) // keskustelu
+    await setAssignmentType(page, '003') // keskustelu
     await setMultiSelectDropdownOptions(page, 'aiheFilter', ['013']) // pohjoismaat
 
     await contentList.checkListAfterFiltering([20, 8])

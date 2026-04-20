@@ -26,23 +26,20 @@ jobs:
       contents: write
     runs-on: 'ubuntu-24.04'
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ inputs.branch }}
+          fetch-depth: 0
       - name: Send build status "in progress"
         uses: ./.github/actions/build_status
         with:
           task: deploy-qa
           status: inProgress
           api_key: ${{ secrets.RADIATOR_AUTH_TOKEN }}
-      - name: Fetch history for all branches and tags
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-        with:
-          fetch-depth: 0
       - name: Configure qa AWS credentials
-        uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37 # v6
         with:
-          role-to-assume: arn:aws:iam::260185049060:role/ludos-github-actions-role-qa
+          role-to-assume: arn:aws:iam::260185049060:role/ludos-restricted-ci-deploy-role
           aws-region: eu-west-1
       - name: Deploy Qa
         run: ./deploy-scripts/08-deploy-qa.sh
@@ -60,7 +57,7 @@ jobs:
     continue-on-error: true
     runs-on: 'ubuntu-24.04'
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: ./.github/actions/build_status
         with:
           task: deploy-qa

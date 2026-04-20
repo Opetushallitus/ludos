@@ -4,18 +4,68 @@ on:
   merge_group:
 
 jobs:
-  lintbuildtest:
+  lint:
+    permissions:
+      contents: read
+    name: lint.sh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run lint.sh
+        run: ./deploy-scripts/lint.sh
+
+  build:
+    permissions:
+      contents: read
+    name: build.sh
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run build.sh
+        run: ./deploy-scripts/build.sh
+
+      - name: Save Docker image
+        run: docker save "ludos-$GITHUB_SHA" | gzip > /tmp/ludos-image.tar.gz
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ludos-docker-image
+          path: /tmp/ludos-image.tar.gz
+          retention-days: 1
+
+  test:
+    needs: [lint, build]
     permissions:
       id-token: write
       contents: read
       packages: write
-    name: lint-build-test.sh
+    name: test.sh
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run lint-build-test.sh
-        run: ./deploy-scripts/lint-build-test.sh
+      - name: Download Docker image
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ludos-docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load < /tmp/ludos-image.tar.gz
+
+      - name: Run test.sh
+        run: ./deploy-scripts/test.sh
         env:
           LUDOS_PALVELUKAYTTAJA_USERNAME: ${{ secrets.LUDOS_PALVELUKAYTTAJA_USERNAME }}
           LUDOS_PALVELUKAYTTAJA_PASSWORD: ${{ secrets.LUDOS_PALVELUKAYTTAJA_PASSWORD }}
+
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright/playwright-results/
+          retention-days: 30

@@ -5,10 +5,9 @@ WORKDIR /app
 COPY ./package-lock.json .
 COPY ./package.json .
 
-RUN npm ci
+RUN npm ci --ignore-scripts=true
 
 COPY ./index.ts .
 COPY ./tsconfig.json .
 RUN npx tsc --noEmit
 ENTRYPOINT ["npx", "tsx", "index.ts"]
-
