@@ -200,6 +200,7 @@ const restrictedCiBoundaryActionPatterns = [
   'secretsmanager:UntagResource',
   'secretsmanager:UpdateSecret',
   'secretsmanager:UpdateSecretVersionStage',
+  'serverlessrepo:CreateCloudFormationTemplate',
   'sns:CreateTopic',
   'sns:DeleteTopic',
   'sns:Get*',
