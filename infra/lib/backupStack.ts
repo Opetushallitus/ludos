@@ -82,10 +82,20 @@ export class BackupStack extends cdk.Stack {
         targets: [new targets.CloudWatchLogGroup(backupEventsLogGroup)]
       })
 
-      const backupNotificationsTopic = new sns.Topic(this, 'BackupNotificationsTopic')
+      const backupNotificationsTopic = new sns.Topic(this, 'BackupNotificationsTopic', {
+        topicName: `${props.envNameCapitalized}BackupNotificationsTopic`,
+        displayName: `${props.envNameCapitalized} Ludos Backup Notifications`
+      })
+      backupNotificationsTopic.addToResourcePolicy(
+        new iam.PolicyStatement({
+          principals: [new iam.ServicePrincipal('backup.amazonaws.com')],
+          actions: ['sns:Publish'],
+          resources: [backupNotificationsTopic.topicArn]
+        })
+      )
 
       const backupNotificationLogGroup = new logs.LogGroup(this, 'BackupNotificationLogGroup', {
-        logGroupName: `/ludos/${props.envName}/backup-notifications`,
+        logGroupName: `/aws/lambda/ludos/${props.envName}/backup-notifications`,
         retention: logs.RetentionDays.ONE_MONTH
       })
 
