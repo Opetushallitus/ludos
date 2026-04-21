@@ -61,7 +61,10 @@ export class BackupStack extends cdk.Stack {
 
     this.s3BackupRole = new iam.Role(this, 'S3BackupRole', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Backup')]
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Backup'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore')
+      ]
     })
 
     new iam.Role(this, 'AwsBackupS3RestoreRole', {
