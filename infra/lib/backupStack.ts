@@ -25,6 +25,7 @@ interface BackupStackProps extends CommonStackProps {}
 export class BackupStack extends cdk.Stack {
   public backupPlan: BackupPlan
   private readonly s3BackupRole: iam.Role
+  private readonly s3RestoreRole: iam.Role
   private props: BackupStackProps
 
   constructor(scope: Construct, id: string, props: BackupStackProps) {
@@ -66,13 +67,15 @@ export class BackupStack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore')
       ]
     })
+    this.addKmsPermissions(this.s3BackupRole)
 
-    new iam.Role(this, 'AwsBackupS3RestoreRole', {
+    this.s3RestoreRole = new iam.Role(this, 'AwsBackupS3RestoreRole', {
       // For manual S3 snapshot restore operations
       roleName: 'AwsBackupS3RestoreRole',
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AWSBackupServiceRolePolicyForS3Restore')]
     })
+    this.addKmsPermissions(this.s3RestoreRole)
 
     const backupEventsLogGroup = new logs.LogGroup(this, 'BackupEventsLogGroup', {
       logGroupName: `/aws/events/${props.envName}/ludos-backup-jobs`,
@@ -137,5 +140,21 @@ export class BackupStack extends cdk.Stack {
       resources: buckets.map((bucket) => BackupResource.fromArn(bucket.bucketArn)),
       role: this.s3BackupRole
     })
+  }
+
+  private addKmsPermissions(role: iam.Role) {
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:Encrypt',
+          'kms:GenerateDataKey',
+          'kms:ReEncryptFrom',
+          'kms:ReEncryptTo'
+        ],
+        resources: ['*']
+      })
+    )
   }
 }
