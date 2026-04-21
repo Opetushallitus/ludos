@@ -37,7 +37,7 @@ export class S3Stack extends cdk.Stack {
           noncurrentVersionExpiration: cdk.Duration.days(2 * 365),
           noncurrentVersionTransitions: [
             {
-              storageClass: s3.StorageClass.GLACIER,
+              storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL,
               transitionAfter: cdk.Duration.days(30)
             }
           ]
