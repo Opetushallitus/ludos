@@ -12,6 +12,7 @@ import { CommonStackProps } from '../types'
 import { EnvName } from './accounts'
 
 const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
+export const recommendedRdsCaCertificate = rds.CaCertificate.RDS_CA_RSA2048_G1
 const devAccountEnvNames: EnvName[] = ['untuva', 'hahtuva']
 
 export function rdsParameterGroupParametersFor(
@@ -87,7 +88,8 @@ export class DbStack extends cdk.Stack {
       enablePerformanceInsights: props.productionGrade,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       parameterGroup: rdsParameterGroup,
-      ...props.databaseInstancePropOverrides
+      ...props.databaseInstancePropOverrides,
+      caCertificate: devAccountEnvNames.includes(props.envName) ? recommendedRdsCaCertificate : undefined
     })
     Tags.of(this.instance).add('Name', `${props.envNameCapitalized}Db`)
     Tags.of(this.instance).add('Environment', props.envName)
