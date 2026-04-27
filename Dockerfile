@@ -26,7 +26,7 @@ COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
 COPY server/src/ ./src/
 RUN gradle --no-daemon bootJar
 
-FROM amazoncorretto:25.0.2-alpine@sha256:29fb372e1090a314688d0105870559369f8481ad18826e1c2367eab67e6eca4b
+FROM amazoncorretto:25.0.3-alpine@sha256:80667e38af71ac103a3ae36a0b531d54c73c4da28fc02b57f69bce8993c0e1b0
 
 RUN apk add curl
 
