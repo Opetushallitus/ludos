@@ -9,8 +9,21 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import * as sns from 'aws-cdk-lib/aws-sns'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
+import { EnvName } from './accounts'
 
 const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
+const devAccountEnvNames: EnvName[] = ['untuva', 'hahtuva']
+
+export function rdsParameterGroupParametersFor(
+  envName: EnvName,
+  parameters: Record<string, string> = {}
+): Record<string, string> {
+  return {
+    log_temp_files: '0',
+    ...parameters,
+    ...(devAccountEnvNames.includes(envName) ? { 'rds.force_ssl': '1' } : {})
+  }
+}
 
 export interface LudosDatabaseInstanceProps extends Omit<DatabaseInstanceProps, 'engine' | 'vpc'> {
   instanceType: ec2.InstanceType
@@ -40,10 +53,7 @@ export class DbStack extends cdk.Stack {
 
     const rdsParameterGroup = new rds.ParameterGroup(this, 'RdsParameterGroup', {
       engine: rdsInstanceEngine,
-      parameters: {
-        log_temp_files: '0', // kilobytes
-        ...props.parameters
-      }
+      parameters: rdsParameterGroupParametersFor(props.envName, props.parameters)
     })
 
     this.masterPasswordSecret = new rds.DatabaseSecret(this, 'MasterPasswordSecret', {
