@@ -13,7 +13,13 @@ import { EnvName } from './accounts'
 
 const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
 export const recommendedRdsCaCertificate = rds.CaCertificate.RDS_CA_RSA2048_G1
-const devAccountEnvNames: EnvName[] = ['untuva', 'hahtuva']
+export const ludos295RdsTlsChangesFeatureFlag = {
+  enabledEnvNames: ['untuva', 'hahtuva'] as EnvName[]
+}
+
+export function isLudos295RdsTlsChangesFeatureFlagEnabled(envName: EnvName): boolean {
+  return ludos295RdsTlsChangesFeatureFlag.enabledEnvNames.includes(envName)
+}
 
 export function rdsParameterGroupParametersFor(
   envName: EnvName,
@@ -22,7 +28,7 @@ export function rdsParameterGroupParametersFor(
   return {
     log_temp_files: '0',
     ...parameters,
-    ...(devAccountEnvNames.includes(envName) ? { 'rds.force_ssl': '1' } : {})
+    ...(isLudos295RdsTlsChangesFeatureFlagEnabled(envName) ? { 'rds.force_ssl': '1' } : {})
   }
 }
 
@@ -89,7 +95,7 @@ export class DbStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       parameterGroup: rdsParameterGroup,
       ...props.databaseInstancePropOverrides,
-      caCertificate: devAccountEnvNames.includes(props.envName) ? recommendedRdsCaCertificate : undefined
+      caCertificate: isLudos295RdsTlsChangesFeatureFlagEnabled(props.envName) ? recommendedRdsCaCertificate : undefined
     })
     Tags.of(this.instance).add('Name', `${props.envNameCapitalized}Db`)
     Tags.of(this.instance).add('Environment', props.envName)
