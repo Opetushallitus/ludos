@@ -55,7 +55,7 @@ dependencies {
     implementation("ch.qos.logback.access:logback-access-common:2.0.12")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.12")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.20")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.21")
     implementation("org.jsoup:jsoup:1.22.2")
     implementation("software.amazon.awssdk:cloudwatchlogs:2.42.36")
     implementation("software.amazon.awssdk:s3:2.42.36")
