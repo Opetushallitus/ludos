@@ -15,7 +15,6 @@
     "jsx": "react-jsx",
 
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": false,
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
