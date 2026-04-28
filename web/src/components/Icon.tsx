@@ -36,8 +36,8 @@ import formatH2 from '@iconify/icons-material-symbols/format-h2'
 import formatH3 from '@iconify/icons-material-symbols/format-h3'
 import formatH4 from '@iconify/icons-material-symbols/format-h4'
 import formatParagraph from '@iconify/icons-material-symbols/format-paragraph'
-import type { IconifyIcon } from '@iconify/types'
 import { twMerge } from 'tailwind-merge'
+import { type IconifyIconModule, normalizeIconifyIcon } from './iconifyIcon'
 
 type IconProps = {
   name: Icons
@@ -91,7 +91,7 @@ export type Icons =
 // icons from https://icon-sets.iconify.design/
 // ic = google material icons
 // material-symbols-light
-const icons: Record<Icons, IconifyIcon> = {
+const icons: Record<Icons, IconifyIconModule> = {
   ['koetehtavat']: outlineAssignment,
   ['ohjeet']: outlineHelpOutline,
   ['todistukset']: outlineVerified,
@@ -133,6 +133,7 @@ const icons: Record<Icons, IconifyIcon> = {
 }
 
 export const Icon = ({ name, color, disabled = false, size, dataTestId, customClass }: IconProps) => {
+  const icon = normalizeIconifyIcon(icons[name])
   const className = twMerge(
     'flex justify-center',
     color,
@@ -146,9 +147,9 @@ export const Icon = ({ name, color, disabled = false, size, dataTestId, customCl
       <span className="inline-block align-top m-auto">
         <svg
           className="block mx-auto w-[1em] h-[1em]"
-          dangerouslySetInnerHTML={{ __html: icons[name]?.body }}
+          dangerouslySetInnerHTML={{ __html: icon.body }}
           xmlns="http://www.w3.org/2000/svg"
-          viewBox={`0 0 ${outlineAssignment.width} ${outlineAssignment.height}`}
+          viewBox={`0 0 ${icon.width} ${icon.height}`}
         />
       </span>
     </i>
