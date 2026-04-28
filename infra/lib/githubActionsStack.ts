@@ -153,6 +153,7 @@ const restrictedCiBoundaryActionPatterns = [
   'logs:UntagResource',
   'rds:AddTagsToResource',
   'rds:DescribeDB*',
+  'rds:DescribeEngineDefaultParameters',
   'rds:ListTagsForResource',
   'rds:CreateDBInstance',
   'rds:CreateDBParameterGroup',
