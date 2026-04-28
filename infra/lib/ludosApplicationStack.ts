@@ -19,12 +19,24 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import * as sns from 'aws-cdk-lib/aws-sns'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
-import { accounts } from './accounts'
+import { accounts, type EnvName } from './accounts'
 import { AlbStack } from './albStack'
-import { DbStack } from './dbStack'
+import { DbStack, isLudos295RdsTlsChangesFeatureFlagEnabled } from './dbStack'
 import { GithubActionsStack } from './githubActionsStack'
 import { LogGroupStack } from './logGroupStack'
 import { S3Stack } from './S3Stack'
+
+export const rdsGlobalBundlePath = '/etc/ssl/certs/rds-global-bundle.pem'
+
+export function ludosDatabaseUrl(envName: EnvName, hostname: string): string {
+  const dbUrl = `jdbc:postgresql://${hostname}:5432/ludos`
+
+  if (!isLudos295RdsTlsChangesFeatureFlagEnabled(envName)) {
+    return dbUrl
+  }
+
+  return `${dbUrl}?sslmode=verify-full&sslrootcert=${rdsGlobalBundlePath}`
+}
 
 interface LudosApplicationStackProps extends CommonStackProps {
   ludosApplicationImageTag: string
@@ -74,7 +86,7 @@ export class LudosApplicationStack extends cdk.Stack {
       essential: true,
       environment: {
         SPRING_PROFILES_ACTIVE: props.envName,
-        DB_URL: `jdbc:postgresql://${props.dbStack.instance.instanceEndpoint.hostname}:5432/ludos`,
+        DB_URL: ludosDatabaseUrl(props.envName, props.dbStack.instance.instanceEndpoint.hostname),
         AUDIT_LOG_LOG_GROUP_NAME: props.auditLogLogGroupStack.logGroupName
       },
       secrets: {

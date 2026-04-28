@@ -28,7 +28,8 @@ RUN gradle --no-daemon bootJar
 
 FROM amazoncorretto:25.0.3-alpine@sha256:80667e38af71ac103a3ae36a0b531d54c73c4da28fc02b57f69bce8993c0e1b0
 
-RUN apk add curl
+RUN apk add --no-cache ca-certificates curl \
+    && curl --fail --location https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem --output /etc/ssl/certs/rds-global-bundle.pem
 
 WORKDIR /ludos-server
 COPY --from=server-build /ludos-build/build/libs/ludos.jar .
