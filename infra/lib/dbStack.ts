@@ -9,28 +9,10 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import * as sns from 'aws-cdk-lib/aws-sns'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
-import { EnvName } from './accounts'
 
 const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
 export const recommendedRdsCaCertificate = rds.CaCertificate.RDS_CA_RSA2048_G1
-export const ludos295RdsTlsChangesFeatureFlag = {
-  enabledEnvNames: ['untuva', 'hahtuva', 'qa'] as EnvName[]
-}
-
-export function isLudos295RdsTlsChangesFeatureFlagEnabled(envName: EnvName): boolean {
-  return ludos295RdsTlsChangesFeatureFlag.enabledEnvNames.includes(envName)
-}
-
-export function rdsParameterGroupParametersFor(
-  envName: EnvName,
-  parameters: Record<string, string> = {}
-): Record<string, string> {
-  return {
-    log_temp_files: '0',
-    ...parameters,
-    ...(isLudos295RdsTlsChangesFeatureFlagEnabled(envName) ? { 'rds.force_ssl': '1' } : {})
-  }
-}
+const LOG_TEMP_FILES_THRESHOLD_KB = '0' // kilobytes; 0 logs all temporary files
 
 export interface LudosDatabaseInstanceProps extends Omit<DatabaseInstanceProps, 'engine' | 'vpc'> {
   instanceType: ec2.InstanceType
@@ -60,7 +42,11 @@ export class DbStack extends cdk.Stack {
 
     const rdsParameterGroup = new rds.ParameterGroup(this, 'RdsParameterGroup', {
       engine: rdsInstanceEngine,
-      parameters: rdsParameterGroupParametersFor(props.envName, props.parameters)
+      parameters: {
+        log_temp_files: LOG_TEMP_FILES_THRESHOLD_KB,
+        ...props.parameters,
+        'rds.force_ssl': '1'
+      }
     })
 
     this.masterPasswordSecret = new rds.DatabaseSecret(this, 'MasterPasswordSecret', {
@@ -95,7 +81,7 @@ export class DbStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       parameterGroup: rdsParameterGroup,
       ...props.databaseInstancePropOverrides,
-      caCertificate: isLudos295RdsTlsChangesFeatureFlagEnabled(props.envName) ? recommendedRdsCaCertificate : undefined
+      caCertificate: recommendedRdsCaCertificate
     })
     Tags.of(this.instance).add('Name', `${props.envNameCapitalized}Db`)
     Tags.of(this.instance).add('Environment', props.envName)
