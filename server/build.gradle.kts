@@ -76,6 +76,7 @@ dependencies {
     implementation("org.postgresql:postgresql:42.7.10")
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.security:spring-security-test")
 
     compileOnly("org.projectlombok:lombok:1.18.46")

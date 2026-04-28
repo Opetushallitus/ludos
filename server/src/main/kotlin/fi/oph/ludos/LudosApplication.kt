@@ -106,9 +106,8 @@ class Config : WebMvcConfigurer {
     @Bean
     fun forwardedHeaderFilter(): FilterRegistrationBean<ForwardedHeaderFilter> {
         val filterRegistrationBean = FilterRegistrationBean<ForwardedHeaderFilter>()
-        filterRegistrationBean.filter = ForwardedHeaderFilter()
-        filterRegistrationBean.order = 0
+        filterRegistrationBean.setFilter(ForwardedHeaderFilter())
+        filterRegistrationBean.setOrder(0)
         return filterRegistrationBean
     }
 }
-

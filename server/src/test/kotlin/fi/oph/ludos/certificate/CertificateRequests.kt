@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
@@ -13,6 +13,7 @@ import org.springframework.mock.web.MockPart
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
@@ -27,7 +28,7 @@ abstract class CertificateRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
-    fun performWithCsrf(requestBuilder: MockHttpServletRequestBuilder): ResultActions =
+    fun performWithCsrf(requestBuilder: AbstractMockHttpServletRequestBuilder<*>): ResultActions =
         mockMvc.perform(requestBuilder.with(SecurityMockMvcRequestPostProcessors.csrf()))
 
     fun examByTestCertificateOutClass(testCertificateOutClass: KClass<out CertificateOut>): Exam =
@@ -51,7 +52,7 @@ abstract class CertificateRequests {
         certificate: String,
         attachmentName: String?,
         attachmentNameSv: String? = null
-    ): MockHttpServletRequestBuilder {
+    ): AbstractMockHttpServletRequestBuilder<*> {
         val certificatePart = MockPart("certificate", certificate.toByteArray())
         val attachmentPartFi = attachmentName?.let { readAttachmentFixtureFile(it) }
 
@@ -116,7 +117,7 @@ abstract class CertificateRequests {
         certificate: String,
         attachmentPart: MockMultipartFile? = null,
         attachmentPartSv: MockMultipartFile? = null
-    ): MockHttpServletRequestBuilder {
+    ): AbstractMockHttpServletRequestBuilder<*> {
         val certificatePart = MockPart("certificate", certificate.toByteArray())
         certificatePart.headers.contentType = MediaType.APPLICATION_JSON
 

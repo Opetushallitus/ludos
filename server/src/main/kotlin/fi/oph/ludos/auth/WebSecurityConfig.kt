@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.cas.web.CasAuthenticationFilter
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -21,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.*
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
 import org.springframework.util.StringUtils
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
@@ -87,7 +88,7 @@ class WebSecurityConfiguration {
         http.logout {
             it.logoutSuccessUrl(casConfig.getCasLogoutUrl())
             it.logoutUrl(casConfig.logoutUrl)
-            it.logoutRequestMatcher(AntPathRequestMatcher(casConfig.logoutUrl, "GET"))
+            it.logoutRequestMatcher(PathPatternRequestMatcher.pathPattern(HttpMethod.GET, casConfig.logoutUrl))
         }
 
         http.authorizeHttpRequests {
@@ -139,7 +140,7 @@ class WebSecurityConfiguration {
             delegate.handle(request, response, csrfToken)
         }
 
-        override fun resolveCsrfTokenValue(request: HttpServletRequest, csrfToken: CsrfToken): String {
+        override fun resolveCsrfTokenValue(request: HttpServletRequest, csrfToken: CsrfToken): String? {
             return if (StringUtils.hasText(request.getHeader(csrfToken.headerName))) super.resolveCsrfTokenValue(
                 request,
                 csrfToken

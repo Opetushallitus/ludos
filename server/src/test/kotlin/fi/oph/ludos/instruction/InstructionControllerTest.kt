@@ -17,9 +17,9 @@ import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.TestInstance
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -33,7 +33,7 @@ import kotlin.streams.asStream
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InstructionControllerTest : InstructionRequests() {
-    @MockBean
+    @MockitoBean
     private lateinit var mockOppijanumerorekisteriClient: OppijanumerorekisteriClient
 
     @BeforeAll

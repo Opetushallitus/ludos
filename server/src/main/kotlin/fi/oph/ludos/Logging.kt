@@ -14,7 +14,7 @@ import net.logstash.logback.composite.AbstractFieldJsonProvider
 import net.logstash.logback.composite.JsonWritingUtils
 import org.slf4j.MDC
 import org.slf4j.spi.LoggingEventBuilder
-import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory
+import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
@@ -47,7 +47,7 @@ class RealRemoteHostProvider : AbstractFieldJsonProvider<IAccessEvent>() {
 class LogbackAccessConfiguration : WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory> {
     override fun customize(factory: ConfigurableTomcatWebServerFactory) {
         val logbackValve = LogbackValve()
-        logbackValve.filename = "logback-access.xml"
+        logbackValve.setFilename("logback-access.xml")
         factory.addEngineValves(logbackValve)
     }
 }
@@ -80,7 +80,7 @@ class CorrelationIdFilterConfig {
     fun requestIdFilter(): FilterRegistrationBean<CorrelationIdFilter> {
         val registrationBean
                 : FilterRegistrationBean<CorrelationIdFilter> = FilterRegistrationBean<CorrelationIdFilter>()
-        registrationBean.filter = CorrelationIdFilter()
+        registrationBean.setFilter(CorrelationIdFilter())
         registrationBean.addUrlPatterns("/*")
         return registrationBean
     }

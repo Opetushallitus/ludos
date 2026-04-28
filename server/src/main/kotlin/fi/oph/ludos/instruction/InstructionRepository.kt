@@ -248,7 +248,7 @@ class InstructionRepository(
         return attachments
     }
 
-    val mapResultSetSuko: (ResultSet, Int) -> SukoInstructionDtoOut? =
+    val mapResultSetSuko: (ResultSet, Int) -> SukoInstructionDtoOut =
         { rs: ResultSet, _: Int ->
             val attachments = mapResultSetInstructionAttachment(rs)
 
@@ -272,7 +272,7 @@ class InstructionRepository(
             )
         }
 
-    val mapResultSetLd: (ResultSet, Int) -> LdInstructionDtoOut? = { rs: ResultSet, _: Int ->
+    val mapResultSetLd: (ResultSet, Int) -> LdInstructionDtoOut = { rs: ResultSet, _: Int ->
         val attachments = mapResultSetInstructionAttachment(rs)
 
         LdInstructionDtoOut(
@@ -294,7 +294,7 @@ class InstructionRepository(
         )
     }
 
-    val mapResultSetPuhvi: (ResultSet, Int) -> PuhviInstructionDtoOut? =
+    val mapResultSetPuhvi: (ResultSet, Int) -> PuhviInstructionDtoOut =
         { rs: ResultSet, _: Int ->
             val attachments = mapResultSetInstructionAttachment(rs)
 
