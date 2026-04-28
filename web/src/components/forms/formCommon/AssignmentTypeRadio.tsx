@@ -1,17 +1,23 @@
-import { Control, Controller, FieldError } from 'react-hook-form'
+import { Control, Controller, FieldError, FieldPath, FieldValues } from 'react-hook-form'
 import { KoodiDtoOut } from '../../../hooks/useKoodisto'
 import { useLudosTranslation } from '../../../hooks/useLudosTranslation'
 import { FormError } from './FormErrors'
 
-interface AssignmentTypeFieldProps {
-  control: Control<any>
-  name: string
+interface AssignmentTypeFieldProps<T extends FieldValues> {
+  control: Control<T>
+  name: FieldPath<T>
   required: boolean
   options: KoodiDtoOut[]
   errorMessage?: FieldError
 }
 
-export const AssignmentTypeField = ({ control, name, required, options, errorMessage }: AssignmentTypeFieldProps) => {
+export const AssignmentTypeField = <T extends FieldValues>({
+  control,
+  name,
+  required,
+  options,
+  errorMessage
+}: AssignmentTypeFieldProps<T>) => {
   const { t } = useLudosTranslation()
   return (
     <div className="mb-6">
