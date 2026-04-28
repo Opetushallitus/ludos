@@ -20,7 +20,7 @@ const attachmentSchema = z.object(
     language: z.enum(['FI', 'SV']).optional(),
     size: z.number().optional()
   },
-  { required_error: ErrorMessages.REQUIRED, invalid_type_error: ErrorMessages.REQUIRED }
+  { error: ErrorMessages.REQUIRED }
 )
 
 export type AttachmentFormType = z.infer<typeof attachmentSchema>

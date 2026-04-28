@@ -20,9 +20,7 @@ export const inputNotEmptyValidation = z
   .string()
   .refine((val) => val.trim().length > 0, { message: ErrorMessages.REQUIRED })
 
-export const nameValidation = z
-  .string({ required_error: ErrorMessages.REQUIRED })
-  .min(MIN_NAME_LENGTH, ErrorMessages.SHORT)
+export const nameValidation = z.string({ error: ErrorMessages.REQUIRED }).min(MIN_NAME_LENGTH, ErrorMessages.SHORT)
 
 export const nameOrEmptyStringValidation = z
   .string()

@@ -53,7 +53,7 @@ export const sukoAssignmentSchema = commonSchema
           oppimaaraKoodiArvo: inputNotEmptyValidation,
           kielitarjontaKoodiArvo: z.string().nullable().default(null)
         },
-        { required_error: ErrorMessages.REQUIRED }
+        { error: ErrorMessages.REQUIRED }
       ),
       tavoitetasoKoodiArvo: z.string().nullable(),
       aiheKoodiArvos: z.array(z.string())
@@ -67,9 +67,7 @@ export const ldAssignmentSchema = commonSchema
   .merge(
     z.object({
       aineKoodiArvo: inputNotEmptyValidation,
-      lukuvuosiKoodiArvos: z
-        .array(z.string(), { required_error: ErrorMessages.REQUIRED })
-        .min(1, ErrorMessages.REQUIRED)
+      lukuvuosiKoodiArvos: z.array(z.string(), { error: ErrorMessages.REQUIRED }).min(1, ErrorMessages.REQUIRED)
     })
   )
   .superRefine(commonSuperRefine)
@@ -80,9 +78,7 @@ export const puhviAssignmentSchema = commonSchema
   .merge(
     z.object({
       assignmentTypeKoodiArvo: inputNotEmptyValidation,
-      lukuvuosiKoodiArvos: z
-        .array(z.string(), { required_error: ErrorMessages.REQUIRED })
-        .min(1, ErrorMessages.REQUIRED)
+      lukuvuosiKoodiArvos: z.array(z.string(), { error: ErrorMessages.REQUIRED }).min(1, ErrorMessages.REQUIRED)
     })
   )
   .superRefine(commonSuperRefine)
