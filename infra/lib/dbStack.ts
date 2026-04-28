@@ -14,7 +14,7 @@ import { EnvName } from './accounts'
 const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
 export const recommendedRdsCaCertificate = rds.CaCertificate.RDS_CA_RSA2048_G1
 export const ludos295RdsTlsChangesFeatureFlag = {
-  enabledEnvNames: ['untuva', 'hahtuva'] as EnvName[]
+  enabledEnvNames: ['untuva', 'hahtuva', 'qa'] as EnvName[]
 }
 
 export function isLudos295RdsTlsChangesFeatureFlagEnabled(envName: EnvName): boolean {
