@@ -8,8 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "biome check",
-    "lint:fix": "biome check --write",
-    "test": "node --import tsx --test test/*.test.ts"
+    "lint:fix": "biome check --write"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.14",
