@@ -161,7 +161,7 @@ export class BackupStack extends cdk.Stack {
       protectedResourceType: 'RDS',
       iamRoleArn: restoreTestingRole.roleArn,
       protectedResourceConditions: {
-        stringEquals: [{ key: 'Environment', value: props.envName }]
+        stringEquals: [{ key: 'aws:ResourceTag/Environment', value: props.envName }]
       },
       restoreMetadataOverrides: {
         dbInstanceClass: 'db.t3.micro'
