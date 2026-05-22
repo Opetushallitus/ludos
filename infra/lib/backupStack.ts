@@ -5,7 +5,9 @@ import {
   BackupPlanRule,
   BackupResource,
   BackupVaultEvents,
-  CfnBackupVault
+  CfnBackupVault,
+  CfnRestoreTestingPlan,
+  CfnRestoreTestingSelection
 } from 'aws-cdk-lib/aws-backup'
 import * as events from 'aws-cdk-lib/aws-events'
 import { Schedule } from 'aws-cdk-lib/aws-events'
@@ -132,6 +134,52 @@ export class BackupStack extends cdk.Stack {
       ],
       snsTopicArn: backupNotificationsTopic.topicArn
     }
+
+    const restoreTestingRole = new iam.Role(this, 'RestoreTestingRole', {
+      assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores')
+      ]
+    })
+    this.addKmsPermissions(restoreTestingRole)
+
+    const restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
+      restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
+      scheduleExpression: 'cron(0 8 ? * MON *)',
+      startWindowHours: 4,
+      recoveryPointSelection: {
+        algorithm: 'LATEST_WITHIN_WINDOW',
+        includeVaults: [this.backupPlan.backupVault.backupVaultArn],
+        recoveryPointTypes: ['SNAPSHOT'],
+        selectionWindowDays: 7
+      }
+    })
+
+    new CfnRestoreTestingSelection(this, 'RdsRestoreTestingSelection', {
+      restoreTestingPlanName: restoreTestingPlan.restoreTestingPlanName,
+      restoreTestingSelectionName: `${props.envNameCapitalized}LudosRdsRestoreTestingSelection`,
+      protectedResourceType: 'RDS',
+      iamRoleArn: restoreTestingRole.roleArn,
+      protectedResourceConditions: {
+        stringEquals: [{ key: 'Environment', value: props.envName }]
+      },
+      restoreMetadataOverrides: {
+        dbInstanceClass: 'db.t3.micro'
+      }
+    })
+
+    new events.Rule(this, 'RestoreTestingJobStateChangeRule', {
+      ruleName: `${props.envNameCapitalized}RestoreTestingJobStateChange`,
+      description: 'Log AWS Backup restore testing job state changes',
+      eventPattern: {
+        source: ['aws.backup'],
+        detailType: ['Restore Testing Job State Change'],
+        detail: {
+          status: ['FAILED', 'COMPLETED']
+        }
+      },
+      targets: [new targets.CloudWatchLogGroup(backupEventsLogGroup), new targets.SnsTopic(backupNotificationsTopic)]
+    })
   }
 
   backupS3Buckets(buckets: s3.Bucket[]) {
