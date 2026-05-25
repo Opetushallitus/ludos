@@ -9,12 +9,14 @@ import {
   CfnRestoreTestingPlan,
   CfnRestoreTestingSelection
 } from 'aws-cdk-lib/aws-backup'
+import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import * as events from 'aws-cdk-lib/aws-events'
 import { Schedule } from 'aws-cdk-lib/aws-events'
 import * as targets from 'aws-cdk-lib/aws-events-targets'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as logs from 'aws-cdk-lib/aws-logs'
+import * as rds from 'aws-cdk-lib/aws-rds'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as sns from 'aws-cdk-lib/aws-sns'
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions'
@@ -28,6 +30,8 @@ export class BackupStack extends cdk.Stack {
   public backupPlan: BackupPlan
   private readonly s3BackupRole: iam.Role
   private readonly s3RestoreRole: iam.Role
+  private readonly restoreTestingPlan: CfnRestoreTestingPlan
+  private readonly restoreTestingRole: iam.Role
   private props: BackupStackProps
 
   constructor(scope: Construct, id: string, props: BackupStackProps) {
@@ -135,17 +139,18 @@ export class BackupStack extends cdk.Stack {
       snsTopicArn: backupNotificationsTopic.topicArn
     }
 
-    const restoreTestingRole = new iam.Role(this, 'RestoreTestingRole', {
+    this.restoreTestingRole = new iam.Role(this, 'RestoreTestingRole', {
       assumedBy: new iam.ServicePrincipal('backup.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBackupServiceRolePolicyForRestores')
       ]
     })
-    this.addKmsPermissions(restoreTestingRole)
+    this.addKmsPermissions(this.restoreTestingRole)
 
-    const restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
+    this.restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
       restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
-      scheduleExpression: 'cron(0 8 ? * MON *)',
+      scheduleExpression: 'cron(30 15 ? * * *)',
+      scheduleExpressionTimezone: 'Europe/Helsinki',
       startWindowHours: 4,
       recoveryPointSelection: {
         algorithm: 'LATEST_WITHIN_WINDOW',
@@ -155,30 +160,26 @@ export class BackupStack extends cdk.Stack {
       }
     })
 
-    new CfnRestoreTestingSelection(this, 'RdsRestoreTestingSelection', {
-      restoreTestingPlanName: restoreTestingPlan.restoreTestingPlanName,
-      restoreTestingSelectionName: `${props.envNameCapitalized}LudosRdsRestoreTestingSelection`,
-      protectedResourceType: 'RDS',
-      iamRoleArn: restoreTestingRole.roleArn,
-      protectedResourceConditions: {
-        stringEquals: [{ key: 'aws:ResourceTag/Environment', value: props.envName }]
-      },
-      restoreMetadataOverrides: {
-        dbInstanceClass: 'db.t3.micro'
-      }
-    })
-
     new events.Rule(this, 'RestoreTestingJobStateChangeRule', {
       ruleName: `${props.envNameCapitalized}RestoreTestingJobStateChange`,
-      description: 'Log AWS Backup restore testing job state changes',
+      description: 'Log AWS Backup restore job state changes',
       eventPattern: {
         source: ['aws.backup'],
-        detailType: ['Restore Testing Job State Change'],
-        detail: {
-          status: ['FAILED', 'COMPLETED']
-        }
+        detailType: ['Restore Job State Change']
       },
       targets: [new targets.CloudWatchLogGroup(backupEventsLogGroup), new targets.SnsTopic(backupNotificationsTopic)]
+    })
+  }
+
+  addRestoreJobAlarming(alarmSnsTopic: sns.Topic) {
+    new events.Rule(this, 'RestoreJobAlarmRule', {
+      ruleName: `${this.props.envNameCapitalized}RestoreJobAlarm`,
+      description: 'Alarm on AWS Backup restore job state changes (PagerDuty/Slack test)',
+      eventPattern: {
+        source: ['aws.backup'],
+        detailType: ['Restore Job State Change']
+      },
+      targets: [new targets.SnsTopic(alarmSnsTopic)]
     })
   }
 
@@ -187,6 +188,27 @@ export class BackupStack extends cdk.Stack {
       backupSelectionName: `${this.props.envNameCapitalized}LudosBucketBackupSelection`,
       resources: buckets.map((bucket) => BackupResource.fromArn(bucket.bucketArn)),
       role: this.s3BackupRole
+    })
+  }
+
+  addRdsRestoreTesting(instance: rds.DatabaseInstance, securityGroup: ec2.SecurityGroup) {
+    const cfnDbInstance = instance.node.defaultChild as rds.CfnDBInstance
+    const dbSubnetGroupName = cfnDbInstance.dbSubnetGroupName
+    if (!dbSubnetGroupName) {
+      throw new Error('Expected the RDS instance to have an auto-generated dbSubnetGroupName')
+    }
+
+    new CfnRestoreTestingSelection(this, 'RdsRestoreTestingSelection', {
+      restoreTestingPlanName: this.restoreTestingPlan.restoreTestingPlanName,
+      restoreTestingSelectionName: `${this.props.envNameCapitalized}LudosRdsRestoreTestingSelection`,
+      protectedResourceType: 'RDS',
+      iamRoleArn: this.restoreTestingRole.roleArn,
+      protectedResourceArns: ['*'],
+      restoreMetadataOverrides: {
+        dbInstanceClass: 'db.t3.micro',
+        dbSubnetGroupName: dbSubnetGroupName,
+        vpcSecurityGroupIds: `["${securityGroup.securityGroupId}"]`
+      }
     })
   }
 

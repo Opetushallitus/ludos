@@ -9,7 +9,7 @@ main() {
     if [[ -n "${AWS_PROFILE:-}" ]]; then
         cdk_args+=(--profile "$AWS_PROFILE")
     fi
-    npx cdk "${cdk_args[@]}" "$@"
+    npx cdk --concurrency 1 "${cdk_args[@]}" "$@"
 }
 
 main "$@"
