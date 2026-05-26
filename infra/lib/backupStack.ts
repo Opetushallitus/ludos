@@ -15,9 +15,11 @@ import { Schedule } from 'aws-cdk-lib/aws-events'
 import * as targets from 'aws-cdk-lib/aws-events-targets'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import * as logs from 'aws-cdk-lib/aws-logs'
 import * as rds from 'aws-cdk-lib/aws-rds'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager'
 import * as sns from 'aws-cdk-lib/aws-sns'
 import * as subscriptions from 'aws-cdk-lib/aws-sns-subscriptions'
 import { Construct } from 'constructs'
@@ -149,7 +151,7 @@ export class BackupStack extends cdk.Stack {
 
     this.restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
       restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
-      scheduleExpression: 'cron(30 15 ? * * *)',
+      scheduleExpression: 'cron(30 16 ? * * *)',
       scheduleExpressionTimezone: 'Europe/Helsinki',
       startWindowHours: 4,
       recoveryPointSelection: {
@@ -174,10 +176,13 @@ export class BackupStack extends cdk.Stack {
   addRestoreJobAlarming(alarmSnsTopic: sns.Topic) {
     new events.Rule(this, 'RestoreJobAlarmRule', {
       ruleName: `${this.props.envNameCapitalized}RestoreJobAlarm`,
-      description: 'Alarm on AWS Backup restore job state changes (PagerDuty/Slack test)',
+      description: 'Alarm on AWS Backup restore job failures',
       eventPattern: {
         source: ['aws.backup'],
-        detailType: ['Restore Job State Change']
+        detailType: ['Restore Job State Change'],
+        detail: {
+          state: ['FAILED', 'ABORTED']
+        }
       },
       targets: [new targets.SnsTopic(alarmSnsTopic)]
     })
@@ -191,7 +196,12 @@ export class BackupStack extends cdk.Stack {
     })
   }
 
-  addRdsRestoreTesting(instance: rds.DatabaseInstance, securityGroup: ec2.SecurityGroup) {
+  addRdsRestoreTesting(
+    instance: rds.DatabaseInstance,
+    vpc: ec2.Vpc,
+    dbSecurityGroup: ec2.SecurityGroup,
+    masterPasswordSecret: secretsmanager.ISecret
+  ) {
     const cfnDbInstance = instance.node.defaultChild as rds.CfnDBInstance
     const dbSubnetGroupName = cfnDbInstance.dbSubnetGroupName
     if (!dbSubnetGroupName) {
@@ -204,11 +214,85 @@ export class BackupStack extends cdk.Stack {
       protectedResourceType: 'RDS',
       iamRoleArn: this.restoreTestingRole.roleArn,
       protectedResourceArns: ['*'],
+      validationWindowHours: 1,
       restoreMetadataOverrides: {
         dbInstanceClass: 'db.t3.micro',
         dbSubnetGroupName: dbSubnetGroupName,
-        vpcSecurityGroupIds: `["${securityGroup.securityGroupId}"]`
+        vpcSecurityGroupIds: `["${dbSecurityGroup.securityGroupId}"]`
       }
+    })
+
+    this.addRestoreValidation(vpc, dbSecurityGroup, masterPasswordSecret)
+  }
+
+  private addRestoreValidation(
+    vpc: ec2.Vpc,
+    dbSecurityGroup: ec2.SecurityGroup,
+    masterPasswordSecret: secretsmanager.ISecret
+  ) {
+    const validatorSg = new ec2.SecurityGroup(this, 'RestoreValidatorSG', {
+      vpc,
+      description: 'Restore validator Lambda',
+      allowAllOutbound: true
+    })
+    // Created in BackupStack scope rather than DbStack to avoid a cross-stack dependency cycle.
+    new ec2.CfnSecurityGroupIngress(this, 'DbIngressFromRestoreValidator', {
+      groupId: dbSecurityGroup.securityGroupId,
+      sourceSecurityGroupId: validatorSg.securityGroupId,
+      ipProtocol: 'tcp',
+      fromPort: 5432,
+      toPort: 5432,
+      description: 'Allow restore validator Lambda to reach restored RDS'
+    })
+
+    const validatorLogGroup = new logs.LogGroup(this, 'RestoreValidatorLogGroup', {
+      logGroupName: `/aws/lambda/ludos/${this.props.envName}/restore-validator`,
+      retention: logs.RetentionDays.ONE_MONTH
+    })
+
+    const validatorLambda = new NodejsFunction(this, 'RestoreValidatorLambda', {
+      functionName: `${this.props.envNameCapitalized}RestoreValidator`,
+      entry: path.join(__dirname, 'lambdas/restoreValidatorLambda/src/index.ts'),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_24_X,
+      timeout: cdk.Duration.minutes(10),
+      memorySize: 256,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroups: [validatorSg],
+      logGroup: validatorLogGroup,
+      bundling: {
+        externalModules: []
+      }
+    })
+
+    masterPasswordSecret.grantRead(validatorLambda)
+    validatorLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['rds:DescribeDBInstances'],
+        resources: ['*']
+      })
+    )
+    validatorLambda.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['backup:PutRestoreValidationResult'],
+        resources: ['*']
+      })
+    )
+
+    new events.Rule(this, 'RestoreValidationTriggerRule', {
+      ruleName: `${this.props.envNameCapitalized}RestoreValidationTrigger`,
+      description: 'Trigger restore validator Lambda on completed RDS restore tests',
+      eventPattern: {
+        source: ['aws.backup'],
+        detailType: ['Restore Job State Change'],
+        detail: {
+          state: ['COMPLETED'],
+          resourceType: ['RDS'],
+          restoreTestingPlanArn: [this.restoreTestingPlan.attrRestoreTestingPlanArn]
+        }
+      },
+      targets: [new targets.LambdaFunction(validatorLambda)]
     })
   }
 

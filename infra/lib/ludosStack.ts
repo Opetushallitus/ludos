@@ -77,7 +77,12 @@ export class LudosStack extends cdk.Stack {
       alarmSnsTopic: alarmStack.alarmSnsTopic
     })
     securityGroupsStack.setDbSecurityGroup(dbStack.dbSecurityGroup)
-    backupStack.addRdsRestoreTesting(dbStack.instance, dbStack.dbSecurityGroup)
+    backupStack.addRdsRestoreTesting(
+      dbStack.instance,
+      vpcStack.vpc,
+      dbStack.dbSecurityGroup,
+      dbStack.masterPasswordSecret
+    )
     backupStack.addRestoreJobAlarming(alarmStack.alarmSnsTopic)
 
     const albStack = new AlbStack(this, 'AlbStack', {
