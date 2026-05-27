@@ -22,6 +22,11 @@ function main {
   end_gh_actions_group
 
   start_gh_actions_group "Deploy $ENV"
+
+  pushd "$repo"/infra/lib/lambdas/restoreValidatorLambda
+  npm_ci_if_package_lock_has_changed
+  popd
+
   deploy
   healthcheck
   end_gh_actions_group

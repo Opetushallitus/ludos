@@ -21,6 +21,10 @@ function main {
   use_correct_node_version
   end_gh_actions_group
 
+  pushd "$repo"/infra/lib/lambdas/restoreValidatorLambda
+  npm_ci_if_package_lock_has_changed
+  popd
+
   start_gh_actions_group "Deploy $ENV"
   if [ $ENV = "untuva" ]; then
     deploy_untuva
