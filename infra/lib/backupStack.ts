@@ -151,7 +151,7 @@ export class BackupStack extends cdk.Stack {
 
     this.restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
       restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
-      scheduleExpression: 'cron(00 12 ? * * *)',
+      scheduleExpression: 'cron(45 15 ? * * *)',
       scheduleExpressionTimezone: 'Europe/Helsinki',
       startWindowHours: 4,
       recoveryPointSelection: {
@@ -181,7 +181,7 @@ export class BackupStack extends cdk.Stack {
         source: ['aws.backup'],
         detailType: ['Restore Job State Change'],
         detail: {
-          state: ['FAILED', 'ABORTED']
+          status: ['FAILED', 'ABORTED']
         }
       },
       targets: [new targets.SnsTopic(alarmSnsTopic)]
@@ -287,7 +287,7 @@ export class BackupStack extends cdk.Stack {
         source: ['aws.backup'],
         detailType: ['Restore Job State Change'],
         detail: {
-          state: ['COMPLETED'],
+          status: ['COMPLETED'],
           resourceType: ['RDS'],
           restoreTestingPlanArn: [this.restoreTestingPlan.attrRestoreTestingPlanArn]
         }
