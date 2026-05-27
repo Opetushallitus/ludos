@@ -151,7 +151,7 @@ export class BackupStack extends cdk.Stack {
 
     this.restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
       restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
-      scheduleExpression: 'cron(30 16 ? * * *)',
+      scheduleExpression: 'cron(00 12 ? * * *)',
       scheduleExpressionTimezone: 'Europe/Helsinki',
       startWindowHours: 4,
       recoveryPointSelection: {

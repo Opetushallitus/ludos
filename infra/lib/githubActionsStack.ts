@@ -50,6 +50,7 @@ const restrictedCiBoundaryActionPatterns = [
   'athena:UpdateWorkGroup',
   'backup:Get*',
   'backup:List*',
+  'backup:Describe*',
   'backup:CreateBackupPlan',
   'backup:CreateBackupSelection',
   'backup:CreateBackupVault',
