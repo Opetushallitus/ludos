@@ -151,7 +151,7 @@ export class BackupStack extends cdk.Stack {
 
     this.restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
       restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
-      scheduleExpression: 'cron(45 15 ? * * *)',
+      scheduleExpression: 'cron(45 10 ? * * *)',
       scheduleExpressionTimezone: 'Europe/Helsinki',
       startWindowHours: 4,
       recoveryPointSelection: {
@@ -261,6 +261,9 @@ export class BackupStack extends cdk.Stack {
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [validatorSg],
       logGroup: validatorLogGroup,
+      environment: {
+        DB_SECRET_ARN: masterPasswordSecret.secretArn
+      },
       bundling: {
         externalModules: []
       }

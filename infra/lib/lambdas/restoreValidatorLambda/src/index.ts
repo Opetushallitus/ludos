@@ -16,7 +16,6 @@ interface RestoreJobEvent {
 const POLL_INTERVAL_MS = 10_000
 const POLL_MAX_ATTEMPTS = 30
 
-export const SECRET_NAME = '/LudosStack/DbStack/DatabaseMasterPassword'
 export const DATABASE_NAME = 'ludos'
 export const VALIDATION_TABLES = ['assignment', 'instruction', 'certificate']
 
@@ -69,9 +68,14 @@ export const handler = async (event: RestoreJobEvent): Promise<void> => {
       throw new Error('missing createdResourceArn')
     }
 
+    const secretId = process.env.DB_SECRET_ARN
+    if (!secretId) {
+      throw new Error('DB_SECRET_ARN env var not set')
+    }
+
     const dbInstanceId = dbInstanceIdFromArn(createdResourceArn)
     const { host, port } = await waitForAvailable(dbInstanceId)
-    const { username, password } = await getDbCredentials(SECRET_NAME)
+    const { username, password } = await getDbCredentials(secretId)
 
     const result = await validate({
       host,
