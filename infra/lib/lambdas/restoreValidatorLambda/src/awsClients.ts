@@ -1,6 +1,7 @@
 import { BackupClient, PutRestoreValidationResultCommand } from '@aws-sdk/client-backup'
 import { DescribeDBInstancesCommand, RDSClient } from '@aws-sdk/client-rds'
 import { GetSecretValueCommand, SecretsManagerClient } from '@aws-sdk/client-secrets-manager'
+import { PublishCommand, SNSClient } from '@aws-sdk/client-sns'
 
 export interface DbEndpoint {
   status: string
@@ -11,6 +12,7 @@ export interface DbEndpoint {
 const rds = new RDSClient({})
 const secrets = new SecretsManagerClient({})
 const backup = new BackupClient({})
+const sns = new SNSClient({})
 
 export async function describeInstance(dbInstanceIdentifier: string): Promise<DbEndpoint | null> {
   const res = await rds.send(new DescribeDBInstancesCommand({ DBInstanceIdentifier: dbInstanceIdentifier }))
@@ -47,6 +49,16 @@ export async function reportValidationResult(
       RestoreJobId: restoreJobId,
       ValidationStatus: status,
       ValidationStatusMessage: message.slice(0, 1024)
+    })
+  )
+}
+
+export async function publishAlarm(topicArn: string, subject: string, message: string): Promise<void> {
+  await sns.send(
+    new PublishCommand({
+      TopicArn: topicArn,
+      Subject: subject.slice(0, 100),
+      Message: message
     })
   )
 }

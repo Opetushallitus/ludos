@@ -151,7 +151,7 @@ export class BackupStack extends cdk.Stack {
 
     this.restoreTestingPlan = new CfnRestoreTestingPlan(this, 'RestoreTestingPlan', {
       restoreTestingPlanName: `${props.envNameCapitalized}LudosRestoreTestingPlan`,
-      scheduleExpression: 'cron(45 10 ? * * *)',
+      scheduleExpression: 'cron(15 10 ? * * *)',
       scheduleExpressionTimezone: 'Europe/Helsinki',
       startWindowHours: 4,
       recoveryPointSelection: {
@@ -200,7 +200,8 @@ export class BackupStack extends cdk.Stack {
     instance: rds.DatabaseInstance,
     vpc: ec2.Vpc,
     dbSecurityGroup: ec2.SecurityGroup,
-    masterPasswordSecret: secretsmanager.ISecret
+    masterPasswordSecret: secretsmanager.ISecret,
+    alarmSnsTopic: sns.Topic
   ) {
     const cfnDbInstance = instance.node.defaultChild as rds.CfnDBInstance
     const dbSubnetGroupName = cfnDbInstance.dbSubnetGroupName
@@ -222,13 +223,14 @@ export class BackupStack extends cdk.Stack {
       }
     })
 
-    this.addRestoreValidation(vpc, dbSecurityGroup, masterPasswordSecret)
+    this.addRestoreValidation(vpc, dbSecurityGroup, masterPasswordSecret, alarmSnsTopic)
   }
 
   private addRestoreValidation(
     vpc: ec2.Vpc,
     dbSecurityGroup: ec2.SecurityGroup,
-    masterPasswordSecret: secretsmanager.ISecret
+    masterPasswordSecret: secretsmanager.ISecret,
+    alarmSnsTopic: sns.Topic
   ) {
     const validatorSg = new ec2.SecurityGroup(this, 'RestoreValidatorSG', {
       vpc,
@@ -262,7 +264,8 @@ export class BackupStack extends cdk.Stack {
       securityGroups: [validatorSg],
       logGroup: validatorLogGroup,
       environment: {
-        DB_SECRET_ARN: masterPasswordSecret.secretArn
+        DB_SECRET_ARN: masterPasswordSecret.secretArn,
+        ALARM_TOPIC_ARN: alarmSnsTopic.topicArn
       },
       bundling: {
         externalModules: []
@@ -270,6 +273,7 @@ export class BackupStack extends cdk.Stack {
     })
 
     masterPasswordSecret.grantRead(validatorLambda)
+    alarmSnsTopic.grantPublish(validatorLambda)
     validatorLambda.addToRolePolicy(
       new iam.PolicyStatement({
         actions: ['rds:DescribeDBInstances'],

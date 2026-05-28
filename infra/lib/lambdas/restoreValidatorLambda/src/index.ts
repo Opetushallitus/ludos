@@ -1,4 +1,4 @@
-import { describeInstance, getDbCredentials, reportValidationResult } from './awsClients'
+import { describeInstance, getDbCredentials, publishAlarm, reportValidationResult } from './awsClients'
 import { validate } from './validator'
 
 interface RestoreJobEventDetail {
@@ -48,6 +48,20 @@ async function waitForAvailable(dbInstanceId: string): Promise<{ host: string; p
   throw new Error(`timeout waiting for DBInstanceStatus=available after ${seconds}s`)
 }
 
+async function reportFailure(restoreJobId: string, message: string): Promise<void> {
+  await reportValidationResult(restoreJobId, 'FAILED', message).catch((err) =>
+    console.error('failed to report result', err)
+  )
+  const alarmTopicArn = process.env.ALARM_TOPIC_ARN
+  if (alarmTopicArn) {
+    await publishAlarm(
+      alarmTopicArn,
+      `Restore validation FAILED (${restoreJobId})`,
+      `Restore job ${restoreJobId} validation failed: ${message}`
+    ).catch((err) => console.error('failed to publish alarm', err))
+  }
+}
+
 export const handler = async (event: RestoreJobEvent): Promise<void> => {
   const { restoreJobId, createdResourceArn, status, resourceType } = event.detail
   console.log('received event', { restoreJobId, status, resourceType, createdResourceArn })
@@ -91,14 +105,12 @@ export const handler = async (event: RestoreJobEvent): Promise<void> => {
     if (result.passed) {
       await reportValidationResult(restoreJobId, 'SUCCESSFUL', `counts: ${JSON.stringify(result.perTable)}`)
     } else {
-      await reportValidationResult(restoreJobId, 'FAILED', result.error ?? 'validation failed')
+      await reportFailure(restoreJobId, result.error ?? 'validation failed')
     }
   } catch (err) {
     const name = (err as Error).name || 'Error'
     const message = (err as Error).message || String(err)
     console.error('handler error', name, message)
-    await reportValidationResult(restoreJobId, 'FAILED', `unhandled: ${name}: ${message}`).catch((reportErr) =>
-      console.error('failed to report result', reportErr)
-    )
+    await reportFailure(restoreJobId, `unhandled: ${name}: ${message}`)
   }
 }

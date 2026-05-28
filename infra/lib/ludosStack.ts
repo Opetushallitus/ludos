@@ -81,7 +81,8 @@ export class LudosStack extends cdk.Stack {
       dbStack.instance,
       vpcStack.vpc,
       dbStack.dbSecurityGroup,
-      dbStack.masterPasswordSecret
+      dbStack.masterPasswordSecret,
+      alarmStack.alarmSnsTopic
     )
     backupStack.addRestoreJobAlarming(alarmStack.alarmSnsTopic)
 
