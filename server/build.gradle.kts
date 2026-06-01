@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot") version "3.5.7"
+    id("org.springframework.boot") version "3.5.14"
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.spring") version "2.3.21"
 }
@@ -39,9 +39,9 @@ configurations.all {
 }
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.9"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.14"))
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.6")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.14")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.20.0")
@@ -49,7 +49,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.3")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.3")
     implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
-    implementation("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    implementation("jakarta.servlet:jakarta.servlet-api")
     implementation("org.flywaydb:flyway-core:11.20.3")
     implementation("org.flywaydb:flyway-database-postgresql:11.20.3")
     implementation("ch.qos.logback.access:logback-access-common:2.0.12")
@@ -63,10 +63,10 @@ dependencies {
     implementation("software.amazon.awssdk:ssooidc:2.44.1")
     implementation("org.springframework.security:spring-security-cas:6.5.10")
     implementation("com.nimbusds:nimbus-jose-jwt:10.9")
-    implementation("ch.qos.logback:logback-classic:1.5.32")
-    implementation("ch.qos.logback:logback-core:1.5.32")
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:10.1.54")
-    implementation("org.springframework:spring-test:6.2.18")
+    implementation("ch.qos.logback:logback-classic")
+    implementation("ch.qos.logback:logback-core")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core")
+    implementation("org.springframework:spring-test")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -78,6 +78,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
 
+    // Lombok must stay pinned: it lives on annotationProcessor/compileOnly, which do NOT
+    // extend `implementation`, so the Spring Boot BOM (platform) does not manage its version.
     compileOnly("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
 
