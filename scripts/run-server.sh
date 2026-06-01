@@ -17,8 +17,8 @@ function main () {
 
 function initialize_credentials() {
   LUDOS_PALVELUKAYTTAJA_JSON=$(aws --profile oph-ludos-dev secretsmanager get-secret-value --secret-id /UntuvaLudosStack/LudosApplicationStack/OphServiceUserCredentials --query 'SecretString' | jq -r .)
-  export "LUDOS_PALVELUKAYTTAJA_USERNAME=\"$(echo "$LUDOS_PALVELUKAYTTAJA_JSON" | jq -r .username)\""
-  export "LUDOS_PALVELUKAYTTAJA_PASSWORD=\"$(echo "$LUDOS_PALVELUKAYTTAJA_JSON" | jq -r .password)\""
+  export LUDOS_PALVELUKAYTTAJA_USERNAME="$(echo "$LUDOS_PALVELUKAYTTAJA_JSON" | jq -r .username)"
+  export LUDOS_PALVELUKAYTTAJA_PASSWORD="$(echo "$LUDOS_PALVELUKAYTTAJA_JSON" | jq -r .password)"
 }
 
 main
