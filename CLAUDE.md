@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-LUDOS is a Finnish educational examination system ("Luokkahuoneen Digitaalinen Oppimisympäristö Sovellus") for creating and managing exam content for three exam types: SUKO, LD (Lukutaito Digitaalinen), and PUHVI. The system allows teachers to create assignments (exam questions), instructions, and certificates.
+LUDOS is a Finnish educational examination system ("Luokkahuoneen Digitaalinen Oppimisympäristö Sovellus") for creating and managing exam content for three exam types: SUKO, LD (Lukiodiplomi), and PUHVI. The system allows teachers to create assignments (exam questions), instructions, and certificates.
 
 **Architecture**: Full-stack web application with React frontend, Kotlin/Spring Boot backend, PostgreSQL database, and AWS infrastructure.
 
@@ -18,30 +18,9 @@ LUDOS is a Finnish educational examination system ("Luokkahuoneen Digitaalinen O
 
 ### Local Development Setup
 
-Quick start (requires tmux):
+Run everything locally (requires tmux) — launches 4 tmux panes handling PostgreSQL, backend, and frontend (dev + watch):
 ```bash
-./start-local.sh   # Launches 4 panes: PostgreSQL, frontend dev, backend, frontend watch
-```
-
-Or manually:
-```bash
-# Terminal 1: Start PostgreSQL
-docker compose up
-
-# Terminal 2: Start backend (requires server/.env)
-SPRING_PROFILES_ACTIVE=local ./server/gradlew bootRun
-
-# Terminal 3: Start frontend dev server
-cd web && npm run dev
-```
-
-### Environment Variables & Secrets
-
-Before running locally, fetch secrets from AWS:
-```bash
-aws --profile oph-ludos-dev sso login
-aws --profile oph-ludos-utility sso login
-scripts/fetch_secrets.sh   # Creates server/.env and playwright/.env
+./start-local-env.sh
 ```
 
 ### Frontend
@@ -57,9 +36,7 @@ npm run lint:fix       # Auto-fix with Biome
 ### Backend Tests
 
 ```bash
-yarn test:server
-# or
-cd server && ./gradlew test --rerun-tasks
+npm run test:server   # = cd server && ./gradlew test --rerun-tasks
 ```
 
 ### E2E Testing
@@ -75,8 +52,8 @@ Requires AWS SSO login (`aws --profile oph-ludos-dev sso login`) before running.
 ### Localization & Code Lists
 
 ```bash
-scripts/update_backups.sh   # Update backup data (also runs via git push hook)
-yarn localizations          # Manage localizations (see help for examples)
+scripts/update_backups.sh        # Update backup data
+scripts/run-localizations.sh     # Manage localizations (run with no args / --help for examples)
 ```
 
 ## Key Architectural Decisions
@@ -86,7 +63,7 @@ yarn localizations          # Manage localizations (see help for examples)
 3. **Publish states**: Content can be DRAFT, PUBLISHED, or ARCHIVED.
 4. **clock_timestamp()**: Content tables use clock_timestamp() instead of now() for created_at/updated_at to ensure accurate timestamps even within long transactions.
 5. **Flyway migrations**: In `server/src/main/resources/db/migration/`. Never edit existing migrations; create new ones with next version number.
-6. **Frontend build output**: Vite bundles to `server/src/main/resources/static/` where Spring Boot serves it. Use port 8000 (Vite dev server) during development for hot reload.
+6. **Frontend build output**: Vite (local config) bundles to `server/build/resources/main/static/` where Spring Boot serves it. Use port 8000 (Vite dev server) during development for hot reload.
 
 ## External Service Integrations
 
@@ -98,8 +75,7 @@ Both accessed via service account credentials in AWS Secrets Manager.
 
 ## Development Workflow Tips
 
-1. **Never commit `.env` files** or credentials; use `scripts/fetch_secrets.sh`
-2. **Git hooks**: `.githooks/` directory configured via `postinstall` script in package.json
+1. **Never commit `.env` files** or credentials; local runs fetch secrets from AWS Secrets Manager at runtime (via `start-local-env.sh` → `scripts/run-server.sh`)
 
 ## AI Agent Instructions
 

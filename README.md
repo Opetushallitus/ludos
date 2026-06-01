@@ -27,7 +27,7 @@ Keskeiset entiteetit, ja järjestelmät, joihin nämä tallennetaan.
 
 Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista kuvaa järjestelmän nykytilaa ja muuttuu matkan varrella tarpeen mukaan.
 
-- PostgreSQL xx.xx -tietokanta
+- PostgreSQL 15.2 -tietokanta
 - Palvelinteknologiat
   - Kotlin (Java 25)
   - Spring boot
@@ -48,8 +48,8 @@ Minimissään tarvitset nämä:
 
 - JDK 25
 - Docker PostgreSQL:n
-- Node ^20.0.0
-- Tarvittaessa tmux `start-local.sh`-skriptiä varten
+- Node ^24.0.0 (ks. `.nvmrc`)
+- tmux `start-local-env.sh`-skriptiä varten
 
 ## AWS-tunnusten konffaus
 
@@ -101,67 +101,21 @@ output = json
 
 ## Ajaminen paikallisesti
 
-### Oikotie kehitysympäristön käyynistykseen
+- Aja projektin juuressa `./start-local-env.sh`
 
-- aja projektin juuressa `./start-local.sh`
+### Ympäristöprofiilit
 
-### Backend
-
-Käynnistä ensin PostgreSQL tietokanta Dockerissa projektin juuressa: `docker compose up`
-
-Backendiä ajettaessa on valittava sopiva ympäristöprofiili:
+Ympäristöt ja niitä vastaavat Spring-profiilit:
 
 - `local` = devaus ja testaus osoitteessa localhost:8000 (vite) tai localhost:8080 (buildattu)
 - `untuva` = https://ludos.untuvaopintopolku.fi/ = AWS Fargatessa pyörivä Untuva-LUDOS
 - `qa` = https://ludos.testiopintopolku.fi/ = AWS Fargatessa pyörivä QA-LUDOS
 - `prod` = https://ludos.opintopolku.fi/ = AWS Fargatessa pyörivä Tuotanto-LUDOS
 
-Salaisuuksien hakeminen:
-
-1. luo `server/.env` ja `playwright/.env`, jossa tarvittavat salaisuudet serverin ajamiseen ja testaamiseen: `aws --profile oph-ludos-dev sso login && aws --profile oph-ludos-utility sso login && scripts/fetch_secrets.sh`
-
-Vaihtoehtoja backendin ajamiseen:
-
-1. Luo Spring Boot run configuration IDEAssa
-   ![image](https://github.com/Opetushallitus/ludos/assets/1202380/aa273728-0b41-4625-8d3f-1a6cf9c63079)
-2. Aja `LudosApplication.kt`:n main-metodi IDEAsta. Lisää run configurationiin halutut profiilit, esim. `local` ja lisää working directory `server`
-3. `SPRING_PROFILES_ACTIVE=local server/gradlew bootRun -p server bootRun`
-4. `yarn build:docker:local` + `yarn run:docker` (profiili kovakoodattu `local`)
-5. `cd server && ./gradlew build -x test && LUDOS_PROFILES=local ../docker-build/run.sh`
-   - Tää buildaa myös frontendin, joka tarjoillaan osoitteesta https://localhost:8080/ spring
-     bootin kautta kuten tuotannossa.
-   - 8080-portissa frontti ei kuitenkaan päivity itsestään vaikka `yarn dev:web` ois päällä, vaan on ajettava `yarn build:web` erikseen joka kerta.
-   - Fronttia devatessa onkin suositeltavaa ajaa `yarn dev:web` ja käyttää selaimessa porttia `8000` eikä `8080` niin autoreloadid yms toimii
-
-Backend-testit ajetaan esim. komennolla `yarn test:server`.
-
-### Frontend
-
-### Playwright e2e
-
-- run-tests.sh
-
 ## Skriptit `/scripts`
 
-- `fetch_secrets.sh` hakee AWS-secrets-managerista backendin tarvitsemat salaisuudet ja tallentaa ne `.env`-tiedostoihin
-- `update_backups.sh` kopio lokalisaatio ja koodisto palveluista Ludokseen tarvittavat datat `/server/src/main/resources/backup_data`-kansioon. Skripti ajautuu git on-push hookissa.
-- `localizations.ts` komentorivi wrapperi lokalisaatio palvelulle. Käyttohjeet: `yarn localizations`, sekä käyttö esimerkkejä: https://wiki.eduuni.fi/pages/viewpage.action?pageId=380016595
-
-## Riippuvuuksien päivitykset
-
-### Backend
-
-1. `cd server`
-2. `./gradlew refreshVersions` lisää saatavilla olevat uudemmat versiot versions.propertiesiin kommentteina
-3. Päivitä versiot muokkaamalla versions.properties-tiedostoa
-4. `./gradlew clean test --rerun-tasks`
-
-### Frontend
-
-1. `cd web`
-2. `yarn upgrade --latest`
-   - Jos major-päivitys rikkoi softan etkä ehdi/jaksa korjata, niin reverttaa ja aja ilman `--latest`
-3. `cd .. && yarn playwright`
+- `update_backups.sh` kopio lokalisaatio ja koodisto palveluista Ludokseen tarvittavat datat `/server/src/main/resources/backup_data`-kansioon.
+- `localizations.ts` komentorivi wrapperi lokalisaatio palvelulle. Käyttohjeet: `scripts/run-localizations.sh`, sekä käyttö esimerkkejä: https://wiki.eduuni.fi/pages/viewpage.action?pageId=380016595
 
 ## AWS Infrastructure
 
