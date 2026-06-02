@@ -2,7 +2,8 @@ package fi.oph.ludos
 
 import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.access.tomcat.LogbackValve
-import com.fasterxml.jackson.core.JsonGenerator
+// logstash-logback-encoder 9.0 moved to Jackson 3, so AbstractFieldJsonProvider / JsonWritingUtils use tools.jackson
+import tools.jackson.core.JsonGenerator
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.UserInfoForLogging
 import jakarta.servlet.Filter
@@ -14,7 +15,7 @@ import net.logstash.logback.composite.AbstractFieldJsonProvider
 import net.logstash.logback.composite.JsonWritingUtils
 import org.slf4j.MDC
 import org.slf4j.spi.LoggingEventBuilder
-import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory
+import org.springframework.boot.tomcat.ConfigurableTomcatWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
@@ -80,7 +81,7 @@ class CorrelationIdFilterConfig {
     fun requestIdFilter(): FilterRegistrationBean<CorrelationIdFilter> {
         val registrationBean
                 : FilterRegistrationBean<CorrelationIdFilter> = FilterRegistrationBean<CorrelationIdFilter>()
-        registrationBean.filter = CorrelationIdFilter()
+        registrationBean.setFilter(CorrelationIdFilter())
         registrationBean.addUrlPatterns("/*")
         return registrationBean
     }

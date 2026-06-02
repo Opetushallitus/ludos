@@ -110,7 +110,7 @@ data class SukoAssignmentDtoIn(
     @field:Valid
     override val oppimaara: Oppimaara,
     @field:ValidKoodiArvo(koodisto = KoodistoName.TAITOTASO)
-    @JsonProperty(required = true)
+    @param:JsonProperty(required = true)
     override val tavoitetasoKoodiArvo: String?,
     @field:ValidKoodiArvos(koodisto = KoodistoName.AIHE_SUKO)
     override val aiheKoodiArvos: List<String>,

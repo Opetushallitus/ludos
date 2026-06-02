@@ -3,7 +3,7 @@ package fi.oph.ludos.certificate
 import fi.oph.ludos.*
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.*
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers

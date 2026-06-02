@@ -399,7 +399,7 @@ class InstructionRepository(
                 $groupByConditionByExam
             ORDER BY i.instruction_version;"""
 
-        return jdbcTemplate.query(sql, mapper, id)
+        return jdbcTemplate.query(sql, mapper, id).filterNotNull()
     }
 
     private fun examSpecificFilters(
@@ -454,7 +454,7 @@ class InstructionRepository(
          """.trimIndent()
         )
 
-        return namedJdbcTemplate.query(queryBuilder.toString(), parameters, ldListMetadataResultSetExtractor)!!
+        return namedJdbcTemplate.query(queryBuilder.toString(), parameters, ldListMetadataResultSetExtractor)
     }
 
     private fun listInstructions(filters: InstructionBaseFilters, exam: Exam, role: Role): List<InstructionOut> {
@@ -511,7 +511,7 @@ class InstructionRepository(
                     $additionalSelectFields
                 ORDER BY i.instruction_updated_at $orderDirection;"""
 
-        return namedJdbcTemplate.query(sql, parameters, mapper)
+        return namedJdbcTemplate.query(sql, parameters, mapper).filterNotNull()
     }
 
     fun getInstructions(

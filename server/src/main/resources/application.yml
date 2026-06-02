@@ -16,6 +16,10 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  jackson:
+    deserialization:
+      # Jackson 3 defaults FAIL_ON_NULL_FOR_PRIMITIVES to true; keep Boot 3 behavior for parity.
+      fail-on-null-for-primitives: false
 logging:
   level:
     org:

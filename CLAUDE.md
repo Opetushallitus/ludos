@@ -36,7 +36,7 @@ npm run lint:fix       # Auto-fix with Biome
 ### Backend Tests
 
 ```bash
-npm run test:server   # = cd server && ./gradlew test --rerun-tasks
+cd server && ./gradlew test --rerun-tasks
 ```
 
 ### E2E Testing
@@ -45,9 +45,13 @@ Playwright tests run inside Docker (base URL is hardcoded to `ludos-server:8080`
 Requires AWS SSO login (`aws --profile oph-ludos-dev sso login`) before running.
 
 ```bash
-./run-tests.sh          # Run all E2E + server tests
-./run-tests.sh --ui     # UI mode at http://127.0.0.1:9876/
+./run-tests.sh                    # Run all E2E + server tests
+./run-tests.sh --only-server      # Run only server tests
+./run-tests.sh --only-playwright  # Run only Playwright E2E tests
+./run-tests.sh --ui               # UI mode at http://127.0.0.1:9876/ (ignored with --only-server)
 ```
+
+Server tests need the web frontend built into `server/build/resources/main/static/` (run `start-local-env.sh` first); otherwise every `@SpringBootTest` fails with `index.html not found`.
 
 ### Localization & Code Lists
 

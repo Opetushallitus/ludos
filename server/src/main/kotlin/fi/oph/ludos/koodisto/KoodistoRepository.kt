@@ -1,7 +1,7 @@
 package fi.oph.ludos.koodisto
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 import fi.oph.ludos.ludosHttpClientBuilder
 import org.apache.http.HttpStatus
 import org.apache.http.client.methods.HttpGet
@@ -19,7 +19,7 @@ interface KoodistoRepository {
 @Repository
 class HttpKoodistoRepository(
     private val objectMapper: ObjectMapper,
-    @Value("\${ludos.opintopolkuHostname}") private val opintopolkuHostname: String
+    @param:Value("\${ludos.opintopolkuHostname}") private val opintopolkuHostname: String
 ) : KoodistoRepository {
     private val httpClient: CloseableHttpClient = ludosHttpClientBuilder().build()
 

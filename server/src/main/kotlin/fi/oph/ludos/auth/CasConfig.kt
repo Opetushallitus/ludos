@@ -40,7 +40,7 @@ class CasConfig {
 
     @Bean
     fun serviceProperties(): ServiceProperties = ServiceProperties().apply {
-        service = "$appUrl/j_spring_cas_security_check"
+        setService("$appUrl/j_spring_cas_security_check")
         isSendRenew = false
         isAuthenticateAllArtifacts = true
     }
@@ -68,7 +68,7 @@ class CasConfig {
         serviceProperties: ServiceProperties
     ): AuthenticationEntryPoint {
         val entryPoint = CasAuthenticationEntryPoint()
-        entryPoint.loginUrl = "https://$opintopolkuHostname/cas/login"
+        entryPoint.setLoginUrl("https://$opintopolkuHostname/cas/login")
         entryPoint.serviceProperties = serviceProperties
         return entryPoint
     }
@@ -91,9 +91,9 @@ class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccess
     private val auditLogger = LoggerFactory.getLogger(AUDIT_LOGGER_NAME)
 
     override fun onAuthenticationSuccess(
-        request: HttpServletRequest?, response: HttpServletResponse?, authentication: Authentication?
+        request: HttpServletRequest, response: HttpServletResponse, authentication: Authentication
     ) {
-        val principal = authentication?.principal as? Kayttajatiedot
+        val principal = authentication.principal as? Kayttajatiedot
 
         if (principal != null) {
             ludosLogger.atInfo().addUserIp(request).addLudosUserInfo().log("User login")
@@ -112,12 +112,10 @@ class LudosAuthenticationFailureHandler : AuthenticationFailureHandler {
     private val ludosLogger: Logger = LoggerFactory.getLogger(javaClass)
 
     override fun onAuthenticationFailure(
-        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException?
+        request: HttpServletRequest, response: HttpServletResponse, exception: AuthenticationException
     ) {
-        val logEventBuilder = ludosLogger.atWarn().addUserIp(request).addKeyValue("causeMessage", exception?.message)
-        if (exception != null) {
-            logEventBuilder.setCause(exception)
-        }
+        val logEventBuilder = ludosLogger.atWarn().addUserIp(request).addKeyValue("causeMessage", exception.message)
+        logEventBuilder.setCause(exception)
         logEventBuilder.log("Login failed")
 
         response.status = HttpServletResponse.SC_UNAUTHORIZED

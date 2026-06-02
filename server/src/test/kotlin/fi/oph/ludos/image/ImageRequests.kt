@@ -1,14 +1,15 @@
 package fi.oph.ludos.image
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.jacksonObjectMapper
 import fi.oph.ludos.Constants
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.HttpMethod
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 @AutoConfigureMockMvc
@@ -17,7 +18,7 @@ abstract class ImageRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
-    fun postImage(file: MockMultipartFile): MockHttpServletRequestBuilder {
+    fun postImage(file: MockMultipartFile): MockMultipartHttpServletRequestBuilder {
         val reqBuilder =
             MockMvcRequestBuilders.multipart(HttpMethod.POST, "${Constants.API_PREFIX}/image")
         reqBuilder.file(file).with(csrf())

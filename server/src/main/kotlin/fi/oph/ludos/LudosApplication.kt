@@ -1,8 +1,5 @@
 package fi.oph.ludos
 
-import io.github.cdimascio.dotenv.Dotenv
-import io.github.cdimascio.dotenv.DotenvException
-import io.github.cdimascio.dotenv.dotenv
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -13,6 +10,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.Resource
 import org.springframework.http.CacheControl
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.filter.ForwardedHeaderFilter
 import org.springframework.web.filter.ShallowEtagHeaderFilter
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
@@ -40,17 +42,6 @@ fun main(args: Array<String>) {
         logger.error("No profiles set!")
         exitProcess(1)
     }
-    if (activeProfiles.contains("local")) {
-        try {
-            val dotenv: Dotenv = dotenv {
-                filename = ".env"
-            }
-            dotenv.entries(Dotenv.Filter.DECLARED_IN_ENV_FILE).forEach { System.setProperty(it.key, it.value) }
-        } catch (e: DotenvException) {
-            logger.info("Could not read .env file. This is ok for non local environments")
-        }
-    }
-
     runApplication<LudosApplication>(*args)
 }
 
@@ -90,7 +81,7 @@ class Config : WebMvcConfigurer {
         // Palauta index.html kaikista tuntemattomista poluista, frontin SPA-router näyttää oikean sivun tai 404
         registry
             .addResourceHandler("/**")
-            .addResourceLocations("classpath:/static/**/")
+            .addResourceLocations("classpath:/static/")
             .resourceChain(true)
             .addResolver(object : PathResourceResolver() {
                 override fun getResource(resourcePath: String, location: Resource) = indexHtml
@@ -106,9 +97,17 @@ class Config : WebMvcConfigurer {
     @Bean
     fun forwardedHeaderFilter(): FilterRegistrationBean<ForwardedHeaderFilter> {
         val filterRegistrationBean = FilterRegistrationBean<ForwardedHeaderFilter>()
-        filterRegistrationBean.filter = ForwardedHeaderFilter()
+        filterRegistrationBean.setFilter(ForwardedHeaderFilter())
         filterRegistrationBean.order = 0
         return filterRegistrationBean
     }
+}
+
+@Controller
+class SpaRootController {
+    @GetMapping("/")
+    @ResponseBody
+    fun index(): ResponseEntity<Resource> =
+        ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(Config.indexHtml)
 }
 

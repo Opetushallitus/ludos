@@ -1,13 +1,13 @@
 package fi.oph.ludos.instruction
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
 import fi.oph.ludos.Constants
 import fi.oph.ludos.Exam
 import fi.oph.ludos.PublishState
 import fi.oph.ludos.yllapitajaUser
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
@@ -15,7 +15,9 @@ import org.springframework.mock.web.MockPart
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -30,7 +32,7 @@ abstract class InstructionRequests {
     lateinit var mockMvc: MockMvc
     val mapper = jacksonObjectMapper()
 
-    fun performWithCsrf(requestBuilder: MockHttpServletRequestBuilder): ResultActions =
+    fun performWithCsrf(requestBuilder: AbstractMockHttpServletRequestBuilder<*>): ResultActions =
         mockMvc.perform(requestBuilder.with(SecurityMockMvcRequestPostProcessors.csrf()))
 
     val minimalSukoInstructionIn = TestSukoInstructionDtoIn(
@@ -171,7 +173,7 @@ abstract class InstructionRequests {
         instructionIn: String,
         attachmentsMetadata: List<InstructionAttachmentMetadataDtoIn> = emptyList(),
         newAttachments: List<InstructionAttachmentIn> = emptyList()
-    ): MockHttpServletRequestBuilder {
+    ): MockMultipartHttpServletRequestBuilder {
         val instructionPart = MockPart("instruction", instructionIn.toByteArray())
         instructionPart.headers.contentType = MediaType.APPLICATION_JSON
 
@@ -215,7 +217,7 @@ abstract class InstructionRequests {
 
     fun createInstructionReq(
         certificate: String, attachmentParts: List<InstructionAttachmentIn>
-    ): MockHttpServletRequestBuilder {
+    ): MockMultipartHttpServletRequestBuilder {
         val instructionPart = MockPart("instruction", certificate.toByteArray())
         instructionPart.headers.contentType = MediaType.APPLICATION_JSON
 

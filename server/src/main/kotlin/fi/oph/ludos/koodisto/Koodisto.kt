@@ -22,7 +22,7 @@ enum class KoodistoName(@JsonValue val koodistoUri: String) {
 data class KoodiDtoOut(
     val koodiArvo: String,
     val nimi: String,
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @param:JsonInclude(JsonInclude.Include.NON_NULL)
     val tarkenteet: List<String>? = null
 )
 

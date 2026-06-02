@@ -42,7 +42,7 @@ class CertificateRepository(
         val certificateAttachment = createAttachment(attachment)
 
         insertCertificateRow(certificateAttachment)
-    }!!
+    }
 
     fun createSukoCertificate(
         certificateDtoIn: SukoCertificateDtoIn,
@@ -102,7 +102,7 @@ class CertificateRepository(
         val certificateAttachmentSv = createAttachment(attachmentSv)
 
         insertCertificateRow(certificateAttachmentFi, certificateAttachmentSv)
-    }!!
+    }
 
     fun createLdCertificate(
         certificateDtoIn: LdCertificateDtoIn,

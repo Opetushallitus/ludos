@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot") version "3.5.14"
+    id("org.springframework.boot") version "4.0.6"
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.spring") version "2.3.21"
 }
@@ -39,44 +39,43 @@ configurations.all {
 }
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:3.5.14"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:3.5.14")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.20.0")
     implementation("io.arrow-kt:arrow-core:2.2.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.3")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.3")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.5.1")
+    implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("jakarta.servlet:jakarta.servlet-api")
-    implementation("org.flywaydb:flyway-core:11.20.3")
-    implementation("org.flywaydb:flyway-database-postgresql:11.20.3")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
+    implementation("org.flywaydb:flyway-database-postgresql")
     implementation("ch.qos.logback.access:logback-access-common:2.0.12")
-    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
     implementation("ch.qos.logback.access:logback-access-tomcat:2.0.12")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.21")
     implementation("org.jsoup:jsoup:1.22.2")
-    implementation("software.amazon.awssdk:cloudwatchlogs:2.44.1")
-    implementation("software.amazon.awssdk:s3:2.44.1")
-    implementation("software.amazon.awssdk:sso:2.44.1")
-    implementation("software.amazon.awssdk:ssooidc:2.44.1")
-    implementation("org.springframework.security:spring-security-cas:6.5.10")
+    implementation("software.amazon.awssdk:cloudwatchlogs:2.45.0")
+    implementation("software.amazon.awssdk:s3:2.45.0")
+    implementation("software.amazon.awssdk:sso:2.45.0")
+    implementation("software.amazon.awssdk:ssooidc:2.45.0")
+    implementation("org.springframework.security:spring-security-cas")
     implementation("com.nimbusds:nimbus-jose-jwt:10.9")
     implementation("ch.qos.logback:logback-classic")
     implementation("ch.qos.logback:logback-core")
     implementation("org.apache.tomcat.embed:tomcat-embed-core")
     implementation("org.springframework:spring-test")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.session:spring-session-jdbc")
+    implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
     implementation("org.postgresql:postgresql:42.7.11")
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 
     // Lombok must stay pinned: it lives on annotationProcessor/compileOnly, which do NOT
     // extend `implementation`, so the Spring Boot BOM (platform) does not manage its version.
@@ -85,12 +84,6 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.46")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll(listOf("-Xjsr305=strict"))
-    }
 }
 
 val bootJar = tasks.named<BootJar>("bootJar")

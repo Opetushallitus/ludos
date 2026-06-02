@@ -218,7 +218,7 @@ class AssignmentRepository(
         val (listQuery, listParameters, listMapper) = buildListQuery(assignmentFilter, role)
         val assignments = namedJdbcTemplate.query(listQuery, listParameters, listMapper)
 
-        val totalCount = metadata!!.totalCount
+        val totalCount = metadata.totalCount
         val totalPages = if (totalCount == 0) 1 else (totalCount + ASSIGNMENT_PAGE_SIZE - 1) / ASSIGNMENT_PAGE_SIZE
 
         return AssignmentListDtoOut(
@@ -717,7 +717,7 @@ class AssignmentRepository(
             insertAssignmentContent(Exam.SUKO, assignmentId, assignment.contentFi, assignment.contentSv, version)
 
             SukoAssignmentDtoOut(assignment, contentOutFields(keyHolder))
-        }!!
+        }
 
     fun saveLdAssignment(assignment: LdAssignmentDtoIn): LdAssignmentDtoOut = transactionTemplate.execute { _ ->
         val version = INITIAL_VERSION_NUMBER
@@ -759,7 +759,7 @@ class AssignmentRepository(
         insertAssignmentContent(Exam.LD, assignmentId, assignment.contentFi, assignment.contentSv, version)
 
         LdAssignmentDtoOut(assignment, contentOutFields(keyHolder))
-    }!!
+    }
 
     fun savePuhviAssignment(assignment: PuhviAssignmentDtoIn): PuhviAssignmentDtoOut =
         transactionTemplate.execute { _ ->
@@ -820,7 +820,7 @@ class AssignmentRepository(
                 assignmentTypeKoodiArvo = assignment.assignmentTypeKoodiArvo,
                 lukuvuosiKoodiArvos = assignment.lukuvuosiKoodiArvos
             )
-        }!!
+        }
 
 
     fun getAssignmentsByIds(exam: Exam, ids: List<Int>, version: Int?): List<AssignmentOut> {
@@ -1250,7 +1250,7 @@ class AssignmentRepository(
                 assignmentFavoriteRows,
                 assignmentsById
             )
-        }!!
+        }
 
     fun constructFavoriteFolder(
         rootFolderRow: FavoriteFolderRow,
@@ -1303,7 +1303,7 @@ class AssignmentRepository(
                 rootFolder = constructFavoriteFolder(rootFolderRows.first(), otherFolderRows),
                 folderIdsByAssignmentId = constructFolderIdsByAssignmentId(assignmentFavoriteRows)
             )
-        }!!
+        }
 
     fun createNewFavoriteFolder(exam: Exam, folder: FavoriteFolderDtoIn): Int {
         val userOid = Kayttajatiedot.fromSecurityContext().oidHenkilo

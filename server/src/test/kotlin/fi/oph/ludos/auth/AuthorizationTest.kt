@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.fail
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
@@ -24,7 +24,7 @@ import kotlin.reflect.full.functions
 @AutoConfigureMockMvc
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class AuthorizationTest(@Autowired val mockMvc: MockMvc) {
+class AuthorizationTest(@param:Autowired val mockMvc: MockMvc) {
     fun getRequireRoleAnnotationClassByRole(role: Role): Class<*> =
         when (role) {
             Role.OPETTAJA -> RequireAtLeastOpettajaRole::class.java

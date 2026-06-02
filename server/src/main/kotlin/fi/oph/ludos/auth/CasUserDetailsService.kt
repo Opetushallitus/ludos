@@ -2,15 +2,14 @@ package fi.oph.ludos.auth
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
 import org.springframework.stereotype.Component
 
 @Component
 class CasUserDetailsService(
-    @Autowired val kayttooikeusClient: KayttooikeusClient,
-    @Autowired val oppijanumerorekisteriClient: OppijanumerorekisteriClient
+    val kayttooikeusClient: KayttooikeusClient,
+    val oppijanumerorekisteriClient: OppijanumerorekisteriClient
 ) : AuthenticationUserDetailsService<CasAssertionAuthenticationToken> {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 

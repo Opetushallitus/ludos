@@ -1,6 +1,6 @@
 package fi.oph.ludos.exception
 
-import com.fasterxml.jackson.databind.exc.InvalidTypeIdException
+import tools.jackson.databind.exc.InvalidTypeIdException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.access.AccessDeniedException

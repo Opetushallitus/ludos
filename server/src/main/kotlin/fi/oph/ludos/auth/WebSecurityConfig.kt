@@ -142,7 +142,7 @@ class WebSecurityConfiguration {
             delegate.handle(request, response, csrfToken)
         }
 
-        override fun resolveCsrfTokenValue(request: HttpServletRequest, csrfToken: CsrfToken): String {
+        override fun resolveCsrfTokenValue(request: HttpServletRequest, csrfToken: CsrfToken): String? {
             return if (StringUtils.hasText(request.getHeader(csrfToken.headerName))) super.resolveCsrfTokenValue(
                 request,
                 csrfToken

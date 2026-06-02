@@ -1,24 +1,24 @@
 package fi.oph.ludos.localization
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.annotation.JsonDeserialize
 import fi.oph.ludos.Language
 
 data class Localization(
     val category: String,
     val key: String,
     val id: Int,
-    @JsonDeserialize(using = LocaleDeserializer::class)
+    @param:JsonDeserialize(using = LocaleDeserializer::class)
     val locale: Locale,
     val value: String
 )
 
 
-class LocaleDeserializer : JsonDeserializer<Locale>() {
+class LocaleDeserializer : ValueDeserializer<Locale>() {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Locale {
-        val localeStr = p.text
+        val localeStr = p.string
         return Locale.fromLocaleString(localeStr) ?: throw IllegalArgumentException("Unknown locale: $localeStr")
     }
 }

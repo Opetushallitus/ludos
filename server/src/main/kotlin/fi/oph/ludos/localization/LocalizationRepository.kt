@@ -1,7 +1,7 @@
 package fi.oph.ludos.localization
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import tools.jackson.databind.ObjectMapper
+import tools.jackson.module.kotlin.readValue
 import fi.oph.ludos.ludosHttpClientBuilder
 import org.apache.http.HttpStatus
 import org.apache.http.client.methods.HttpGet
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class LocalizationRepository(
-    @Value("\${ludos.opintopolkuHostname}") private val opintopolkuHostname: String,
+    @param:Value("\${ludos.opintopolkuHostname}") private val opintopolkuHostname: String,
     private val objectMapper: ObjectMapper
 ) {
     private val httpClient: CloseableHttpClient = ludosHttpClientBuilder().build()

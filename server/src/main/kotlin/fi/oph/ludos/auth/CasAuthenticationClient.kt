@@ -1,7 +1,7 @@
 package fi.oph.ludos.auth
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.databind.DeserializationFeature
+import tools.jackson.module.kotlin.jacksonMapperBuilder
 import httputils.OphHttpClient
 import httputils.auth.CasAuthenticator
 import jakarta.annotation.PostConstruct
@@ -19,9 +19,9 @@ abstract class CasAuthenticationClient(val service: String) {
 
     lateinit var httpClient: OphHttpClient
 
-    val mapper = jacksonObjectMapper().apply {
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    }
+    val mapper = jacksonMapperBuilder()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .build()
 
     @PostConstruct
     fun setup() {

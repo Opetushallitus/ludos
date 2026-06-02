@@ -1,6 +1,6 @@
 package fi.oph.ludos.auth
 
-import com.fasterxml.jackson.module.kotlin.readValue
+import tools.jackson.module.kotlin.readValue
 import httputils.OphHttpRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus

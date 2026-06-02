@@ -9,5 +9,5 @@ inline fun <reified T> ResultSet.getKotlinArray(columnLabel: String): Array<T> {
 }
 
 inline fun <reified T> ResultSet.getKotlinList(columnLabel: String): List<T> {
-    return this.getKotlinArray<T>(columnLabel).toList()
+    return this.getKotlinArray<T>(columnLabel).toList().filterNotNull()
 }
