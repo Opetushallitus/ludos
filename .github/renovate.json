@@ -73,6 +73,11 @@
       "groupName": "Vite",
       "matchPackageNames": ["vite"],
       "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
     }
   ],
   "prConcurrentLimit": 10
