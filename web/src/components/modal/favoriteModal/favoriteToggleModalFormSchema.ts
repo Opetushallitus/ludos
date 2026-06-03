@@ -24,6 +24,7 @@ export const favoriteToggleModalFormSchema = z
   )
 
 export type FavoriteToggleModalFormType = z.infer<typeof favoriteToggleModalFormSchema>
+export type FavoriteToggleModalFormInput = z.input<typeof favoriteToggleModalFormSchema>
 
 export const favoriteToggleModalFormDefaultValues = (
   exam: Exam,

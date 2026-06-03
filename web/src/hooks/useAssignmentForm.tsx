@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { FieldPath, PathValue, useForm } from 'react-hook-form'
+import { FieldPath, PathValue, Resolver, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 import { MultiValue } from 'react-select'
 import {
@@ -46,7 +46,7 @@ export function useAssignmentForm<T extends CommonAssignmentFormType>(
   const methods = useForm<T>({
     defaultValues,
     mode: 'onBlur',
-    resolver: zodResolver(assignmentSchemaByExam[exam])
+    resolver: zodResolver(assignmentSchemaByExam[exam]) as unknown as Resolver<T>
   })
 
   const {

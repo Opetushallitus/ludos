@@ -10,6 +10,7 @@ import { FormError } from '../../forms/formCommon/FormErrors'
 import { TextInput } from '../../TextInput'
 import { FavoriteFolderCheckboxes } from './FavoriteFolderCheckboxes'
 import {
+  FavoriteToggleModalFormInput,
   FavoriteToggleModalFormType,
   favoriteToggleModalFormDefaultValues,
   favoriteToggleModalFormSchema
@@ -32,7 +33,7 @@ export const FavoriteForm = ({
 }: FavoriteFormProps) => {
   const { t, lt } = useLudosTranslation()
 
-  const methods = useForm<FavoriteToggleModalFormType>({
+  const methods = useForm<FavoriteToggleModalFormInput, unknown, FavoriteToggleModalFormType>({
     defaultValues: {
       ...favoriteToggleModalFormDefaultValues(exam, assignmentId),
       addOptions: isFavorite ? AddToFavoriteOptions.FOLDER : AddToFavoriteOptions.FAVORITES,

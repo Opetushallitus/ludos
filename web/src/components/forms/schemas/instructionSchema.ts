@@ -17,7 +17,7 @@ export const instructionSchema = z
     }),
     shortDescriptionFi: z.string().optional(),
     shortDescriptionSv: z.string().optional(),
-    nameRequired: z.custom(),
+    nameRequired: z.custom().optional(),
     aineKoodiArvo: z.string().optional()
   })
   .refine((data) => !(data.exam === 'LD' && !data.aineKoodiArvo), {
@@ -27,6 +27,7 @@ export const instructionSchema = z
   .superRefine(commonSuperRefine)
 
 export type InstructionFormType = z.infer<typeof instructionSchema>
+export type InstructionFormInput = z.input<typeof instructionSchema>
 
 export const instructionDefaultValues: Partial<InstructionFormType> = {
   publishState: PublishState.Published,

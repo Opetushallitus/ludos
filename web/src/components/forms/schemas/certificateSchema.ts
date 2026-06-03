@@ -20,7 +20,7 @@ const attachmentSchema = z.object(
     language: z.enum(['FI', 'SV']).optional(),
     size: z.number().optional()
   },
-  { required_error: ErrorMessages.REQUIRED, invalid_type_error: ErrorMessages.REQUIRED }
+  { error: ErrorMessages.REQUIRED }
 )
 
 export type AttachmentFormType = z.infer<typeof attachmentSchema>
@@ -34,36 +34,30 @@ const commonCertificateSchema = z.object({
 
 export type CommonCertificateFormType = z.infer<typeof commonCertificateSchema>
 
-const sukoCertificateSchema = commonCertificateSchema.merge(
-  z.object({
-    nameSv: z.string().min(0).max(0),
-    descriptionFi: inputNotEmptyValidation,
-    descriptionSv: z.string().min(0).max(0)
-  })
-)
+const sukoCertificateSchema = commonCertificateSchema.extend({
+  nameSv: z.string().min(0).max(0),
+  descriptionFi: inputNotEmptyValidation,
+  descriptionSv: z.string().min(0).max(0)
+})
 
 export type SukoCertificateFormType = z.infer<typeof sukoCertificateSchema>
 
-const ldCertificateSchema = commonCertificateSchema.merge(
-  z.object({
-    nameSv: nameValidation,
-    descriptionFi: z.string().min(0).max(0).default(''),
-    descriptionSv: z.string().min(0).max(0).default(''),
-    aineKoodiArvo: inputNotEmptyValidation,
-    attachmentSv: attachmentSchema
-  })
-)
+const ldCertificateSchema = commonCertificateSchema.extend({
+  nameSv: nameValidation,
+  descriptionFi: z.string().min(0).max(0).default(''),
+  descriptionSv: z.string().min(0).max(0).default(''),
+  aineKoodiArvo: inputNotEmptyValidation,
+  attachmentSv: attachmentSchema
+})
 
 export type LdCertificateFormType = z.infer<typeof ldCertificateSchema>
 
-const puhviCertificateSchema = commonCertificateSchema.merge(
-  z.object({
-    nameSv: inputNotEmptyValidation,
-    descriptionFi: inputNotEmptyValidation,
-    descriptionSv: inputNotEmptyValidation,
-    attachmentSv: attachmentSchema
-  })
-)
+const puhviCertificateSchema = commonCertificateSchema.extend({
+  nameSv: inputNotEmptyValidation,
+  descriptionFi: inputNotEmptyValidation,
+  descriptionSv: inputNotEmptyValidation,
+  attachmentSv: attachmentSchema
+})
 
 export type PuhviCertificateFormType = z.infer<typeof puhviCertificateSchema>
 

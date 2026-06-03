@@ -12,7 +12,7 @@ export const commonSuperRefine = ({ nameFi, nameSv }: { nameFi: string; nameSv: 
   // Either nameFi or nameSv has a length of at least 1, but not both
   if (nameFi.trim().length === 0 && nameSv.trim().length === 0) {
     ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+      code: 'custom',
       message: ErrorMessages.ASSIGNMENT_NAME_REQUIRED,
       path: ['nameRequired']
     })
@@ -44,47 +44,41 @@ const commonSchema = z.object({
 export type CommonAssignmentFormType = z.infer<typeof commonSchema>
 
 export const sukoAssignmentSchema = commonSchema
-  .merge(
-    z.object({
-      nameSv: z.string().refine((val) => val.trim().length === 0),
-      assignmentTypeKoodiArvo: inputNotEmptyValidation,
-      oppimaara: z.object(
-        {
-          oppimaaraKoodiArvo: inputNotEmptyValidation,
-          kielitarjontaKoodiArvo: z.string().nullable().default(null)
-        },
-        { required_error: ErrorMessages.REQUIRED }
-      ),
-      tavoitetasoKoodiArvo: z.string().nullable(),
-      aiheKoodiArvos: z.array(z.string())
-    })
-  )
+  .extend({
+    nameSv: z.string().refine((val) => val.trim().length === 0),
+    assignmentTypeKoodiArvo: inputNotEmptyValidation,
+    oppimaara: z.object(
+      {
+        oppimaaraKoodiArvo: inputNotEmptyValidation,
+        kielitarjontaKoodiArvo: z.string().nullable().default(null)
+      },
+      { error: (issue) => (issue.input === undefined ? ErrorMessages.REQUIRED : undefined) }
+    ),
+    tavoitetasoKoodiArvo: z.string().nullable(),
+    aiheKoodiArvos: z.array(z.string())
+  })
   .superRefine(commonSuperRefine)
 
 export type SukoAssignmentFormType = z.infer<typeof sukoAssignmentSchema>
 
 export const ldAssignmentSchema = commonSchema
-  .merge(
-    z.object({
-      aineKoodiArvo: inputNotEmptyValidation,
-      lukuvuosiKoodiArvos: z
-        .array(z.string(), { required_error: ErrorMessages.REQUIRED })
-        .min(1, ErrorMessages.REQUIRED)
-    })
-  )
+  .extend({
+    aineKoodiArvo: inputNotEmptyValidation,
+    lukuvuosiKoodiArvos: z
+      .array(z.string(), { error: (issue) => (issue.input === undefined ? ErrorMessages.REQUIRED : undefined) })
+      .min(1, ErrorMessages.REQUIRED)
+  })
   .superRefine(commonSuperRefine)
 
 export type LdAssignmentFormType = z.infer<typeof ldAssignmentSchema>
 
 export const puhviAssignmentSchema = commonSchema
-  .merge(
-    z.object({
-      assignmentTypeKoodiArvo: inputNotEmptyValidation,
-      lukuvuosiKoodiArvos: z
-        .array(z.string(), { required_error: ErrorMessages.REQUIRED })
-        .min(1, ErrorMessages.REQUIRED)
-    })
-  )
+  .extend({
+    assignmentTypeKoodiArvo: inputNotEmptyValidation,
+    lukuvuosiKoodiArvos: z
+      .array(z.string(), { error: (issue) => (issue.input === undefined ? ErrorMessages.REQUIRED : undefined) })
+      .min(1, ErrorMessages.REQUIRED)
+  })
   .superRefine(commonSuperRefine)
 
 export type PuhviAssignmentFormType = z.infer<typeof puhviAssignmentSchema>

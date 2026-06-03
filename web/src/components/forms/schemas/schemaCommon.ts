@@ -2,8 +2,8 @@ import { z } from 'zod'
 import { ErrorMessages, Exam, PublishState } from '../../../types'
 
 export const MIN_NAME_LENGTH = 3
-export const examEnumZodType = z.nativeEnum(Exam).readonly()
-export const publishStateEnumZodType = z.nativeEnum(PublishState).readonly()
+export const examEnumZodType = z.enum(Exam).readonly()
+export const publishStateEnumZodType = z.enum(PublishState).readonly()
 
 export const validateImgTags = (htmlString: string) => {
   const parser = new DOMParser()
@@ -21,7 +21,7 @@ export const inputNotEmptyValidation = z
   .refine((val) => val.trim().length > 0, { message: ErrorMessages.REQUIRED })
 
 export const nameValidation = z
-  .string({ required_error: ErrorMessages.REQUIRED })
+  .string({ error: (issue) => (issue.input === undefined ? ErrorMessages.REQUIRED : undefined) })
   .min(MIN_NAME_LENGTH, ErrorMessages.SHORT)
 
 export const nameOrEmptyStringValidation = z

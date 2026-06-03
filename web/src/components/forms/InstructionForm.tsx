@@ -29,7 +29,12 @@ import { FormAineDropdown } from './formCommon/FormAineDropdown'
 import { FormButtonRow } from './formCommon/FormButtonRow'
 import { FormError } from './formCommon/FormErrors'
 import { FormHeader } from './formCommon/FormHeader'
-import { InstructionFormType, instructionDefaultValues, instructionSchema } from './schemas/instructionSchema'
+import {
+  InstructionFormInput,
+  InstructionFormType,
+  instructionDefaultValues,
+  instructionSchema
+} from './schemas/instructionSchema'
 
 type InstructionFormProps = {
   action: ContentFormAction
@@ -72,7 +77,7 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   const { submitFormData, submitError } = useFormSubmission(exam, ContentType.INSTRUCTION, isUpdate)
 
-  const methods = useForm<InstructionFormType>({
+  const methods = useForm<InstructionFormInput, unknown, InstructionFormType>({
     defaultValues:
       isUpdate && id
         ? async () => {
@@ -108,8 +113,8 @@ const InstructionForm = ({ action }: InstructionFormProps) => {
 
   useBlockFormCloseOrRefresh(isDirty)
 
-  const watchNameFi = watch('nameFi')
-  const watchNameSv = watch('nameSv')
+  const watchNameFi = watch('nameFi') ?? ''
+  const watchNameSv = watch('nameSv') ?? ''
   const watchContentFi = watch('contentFi')
   const watchContentSv = watch('contentSv')
   const watchPublishState = watch('publishState')

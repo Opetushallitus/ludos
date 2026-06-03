@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { DefaultValues, useForm } from 'react-hook-form'
+import { DefaultValues, Resolver, useForm } from 'react-hook-form'
 import { useMatch } from 'react-router-dom'
 import { CommonCertificateFormType, certificateSchemaByExam } from '../components/forms/schemas/certificateSchema'
 import { contentListPath } from '../components/LudosRoutes'
@@ -29,7 +29,7 @@ export function useCertificateForm<T extends CommonCertificateFormType>(
   const methods = useForm<T>({
     defaultValues: defaultValues as DefaultValues<T>,
     mode: 'onBlur',
-    resolver: zodResolver(certificateSchemaByExam[exam])
+    resolver: zodResolver(certificateSchemaByExam[exam]) as unknown as Resolver<T>
   })
 
   const {
