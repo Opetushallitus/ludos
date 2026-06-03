@@ -2,7 +2,6 @@ package fi.oph.ludos
 
 import ch.qos.logback.access.common.spi.IAccessEvent
 import ch.qos.logback.access.tomcat.LogbackValve
-// logstash-logback-encoder 9.0 moved to Jackson 3, so AbstractFieldJsonProvider / JsonWritingUtils use tools.jackson
 import tools.jackson.core.JsonGenerator
 import fi.oph.ludos.auth.Kayttajatiedot
 import fi.oph.ludos.auth.UserInfoForLogging

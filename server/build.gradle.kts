@@ -77,8 +77,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 
-    // Lombok must stay pinned: it lives on annotationProcessor/compileOnly, which do NOT
-    // extend `implementation`, so the Spring Boot BOM (platform) does not manage its version.
     compileOnly("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
 
