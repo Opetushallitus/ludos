@@ -227,10 +227,7 @@ export class InstructionFormModel extends FormModel {
     }
 
     form.append(partName, attachment.fileBlob)
-    form.append(
-      `${partName}-metadata`,
-      new Blob([JSON.stringify(attachment.metadata)], { type: 'application/json' })
-    )
+    form.append(`${partName}-metadata`, new Blob([JSON.stringify(attachment.metadata)], { type: 'application/json' }))
   }
 
   async updateInstructionApiCall(
