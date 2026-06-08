@@ -129,6 +129,8 @@ const restrictedCiBoundaryActionPatterns = [
   'glue:UpdateDatabase',
   'glue:UpdateTable',
   'iam:GetRole',
+  'iam:TagRole',
+  'iam:UntagRole',
   'iam:CreatePolicyVersion',
   'iam:DeletePolicyVersion',
   'iam:ListPolicyVersions',
