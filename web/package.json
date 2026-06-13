@@ -50,7 +50,7 @@
     "@biomejs/biome": "2.4.16",
     "@iconify/icons-ic": "1.2.13",
     "@iconify/icons-material-symbols": "1.2.58",
-    "@types/node": "24.13.1",
+    "@types/node": "24.13.2",
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "6.0.2",
