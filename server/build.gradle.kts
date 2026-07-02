@@ -71,7 +71,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-session-jdbc")
-    implementation("org.postgresql:postgresql:42.7.11")
+    implementation("org.postgresql:postgresql:42.7.12")
     testImplementation("org.reflections:reflections:0.10.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
