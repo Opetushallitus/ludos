@@ -42,14 +42,53 @@ class CloudS3Helper(val environment: Environment, val s3: S3Client) : S3Helper {
     @PostConstruct
     fun checkS3Credentials() {
         Bucket.entries.forEach {
-            val objectRequest =
-                PutObjectRequest.builder()
-                    .bucket(it.getBucketName(environment))
-                    .key("ludos_app_s3_client_initialization_test")
-                    .build()
-            s3.putObject(objectRequest, RequestBody.empty())
+            checkS3WritePermission(it.getBucketName(environment))
         }
     }
+
+    private fun checkS3WritePermission(bucketName: String) {
+        val probeExists = probeObjectExists(bucketName)
+        val objectRequestBuilder =
+            PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(S3_CLIENT_INITIALIZATION_PROBE_KEY)
+
+        if (probeExists) {
+            objectRequestBuilder.ifNoneMatch("*")
+        }
+
+        try {
+            s3.putObject(objectRequestBuilder.build(), RequestBody.empty())
+        } catch (ex: S3Exception) {
+            if (probeExists && ex.isPreconditionFailed()) {
+                return
+            }
+            logger.error("Unexpected error checking S3 write permission for bucket '$bucketName'", ex)
+            throw ex
+        }
+    }
+
+    private fun probeObjectExists(bucketName: String): Boolean =
+        try {
+            s3.headObject(
+                HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(S3_CLIENT_INITIALIZATION_PROBE_KEY)
+                    .build()
+            )
+            true
+        } catch (ex: NoSuchKeyException) {
+            false
+        } catch (ex: S3Exception) {
+            if (ex.statusCode() == 404) {
+                false
+            } else {
+                throw ex
+            }
+        }
+
+    private fun S3Exception.isPreconditionFailed(): Boolean =
+        statusCode() == 412 || awsErrorDetails()?.errorCode() == "PreconditionFailed"
 
     override fun putObject(bucket: Bucket, key: String, file: MultipartFile) {
         val bucketName = bucket.getBucketName(environment)
@@ -91,6 +130,10 @@ class CloudS3Helper(val environment: Environment, val s3: S3Client) : S3Helper {
             throw ex
         }
         logger.info("Deleted $key from $bucketName")
+    }
+
+    companion object {
+        const val S3_CLIENT_INITIALIZATION_PROBE_KEY = "ludos_app_s3_client_initialization_test"
     }
 }
 
