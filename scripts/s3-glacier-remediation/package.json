@@ -1,0 +1,21 @@
+{
+  "name": "ludos-s3-glacier-remediation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.18.1"
+  },
+  "scripts": {
+    "test": "node --import tsx --test src/remediation.test.ts launcher.test.mjs",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1101.0",
+    "tsx": "^4.20.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

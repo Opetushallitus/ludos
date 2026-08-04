@@ -15,12 +15,14 @@ export class S3Stack extends cdk.Stack {
   public readonly instructionBucket: s3.Bucket
   public readonly certificateBucket: s3.Bucket
   public readonly imageBucket: s3.Bucket
+  public readonly glacierRemediationArchiveBucket: s3.Bucket
   constructor(scope: Construct, id: string, props: S3StackProps) {
     super(scope, id, props)
 
     this.instructionBucket = this.newBucket('instruction', props)
     this.certificateBucket = this.newBucket('certificate', props)
     this.imageBucket = this.newBucket('image', props)
+    this.glacierRemediationArchiveBucket = this.createGlacierRemediationArchiveBucket(props)
 
     props.backupStack.backupS3Buckets(this.allBuckets()) // Backup all buckets stored in this.X automatically
   }
@@ -47,7 +49,28 @@ export class S3Stack extends cdk.Stack {
     })
   }
 
+  createGlacierRemediationArchiveBucket(props: S3StackProps): s3.Bucket {
+    return new s3.Bucket(this, 'GlacierRemediationArchiveBucket', {
+      bucketName: `ludos-application-glacier-remediation-archive-${props.envName}`,
+      accessControl: BucketAccessControl.PRIVATE,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      versioned: true,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
+      lifecycleRules: [
+        {
+          noncurrentVersionTransitions: [
+            {
+              storageClass: s3.StorageClass.GLACIER_INSTANT_RETRIEVAL,
+              transitionAfter: cdk.Duration.days(30)
+            }
+          ]
+        }
+      ],
+      removalPolicy: RemovalPolicy.RETAIN
+    })
+  }
+
   allBuckets(): s3.Bucket[] {
-    return Object.values(this).flatMap((v) => (v instanceof s3.Bucket ? v : []))
+    return [this.instructionBucket, this.certificateBucket, this.imageBucket]
   }
 }
