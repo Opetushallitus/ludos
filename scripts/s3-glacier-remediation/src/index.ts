@@ -4,7 +4,7 @@ async function main() {
   const env = parseRemediationEnv(process.env)
   const command = process.argv[2]
   if (!command) {
-    throw new Error("Missing command. Expected one of: discover, copy, verify, remediate")
+    throw new Error("Missing command. Expected one of: discover, copy, verify")
   }
 
   await runCommand(env, command)

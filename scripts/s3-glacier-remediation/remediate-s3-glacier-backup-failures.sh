@@ -19,8 +19,8 @@ function configure_target_from_script_name {
       LUDOS_S3_GLACIER_REMEDIATION_ENV="qa"
       ;;
     remediate-s3-glacier-backup-failures-prod.sh)
-      echo >&2 "Production S3 Glacier remediation is not enabled yet"
-      exit 1
+      AWS_LOGIN_ENV="prod"
+      LUDOS_S3_GLACIER_REMEDIATION_ENV="prod"
       ;;
     *)
       echo >&2 "Don't call this script directly"
@@ -44,6 +44,7 @@ function main {
   require_aws_session_for_env "$AWS_LOGIN_ENV"
   export_profile_credentials_for_host_tools "oph-ludos-${AWS_LOGIN_ENV}"
   use_correct_node_version
+  info "Running S3 Glacier remediation command '$*' for ${LUDOS_S3_GLACIER_REMEDIATION_ENV}"
 
   pushd "$SCRIPT_DIR" > /dev/null
   npm_ci_if_package_lock_has_changed

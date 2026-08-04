@@ -1,5 +1,6 @@
 import {
   GetObjectCommand,
+  GetObjectCommandOutput,
   HeadObjectCommand,
   ListObjectVersionsCommand,
   PutObjectCommand,
@@ -14,11 +15,12 @@ import path from 'node:path'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 
-export type RemediationEnv = 'untuva' | 'qa'
+export type RemediationEnv = 'untuva' | 'qa' | 'prod'
 
 export type ManifestItemStatus =
   | 'discovered'
   | 'destination_missing'
+  | 'source_delete_candidate'
   | 'restore_requested'
   | 'restore_available'
   | 'copied'
@@ -26,6 +28,8 @@ export type ManifestItemStatus =
   | 'restore_failed'
   | 'copy_failed'
   | 'checksum_mismatch'
+
+export type ManifestItemAction = 'copy_to_archive' | 'delete_source'
 
 export type ManifestItem = {
   environment: RemediationEnv
@@ -36,6 +40,7 @@ export type ManifestItem = {
   sourceStorageClass: 'GLACIER'
   sourceETag: string | null
   sourceSizeBytes: number | null
+  remediationAction: ManifestItemAction
   destinationBucket: string
   destinationKey: string
   destinationVersionId: string | null
@@ -55,6 +60,10 @@ type Manifest = {
   items: ManifestItem[]
 }
 
+type ManifestItemWithOptionalAction = Omit<ManifestItem, 'remediationAction'> & {
+  remediationAction?: ManifestItemAction
+}
+
 export type S3VersionLike = {
   Key?: string
   VersionId?: string
@@ -68,16 +77,24 @@ export type S3VersionLike = {
 
 const cutoffDate = new Date('2026-04-21T00:00:00.000Z')
 const region = 'eu-west-1'
+const progressLogInterval = 100
+const sourceDeleteCandidateKeys = new Set(['testfile_0', 'testfile_1', 'ludos_app_s3_client_initialization_test'])
+const copyableStatuses = new Set<ManifestItemStatus>([
+  'discovered',
+  'destination_missing',
+  'restore_requested',
+  'restore_failed',
+  'restore_available',
+  'copy_failed'
+])
+const copiedArchiveObjectStatuses = new Set<ManifestItemStatus>(['copied', 'verified', 'checksum_mismatch'])
 
 export function parseRemediationEnv(env: NodeJS.ProcessEnv): RemediationEnv {
   const value = env.LUDOS_S3_GLACIER_REMEDIATION_ENV
   if (!value) {
     throw new Error('LUDOS_S3_GLACIER_REMEDIATION_ENV is missing')
   }
-  if (value === 'prod') {
-    throw new Error('Production S3 Glacier remediation is not enabled yet')
-  }
-  if (value !== 'untuva' && value !== 'qa') {
+  if (value !== 'untuva' && value !== 'qa' && value !== 'prod') {
     throw new Error(`Unsupported S3 Glacier remediation environment '${value}'`)
   }
   return value
@@ -104,6 +121,22 @@ function manifestIdentity(item: Pick<ManifestItem, 'sourceBucket' | 'sourceKey' 
   return `${item.sourceBucket}\u0000${item.sourceKey}\u0000${item.sourceVersionId}`
 }
 
+function sourceObjectVersionUri(item: Pick<ManifestItem, 'sourceBucket' | 'sourceKey' | 'sourceVersionId'>): string {
+  return `s3://${item.sourceBucket}/${item.sourceKey}?versionId=${encodeURIComponent(item.sourceVersionId)}`
+}
+
+function destinationObjectUri(item: Pick<ManifestItem, 'destinationBucket' | 'destinationKey'>): string {
+  return `s3://${item.destinationBucket}/${item.destinationKey}`
+}
+
+function remediationActionFor(sourceKey: string): ManifestItemAction {
+  return sourceDeleteCandidateKeys.has(sourceKey) ? 'delete_source' : 'copy_to_archive'
+}
+
+function initialStatusFor(remediationAction: ManifestItemAction): ManifestItemStatus {
+  return remediationAction === 'delete_source' ? 'source_delete_candidate' : 'discovered'
+}
+
 export function filterRestorableVersions(
   environment: RemediationEnv,
   sourceBucket: string,
@@ -124,25 +157,30 @@ export function filterRestorableVersions(
         version.Key !== undefined &&
         version.VersionId !== undefined
     )
-    .map((version) => ({
-      environment,
-      sourceBucket,
-      sourceKey: version.Key!,
-      sourceVersionId: version.VersionId!,
-      sourceLastModified: version.LastModified!.toISOString(),
-      sourceStorageClass: 'GLACIER',
-      sourceETag: version.ETag ?? null,
-      sourceSizeBytes: version.Size ?? null,
-      destinationBucket,
-      destinationKey: destinationKeyFor(sourceBucket, version.Key!, version.VersionId!),
-      destinationVersionId: null,
-      sourceSha256: null,
-      destinationSha256: null,
-      checksumMatches: null,
-      status: 'discovered',
-      error: null,
-      updatedAt: now
-    }))
+    .map((version) => {
+      const sourceKey = version.Key!
+      const remediationAction = remediationActionFor(sourceKey)
+      return {
+        environment,
+        sourceBucket,
+        sourceKey,
+        sourceVersionId: version.VersionId!,
+        sourceLastModified: version.LastModified!.toISOString(),
+        sourceStorageClass: 'GLACIER',
+        sourceETag: version.ETag ?? null,
+        sourceSizeBytes: version.Size ?? null,
+        remediationAction,
+        destinationBucket,
+        destinationKey: destinationKeyFor(sourceBucket, sourceKey, version.VersionId!),
+        destinationVersionId: null,
+        sourceSha256: null,
+        destinationSha256: null,
+        checksumMatches: null,
+        status: initialStatusFor(remediationAction),
+        error: null,
+        updatedAt: now
+      }
+    })
 }
 
 export function mergeDiscoveredItems(
@@ -150,15 +188,59 @@ export function mergeDiscoveredItems(
   discoveredItems: ManifestItem[],
   now: string = new Date().toISOString()
 ): ManifestItem[] {
-  const existingByIdentity = new Map(existingItems.map((item) => [manifestIdentity(item), item]))
+  const existingByIdentity = new Map(
+    existingItems.map((item) => {
+      const normalized = normalizeManifestItemForSourceDeletionSafety(item)
+      return [manifestIdentity(normalized), normalized]
+    })
+  )
   const merged = new Map<string, ManifestItem>()
 
   for (const item of discoveredItems) {
-    const identity = manifestIdentity(item)
-    merged.set(identity, existingByIdentity.get(identity) ?? { ...item, updatedAt: now })
+    const discovered = normalizeManifestItemForSourceDeletionSafety(item)
+    const identity = manifestIdentity(discovered)
+    const existing = existingByIdentity.get(identity)
+    if (discovered.remediationAction === 'delete_source') {
+      merged.set(identity, sourceDeleteCandidate({ ...(existing ?? discovered), ...discovered }, now))
+      continue
+    }
+    merged.set(identity, existing ?? { ...discovered, updatedAt: now })
   }
 
   return Array.from(merged.values()).sort((a, b) => manifestIdentity(a).localeCompare(manifestIdentity(b)))
+}
+
+function normalizeManifestItemForSourceDeletionSafety(item: ManifestItem): ManifestItem {
+  const manifestItem = item as ManifestItemWithOptionalAction
+  const expectedAction = expectedRemediationAction(manifestItem)
+
+  rejectUnsafeSourceDeleteOverride(manifestItem, expectedAction)
+  return manifestItemWithExpectedAction(manifestItem, expectedAction)
+
+  function expectedRemediationAction(item: ManifestItemWithOptionalAction): ManifestItemAction {
+    return remediationActionFor(item.sourceKey)
+  }
+
+  function rejectUnsafeSourceDeleteOverride(
+    item: ManifestItemWithOptionalAction,
+    expectedAction: ManifestItemAction
+  ): void {
+    if (item.remediationAction === 'delete_source' && expectedAction !== 'delete_source') {
+      throw new Error(
+        `Manifest item ${sourceObjectVersionUri(item)} remediationAction ${item.remediationAction} does not match expected action ${expectedAction}`
+      )
+    }
+  }
+
+  function manifestItemWithExpectedAction(
+    item: ManifestItemWithOptionalAction,
+    expectedAction: ManifestItemAction
+  ): ManifestItem {
+    const trusted = { ...item, remediationAction: expectedAction }
+    return expectedAction === 'delete_source'
+      ? sourceDeleteCandidate(trusted, trusted.updatedAt)
+      : trusted
+  }
 }
 
 function emptyManifest(env: RemediationEnv, now = new Date().toISOString()): Manifest {
@@ -263,13 +345,8 @@ export async function runCommand(
     case 'verify':
       await verifyWithContext(context)
       return
-    case 'remediate':
-      await discoverWithContext(context)
-      await copyWithContext(context)
-      await verifyWithContext(context)
-      return
     default:
-      throw new Error("Expected command to be one of: discover, copy, verify, remediate")
+      throw new Error("Expected command to be one of: discover, copy, verify")
   }
 }
 
@@ -286,13 +363,19 @@ export async function verify(env: RemediationEnv, s3: S3Client = new S3Client({ 
 }
 
 async function discoverWithContext(context: RemediationContext): Promise<Manifest> {
+  logProgress(context, `discover: loading manifest s3://${context.archiveBucket}/${context.manifestObjectKey}`)
   const manifest = await loadManifest(context)
+  logProgress(context, `discover: loaded manifest with ${manifest.items.length} existing items`)
   const discovered: ManifestItem[] = []
 
   for (const sourceBucket of context.sourceBuckets) {
     let keyMarker: string | undefined
     let versionIdMarker: string | undefined
+    let page = 0
+    let bucketDiscovered = 0
+    logProgress(context, `discover: listing source bucket ${sourceBucket}`)
     do {
+      page += 1
       const response = await context.s3.send(
         new ListObjectVersionsCommand({
           Bucket: sourceBucket,
@@ -300,37 +383,83 @@ async function discoverWithContext(context: RemediationContext): Promise<Manifes
           VersionIdMarker: versionIdMarker
         })
       )
-      discovered.push(...filterRestorableVersions(context.env, sourceBucket, response.Versions ?? []))
+      const pageDiscovered = filterRestorableVersions(context.env, sourceBucket, response.Versions ?? [])
+      bucketDiscovered += pageDiscovered.length
+      discovered.push(...pageDiscovered)
+      logProgress(
+        context,
+        `discover: listed page ${page} from ${sourceBucket}; ${pageDiscovered.length} matching versions on page, ${bucketDiscovered} matching versions in bucket`
+      )
       keyMarker = response.NextKeyMarker
       versionIdMarker = response.NextVersionIdMarker
     } while (keyMarker !== undefined || versionIdMarker !== undefined)
+    logProgress(context, `discover: completed source bucket ${sourceBucket}; ${bucketDiscovered} matching versions`)
   }
 
   const now = new Date().toISOString()
-  const items = await verifyDestinationObjects(context, mergeDiscoveredItems(manifest.items, discovered, now), now)
+  const mergedItems = mergeDiscoveredItems(manifest.items, discovered, now)
+  const archiveCopyItemCount = mergedItems.filter((item) => item.remediationAction === 'copy_to_archive').length
+  const sourceDeleteCandidateCount = mergedItems.length - archiveCopyItemCount
+  logProgress(
+    context,
+    `discover: checking destination archive objects for ${archiveCopyItemCount} archive-copy manifest items; ${sourceDeleteCandidateCount} source-delete candidates do not require archive destinations`
+  )
+  const items = await verifyDestinationObjects(context, mergedItems, now)
   const updated = {
     ...manifest,
     items,
     updatedAt: now
   }
+  logProgress(context, `discover: saving manifest with ${items.length} items to s3://${context.archiveBucket}/${context.manifestObjectKey}`)
   await saveManifest(context, updated)
   logSummary(context, 'discover', updated)
   return updated
 }
 
 async function copyWithContext(context: RemediationContext): Promise<Manifest> {
+  logProgress(context, `copy: loading manifest s3://${context.archiveBucket}/${context.manifestObjectKey}`)
   const manifest = await loadManifest(context)
   const now = new Date().toISOString()
   const items: ManifestItem[] = []
+  const archiveCopyItemsTotal = manifest.items.filter((item) => item.remediationAction === 'copy_to_archive').length
+  const sourceDeleteCandidateCount = manifest.items.length - archiveCopyItemsTotal
+  let archiveItemNumber = 0
+  logProgress(
+    context,
+    `copy: loaded manifest with ${manifest.items.length} items; ${archiveCopyItemsTotal} archive-copy items to inspect; ${sourceDeleteCandidateCount} source-delete candidates to skip`
+  )
 
   for (const item of manifest.items) {
-    if (!['destination_missing', 'restore_requested', 'restore_failed', 'restore_available', 'copy_failed'].includes(item.status)) {
+    if (item.remediationAction === 'delete_source') {
+      logProgress(context, `copy: skipping source-delete candidate ${sourceObjectVersionUri(item)}`)
+      items.push(sourceDeleteCandidate(item, now))
+      continue
+    }
+
+    archiveItemNumber += 1
+    if (!copyableStatuses.has(item.status)) {
+      if (shouldLogItemProgress(archiveItemNumber, archiveCopyItemsTotal)) {
+        logProgress(
+          context,
+          `copy: skipping item ${archiveItemNumber}/${archiveCopyItemsTotal} with status ${item.status}: ${sourceObjectVersionUri(item)}`
+        )
+      }
       items.push(item)
       continue
     }
 
     try {
-      const sourceRestoreStatus = await requestSourceRestoreIfNeeded(context, item, now)
+      logProgress(
+        context,
+        `copy: processing item ${archiveItemNumber}/${archiveCopyItemsTotal}: ${sourceObjectVersionUri(item)} -> ${destinationObjectUri(item)}`
+      )
+      const sourceRestoreStatus = await requestSourceRestoreIfNeeded(
+        context,
+        item,
+        now,
+        archiveItemNumber,
+        archiveCopyItemsTotal
+      )
       if (sourceRestoreStatus) {
         items.push(sourceRestoreStatus)
         continue
@@ -338,9 +467,18 @@ async function copyWithContext(context: RemediationContext): Promise<Manifest> {
 
       const copied = await withTempDir(async (dir) => {
         const sourcePath = path.join(dir, 'source-object')
-        await downloadObject(context, item.sourceBucket, item.sourceKey, item.sourceVersionId, sourcePath)
+        logProgress(
+          context,
+          `copy: downloading source object for item ${archiveItemNumber}/${archiveCopyItemsTotal}: ${sourceObjectVersionUri(item)}`
+        )
+        const sourceObject = await downloadObject(context, item.sourceBucket, item.sourceKey, item.sourceVersionId, sourcePath)
         const sourceSha256 = await sha256File(sourcePath)
+        logProgress(context, `copy: source SHA-256 for item ${archiveItemNumber}/${archiveCopyItemsTotal}: ${sourceSha256}`)
         const stat = await fs.stat(sourcePath)
+        logProgress(
+          context,
+          `copy: uploading archive object for item ${archiveItemNumber}/${archiveCopyItemsTotal}: ${destinationObjectUri(item)}`
+        )
         const upload = await context.s3.send(
           new PutObjectCommand({
             Bucket: item.destinationBucket,
@@ -348,7 +486,14 @@ async function copyWithContext(context: RemediationContext): Promise<Manifest> {
             Body: createReadStream(sourcePath),
             ContentLength: stat.size,
             StorageClass: 'GLACIER_IR',
+            CacheControl: sourceObject.CacheControl,
+            ContentDisposition: sourceObject.ContentDisposition,
+            ContentEncoding: sourceObject.ContentEncoding,
+            ContentLanguage: sourceObject.ContentLanguage,
+            ContentType: sourceObject.ContentType,
+            Expires: sourceObject.Expires,
             Metadata: {
+              ...(sourceObject.Metadata ?? {}),
               sourcebucket: item.sourceBucket,
               sourcekeybase64url: Buffer.from(item.sourceKey, 'utf8').toString('base64url'),
               sourceversionid: item.sourceVersionId,
@@ -356,6 +501,10 @@ async function copyWithContext(context: RemediationContext): Promise<Manifest> {
               sourcestorageclass: item.sourceStorageClass
             }
           })
+        )
+        logProgress(
+          context,
+          `copy: copied item ${archiveItemNumber}/${archiveCopyItemsTotal} to archive version ${upload.VersionId ?? '(unversioned)'}`
         )
 
         return {
@@ -369,11 +518,19 @@ async function copyWithContext(context: RemediationContext): Promise<Manifest> {
       })
       items.push(copied)
     } catch (error) {
+      logProgress(
+        context,
+        `copy: failed item ${archiveItemNumber}/${archiveCopyItemsTotal}: ${sourceObjectVersionUri(item)}: ${String(error)}`
+      )
       items.push({ ...item, status: 'copy_failed', error: String(error), updatedAt: now })
     }
   }
 
   const updated = { ...manifest, items, updatedAt: now }
+  logProgress(
+    context,
+    `copy: saving manifest with ${items.length} items to s3://${context.archiveBucket}/${context.manifestObjectKey}`
+  )
   await saveManifest(context, updated)
   logSummary(context, 'copy', updated)
   return updated
@@ -382,9 +539,15 @@ async function copyWithContext(context: RemediationContext): Promise<Manifest> {
 async function requestSourceRestoreIfNeeded(
   context: RemediationContext,
   item: ManifestItem,
-  now: string
+  now: string,
+  itemNumber: number,
+  totalItems: number
 ): Promise<ManifestItem | null> {
   try {
+    logProgress(
+      context,
+      `copy: checking source restore availability for item ${itemNumber}/${totalItems}: ${sourceObjectVersionUri(item)}`
+    )
     const head = await context.s3.send(
       new HeadObjectCommand({
         Bucket: item.sourceBucket,
@@ -393,9 +556,14 @@ async function requestSourceRestoreIfNeeded(
       })
     )
     if (isRestoreAvailable(head.Restore)) {
+      logProgress(context, `copy: source restore is available for item ${itemNumber}/${totalItems}`)
       return null
     }
 
+    logProgress(
+      context,
+      `copy: requesting source restore for item ${itemNumber}/${totalItems}: ${sourceObjectVersionUri(item)}`
+    )
     await context.s3.send(
       new RestoreObjectCommand({
         Bucket: item.sourceBucket,
@@ -409,14 +577,18 @@ async function requestSourceRestoreIfNeeded(
         }
       })
     )
+    logProgress(context, `copy: source restore requested for item ${itemNumber}/${totalItems}`)
     return { ...item, status: 'restore_requested', error: null, updatedAt: now }
   } catch (error) {
     if (isRestoreAlreadyInProgress(error)) {
+      logProgress(context, `copy: source restore already in progress for item ${itemNumber}/${totalItems}`)
       return { ...item, status: 'restore_requested', error: null, updatedAt: now }
     }
     if (isObjectAlreadyRestored(error)) {
+      logProgress(context, `copy: source object is already restored for item ${itemNumber}/${totalItems}`)
       return null
     }
+    logProgress(context, `copy: source restore failed for item ${itemNumber}/${totalItems}: ${String(error)}`)
     return { ...item, status: 'restore_failed', error: String(error), updatedAt: now }
   }
 }
@@ -460,12 +632,80 @@ async function verifyWithContext(context: RemediationContext): Promise<Manifest>
 
   const updated = { ...manifest, items, updatedAt: now }
   await saveManifest(context, updated)
-  logSummary(context, 'verify', updated)
+  logVerifySummary(context, updated)
   const mismatch = updated.items.find((item) => item.status === 'checksum_mismatch')
   if (mismatch) {
     throw new Error(`Checksum verification failed for ${mismatch.sourceBucket}/${mismatch.sourceKey}`)
   }
+  const incomplete = updated.items.filter(
+    (item) => item.remediationAction === 'copy_to_archive' && (item.status !== 'verified' || item.checksumMatches !== true)
+  )
+  if (incomplete.length > 0) {
+    const noun = incomplete.length === 1 ? 'item is' : 'items are'
+    throw new Error(`Remediation incomplete: ${incomplete.length} archive copy ${noun} not verified`)
+  }
+  const notReadyForSourceDeletion = updated.items
+    .map((item) => ({ item, error: sourceDeletionReadinessError(context, item) }))
+    .find((result) => result.error !== null)
+  if (notReadyForSourceDeletion) {
+    throw new Error(
+      `Manifest item not ready for source deletion: ${sourceObjectVersionUri(notReadyForSourceDeletion.item)}: ${notReadyForSourceDeletion.error}`
+    )
+  }
   return updated
+}
+
+function sourceDeletionReadinessError(context: RemediationContext, item: ManifestItem): string | null {
+  const expectedAction = remediationActionFor(item.sourceKey)
+  if (item.remediationAction !== expectedAction) {
+    return `remediationAction ${item.remediationAction} does not match expected action ${expectedAction}`
+  }
+  if (item.environment !== context.env) {
+    return `environment ${item.environment} does not match ${context.env}`
+  }
+  if (!context.sourceBuckets.includes(item.sourceBucket)) {
+    return `source bucket ${item.sourceBucket} is not one of the configured ${context.env} source buckets`
+  }
+  if (!item.sourceVersionId) {
+    return 'sourceVersionId is missing'
+  }
+
+  if (item.remediationAction === 'delete_source') {
+    if (!sourceDeleteCandidateKeys.has(item.sourceKey)) {
+      return `source key ${item.sourceKey} is not an allowed source-delete candidate`
+    }
+    if (item.status !== 'source_delete_candidate') {
+      return `delete-source candidate status is ${item.status}, expected source_delete_candidate`
+    }
+    return null
+  }
+
+  if (item.destinationBucket !== context.archiveBucket) {
+    return `destination bucket ${item.destinationBucket} does not match ${context.archiveBucket}`
+  }
+  const expectedDestinationKey = destinationKeyFor(item.sourceBucket, item.sourceKey, item.sourceVersionId)
+  if (item.destinationKey !== expectedDestinationKey) {
+    return `destination key ${item.destinationKey} does not match ${expectedDestinationKey}`
+  }
+  if (item.destinationVersionId === null) {
+    return 'destinationVersionId is missing'
+  }
+  if (item.status !== 'verified') {
+    return `status is ${item.status}, expected verified`
+  }
+  if (item.checksumMatches !== true) {
+    return `checksumMatches is ${item.checksumMatches}, expected true`
+  }
+  if (!item.sourceSha256) {
+    return 'sourceSha256 is missing'
+  }
+  if (!item.destinationSha256) {
+    return 'destinationSha256 is missing'
+  }
+  if (item.sourceSha256 !== item.destinationSha256) {
+    return 'sourceSha256 and destinationSha256 differ'
+  }
+  return null
 }
 
 async function verifyDestinationObjects(
@@ -474,8 +714,22 @@ async function verifyDestinationObjects(
   now: string
 ): Promise<ManifestItem[]> {
   const verified: ManifestItem[] = []
+  const archiveItemsTotal = items.filter((item) => item.remediationAction === 'copy_to_archive').length
+  let archiveItemNumber = 0
 
   for (const item of items) {
+    if (item.remediationAction === 'delete_source') {
+      verified.push(sourceDeleteCandidate(item, now))
+      continue
+    }
+
+    archiveItemNumber += 1
+    if (shouldLogItemProgress(archiveItemNumber, archiveItemsTotal)) {
+      logProgress(
+        context,
+        `discover: checking destination archive object ${archiveItemNumber}/${archiveItemsTotal}: s3://${item.destinationBucket}/${item.destinationKey}`
+      )
+    }
     try {
       const head = await context.s3.send(
         new HeadObjectCommand({
@@ -503,6 +757,20 @@ async function verifyDestinationObjects(
   return verified
 }
 
+function sourceDeleteCandidate(item: ManifestItem, now: string): ManifestItem {
+  return {
+    ...item,
+    remediationAction: 'delete_source',
+    destinationVersionId: null,
+    sourceSha256: null,
+    destinationSha256: null,
+    checksumMatches: null,
+    status: 'source_delete_candidate',
+    error: null,
+    updatedAt: now
+  }
+}
+
 function destinationMissing(item: ManifestItem, now: string): ManifestItem {
   return {
     ...item,
@@ -520,7 +788,11 @@ async function loadManifest(context: RemediationContext): Promise<Manifest> {
     const response = await context.s3.send(
       new GetObjectCommand({ Bucket: context.archiveBucket, Key: context.manifestObjectKey })
     )
-    return JSON.parse(await responseBodyToString(response.Body)) as Manifest
+    const manifest = JSON.parse(await responseBodyToString(response.Body)) as Manifest
+    return {
+      ...manifest,
+      items: manifest.items.map(normalizeManifestItemForSourceDeletionSafety)
+    }
   } catch (error) {
     if (isNoSuchKey(error)) {
       return emptyManifest(context.env)
@@ -547,7 +819,7 @@ async function downloadObject(
   key: string,
   versionId: string | null,
   destinationPath: string
-): Promise<void> {
+): Promise<GetObjectCommandOutput> {
   const response = await context.s3.send(
     new GetObjectCommand({
       Bucket: bucket,
@@ -557,12 +829,52 @@ async function downloadObject(
   )
   const fileHandle = await fs.open(destinationPath, 'w')
   await pipeline(await responseBodyToReadable(response.Body), fileHandle.createWriteStream())
+  return response
 }
 
 function logSummary(context: RemediationContext, phase: string, manifest: Manifest): void {
-  const counts = manifest.items.reduce<Record<string, number>>((acc, item) => {
+  console.log(`${phase} complete for ${context.env}: ${JSON.stringify(statusCounts(manifest.items))}`)
+}
+
+function logVerifySummary(context: RemediationContext, manifest: Manifest): void {
+  const counts = statusCounts(manifest.items)
+  const archiveCopyItems = manifest.items.filter((item) => item.remediationAction === 'copy_to_archive')
+  const archiveObjectsCopied = archiveCopyItems.filter(
+    (item) => item.destinationVersionId !== null || copiedArchiveObjectStatuses.has(item.status)
+  ).length
+  const checksumSucceeded = archiveCopyItems.filter(
+    (item) => item.status === 'verified' && item.checksumMatches === true
+  ).length
+  const checksumFailed = archiveCopyItems.filter((item) => item.status === 'checksum_mismatch').length
+  const checksumPending = archiveCopyItems.filter((item) => item.status === 'copied').length
+  const notCopiedYet = archiveCopyItems.length - archiveObjectsCopied
+  const sourceDeleteCandidateCount = manifest.items.filter((item) => item.remediationAction === 'delete_source').length
+
+  logProgress(context, `verify summary for ${context.env}`)
+  logProgress(context, `  manifest items: ${manifest.items.length}`)
+  logProgress(context, `  archive copy target files: ${archiveCopyItems.length}`)
+  logProgress(context, `  archive objects copied: ${archiveObjectsCopied}/${archiveCopyItems.length}`)
+  logProgress(context, `  checksums: ${checksumSucceeded} succeeded, ${checksumFailed} failed, ${checksumPending} pending`)
+  logProgress(context, `  not copied yet: ${notCopiedYet}`)
+  logProgress(context, `  source delete candidates: ${sourceDeleteCandidateCount}`)
+  logProgress(
+    context,
+    `  blocked states: restore_failed=${counts.restore_failed ?? 0}, copy_failed=${counts.copy_failed ?? 0}, checksum_mismatch=${counts.checksum_mismatch ?? 0}`
+  )
+  logProgress(context, `  status counts: ${JSON.stringify(counts)}`)
+}
+
+function statusCounts(items: ManifestItem[]): Record<string, number> {
+  return items.reduce<Record<string, number>>((acc, item) => {
     acc[item.status] = (acc[item.status] ?? 0) + 1
     return acc
   }, {})
-  console.log(`${phase} complete for ${context.env}: ${JSON.stringify(counts)}`)
+}
+
+function logProgress(context: RemediationContext, message: string): void {
+  console.log(`[${context.env}] ${message}`)
+}
+
+function shouldLogItemProgress(itemNumber: number, totalItems: number): boolean {
+  return itemNumber === 1 || itemNumber === totalItems || itemNumber % progressLogInterval === 0
 }
