@@ -71,6 +71,6 @@ export class S3Stack extends cdk.Stack {
   }
 
   allBuckets(): s3.Bucket[] {
-    return [this.instructionBucket, this.certificateBucket, this.imageBucket]
+    return [this.instructionBucket, this.certificateBucket, this.imageBucket, this.glacierRemediationArchiveBucket]
   }
 }
