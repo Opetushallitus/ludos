@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "24.18.1"
+    "node": "24.19.0"
   },
   "scripts": {
     "test": "node --import tsx --test src/remediation.test.ts launcher.test.mjs",
