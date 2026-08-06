@@ -13,9 +13,22 @@ function remind_about_full_developer_permissions_on_error {
   exit "$exit_code"
 }
 
+function require_full_developer_permissions_flag {
+  local arg
+  for arg in "$@"; do
+    if [[ "$arg" == "--full-developer-permissions" ]]; then
+      return
+    fi
+  done
+
+  fatal "deploy-utility.sh must be run with --full-developer-permissions. Restricted utility deploys can break the AWS stack."
+}
+
 function main {
-  start_gh_actions_group "Setup"
   parse_deploy_permission_mode_args "$@"
+  require_full_developer_permissions_flag "$@"
+
+  start_gh_actions_group "Setup"
   trap remind_about_full_developer_permissions_on_error ERR
   parse_env_from_script_name "deploy"
   use_correct_node_version
