@@ -5,11 +5,15 @@ source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../scripts/common-func
 main() {
     use_correct_node_version
     npm_ci_if_package_lock_has_changed
-    local -a cdk_args=(--context envName="$ENV")
+    local -a cdk_args=()
+    if [[ "${1:-}" != "bootstrap" ]]; then
+        cdk_args+=(--concurrency 1)
+    fi
+    cdk_args+=(--context envName="$ENV")
     if [[ -n "${AWS_PROFILE:-}" ]]; then
         cdk_args+=(--profile "$AWS_PROFILE")
     fi
-    npx cdk --concurrency 1 "${cdk_args[@]}" "$@"
+    npx --no-install cdk "${cdk_args[@]}" "$@"
 }
 
 main "$@"
