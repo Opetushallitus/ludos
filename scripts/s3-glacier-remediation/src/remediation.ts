@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   GetObjectCommandOutput,
   HeadObjectCommand,
@@ -25,6 +26,7 @@ export type ManifestItemStatus =
   | 'restore_available'
   | 'copied'
   | 'verified'
+  | 'source_deleted'
   | 'restore_failed'
   | 'copy_failed'
   | 'checksum_mismatch'
@@ -88,6 +90,7 @@ const copyableStatuses = new Set<ManifestItemStatus>([
   'copy_failed'
 ])
 const copiedArchiveObjectStatuses = new Set<ManifestItemStatus>(['copied', 'verified', 'checksum_mismatch'])
+const sourceDeletionReadyStatuses = new Set<ManifestItemStatus>(['verified', 'source_deleted'])
 
 export function parseRemediationEnv(env: NodeJS.ProcessEnv): RemediationEnv {
   const value = env.LUDOS_S3_GLACIER_REMEDIATION_ENV
@@ -345,8 +348,11 @@ export async function runCommand(
     case 'verify':
       await verifyWithContext(context)
       return
+    case 'delete-source':
+      await deleteSourceWithContext(context)
+      return
     default:
-      throw new Error("Expected command to be one of: discover, copy, verify")
+      throw new Error("Expected command to be one of: discover, copy, verify, delete-source")
   }
 }
 
@@ -360,6 +366,10 @@ export async function copy(env: RemediationEnv, s3: S3Client = new S3Client({ re
 
 export async function verify(env: RemediationEnv, s3: S3Client = new S3Client({ region })): Promise<Manifest> {
   return verifyWithContext(remediationContext(env, s3))
+}
+
+export async function deleteSource(env: RemediationEnv, s3: S3Client = new S3Client({ region })): Promise<Manifest> {
+  return deleteSourceWithContext(remediationContext(env, s3))
 }
 
 async function discoverWithContext(context: RemediationContext): Promise<Manifest> {
@@ -638,7 +648,9 @@ async function verifyWithContext(context: RemediationContext): Promise<Manifest>
     throw new Error(`Checksum verification failed for ${mismatch.sourceBucket}/${mismatch.sourceKey}`)
   }
   const incomplete = updated.items.filter(
-    (item) => item.remediationAction === 'copy_to_archive' && (item.status !== 'verified' || item.checksumMatches !== true)
+    (item) =>
+      item.remediationAction === 'copy_to_archive' &&
+      (!sourceDeletionReadyStatuses.has(item.status) || item.checksumMatches !== true)
   )
   if (incomplete.length > 0) {
     const noun = incomplete.length === 1 ? 'item is' : 'items are'
@@ -690,8 +702,8 @@ function sourceDeletionReadinessError(context: RemediationContext, item: Manifes
   if (item.destinationVersionId === null) {
     return 'destinationVersionId is missing'
   }
-  if (item.status !== 'verified') {
-    return `status is ${item.status}, expected verified`
+  if (!sourceDeletionReadyStatuses.has(item.status)) {
+    return `status is ${item.status}, expected verified or source_deleted`
   }
   if (item.checksumMatches !== true) {
     return `checksumMatches is ${item.checksumMatches}, expected true`
@@ -706,6 +718,86 @@ function sourceDeletionReadinessError(context: RemediationContext, item: Manifes
     return 'sourceSha256 and destinationSha256 differ'
   }
   return null
+}
+
+async function deleteSourceWithContext(context: RemediationContext): Promise<Manifest> {
+  logProgress(context, `delete-source: loading manifest s3://${context.archiveBucket}/${context.manifestObjectKey}`)
+  let manifest = await loadManifest(context)
+  const archiveCopyItems = manifest.items.filter((item) => item.remediationAction === 'copy_to_archive')
+  const notReady = archiveCopyItems
+    .map((item) => ({ item, error: sourceDeletionReadinessError(context, item) }))
+    .find((result) => result.error !== null)
+
+  if (notReady) {
+    throw new Error(
+      `Refusing source deletion because manifest item is not safely archived: ${sourceObjectVersionUri(notReady.item)}: ${notReady.error}`
+    )
+  }
+
+  const deleteTargets = manifest.items.filter(
+    (item) => item.remediationAction === 'copy_to_archive' && item.status === 'verified'
+  )
+  logProgress(
+    context,
+    `delete-source: ${deleteTargets.length} verified source versions to delete; ${archiveCopyItems.length - deleteTargets.length} already deleted or skipped`
+  )
+
+  for (const item of deleteTargets) {
+    await assertDestinationStillExists(context, item)
+  }
+
+  for (let index = 0; index < deleteTargets.length; index += 1) {
+    const item = deleteTargets[index]
+    logProgress(
+      context,
+      `delete-source: deleting source version ${index + 1}/${deleteTargets.length}: ${sourceObjectVersionUri(item)}`
+    )
+    await context.s3.send(
+      new DeleteObjectCommand({
+        Bucket: item.sourceBucket,
+        Key: item.sourceKey,
+        VersionId: item.sourceVersionId
+      })
+    )
+    manifest = markSourceDeleted(manifest, item, new Date().toISOString())
+    await saveManifest(context, manifest)
+  }
+
+  logSummary(context, 'delete-source', manifest)
+  return manifest
+}
+
+async function assertDestinationStillExists(context: RemediationContext, item: ManifestItem): Promise<void> {
+  try {
+    await context.s3.send(
+      new HeadObjectCommand({
+        Bucket: item.destinationBucket,
+        Key: item.destinationKey,
+        VersionId: item.destinationVersionId ?? undefined
+      })
+    )
+  } catch (error) {
+    throw new Error(
+      `Refusing source deletion because archive object is not readable: ${destinationObjectUri(item)}: ${String(error)}`
+    )
+  }
+}
+
+function markSourceDeleted(manifest: Manifest, deleted: ManifestItem, now: string): Manifest {
+  return {
+    ...manifest,
+    updatedAt: now,
+    items: manifest.items.map((item) =>
+      manifestIdentity(item) === manifestIdentity(deleted)
+        ? {
+            ...item,
+            status: 'source_deleted',
+            error: null,
+            updatedAt: now
+          }
+        : item
+    )
+  }
 }
 
 async function verifyDestinationObjects(
