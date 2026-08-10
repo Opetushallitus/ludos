@@ -91,6 +91,7 @@ const copyableStatuses = new Set<ManifestItemStatus>([
 ])
 const copiedArchiveObjectStatuses = new Set<ManifestItemStatus>(['copied', 'verified', 'checksum_mismatch'])
 const sourceDeletionReadyStatuses = new Set<ManifestItemStatus>(['verified', 'source_deleted'])
+const sourceDeleteCandidateReadyStatuses = new Set<ManifestItemStatus>(['source_delete_candidate', 'source_deleted'])
 
 export function parseRemediationEnv(env: NodeJS.ProcessEnv): RemediationEnv {
   const value = env.LUDOS_S3_GLACIER_REMEDIATION_ENV
@@ -686,8 +687,14 @@ function sourceDeletionReadinessError(context: RemediationContext, item: Manifes
     if (!sourceDeleteCandidateKeys.has(item.sourceKey)) {
       return `source key ${item.sourceKey} is not an allowed source-delete candidate`
     }
-    if (item.status !== 'source_delete_candidate') {
-      return `delete-source candidate status is ${item.status}, expected source_delete_candidate`
+    if (item.sourceSizeBytes !== 0) {
+      return `delete-source candidate size is ${item.sourceSizeBytes}, expected 0`
+    }
+    if (item.sourceStorageClass !== 'GLACIER') {
+      return `delete-source candidate storage class is ${item.sourceStorageClass}, expected GLACIER`
+    }
+    if (!sourceDeleteCandidateReadyStatuses.has(item.status)) {
+      return `delete-source candidate status is ${item.status}, expected source_delete_candidate or source_deleted`
     }
     return null
   }
@@ -724,25 +731,30 @@ async function deleteSourceWithContext(context: RemediationContext): Promise<Man
   logProgress(context, `delete-source: loading manifest s3://${context.archiveBucket}/${context.manifestObjectKey}`)
   let manifest = await loadManifest(context)
   const archiveCopyItems = manifest.items.filter((item) => item.remediationAction === 'copy_to_archive')
-  const notReady = archiveCopyItems
+  const sourceDeleteCandidateItems = manifest.items.filter((item) => item.remediationAction === 'delete_source')
+  const notReady = manifest.items
     .map((item) => ({ item, error: sourceDeletionReadinessError(context, item) }))
     .find((result) => result.error !== null)
 
   if (notReady) {
     throw new Error(
-      `Refusing source deletion because manifest item is not safely archived: ${sourceObjectVersionUri(notReady.item)}: ${notReady.error}`
+      `Refusing source deletion because manifest item is not safe to delete: ${sourceObjectVersionUri(notReady.item)}: ${notReady.error}`
     )
   }
 
-  const deleteTargets = manifest.items.filter(
+  const archivedDeleteTargets = manifest.items.filter(
     (item) => item.remediationAction === 'copy_to_archive' && item.status === 'verified'
   )
+  const sourceDeleteTargets = manifest.items.filter(
+    (item) => item.remediationAction === 'delete_source' && item.status === 'source_delete_candidate'
+  )
+  const deleteTargets = [...archivedDeleteTargets, ...sourceDeleteTargets]
   logProgress(
     context,
-    `delete-source: ${deleteTargets.length} verified source versions to delete; ${archiveCopyItems.length - deleteTargets.length} already deleted or skipped`
+    `delete-source: ${archivedDeleteTargets.length} verified archive-copy source versions and ${sourceDeleteTargets.length} zero-byte source-delete candidates to delete; ${archiveCopyItems.length - archivedDeleteTargets.length + sourceDeleteCandidateItems.length - sourceDeleteTargets.length} already deleted or skipped`
   )
 
-  for (const item of deleteTargets) {
+  for (const item of archivedDeleteTargets) {
     await assertDestinationStillExists(context, item)
   }
 
@@ -857,7 +869,7 @@ function sourceDeleteCandidate(item: ManifestItem, now: string): ManifestItem {
     sourceSha256: null,
     destinationSha256: null,
     checksumMatches: null,
-    status: 'source_delete_candidate',
+    status: item.status === 'source_deleted' ? 'source_deleted' : 'source_delete_candidate',
     error: null,
     updatedAt: now
   }
