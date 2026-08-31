@@ -15,7 +15,7 @@ fi
 echo "Found bastion with instance id: '$BASTION_INSTANCE_ID'"
 
 echo "Searching for DB from environment ${ENV_NAME}"
-DB_HOSTNAME=$(aws rds describe-db-instances --query "DBInstances[?TagList[? Key == 'Environment' && Value == '${ENV_NAME}']].Endpoint.Address" --output text)
+DB_HOSTNAME=$(aws rds describe-db-instances --query "DBInstances[?TagList[? Key == 'Environment' && Value == '${ENV_NAME}'] && !starts_with(DBInstanceIdentifier, 'awsbackup-restore-test')].Endpoint.Address" --output text)
 if [[ -z "$DB_HOSTNAME" ]]; then
     echo "Could not find DB instance"
     exit 1
