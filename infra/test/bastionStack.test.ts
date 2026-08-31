@@ -37,7 +37,7 @@ function findInstance(template: ReturnType<typeof synthesizeBastionStack>) {
   return Object.entries(template.Resources).find(([, resource]) => resource.Type === 'AWS::EC2::Instance')
 }
 
-test('bastion uses the current default AL2023 ARM64 AMI and replaces on image revision changes in dev', () => {
+test('bastion uses the current default AL2023 ARM64 AMI and replaces on image revision changes', () => {
   const template = synthesizeBastionStack('untuva')
   const imageParameter = findImageParameter(template)
   const instance = findInstance(template)
@@ -50,15 +50,15 @@ test('bastion uses the current default AL2023 ARM64 AMI and replaces on image re
   assert.match(instance[0], /[A-Fa-f0-9]{16}$/)
 })
 
-test('bastion keeps the existing image and replacement behavior outside dev', () => {
+test('bastion uses the same current image and replacement behavior outside dev', () => {
   const template = synthesizeBastionStack('qa')
   const imageParameter = findImageParameter(template)
   const instance = findInstance(template)
 
-  assert.equal(imageParameter?.Default, '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-arm64')
+  assert.equal(imageParameter?.Default, '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64')
   if (!instance) {
     throw new Error('Expected a bastion EC2 instance in the synthesized template')
   }
-  assert.doesNotMatch(instance[1].Properties?.UserData?.['Fn::Base64'] ?? '', /bastion-image-revision/)
-  assert.doesNotMatch(instance[0], /[A-Fa-f0-9]{16}$/)
+  assert.match(instance[1].Properties?.UserData?.['Fn::Base64'] ?? '', /bastion-image-revision: 2026-08-31/)
+  assert.match(instance[0], /[A-Fa-f0-9]{16}$/)
 })
