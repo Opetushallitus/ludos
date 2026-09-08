@@ -27,5 +27,5 @@ cat <<EOF
 EOF
 }
 
-curl -H "Content-Type: application/json" -X POST -d "$(body "$PAGERDUTY_ROUTING_KEY")" https://events.pagerduty.com/v2/enqueue
+curl -H "Content-Type: application/json" -X POST -d "$(body "$PAGERDUTY_ROUTING_KEY")" https://events.eu.pagerduty.com/v2/enqueue
 
