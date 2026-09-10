@@ -10,7 +10,6 @@ import * as sns from 'aws-cdk-lib/aws-sns'
 import { Construct } from 'constructs'
 import { CommonStackProps } from '../types'
 
-const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 })
 export const recommendedRdsCaCertificate = rds.CaCertificate.RDS_CA_RSA2048_G1
 const LOG_TEMP_FILES_THRESHOLD_KB = '0' // kilobytes; 0 logs all temporary files
 
@@ -36,6 +35,14 @@ export class DbStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props: DbStackProps) {
     super(scope, id, props)
+
+    const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({
+      // Keep dev and QA aligned with docker-compose.yaml; production is upgraded separately.
+      version:
+        props.envName === 'untuva' || props.envName === 'hahtuva' || props.envName === 'qa'
+          ? rds.PostgresEngineVersion.of('18.6', '18')
+          : rds.PostgresEngineVersion.VER_15_2
+    })
 
     const defaultAllocatedStorage = 20
     const allocatedStorage = props.databaseInstancePropOverrides.allocatedStorage ?? defaultAllocatedStorage

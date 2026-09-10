@@ -77,7 +77,7 @@ function overwrite_target_database_state {
       --net=host \
       --mount type=bind,source="${STORED_STATE_DIRECTORY}/database",target=/tmp/dump_directory \
       -e PGPASSWORD="${PGPASSWORD}" \
-      postgres:15 \
+      postgres:18.6 \
       pg_restore \
         -h 127.0.0.1 \
         -p "${SSH_TUNNEL_PORT}" \

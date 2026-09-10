@@ -19,11 +19,17 @@ function dump_database {
   echo "Dumping database ${ENV} to ${CURRENT_EXEC_DIR}"
   mkdir "${CURRENT_EXEC_DIR}/database"
 
+  # pg_dump must be at least as new as the server; dev and QA run PostgreSQL 18.
+  local postgres_image='postgres:15'
+  if [[ "${ENV}" == "untuva" || "${ENV}" == "hahtuva" || "${ENV}" == "qa" ]]; then
+    postgres_image='postgres:18.6'
+  fi
+
   docker run --rm \
     --net=host \
     --mount type=bind,source="${CURRENT_EXEC_DIR}/database",target=/tmp/dump_directory \
     -e PGPASSWORD="${PGPASSWORD}" \
-    postgres:15 \
+    "${postgres_image}" \
     pg_dump -h 127.0.0.1 -p "${SSH_TUNNEL_PORT}" -U "${USERNAME}" -d "ludos" -b -Fc -f /tmp/dump_directory/db-dump.custom
 }
 
