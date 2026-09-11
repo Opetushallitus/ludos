@@ -27,7 +27,7 @@ Keskeiset entiteetit, ja järjestelmät, joihin nämä tallennetaan.
 
 Nämä ovat keskeiset LUDOS-järjestelmässä käytettävät teknologiat. Lista kuvaa järjestelmän nykytilaa ja muuttuu matkan varrella tarpeen mukaan.
 
-- PostgreSQL 18.6 -tietokanta kehitysympäristöissä (untuva, hahtuva), QA:ssa, CI:ssä ja paikallisessa kehityksessä; tuotannon CDK-versio on edelleen 15.2
+- PostgreSQL 
 - Palvelinteknologiat
   - Kotlin (Java 25)
   - Spring boot
@@ -106,7 +106,7 @@ output = json
 ### PostgreSQL-version päivitys
 
 Paikallinen kehitys sekä CI:n palvelin- ja Playwright-testit käyttävät samaa
-`docker-compose.yaml`-tiedoston PostgreSQL 18.6 -palvelua. AWS:n dev- ja QA-ympäristöjen
+`docker-compose.yaml`-tiedoston PostgreSQL 18.6 -palvelua. Kaikkien AWS-ympäristöjen
 versio määritellään tiedostossa `infra/lib/dbStack.ts`; päivitä nämä versiot yhdessä.
 Tavallisella RDS PostgreSQL:llä ei ole erillisiä Aurora-tyyppisiä LTS-julkaisuja.
 
@@ -117,7 +117,7 @@ datapolku on `/var/lib/postgresql/18/docker` ja volyymin liitospolku
 `/var/lib/postgresql`. Säilytä vanha kontti tai sen datavolyymi, kunnes palautus
 on tarkistettu. Pelkkä Docker-kuvan version vaihto ei siirrä vanhoja tietoja.
 
-AWS:n dev- ja QA-kantojen päivitys tehdään erillisellä CDK-deploylla. Tarkista ensin
+AWS-kantojen päivitys tehdään erillisellä CDK-deploylla. Tarkista ensin
 käynnissä olevan RDS-version sallittu päivityspolku versioon 18.6 ja testaa
 päivitys snapshotista palautetulla kannalla. CDK päivittää myös parametriryhmän
 PostgreSQL 18:lle; varaa päivitykselle käyttökatko.

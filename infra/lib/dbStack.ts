@@ -37,11 +37,8 @@ export class DbStack extends cdk.Stack {
     super(scope, id, props)
 
     const rdsInstanceEngine = rds.DatabaseInstanceEngine.postgres({
-      // Keep dev and QA aligned with docker-compose.yaml; production is upgraded separately.
-      version:
-        props.envName === 'untuva' || props.envName === 'hahtuva' || props.envName === 'qa'
-          ? rds.PostgresEngineVersion.of('18.6', '18')
-          : rds.PostgresEngineVersion.VER_15_2
+      // Keep all environments aligned with docker-compose.yaml.
+      version: rds.PostgresEngineVersion.of('18.6', '18')
     })
 
     const defaultAllocatedStorage = 20
