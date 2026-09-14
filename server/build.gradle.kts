@@ -32,7 +32,7 @@ configurations.all {
         substitute(module("org.bouncycastle:bcprov-jdk15on"))
             .using(module("org.bouncycastle:bcprov-jdk18on:1.85.2"))
         substitute(module("org.bouncycastle:bcpkix-jdk15on"))
-            .using(module("org.bouncycastle:bcpkix-jdk18on:1.85"))
+            .using(module("org.bouncycastle:bcpkix-jdk18on:1.86"))
         substitute(module("org.bouncycastle:bcutil-jdk15on"))
             .using(module("org.bouncycastle:bcutil-jdk18on:1.85"))
     }
