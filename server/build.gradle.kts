@@ -40,6 +40,8 @@ configurations.all {
 
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.6"))
+    implementation(platform("tools.jackson:jackson-bom:3.1.6"))
 
     developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
