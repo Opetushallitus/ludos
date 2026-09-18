@@ -38,6 +38,8 @@ configurations.all {
     }
 }
 
+val tomcatVersion = "11.0.26"
+
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.6"))
@@ -65,7 +67,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
     implementation("ch.qos.logback:logback-classic")
     implementation("ch.qos.logback:logback-core")
-    implementation("org.apache.tomcat.embed:tomcat-embed-core")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:$tomcatVersion")
     implementation("org.springframework:spring-test")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -84,6 +86,11 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:1.18.48")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
+
+    constraints {
+        implementation("org.apache.tomcat.embed:tomcat-embed-el:$tomcatVersion")
+        implementation("org.apache.tomcat.embed:tomcat-embed-websocket:$tomcatVersion")
+    }
 }
 
 val bootJar = tasks.named<BootJar>("bootJar")
