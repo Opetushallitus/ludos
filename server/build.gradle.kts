@@ -45,8 +45,8 @@ dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.6"))
     implementation(platform("org.springframework:spring-framework-bom:$springFrameworkVersion"))
     implementation(platform("io.netty:netty-bom:4.2.18.Final"))
-    implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.6"))
-    implementation(platform("tools.jackson:jackson-bom:3.1.6"))
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
+    implementation(platform("tools.jackson:jackson-bom:3.2.2"))
 
     developmentOnly(platform("org.springframework:spring-framework-bom:$springFrameworkVersion"))
     developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.6")
