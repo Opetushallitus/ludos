@@ -12,7 +12,7 @@
     "lint:fix": "biome check --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.13",
+    "@biomejs/biome": "2.5.14",
     "@types/node": "24.13.5",
     "esbuild": "0.28.2",
     "typescript": "6.0.3"
