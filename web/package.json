@@ -47,7 +47,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.13",
+    "@biomejs/biome": "2.5.14",
     "@iconify/icons-ic": "1.2.13",
     "@iconify/icons-material-symbols": "1.2.58",
     "@types/node": "24.13.5",
