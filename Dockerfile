@@ -19,7 +19,7 @@ RUN npm run build:ci
 FROM gradle:jdk25@sha256:e06837018d077ee7f1218e53499425ca7615702ad58856d980c154caa17eb093 AS server-build
 
 WORKDIR /ludos-build
-COPY server/settings.gradle.kts server/build.gradle.kts .
+COPY server/settings.gradle.kts server/build.gradle.kts server/gradle.lockfile ./
 RUN  gradle --no-daemon dependencies --refresh-dependencies
 
 COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
