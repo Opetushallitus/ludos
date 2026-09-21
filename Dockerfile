@@ -20,8 +20,6 @@ FROM gradle:jdk25@sha256:e06837018d077ee7f1218e53499425ca7615702ad58856d980c154c
 
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts server/gradle.lockfile ./
-RUN  gradle --no-daemon dependencies --refresh-dependencies
-
 COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
 COPY server/src/ ./src/
 RUN gradle --no-daemon bootJar
