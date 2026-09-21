@@ -39,17 +39,13 @@ configurations.all {
 }
 
 val tomcatVersion = "11.0.26"
-val springFrameworkVersion = "7.0.9"
 
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.8"))
-    implementation(platform("org.springframework:spring-framework-bom:$springFrameworkVersion"))
-    implementation(platform("org.springframework.data:spring-data-bom:2025.1.7"))
     implementation(platform("io.netty:netty-bom:4.2.18.Final"))
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.2"))
     implementation(platform("tools.jackson:jackson-bom:3.2.2"))
 
-    developmentOnly(platform("org.springframework:spring-framework-bom:$springFrameworkVersion"))
     developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.8")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
