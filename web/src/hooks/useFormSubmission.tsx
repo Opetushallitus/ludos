@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { NavigateOptions, useNavigate } from 'react-router-dom'
 import { ExternalLink } from '../components/ExternalLink'
-import { contentListPath, contentPagePath, uudelleenkirjautuminenOnnistuiPath } from '../components/LudosRoutes'
+import { contentListPath, contentPagePath, reauthorizeLoginUrl } from '../components/LudosRoutes'
 import { NotificationEnum, useNotification } from '../contexts/NotificationContext'
 import { SessionExpiredFetchError } from '../request'
 import { ContentType, Exam, NonDeletedPublishState, PublishState } from '../types'
@@ -49,12 +49,7 @@ export const useFormSubmission = (exam: Exam, contentType: ContentType, isUpdate
       type: NotificationEnum.error,
       linkComponent:
         error instanceof SessionExpiredFetchError ? (
-          <ExternalLink
-            className="underline"
-            textColor="text-white"
-            url={uudelleenkirjautuminenOnnistuiPath}
-            data-testid="link"
-          >
+          <ExternalLink className="underline" textColor="text-white" url={reauthorizeLoginUrl} data-testid="link">
             {t('notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki')}
           </ExternalLink>
         ) : undefined

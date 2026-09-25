@@ -1,10 +1,10 @@
 package fi.oph.ludos.localization
 
 import fi.oph.ludos.Constants
-import fi.oph.ludos.auth.RequireAtLeastOpettajaRole
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
 import org.springframework.http.CacheControl
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -18,7 +18,7 @@ val LOCALIZATION_CACHE_CONTROL = CacheControl.maxAge(Duration.ofMinutes(5)).must
 @RequestMapping("${Constants.API_PREFIX}/localization")
 class LocalizationController(val localizationService: LocalizationService) {
     @GetMapping("")
-    @RequireAtLeastOpettajaRole
+    @PreAuthorize("permitAll()")
     fun getLocalizationTexts(): ResponseEntity<Map<*, *>> =
         ResponseEntity.ok()
             .cacheControl(LOCALIZATION_CACHE_CONTROL)

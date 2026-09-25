@@ -1,11 +1,15 @@
 package fi.oph.ludos.auth
 
 import fi.oph.ludos.Constants
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 
 @RestController
 @RequestMapping("${Constants.API_PREFIX}/auth")
@@ -32,6 +36,11 @@ class CasController(
 
         return ResponseEntity.ok(user)
     }
+
+    @GetMapping("/login")
+    @PreAuthorize("isAuthenticated()")
+    fun login(@RequestParam(required = false) to: String?): ResponseEntity<Unit> =
+        ResponseEntity.status(HttpStatus.FOUND).location(URI.create(to?.takeIf(::isSafeRedirectPath) ?: "/")).build()
 }
 
 data class User(

@@ -1,6 +1,9 @@
 package fi.oph.ludos.auth
 
+import fi.oph.ludos.Constants.Companion.API_PREFIX
+import fi.oph.ludos.Constants.Companion.LANDING_PAGE_PATH
 import fi.oph.ludos.test.TestController
+import jakarta.servlet.DispatcherType
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
@@ -96,6 +99,9 @@ class WebSecurityConfiguration {
         http.authorizeHttpRequests {
             it.requestMatchers("/assets/**").permitAll()
             it.requestMatchers("/api/health-check").permitAll()
+            it.requestMatchers(LANDING_PAGE_PATH).permitAll()
+            it.requestMatchers(HttpMethod.GET, "$API_PREFIX/localization").permitAll()
+            it.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
         }
 
         if (TestController.isEnabled()) {

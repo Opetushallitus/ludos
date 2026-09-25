@@ -2,6 +2,7 @@ package fi.oph.ludos.auth
 
 import fi.oph.ludos.AUDIT_LOGGER_NAME
 import fi.oph.ludos.Constants.Companion.API_PREFIX
+import fi.oph.ludos.Constants.Companion.LANDING_PAGE_PATH
 import fi.oph.ludos.addLudosUserInfo
 import fi.oph.ludos.addUserIp
 import jakarta.servlet.http.HttpServletRequest
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.cas.ServiceProperties
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken
 import org.springframework.security.cas.authentication.CasAuthenticationProvider
@@ -25,7 +27,12 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import java.net.URI
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
+
+const val CAS_CALLBACK_PATH = "/j_spring_cas_security_check"
 
 @Configuration
 class CasConfig {
@@ -40,7 +47,7 @@ class CasConfig {
 
     @Bean
     fun serviceProperties(): ServiceProperties = ServiceProperties().apply {
-        setService("$appUrl/j_spring_cas_security_check")
+        setService("$appUrl$CAS_CALLBACK_PATH")
         isSendRenew = false
         isAuthenticateAllArtifacts = true
     }
@@ -54,7 +61,7 @@ class CasConfig {
     ): CasAuthenticationFilter {
         val casAuthenticationFilter = CasAuthenticationFilter()
         casAuthenticationFilter.setAuthenticationManager(authenticationConfiguration.authenticationManager)
-        casAuthenticationFilter.setFilterProcessesUrl("/j_spring_cas_security_check")
+        casAuthenticationFilter.setFilterProcessesUrl(CAS_CALLBACK_PATH)
         casAuthenticationFilter.setAuthenticationSuccessHandler(LudosAuthenticationSuccessHandler())
         casAuthenticationFilter.setAuthenticationFailureHandler(LudosAuthenticationFailureHandler())
         return casAuthenticationFilter
@@ -70,7 +77,8 @@ class CasConfig {
         val entryPoint = CasAuthenticationEntryPoint()
         entryPoint.setLoginUrl("https://$opintopolkuHostname/cas/login")
         entryPoint.serviceProperties = serviceProperties
-        return entryPoint
+        entryPoint.afterPropertiesSet()
+        return LandingPageAuthenticationEntryPoint(entryPoint)
     }
 
     @Bean
@@ -85,6 +93,27 @@ class CasConfig {
         setKey("ludos")
     }
 }
+
+class LandingPageAuthenticationEntryPoint(
+    private val casEntryPoint: AuthenticationEntryPoint
+) : AuthenticationEntryPoint {
+    override fun commence(
+        request: HttpServletRequest, response: HttpServletResponse, authException: AuthenticationException
+    ) {
+        val path = request.requestURI.removePrefix(request.contextPath)
+        if (request.method == HttpMethod.GET.name() && !path.startsWith("$API_PREFIX/")) {
+            val originalPath = path + (request.queryString?.let { "?$it" } ?: "")
+            val deepLinkQuery = if (originalPath == "/") "" else "?to=${URLEncoder.encode(originalPath, StandardCharsets.UTF_8)}"
+            response.sendRedirect("${request.contextPath}$LANDING_PAGE_PATH$deepLinkQuery")
+        } else {
+            casEntryPoint.commence(request, response, authException)
+        }
+    }
+}
+
+fun isSafeRedirectPath(path: String?): Boolean =
+    path != null && path.startsWith("/") && !path.startsWith("//") &&
+            runCatching { URI(path) }.getOrNull()?.let { it.scheme == null && it.authority == null } == true
 
 class LudosAuthenticationSuccessHandler : SavedRequestAwareAuthenticationSuccessHandler() {
     private val ludosLogger = LoggerFactory.getLogger(javaClass)

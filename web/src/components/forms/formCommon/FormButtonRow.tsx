@@ -4,7 +4,7 @@ import { PublishState } from '../../../types'
 import { Button } from '../../Button'
 import { ExternalLink } from '../../ExternalLink'
 import { Icon } from '../../Icon'
-import { uudelleenkirjautuminenOnnistuiPath } from '../../LudosRoutes'
+import { reauthorizeLoginUrl } from '../../LudosRoutes'
 
 type FormButtonRowProps = {
   actions: {
@@ -56,12 +56,7 @@ export const FormButtonRow = ({ actions, state, formHasValidationErrors, submitE
       return (
         <div data-testid="session-expired-error-message">
           {t('notification.error.istunto-vanhentunut')}
-          <ExternalLink
-            className="underline"
-            textColor="text-red-primary"
-            url={uudelleenkirjautuminenOnnistuiPath}
-            data-testid="link"
-          >
+          <ExternalLink className="underline" textColor="text-red-primary" url={reauthorizeLoginUrl} data-testid="link">
             {t('notification.error.istunto-vanhentunut-uudelleenkirjautuminen-linkki')}
           </ExternalLink>
         </div>

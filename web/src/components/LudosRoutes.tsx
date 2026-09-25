@@ -7,11 +7,17 @@ import {
   RouteObject,
   useRouteError
 } from 'react-router-dom'
+import { LANDING_PAGE_PATH } from '../constants'
+import { LudosContextProvider } from '../contexts/LudosContextProvider'
+import { NotificationProvider } from '../contexts/NotificationContext'
+import { useDocumentLanguage } from '../hooks/useDocumentLanguage'
+import { useHideSpringSecurityMatchingRequestParameter } from '../hooks/useHideSpringSecurityMatchingRequestParameter'
 import { useLudosTranslation } from '../hooks/useLudosTranslation'
 import { useUserDetails } from '../hooks/useUserDetails'
 import { ContentBaseOut, ContentFormAction, ContentType, ContentTypePluralFi, Exam, Roles } from '../types'
 import { AssignmentFavorite } from './content/assignmentFavorite/AssignmentFavorite'
 import { Frontpage } from './frontpage/Frontpage'
+import { LandingPage } from './LandingPage'
 import { Layout } from './layout/Layout'
 import { ReauthorizeSuccessful } from './ReauthorizeSuccessful'
 import { Spinner } from './Spinner'
@@ -25,6 +31,7 @@ export const ldKey = Exam.LD.toLowerCase()
 export const suosikitKey = 'suosikit'
 export const tulostusnakymaKey = 'tulostusnakyma'
 export const uudelleenkirjautuminenOnnistuiPath = '/uudelleenkirjautuminen-onnistui'
+export const reauthorizeLoginUrl = `/api/auth/login?to=${encodeURIComponent(uudelleenkirjautuminenOnnistuiPath)}`
 
 export const frontpagePath = () => '/'
 
@@ -53,6 +60,19 @@ const ContentListPage = lazy(() => import('./content/list/ContentListPage'))
 const SpinnerSuspense = ({ children }: { children: ReactNode }) => (
   <Suspense fallback={<Spinner className="mt-32 text-center" />}>{children}</Suspense>
 )
+
+const LudosAppRoot = () => {
+  useDocumentLanguage()
+  useHideSpringSecurityMatchingRequestParameter()
+
+  return (
+    <LudosContextProvider>
+      <NotificationProvider>
+        <Outlet />
+      </NotificationProvider>
+    </LudosContextProvider>
+  )
+}
 
 const AuthorizedRoute = (): ReactElement | null => {
   const { role } = useUserDetails()
@@ -91,44 +111,53 @@ const DefaultError = () => {
 
 export const ludosRouter = createBrowserRouter([
   {
-    element: <AuthorizedRoute />,
+    path: LANDING_PAGE_PATH,
+    element: <LandingPage />
+  },
+  {
+    element: <LudosAppRoot />,
     errorElement: <DefaultError />,
     children: [
       {
-        path: '/',
-        element: (
-          <Layout>
-            <Frontpage />
-          </Layout>
-        )
-      },
-      examRoute(Exam.SUKO),
-      examRoute(Exam.LD),
-      examRoute(Exam.PUHVI),
-      {
-        index: true,
-        path: `/${suosikitKey}`,
-        element: <Navigate replace to={favoritesPagePath(Exam.SUKO)} />
-      },
-      {
-        path: `/${suosikitKey}/:exam/:folderId?`,
-        element: (
-          <Layout>
-            <AssignmentFavorite />
-          </Layout>
-        )
-      },
-      {
-        path: uudelleenkirjautuminenOnnistuiPath,
-        element: (
-          <Layout>
-            <ReauthorizeSuccessful />
-          </Layout>
-        )
-      },
-      {
-        path: '/vitelogin',
-        element: <Navigate replace to="/" />
+        element: <AuthorizedRoute />,
+        children: [
+          {
+            path: '/',
+            element: (
+              <Layout>
+                <Frontpage />
+              </Layout>
+            )
+          },
+          examRoute(Exam.SUKO),
+          examRoute(Exam.LD),
+          examRoute(Exam.PUHVI),
+          {
+            index: true,
+            path: `/${suosikitKey}`,
+            element: <Navigate replace to={favoritesPagePath(Exam.SUKO)} />
+          },
+          {
+            path: `/${suosikitKey}/:exam/:folderId?`,
+            element: (
+              <Layout>
+                <AssignmentFavorite />
+              </Layout>
+            )
+          },
+          {
+            path: uudelleenkirjautuminenOnnistuiPath,
+            element: (
+              <Layout>
+                <ReauthorizeSuccessful />
+              </Layout>
+            )
+          },
+          {
+            path: '/vitelogin',
+            element: <Navigate replace to="/" />
+          }
+        ]
       }
     ]
   }
