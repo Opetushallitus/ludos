@@ -17,7 +17,7 @@
   },
   "linter": {
     "rules": {
-      "recommended": false,
+      "preset": "none",
       "a11y": {
         "noAccessKey": "error",
         "noAriaUnsupportedElements": "error",
