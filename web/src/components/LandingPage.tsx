@@ -5,50 +5,30 @@ import { twMerge } from 'tailwind-merge'
 import { ludosUILanguageKey } from '../contexts/LudosContext'
 import { Language } from '../types'
 import { buttonClasses } from './Button'
-import { ExternalLink } from './ExternalLink'
 import { Footer } from './Footer'
 import { UiLanguageDropdown } from './header/HeaderUiLanguageDropdown'
 
-const TEXTS = {
-  [Language.FI]: {
-    title: 'LUDOS – Kirjaudu sisään',
-    welcome: 'Tervetuloa Ludos-palveluun',
-    login: 'Kirjaudu sisään',
-    instructions: 'Ohjeet LUDOS-palveluun kirjautumiseen'
-  },
-  [Language.SV]: {
-    title: 'LUDOS – Logga in',
-    welcome: 'Välkommen till Ludos-tjänsten',
-    login: 'Logga in',
-    instructions: 'Anvisningar för inloggning i LUDOS-tjänsten'
-  }
-}
-
-type LandingPageLanguage = keyof typeof TEXTS
-
-const INSTRUCTIONS_URL =
-  'https://www.oph.fi/fi/koulutus-ja-tutkinnot/ludos-palvelu-lukiodiplomipalvelu-suullisen-kielitaidon-arviointi-ja'
-
-function isLandingPageLanguage(lang: string | null | undefined): lang is LandingPageLanguage {
+function isLanguage(lang: string | null | undefined): lang is Language {
   return lang === Language.FI || lang === Language.SV
 }
 
-function initialLanguage(langParam: string | null): LandingPageLanguage {
-  const lang = langParam?.toUpperCase() ?? localStorage.getItem(ludosUILanguageKey)
-  if (isLandingPageLanguage(lang)) {
-    return lang
-  }
-  return navigator.language.toLowerCase().startsWith('sv') ? Language.SV : Language.FI
+function initialLanguage(langParam: string | null): Language {
+  const candidates = [
+    langParam?.toUpperCase(),
+    localStorage.getItem(ludosUILanguageKey),
+    navigator.language.slice(0, 2).toUpperCase()
+  ]
+  return candidates.find(isLanguage) ?? Language.FI
 }
 
 export const LandingPage = () => {
   const [searchParams] = useSearchParams()
   const [lang, setLang] = useState(() => initialLanguage(searchParams.get('lang')))
-  const texts = TEXTS[lang]
   const { i18n } = useTranslation()
+  const t = i18n.getFixedT(lang)
 
   const changeLanguage = (language: string) => {
-    if (isLandingPageLanguage(language)) {
+    if (isLanguage(language)) {
       setLang(language)
       localStorage.setItem(ludosUILanguageKey, language)
     }
@@ -58,9 +38,8 @@ export const LandingPage = () => {
 
   useEffect(() => {
     document.documentElement.lang = lang.toLowerCase()
-    document.title = texts.title
     void i18n.changeLanguage(lang)
-  }, [lang, texts.title, i18n])
+  }, [lang, i18n])
 
   return (
     <div className="grid min-h-[98vh] max-w-full grid-rows-[auto,1fr,auto] md:grid-rows-[6rem,1fr,7rem]">
@@ -77,7 +56,8 @@ export const LandingPage = () => {
 
       <main className="flex justify-center">
         <section className="mt-10 w-[80vw]">
-          <h2>{texts.welcome}</h2>
+          <h2>{t('landing-page.tervetuloa')}</h2>
+          <p className="mt-4 max-w-xl">{t('landing-page.kuvausteksti')}</p>
 
           <div className="mt-8 max-w-xl rounded-md border-2 border-t-4 border-gray-light border-t-green-primary p-5 md:p-8">
             <a
@@ -88,12 +68,8 @@ export const LandingPage = () => {
               href={loginUrl}
               data-testid="login-button"
             >
-              {texts.login}
+              {t('landing-page.kirjaudu-sisaan')}
             </a>
-
-            <div className="mt-6 border-l-4 border-green-primary bg-gray-bg px-4 py-3 text-sm">
-              <ExternalLink url={INSTRUCTIONS_URL}>{texts.instructions}</ExternalLink>
-            </div>
           </div>
         </section>
       </main>

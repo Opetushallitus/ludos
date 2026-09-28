@@ -11,16 +11,13 @@ data class Localization(
     val key: String,
     val id: Int,
     @param:JsonDeserialize(using = LocaleDeserializer::class)
-    val locale: Locale,
+    val locale: Locale?,
     val value: String
 )
 
 
-class LocaleDeserializer : ValueDeserializer<Locale>() {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Locale {
-        val localeStr = p.string
-        return Locale.fromLocaleString(localeStr) ?: throw IllegalArgumentException("Unknown locale: $localeStr")
-    }
+class LocaleDeserializer : ValueDeserializer<Locale?>() {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Locale? = Locale.fromLocaleString(p.string)
 }
 
 enum class Locale(val locale: String) {
