@@ -5,6 +5,7 @@ import { AlarmStack } from './alarmStack'
 import { AlbStack } from './albStack'
 import { BackupStack } from './backupStack'
 import { BastionStack } from './bastionStack'
+import { CanaryStack } from './canaryStack'
 import { CloudFrontCertificateStack } from './cloudfrontCertificateStack'
 import { DbStack, LudosDatabaseInstanceProps } from './dbStack'
 import { EcsStack } from './ecsStack'
@@ -140,6 +141,12 @@ export class LudosStack extends cdk.Stack {
       dbStack,
       s3BucketStack,
       githubActionsStack,
+      alarmSnsTopic: alarmStack.alarmSnsTopic
+    })
+
+    new CanaryStack(this, 'CanaryStack', {
+      ...commonProps,
+      domain: props.domain,
       alarmSnsTopic: alarmStack.alarmSnsTopic
     })
 
