@@ -8,7 +8,8 @@ import {
   createRestrictedCiRoleAssumerPrincipal,
   GITHUB_ACTIONS_OIDC_THUMBPRINT_LIST,
   RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
-  restrictedCiBoundaryStatements
+  restrictedCiCfnExecutionRolePolicyStatements,
+  restrictedCiPermissionsBoundaryStatements
 } from './githubActionsStack'
 
 export class EcrStack extends cdk.Stack {
@@ -49,7 +50,7 @@ export class EcrStack extends cdk.Stack {
     const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
       managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
       description: 'Maximum permissions allowed for the restricted CI deploy lane.',
-      statements: restrictedCiBoundaryStatements(props)
+      statements: restrictedCiPermissionsBoundaryStatements()
     })
 
     const restrictedCloudFormationExecutionRole = new iam.Role(this, 'RestrictedCloudFormationExecutionRole', {
@@ -67,7 +68,7 @@ export class EcrStack extends cdk.Stack {
     )
     restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
 
-    for (const statement of restrictedCiBoundaryStatements(props)) {
+    for (const statement of restrictedCiCfnExecutionRolePolicyStatements(props)) {
       restrictedCloudFormationExecutionRole.addToPolicy(statement)
     }
 

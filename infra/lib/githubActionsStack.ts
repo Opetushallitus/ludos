@@ -30,7 +30,7 @@ export function createRestrictedCiRoleAssumerPrincipal(accountId: string) {
   })
 }
 
-const restrictedCiBoundaryActionPatterns = [
+const restrictedCiCfnExecutionRoleAllowedActions = [
   'acm:AddTagsToCertificate',
   'acm:DeleteCertificate',
   'acm:DescribeCertificate',
@@ -127,17 +127,22 @@ const restrictedCiBoundaryActionPatterns = [
   'glue:UpdateDatabase',
   'glue:UpdateTable',
   'iam:GetRole',
+  'iam:GetRolePolicy',
+  'iam:ListAttachedRolePolicies',
+  'iam:ListPolicyVersions',
+  'iam:ListRolePolicies',
+  'iam:ListRoles',
   'iam:TagRole',
   'iam:UntagRole',
-  'iam:CreatePolicyVersion',
-  'iam:DeletePolicyVersion',
-  'iam:ListPolicyVersions',
   'iam:PassRole',
   'lambda:AddPermission',
   'lambda:CreateFunction',
   'lambda:DeleteFunction',
+  'lambda:DeleteLayerVersion',
   'lambda:Get*',
   'lambda:ListTags',
+  'lambda:PublishLayerVersion',
+  'lambda:PublishVersion',
   'lambda:RemovePermission',
   'lambda:TagResource',
   'lambda:UntagResource',
@@ -179,6 +184,8 @@ const restrictedCiBoundaryActionPatterns = [
   's3:GetLifecycle*',
   's3:GetObject',
   's3:GetObjectAcl',
+  's3:GetObjectVersion',
+  's3:ListAllMyBuckets',
   's3:ListBucket',
   's3:PutBucketAcl',
   's3:PutBucketOwnershipControls',
@@ -221,6 +228,52 @@ const restrictedCiBoundaryActionPatterns = [
   'ssm:GetParameter',
   'ssm:GetParameters',
   'sts:AssumeRole',
+  'sts:GetCallerIdentity',
+  'synthetics:CreateCanary',
+  'synthetics:DeleteCanary',
+  'synthetics:DescribeCanaries',
+  'synthetics:GetCanary',
+  'synthetics:GetCanaryRuns',
+  'synthetics:ListTagsForResource',
+  'synthetics:ReplicateCanary',
+  'synthetics:StartCanary',
+  'synthetics:StartCanaryDryRun',
+  'synthetics:StopCanary',
+  'synthetics:TagResource',
+  'synthetics:UntagResource',
+  'synthetics:UpdateCanary'
+]
+
+const restrictedCiPermissionsBoundaryAllowedActions = [
+  'acm:*',
+  'athena:*',
+  'backup:*',
+  'cloudformation:*',
+  'cloudfront:*',
+  'cloudwatch:*',
+  'ec2:*',
+  'ecr:*',
+  'ecs:*',
+  'elasticloadbalancing:*',
+  'events:*',
+  'glue:*',
+  'lambda:*',
+  'logs:*',
+  'rds:*',
+  'route53:*',
+  's3:*',
+  'secretsmanager:*',
+  'serverlessrepo:*',
+  'sns:*',
+  'synthetics:*',
+  'iam:Get*',
+  'iam:List*',
+  'iam:PassRole',
+  'iam:TagRole',
+  'iam:UntagRole',
+  'ssm:GetParameter',
+  'ssm:GetParameters',
+  'sts:AssumeRole',
   'sts:GetCallerIdentity'
 ]
 
@@ -240,10 +293,35 @@ function ludosServiceArn(props: CommonStackProps) {
   return `arn:aws:ecs:${props.env!.region!}:${props.env!.account!}:service/${props.envNameCapitalized}Cluster/${props.envNameCapitalized}Service`
 }
 
-export function restrictedCiBoundaryStatements(props: CommonStackProps) {
+export function restrictedCiPermissionsBoundaryStatements() {
   return [
     new iam.PolicyStatement({
-      actions: restrictedCiBoundaryActionPatterns,
+      actions: restrictedCiPermissionsBoundaryAllowedActions,
+      resources: ['*']
+    }),
+    new iam.PolicyStatement({
+      sid: 'DenyIamModifications',
+      effect: iam.Effect.DENY,
+      actions: [
+        'iam:Add*',
+        'iam:Attach*',
+        'iam:Create*',
+        'iam:Delete*',
+        'iam:Detach*',
+        'iam:Put*',
+        'iam:Remove*',
+        'iam:SetDefaultPolicyVersion',
+        'iam:Update*'
+      ],
+      resources: ['*']
+    })
+  ]
+}
+
+export function restrictedCiCfnExecutionRolePolicyStatements(props: CommonStackProps) {
+  return [
+    new iam.PolicyStatement({
+      actions: restrictedCiCfnExecutionRoleAllowedActions,
       resources: ['*']
     }),
     new iam.PolicyStatement({
@@ -318,7 +396,7 @@ export class GithubActionsStack extends cdk.Stack {
     const restrictedCiPermissionsBoundary = new iam.ManagedPolicy(this, 'RestrictedCiPermissionsBoundary', {
       managedPolicyName: RESTRICTED_CI_PERMISSIONS_BOUNDARY_NAME,
       description: 'Maximum permissions allowed for the restricted CI deploy lane.',
-      statements: restrictedCiBoundaryStatements(props)
+      statements: restrictedCiPermissionsBoundaryStatements()
     })
 
     const restrictedCloudFormationExecutionRole = new iam.Role(this, 'RestrictedCloudFormationExecutionRole', {
@@ -339,7 +417,7 @@ export class GithubActionsStack extends cdk.Stack {
       restrictedCloudFormationExecutionRole.grantPassRole(bootstrapDeployRole)
     }
 
-    for (const statement of restrictedCiBoundaryStatements(props)) {
+    for (const statement of restrictedCiCfnExecutionRolePolicyStatements(props)) {
       restrictedCloudFormationExecutionRole.addToPolicy(statement)
     }
 
