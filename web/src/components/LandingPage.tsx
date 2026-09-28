@@ -26,6 +26,7 @@ export const LandingPage = () => {
   const [lang, setLang] = useState(() => initialLanguage(searchParams.get('lang')))
   const { i18n } = useTranslation()
   const t = i18n.getFixedT(lang)
+  const title = `${t('title.ludos')} – ${t('landing-page.kirjaudu-sisaan')}`
 
   const changeLanguage = (language: string) => {
     if (isLanguage(language)) {
@@ -38,8 +39,9 @@ export const LandingPage = () => {
 
   useEffect(() => {
     document.documentElement.lang = lang.toLowerCase()
+    document.title = title
     void i18n.changeLanguage(lang)
-  }, [lang, i18n])
+  }, [lang, i18n, title])
 
   return (
     <div className="grid min-h-[98vh] max-w-full grid-rows-[auto,1fr,auto] md:grid-rows-[6rem,1fr,7rem]">
