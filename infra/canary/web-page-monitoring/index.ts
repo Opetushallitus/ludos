@@ -8,10 +8,10 @@ export const handler = async () => {
     const page = await synthetics.newPage(browser)
     const step = (name: string, check: () => Promise<void>) => synthetics.executeStep(name, check, stepConfig, page)
 
-    await step('landing-page-returns-http-200', async () => {
-      const response = await page.goto(requiredEnv('LANDING_PAGE_URL'), { waitUntil: 'domcontentloaded' })
+    await step('web-page-returns-http-200', async () => {
+      const response = await page.goto(requiredEnv('WEB_PAGE_URL'), { waitUntil: 'domcontentloaded' })
       if (response?.status() !== 200) {
-        throw new Error(`Expected landing page status 200, got ${response?.status()}`)
+        throw new Error(`Expected web page status 200, got ${response?.status()}`)
       }
     })
 

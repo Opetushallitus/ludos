@@ -12,8 +12,8 @@ const SYNTHETICS_NODEJS_PLAYWRIGHT_8_0 = new synthetics.Runtime(
   'syn-nodejs-playwright-8.0',
   synthetics.RuntimeFamily.NODEJS
 )
-const LANDING_PAGE_BROWSER_CANARY_DIR = path.join(__dirname, '../canary/landing-page-browser')
-const LANDING_PAGE_PATH = '/kirjaudu'
+const WEB_PAGE_MONITORING_CANARY_DIR = path.join(__dirname, '../canary/web-page-monitoring')
+const WEB_PAGE_PATH = '/kirjaudu'
 
 interface CanaryStackProps extends CommonStackProps {
   domain: string
@@ -24,19 +24,19 @@ export class CanaryStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: CanaryStackProps) {
     super(scope, id, props)
 
-    const canary = this.createLandingPageBrowserCanary(props)
+    const canary = this.createWebPageMonitoringCanary(props)
     this.createCanaryFailedAlarm(canary, props.alarmSnsTopic)
   }
 
-  private createLandingPageBrowserCanary(props: CanaryStackProps) {
-    return new synthetics.Canary(this, 'LandingPageBrowserCanary', {
-      canaryName: `${props.envName}-landing-page-browser`,
+  private createWebPageMonitoringCanary(props: CanaryStackProps) {
+    return new synthetics.Canary(this, 'WebPageMonitoringCanary', {
+      canaryName: `${props.envName}-web-page-monitoring`,
       runtime: SYNTHETICS_NODEJS_PLAYWRIGHT_8_0,
       test: synthetics.Test.custom({
         handler: 'index.handler',
-        code: synthetics.Code.fromAsset(LANDING_PAGE_BROWSER_CANARY_DIR, { bundling: bundleWithEsbuild() })
+        code: synthetics.Code.fromAsset(WEB_PAGE_MONITORING_CANARY_DIR, { bundling: bundleWithEsbuild() })
       }),
-      environmentVariables: { LANDING_PAGE_URL: `https://${props.domain}${LANDING_PAGE_PATH}` },
+      environmentVariables: { WEB_PAGE_URL: `https://${props.domain}${WEB_PAGE_PATH}` },
       schedule: synthetics.Schedule.rate(cdk.Duration.minutes(5)),
       provisionedResourceCleanup: true,
       artifactsBucketLifecycleRules: [{ expiration: cdk.Duration.days(30) }]
@@ -46,8 +46,8 @@ export class CanaryStack extends cdk.Stack {
   private createCanaryFailedAlarm(canary: synthetics.Canary, alarmSnsTopic: sns.Topic) {
     const alarmSnsAction = new cloudwatchActions.SnsAction(alarmSnsTopic)
 
-    const canaryFailedAlarm = new cloudwatch.Alarm(this, 'LandingPageBrowserCanaryFailedAlarm', {
-      alarmName: 'LandingPageBrowserCanaryFailedAlarm',
+    const canaryFailedAlarm = new cloudwatch.Alarm(this, 'WebPageMonitoringCanaryFailedAlarm', {
+      alarmName: 'WebPageMonitoringCanaryFailedAlarm',
       metric: canary.metricSuccessPercent({ period: cdk.Duration.minutes(5) }),
       threshold: 100,
       evaluationPeriods: 2,
@@ -65,7 +65,7 @@ function bundleWithEsbuild(): cdk.BundlingOptions {
     local: {
       tryBundle(outputDir) {
         esbuild.buildSync({
-          entryPoints: [path.join(LANDING_PAGE_BROWSER_CANARY_DIR, 'index.ts')],
+          entryPoints: [path.join(WEB_PAGE_MONITORING_CANARY_DIR, 'index.ts')],
           outfile: path.join(outputDir, 'index.mjs'),
           bundle: true,
           platform: 'node',
