@@ -2,6 +2,7 @@ package fi.oph.ludos.healthcheck
 
 import fi.oph.ludos.Constants
 import fi.oph.ludos.auth.RequireAtLeastYllapitajaRole
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.access.prepost.PreAuthorize
@@ -17,13 +18,13 @@ class HealthCheckController(private val jdbcTemplate: JdbcTemplate) {
 
     @GetMapping("")
     @PreAuthorize("permitAll()")
-    fun healthCheck(): ResponseEntity<Nothing> {
+    fun healthCheck(): ResponseEntity<String> {
         try {
             jdbcTemplate.query("SELECT 1") { rs, _ -> rs.getInt(1) }.firstOrNull()
         } catch (e: Exception) {
             return ResponseEntity.internalServerError().build()
         }
 
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("ok")
     }
 }
