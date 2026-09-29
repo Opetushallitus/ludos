@@ -4,12 +4,25 @@ const stepConfig = { screenshotOnStepFailure: true, continueOnStepFailure: false
 
 export const handler = async () => {
   try {
+    const domain = requiredEnv('DOMAIN')
+    const loginPageUrl = `https://${domain}/kirjaudu`
+    const healthCheckUrl = `https://${domain}/api/health-check`
     const browser = await synthetics.launch()
     const page = await synthetics.newPage(browser)
     const step = (name: string, check: () => Promise<void>) => synthetics.executeStep(name, check, stepConfig, page)
 
+    await step('health-check-returns-ok', async () => {
+      const response = await page.goto(healthCheckUrl, { waitUntil: 'domcontentloaded' })
+      if (response?.status() !== 200) {
+        throw new Error(`Expected health check status 200, got ${response?.status()}`)
+      }
+      if ((await response.text()).trim() !== 'ok') {
+        throw new Error('Expected health check response body to be "ok"')
+      }
+    })
+
     await step('web-page-returns-http-200', async () => {
-      const response = await page.goto(requiredEnv('WEB_PAGE_URL'), { waitUntil: 'domcontentloaded' })
+      const response = await page.goto(loginPageUrl, { waitUntil: 'domcontentloaded' })
       if (response?.status() !== 200) {
         throw new Error(`Expected web page status 200, got ${response?.status()}`)
       }

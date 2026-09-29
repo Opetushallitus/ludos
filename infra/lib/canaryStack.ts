@@ -13,7 +13,6 @@ const SYNTHETICS_NODEJS_PLAYWRIGHT_8_0 = new synthetics.Runtime(
   synthetics.RuntimeFamily.NODEJS
 )
 const WEB_PAGE_MONITORING_CANARY_DIR = path.join(__dirname, '../canary/web-page-monitoring')
-const WEB_PAGE_PATH = '/kirjaudu'
 
 interface CanaryStackProps extends CommonStackProps {
   domain: string
@@ -36,7 +35,7 @@ export class CanaryStack extends cdk.Stack {
         handler: 'index.handler',
         code: synthetics.Code.fromAsset(WEB_PAGE_MONITORING_CANARY_DIR, { bundling: bundleWithEsbuild() })
       }),
-      environmentVariables: { WEB_PAGE_URL: `https://${props.domain}${WEB_PAGE_PATH}` },
+      environmentVariables: { DOMAIN: props.domain },
       schedule: synthetics.Schedule.rate(cdk.Duration.minutes(5)),
       provisionedResourceCleanup: true,
       artifactsBucketLifecycleRules: [{ expiration: cdk.Duration.days(30) }]
