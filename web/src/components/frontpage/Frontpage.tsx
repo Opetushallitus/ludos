@@ -10,6 +10,7 @@ export const Frontpage = () => {
   return (
     <div className="mt-10">
       <h2 data-testid={`page-heading-${etusivuKey}`}>{t('frontpage.tervehdys', { nimi: firstNames ?? '' })}</h2>
+      <p className="mt-4 max-w-xl">{t('landing-page.kuvausteksti')}</p>
       <NavigationBoxes />
     </div>
   )
