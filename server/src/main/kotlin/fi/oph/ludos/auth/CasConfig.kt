@@ -5,6 +5,7 @@ import fi.oph.ludos.Constants.Companion.API_PREFIX
 import fi.oph.ludos.Constants.Companion.LANDING_PAGE_PATH
 import fi.oph.ludos.addLudosUserInfo
 import fi.oph.ludos.addUserIp
+import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.apereo.cas.client.validation.Cas30ServiceTicketValidator
@@ -20,6 +21,7 @@ import org.springframework.security.cas.authentication.CasAssertionAuthenticatio
 import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint
 import org.springframework.security.cas.web.CasAuthenticationFilter
+import org.springframework.security.cas.web.CasGatewayAuthenticationRedirectFilter
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -42,6 +44,9 @@ class CasConfig {
 
     @Value("\${ludos.opintopolkuHostname}")
     lateinit var opintopolkuHostname: String
+
+    @Value("\${ludos.casGatewayEnabled:false}")
+    var casGatewayEnabled: Boolean = false
 
     val logoutUrl = "${API_PREFIX}/logout"
 
@@ -74,11 +79,13 @@ class CasConfig {
     fun authenticationEntryPoint(
         serviceProperties: ServiceProperties
     ): AuthenticationEntryPoint {
+        val casLoginUrl = "https://$opintopolkuHostname/cas/login"
         val entryPoint = CasAuthenticationEntryPoint()
-        entryPoint.setLoginUrl("https://$opintopolkuHostname/cas/login")
+        entryPoint.setLoginUrl(casLoginUrl)
         entryPoint.serviceProperties = serviceProperties
         entryPoint.afterPropertiesSet()
-        return LandingPageAuthenticationEntryPoint(entryPoint)
+        val gatewayFilter = CasGatewayAuthenticationRedirectFilter(casLoginUrl, serviceProperties).takeIf { casGatewayEnabled }
+        return LandingPageAuthenticationEntryPoint(entryPoint, gatewayFilter)
     }
 
     @Bean
@@ -95,7 +102,8 @@ class CasConfig {
 }
 
 class LandingPageAuthenticationEntryPoint(
-    private val casEntryPoint: AuthenticationEntryPoint
+    private val casEntryPoint: AuthenticationEntryPoint,
+    private val casGatewayFilter: CasGatewayAuthenticationRedirectFilter?
 ) : AuthenticationEntryPoint {
     override fun commence(
         request: HttpServletRequest, response: HttpServletResponse, authException: AuthenticationException
@@ -104,7 +112,12 @@ class LandingPageAuthenticationEntryPoint(
         if (request.method == HttpMethod.GET.name() && !path.startsWith("$API_PREFIX/")) {
             val originalPath = path + (request.queryString?.let { "?$it" } ?: "")
             val deepLinkQuery = if (originalPath == "/") "" else "?to=${URLEncoder.encode(originalPath, StandardCharsets.UTF_8)}"
-            response.sendRedirect("${request.contextPath}$LANDING_PAGE_PATH$deepLinkQuery")
+            val landingPageRedirect = FilterChain { _, _ ->
+                response.sendRedirect("${request.contextPath}$LANDING_PAGE_PATH$deepLinkQuery")
+            }
+            // Silently check for an existing opintopolku SSO session once per session (CAS gateway=true);
+            // CAS returns without a ticket if there is none and we end up on the landing page
+            casGatewayFilter?.doFilter(request, response, landingPageRedirect) ?: landingPageRedirect.doFilter(request, response)
         } else {
             casEntryPoint.commence(request, response, authException)
         }
