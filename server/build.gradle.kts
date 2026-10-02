@@ -49,7 +49,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.8")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
-    implementation("org.apache.commons:commons-lang3:3.20.0")
+    implementation("org.apache.commons:commons-lang3:3.21.0")
     implementation("io.arrow-kt:arrow-core:2.2.3")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("jakarta.servlet:jakarta.servlet-api")
