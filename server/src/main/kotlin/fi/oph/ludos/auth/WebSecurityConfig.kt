@@ -23,7 +23,6 @@ import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.security.web.csrf.*
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher
 import org.springframework.util.StringUtils
 import org.springframework.web.cors.CorsConfiguration
@@ -83,9 +82,7 @@ class WebSecurityConfiguration {
 
         http.addFilterAfter(SpaCsrfTokenRequestHandler.CsrfCookieFilter(), BasicAuthenticationFilter::class.java)
 
-        val requestCache = HttpSessionRequestCache()
-        requestCache.setMatchingRequestParameterName("j")
-        http.requestCache { it.requestCache(requestCache) }
+        http.requestCache { it.requestCache(ludosRequestCache()) }
 
         http.logout {
             it.logoutSuccessUrl(casConfig.getCasLogoutUrl())

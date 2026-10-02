@@ -8,6 +8,7 @@ import fi.oph.ludos.addUserIp
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.apereo.cas.client.authentication.DefaultGatewayResolverImpl
 import org.apereo.cas.client.validation.Cas30ServiceTicketValidator
 import org.apereo.cas.client.validation.TicketValidator
 import org.slf4j.Logger
@@ -29,6 +30,7 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import java.net.URI
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -84,7 +86,9 @@ class CasConfig {
         entryPoint.setLoginUrl(casLoginUrl)
         entryPoint.serviceProperties = serviceProperties
         entryPoint.afterPropertiesSet()
-        val gatewayFilter = CasGatewayAuthenticationRedirectFilter(casLoginUrl, serviceProperties).takeIf { casGatewayEnabled }
+        val gatewayFilter = CasGatewayAuthenticationRedirectFilter(casLoginUrl, serviceProperties)
+            .apply { setRequestCache(ludosRequestCache()) }
+            .takeIf { casGatewayEnabled }
         return LandingPageAuthenticationEntryPoint(entryPoint, gatewayFilter)
     }
 
@@ -113,16 +117,17 @@ class LandingPageAuthenticationEntryPoint(
             val originalPath = path + (request.queryString?.let { "?$it" } ?: "")
             val deepLinkQuery = if (originalPath == "/") "" else "?to=${URLEncoder.encode(originalPath, StandardCharsets.UTF_8)}"
             val landingPageRedirect = FilterChain { _, _ ->
+                request.getSession(false)?.removeAttribute(DefaultGatewayResolverImpl.CONST_CAS_GATEWAY)
                 response.sendRedirect("${request.contextPath}$LANDING_PAGE_PATH$deepLinkQuery")
             }
-            // Silently check for an existing opintopolku SSO session once per session (CAS gateway=true);
-            // CAS returns without a ticket if there is none and we end up on the landing page
             casGatewayFilter?.doFilter(request, response, landingPageRedirect) ?: landingPageRedirect.doFilter(request, response)
         } else {
             casEntryPoint.commence(request, response, authException)
         }
     }
 }
+
+fun ludosRequestCache() = HttpSessionRequestCache().apply { setMatchingRequestParameterName("j") }
 
 fun isSafeRedirectPath(path: String?): Boolean =
     path != null && path.startsWith("/") && !path.startsWith("//") &&
