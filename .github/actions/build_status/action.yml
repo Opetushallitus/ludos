@@ -18,9 +18,17 @@ runs:
       shell: bash
       working-directory: ./
       run: |
+        body=$(jq -n \
+          --arg status "${{ inputs.status }}" \
+          --arg commitHeader "$(git log -1 --pretty=%s)" \
+          --arg committer "$(git log -1 --pretty=%an)" \
+          --arg commitHash "${{ github.sha }}" \
+          --arg deployer "${{ github.actor }}" \
+          --arg runId "${{ github.run_id }}" \
+          '$ARGS.named')
         curl \
           -H "AUTH_TOKEN: ${{ inputs.api_key }}" \
           -H "Content-Type: application/json" \
           -X PUT \
           https://radiator.continuous-services.services/api/v2/buildstatus/ludos/${{ inputs.task }} \
-          -d "{\"status\": \"${{ inputs.status }}\"}"
+          -d "$body"
