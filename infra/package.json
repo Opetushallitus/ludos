@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@aws/synthetics-playwright": "7.0.0",
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.5.15",
     "@types/node": "24.19.0",
     "esbuild": "0.28.2",
     "typescript": "6.0.3"
