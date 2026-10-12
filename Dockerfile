@@ -7,7 +7,6 @@ COPY web/package.json web/package-lock.json ./
 RUN npm ci --ignore-scripts=true
 
 COPY web/tsconfig.json .
-COPY web/*.config.cjs .
 COPY web/vite.config.ts .
 COPY web/tailwind.config.ts .
 COPY web/index.html .

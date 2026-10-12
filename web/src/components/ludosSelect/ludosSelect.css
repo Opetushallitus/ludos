@@ -1,3 +1,5 @@
+@reference '../../index.css';
+
 div.ludos-select__control {
     @apply border border-gray-border;
     border-radius: 0;

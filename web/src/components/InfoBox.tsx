@@ -26,7 +26,7 @@ export const InfoBox = ({ type, i18nKey }: InfoBoxProps) => {
         color={isError ? 'text-white' : 'text-black'}
         size="lg"
       />
-      <p className="flex-grow">
+      <p className="grow">
         <Trans i18nKey={i18nKey} />
         {isError && (
           <FeedbackEmailLink className="ml-1 underline" textColor="text-white">
