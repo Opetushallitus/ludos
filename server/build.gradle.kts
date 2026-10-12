@@ -38,7 +38,7 @@ configurations.all {
     }
 }
 
-val tomcatVersion = "11.0.26"
+val tomcatVersion = "11.0.27"
 
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.8"))
