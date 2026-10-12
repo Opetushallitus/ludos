@@ -6,7 +6,7 @@
   "dependencies": {
     "@types/node": "^24.0.0",
     "@typescript/typescript6": "6.0.2",
-    "chalk": "^5.3.0",
+    "chalk": "^6.0.0",
     "cmd-ts": "^0.15.0",
     "typescript": "^6.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
