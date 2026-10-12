@@ -11,36 +11,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": "Käyttö Lops2025",
+        "nimi": "Well-being competence",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "Käyttö Lops2021",
         "lyhytNimi": "",
         "nimi": "Hyvinvointiosaaminen",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Kompetens för välbefinnande",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-27",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/laajaalainenosaaminenlops2021_01",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-04-12",
     "voimassaLoppuPvm": null
   },
@@ -56,36 +67,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Interaction competence",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Vuorovaikutusosaaminen",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Kommunikativ kompetens",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-27",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/laajaalainenosaaminenlops2021_02",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-04-12",
     "voimassaLoppuPvm": null
   },
@@ -101,36 +123,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Multidisciplinary and creative competence",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Monitieteinen ja luova osaaminen",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Tvärvetenskaplig och kreativ kompetens",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-27",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/laajaalainenosaaminenlops2021_03",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-04-12",
     "voimassaLoppuPvm": null
   },
@@ -146,36 +179,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Societal competence ",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Yhteiskunnallinen osaaminen",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Samhällelig kompetens",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-27",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/laajaalainenosaaminenlops2021_04",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-04-12",
     "voimassaLoppuPvm": null
   },
@@ -191,36 +235,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Ethical and environmental competence ",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Eettisyys ja ympäristöosaaminen",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Etisk kompetens och miljökompetens",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-27",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/laajaalainenosaaminenlops2021_05",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-04-12",
     "voimassaLoppuPvm": null
   },
@@ -236,36 +291,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Global and cultural competence",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Globaali- ja kulttuuriosaaminen",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Global och kulturell kompetens",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-27",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/laajaalainenosaaminenlops2021_06",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-04-12",
     "voimassaLoppuPvm": null
   }
