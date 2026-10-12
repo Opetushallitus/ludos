@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
-    id("org.springframework.boot") version "4.0.8"
+    id("org.springframework.boot") version "4.1.1"
     kotlin("jvm") version "2.4.21"
     kotlin("plugin.spring") version "2.4.21"
 }
@@ -27,26 +27,15 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("org.bouncycastle:bcprov-jdk15on"))
-            .using(module("org.bouncycastle:bcprov-jdk18on:1.86"))
-        substitute(module("org.bouncycastle:bcpkix-jdk15on"))
-            .using(module("org.bouncycastle:bcpkix-jdk18on:1.86"))
-        substitute(module("org.bouncycastle:bcutil-jdk15on"))
-            .using(module("org.bouncycastle:bcutil-jdk18on:1.86"))
-    }
-}
-
 val tomcatVersion = "11.0.27"
 
 dependencies {
-    implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.8"))
+    implementation(platform("org.springframework.boot:spring-boot-dependencies:4.1.1"))
     implementation(platform("io.netty:netty-bom:4.2.19.Final"))
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.22.3"))
     implementation(platform("tools.jackson:jackson-bom:3.2.3"))
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools:4.0.8")
+    developmentOnly("org.springframework.boot:spring-boot-devtools:4.1.1")
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.21.0")
@@ -89,6 +78,9 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
 
     constraints {
+        implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+        implementation("org.bouncycastle:bcpkix-jdk18on:1.86")
+        implementation("org.bouncycastle:bcutil-jdk18on:1.86")
         implementation("org.apache.tomcat.embed:tomcat-embed-el:$tomcatVersion")
         implementation("org.apache.tomcat.embed:tomcat-embed-websocket:$tomcatVersion")
     }
