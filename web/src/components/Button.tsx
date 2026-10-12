@@ -2,6 +2,14 @@ import { AriaAttributes, ButtonHTMLAttributes, DetailedHTMLProps, ForwardedRef, 
 import { twMerge } from 'tailwind-merge'
 
 type ButtonVariant = 'buttonPrimary' | 'buttonSecondary' | 'buttonGhost' | 'buttonDanger'
+
+const buttonTextColors: Record<ButtonVariant, string> = {
+  buttonPrimary: 'text-white',
+  buttonSecondary: 'text-green-primary',
+  buttonGhost: 'text-black',
+  buttonDanger: 'text-red-primary'
+}
+
 export interface ButtonProps
   extends DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>,
     AriaAttributes {
@@ -22,5 +30,5 @@ export const Button = forwardRef(
 )
 
 export function buttonClasses(variant: ButtonVariant): string {
-  return `${variant} rounded-xs px-4 py-2`
+  return `${variant} ${buttonTextColors[variant]} rounded-xs px-4 py-2`
 }
