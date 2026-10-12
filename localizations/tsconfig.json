@@ -2,13 +2,13 @@
   "compilerOptions": {
     "target": "ESNext",
     "strict": true,
-    "moduleResolution": "Node",
-    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "types": ["node"],
     "esModuleInterop": true,
     "noEmit": true
-  },
-  "ts-node": {
-    "swc": true
   },
   "include": ["*.ts"],
   "exclude": ["localizationScripts/*.ts"]

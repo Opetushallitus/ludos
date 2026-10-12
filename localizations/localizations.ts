@@ -2,9 +2,9 @@ import fs, { promises as fsPromises } from 'fs'
 import * as path from 'path'
 import { homedir } from 'os'
 
-import ts from 'typescript'
-import { boolean, command, flag, option, optional, positional, run, string, subcommands, Type, union } from 'cmd-ts'
-import chalk, { ChalkInstance } from 'chalk'
+import ts from '@typescript/typescript6'
+import { boolean, command, flag, option, optional, positional, run, string, subcommands, type Type, union } from 'cmd-ts'
+import chalk, { type ChalkInstance } from 'chalk'
 import * as XLSX from 'xlsx'
 import * as process from 'process'
 
