@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
     id("org.springframework.boot") version "4.0.8"
-    kotlin("jvm") version "2.4.20"
+    kotlin("jvm") version "2.4.21"
     kotlin("plugin.spring") version "2.4.21"
 }
 
@@ -38,7 +38,7 @@ configurations.all {
     }
 }
 
-val tomcatVersion = "11.0.26"
+val tomcatVersion = "11.0.27"
 
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.0.8"))
