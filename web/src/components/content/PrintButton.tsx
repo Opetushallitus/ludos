@@ -1,5 +1,5 @@
-import React from 'react'
 import { useLudosTranslation } from '../../hooks/useLudosTranslation'
+import { Button } from '../Button'
 
 export const PrintButton = () => {
   const { t } = useLudosTranslation()
@@ -10,9 +10,9 @@ export const PrintButton = () => {
 
   return (
     <div id="print-button" className="row mb-3 print:hidden">
-      <button onClick={print} className="buttonPrimary px-6 py-3 inline-block">
+      <Button variant="buttonPrimary" customClass="rounded-none px-6 py-3 inline-block" onClick={print}>
         {t('tehtava.tulosta')}
-      </button>
+      </Button>
     </div>
   )
 }

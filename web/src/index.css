@@ -9,22 +9,6 @@
     @apply flex flex-col;
 }
 
-@utility buttonPrimary {
-    @apply bg-green-primary hover:bg-green-light text-white;
-}
-
-@utility buttonSecondary {
-    @apply border-2 border-green-primary text-green-primary hover:bg-green-primary hover:text-white;
-}
-
-@utility buttonGhost {
-    @apply text-black bg-none hover:bg-gray-light;
-}
-
-@utility buttonDanger {
-    @apply border-2 border-red-primary hover:bg-red-light text-red-primary;
-}
-
 @utility main-grid {
     @media not print {
         @apply grid-rows-[6rem_1fr_7rem];

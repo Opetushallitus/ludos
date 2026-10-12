@@ -3,11 +3,11 @@ import { twMerge } from 'tailwind-merge'
 
 type ButtonVariant = 'buttonPrimary' | 'buttonSecondary' | 'buttonGhost' | 'buttonDanger'
 
-const buttonTextColors: Record<ButtonVariant, string> = {
-  buttonPrimary: 'text-white',
-  buttonSecondary: 'text-green-primary',
-  buttonGhost: 'text-black',
-  buttonDanger: 'text-red-primary'
+const buttonVariantClasses: Record<ButtonVariant, string> = {
+  buttonPrimary: 'bg-green-primary text-white hover:bg-green-light',
+  buttonSecondary: 'border-2 border-green-primary text-green-primary hover:bg-green-primary hover:text-white',
+  buttonGhost: 'text-black bg-none hover:bg-gray-light',
+  buttonDanger: 'border-2 border-red-primary text-red-primary hover:bg-red-light'
 }
 
 export interface ButtonProps
@@ -30,5 +30,5 @@ export const Button = forwardRef(
 )
 
 export function buttonClasses(variant: ButtonVariant): string {
-  return `${variant} ${buttonTextColors[variant]} rounded-xs px-4 py-2`
+  return `${buttonVariantClasses[variant]} rounded-xs px-4 py-2`
 }
