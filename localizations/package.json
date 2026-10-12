@@ -4,9 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@swc-node/register": "^1.10.9",
-    "@swc/core": "^1.7.6",
     "@types/node": "^24.0.0",
+    "@typescript/typescript6": "6.0.2",
     "chalk": "^5.3.0",
     "cmd-ts": "^0.15.0",
     "typescript": "^7.0.0",

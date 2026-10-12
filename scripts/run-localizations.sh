@@ -7,7 +7,7 @@ function main () {
   pushd "$repo"/localizations
   use_correct_node_version
   npm_ci_if_package_lock_has_changed
-  node --no-warnings --loader @swc-node/register/esm localizations.ts "$@"
+  node localizations.ts "$@"
   popd
 }
 
