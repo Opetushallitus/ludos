@@ -10,7 +10,7 @@ export const PrintButton = () => {
 
   return (
     <div id="print-button" className="row mb-3 print:hidden">
-      <button onClick={print} className="text-green-primary buttonPrimary px-6 py-3 inline-block">
+      <button onClick={print} className="buttonPrimary px-6 py-3 inline-block">
         {t('tehtava.tulosta')}
       </button>
     </div>
