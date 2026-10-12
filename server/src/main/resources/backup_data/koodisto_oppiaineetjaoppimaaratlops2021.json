@@ -11,36 +11,47 @@
     },
     "metadata": [
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Mother tongue and literature",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Äidinkieli ja kirjallisuus",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       },
       {
-        "eiSisallaMerkitysta": "",
-        "huomioitavaKoodi": "",
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
         "kasite": "",
-        "kayttoohje": "",
+        "kayttoohje": null,
         "kieli": "SV",
         "kuvaus": "",
         "lyhytNimi": "",
         "nimi": "Modersmål och litteratur",
-        "sisaltaaKoodiston": "",
-        "sisaltaaMerkityksen": ""
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-11-28",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -62,7 +73,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Suomen kieli ja kirjallisuus",
+        "nimi": "Syllabus in Finnish language and literature",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -89,12 +100,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-29",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -116,7 +127,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Suomi viittomakielisille",
+        "nimi": "Syllabus in Finnish for sign language users",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -143,12 +154,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-31",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai10",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -170,7 +181,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi viittomakielisille",
+        "nimi": "Syllabus in Swedish for sign language users",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -197,12 +208,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-31",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai11",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -224,7 +235,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Muu opiskelijan äidinkieli ja kirjallisuus",
+        "nimi": "Syllabus in a student's other mother tongue and literature",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -251,12 +262,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai12",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -271,6 +282,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Syllabus in Swedish language and literature",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -294,12 +316,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai2",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -321,7 +343,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Saamen kieli ja kirjallisuus",
+        "nimi": "Syllabus in Sámi language and literature",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -348,12 +370,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-31",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -375,7 +397,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Romanikieli ja kirjallisuus",
+        "nimi": "Syllabus in Roma language and literature",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -402,12 +424,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai4",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -429,7 +451,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Viittomakieli ja kirjallisuus",
+        "nimi": "Syllabus in sign language and literature",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -456,12 +478,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-31",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai5",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -483,7 +505,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Suomi toisena kielenä ja kirjallisuus",
+        "nimi": "Syllabus in Finnish as a second language and literature",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -510,12 +532,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-31",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai6",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -530,6 +552,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Syllabus in Swedish as a second language and literature",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -553,12 +586,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai7",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -580,7 +613,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Suomi saamenkielisille",
+        "nimi": "Syllabus in Finnish for Sámi speakers",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -607,12 +640,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-31",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai8",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -634,7 +667,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi saamenkielisille",
+        "nimi": "Syllabus in Swedish for Sámi speakers",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -661,12 +694,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ai9",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -686,19 +719,41 @@
         "huomioitavaKoodi": null,
         "kasite": null,
         "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Student's mother tongue",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "käytetään uusi Luva",
         "nimi": "Opiskelijan oma äidinkieli",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "Den studerandes eget modersmål",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2021-07-01",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-19",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_aiai6",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 2,
     "voimassaAlkuPvm": "2021-06-30",
     "voimassaLoppuPvm": null
   },
@@ -720,7 +775,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Biologia",
+        "nimi": "Biology",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -747,12 +802,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_bi",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -774,7 +829,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Elämänkatsomustieto",
+        "nimi": "Culture, worldviews and ethics",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -801,12 +856,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_et",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -828,7 +883,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Filosofia",
+        "nimi": "Philosophy",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -855,12 +910,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_fi",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -882,7 +937,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Fysiikka",
+        "nimi": "Physics",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -909,12 +964,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_fy",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -936,7 +991,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Maantiede",
+        "nimi": "Geography",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -963,12 +1018,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ge",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -990,7 +1045,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Historia",
+        "nimi": "History",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1017,12 +1072,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_hi",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1044,7 +1099,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Kemia",
+        "nimi": "Chemistry",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1071,12 +1126,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ke",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1098,7 +1153,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Uskonto",
+        "nimi": "Religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1125,12 +1180,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1152,7 +1207,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Evankelisluterilainen uskonto",
+        "nimi": "Evangelic-Lutheran religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1180,12 +1235,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 2,
+    "version": 3,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1207,7 +1262,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Krishna-uskonto",
+        "nimi": "Krishna religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1234,12 +1289,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt10",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2021-09-27",
     "voimassaLoppuPvm": null
   },
@@ -1261,7 +1316,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ortodoksinen uskonto",
+        "nimi": "Orthodox religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1288,12 +1343,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt2",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1315,7 +1370,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Katolinen uskonto",
+        "nimi": "Catholic religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1342,12 +1397,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-18",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1369,7 +1424,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Islamin uskonto",
+        "nimi": "Islam religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1396,12 +1451,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt4",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1423,7 +1478,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Juutalainen uskonto",
+        "nimi": "Jewish religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1450,12 +1505,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt5",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1477,7 +1532,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Bahá’í-uskonto",
+        "nimi": "Baháʼí religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1504,12 +1559,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt7",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2021-09-27",
     "voimassaLoppuPvm": null
   },
@@ -1531,7 +1586,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Buddhalainen uskonto",
+        "nimi": "Buddhist religion",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1558,12 +1613,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_kt8",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2021-09-27",
     "voimassaLoppuPvm": null
   },
@@ -1585,7 +1640,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Kuvataide",
+        "nimi": "Visual arts",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1612,12 +1667,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ku",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1639,7 +1694,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Lukiodiplomit",
+        "nimi": "General upper secondary school diplomas",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1666,12 +1721,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ld",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1693,7 +1748,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Liikunta",
+        "nimi": "Physical education",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1720,12 +1775,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_li",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1779,7 +1834,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Matematiikka",
+        "nimi": "Mathematics",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1806,12 +1861,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ma",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1833,7 +1888,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Matematiikan pitkä oppimäärä",
+        "nimi": "Advanced syllabus in mathematics",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1860,12 +1915,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_maa",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1887,7 +1942,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Matematiikan lyhyt oppimäärä",
+        "nimi": "Basic syllabus in mathematics",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1914,12 +1969,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_mab",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1941,7 +1996,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Matematiikan yhteinen opintokokonaisuus",
+        "nimi": "Common study module in mathematics",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -1968,12 +2023,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_may",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -1995,7 +2050,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Musiikki",
+        "nimi": "Music",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2022,12 +2077,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_mu",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2049,7 +2104,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Opinto-ohjaus",
+        "nimi": "Study and careers education",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2076,12 +2131,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-29",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_op",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2101,19 +2156,41 @@
         "huomioitavaKoodi": null,
         "kasite": null,
         "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Language studies started in primary or lower secondary education",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": "käytetään uusi LUVA peruste",
         "nimi": "Perusopetuksessa alkanut kieli",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "Språk som inletts i den grundläggande utbildningen",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2021-07-01",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-19",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_poak",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 2,
     "voimassaAlkuPvm": "2021-06-30",
     "voimassaLoppuPvm": null
   },
@@ -2135,7 +2212,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Psykologia",
+        "nimi": "Psychology",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2162,12 +2239,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ps",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2189,7 +2266,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Terveystieto",
+        "nimi": "Health education",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2216,12 +2293,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_te",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2241,19 +2318,41 @@
         "huomioitavaKoodi": null,
         "kasite": null,
         "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Second national language",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
         "kieli": "FI",
         "kuvaus": null,
         "nimi": "Toinen kotimainen kieli",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "Det andra inhemska språket",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-19",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tk",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2268,6 +2367,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Finnish (Finska)",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -2291,12 +2401,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkfi",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2311,6 +2421,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Finnish, A syllabus",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -2334,12 +2455,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkfia1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2354,6 +2475,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Finnish, native-level syllabus",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -2377,12 +2509,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkfiai",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2397,6 +2529,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Finnish, B1 syllabus",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -2420,12 +2563,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkfib1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2440,6 +2583,17 @@
       "organisaatioOid": "1.2.246.562.10.00000000001"
     },
     "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "Finnish, B3 syllabus",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
       {
         "eiSisallaMerkitysta": null,
         "huomioitavaKoodi": null,
@@ -2463,12 +2617,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.77925329174",
-    "paivitysPvm": "2019-08-30",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkfib3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 0,
+    "version": 1,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2490,7 +2644,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi",
+        "nimi": "Swedish",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2518,12 +2672,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkru",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 2,
+    "version": 3,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2545,7 +2699,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi, A-oppimäärä",
+        "nimi": "Swedish, A syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2572,12 +2726,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkrua1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2599,7 +2753,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi, äidinkielenomainen oppimäärä",
+        "nimi": "Swedish, native-level syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2626,12 +2780,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkruai",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2653,7 +2807,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi, B1-oppimäärä",
+        "nimi": "Swedish, B1 syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2680,12 +2834,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkrub1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2707,7 +2861,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Ruotsi, B3-oppimäärä",
+        "nimi": "Swedish, B3 syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2734,12 +2888,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_tkrub3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2761,7 +2915,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Temaattiset opinnot",
+        "nimi": "Thematic studies",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2788,12 +2942,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_to",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2815,7 +2969,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Muut uskonnot",
+        "nimi": "Other religions",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2842,12 +2996,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_ux",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2869,7 +3023,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet",
+        "nimi": "Foreign languages",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2896,12 +3050,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vk",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2923,7 +3077,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, A-oppimäärä",
+        "nimi": "Foreign languages, A syllabus ",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -2950,12 +3104,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.68224387211",
-    "paivitysPvm": "2023-10-17",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vka1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 2,
+    "version": 3,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -2977,7 +3131,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, Aasian ja Afrikan kielet, A-oppimäärä",
+        "nimi": "Foreign languages, Asian and African languages, A syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3004,12 +3158,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkaaa1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3031,7 +3185,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, Aasian ja Afrikan kielet, B3-oppimäärä",
+        "nimi": "Foreign languages, Asian and African languages, B3 syllabus ",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3058,12 +3212,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkaab3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3085,7 +3239,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, B1-oppimäärä",
+        "nimi": "Foreign languages, B1 syllabus ",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3112,12 +3266,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.68224387211",
-    "paivitysPvm": "2023-11-09",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkb1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 3,
+    "version": 4,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3139,7 +3293,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, B2-oppimäärä",
+        "nimi": "Foreign languages, B2 syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3166,12 +3320,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkb2",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3193,7 +3347,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, B3-oppimäärä",
+        "nimi": "Foreign languages, B3 syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3220,12 +3374,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkb3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3247,7 +3401,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, englanti, A-oppimäärä",
+        "nimi": "Foreign languages, English, A syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3274,12 +3428,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkena1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3301,7 +3455,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, latina, B2-oppimäärä",
+        "nimi": "Foreign languages, Latin, B2 syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3328,12 +3482,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vklkb2",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3355,7 +3509,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, latina, B3-oppimäärä",
+        "nimi": "Foreign languages, Latin, B3 syllabus",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3382,12 +3536,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vklkb3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3409,7 +3563,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, saame, A-oppimäärä",
+        "nimi": "Foreign languages, Sámi language, A syllabus ",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3436,12 +3590,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkska1",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3463,7 +3617,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, saame, B2-oppimäärä",
+        "nimi": "Foreign languages, Sámi language, B2 syllabus ",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3490,12 +3644,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkskb2",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3517,7 +3671,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Vieraat kielet, saame, B3-oppimäärä",
+        "nimi": "Foreign languages, Sámi language, B3 syllabus ",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3544,12 +3698,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_vkskb3",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   },
@@ -3571,7 +3725,7 @@
         "kayttoohje": null,
         "kieli": "EN",
         "kuvaus": null,
-        "nimi": "Yhteiskuntaoppi",
+        "nimi": "Social studies",
         "sisaltaaKoodiston": null,
         "sisaltaaMerkityksen": null
       },
@@ -3598,12 +3752,12 @@
         "sisaltaaMerkityksen": null
       }
     ],
-    "paivittajaOid": "1.2.246.562.24.47046981340",
-    "paivitysPvm": "2023-05-22",
+    "paivittajaOid": "1.2.246.562.24.78186833301",
+    "paivitysPvm": "2025-03-07",
     "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/oppiaineetjaoppimaaratlops2021_yh",
     "tila": "LUONNOS",
     "versio": 1,
-    "version": 1,
+    "version": 2,
     "voimassaAlkuPvm": "2019-08-30",
     "voimassaLoppuPvm": null
   }

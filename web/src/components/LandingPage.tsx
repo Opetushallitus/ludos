@@ -44,8 +44,8 @@ export const LandingPage = () => {
   }, [lang, i18n, title])
 
   return (
-    <div className="grid min-h-[98vh] max-w-full grid-rows-[auto,1fr,auto] md:grid-rows-[6rem,1fr,7rem]">
-      <header className="border-t-5 border-green-primary bg-gray-bg">
+    <div className="grid min-h-[98vh] max-w-full grid-rows-[auto_1fr_auto] md:grid-rows-[6rem_1fr_7rem]">
+      <header className="border-t-5 border-green-primary bg-gray-bg print:border-none">
         <div className="flex justify-center py-3 md:pb-0">
           <div className="row w-[80vw] items-center justify-between">
             <h1>LUDOS</h1>

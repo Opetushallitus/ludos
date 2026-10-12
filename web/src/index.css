@@ -1,46 +1,80 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss' source(none);
+@config '../tailwind.config.ts';
+
+@utility row {
+    @apply flex flex-row;
+}
+
+@utility col {
+    @apply flex flex-col;
+}
+
+@utility buttonPrimary {
+    @apply bg-green-primary hover:bg-green-light text-white;
+}
+
+@utility buttonSecondary {
+    @apply border-2 border-green-primary text-green-primary hover:bg-green-primary hover:text-white;
+}
+
+@utility buttonGhost {
+    @apply text-black bg-none hover:bg-gray-light;
+}
+
+@utility buttonDanger {
+    @apply border-2 border-red-primary hover:bg-red-light text-red-primary;
+}
+
+@utility main-grid {
+    @media not print {
+        @apply grid-rows-[6rem_1fr_7rem];
+    }
+}
+
+@layer base {
+    /* Preserve the v3 form controls and Preflight defaults. */
+    input[type='text'], input:not([type]), textarea {
+        @apply bg-white;
+    }
+
+    input::placeholder, textarea::placeholder {
+        opacity: 1;
+        color: #9ca3af;
+    }
+
+    button, [role='button'] {
+        cursor: pointer;
+    }
+
+    :disabled {
+        cursor: default;
+    }
+
+    dialog {
+        margin: auto;
+    }
+}
 
 @layer utilities {
-    .row {
-        @apply flex flex-row
-    }
-
-    .col {
-        @apply flex flex-col
-    }
-
-    .buttonPrimary {
-        @apply bg-green-primary hover:bg-green-light text-white
-    }
-
-    .buttonSecondary {
-        @apply border-2 border-green-primary text-green-primary hover:bg-green-primary hover:text-white
-    }
-
-    .buttonGhost {
-        @apply text-black bg-none hover:bg-gray-light
-    }
-
-    .buttonDanger {
-        @apply border-2 border-red-primary hover:bg-red-light text-red-primary
-    }
-
+    /* Let text-size utilities override heading line heights without inheriting --tw-leading. */
     h1 {
-        @apply text-[1.8rem] leading-[2.4rem] tracking-[-0.015em] font-bold
+        @apply text-[1.8rem] tracking-[-0.015em] font-bold;
+        line-height: 2.4rem;
     }
 
     h2 {
-        @apply text-[1.5rem] leading-[2rem] font-semibold
+        @apply text-[1.5rem] font-semibold;
+        line-height: 2rem;
     }
 
     h3 {
-        @apply text-[1.3rem] leading-[1.8rem] font-semibold
+        @apply text-[1.3rem] font-semibold;
+        line-height: 1.8rem;
     }
 
     h4 {
-        @apply text-[1.1rem] leading-[1.6rem] font-semibold
+        @apply text-[1.1rem] font-semibold;
+        line-height: 1.6rem;
     }
 
     div.dropdown-full {
@@ -63,12 +97,6 @@
         @apply accent-green-primary
     }
 
-    @media not print {
-        .main-grid {
-            @apply grid-rows-[6rem,1fr,7rem]
-        }
-    }
-
     .print-content {
         .create-date {
             display: none;
@@ -78,9 +106,6 @@
     @media print {
         html, body {
             height: 98%;
-        }
-        header {
-            border-style: none;
         }
         .main-grid {
             @apply mt-1

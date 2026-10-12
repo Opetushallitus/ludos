@@ -84,7 +84,7 @@ export const VersionBrowserBar = ({
           <p className="text-green-primary">{t('version-control.muokkaushistoria')}</p>
         </span>
       </Button>
-      <div className="flex-grow text-right">
+      <div className="grow text-right">
         <Button
           variant="buttonGhost"
           customClass="p-0"

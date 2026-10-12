@@ -32,7 +32,7 @@ export const DeleteModal = ({ modalTitle, open, onClose, onDeleteAction, childre
 
         {children}
 
-        <div className="flex-grow" />
+        <div className="grow" />
 
         <div className="m-8 flex justify-end gap-5">
           <Button variant="buttonGhost" onClick={onClose} data-testid="modal-button-cancel">

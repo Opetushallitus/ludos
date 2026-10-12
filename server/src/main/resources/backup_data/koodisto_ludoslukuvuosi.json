@@ -268,5 +268,116 @@
     "version": 0,
     "voimassaAlkuPvm": "2023-05-04",
     "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "20252026",
+    "koodiUri": "ludoslukuvuosi_20252026",
+    "koodisto": {
+      "koodistoUri": "ludoslukuvuosi",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "nimi": "2025-2026",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "nimi": "2025-2026",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "nimi": "2025-2026",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": "1.2.246.562.24.77925329174",
+    "paivitysPvm": "2024-08-12",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20252026",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 0,
+    "voimassaAlkuPvm": "2024-08-12",
+    "voimassaLoppuPvm": null
+  },
+  {
+    "koodiArvo": "20252027",
+    "koodiUri": "ludoslukuvuosi_20252027",
+    "koodisto": {
+      "koodistoUri": "ludoslukuvuosi",
+      "koodistoVersios": [
+        1
+      ],
+      "organisaatioOid": "1.2.246.562.10.00000000001"
+    },
+    "metadata": [
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "EN",
+        "kuvaus": null,
+        "lyhytNimi": "2026-2027",
+        "nimi": "2026-2027",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "FI",
+        "kuvaus": null,
+        "lyhytNimi": "2026-2027",
+        "nimi": "2026-2027",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      },
+      {
+        "eiSisallaMerkitysta": null,
+        "huomioitavaKoodi": null,
+        "kasite": null,
+        "kayttoohje": null,
+        "kieli": "SV",
+        "kuvaus": null,
+        "lyhytNimi": "2026-2027",
+        "nimi": "2026-2027",
+        "sisaltaaKoodiston": null,
+        "sisaltaaMerkityksen": null
+      }
+    ],
+    "paivittajaOid": "1.2.246.562.24.69948124568",
+    "paivitysPvm": "2026-08-28",
+    "resourceUri": "https://virkailija.testiopintopolku.fi/koodisto-service/rest/codeelement/ludoslukuvuosi_20252027",
+    "tila": "LUONNOS",
+    "versio": 1,
+    "version": 1,
+    "voimassaAlkuPvm": "2026-08-28",
+    "voimassaLoppuPvm": null
   }
 ]

@@ -18,8 +18,8 @@ export const Layout = ({ header = <Header />, footer = <Footer />, children }: T
   const isMobile = useMediaQuery({ query: IS_MOBILE_QUERY })
 
   return (
-    <main className={twMerge('grid min-h-[98vh] max-w-full main-grid gap-0', isMobile && 'grid-rows-[3rem,1fr,7rem]')}>
-      <header className="border-t-5 border-green-primary">{header}</header>
+    <main className={twMerge('grid min-h-[98vh] max-w-full main-grid gap-0', isMobile && 'grid-rows-[3rem_1fr_7rem]')}>
+      <header className="border-t-5 border-green-primary print:border-none">{header}</header>
       <Notification />
       <div className="flex justify-center">
         <section className="w-[80vw]">{children}</section>

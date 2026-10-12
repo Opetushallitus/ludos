@@ -22,5 +22,5 @@ export const Button = forwardRef(
 )
 
 export function buttonClasses(variant: ButtonVariant): string {
-  return `${variant} rounded-sm px-4 py-2`
+  return `${variant} rounded-xs px-4 py-2`
 }

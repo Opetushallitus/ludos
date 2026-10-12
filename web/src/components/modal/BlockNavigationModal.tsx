@@ -38,7 +38,7 @@ export const BlockNavigationModal = ({ open, onProceed, onClose }: BlockNavigati
           <p>{t('modal.body.teksti')}</p>
         </div>
 
-        <div className="flex-grow" />
+        <div className="grow" />
 
         <div className="m-8 flex justify-end gap-5">
           <Button variant="buttonGhost" onClick={onClose} data-testid="cancel">
