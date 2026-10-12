@@ -1,6 +1,6 @@
 # Ludos
 
-Wiki: https://wiki.eduuni.fi/display/OPHPALV/LUDOS
+Wiki: https://wiki.eduuni.fi/spaces/ophPPK/pages/511765177/LUDOS-palvelun+ohjeet
 
 # Ludos lokaalit linkit
 
