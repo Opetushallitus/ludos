@@ -56,20 +56,25 @@
 }
 
 @layer utilities {
+    /* Let text-size utilities override heading line heights without inheriting --tw-leading. */
     h1 {
-        @apply text-[1.8rem] leading-[2.4rem] tracking-[-0.015em] font-bold
+        @apply text-[1.8rem] tracking-[-0.015em] font-bold;
+        line-height: 2.4rem;
     }
 
     h2 {
-        @apply text-[1.5rem] leading-[2rem] font-semibold
+        @apply text-[1.5rem] font-semibold;
+        line-height: 2rem;
     }
 
     h3 {
-        @apply text-[1.3rem] leading-[1.8rem] font-semibold
+        @apply text-[1.3rem] font-semibold;
+        line-height: 1.8rem;
     }
 
     h4 {
-        @apply text-[1.1rem] leading-[1.6rem] font-semibold
+        @apply text-[1.1rem] font-semibold;
+        line-height: 1.6rem;
     }
 
     div.dropdown-full {
