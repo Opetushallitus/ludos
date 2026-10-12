@@ -63,8 +63,9 @@ sukoPrintViewTest('Print view', async ({ sukoAssignmentPrintView, formData, prin
     )
   })
 
-  await test.step('has print button', async () => {
+  await test.step('print button matches its visual baseline', async () => {
     await expect(sukoAssignmentPrintView.printButton).toBeVisible()
+    await expect(sukoAssignmentPrintView.printButton).toHaveScreenshot('print-button.png', { animations: 'disabled' })
   })
 
   await test.step('printed PDF looks correct', async () => {
