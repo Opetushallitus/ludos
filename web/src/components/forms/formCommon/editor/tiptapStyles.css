@@ -1,3 +1,5 @@
+@reference '../../../../index.css';
+
 .tiptap {
     @apply h-auto w-full p-2 overflow-auto
 }
