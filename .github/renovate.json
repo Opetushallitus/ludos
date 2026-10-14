@@ -1,6 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices", "security:minimumReleaseAgeNpm"],
+  "extends": [
+    "config:best-practices",
+    "security:minimumReleaseAgeNpm",
+    ":pinAllExceptPeerDependencies",
+    "customManagers:biomeVersions"
+  ],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Ludos Renovate Dependency Dashboard",
   "gitAuthor": "ludos-renovate[bot] <178999943+ludos-renovate[bot]@users.noreply.github.com>",
@@ -24,7 +29,8 @@
     "github-actions",
     "dockerfile",
     "gradle",
-    "gradle-wrapper"
+    "gradle-wrapper",
+    "custom.jsonata"
   ],
   "github-actions": {
     "automerge": true
