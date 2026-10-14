@@ -124,7 +124,7 @@ const ConsentModalComponent: ForwardRefRenderFunction<ConsentModalHandles> = (_,
         </div>
 
         {isSettingsOpen && (
-          <div className="m-6 border-t border-separate">
+          <div className="m-6 border-t border-gray-separator">
             <h3 className="my-3">{t('consent.modal.settings-title')}</h3>
             <input type="checkbox" disabled checked id="consent-mandatory-checkbox" name="mandatory" />
             <label className="pl-2" htmlFor="consent-mandatory-checkbox">
