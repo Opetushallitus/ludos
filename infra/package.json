@@ -19,10 +19,10 @@
     "typescript": "7.0.2"
   },
   "dependencies": {
-    "aws-cdk": "^2.1109.0",
+    "aws-cdk": "2.1145.0",
     "aws-cdk-lib": "2.273.0",
-    "constructs": "^10.3.0",
-    "source-map-support": "^0.5.21",
-    "tsx": "^4.20.3"
+    "constructs": "10.8.1",
+    "source-map-support": "0.5.21",
+    "tsx": "4.23.15"
   }
 }
