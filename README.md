@@ -138,6 +138,8 @@ Ympäristöt ja niitä vastaavat Spring-profiilit:
 
 ## AWS Infrastructure
 
+[AWS Health RISK → PagerDuty (kaikki Ludos-tilit)](infra/README-aws-health-risk.md)
+
 ![AWS](./docs/images/Ludos_AWS_setup.png)
 
 ## Tekninen dokumentaatio
