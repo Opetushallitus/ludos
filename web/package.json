@@ -47,7 +47,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
+    "@biomejs/biome": "2.6.3",
     "@iconify/icons-ic": "1.2.13",
     "@iconify/icons-material-symbols": "1.2.58",
     "@tailwindcss/vite": "4.3.3",
