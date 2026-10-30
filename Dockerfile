@@ -23,7 +23,7 @@ COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
 COPY server/src/ ./src/
 RUN gradle --no-daemon bootJar
 
-FROM amazoncorretto:25.0.4-alpine@sha256:19f1e2198abaaf201f5b9faa39222412da3fad66415e9dfe253bd6763415097e
+FROM amazoncorretto:25.0.4-alpine@sha256:b79cd12dceb279962a585059498694fd66965df39244bbab2879aad39dd6278d
 
 RUN apk add --no-cache ca-certificates curl \
     && curl --fail --location https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem --output /etc/ssl/certs/rds-global-bundle.pem
