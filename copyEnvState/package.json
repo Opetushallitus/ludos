@@ -10,7 +10,7 @@
     "typescript": "7.0.2"
   },
   "dependencies": {
-    "@aws-sdk/client-ecs": "3.1157.0",
+    "@aws-sdk/client-ecs": "3.1158.0",
     "tsx": "4.23.15"
   }
 }
