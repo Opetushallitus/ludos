@@ -50,12 +50,12 @@
     "@biomejs/biome": "2.6.4",
     "@iconify/icons-ic": "1.2.13",
     "@iconify/icons-material-symbols": "1.2.58",
-    "@tailwindcss/vite": "4.3.3",
+    "@tailwindcss/vite": "4.3.4",
     "@types/node": "24.19.2",
     "@types/react": "18.3.31",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "6.2.1",
-    "tailwindcss": "4.3.3",
+    "tailwindcss": "4.3.4",
     "typescript": "7.0.2",
     "vite": "8.3.5"
   }
