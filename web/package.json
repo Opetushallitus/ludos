@@ -32,7 +32,7 @@
     "@tiptap/pm": "3.32.3",
     "@tiptap/react": "3.32.3",
     "html-react-parser": "6.1.9",
-    "i18next": "26.7.1",
+    "i18next": "26.7.2",
     "i18next-browser-languagedetector": "8.3.0",
     "iconify-icon": "3.0.5",
     "qrcode.react": "4.2.0",
