@@ -15,7 +15,7 @@ COPY web/src/ ./src/
 RUN npm run build:ci
 
 
-FROM gradle:jdk25@sha256:550b31f6ce877521dd75a62edda57a116e2d399c75cf49b3bac7a0e8ee4cc23d AS server-build
+FROM gradle:jdk25@sha256:39d599d8df1777d73b00b5bf928254ecd121802d518577fe08d41a3cf86aa45f AS server-build
 
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts server/gradle.lockfile ./
