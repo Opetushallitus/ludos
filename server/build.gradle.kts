@@ -27,7 +27,7 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
-val tomcatVersion = "11.0.27"
+val tomcatVersion = "11.0.29"
 
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.1.1"))
