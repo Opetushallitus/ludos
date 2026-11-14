@@ -78,7 +78,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
 
     constraints {
-        implementation("org.bouncycastle:bcprov-jdk18on:1.86")
+        implementation("org.bouncycastle:bcprov-jdk18on:1.87")
         implementation("org.bouncycastle:bcpkix-jdk18on:1.87")
         implementation("org.bouncycastle:bcutil-jdk18on:1.86")
         implementation("org.apache.tomcat.embed:tomcat-embed-el:$tomcatVersion")
