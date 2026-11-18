@@ -14,6 +14,7 @@ function main() {
     -e RENOVATE_REPOSITORIES="Opetushallitus/ludos" \
     -e RENOVATE_AUTODISCOVER_FILTER="Opetushallitus/ludos" \
     -e RENOVATE_ALLOWED_COMMANDS="cd server && ./gradlew dependencies --write-locks" \
+    -e RENOVATE_CUSTOM_ENV_VARIABLES='{"JAVA_TOOL_OPTIONS":"-XX:-UseBASE64Intrinsics"}' \
     renovate/renovate:41-full --dry-run=lookup
   popd
 }

@@ -31,3 +31,5 @@ jobs:
           RENOVATE_REPOSITORIES: 'Opetushallitus/ludos'
           RENOVATE_AUTODISCOVER_FILTER: 'Opetushallitus/ludos'
           RENOVATE_ALLOWED_COMMANDS: 'cd server && ./gradlew dependencies --write-locks'
+          # CVE-2026-114938: Renovate must pass the flag to child JVMs.
+          RENOVATE_CUSTOM_ENV_VARIABLES: '{"JAVA_TOOL_OPTIONS":"-XX:-UseBASE64Intrinsics"}'

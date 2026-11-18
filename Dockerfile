@@ -17,13 +17,17 @@ RUN npm run build:ci
 
 FROM gradle:jdk25@sha256:39d599d8df1777d73b00b5bf928254ecd121802d518577fe08d41a3cf86aa45f AS server-build
 
+# CVE-2026-114938: mitigate until this Gradle image ships a fixed JVM.
+ENV JAVA_TOOL_OPTIONS=-XX:-UseBASE64Intrinsics
+
 WORKDIR /ludos-build
 COPY server/settings.gradle.kts server/build.gradle.kts server/gradle.lockfile ./
 COPY --from=web-build /ludos-web/dist/ ./src/main/resources/static/
 COPY server/src/ ./src/
 RUN gradle --no-daemon bootJar
 
-FROM amazoncorretto:25.0.4-alpine@sha256:b79cd12dceb279962a585059498694fd66965df39244bbab2879aad39dd6278d
+# This digest contains Corretto 25.0.5.1.2 (CVE-2026-114938 fix).
+FROM amazoncorretto:25.0.5-alpine@sha256:1124f698f69d2185828dbd1a1ebeb9aee21884ac64bed7af3deeafd20b21a9dc
 
 RUN apk add --no-cache ca-certificates curl \
     && curl --fail --location https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem --output /etc/ssl/certs/rds-global-bundle.pem
