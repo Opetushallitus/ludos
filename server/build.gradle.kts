@@ -31,7 +31,7 @@ val tomcatVersion = "11.0.29"
 
 dependencies {
     implementation(platform("org.springframework.boot:spring-boot-dependencies:4.1.1"))
-    implementation(platform("io.netty:netty-bom:4.2.20.Final"))
+    implementation(platform("io.netty:netty-bom:4.2.21.Final"))
     implementation(platform("com.fasterxml.jackson:jackson-bom:2.23.0"))
     implementation(platform("tools.jackson:jackson-bom:3.3.0"))
 
