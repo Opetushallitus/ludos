@@ -15,7 +15,7 @@ COPY web/src/ ./src/
 RUN npm run build:ci
 
 
-FROM gradle:jdk25@sha256:9d2e0d1719260ba3d5b15c8d5071b7bc30dbfba6162c18acf620dd48a6c7531a AS server-build
+FROM gradle:jdk25@sha256:a16370cdf4fab2bdec80810ba7f7d577fc2ce86eb1332b067031fcc19d947ed5 AS server-build
 
 # CVE-2026-114938: mitigate until this Gradle image ships a fixed JVM.
 ENV JAVA_TOOL_OPTIONS=-XX:-UseBASE64Intrinsics
