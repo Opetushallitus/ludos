@@ -39,7 +39,7 @@ dependencies {
     implementation("org.apache.httpcomponents:httpclient:4.5.14")
     implementation("org.apache.httpcomponents:httpclient-cache:4.5.14")
     implementation("org.apache.commons:commons-lang3:3.22.0")
-    implementation("io.arrow-kt:arrow-core:2.3.0")
+    implementation("io.arrow-kt:arrow-core:2.3.0.1")
     implementation("tools.jackson.module:jackson-module-kotlin")
     implementation("jakarta.servlet:jakarta.servlet-api")
     implementation("org.springframework.boot:spring-boot-starter-flyway")
